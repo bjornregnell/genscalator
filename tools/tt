@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# tt — launcher for the Scala agent toolbox, so tools run from ANY repo as ONE literal,
+# tt — "typed tools": launcher for the Scala agent toolbox, so tools run from ANY repo as ONE literal,
 # statically-analyzable command:  tt <tool> <args...>
 # Why: matches a precise allowlist (e.g. `Bash(tt text *)`) → no /tmp, no `..` traversal, no
 # shell-variable in the gated command (all of which force manual confirmation). Canonical copy lives

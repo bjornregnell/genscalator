@@ -2,6 +2,10 @@
 
 > Canonical foundations doc for **genscalator / GS** — *"Power tools for agents: smarter, safer, faster"*.
 
+> **Voice:** this repo uses **the human** and **the agent** for the two roles (see *Stakeholders*).
+> Second-person **"you"** addresses the reader — a human adopting GS — and is used only in
+> how-to/instruction contexts.
+
 ## High-level goal
 **An efficient AND safe agentic workflow that leverages the power of Scala.**
 
@@ -78,7 +82,7 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   compiled tool beats re-emitting brittle bash every time. **Two distinct pressures, usually aligned but
   not always:** (a) **$cost** — total tokens billed; (b) **smart-zone** — keeping *working* context small
   so quality stays high (see *smart zone / dumb zone*). (b) is the one that bites silently. GS tools serve
-  both: a tool is a small stable thing you *call*, vs re-deriving bash + re-reading its output, which
+  both: a tool is a small stable thing the agent *calls*, vs re-deriving bash + re-reading its output, which
   bloats context.
 - **Smart zone / dumb zone** — the region of context-window fill where the agent reasons well ("smart")
   vs. where it degrades ("dumb") — even though tokens remain below the hard limit. The boundary (X%) is

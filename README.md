@@ -28,7 +28,9 @@ Hat Hacker threat model), and glossary.
 
 Requires [scala-cli](https://scala-cli.virtuslab.org/) (and a JDK).
 
-Put the `tt` launcher on your PATH so tools run as one literal, allowlist-friendly command from any repo:
+**Platforms:** Linux, macOS, and WSL — anywhere `bash` + `scala-cli` run. On native Windows use WSL (or Git Bash).
+
+Put the `tt` launcher ("typed tools") on your PATH so tools run as one literal, allowlist-friendly command from any repo:
 
 ```
 ln -s "$PWD/tools/tt" ~/.local/bin/tt    # ensure ~/.local/bin is on your PATH

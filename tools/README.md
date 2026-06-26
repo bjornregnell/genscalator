@@ -10,8 +10,9 @@ stable Scala** (now 3.8.4; re-check per project).
 tt <tool> <args...>                              # from ANY repo (recommended)
 scala-cli run tools/<tool>.scala -- <args>       # explicit, from this repo's root
 ```
-**`tt`** is the launcher (`tools/tt`, symlinked onto PATH at `~/.local/bin/tt`). It makes every tool
-ONE literal, statically-analyzable command — so it matches a precise allowlist entry and needs no
+**`tt`** ("typed tools") is the launcher (`tools/tt`, symlinked onto PATH at `~/.local/bin/tt`). The
+symlink name is yours to choose — rename it if `tt` collides with something on your PATH (it's not a
+standard command). It makes every tool ONE literal, statically-analyzable command — so it matches a precise allowlist entry and needs no
 manual confirmation (no `/tmp`, no `..` traversal, no shell variable in the gated command). Allowlist
 is **per-subcommand** for "start safe", e.g. `Bash(tt text *)`; add an entry as each tool is proven.
 First run compiles (~couple s); reruns are cached. Pure tools use only the JDK (fast); effectful
