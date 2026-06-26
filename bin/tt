@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# bin/tt — plugin PATH entry for the `tt` launcher.
+# When this plugin is enabled, Claude Code adds this dir to the Bash tool's PATH, so the agent can run
+# `tt <tool> …` with no manual symlink. This is a thin wrapper: it finds the bundled tools/ and hands
+# off to the canonical launcher (tools/tt), so there is no logic duplication.
+set -euo pipefail
+
+# Find the repo/plugin root. Claude Code sets CLAUDE_PLUGIN_ROOT for plugin executables; otherwise fall
+# back to this script's own folder, one level up (bin/ and tools/ are siblings under the root).
+root="${CLAUDE_PLUGIN_ROOT:-"$(cd "$(dirname "$0")/.." && pwd)"}"
+
+export TT_TOOLS="$root/tools"
+exec "$root/tools/tt" "$@"

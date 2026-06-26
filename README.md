@@ -67,14 +67,35 @@ Full cheat-sheet: [`tools/README.md`](tools/README.md).
 - Tool safety flags: `--safe-mode`, `--sandboxed`, `--audit`.
 - Capture-Checking **Safe-mode** PoC → pure tools safe by default.
 - A Scala-style skill (direct, state-safe, safe-mode-where-possible).
-- Native compilation; skill packaging.
+- **Cross-tool packaging:** an MCP server so the tools are first-class in Codex/opencode too. (The
+  Claude Code plugin already ships — see *Use as a Claude Code plugin* below.)
+- Native compilation.
 - A Java-vs-Scala token-efficiency experiment (out-of-the-box vs genscalator).
+
+## Use as a Claude Code plugin
+
+This repo doubles as its own Claude Code plugin marketplace, so `tt` lands on your PATH automatically and
+a skill teaches the habit — no manual symlink:
+```
+/plugin marketplace add https://codeberg.org/bjornregnell/genscalator.git
+/plugin install genscalator@bjornregnell
+```
+Use the **full Codeberg URL with `.git`** — the short `owner/repo` form resolves to GitHub, and the
+`.git` suffix makes Claude Code clone the repo (where `marketplace.json` lives).
+Details, the recommended allowlist, and caveats: [`docs/claude-plugin.md`](docs/claude-plugin.md).
+(You still need `scala-cli` + a JDK installed.)
 
 ## Portability
 
 GS targets *any* capable coding agent, not one vendor. The tools (scala-cli scripts + the `tt` launcher)
 are agent-agnostic; the agent-specific parts are thin harness integration (allowlist, memory, skill
 packaging). We aim to support frontier tools (Claude, Codex) and open-source agent frameworks/models.
+
+## Contributing
+
+Humans **and** agents are welcome — especially new general-purpose tools. If your agent builds a tool that
+turns out to be project-agnostic, it should suggest contributing it back here (issue + PR). The agent
+proposes; you approve and submit. See [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## License
 

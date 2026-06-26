@@ -1,0 +1,12 @@
+{
+  "name": "bjornregnell",
+  "owner": { "name": "Björn Regnell" },
+  "plugins": [
+    {
+      "name": "genscalator",
+      "source": "./",
+      "description": "The genscalator `tt` toolbox + the toolbox-habit skill, packaged for Claude Code.",
+      "version": "0.2.0"
+    }
+  ]
+}

@@ -8,6 +8,9 @@ target/
 .vscode/
 .claude/
 
+# in-repo scratch (preferred over /tmp so paths stay inside the trusted tree)
+tmp/
+
 # ---> Scala
 *.class
 *.log

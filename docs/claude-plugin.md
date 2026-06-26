@@ -1,0 +1,69 @@
+# Using genscalator as a Claude Code plugin
+
+This repo doubles as its own **plugin marketplace**, so adopters get the `tt` toolbox on PATH and the
+toolbox-habit skill in one step — no manual symlink.
+
+> Plugin packaging is **Claude Code-specific**. The tools themselves are just `scala-cli` scripts and
+> work in any agent that can run a shell command; `AGENTS.md` carries the workflow to other tools. The
+> portable cross-tool path (Claude / Codex / opencode) is an MCP server — see the README roadmap.
+
+## What the plugin ships
+- **`bin/tt`** — added to the Bash tool's PATH while the plugin is enabled, so the agent runs `tt …`
+  with no setup. It delegates to the bundled `tools/tt` and sets `TT_TOOLS` to the bundled `tools/`.
+- **`skills/tt-toolbox/SKILL.md`** — teaches the habit (prefer `tt` over bash/grep/awk; one bare command
+  per call) and loads contextually when relevant.
+- Manifests: `.claude-plugin/plugin.json` (the plugin) and `.claude-plugin/marketplace.json` (the catalog).
+
+Still required on the user's machine (plugins can't install dependencies): **`scala-cli`** and a **JDK**.
+
+## Install
+```
+/plugin marketplace add https://codeberg.org/bjornregnell/genscalator.git
+/plugin install genscalator@bjornregnell
+```
+**Use the full Codeberg URL with the `.git` suffix:**
+- The short `owner/repo` form of `/plugin marketplace add` resolves to **github.com**, so it would not
+  find a Codeberg-hosted repo.
+- The **`.git` suffix** tells Claude Code to *clone* the repo (so it finds `.claude-plugin/marketplace.json`
+  inside it) rather than treating the URL as a direct link to a hosted `marketplace.json`.
+
+The install token is **`<plugin>@<marketplace>`** — here the plugin `genscalator` (its `name` in
+`plugin.json`) from the marketplace `bjornregnell` (its `name` in `marketplace.json`). It is *not* the
+`owner/repo` git path.
+
+Then verify the agent can run e.g. `tt files src .scala --count`.
+
+## Recommended allowlist (opt-in, curated)
+Plugins do **not** silently grant Bash permissions — and that's deliberate (see
+[`confirmations-method.md`](confirmations-method.md): curate the allowlist as reviewed code, not via
+in-the-moment "always allow" clicks). The skill pre-approves the narrow `tt` commands while it's active;
+to make them always-allowed, add **narrow, per-subcommand** entries to your own `.claude/settings.json`:
+```json
+{
+  "permissions": {
+    "allow": ["Bash(tt text *)", "Bash(tt files *)", "Bash(scala-cli run *)"]
+  }
+}
+```
+Keep entries per-subcommand (`Bash(tt text *)`, not `Bash(tt *)`) so each grant stays tightly scoped.
+
+## Optional: a "nudge" hook (roadmap, not shipped)
+A `PreToolUse` hook on `Bash` could advise switching to `tt` when it sees a raw `grep`/`awk`/`sed`/`find`
+in a command. It's left out of the default plugin to avoid false positives and per-call overhead; wire it
+in deliberately if wanted. Sketch (`hooks/hooks.json`, plus a script that reads the tool JSON on stdin):
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      { "matcher": "Bash",
+        "hooks": [ { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/nudge-bash.sh" } ] }
+    ]
+  }
+}
+```
+
+## Caveats to verify on first install
+- **`CLAUDE_PLUGIN_ROOT` in `bin/` scripts** is documented for hooks/MCP; `bin/tt` also falls back to
+  resolving `tools/` relative to itself, so it works either way.
+- **`allowed-tools` grammar** in `SKILL.md` (space-separated `Bash(tt text *) …`) — confirm it pre-approves
+  as expected; adjust to an array if your Claude Code version prefers that.
