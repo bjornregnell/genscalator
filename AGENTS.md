@@ -1,6 +1,6 @@
 # AGENTS.md — operating contract for agents
 
-genscalator (GS) is a toolbox + workflow for *you, the coding agent*. This file is the short contract;
+genscalator is a toolbox + workflow for *you, the coding agent*. This file is the short contract;
 the reference docs are linked at the bottom — read them once, then follow these rules.
 
 ## Core habit

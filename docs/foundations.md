@@ -1,9 +1,9 @@
 # genscalator — foundations: goals, stakeholders & glossary
 
-> Canonical foundations doc for **genscalator / GS** — *"Power tools for agents: smarter, safer, faster"*.
+> Canonical foundations doc for **genscalator** — *"Power tools for agents: smarter, safer, faster"*.
 
 > **Voice:** this repo uses **the human** and **the agent** for the two roles (see *Stakeholders*).
-> Second-person **"you"** addresses the reader — a human adopting GS — and is used only in
+> Second-person **"you"** addresses the reader — a human adopting genscalator — and is used only in
 > how-to/instruction contexts.
 
 ## High-level goal
@@ -22,11 +22,11 @@ self-contained, safe Scala tool for repeated reuse.* This levels up to static gu
 risk of the agent getting stuck debugging its own brittle dynamic helpers.
 
 ## Naming
-- **genscalator** / **GS** = the product AND the repo; say **"GS repo"** to disambiguate.
-- Develop in your own working project; **publish generalized, project-agnostic** results to the GS repo.
+- **genscalator** = the product AND the repo; say **"genscalator repo"** to disambiguate when needed.
+- Develop in your own working project; **publish generalized, project-agnostic** results to the genscalator repo.
 
 ## Stakeholders
-- **Human developer** ("human") — you and future users of GS.
+- **Human developer** ("human") — you and future users of genscalator.
 - **Agent developer** ("agent") — the AI doing the work; the primary *user* of the power tools.
 - **Black Hat Hacker** ("BHH") — adversary. Models the threat the safety machinery exists to contain; has
   **BadGoals** (things human+agent must PREVENT). Making BHH explicit turns "safe by design" from a slogan
@@ -40,8 +40,8 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   tools** that earn static guarantees and are reused across projects.
 - **G:** get leverage from **static types + modern tooling** (Scalex, Metals, capture checking).
 - **G:** **token efficiency (TE)** — fewer tokens per task (don't re-derive brittle helpers each time).
-- **G: portability** — GS targets *any* capable coding agent, not one vendor. We develop with Anthropic
-  **Claude Code + Opus** now, but **avoid agent-specific choices unless necessary** and aim to make GS
+- **G: portability** — genscalator targets *any* capable coding agent, not one vendor. We develop with Anthropic
+  **Claude Code + Opus** now, but **avoid agent-specific choices unless necessary** and aim to make genscalator
   usable across **frontier tools (Claude, Codex)** AND **open-source agent frameworks/models** (e.g.
   opencode, kilo, local models). The "agent" stakeholder is tool-agnostic.
 
@@ -49,7 +49,7 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
 - **G:** avoid **confirmation fatigue (CF)** — few, meaningful approval prompts, not a stream of rubber-stamps.
 - **G:** avoid **review overload** — agent output stays reviewable (small, typed, idiomatic).
 - **G:** **trust-but-verify** — be able to audit what a tool actually did (→ `--audit`).
-- **G:** **contribute to open source** (the GS repo) so others reuse the workflow.
+- **G:** **contribute to open source** (the genscalator repo) so others reuse the workflow.
 - **G:** keep **"always-allow" decisions low-stakes** — narrow, reviewable allowlist entries, curated as code.
 - **G:** be able to start **ralph loops** (see glossary) — hand a safe, well-scoped task *fully* to the
   agent to run unattended until goals are met. This is a key payoff of safe-by-design: the human can only
@@ -81,7 +81,7 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
 - **Token efficiency (TE)** — achieving a task with fewer model tokens (input + output). A committed,
   compiled tool beats re-emitting brittle bash every time. **Two distinct pressures, usually aligned but
   not always:** (a) **$cost** — total tokens billed; (b) **smart-zone** — keeping *working* context small
-  so quality stays high (see *smart zone / dumb zone*). (b) is the one that bites silently. GS tools serve
+  so quality stays high (see *smart zone / dumb zone*). (b) is the one that bites silently. genscalator tools serve
   both: a tool is a small stable thing the agent *calls*, vs re-deriving bash + re-reading its output, which
   bloats context.
 - **Smart zone / dumb zone** — the region of context-window fill where the agent reasons well ("smart")
@@ -110,7 +110,7 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   reviewable), rather than relying on the human to vigilantly catch danger at every prompt.
 
 ## Development approach — case-study-driven; start specific, generalize-ready
-- **Case-study-driven:** GS is distilled from doing *real* work, not designed in the abstract. A seed case
+- **Case-study-driven:** genscalator is distilled from doing *real* work, not designed in the abstract. A seed case
   study is **introprog/autotranslate**
   (https://github.com/lunduniversity/introprog/tree/master/autotranslate) — the tools + workflow earn
   their place by solving an actual project.
@@ -118,11 +118,11 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   specifically than needed** — keep the portability goal (above) in view from the start. The tools
   themselves (scala-cli scripts + the `tt` launcher) are already agent-agnostic; the agent-specific parts
   are the *harness integration* (allowlist, memory, skill packaging), which we keep thin and documented.
-- **Long-term:** GS docs should include how-to for using it with **Claude, Codex, and open-source
+- **Long-term:** genscalator docs should include how-to for using it with **Claude, Codex, and open-source
   frameworks/models** (opencode, kilo, local models) — so adopters aren't forced into one vendor.
 
 ## Tool safety flags (roadmap — operationalize "safe by design")
-A GS tool *declares* where it sits in the threat model, so the human can grant trust cheaply:
+A genscalator tool *declares* where it sits in the threat model, so the human can grant trust cheaply:
 - **`--safe-mode`** — runs under capture-checking / purity constraints; the compiler rejects accidental
   side effects. Default for pure tools (text/file analysis).
 - **`--sandboxed`** — restricts the tool to a declared scope (e.g. reads only under a given dir, no
