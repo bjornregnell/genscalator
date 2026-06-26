@@ -26,17 +26,44 @@ Hat Hacker threat model), and glossary.
 
 ## Install
 
-Requires [scala-cli](https://scala-cli.virtuslab.org/) (and a JDK).
+**Prerequisites:** [scala-cli](https://scala-cli.virtuslab.org/) and a JDK (to run the tools), plus `git`
+(to clone this repo).
 
 **Platforms:** Linux, macOS, and WSL — anywhere `bash` + `scala-cli` run. On native Windows use WSL (or Git Bash).
 
-Put the `tt` launcher ("typed tools") on your PATH so tools run as one literal, allowlist-friendly command from any repo:
+> On **Claude Code** you can skip the manual steps below and install genscalator as a plugin — `tt` lands
+> on your PATH automatically. See [Use as a Claude Code plugin](#use-as-a-claude-code-plugin). The steps
+> here are the manual path that works with any agent.
 
+**1. Clone the repo:**
+```
+git clone https://codeberg.org/bjornregnell/genscalator.git
+cd genscalator
+```
+
+**2. Put the `tt` launcher on your PATH.** Run this *from the repo root* (so `$PWD` is your clone),
+symlinking the launcher into a directory that's on your PATH:
 ```
 ln -s "$PWD/tools/tt" ~/.local/bin/tt    # ensure ~/.local/bin is on your PATH
 ```
+"typed tools" — one literal, allowlist-friendly command from any repo. First run of a tool compiles
+(~a couple of seconds); reruns are cached. Verify with `tt files src .scala --count`.
 
-First run of a tool compiles (~a couple of seconds); reruns are cached.
+### Companions for Scala code (recommended)
+
+genscalator integrates — but does **not** bundle — two upstream tools for Scala *code* intelligence (the
+`tt` tools cover text and logs). Install whichever you need; [`docs/tool-selection.md`](docs/tool-selection.md)
+says which tool answers which question.
+
+- **[scalex](https://github.com/nguyenyou/scalex)** — fast, symbol-aware Scala navigation. On Claude Code:
+  ```
+  /plugin marketplace add nguyenyou/scalex
+  /plugin install scalex@scalex-marketplace
+  ```
+  For a standalone binary / other agents, see the upstream repo.
+- **[Metals MCP](https://scalameta.org/metals/docs/features/mcp/)** — compiler-grade truth (inferred types,
+  real diagnostics, run tests, refactor); heavier. Enable it through your editor's Metals + MCP-client
+  config per the linked setup page.
 
 ## Usage
 
@@ -55,10 +82,12 @@ tt files src .scala --count            # count matching files (find|wc)
 
 Full cheat-sheet: [`tools/README.md`](tools/README.md).
 
-**Companion for Scala code:** `tt`/grep are for text and logs; for Scala *structure* (where defined, who
+**Companions for Scala code:** `tt`/grep are for text and logs; for Scala *structure* (where defined, who
 calls, what extends, resolve imports) genscalator recommends [scalex](https://github.com/nguyenyou/scalex)
-— a symbol-aware "grep for the AST", separately installed. Which tool for which question:
-[`docs/tool-selection.md`](docs/tool-selection.md).
+— a symbol-aware "grep for the AST", separately installed. For **compiler-grade truth or mutation**
+(inferred types, real diagnostics, run tests, refactor) it escalates to
+[Metals MCP](https://scalameta.org/metals/docs/features/mcp/). Which tool for which question — and the
+escalation ladder: [`docs/tool-selection.md`](docs/tool-selection.md).
 
 ## Scope & roadmap
 
@@ -68,14 +97,18 @@ calls, what extends, resolve imports) genscalator recommends [scalex](https://gi
 - [`docs/confirmations-method.md`](docs/confirmations-method.md) — a method + template for driving down
   confirmation fatigue.
 
-**Roadmap (planned, not yet built):**
-- Tool safety flags: `--safe-mode`, `--sandboxed`, `--audit`.
-- Capture-Checking **Safe-mode** PoC → pure tools safe by default.
+**Roadmap (planned, not yet built — roughly cheapest-to-build first):**
 - A Scala-style skill (direct, state-safe, safe-mode-where-possible).
-- **Cross-tool packaging:** an MCP server so the tools are first-class in Codex/opencode too. (The
-  Claude Code plugin already ships — see *Use as a Claude Code plugin* below.)
+- **One-command install** of genscalator + companions (scalex + Metals MCP) for newcomers who want
+  everything at once — as a **reviewable, version-pinned installer script you read before running**, not
+  a blind `curl … | bash` (that opaque-pipe pattern is exactly the confirmation-fatigue / RCE risk
+  genscalator argues against).
 - Native compilation.
 - A Java-vs-Scala token-efficiency experiment (out-of-the-box vs genscalator).
+- Tool safety flags: `--safe-mode`, `--sandboxed`, `--audit`.
+- Capture-Checking **Safe-mode** PoC → pure tools safe by default.
+- **Cross-tool packaging:** an MCP server so the tools are first-class in Codex/opencode too. (The
+  Claude Code plugin already ships — see *Use as a Claude Code plugin* below.)
 
 ## Use as a Claude Code plugin
 
@@ -89,6 +122,18 @@ Use the **full Codeberg URL with `.git`** — the short `owner/repo` form resolv
 `.git` suffix makes Claude Code clone the repo (where `marketplace.json` lives).
 Details, the recommended allowlist, and caveats: [`docs/claude-plugin.md`](docs/claude-plugin.md).
 (You still need `scala-cli` + a JDK installed.)
+
+**Add the Scala-code companions.** This plugin installs `tt` only — it does **not** pull in the companions
+transitively (Claude Code plugins can't install other plugins or system tools). Add them yourself:
+```
+/plugin marketplace add nguyenyou/scalex      # scalex: fast, symbol-aware Scala navigation
+/plugin install scalex@scalex-marketplace
+```
+**Metals MCP** (compiler-grade truth — types, diagnostics, tests, refactor) isn't a plugin: enable it via
+your editor's Metals + MCP-client config — see https://scalameta.org/metals/docs/features/mcp/. Then add
+the companion entries to your allowlist (`Bash(scalex *)`; Metals' effectful MCP tools stay per-use, not
+blanket-allowed) — details in [`docs/claude-plugin.md`](docs/claude-plugin.md). Which tool for which
+question: [`docs/tool-selection.md`](docs/tool-selection.md).
 
 ## Portability
 

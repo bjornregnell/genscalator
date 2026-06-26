@@ -140,8 +140,12 @@ A genscalator tool *declares* where it sits in the threat model, so the human ca
    (depth: https://github.com/nguyenyou/scalex). Symbol-aware (AST) querying of Scala code — far more
    precise than grep/regex/awk; the semantic-Scala companion to the textual `tt` tools. See
    [`tool-selection.md`](tool-selection.md) and [`../tools/README.md`](../tools/README.md#companion-scalex).
-2. **Scala Capture Checking (CC)** — focus FIRST on **Safe mode**:
+2. **Metals MCP** — *adopted complement* (heavier tier above scalex). https://scalameta.org/metals/docs/features/mcp/.
+   Presentation-compiler + build-server intelligence over MCP: real diagnostics, inferred types, run tests,
+   refactor (Scalafix), format, dep/build queries. Use when scalex's source-level view isn't enough; note the
+   read-only-vs-effectful safety split. See [`tool-selection.md`](tool-selection.md).
+3. **Scala Capture Checking (CC)** — focus FIRST on **Safe mode**:
    https://www.scala-lang.org/api/3.x/docs/experimental/capture-checking/safe.html
    (overview: https://www.scala-lang.org/api/3.x/docs/experimental/capture-checking/index.html).
-3. **Paper: making agents safer with capture checking** — https://arxiv.org/abs/2603.00991. For
+4. **Paper: making agents safer with capture checking** — https://arxiv.org/abs/2603.00991. For
    *ideas/examples*; syntax has evolved, don't copy verbatim.

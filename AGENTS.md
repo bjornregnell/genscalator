@@ -9,7 +9,10 @@ the reference docs are linked at the bottom — read them once, then follow thes
   (not `| wc -l`). This applies to your *own* checks too (leak scans, verification), not just the user's task.
 - For Scala **code** questions (def / refs / hierarchy / imports / body), use **`scalex`** — not `grep`
   or `tt text`. It's symbol-aware (knows the AST), so it answers right the first time. `tt`/grep is for
-  plain text and logs; `scalex` is for Scala structure. Full guide: [`docs/tool-selection.md`](docs/tool-selection.md).
+  plain text and logs; `scalex` is for Scala structure. For **compiler-grade truth or mutation** (inferred
+  types, real diagnostics, run tests, refactor/format) escalate to **Metals MCP** — heavier, and its
+  effectful tools (`test`, `*-scalafix-rule`) are *not* blanket-allowed. Full guide + ladder:
+  [`docs/tool-selection.md`](docs/tool-selection.md).
 - If no tool fits, **scaffold one**: `scala-cli run tools/newtool.scala -- <name>`, then implement it.
   Keep pure tools pure (read → compute → print). A committed, compiled tool beats re-emitting brittle
   bash every time.
