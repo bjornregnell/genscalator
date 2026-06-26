@@ -1,0 +1,16 @@
+//> using scala 3.8.4
+//> using jvm 21
+//> using file lib.scala
+
+// __NAME__ — <one-line purpose>. PURE: reads input, computes, prints; no other effects.
+//   scala-cli run tools/__NAME__.scala -- <args>
+import agenttools.Lib
+
+@main def __NAME__(args: String*): Unit =
+  args.toList match
+    case file :: Nil =>
+      val text = Lib.readUtf8(file)
+      // TODO: compute from `text` and print a clean === result ===
+      println(s"${text.linesIterator.size} lines")
+    case _ =>
+      println("usage: __NAME__ <file>")

@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# tt — launcher for the Scala agent toolbox, so tools run from ANY repo as ONE literal,
+# statically-analyzable command:  tt <tool> <args...>
+# Why: matches a precise allowlist (e.g. `Bash(tt text *)`) → no /tmp, no `..` traversal, no
+# shell-variable in the gated command (all of which force manual confirmation). Canonical copy lives
+# here in the repo; ~/.local/bin/tt is typically a symlink to it.
+set -euo pipefail
+# Self-locate: TOOLS = the dir this script really lives in (follow symlinks), so tt works from ANY
+# clone/install with no hardcoded path. Override with TT_TOOLS if the tools live elsewhere.
+SOURCE="${BASH_SOURCE[0]}"
+while [[ -L "$SOURCE" ]]; do
+  DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ "$SOURCE" != /* ]] && SOURCE="$DIR/$SOURCE"
+done
+TOOLS="${TT_TOOLS:-$(cd -P "$(dirname "$SOURCE")" && pwd)}"
+if [[ $# -lt 1 ]]; then
+  echo "usage: tt <tool> <args...>   (tools: $(cd "$TOOLS" && ls *.scala | sed 's/\.scala//' | tr '\n' ' '))"
+  exit 2
+fi
+tool="$1"; shift
+# Guardrail: tool must be a bare identifier (no '/', no '..') so we can only run TOOLS/<name>.scala.
+[[ "$tool" =~ ^[a-zA-Z][a-zA-Z0-9_-]*$ ]] || { echo "tt: invalid tool name '$tool'"; exit 2; }
+[[ -f "$TOOLS/$tool.scala" ]] || { echo "tt: no such tool '$tool' in $TOOLS"; exit 2; }
+exec scala-cli run "$TOOLS/$tool.scala" -- "$@"
