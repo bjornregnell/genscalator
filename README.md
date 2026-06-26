@@ -98,7 +98,6 @@ escalation ladder: [`docs/tool-selection.md`](docs/tool-selection.md).
   confirmation fatigue.
 
 **Roadmap (planned, not yet built — roughly cheapest-to-build first):**
-- A Scala-style skill (direct, state-safe, safe-mode-where-possible).
 - **One-command install** of genscalator + companions (scalex + Metals MCP) for newcomers who want
   everything at once — as a **reviewable, version-pinned installer script you read before running**, not
   a blind `curl … | bash` (that opaque-pipe pattern is exactly the confirmation-fatigue / RCE risk
@@ -113,7 +112,7 @@ escalation ladder: [`docs/tool-selection.md`](docs/tool-selection.md).
 ## Use as a Claude Code plugin
 
 This repo doubles as its own Claude Code plugin marketplace, so `tt` lands on your PATH automatically and
-a skill teaches the habit — no manual symlink:
+skills teach the habit (tool selection + Scala style) — no manual symlink:
 ```
 /plugin marketplace add https://codeberg.org/bjornregnell/genscalator.git
 /plugin install genscalator@bjornregnell
@@ -140,6 +139,14 @@ question: [`docs/tool-selection.md`](docs/tool-selection.md).
 genscalator targets *any* capable coding agent, not one vendor. The tools (scala-cli scripts + the `tt` launcher)
 are agent-agnostic; the agent-specific parts are thin harness integration (allowlist, memory, skill
 packaging). We aim to support frontier tools (Claude, Codex) and open-source agent frameworks/models.
+
+## Research
+
+genscalator is developed **in the open as a research project** — its tools, skills, and docs are distilled
+from real investigations. Plans and results live in [`research/`](research/), e.g. *how the `scala-style`
+skill should self-consciously evolve from agent use without drifting or bloating*. Research notes are
+deliberately kept **out of agents' daily working context** (an agent reads them only when explicitly
+investigating), so exploration never adds confirmation/context overhead to ordinary tool use.
 
 ## Contributing
 

@@ -12,6 +12,8 @@ toolbox-habit skill in one step — no manual symlink.
   with no setup. It delegates to the bundled `tools/tt` and sets `TT_TOOLS` to the bundled `tools/`.
 - **`skills/tt-toolbox/SKILL.md`** — teaches the habit (prefer `tt` over bash/grep/awk; one bare command
   per call) and loads contextually when relevant.
+- **`skills/scala-style/SKILL.md`** — how to *write* a tool when scaffolding one: direct style, state-safe,
+  safe-mode-where-possible. Loads when editing/creating Scala tools.
 - Manifests: `.claude-plugin/plugin.json` (the plugin) and `.claude-plugin/marketplace.json` (the catalog).
 
 Still required on the user's machine (plugins can't install dependencies): **`scala-cli`** and a **JDK**.

@@ -114,6 +114,15 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   study is **introprog/autotranslate**
   (https://github.com/lunduniversity/introprog/tree/master/autotranslate) — the tools + workflow earn
   their place by solving an actual project.
+- **Open research log:** investigations — plans *and* results that lead to genscalator improvements — live
+  in [`../research/`](../research/), in the open for the community (e.g. *how the `scala-style` skill should
+  self-consciously evolve from agent use*). **Hard rule:** research notes stay **out of agents' daily
+  working context** — referenced from no `AGENTS.md` core or task-loaded skill, read only when *explicitly*
+  investigating — so exploration never costs context/CF overhead in ordinary use (cf. *smart zone* above).
+  **Exception — contribution mode:** when an agent is about to *propose a contribution back* to genscalator
+  (or has spotted a possible improvement), it **should** first check the README **roadmap** and `research/`,
+  to align with on-going work and avoid duplicating or contradicting it. Findings that generalize graduate
+  into tool/doc/skill edits + a release.
 - **Start specific** (e.g. Claude Code + Opus) but **don't pin the first-attempt environment more
   specifically than needed** — keep the portability goal (above) in view from the start. The tools
   themselves (scala-cli scripts + the `tt` launcher) are already agent-agnostic; the agent-specific parts
