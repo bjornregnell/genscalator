@@ -41,11 +41,25 @@ to make them always-allowed, add **narrow, per-subcommand** entries to your own 
 ```json
 {
   "permissions": {
-    "allow": ["Bash(tt text *)", "Bash(tt files *)", "Bash(scala-cli run *)"]
+    "allow": ["Bash(tt text *)", "Bash(tt files *)", "Bash(scala-cli run *)", "Bash(scalex *)"]
   }
 }
 ```
 Keep entries per-subcommand (`Bash(tt text *)`, not `Bash(tt *)`) so each grant stays tightly scoped.
+`scalex` is read-only Scala code intelligence (no writes, no build server), so `Bash(scalex *)` is a
+low-stakes grant; narrow it per-subcommand (`Bash(scalex explain *)`, `Bash(scalex refs *)`, …) if you
+prefer to start tighter.
+
+## Companion plugin: scalex
+For Scala **code** navigation, genscalator recommends **[scalex](https://github.com/nguyenyou/scalex)**
+(symbol-aware "grep for the AST"). It's a *separate* upstream plugin — install it alongside genscalator,
+it is not bundled:
+```
+/plugin marketplace add nguyenyou/scalex
+/plugin install scalex@scalex-marketplace
+```
+Which tool for which question — `tt` (text/logs) vs `scalex` (Scala structure) vs Metals MCP (compiler
+semantics): [`tool-selection.md`](tool-selection.md). Command reference: [`../tools/README.md`](../tools/README.md#companion-scalex).
 
 ## Optional: a "nudge" hook (roadmap, not shipped)
 A `PreToolUse` hook on `Bash` could advise switching to `tt` when it sees a raw `grep`/`awk`/`sed`/`find`

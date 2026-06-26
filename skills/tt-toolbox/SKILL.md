@@ -12,6 +12,8 @@ You have a typed, compiler-checked Scala toolbox on PATH as `tt`. Prefer it over
 - Before reaching for **bash/grep/awk/sed/python** to search, count, scan, or extract — use a `tt` tool.
   Recursive search → `tt text grepr` (not `grep -r`); counts → `tt text count` / `tt files … --count`
   (not `| wc -l`). Applies to your own leak-scans/verification too, not just the user's task.
+- For Scala **code** structure (def / refs / hierarchy / imports / body), use **`scalex`**, not `grep`/`tt text`
+  — it's symbol-aware. `tt` is for plain text and logs. Which-tool-for-which-question: `docs/tool-selection.md`.
 - If none fits, **scaffold one**: `scala-cli run tools/newtool.scala -- <name>`, then implement it (keep
   pure tools pure: read → compute → print). A committed, compiled tool beats re-emitting brittle bash.
 - **Self-monitor:** if a new tool is project-agnostic and generally useful, offer to contribute it upstream

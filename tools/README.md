@@ -53,6 +53,34 @@ tt files src .scala --count
 scala-cli run tools/newtool.scala -- <name>      # creates tools/<name>.scala from template.scala.txt
 ```
 
+## Companion: scalex
+The `tt` tools are **textual** — grep/awk/cut over any file. For **Scala code structure** the companion
+is **[scalex](https://github.com/nguyenyou/scalex)**: "grep, but it understands Scala's AST." It parses
+with Scalameta and caches per git OID — no build server (~2–5 s cold index, **<400 ms** warm).
+
+**Separately installed, not bundled.** scalex is its own upstream project (a GraalVM-native CLI shipping
+its own Claude Code plugin); genscalator recommends and integrates it. Install (adopter):
+```
+/plugin marketplace add nguyenyou/scalex
+/plugin install scalex@scalex-marketplace
+```
+Core commands:
+```
+scalex explain <Sym>           # definition + scaladoc + members + impls
+scalex def <Sym>               # where defined
+scalex refs <Sym> --count      # categorized usage / impact
+scalex hierarchy <Sym>         # super/sub types
+scalex imports <Sym>           # resolve imports (incl. wildcard `import pkg.*`)
+scalex body <method> --in <Type>
+scalex batch ...               # several queries, one index load
+```
+Filters: `--kind / --path / --no-tests / --exact / --max-output` (~30 commands total).
+
+**When to reach for it:** any Scala *structure* question (where defined, who uses, what extends, show the
+body, resolve an import) — symbol-aware and structured, so fewer follow-up calls than grep. Use `tt`/grep
+for plain text and logs; use Metals MCP when you need true compiler semantics (inferred types,
+diagnostics, refactors). Full guide: [`../docs/tool-selection.md`](../docs/tool-selection.md).
+
 ## Files
 - `lib.scala` — shared PURE helpers (`readLatin1`/`readUtf8`, `histogram`, `edit1`). No deps.
 - `text.scala` — the grep/awk replacement.

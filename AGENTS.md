@@ -7,6 +7,9 @@ the reference docs are linked at the bottom — read them once, then follow thes
 - Before reaching for a one-off **bash/grep/awk/sed/python** helper, use a typed `tt` tool instead —
   e.g. recursive search → `tt text grepr` (not `grep -r`); counts → `tt text count` / `tt files … --count`
   (not `| wc -l`). This applies to your *own* checks too (leak scans, verification), not just the user's task.
+- For Scala **code** questions (def / refs / hierarchy / imports / body), use **`scalex`** — not `grep`
+  or `tt text`. It's symbol-aware (knows the AST), so it answers right the first time. `tt`/grep is for
+  plain text and logs; `scalex` is for Scala structure. Full guide: [`docs/tool-selection.md`](docs/tool-selection.md).
 - If no tool fits, **scaffold one**: `scala-cli run tools/newtool.scala -- <name>`, then implement it.
   Keep pure tools pure (read → compute → print). A committed, compiled tool beats re-emitting brittle
   bash every time.
@@ -34,6 +37,7 @@ Fewer dangerous, dynamic commands → fewer approval prompts → less **confirma
 typed path stays reviewable and reusable.
 
 ## Read more
-- [`tools/README.md`](tools/README.md) — the `tt` toolbox cheat-sheet (`text`, `files`, `newtool`).
+- [`tools/README.md`](tools/README.md) — the `tt` toolbox cheat-sheet (`text`, `files`, `newtool`) + the *Companion: scalex* section.
+- [`docs/tool-selection.md`](docs/tool-selection.md) — which tool for which question (`tt` vs `scalex` vs Metals).
 - [`docs/foundations.md`](docs/foundations.md) — goals, stakeholders (human / agent / BHH), glossary.
 - [`docs/confirmations-method.md`](docs/confirmations-method.md) — method for driving down confirmation fatigue.

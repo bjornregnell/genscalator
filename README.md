@@ -55,6 +55,11 @@ tt files src .scala --count            # count matching files (find|wc)
 
 Full cheat-sheet: [`tools/README.md`](tools/README.md).
 
+**Companion for Scala code:** `tt`/grep are for text and logs; for Scala *structure* (where defined, who
+calls, what extends, resolve imports) genscalator recommends [scalex](https://github.com/nguyenyou/scalex)
+— a symbol-aware "grep for the AST", separately installed. Which tool for which question:
+[`docs/tool-selection.md`](docs/tool-selection.md).
+
 ## Scope & roadmap
 
 **v0.1.0 (this release):**

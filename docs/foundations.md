@@ -136,8 +136,10 @@ A genscalator tool *declares* where it sits in the threat model, so the human ca
 - How do these flags surface in the allowlist so "always allow `tool --sandboxed *`" is genuinely safe?
 
 ## Things to read/learn
-1. **Scalex** — https://nguyenyou.github.io/scalex/ (depth: https://github.com/nguyenyou/scalex).
-   Type/compiler-semantic querying of Scala code — far more precise than grep/regex/awk.
+1. **Scalex** — *adopted companion* (no longer just to-read). https://nguyenyou.github.io/scalex/
+   (depth: https://github.com/nguyenyou/scalex). Symbol-aware (AST) querying of Scala code — far more
+   precise than grep/regex/awk; the semantic-Scala companion to the textual `tt` tools. See
+   [`tool-selection.md`](tool-selection.md) and [`../tools/README.md`](../tools/README.md#companion-scalex).
 2. **Scala Capture Checking (CC)** — focus FIRST on **Safe mode**:
    https://www.scala-lang.org/api/3.x/docs/experimental/capture-checking/safe.html
    (overview: https://www.scala-lang.org/api/3.x/docs/experimental/capture-checking/index.html).
