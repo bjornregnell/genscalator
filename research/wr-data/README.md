@@ -31,6 +31,8 @@ confirmation causes* — turning the WR log itself into input for prioritising w
 ## Files
 - [`introprog-autotranslate.md`](introprog-autotranslate.md) — WR entries from the introprog/autotranslate
   case study (its own working session writes here).
+- [`genscalator-self-dev.md`](genscalator-self-dev.md) — WR entries from developing genscalator itself
+  (dogfooding: building the toolbox surfaces the friction it exists to remove).
 
 ## Note
 This is research **data**, not daily-use context — the non-interference rule in

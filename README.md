@@ -98,6 +98,10 @@ escalation ladder: [`docs/tool-selection.md`](docs/tool-selection.md).
   confirmation fatigue.
 
 **Roadmap (planned, not yet built — roughly cheapest-to-build first):**
+- **Update awareness** — an *inform-only* update skill + a read-only version-check (compare the installed
+  version against upstream `marketplace.json`) so staleness is visible. It hands the human the update
+  commands but **never self-updates the operating rules** — adopting new rules stays a human-reviewed step
+  (see [`docs/updating.md`](docs/updating.md)).
 - **One-command install** of genscalator + companions (scalex + Metals MCP) for newcomers who want
   everything at once — as a **reviewable, version-pinned installer script you read before running**, not
   a blind `curl … | bash` (that opaque-pipe pattern is exactly the confirmation-fatigue / RCE risk

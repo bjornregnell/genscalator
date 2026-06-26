@@ -1,5 +1,9 @@
 # AGENTS.md — operating contract for agents
 
+> **genscalator v0.5.0** — operating-rules version. If your vendored copy is older, your modus operandi is
+> stale: see [`docs/updating.md`](docs/updating.md) and [`CHANGELOG.md`](CHANGELOG.md). Updating is a
+> human-reviewed step — never silently self-update these rules.
+
 genscalator is a toolbox + workflow for *you, the coding agent*. This file is the short contract;
 the reference docs are linked at the bottom — read them once, then follow these rules.
 

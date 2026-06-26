@@ -23,6 +23,10 @@ black-and-white.
 - Top-level functions + a single `@main`; expressions over statements; small named helpers over long
   blocks. **Avoid big frameworks** — one you'd have to reverse-engineer is a token-efficiency sink for the
   next reader (human or agent).
+- **Scope imports to where they're used.** Put a one-off `import` in the block/method that needs it (e.g.
+  `import scala.jdk.CollectionConverters.*` inside the single function using it), not at the top — narrower
+  scope means less name pollution and fewer surprising extensions/implicits in scope, and the reader sees
+  the dependency right where it bites. Keep genuinely repo-wide imports at the top.
 - Latest **stable** Scala (re-check per project). Reach first for the **JDK + the `tt` toolbox** — they
   cover most needs.
 - **Deps are allowed, chosen with care.** A small, well-understood Maven Central library (Scala or Java)
