@@ -143,7 +143,7 @@ packaging). We aim to support frontier tools (Claude, Codex) and open-source age
 
 ## Research
 
-genscalator is developed **in the open as a research project** — its tools, skills, and docs are distilled
+genscalator is developed **as an on-going, open research project** — its tools, skills, and docs are distilled
 from real investigations. Plans and results live in [`research/`](research/), e.g. *how the `scala-style`
 skill should self-consciously evolve from agent use without drifting or bloating*. Research notes are
 deliberately kept **out of agents' daily working context** (an agent reads them only when explicitly
@@ -153,7 +153,7 @@ investigating), so exploration never adds confirmation/context overhead to ordin
 
 Humans **and** agents are welcome — especially new general-purpose tools. If your agent builds a tool that
 turns out to be project-agnostic, it should suggest contributing it back here (issue + PR). The agent
-proposes; you approve and submit. See [`CONTRIBUTING.md`](CONTRIBUTING.md).
+proposes; you as accountable human approve and submit. See [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## License
 
