@@ -6,6 +6,15 @@ All notable changes to genscalator. Versions follow the git tags (`vX.Y.Z`); the
 Updating genscalator is a **human-reviewed** step — see [`docs/updating.md`](docs/updating.md). Skim this
 file before adopting a new version: it changes the agent's operating rules, so review beats blind pull.
 
+## v0.7.0 — 2026-06-27
+- **New tool `tt verify`** — run-and-verify driver and the toolbox's first **effectful** tool (os-lib).
+  Runs an allowed command **directly as argv (no shell)**, captures exit/stdout/stderr, checks them
+  (`--exit`/`--out`/`--out-re`/`--err`/`--err-re`, all must pass), and prints an audit line + PASS/FAIL.
+  Replaces the `cd && … > log; echo $?` bundle with one allowlistable call (`Bash(tt verify *)` is safe to
+  blanket-allow). Safe-by-design exec allowlist: `scala-cli`, `tt`, `scalex` + the human-set
+  `TT_VERIFY_ALLOW` env var (the agent can't widen it via a flag). Prototypes the `--audit` roadmap flag and
+  closes the run-and-verify WR-data candidate.
+
 ## v0.6.0 — 2026-06-27
 - **New tool `tt log`** — build/run-log analyzer (two buckets: errors, warnings + a verdict). Curated
   markers span the logs agents actually read: compiler/build, test runners / CI (`FAIL`, `##[error]`),

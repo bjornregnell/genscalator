@@ -16,3 +16,8 @@ one-bare-command discipline is literally documented in `AGENTS.md`; momentum sti
 scaffolding stack. Evidence that command-hygiene needs to be **frictionless/reflexive**, not just written
 down. It also adds a concrete data point in favour of building the roadmapped **run-and-verify driver**:
 verifying a tool's behaviour is a recurring need that currently invites an `echo`+`;`+`$?` bundle.
+
+**Update (v0.7.0):** the run-and-verify driver shipped as **`tt verify`** — one allowlistable call that runs
+an allowed command (no shell), checks exit/stdout/stderr, and prints PASS/FAIL. This closes the candidate:
+the `echo`+`;`+`$?` bundle is now replaced by `tt verify --exit 0 --out … -- <cmd>`. The friction event →
+tool loop, end to end.

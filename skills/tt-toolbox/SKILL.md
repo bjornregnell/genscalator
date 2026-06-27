@@ -29,6 +29,7 @@ tt text grepr <dir> <ext[,ext2…]> <regex> # recursive search → file:line:mat
 tt text cols  <file> <sep> <i...> # cut/awk field extraction
 tt files <dir> <ext> [regex]      # find / grep -l ; add --count for just the number
 tt log <file>                     # build/run-log analyzer: errors + warnings + verdict
+tt verify [checks] -- <cmd>...    # run-and-verify (effectful): run an allowed cmd, check exit/out, PASS/FAIL
 ```
 Run `tt` with no args for the live tool list. Full cheat-sheet: `tools/README.md`.
 

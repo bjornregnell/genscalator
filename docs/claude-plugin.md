@@ -45,7 +45,7 @@ to make them always-allowed, add **narrow, per-subcommand** entries to your own 
 ```json
 {
   "permissions": {
-    "allow": ["Bash(tt text *)", "Bash(tt files *)", "Bash(scala-cli run *)", "Bash(scalex *)"]
+    "allow": ["Bash(tt text *)", "Bash(tt files *)", "Bash(tt log *)", "Bash(tt verify *)", "Bash(scala-cli run *)", "Bash(scalex *)"]
   }
 }
 ```
@@ -53,6 +53,10 @@ Keep entries per-subcommand (`Bash(tt text *)`, not `Bash(tt *)`) so each grant 
 `scalex` is read-only Scala code intelligence (no writes, no build server), so `Bash(scalex *)` is a
 low-stakes grant; narrow it per-subcommand (`Bash(scalex explain *)`, `Bash(scalex refs *)`, …) if you
 prefer to start tighter.
+`tt verify` is *effectful* (it runs commands), but `Bash(tt verify *)` is still safe to blanket-allow
+**by design**: it executes only its allowlisted executables (`scala-cli`/`tt`/`scalex` + your
+`TT_VERIFY_ALLOW`) directly as argv with **no shell**, so an approved `tt verify *` can't become a general
+exec/`bash -c` surface. To widen what it may run, set `TT_VERIFY_ALLOW` in your shell profile (not a flag).
 
 ## Companion plugin: scalex
 For Scala **code** navigation, genscalator recommends **[scalex](https://github.com/nguyenyou/scalex)**

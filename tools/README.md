@@ -79,6 +79,25 @@ tt log weird.log --no-defaults --error 'BOOM:'    # only my pattern
 scala-cli run tools/newtool.scala -- <name>      # creates tools/<name>.scala from template.scala.txt
 ```
 
+### verify — run-and-verify driver (EFFECTFUL)
+```
+verify [checks] -- <cmd> <args...>      # run <cmd> (NO shell), check exit/stdout/stderr, print PASS/FAIL
+   --exit N        expected exit code (default 0)
+   --out  <substr> / --out-re <regex>   stdout must contain / match
+   --err  <substr> / --err-re <regex>   stderr must contain / match
+```
+The toolbox's first **effectful driver** (os-lib; not a pure tool). Replaces the `cd && … > log 2>&1;
+echo $?` bundle with **one allowlistable call** — so `Bash(tt verify *)` is safe to blanket-allow.
+Safe-by-design: runs the command **directly as argv (no shell)**, so `;`/`|`/`&&`/`$()`/globs are inert,
+and only executables on the allowlist run — **`scala-cli`, `tt`, `scalex`**, plus any in the *human-set*
+`TT_VERIFY_ALLOW` (comma-separated). The agent can't widen that via a flag (a flag would be agent-authored,
+not human approval). Prints an audit line (argv, exit, ms) — the seed of the `--audit` roadmap flag.
+Examples:
+```
+tt verify --exit 0 --out 8 -- scala-cli run tools/text.scala -- grepr /abs/tools .scala,.md grepr --count
+tt verify -- tt files /abs/src .scala --count
+```
+
 ## Companion: scalex
 The `tt` tools are **textual** — grep/awk/cut over any file. For **Scala code structure** the companion
 is **[scalex](https://github.com/nguyenyou/scalex)**: "grep, but it understands Scala's AST." It parses
@@ -111,6 +130,7 @@ diagnostics, refactors). Full guide: [`../docs/tool-selection.md`](../docs/tool-
 - `lib.scala` — shared PURE helpers (`readLatin1`/`readUtf8`, `histogram`, `edit1`). No deps.
 - `text.scala` — the grep/awk replacement.
 - `log.scala` — the build/run-log analyzer.
+- `verify.scala` — the run-and-verify driver (effectful; os-lib).
 - `newtool.scala` — the generator.
 - `template.scala.txt` — starter template (latest Scala header, lib include, dispatch skeleton).
 
@@ -123,8 +143,8 @@ diagnostics, refactors). Full guide: [`../docs/tool-selection.md`](../docs/tool-
 - Clean `===` section output; return a clear verdict (e.g. error count) so no bash post-processing is needed.
 
 ## Roadmap
-- More generic tools (run-and-verify driver, tsv stats, pdf scan), generalized from real case-study work.
-  (`log` analyzer shipped in v0.6.0.)
-- Guarded `cd`-and-run primitive (all guardrails: allowed-roots, reject `..`/symlinks, dry-run echo,
-  scala-cli/scalex only).
+- More generic tools (tsv stats, pdf scan), generalized from real case-study work. (`log` analyzer shipped
+  in v0.6.0; `verify` run-and-verify driver in v0.7.0.)
+- Extend the guarded-run primitive (`verify` already does allowed-executables + no-shell): add allowed-roots
+  / `cwd`, reject `..`/symlinks, a `--dry-run` echo. `verify` also prototypes the `--audit` flag below.
 - Capture-Checking Safe-mode PoC → pure tools safe by default.
