@@ -1,6 +1,6 @@
 # AGENTS.md — operating contract for agents
 
-> **genscalator v0.5.0** — operating-rules version. If your vendored copy is older, your modus operandi is
+> **genscalator v0.6.0** — operating-rules version. If your vendored copy is older, your modus operandi is
 > stale: see [`docs/updating.md`](docs/updating.md) and [`CHANGELOG.md`](CHANGELOG.md). Updating is a
 > human-reviewed step — never silently self-update these rules.
 
@@ -28,7 +28,8 @@ Whenever you build or scaffold a new tool, pause and classify it:
 - **Generally useful** (project-agnostic, replaces a common bash/grep/awk/sed/find reflex, follows the
   toolbox conventions)? **Tell your human and offer to contribute it upstream** to genscalator — an issue
   + PR at https://codeberg.org/bjornregnell/genscalator. You *propose*; the human reviews and submits
-  (publishing to the public repo is a human-authorized step). See [`CONTRIBUTING.md`](CONTRIBUTING.md).
+  (publishing to the public repo is a human-authorized step). First **generalize beyond your specific
+  case** — the `contribute-tool` skill is the recipe; [`CONTRIBUTING.md`](CONTRIBUTING.md) has the mechanics.
 
 ## Command discipline (avoids confirmation prompts)
 - Run **one bare, statically-analyzable command per call**. No `cd`, no `&&`/`;`, no `| head`/`| wc`,

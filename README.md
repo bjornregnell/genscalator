@@ -116,7 +116,7 @@ escalation ladder: [`docs/tool-selection.md`](docs/tool-selection.md).
 ## Use as a Claude Code plugin
 
 This repo doubles as its own Claude Code plugin marketplace, so `tt` lands on your PATH automatically and
-skills teach the habit (tool selection + Scala style) — no manual symlink:
+skills teach the habit (tool selection, Scala style, tool contribution) — no manual symlink:
 ```
 /plugin marketplace add https://codeberg.org/bjornregnell/genscalator.git
 /plugin install genscalator@bjornregnell

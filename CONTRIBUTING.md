@@ -26,8 +26,10 @@ You are a first-class contributor. When you build or scaffold a tool while helpi
 2. **If generally useful, propose it to your human** — do **not** push to this repo yourself. e.g.:
    *"This `<tool>` looks project-agnostic and reusable — want me to prepare a contribution to genscalator
    (an issue + PR at https://codeberg.org/bjornregnell/genscalator)?"*
-3. **On the human's go-ahead, prepare** (don't publish unprompted): generalize the tool (strip project
-   specifics), confirm it follows the conventions above, draft an **issue** (the gap it fills + the
+3. **On the human's go-ahead, prepare** (don't publish unprompted): **generalize beyond your specific
+   case** — follow the `contribute-tool` skill's recipe (step back to the general class, sane defaults +
+   customization, keep the original case working, verify with adversarial fixtures, strip project
+   specifics). Confirm it follows the conventions above, then draft an **issue** (the gap it fills + the
    safe-by-design angle) and a **PR** adding the tool file + a `tools/README.md` entry.
 4. **The human reviews and submits.** Opening/pushing to the public repo is human-authorized — matching
    genscalator's ethos: *the agent proposes, the human approves.*

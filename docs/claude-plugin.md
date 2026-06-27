@@ -14,6 +14,8 @@ toolbox-habit skill in one step — no manual symlink.
   per call) and loads contextually when relevant.
 - **`skills/scala-style/SKILL.md`** — how to *write* a tool when scaffolding one: direct style, state-safe,
   safe-mode-where-possible. Loads when editing/creating Scala tools.
+- **`skills/contribute-tool/SKILL.md`** — how to *generalize* a scratch tool into a toolbox-worthy one and
+  propose it upstream. Loads when an agent is about to contribute a tool.
 - Manifests: `.claude-plugin/plugin.json` (the plugin) and `.claude-plugin/marketplace.json` (the catalog).
 
 Still required on the user's machine (plugins can't install dependencies): **`scala-cli`** and a **JDK**.

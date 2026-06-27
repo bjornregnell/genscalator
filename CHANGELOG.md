@@ -6,6 +6,19 @@ All notable changes to genscalator. Versions follow the git tags (`vX.Y.Z`); the
 Updating genscalator is a **human-reviewed** step — see [`docs/updating.md`](docs/updating.md). Skim this
 file before adopting a new version: it changes the agent's operating rules, so review beats blind pull.
 
+## v0.6.0 — 2026-06-27
+- **New tool `tt log`** — build/run-log analyzer (two buckets: errors, warnings + a verdict). Curated
+  markers span the logs agents actually read: compiler/build, test runners / CI (`FAIL`, `##[error]`),
+  runtime leveled logs (`ERROR`/`FATAL`/`CRITICAL`, logfmt `level=error`, JSON `"level":"error"`), Python
+  `Traceback`, Go `panic:`, `npm ERR!`, and LaTeX — all targeted so tally lines ("0 errors") don't
+  false-positive. Customizable per log: `--error`/`--warn` (repeatable) extend the defaults, `--no-defaults`
+  replaces them, `--cap N` bounds output. Pure, JDK-only. First of the case-study-driven "more generic
+  tools" roadmap item.
+- **New skill `contribute-tool`** — the recipe to generalize a scratch tool into a toolbox-worthy `tt`
+  tool before proposing it (start specific → general class → sane defaults + customization → verify with
+  adversarial fixtures → strip specifics → propose; human ships). Sibling to `scala-style`; distilled from
+  the `tt log` generalization. Wired into `AGENTS.md` (self-monitoring) and `CONTRIBUTING.md`.
+
 ## v0.5.0 — 2026-06-27
 - **New skill `scala-style`** — how to *write* a tool: direct style, pragmatic immutability (safety ↔
   token-efficiency ↔ performance as a conscious balance), Safe-mode-ready, effects isolated to drivers.

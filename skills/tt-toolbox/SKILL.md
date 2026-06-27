@@ -25,9 +25,10 @@ You have a typed, compiler-checked Scala toolbox on PATH as `tt`. Prefer it over
 tt text count <file> <regex>      # grep -c
 tt text match <file> <regex>      # grep -n
 tt text freq  <file> <regex>      # histogram of matches
-tt text grepr <dir> <ext> <regex> # recursive search → file:line:match
+tt text grepr <dir> <ext[,ext2…]> <regex> # recursive search → file:line:match (multi-ext)
 tt text cols  <file> <sep> <i...> # cut/awk field extraction
 tt files <dir> <ext> [regex]      # find / grep -l ; add --count for just the number
+tt log <file>                     # build/run-log analyzer: errors + warnings + verdict
 ```
 Run `tt` with no args for the live tool list. Full cheat-sheet: `tools/README.md`.
 

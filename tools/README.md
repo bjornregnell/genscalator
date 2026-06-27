@@ -25,14 +25,16 @@ drivers add `//> using dep com.lihaoyi::os-lib:0.11.8`.
 text count <file> <regex>            # grep -c   : count matches
 text match <file> <regex>            # grep -n   : print matching lines, numbered
 text freq  <file> <regex>            # sort|uniq -c|sort -rn : histogram of match (or capture group 1)
-text grepr <dir> <ext> <regex>       # grep -r --include : recursive search → file:line:match
+text grepr <dir> <ext[,ext2…]> <regex>  # grep -r --include : recursive search → file:line:match
 text cols  <file> <sep> <i...>       # cut/awk   : extract 1-based fields, tab-joined
 ```
+`grepr` takes a comma-separated extension list (`.scala,.java`) and prints a friendly one-line error
+(+ exit 2) on a missing/relative dir instead of a stack trace — pass an absolute dir.
 Examples:
 ```
 tt text count build.log '^! '
 tt text freq  run.log  '\[fallback\] ([a-z][^,]*)'
-tt text grepr src .scala 'TODO'
+tt text grepr src .scala,.java 'TODO'
 ```
 
 ### files — typed find / find|wc / grep -l replacement (PURE)
@@ -46,6 +48,30 @@ Examples:
 ```
 tt files src .scala 'TODO'                  # source files containing TODO
 tt files src .scala --count
+```
+
+### log — build/run-log analyzer (PURE)
+```
+log [summary|errors|warnings] <file>    # summary (default) = counts + lines + verdict
+   [--error <regex>]...                 # add an error pattern   (repeatable)
+   [--warn  <regex>]...                 # add a warning pattern  (repeatable)
+   [--no-defaults]                      # use ONLY supplied patterns (skip curated markers)
+   [--cap <n>]                          # max lines shown per bucket (default 50)
+```
+**Sane defaults, customizable.** Curated markers span the logs agents actually read — compiler/build
+(`error:`, `error[E…]`, `[error]`), test runners / CI (`FAIL`, `##[error]`), runtime leveled logs
+(`ERROR`/`FATAL`/`CRITICAL`, logfmt `level=error`, JSON `"level":"error"`), Python `Traceback`, Go
+`panic:`, `npm ERR!`, and LaTeX (`^! `, Over/Underfull). All **targeted** so tally lines like "0 errors" /
+"no warnings" don't false-positive. Two buckets only: errors and warnings (test failures fold into errors).
+When the agent knows a log's own markers, it extends (or with `--no-defaults`, replaces) the set. Each
+pattern compiles separately, so an inline `(?i)` in one can't leak into the others. Reads Latin-1 (some
+logs, e.g. LaTeX, aren't valid UTF-8).
+Examples:
+```
+tt log build.log                                  # curated defaults (the 90% case)
+tt log errors run.log --cap 200                   # just errors, show more
+tt log app.log --error 'MYAPP-FATAL'              # defaults + my app's marker
+tt log weird.log --no-defaults --error 'BOOM:'    # only my pattern
 ```
 
 ### newtool — generator (scaffold a new pure tool)
@@ -84,6 +110,7 @@ diagnostics, refactors). Full guide: [`../docs/tool-selection.md`](../docs/tool-
 ## Files
 - `lib.scala` — shared PURE helpers (`readLatin1`/`readUtf8`, `histogram`, `edit1`). No deps.
 - `text.scala` — the grep/awk replacement.
+- `log.scala` — the build/run-log analyzer.
 - `newtool.scala` — the generator.
 - `template.scala.txt` — starter template (latest Scala header, lib include, dispatch skeleton).
 
@@ -96,8 +123,8 @@ diagnostics, refactors). Full guide: [`../docs/tool-selection.md`](../docs/tool-
 - Clean `===` section output; return a clear verdict (e.g. error count) so no bash post-processing is needed.
 
 ## Roadmap
-- More generic tools (log-analyze, run-and-verify driver, tsv stats, pdf scan), generalized from real
-  case-study work.
+- More generic tools (run-and-verify driver, tsv stats, pdf scan), generalized from real case-study work.
+  (`log` analyzer shipped in v0.6.0.)
 - Guarded `cd`-and-run primitive (all guardrails: allowed-roots, reject `..`/symlinks, dry-run echo,
   scala-cli/scalex only).
 - Capture-Checking Safe-mode PoC → pure tools safe by default.
