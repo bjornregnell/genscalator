@@ -89,15 +89,12 @@ calls, what extends, resolve imports) genscalator recommends [scalex](https://gi
 [Metals MCP](https://scalameta.org/metals/docs/features/mcp/). Which tool for which question — and the
 escalation ladder: [`docs/tool-selection.md`](docs/tool-selection.md).
 
-## Scope & roadmap
+## Roadmap
 
-**v0.1.0 (this release):**
-- The `tt` toolbox (`text`, `files`, `newtool` + shared `lib`).
-- [`docs/foundations.md`](docs/foundations.md) — goals, stakeholders, glossary.
-- [`docs/confirmations-method.md`](docs/confirmations-method.md) — a method + template for driving down
-  confirmation fatigue.
+What's shipped so far, per release: [`CHANGELOG.md`](CHANGELOG.md).
+For the toolbox-specific roadmap (new/extended `tt` tools), see [`tools/README.md`](tools/README.md#roadmap).
 
-**Roadmap (planned, not yet built — roughly cheapest-to-build first):**
+**Planned, not yet built — roughly cheapest-to-build first:**
 - **Update awareness** — an *inform-only* update skill + a read-only version-check (compare the installed
   version against upstream `marketplace.json`) so staleness is visible. It hands the human the update
   commands but **never self-updates the operating rules** — adopting new rules stays a human-reviewed step
