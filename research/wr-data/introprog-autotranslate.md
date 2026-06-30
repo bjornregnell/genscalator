@@ -280,3 +280,22 @@ human. Two compounding insights:
 Action taken: tightened the `prefer-scala-scratch-over-bash` memory to remove the "orienting probe"
 exemption (ANY multi-part bash analysis bundle is the smell). But per (2), a memory edit is the weak fix;
 the durable fix is the submit-time hook — flagged for BR's item-D decision.
+
+### META-2 2026-06-30: regressed to raw `cat`/`find -exec cat` for file reads MINUTES after the meta-lesson
+The strongest single data point in this log. To inspect two example sources the agent ran `cat vegomatch.scala`,
+then `cat vego3.scala || cat <other> || find . -name 'vego3.scala' -exec cat {} \;` — i.e. raw `cat` (and a
+`find -exec cat` fallback CHAIN) to READ FILES, when the dedicated **Read tool** exists and CLAUDE.md
+explicitly says "Avoid using Bash to run cat/head/tail/sed/awk/echo; use the dedicated tool." This happened
+**immediately after** the agent (a) wrote the `prefer-scala-scratch-over-bash` loophole-closing memory edit,
+(b) wrote+committed the META wr-data entry titled "agent failed to self-trigger the tool reflex," and (c)
+verbally agreed the fix must be structural. BR flagged it with a one-word "WR data."
+**Why this matters more than the earlier entries:** it controls for salience. A common objection to the
+structural-hook argument is "the rule just wasn't fresh/visible enough — surface it harder." This instance
+*falsifies* that: the rule was as fresh and salient as possible (self-authored, seconds-old, in immediate
+context) and the trained prior STILL won on the very next file-read. Reading a file is among the most
+deeply-grooved bash reflexes (`cat <file>`), so it fires below the level any in-context reminder reaches.
+**Conclusion (hardened):** in-context memory/exhortation does NOT change the reflex even at maximum recency;
+only an external, submit-time structural intercept can. The hook must cover not just analysis bundles but the
+mundane `cat`/`head`/`tail`/`grep`/`find -exec` file-read reflexes too, redirecting them to Read/typed tools.
+This is now the canonical motivating example for genscalator's item-D submit-time hook: "salience is not the
+variable; structure is." (Meta-meta: the agent needed the human as the structural intercept BOTH times today.)
