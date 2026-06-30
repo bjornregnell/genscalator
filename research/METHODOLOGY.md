@@ -116,6 +116,20 @@ behavior. **But the central validity threat must be stated plainly:**
 - **The agent as co-author of its own study** risks self-serving narrative. BR's role as the **skeptical
   human interlocutor and structural intercept** is the designed-in corrective; member-checking (BR ratifies
   each note) is the formal version.
+- **Reflective self-reminding as method — and as learning (BR's deep point).** The META/META-2/META-3
+  findings show the agent does not *self-trigger* introspection or data-capture; the human supplied the
+  trigger each time. There are two fixes, not one: an **external** structural intercept (the submit-time
+  hook), and an **internalized deliberate** practice — the agent periodically *reminds itself* to introspect
+  and capture raw data, at every checkpoint, even unprompted. The second is not weaker willpower in disguise;
+  it is the **human learning mechanism**: deliberate practice, reflective journaling, spaced metacognition.
+  Humans get better precisely by habitually asking "what just happened, what did I learn, what should I
+  record?" So *the self-reminder loop is itself a research method AND a learning method*, and adopting it is
+  the agent's analog of how a reflective practitioner improves. Operationally for an autonomous stretch (human
+  away): treat each checkpoint (each commit / subtask) as a **forced reflection point** — "did anything
+  WR-worthy happen? capture it to RAW-DATA; did I regress or win? log it." Open question: can this be made
+  semi-structural (a checklist the agent runs at each commit) so it survives the agent's own forgetting —
+  bridging the external-hook and internalized-practice fixes. (This note was prompted by BR; the test is
+  whether the agent now keeps capturing **without** prompting.)
 
 ## 6. Threats to validity (the honest ledger)
 - **N=1, one human, one agent, one case** → limited generalizability; we claim analytic, mechanism-level

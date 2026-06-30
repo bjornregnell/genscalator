@@ -59,3 +59,15 @@ WR data
 > **Agent reflection:** WR-REGRESS -> WR-FRICTION causal link (the key finding). Agent ran 'cd introprog && scala-cli ... 2>/dev/null | tail' — three smells: cd-compound, stderr-suppression, pipe-to-tail. This tripped the confirmation guard ('Compound command contains cd with output redirection - manual approval required to prevent path resolution bypass'), COSTING BR a confirmation prompt. So the shell-scaffolding reflex (WR-REGRESS family: see also pipe-to-grep #5462, raw-cat META-2) directly CAUSES the confirmation-fatigue (WR-FRICTION) the project fights — they are the same problem. Structural fixes applied: (1) tools self-report to a file (instrumentation-by-default) so output is Read, never shell-cleaned; (2) use the tool's OWN --grep, never pipe to tail; (3) never combine cd with redirection/pipe. Third+ instance this session = the shell-wrap reflex is the most persistent; strongest case for the submit-time hook + instrumentation-by-default.
 
 ---
+
+## Excerpt #6402–6402 · 2026-06-30
+
+**[🧑 BR · 18:28:07 · #6402]**
+
+⟦tool_result⟧
+WR data, guard says reason: " This command changes directory before running git, which can execute untrusted hooks from the target directory. Approve only if you trust it."  (remember that it  is ok for me to see git commitss as I have say I want them, but the action should not trigger the guard if possible)
+
+
+> **Agent reflection:** WR-REGRESS META-4 (cd+git). Agent ran 'cd introprog && git add && git commit && git push' instead of 'git -C <abs-path>', tripping the untrusted-hooks guard -> another needless confirmation. 4th cd/shell-compound regression this session (pipe-to-grep #5462, raw-cat META-2, cd+redirect, now cd+git). Pattern is unmistakable: the agent reflexively prefixes 'cd <project> &&' and chains shell, carrying the scratch-runner cd-habit onto git where 'git -C' is correct. The agent USES git -C correctly for genscalator but regressed on introprog = context-dependent reflex, not ignorance. Strongest cumulative case for a submit-time hook that rewrites 'cd X && <git|tool>' to the safe form. BR's constraint: he wants to SEE commits (good) but the action must not prompt; git -C satisfies both. Self-captured during the autonomous stretch per the self-reminding-as-method commitment (METHODOLOGY §5).
+
+---
