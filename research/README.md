@@ -64,6 +64,11 @@ an agent's working context during ordinary tool use.
   hand-over **ralph-loop** (little human check) and an active **ballgame** (human in every volley)? Verifiability
   is the deciding signal; the agent should *propose* the mode and the human confirm. Spends the scarce resource
   (human attention) only where it changes the outcome. Generalizes the *ralph loop* glossary into a spectrum.
+- [`human-state-and-joint-zone.md`](human-state-and-joint-zone.md) — we model the *agent's* state (smart/dumb
+  zone); should we model the *human's* too, and the **joint** (human-zone, agent-zone) 2x2? Both-dumb = collapse;
+  human-dumb+agent-smart is the subtly dangerous field (rubber-stamping unreviewable work). Key payoff: the
+  agent, being tireless, should act as **stabilizer** and help keep the human in the smart zone (cut prompt
+  events, time ambition, propose a **rest dance**). Names thriller state + the rabbit-hole/repo-trashing ladder.
 - [`shared-file-editing-protocol.md`](shared-file-editing-protocol.md) — when human and agent edit the same
   file (HUMANS.md), how to avoid the agent clobbering live human edits? Section-zones fail (editors save whole
   buffers), so partition must be file-level. Opt A (inbox) is safest but adds harvest churn; Opt C (two-writer +

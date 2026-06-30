@@ -26,3 +26,9 @@ human-owned HUMANS.md and can't clobber a live editor buffer).
 
 - [ ] FYI (no action): `research/instructions-for-claude.md` example updated with the `No em-dashes` standing
       style line (committed 711217e) for you to copy back to the web-GUI instructions.
+
+- [ ] `research/human-state-and-joint-zone.md` - NEW note (your "model human state too" idea). Models human
+      smart/dumb zone, the joint (human,agent) 2x2 (both-dumb = collapse; human-dumb+agent-smart = the subtly
+      dangerous field), names **thriller state**, refines CF as an event-driven state, and the key payoff:
+      agent-as-stabilizer keeping you in the smart zone (+ a **rest dance**, human analog of the compact dance).
+      Has a candidate-glossary section for you to ratify. Skim + steer; veto/keep the new terms.

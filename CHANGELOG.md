@@ -21,6 +21,12 @@ Docs/research only — no tool/version change. Human review pending (see [`HUMAN
 - **`research/wr-data/introprog-autotranslate.md`** — appended friction events (count/status aggregation gaps,
   GPU/job probe, pipe-to-grep noise suppression, git-commit & repo-overview cd/&&/echo regressions) feeding
   candidate `tt` tools.
+- **Human-agent collaboration research notes:** `instruction-adherence-decay.md` (why the agent regresses to
+  dynamic shell — trained-prior reflex, fix is structural), `task-autonomy-negotiation.md` (ralph-loop vs
+  ballgame per-task triage by verifiability), `shared-file-editing-protocol.md` (non-destructive shared-file
+  editing; Opt A/B/C trade-offs; the HUMANS.md/HUMANS.inbox.md split), `human-state-and-joint-zone.md` (model
+  the human's smart/dumb zone + the joint (human,agent) 2x2; agent-as-stabilizer; thriller state; rest dance).
+  Plus the **HUMANS.md + HUMANS.inbox.md** collaboration protocol (Opt A file-level partition).
 
 ## v0.7.0 — 2026-06-27
 - **New tool `tt verify`** — run-and-verify driver and the toolbox's first **effectful** tool (os-lib).
