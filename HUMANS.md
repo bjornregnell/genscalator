@@ -1,8 +1,9 @@
-# HUMAN.md — BR's review queue
+# HUMANS.md — the humans' review queue
 
-> Your personal to-do list for **reviewing agent-authored genscalator changes**. The agent appends here when
-> it has pushed work that needs your judgement (naming, definitions, decisions, what to ship). Tick items as
-> you go; delete a section once cleared. The **historical record** of what changed lives in
+> Mirror of [`AGENTS.md`](AGENTS.md): that file is for the agent, this one is for the **human reviewer(s)** —
+> a to-do list for **reviewing agent-authored genscalator changes**. The agent appends here when it has pushed
+> work that needs human judgement (naming, definitions, decisions, what to ship). Tick items as you go; delete
+> a section once cleared. The **historical record** of what changed lives in
 > [`CHANGELOG.md`](CHANGELOG.md) (`## Unreleased`) — this file is only the *what-you-still-owe* checklist.
 
 ## How this works
@@ -62,4 +63,4 @@ These are the most-repeated friction patterns; each is a small typed tool waitin
 
 ---
 *Agent: keep this file current — append a new dated section when you push review-worthy work; prune cleared
-sections so the list reflects only what BR still owes.*
+sections so the list reflects only what the human reviewer(s) still owe.*

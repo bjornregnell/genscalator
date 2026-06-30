@@ -7,7 +7,7 @@ Updating genscalator is a **human-reviewed** step — see [`docs/updating.md`](d
 file before adopting a new version: it changes the agent's operating rules, so review beats blind pull.
 
 ## Unreleased — docs + research accretion (introprog session 2026-06-30)
-Docs/research only — no tool/version change. Human review pending (see [`HUMAN.md`](HUMAN.md)).
+Docs/research only — no tool/version change. Human review pending (see [`HUMANS.md`](HUMANS.md)).
 - **`docs/foundations.md` glossary — new agent-introspection concepts:** **Context rot**, **Token velocity**,
   **Token acceleration**, **Smart-zone ceiling (L)** (usable working-context ratio before the dumb zone),
   **Communication bandwidth (human↔agent)** (per-direction language/TE channel), **Compact dance** (the
