@@ -177,6 +177,18 @@ compact dance and both parties read it). Proposed convention:
   researching: do such directional cues (who-acts-next: `for-agent` / `for-human` / `for-review`) belong in
   commit subjects, and do they measurably improve ballgame handoff vs. living only in HUMANS.md / the `NEXT:`
   trailer? A candidate is a tiny controlled comparison across a batch of commits.
+- **A commit cue is PASSIVE — pair it with an ACTIVE reminder (BR).** A `NEXT:`/`HD-NEEDED:` trailer only
+  works if the other party *reads the log*, which neither reliably does mid-flow. So the policy needs a
+  **bidirectional active-surfacing rule:**
+  - **agent → human:** when the agent commits with a handover trailer, it **states that handover in chat**
+    ("my last commit leaves HD-NEEDED: X / NEXT: Y") so the human is not relying on `git log`.
+  - **human → agent:** when the human writes a handover cue in a commit (e.g. "for agent to work on"), the
+    agent should **pick it up** — on resume / when told to read a file, the agent scans the recent commit
+    subjects of the touched files for directional cues and folds them into its plan (the same way it harvests
+    HUMANS.md `TAP:` items). A candidate tool: `tt git overview <path>` already surfaces recent commit
+    subjects, so the cues are one bare call away.
+  The cue is the *durable* record (survives the compact dance); the chat reminder is the *active* nudge. Both,
+  not either. This makes the git log a ledger **and** keeps the ballgame live.
 
 ## 9. Analysis approach
 - **Qualitative:** thematic coding of wr-data events (§4 taxonomy) → mechanisms → research notes →
