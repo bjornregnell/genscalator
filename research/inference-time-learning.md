@@ -5,10 +5,20 @@
   Yet the whole point of genscalator is to make the agent *get better over time*. So: **what is the actual
   substrate of an agent's learning during inference, given it cannot change its weights?** And how do we
   build tools that make that learning real, reliable, and cumulative?
-- **Why it matters (BR):** this is plausibly the **thesis** of the project. It unifies the memory system, the
-  instruction-adherence-decay finding, the compact dance, the roundtrip process, and the structural-fix rule
-  under one frame: *genscalator is a system for inference-time learning by externalizing hard-won experience
-  into persistent structure that changes behavior without retraining.*
+- **Why it matters (BR):** this is **an important thesis** of the project (not necessarily *the* central one —
+  see the BR note below). It unifies the memory system, the instruction-adherence-decay finding, the compact
+  dance, the roundtrip process, and the structural-fix rule under one frame: *genscalator is a system for
+  inference-time learning by externalizing hard-won experience into persistent structure that changes behavior
+  without retraining.*
+
+> **BR note (2026-06-30 — paper focus still undecided).** Inference-time learning is **one candidate framing,
+> maybe not THE thesis.** The project's original, more down-to-earth main thesis was simpler: *human-agent
+> productivity can be increased through static (typed, statically-checked) tools built for agents.* It has
+> since grown into several theses (inference-time learning, the substrate hierarchy, confirmation-fatigue /
+> joint-zone, instruction-adherence-decay). BR still needs to think about the focus for the **first** paper.
+> Keep this note as a strong candidate frame, but read it as *elaborating* the down-to-earth backbone —
+> **human-agent joint productivity via static tooling** — rather than displacing it. Revisit when we start
+> writing the paper.
 - **Status:** open, foundational (new 2026-06-30, from BR's "agents learn during inference" deep thought).
   Agent co-theorizing its own learning — read with the METHODOLOGY §5 confabulation caveat.
 

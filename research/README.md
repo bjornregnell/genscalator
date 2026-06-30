@@ -65,11 +65,13 @@ an agent's working context during ordinary tool use.
   is the deciding signal; the agent should *propose* the mode and the human confirm. Spends the scarce resource
   (human attention) only where it changes the outcome. Generalizes the *ralph loop* glossary into a spectrum.
 - [`inference-time-learning.md`](inference-time-learning.md) — agents have a frozen pre-training/inference
-  boundary (no weight updates while working), so inference-time learning must be **externalized**. The thesis:
+  boundary (no weight updates while working), so inference-time learning must be **externalized**. The frame:
   genscalator migrates insight DOWN a reliability hierarchy — in-context instruction (weakest) → persistent
   memory → environmental/structural change (strongest, e.g. the submit-time hook). Explains why exhortation
   fails and structure works; reframes memory as surrogate plasticity, the roundtrip as the learning loop, and
-  the wr-data ledger as how learning is measured. Possibly the paper's central frame.
+  the wr-data ledger as how learning is measured. **One** strong candidate frame for the first paper — one of
+  several theses; the down-to-earth backbone is *human-agent productivity via static tooling* (BR sets the
+  paper's focus when writing starts; see the BR note in the file).
 - [`human-state-and-joint-zone.md`](human-state-and-joint-zone.md) — we model the *agent's* state (smart/dumb
   zone); should we model the *human's* too, and the **joint** (human-zone, agent-zone) 2x2? Both-dumb = collapse;
   human-dumb+agent-smart is the subtly dangerous field (rubber-stamping unreviewable work). Key payoff: the

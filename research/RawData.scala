@@ -10,14 +10,15 @@
 // The raw transcript already persists in the jsonl (harness-written); what we risk losing at compaction is
 // the CURATION — which moments mattered and why. This tool makes capturing that cheap + objective.
 //
-// Modes (read-only except --append):
-//   --list [--grep <regex>]          index | ts | role | snippet   (find turn indices to capture)
-//   --dump <from> [<to>]             verbatim Markdown of turns [from..to] (default to=from)
-//   --append <from> [<to>] --note "<reflection>"   append the excerpt + reflection to RAW-DATA.md
-//   [--jsonl <path>]                 mine a specific transcript instead of the newest
+// Modes (read-only except --append). Range = `FROM..TO` (Scala-style) or two ints `FROM TO`; NEVER the
+// `<FROM-TO>` angle form (zsh reads `<N-M>` as a numeric-range glob → the harness guard locks on it):
+//   --list [--grep REGEX]            index | ts | role | snippet   (find turn indices to capture)
+//   --dump FROM..TO                  verbatim Markdown of turns FROM..TO (single int = just that turn)
+//   --append FROM..TO --note "TEXT"  append the excerpt + reflection to RAW-DATA.md
+//   [--jsonl PATH]                   mine a specific transcript instead of the newest
 //   [--role user|assistant]          filter to one side
 // Usage: scala-cli run research/RawData.scala -- --list --grep "WR data"
-//        scala-cli run research/RawData.scala -- --append 120 124 --note "META-2: cat regression right after the lesson."
+//        scala-cli run research/RawData.scala -- --append 120..124 --note "META-2: cat regression right after the lesson."
 
 import scala.util.Try
 
@@ -93,14 +94,27 @@ def mdTurn(t: Turn): String =
       val who = if t.role == "user" then "BR " else "AGT"
       println(f"  #${t.idx}%-4d ${fmtTs(t.ts)}  $who  ${snippet(t.text, 96)}")
   else
-    val from = valOf("--dump").orElse(valOf("--append")).flatMap(_.toIntOption)
-    if from.isEmpty then
-      println("usage: --list [--grep RE] | --dump <from> [<to>] | --append <from> [<to>] --note \"...\"")
-      sys.exit(1)
-    val f = from.get
-    // <to> is the positional after <from> for dump/append
     val mode = if flag("--append") then "--append" else "--dump"
-    val to = a.drop(a.indexOf(mode) + 2).headOption.flatMap(_.toIntOption).getOrElse(f)
+    // Range convention is `FROM..TO` (Scala-style, zsh-safe) OR two space-separated ints `FROM TO`.
+    // We deliberately do NOT use the `<FROM-TO>` angle-bracket form: zsh reads `<N-M>` as a numeric-range
+    // glob, so the harness guard locks on it (incidental complexity — see WR data 2026-06-30). `..` and a
+    // space never glob, so they never trip the guard.
+    def parseRange(s: String): Option[(Int, Int)] =
+      if s.contains("..") then
+        s.split("""\.\.""", 2) match
+          case Array(x, y) => for a <- x.trim.toIntOption; b <- y.trim.toIntOption yield (a, b)
+          case _           => None
+      else s.toIntOption.map(n => (n, n))
+    val raw = valOf(mode)
+    val range = raw.flatMap(parseRange)
+    if range.isEmpty then
+      println("usage: --list [--grep RE] | --dump FROM..TO (or: FROM TO) | --append FROM..TO --note \"...\"")
+      sys.exit(1)
+    val (f, toParsed) = range.get
+    // back-compat: if FROM was a bare int, a second space-separated positional may carry TO
+    val to =
+      if raw.exists(_.contains("..")) then toParsed
+      else a.drop(a.indexOf(mode) + 2).headOption.flatMap(_.toIntOption).getOrElse(toParsed)
     val excerpt = all.filter(t => t.idx >= f && t.idx <= to)
     val body = excerpt.map(mdTurn).mkString("\n")
     if flag("--append") then
