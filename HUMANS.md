@@ -1,21 +1,29 @@
 # HUMANS.md — the humans' review queue
 
-> Mirror of [`AGENTS.md`](AGENTS.md): that file is for the agent, this one is for the **human reviewer(s)** —
-> a to-do list for **reviewing agent-authored genscalator changes**. The agent appends here when it has pushed
-> work that needs human judgement (naming, definitions, decisions, what to ship). Tick items as you go; delete
-> a section once cleared. The **historical record** of what changed lives in
-> [`CHANGELOG.md`](CHANGELOG.md) (`## Unreleased`) — this file is only the *what-you-still-owe* checklist.
+Mirror of [`AGENTS.md`](AGENTS.md): that file is for the agent(s), this one is for the **human(s)** —
+a to-do list for human tasks such as **reviewing agent-authored changes**. The agent appends here when it has pushed
+work that needs human judgement (quality requirements trade-offs, domain-specific naming, definitions, decisions, what to ship). Tick items as you go; when a whole subsection is completed move it from ##TODO to ##DONE so other humans can see what we have done. Agent should keep CHANGELOG.md consistent if affected. The main **historical record** of what changed in the repo lives in
+[`CHANGELOG.md`](CHANGELOG.md) (`## Unreleased`) — this file is only the *what-humans-still-owe* checklist.
 
 ## How this works
-- Agent commits + pushes docs/research freely (you authorized this 2026-06-30 because you were behind on
-  review). Nothing here changes the `tt` tools or a released version — it's docs/research accretion.
-- **Tool/version changes still follow the human-reviewed release flow** (`docs/updating.md`) — those are NOT
-  auto-pushed; they wait for you.
-- When you finish reviewing an item, check it off or delete it. When the file is empty, you're caught up.
+- Agent commits + pushes docs/research freely if agreed with human. 
 
-## To review — session 2026-06-30 (foundations concepts + research notes)
+- **Tool/version changes still follow the human-reviewed release flow** (`docs/updating.md`) — those are NOT auto-pushed; they wait for human approval.
 
-### A. Ratify glossary concepts (`docs/foundations.md`) — names + definitions are yours to veto
+- When you as a human finish reviewing an item, you to check it off or move a completet subsection to ## DONE or delete it if not relevant anymore for memory, changelog purpuses etc. When the ## TODO section is empty, you're caught up.
+
+- When you tick of items that include requests for human decisions then you prefix your decision with *HD:* (for Human Decision) and you can also provide jobs for the agent marked *TAP:* for To Ageent Plan so when you instruct agent to read your updates in HUMANS.md agent will put those instructions in its work plan automatically and chat with you if prioritization of the plan is needed. 
+
+## TODO
+
+Here are the actual TODO of genscalator, so this document is both a template example of a HUMANS.md file as well as a working document for this repo. Future research may expand how we use HUMANS.md to support efficient agent-human work split and collaboration.
+
+### Work on the HUMANS.md file guidelines
+- [ ] **Chat with agent about HUMANS.md to improve guidlines in it** - (side note: humans tend not to do long emdashes but just - so why do agents do -- (but some UTF-8 glyph) all the time???) The HUMANS.md <-> AGENTS.md pair is actually a protocoll for human-agent collaboration. How do we get that into the /genscalator plugin? *TAP:* We should chat about this. 
+
+### To review — session 2026-06-30 (foundations concepts + research notes)
+
+#### A. Ratify glossary concepts (`docs/foundations.md`) — names + definitions are yours to veto
 - [ ] **Smart-zone ceiling (L)** — the usable working-context ratio (~0.3) before the dumb zone. (You already
       picked this name over "lucidity ceiling".) Confirm the definition reads right.
 - [ ] **Compact dance** — the save→prompt→compact→paste ritual + the *recovery invariant* (truth in committed
@@ -26,7 +34,7 @@
 - [ ] **Token velocity / Token acceleration / Context rot** — the dS/dt, d²S/dt², and the rot framing. Confirm
       these are keepers (claim: self-monitoring the *derivative* of spend looks like a fresh framing).
 
-### B. Read the new research notes (lab-notebook depth, no action needed beyond a skim + steer)
+#### B. Read the new research notes (lab-notebook depth, no action needed beyond a skim + steer)
 - [ ] `research/instructions-for-claude.md` — **contains your current "Instructions for Claude" verbatim** as
       the worked example. Check I captured it correctly. Note: I recorded that you **removed "No emojis"**
       (emojis can raise bandwidth if non-irritating) — confirm that's the intent.
@@ -39,13 +47,6 @@
       not more rules. This is the *justification for genscalator's whole method* — worth your read + steer on
       whether to prototype the **submit-time hook** (item D).
 
-### C. Decisions I'm waiting on you for
-- [ ] **`AGENTS.md` vs `CLAUDE.md` canonicalization** — pick one as source of truth (symlink/include the
-      other) so they can't drift. (Raised in `instruction-surfaces-precedence.md`.)
-- [ ] **Emoji rule** — you dropped the flat ban. Want any *scoped* guidance instead ("no decorative clutter;
-      functional status glyphs OK"), or leave it unspecified?
-- [ ] **Where does the language-channel rule live?** — currently in agent *memory* (per-project). Should the
-      universal version go in the *global* "Instructions for Claude" field instead? (See instructions-for-claude.md.)
 
 ### D. WR-data → candidate `tt` tools to greenlight (from `research/wr-data/introprog-autotranslate.md`)
 These are the most-repeated friction patterns; each is a small typed tool waiting for your go-ahead:
@@ -61,6 +62,15 @@ These are the most-repeated friction patterns; each is a small typed tool waitin
 - [ ] **Encoding bug:** `tt text match/count/cols` read latin1 → mangle Swedish å/ä/ö; make them UTF-8 (or
       `--enc`). Pre-existing, still owed.
 
+## DONE
+
+### C. Decisions I'm waiting on you for
+- [X] **`AGENTS.md` vs `CLAUDE.md` canonicalization** — pick one as source of truth (symlink/include the other) so they can't drift. (Raised in `instruction-surfaces-precedence.md`.)
+  * *HD:* go with AGENTS.md as we want to be agent-provider agnostic and work also for codex and opencode etc.
+- [X] **Emoji rule** — you dropped the flat ban. Want any *scoped* guidance instead ("no decorative clutter; functional status glyphs OK"), or leave it unspecified?
+  * *HD:* yes *TAP*: agent help me with scoped guidance and include in exa,ple of instruction for claude
+- [X] **Where does the language-channel rule live?** — currently in agent *memory* (per-project). Should the universal version go in the *global* "Instructions for Claude" field instead? (See instructions-for-claude.md.) Probably global. *TAP:* Agnet investigate pros and cons of language-channel rule placement options.
+
+
 ---
-*Agent: keep this file current — append a new dated section when you push review-worthy work; prune cleared
-sections so the list reflects only what the human reviewer(s) still owe.*
+*Agent: keep this file current — append a new dated section when you push review-worthy work; prune cleared sections by moving to ## DONE so the ## TODO list reflects only what the human reviewer(s) still owe. Keep consistent with other documents such as CHANGELOG.md when relevant*
