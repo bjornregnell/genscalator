@@ -157,6 +157,13 @@ behavior. **But the central validity threat must be stated plainly:**
   tax vs bash's instant start. For a genuine one-shot triviality bash wins on latency; for anything reused,
   extended, or correctness-sensitive, the typed tool dominates. The reflex error is misclassifying *reusable/
   correctness-sensitive* work as *one-shot trivial* (that misclassification is the WR-REGRESS mechanism).
+  - **This cost is ERASABLE for repeated tools (BR).** A tool used over and over can be **AOT-compiled to a
+    native binary** — GraalVM `native-image` or Scala Native — giving **instant startup** (no JVM spin-up, no
+    dependency resolution). That removes bash's *only* remaining advantage (latency) precisely for the tools
+    where it would otherwise recur most. So the trade-off is not static: a scratch graduates from
+    `scala-cli`-interpreted (fast to iterate, slow to start) to a native `tt` subcommand (instant, allowlistable)
+    once it proves reusable — the same graduation path the genscalator toolbox already follows. Net: for any
+    tool worth keeping, the typed-vs-bash latency gap closes to ~zero while the correctness/reuse wins remain.
 
 ## 8. Commit-message policy as a handover / ballgame ledger
 **[BR NOTE]** *"can we have a policy for how we write commit messages that improves our ballgame state?
