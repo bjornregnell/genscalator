@@ -76,6 +76,10 @@ kept few + memorable so they can be typed mid-chat):
 - **WR-TOOL** — a candidate artifact identified for genscalator.
 - **WR-STATE** — a human/agent state observation (smart/dumb zone, fatigue, thriller state, self-disclosure).
 - **WR-DECISION / HD** — a ballgame decision point; HD = a logged Human Decision.
+- **WR-INVENT** — a *new way of working* / practice / convention is **created** in-flight (the `WR data` flag,
+  the compact dance, the meta-project itself, build-your-own-tool, the AT/WR split, smart/dumb-zone vocabulary).
+  Distinct from WR-META: INVENT *makes* a practice, META *reflects on* one — the generative moments that became
+  genscalator's methods. (Added 2026-06-30 during the meta-collaboration sweep; see `RAW-DATA.md` legend.)
 Each event: `code | date#turn | one-line mechanism | (for REGRESS) what-should-have-happened`.
 
 ### The visibility/confirmation bias (BR's sharpest methodological point)
@@ -94,6 +98,41 @@ Three mitigations:
   (a sibling of `token-usage`, same jsonl source). *Proposed and not yet built — flagged WR-TOOL.*
 - **Counterfactual cost estimate:** for a WR-WIN, optionally note the avoided cost (confirmations dodged,
   re-reads saved, runtime errors a type-check pre-empted) so the benefit is quantified, not asserted.
+
+### Two capture modes: in-situ flags and retrospective sweeps
+The corpus is captured two complementary ways, each honest about what it is:
+
+1. **In-situ flagging (live, human-triggered).** The human types a short in-band code the moment a notable
+   event occurs — the project's cheapest shared structure (its own origin is `RAW-DATA.md` #6313): **`WR data`**
+   = "capture this confirmation/moment"; **`HD:`** = "this is a hard decision, record it"; and the correction
+   protocol **`edit: wrong -> right`** = "amend my previous prompt" (a distinctive prefix the agent treats as a
+   *retroactive fix* to the prior turn, not as new work). These are **experience-sampling triggers embedded in
+   the workflow**: data is tagged when/where it happens, by the person who felt it, not reconstructed later.
+
+2. **Retrospective sweeps (batch, agent-mined).** Between or after sessions the agent mines the `.jsonl` with
+   `RawData.scala` in **focused batches, each with a *declared focus***, so coverage is auditable rather than
+   ad-hoc and a reviewer can see the lens (and its blind spots). The sweeps run on 2026-06-30, as a worked
+   example for the paper's data-collection section:
+   - **Sweep A — friction events:** grep the human's `WR data` / guard-reason turns → the confirmation-fatigue spine.
+   - **Sweep B — tt gains vs dynamic-tool costs:** grep `clobber`/`round-trip`/`statically`/`--only` → paired
+     **WR-WIN** (#6266 statically-analyzable `tt`; #6056 the round-trip invariant gating 293 files) and
+     **WR-REGRESS/cost** (#5440 the `--only` mirror clobber; #5148 the model mangling a `\usepackage` preamble).
+   - **Sweep C — meta-collaboration / inventions:** grep `dogfood`/`smart zone`/`convention`/`spirit` →
+     **WR-INVENT** (#6065 project birth; #5831 build-your-own-scratch; #7294 zone vocabulary; #6240 AT/WR naming;
+     #7180-81 the architecture-crystallization turn-pair).
+   - **Sweep D — thin tail + cluster-collapse:** the remaining bare flags recorded as **one representative with
+     the near-duplicate indices listed** (no silent truncation), since they collapse into already-characterized
+     classes (background-launch / git-state friction).
+   Each mined excerpt is **verbatim** (objective) with a **labelled reflection** (subjective) and one+ WR-* codes.
+   The two modes are complementary: in-situ catches what the human noticed live; sweeps recover what a compaction
+   would have buried *and* surface cross-cutting patterns no single moment shows.
+
+**Language-for-transparency [BR].** The human is more fluent in Swedish but **deliberately writes English** in
+these sessions so the primary corpus is directly quotable and reviewer-readable without a translation step. This
+is a worked instance of the `communication-bandwidth.md` trade-off where **data transparency/reviewability
+outranks** the human's per-message ease. State it as a known sampling property: the human's phrasing is
+second-language English, occasionally with typos (which is *why* the typo-rate fatigue gauge, `human-state-and-
+joint-zone.md`, is observable here) — a feature for reviewability, not noise to be cleaned away.
 
 ## 5. Reflexivity and the introspection-elicitation method (and its honest limits)
 **[BR]** *"I am actually probing your introspection capabilities and trying to enhance them by deliberate

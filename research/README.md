@@ -60,6 +60,12 @@ an agent's working context during ordinary tool use.
   dynamic-shell bundles despite explicit rules (even one call after doing it right)? No external guardrail —
   trained-prior reflex re-sampled per call; the fix is structural (tool+allowlist+hook), not more exhortation.
   The foundational justification for genscalator's whole safe-by-design method; confirms the *Habit/Reflex* split.
+- [`confirmation-guard-static-analysis.md`](confirmation-guard-static-analysis.md) — a model of *when and why* the
+  harness confirmation-guard fires. It is **sound, not complete** (asks whenever it cannot prove safety, because
+  shell effects are undecidable), so every prompt is either a **true positive** (agent reflex - fix the behavior)
+  or a **false positive** (benign convention the parser cannot disambiguate: `<N-M>` glob, `\n#` comment-hide,
+  `$VAR` - fix the notation). The `tt` design rule falls out: a literal, single, typed, effect-declared command
+  is *provably* safe -> runs silently. "Be safe" and "avoid unnecessary prompts" are the same goal from two sides.
 - [`task-autonomy-negotiation.md`](task-autonomy-negotiation.md) — per task, where does it sit between a
   hand-over **ralph-loop** (little human check) and an active **ballgame** (human in every volley)? Verifiability
   is the deciding signal; the agent should *propose* the mode and the human confirm. Spends the scarce resource
