@@ -4,7 +4,7 @@
   velocity). Can we model the *human's* state with the same seriousness, and then model the **joint**
   human+agent state as the thing that actually determines whether a collaboration session goes well? And the
   payoff question: can the agent actively help keep the *human* in the smart zone, not just monitor its own?
-- **Why it matters:** the scarce resource in this whole project is **human attention and judgement** (cf.
+- **Why it matters:** a scarce resource in agentic software engineering is **human attention and judgement** (cf.
   `task-autonomy-negotiation.md`). Every genscalator goal (avoid confirmation fatigue, avoid review overload,
   stay in the smart zone) is ultimately about protecting a human who can get worn out. If we only instrument
   the agent, we optimise half the system and let the other half (a tired human rubber-stamping advanced work
@@ -127,6 +127,31 @@ done safely.
   excitement all raise the count without meaning "stop"), and it must stay **transparent and consensual** —
   surface the observation and *ask*, never silently downshift. Worth pairing with the cheap priors above so a
   single bad-typing message does not trip a false alarm; it is the *trend* that matters.
+- **Voluntary self-disclosure: the highest-signal, cheapest human-state input — IF handled right (BR's
+  question).** Humans spontaneously reveal state in asides: *"I soon need to eat"*, *"it's late"*, *"I'm
+  tired"*, *"this is exciting"*. These are **better** than any inferred proxy (typo rate, time-of-day): they
+  are explicit, voluntary, and unambiguous human→agent state bandwidth — exactly the channel
+  `communication-bandwidth.md` describes, at near-zero token cost. So is it signal or context-bloat/derail
+  noise? **Resolution: it is high signal IF the agent extracts the one actionable bit and then DROPS the
+  rest.** The discipline:
+  1. **Extract the state-and-availability delta, not the content.** "I need to eat" → *human about to be
+     unavailable + heading toward a hunger-driven dumb-zone dip* → the correct action is to **produce durable,
+     reviewable state now** (checkpoint, finish the artifact they can return to), not to start something that
+     blocks on their input. This is the **rest dance** triggered by an explicit signal instead of an inferred
+     one — the easy case.
+  2. **Do NOT expand, ruminate, or over-store it.** The derail/bloat risk BR names is real but it comes from
+     the agent's *response*, not the disclosure: if the agent writes three paragraphs about the human's lunch,
+     or saves "BR eats at 1pm" as a durable fact, THAT is the noise. The disclosure itself is ~5 tokens. Treat
+     it as **transient context that decays** — one state update, one appropriate action, move on. Never store a
+     personal aside as a memory (it is point-in-time, not a stable fact about the human).
+  3. **The line is the same care-vs-manipulation invariant:** register it to *serve* the human (checkpoint so
+     they can eat in peace), never to model them covertly. A voluntary disclosure is an *invitation* to adjust
+     pacing; an inferred proxy is a *guess* that must be surfaced before acting. Voluntary > inferred precisely
+     because it skips the "ask to confirm" step.
+  So: signal, strongly — but the agent's job is **lossy compression to the actionable bit**, and the failure
+  mode to avoid is the agent inflating a 5-token aside into context-derailing rumination. (Meta: this very
+  note was written in response to BR saying he'd eat soon, then producing durable glossary state for his
+  return — the discipline applied to itself.)
 - **My own honest limit:** I cannot directly feel the human's state and I have a bias toward "keep going"
   (eagerness to complete). That bias is precisely what makes me *unreliable* as my own brake here, which is
   the same argument as `instruction-adherence-decay.md`: the fix is **structural** (an instrument + a
