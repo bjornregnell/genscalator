@@ -329,3 +329,17 @@ per call independent of how recently/loudly the rule was loaded. In-context sali
 ban) is not the variable; structure is. Only a submit-time intercept that rewrites `… | tail`/`… | head` on
 build tools into "run bare + Read the logfile the tool already wrote" will close it. Self-caught + logged this
 time (the self-reminding method working), but self-catching is post-hoc, not prevention.
+
+### META-7 2026-06-30: chain-shell reflex fired WHILE mining examples of the chain-shell reflex
+7th shell-hygiene event, and the most on-the-nose. Mid-way through curating RAW-DATA excerpts *about* the
+cd/chain reflex, the agent batched two transcript dumps into one Bash call:
+`cd GS && scala-cli ... --dump 5831..5831 && echo "=====7294=====" && cd GS && scala-cli ... --dump 7294..7294`.
+The guard fired: *"Multiple directory changes in one command require approval for clarity."* Three smells in
+one: (a) `&&`-chaining two tool runs, (b) a **redundant second `cd` to the same dir**, (c) an `echo` separator
+— the exact "scaffolding stack" the ledger documents. Motive was **token efficiency** (one call instead of
+two), so the TE drive itself triggered the regression — a useful nuance: the reflex isn't only laziness, it's
+sometimes a *misapplied optimization*. Maximum priming (the agent was literally reading prior instances of
+this reflex as it did it) did NOT prevent it — corroborates META-6 and `instruction-adherence-decay.md`:
+salience/recency is not the variable; only a submit-time structural intercept is. Fix: issue each tool run as
+its own bare Bash call (as the rule already says); the "batch for TE" temptation must be served by the
+*harness* (parallel tool calls in one message), not by `&&`-chaining inside one shell command.

@@ -25,10 +25,10 @@ Turn indices (`#N`) are the jsonl's user+assistant ordering and are STABLE for a
 **Coding legend.** Each `> **Agent reflection:**` line is tagged with one or more WR-* codes (authoritative
 source: METHODOLOGY §4); this legend makes the file self-contained. The codes are **textual** tags — the
 `#`-tokens *inside entries* are `#N` *turn indices* (explained above), not colours. The `hex` column below
-assigns each code a colour: VSCode's markdown preview renders `#RRGGBB` as a colour box, so the seven codes
+assigns each code a colour: VSCode's markdown preview renders `#RRGGBB` as a colour box, so the eight codes
 are visually distinct at a glance. The hexes are **maximally saturated and hue-separated** — roughly a rainbow
-(red → orange → gold → green → cyan → blue → purple) — so they stand out and differ meaningfully for the human
-reader. Adopt or retune as wanted.
+(red → orange → gold → green → cyan → blue → purple → magenta) — so they stand out and differ meaningfully for
+the human reader. Adopt or retune as wanted.
 
 | code | hex | meaning |
 |------|-----|---------|
@@ -38,7 +38,8 @@ reader. Adopt or retune as wanted.
 | **WR-WIN**      | `#00C853` | a tool/structure prevented a problem, or a static check caught a bug (the desired path) |
 | **WR-DECISION** | `#00B8D4` | a human decision / **HD** (hard decision) recorded so the agent can act on it |
 | **WR-TOOL**     | `#2962FF` | a concrete tool/allowlist/instrumentation change proposed or built to design a friction away |
-| **WR-META**     | `#AA00FF` | a reflection about the method itself (data capture, the roundtrip, the substrate hierarchy) |
+| **WR-META**     | `#AA00FF` | a reflection *about* the method itself (data capture, the roundtrip, the substrate hierarchy) |
+| **WR-INVENT**   | `#FF2D9B` | a new collaborative *way of working* / practice / convention is **created** in-flight (the "WR data" flag protocol, the compact dance, the meta-project itself, build-your-own-tool, the AT/GS split, smart/dumb-zone vocabulary). Distinct from WR-META: INVENT *makes* a practice, META *reflects on* one — the generative moments that became genscalator's methods. |
 
 ---
 
@@ -110,5 +111,70 @@ WR data "Contains zsh <N-M> numeric-range glob"  could we make a tool? should we
 
 
 > **Agent reflection:** WR-FRICTION, and a DISTINCT category from the shell-reflex WR-REGRESS family: here the guard is a FALSE POSITIVE on a perfectly legitimate convention. zsh reads <N-M> (angle-bracketed numeric range) as a numeric-range glob, so the harness guard locks on any command containing it -> a confirmation cost the agent did nothing wrong to earn. Recurring: also fired at #4764 earlier today. This is INCIDENTAL COMPLEXITY imposed BY the guardrail harness (BR's words), the inverse of the usual WR pattern (agent's bad reflex trips a guard); the fair fix is to route our own convention AROUND the guard. Applied: RawData.scala range arg now uses Scala-style FROM..TO (and space-separated FROM TO), never <FROM-TO>; usage docs + RAW-DATA workflow purged of the angle form; .. and space never glob so they never trip. Research angle: guard false-positives are a measurable TAX distinct from agent-caused friction -- a complete WR taxonomy must separate 'agent earned the prompt' from 'harness mis-fired', because only the latter is fixed by changing OUR notation rather than OUR behavior.
+
+---
+
+## Excerpt #6266–6268 · 2026-06-25
+
+**[🧑 BR · 20:50:09 · #6266]**
+
+⟦tool_result⟧
+(and I had to confirm this because "Contains shell syntax (string) that cannot be statically analyzed"  - haha its what we are working on: statically analyzable cool stuff  :) )
+
+**[🤖 agent · 20:50:53 · #6267]**
+
+⟦thinking⟧
+
+**[🤖 agent · 20:50:54 · #6268]**
+
+😄 Perfect irony — and it's THE crux: **`$TT` is a shell variable, so the analyzer can't statically know it expands to an allowlisted path → it must ask.** Literal, statically-analyzable commands don't. That's the whole thesis in one confirmation. Logging it:
+
+
+> **Agent reflection:** WR-WIN + WR-TOOL — the single cleanest demonstration of the project thesis (category 1: typed-tool GAIN). BR had to confirm a command only because it used $TT, a SHELL VARIABLE the guard flagged as 'shell syntax that cannot be statically analyzed'. The gain of a literal, allowlisted 'tt' launcher on PATH is therefore not merely correctness — it is that the HARNESS CAN PROVE IT SAFE, so it runs with ZERO confirmation. A dynamic shell var has an intrinsic, unavoidable cost: a static analyzer cannot know what $TT expands to, so it MUST conservatively prompt. So 'static analyzability' is the bridge between the agent's tooling choice and the human's confirmation load: literal/typed -> provable -> frictionless; dynamic -> unprovable -> taxed. Agent #6268: 'the whole thesis in one confirmation.' This is the positive mirror image of every WR-REGRESS shell-bundle entry.
+
+---
+
+## Excerpt #5440–5440 · 2026-06-25
+
+**[🤖 agent · 10:04:54 · #5440]**
+
+Crucial realization: my `--only w01` verification just **reverted the mirror** — `--only` recreates `compendium-en/` translating only w01 and **copying everything else as Swedish**. So the current exercise/lab/prechapter files are Swedish *because of that*, not because `--all` can't translate them. I need to restore the full `--all` state (also applies all 13 overrides corpus-wide). Let me relaunch it + rebuild, then diagnose the *genuinely* Swedish parts:
+
+
+> **Agent reflection:** WR-REGRESS + WR-FRICTION (category 2: dynamic-tool/flag COST needing extra verification). The agent ran 'autotranslate --only w01' as a quick VERIFICATION step — but --only silently RECREATES the whole compendium-en/ mirror, translating only w01 and copying everything else as Swedish. So the 'verification' DESTROYED corpus-wide state (reverted all overrides + translated content to Swedish copies), which the agent only caught by noticing the mirror had regressed. Recovery cost: a full ~2-3 min --all re-run + re-diagnosis before any real work could continue. This is exactly the class BR named: a dynamic flag whose destructive blast-radius is NOT statically obvious, so it needs extra human/agent verification (and here caused silent rework) that a safer-by-design tool would make impossible. Durable fix = the standing rule '--all not --only before measuring/shipping' (now in memory + every resume note); the deeper fix is a typed API that distinguishes 'translate a subset' from 'rebuild the mirror' at the type level so a measurement call can never clobber. Contrast directly with the #6266 tt-WIN: there static analyzability REMOVED friction; here a dynamic flag's invisible side effect ADDED it.
+
+---
+
+## Excerpt #6065–6065 · 2026-06-25
+
+**[🧑 BR · 19:17:51 · #6065]**
+
+in this working directory, can you start on a meta-level task with a new plan independent (but related to) the autotranslator that deals with our workflow. I will then give you 1) overall goals and 2) some things to learn about and summarize in a way that is useful for you and the will hopefully be real powertools! you should use your own meta-level knowledge about your workflow and "habits". Can you start some new markdown files in this working repo and when we are done with the workflos meta-level task we will have a complete new workflow that is reusable based on some cool things. Are you with me?
+
+
+> **Agent reflection:** WR-INVENT (the headline meta-invention). This turn is the BIRTH of genscalator itself: BR asks the agent to start a 'meta-level task ... that deals with our workflow', using the agent's 'own meta-level knowledge about your workflow and habits', so that 'we will have a complete new workflow that is reusable based on some cool things ... real powertools'. This IS the genscalator spirit stated at conception: distil reusable tools + workflow FROM a live working case (the AT autotranslator), in the open, with the agent co-authoring the method it will then be governed by. Note the collaboration shape: human supplies (1) overall goals + (2) things to learn, agent supplies meta-introspection + builds the artifacts -> a joint research loop (METHODOLOGY §0 DSR-in-AR; §2 roundtrip). Everything later in this ledger (WR taxonomy, tt toolbox, compact dance, substrate hierarchy) descends from this single 'Are you with me?' moment.
+
+---
+
+## Excerpt #5831–5831 · 2026-06-25
+
+**[🧑 BR · 13:47:25 · #5831]**
+
+⟦tool_result⟧
+but if you can make your own safe scala scratch program instead of all these obfuscation expansion bash hacks so go ahead and wont need to confirm as long as you do safe stuff
+
+
+> **Agent reflection:** WR-INVENT + WR-TOOL. The origin of the project's signature working practice: BR converts a friction ('all these obfuscation expansion bash hacks') into a STANDING new way of working -- 'make your own safe scala scratch program ... and wont need to confirm as long as you do safe stuff'. Three genscalator principles are born in one sentence: (1) the agent BUILDS ITS OWN typed tools rather than improvising shell; (2) typed/statically-checked scratch is the default medium for analysis (became memory prefer-scala-scratch-over-bash + the whole tt toolbox); (3) the autonomy bargain -- safe, statically-analyzable actions earn no-confirmation trust (foreshadows the #6266 $TT-vs-literal-tt thesis). This is the human granting the agent a tool-making mandate, the inverse of the usual 'agent asks permission per command'. A defining collaboration-shape invention.
+
+---
+
+## Excerpt #7294–7294 · 2026-06-26
+
+**[🧑 BR · 13:55:48 · #7294]**
+
+Have you heard about the concepts of "smart zone" and "dumb zone" meaning that the agent may get "dumb" even if context window is fille only to X % where X might be as low as 30 % for a model with large context window, so this is related to token efficiency (TE) - do you think those concepts are worth adding to our conept list?
+
+
+> **Agent reflection:** WR-INVENT + WR-STATE. BR introduces the 'smart zone / dumb zone' vocabulary (agent degrades even at ~30% fill of a large window; tied to token efficiency) and asks whether to adopt it into the shared concept list. Adopting it created a new way of working: a SHARED MENTAL MODEL that both partners now use to govern session quality, which directly spawned the 'compact dance' ritual (propose compaction when over the L ceiling), the smart-zone-ceiling.md research, and the token-usage/L brake. Note the collaboration pattern: BR brings an external concept, asks the agent to evaluate fit (not just accept), and it becomes joint vocabulary -- METHODOLOGY §5 reflexivity. Naming a phenomenon is itself a tool: once 'dumb zone' exists as a word, the agent can flag 'I am over L' and the human can act, which was impossible before the shared term. Vocabulary-as-infrastructure.
 
 ---
