@@ -172,6 +172,11 @@ compact dance and both parties read it). Proposed convention:
   no chat needed. The existing AT handoff commits already do an ad-hoc version ("DONE …; NEXT = …"); this just
   formalizes it. (Constraint preserved: introprog/muntabot commits carry **no** Claude credit.)
 - **Meta:** this very file will be committed with a `NEXT:` handover trailer, dogfooding the policy.
+- **Cue example to study (BR):** BR's own commit `"add METHODOLOGY stub for agent to work on"` used *"for
+  agent to work on"* as a lightweight **agent-facing handover cue** in the subject. Open question worth
+  researching: do such directional cues (who-acts-next: `for-agent` / `for-human` / `for-review`) belong in
+  commit subjects, and do they measurably improve ballgame handoff vs. living only in HUMANS.md / the `NEXT:`
+  trailer? A candidate is a tiny controlled comparison across a batch of commits.
 
 ## 9. Analysis approach
 - **Qualitative:** thematic coding of wr-data events (§4 taxonomy) → mechanisms → research notes →
