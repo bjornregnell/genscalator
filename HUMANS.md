@@ -1,12 +1,15 @@
 # HUMANS.md — the humans' review queue
 
 Mirror of [`AGENTS.md`](AGENTS.md): that file is for the agent(s), this one is for the **human(s)** —
-a to-do list for human tasks such as **reviewing agent-authored changes**. The agent appends here when it has pushed
-work that needs human judgement (quality requirements trade-offs, domain-specific naming, definitions, decisions, what to ship). Tick items as you go; when a whole subsection is completed move it from ##TODO to ##DONE so other humans can see what we have done. Agent should keep CHANGELOG.md consistent if affected. The main **historical record** of what changed in the repo lives in
-[`CHANGELOG.md`](CHANGELOG.md) (`## Unreleased`) — this file is only the *what-humans-still-owe* checklist.
+a to-do list for human tasks such as **reviewing agent-authored changes**. 
+* The agent NEVER writes this file directly (so it can't clobber your live edits). Instead it appends proposals to HUMANS.inbox.md (append-only, agent-owned), and you harvest them into the TODO below. This file is human-written only. 
+* Tick items as you go; when a whole subsection is completed move it from ##TODO to ##DONE so other humans can see what we have done. 
+* Agent should keep CHANGELOG.md consistent if affected. The main **historical record** of what changed in the repo lives in [`CHANGELOG.md`](CHANGELOG.md) (`## Unreleased`) — this file is only the *what-humans-still-owe* checklist.
 
 ## How this works
 - Agent commits + pushes docs/research freely if agreed with human. 
+
+- Agent->human channel: the agent posts new review items / proposals to HUMANS.inbox.md, never here. You harvest: move an item into TODO (tagging HD:/TAP: as needed), then delete it from the inbox. You alone own TODO and DONE.
 
 - **Tool/version changes still follow the human-reviewed release flow** (`docs/updating.md`) — those are NOT auto-pushed; they wait for human approval.
 
@@ -73,4 +76,4 @@ These are the most-repeated friction patterns; each is a small typed tool waitin
 
 
 ---
-*Agent: keep this file current — append a new dated section when you push review-worthy work; prune cleared sections by moving to ## DONE so the ## TODO list reflects only what the human reviewer(s) still owe. Keep consistent with other documents such as CHANGELOG.md when relevant*
+Agent: never write HUMANS.md directly. Append review-worthy proposals to HUMANS.inbox.md (append-only). The human harvests into TODO, ticks, and moves completed subsections to DONE. Keep CHANGELOG.md consistent when relevant; stage only agent-authored paths, never git add -A.
