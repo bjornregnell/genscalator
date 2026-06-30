@@ -6,6 +6,22 @@ All notable changes to genscalator. Versions follow the git tags (`vX.Y.Z`); the
 Updating genscalator is a **human-reviewed** step — see [`docs/updating.md`](docs/updating.md). Skim this
 file before adopting a new version: it changes the agent's operating rules, so review beats blind pull.
 
+## Unreleased — docs + research accretion (introprog session 2026-06-30)
+Docs/research only — no tool/version change. Human review pending (see [`HUMAN.md`](HUMAN.md)).
+- **`docs/foundations.md` glossary — new agent-introspection concepts:** **Context rot**, **Token velocity**,
+  **Token acceleration**, **Smart-zone ceiling (L)** (usable working-context ratio before the dumb zone),
+  **Communication bandwidth (human↔agent)** (per-direction language/TE channel), **Compact dance** (the
+  save→prompt→compact→paste hand-off ritual, with a committed-files-are-the-guarantee recovery invariant),
+  **Compact trigger** (propose the dance at fill ≥ 0.8·L).
+- **New research notes:** `instrumentation-by-default.md`, `token-budget-awareness.md`, `smart-zone-ceiling.md`,
+  `communication-bandwidth.md`, `instructions-for-claude.md` (the global custom-instructions field; includes
+  BR's current instructions as a worked example), `instruction-surfaces-precedence.md` (how AGENTS.md /
+  CLAUDE.md / SKILL.md / MEMORY.md / global instructions compose, conflict, and rank). `research/README.md`
+  index updated for all.
+- **`research/wr-data/introprog-autotranslate.md`** — appended friction events (count/status aggregation gaps,
+  GPU/job probe, pipe-to-grep noise suppression, git-commit & repo-overview cd/&&/echo regressions) feeding
+  candidate `tt` tools.
+
 ## v0.7.0 — 2026-06-27
 - **New tool `tt verify`** — run-and-verify driver and the toolbox's first **effectful** tool (os-lib).
   Runs an allowed command **directly as argv (no shell)**, captures exit/stdout/stderr, checks them

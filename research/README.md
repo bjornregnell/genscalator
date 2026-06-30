@@ -36,6 +36,26 @@ an agent's working context during ordinary tool use.
 ## Investigations
 - [`scala-style-evolution.md`](scala-style-evolution.md) — how should the `scala-style` skill
   self-consciously evolve, guided by agents using it, without drifting or bloating?
+- [`instrumentation-by-default.md`](instrumentation-by-default.md) — should scratch/CLI tools emit their own
+  progress file + per-event log + compact summary *by default*, so agents Read an instrument instead of
+  wrapping the tool in `echo`/`grep`/`for` shell? The design-principle synthesis of the `wr-data/` evidence.
+- [`token-budget-awareness.md`](token-budget-awareness.md) — how can an agent become aware of its
+  token-spending *rate* across nested limits (context window / session / weekly cap) and *pace* itself, so
+  inefficient/brittle spend never causes a hard halt mid-task? The liveness/governance layer of the thesis.
+- [`smart-zone-ceiling.md`](smart-zone-ceiling.md) — can we *estimate* **L**, the context-fill fraction at
+  which the agent crosses smart→dumb zone, so an instrument can warn/brake before degradation rather than at
+  the hard limit? Turns the ~30% folklore boundary into a measurable brake threshold (pairs with `token-usage`).
+- [`communication-bandwidth.md`](communication-bandwidth.md) — for a non-native-English human + an
+  English-centric agent, what's the bandwidth- and TE-optimal language *per direction*? The linguistic
+  dimension of the human↔agent channel (human L1 in, agent cheapest-clear out; ask when L1 is idiosyncratic).
+- [`instructions-for-claude.md`](instructions-for-claude.md) — what is the highest-leverage content for the
+  agent's *global* custom-instructions field (loaded into every session), and what should live in
+  AGENTS.md/skill/memory instead? The global-vs-local split as a TE + quality lever. Includes BR's current
+  instructions as a worked example.
+- [`instruction-surfaces-precedence.md`](instruction-surfaces-precedence.md) — how do *all* the instruction
+  surfaces (global instructions, AGENTS.md/CLAUDE.md, SKILL.md, MEMORY.md+memory, system prompt) compose,
+  conflict, and **rank**? Which are always-on vs lazy, and where's the redundancy/drift? The governance layer;
+  companion to `instructions-for-claude.md`.
 
 ## Data
 - [`wr-data/`](wr-data/) — **WR** (Workflow Research) log of confirmation/approval events from real

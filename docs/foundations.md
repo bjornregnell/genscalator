@@ -78,6 +78,13 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   approval prompts; ends in rubber-stamping. A direct BHH enabler.
 - **Review overload** — too much agent-generated code/output for the human to meaningfully review, so
   errors slip through. CF's cousin for *code review* rather than *approval prompts*.
+- **Communication bandwidth (human↔agent)** — how much useful intent crosses the human–agent channel per
+  unit effort/tokens, **in each direction**. A quality+TE axis (cousin of *review overload*): a non-native
+  human forced into L2 loses *input* bandwidth (may under-specify); an agent generating the human's L1 pays
+  a *token premium*. Often optimised **asymmetrically** — human writes L1 (cheap, high human bandwidth),
+  agent writes the cheapest-yet-clear language (English for a strong-L2 human), switching to the human's L1
+  when nuance/review-precision justifies it. Also a *smart-zone* lever (cheaper language → more smart-zone
+  budget). See research `communication-bandwidth.md`.
 - **Token efficiency (TE)** — achieving a task with fewer model tokens (input + output). A committed,
   compiled tool beats re-emitting brittle bash every time. **Two distinct pressures, usually aligned but
   not always:** (a) **$cost** — total tokens billed; (b) **smart-zone** — keeping *working* context small
@@ -86,9 +93,71 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   bloats context.
 - **Smart zone / dumb zone** — the region of context-window fill where the agent reasons well ("smart")
   vs. where it degrades ("dumb") — even though tokens remain below the hard limit. The boundary (X%) is
-  often FAR below 100% — possibly ~30% on large-context models (aka **context rot** / "lost in the
-  middle" / *effective context ≪ advertised context*). Implication: keep the *working* context small, not
-  merely under the limit — offload to compiled tools, use fresh subagents for big sweeps, checkpoint + compact.
+  often FAR below 100% — possibly ~30% on large-context models ("lost in the middle" / *effective context
+  ≪ advertised context*). The dumb zone is the region you fall into once **context rot** has set in (see
+  next). Implication: keep the *working* context small, not merely under the limit — offload to compiled
+  tools, use fresh subagents for big sweeps, checkpoint + compact.
+- **Context rot** — the *progressive* degradation of an agent's reasoning as its context window fills with
+  accumulated history (earlier turns, verbose tool dumps, re-read files, dead ends) — **not** because the
+  hard token limit is reached, but because *effective* attention and coherence fall long before it. Relation
+  to the zones: context rot is the **process**; the **dumb zone** is the **region** it lands you in. As rot
+  advances, the agent crosses from the **smart zone** (holds earlier constraints, reasons cleanly) into the
+  **dumb zone** (forgets goals/decisions made earlier, repeats finished work, contradicts itself,
+  "lost in the middle"). Drivers: raw transcript length, **low-signal bloat** (re-polled logs, re-derived
+  aggregations, pasted dumps the agent must re-skim), and long *unattended* runs. Antidotes = the smart-zone
+  ones: offload to compiled tools (a small stable call beats re-emitting+re-reading bash), prefer fresh
+  subagents for big sweeps, and **checkpoint + compact before rot sets in**, not after. TE's smart-zone
+  pressure exists precisely to *slow* context rot; instrumentation-by-default and the `tt` tools reduce the
+  low-signal bloat that *accelerates* it.
+- **Smart-zone ceiling (L)** — the fraction of the context window an agent can fill *before* it crosses from
+  the **smart zone** into the **dumb zone**: the **usable working-context ratio**. Names the "X%" boundary
+  in *Smart zone / dumb zone* as a quantity — if L ≈ 0.3, the agent stays sharp up to ~30% fill and
+  **context rot** dominates beyond it (so a 1M window has a *usable* budget of ~300k, not 1M — *effective
+  context ≪ advertised context*). L is **model- and task-dependent** and currently a **blind spot**: an
+  agent can read its fill % (a `token-usage`-style instrument) but **not its own L**, so it can't tell how
+  close to the edge it is (see research `smart-zone-ceiling.md`). Practical use: compare live fill % against
+  an estimated L and **brake** (checkpoint + compact) as fill nears L — not as it nears 100%. The region
+  below L is the *smart-zone budget*; alias *usable-context ratio*.
+- **Token velocity (burn rate)** — the *first derivative* of cumulative token spend, dS/dt: how fast the
+  budget is being consumed (tokens per unit wall-clock, or per turn/step). "Burn rate" with the derivative
+  made explicit. Per-*time* measure; distinguish its per-*work* cousin **spend efficiency** = dS/d(progress)
+  (tokens per unit of useful work — what TE optimises).
+- **Token acceleration** — the *second derivative*, d²S/dt²: is the burn *speeding up*? The introspective
+  alarm. A spike in token acceleration is the signature of a runaway, a brittle-bash thrash, or a
+  context-rot feedback loop (each re-poll/re-derive longer than the last) — and it appears *before* a hard
+  halt. An agent that watches its own velocity + acceleration (a *speedometer + tachometer* for spend) can
+  **brake** — checkpoint, switch to a typed path, compact — before the budget governs it. Linking agent
+  **introspection** to dS/dt and d²S/dt² as a real-time self-governance signal appears to be a fresh framing
+  (burn-rate is borrowed from finance; budget-aware decoding and LLM metacognition exist, but self-monitoring
+  the *derivative* of spend does not seem to be a named/studied line). The bridge between *context rot* and
+  *token-budget-awareness* (`research/token-budget-awareness.md`): rot raises velocity; velocity/acceleration
+  are how the agent *notices* before halting.
+- **Compact dance** — the deliberate **hand-off ritual across a context compaction**, so crossing it costs
+  little of what matters. Context compaction (summarizing the transcript to reclaim window space) is the main
+  smart-zone hygiene move — but a naive compact *loses* live state (decisions just made, the exact next step,
+  paths, in-flight reasoning) because the summary is lossy. The dance makes the loss bounded and recoverable.
+  **Four steps:** **(1) save** — the agent **durably writes** the state a summary would blur: a resume/plan
+  note (decisions, next-step order, file paths, open threads) **plus** any persistent **memory** entries,
+  *committed* where the repo allows; **(2) prompt** — the agent hands the human a **paste-after-compact
+  prompt** that points at those durable artifacts and names the next action; **(3) compact** — the *human*
+  triggers the compaction; **(4) paste** — the human pastes the prompt, re-seeding the fresh context from the
+  durable state, not from the lossy summary. Initiated when fill nears the **smart-zone ceiling (L)** (read it
+  off a `token-usage`-style instrument), *before* **context rot** sets in. **Safe-recovery invariant:** the
+  truth lives in **committed files + memory**, never only in the chat — so even a total context loss (crash,
+  cap halt, a summary that drops a thread) recovers by reading the resume note. The pasted prompt is a
+  *convenience*; the durable artifacts are the *guarantee*. Steps 1–2 are the agent's, 3–4 the human's: it is
+  a **human↔agent** protocol (cf. *communication bandwidth*), and the cousin of a **ralph loop**'s
+  checkpoint+compact — but human-triggered at a chat boundary rather than autonomous. Initiate at the
+  **compact trigger** (next).
+- **Compact trigger** — the context-fill level at which the agent should **proactively propose the compact
+  dance**, rather than waiting until it is already degrading. Set at a **safety margin below the smart-zone
+  ceiling**: **fill ≥ 0.8·L** (with L≈0.3, ≈24% of a 1M window). The 0.8 margin exists because the *dance
+  itself costs turns* (save + write the resume prompt) — you want it to **complete inside the smart zone**,
+  not begin at the edge of the dumb zone. It is the named behavioral bind on the `⚠ approaching` band a
+  `token-usage`-style instrument already reports (`fill/L ≥ 0.8` → warn; `≥ 1.0` → over). **Agent
+  responsibility:** periodically read fill/L (cheap, read-only) and, on first crossing the compact trigger,
+  *suggest the dance* — not silently push on (that is how a long run drifts into **context rot**). Distinct
+  from L (the *boundary*) and from the dance (the *ritual*): the trigger is *when to start the ritual*.
 - **Habit (agent)** — a *learned default strategy* the agent reaches for. Examples: "munge text with
   grep/awk/sed", "count by piping to `wc -l`", "wrap work in `cd … && … > log`".
 - **Reflex (agent)** — a *fast, sub-deliberative trigger* inside a habit, fired before thinking.

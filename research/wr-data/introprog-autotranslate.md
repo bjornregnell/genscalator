@@ -41,3 +41,199 @@ Prioritisation hint (the point of logging columnar WR data): the **highest-frequ
 generic dynamic-shell bundle; the two `tt text grepr` enhancements (multi-ext, friendly errors) are now
 **built**, so the open items are the discipline/allowlisting reflex and the launch-bundle subtraction rule.
 A later `tt text freq` over the `why-prompted` column across all case studies would rank these objectively.
+
+### Recurrence 2026-06-29 (same root cause)
+Agent ran `cd <dir> && pdflatex … -halt-on-error … > log 2>&1; echo "EXIT=$?"` then a chained `grep` to
+test one cover .tex — the full dynamic-shell bundle (cd, `&&`, `>` redirect, **`echo "EXIT=$?"`**, `;`,
+piped grep). BR flagged it: *"WR data — don't ask again for: echo EXIT$?"*. The `echo "EXIT=$?"` idiom is
+**pure noise** under this harness: `run_in_background` already captures stdout+exit code, so the redirect
+AND the echo are redundant — the correct form is one bare `pdflatex …` (or the existing `build-deck`/
+`pdfCompendium*En` task) with `run_in_background`. Confirms flavour 2 (subtraction): the highest-frequency
+prompt cause remains the agent re-bundling dynamic shell under momentum, not a missing tool. **Candidate
+fix:** allowlist the bare `echo`/exit-status idiom is the WRONG fix — the right fix is the agent NEVER
+emitting `> log 2>&1; echo "EXIT=$?"` because the harness reports exit code itself. A linter/hook that
+rejects `echo "EXIT=$?"`-style tails would make the anti-pattern impossible.
+
+### Tool bug 2026-06-29: `tt text match` is not UTF-8 robust
+`tt text match <file> '[åäöÅÄÖ]'` returned NOTHING on a file full of å/ä/ö, forcing the agent to fall back
+to ASCII-only regex substrings (lossy). Cause: `text match`/`count`/`cols` use `Lib.readLatin1` while
+`grepr`/`freq` use `readUtf8` — so a UTF-8 `å` (bytes C3 A5) is read as two latin1 chars `Ã¥` and a UTF-8
+regex class `[åäö]` can't match. **Fix:** make `match`/`count`/`cols` read UTF-8 (or auto-detect), OR accept
+an `--enc` flag. Until then, `match` mangles Swedish output (shows `Ã¤`) and can't be regex-searched by
+diacritic. BR flagged: fix tt to be encoding-robust. (Reminder owed to BR.)
+
+### Recurrence 2026-06-29: hand-rolled bash wait-loop instead of typed Monitor/Read
+To watch a background job's `progress.txt`, the agent ran
+`f=...; i=0; until [ -f "$f" ] || [ $i -ge 30 ]; do sleep 3; i=$((i+1)); done; echo ...; cat "$f" || echo ...`
+— a dynamic-shell stack (var assignment, `until` loop, `||`, arithmetic `$((...))`, `cat`, `echo`, `;`
+compounds). BR flagged WR data. Two typed paths exist and should be the reflex: **Monitor** (the deferred
+tool) for "block until a condition/file appears", and **Read** for showing a file's contents — never
+`cat`. The `sleep`-loop pattern is exactly what the harness's anti-foreground-sleep rule pushes you off of;
+reaching for bash to poll is the smell. Candidate: a tiny `tt wait <path> [--timeout]` / `tt tail <path>`
+typed helper, OR just discipline (Monitor + Read). Same root cause as the other entries: momentum
+re-introducing dynamic shell when a typed tool exists.
+
+**Follow-on same session:** switched to the typed **Monitor** tool — but its `command` body is STILL a raw
+bash poll loop (`prev=""; while true; do cur=$(cat progress.txt); ...; sleep 90; done; case ... break`).
+BR flagged WR data again. So the typed *wrapper* (Monitor) doesn't remove the dynamic-shell smell when
+there's no typed primitive to poll a file: you still hand-write `cat`/`while`/`sleep`/`case`. The cleaner
+end-states: (1) `tt tail <path>` / `tt watch <path> --interval` typed helper usable as the Monitor command
+(or standalone), so periodic file-progress needs no bash; (2) or the producer streams progress to a
+channel the harness reads natively (e.g. a structured progress event), removing the poll loop entirely.
+This is the strongest case yet for a typed file-watch primitive — it recurs for ANY long background job.
+
+**HOT (3× in one session, 2026-06-29).** BR flagged this same bash-poll-loop pattern THREE times in one
+session (bare until-loop, then twice inside Monitor's command body). Promoted from idea to **high-priority
+candidate**. Resolution adopted as discipline: STOP hand-rolling poll loops entirely — rely on the harness
+auto-completion notification + **Read** the producer's progress file on demand; do NOT wrap a `cat/while/
+sleep` loop in Monitor just to get periodic pushes. The durable fix is a typed `tt tail <path> [--interval]`
+(or a harness-native "watch file" event source) so periodic progress needs zero bash. Highest-frequency
+typed-tool gap found in this case study.
+
+### Recurrence 2026-06-30: grepr bundled with wc/for/printf/echo/head to TALLY leverage
+While scoping which candidate translation fixes are "big wins", the agent needed *match counts* (not the
+matches themselves) for several Swedish short-leader words across two generated dirs (`slides-en`,
+`compendium-en`). `tt text grepr` only emits the matching lines, so the agent fell straight back to a
+dynamic-shell stack:
+`echo "=== ... ==="; tt text grepr <dir> <ext> 'Exempel:' | wc -l; ... ; for w in 'Tips:' 'Notera:' ...; do printf '%s ' "$w"; tt text grepr <dir> <ext> "$w" | wc -l; done`
+— i.e. `echo` section headers + `wc -l` counting + a `for` loop over patterns + `printf` labels + `head -6`
+for a sample. BR flagged WR data. Root cause = the SAME momentum smell: a typed finder exists but has no
+**count / tally** mode and no **multi-pattern, multi-root batch** mode, so the agent reaches for bash
+plumbing to aggregate. This is a "measure leverage across the corpus" need that recurs constantly in the
+override-grind (how many places would this fix touch?).
+Candidate typed primitives: (1) `tt text countr <dir> <ext> <regex>` → just the integer (kills `| wc -l`);
+(2) a batch form taking multiple regexes and/or multiple roots in one call, returning a small
+`pattern  dir  count` table (kills the `for`/`printf`/`echo` scaffolding); optionally `--sample N` to also
+show a few hits (kills `head`). Note also the allowlist already discourages `echo`/`head`/`cat` bundling —
+this entry is a concrete case where the gap is an aggregation/count feature, not just discipline.
+
+### Recurrence 2026-06-30 (same session, ~30min later): per-file build-status check via for/if/grep -q
+Diagnosing which of 7 sibling PDF builds failed, the agent wrote a full bash control-flow stack:
+`cd compendium && for f in compendium1 compendium2 solutions ...; do printf '%-14s ' "$f"; if grep -q 'Output written' "$f-console.log"; then echo "OK ($(grep -oE ... | tail -1))"; else echo "NO OUTPUT — $(grep -E '^! ' ... | head -1)"; fi; done`
+— `cd`, `for`, `if/then/else`, `grep -q` (boolean), nested `$(grep -oE | tail)`, `printf`, `echo`. BR
+flagged WR data. The `cd` also tripped the cwd-reset guard (shell cwd was reset afterwards), reinforcing
+the bare-command rule. This is the **same aggregation gap as the grepr+wc entry above, one step up**: the
+need is a per-file *status table* ("for each of these files: did it match X? if not, show first line
+matching Y"). Candidate typed primitives: (1) `tt text has <file> <regex>` → boolean/exit-code (kills
+`grep -q`); (2) a batch status form: given a list of files + a "success regex" + an "error regex", return
+a `file  ok?  first-error` table in one call (kills the whole for/if/printf/echo loop). Until then the
+discipline is: ONE bare command per file (Read the log, or a single grepr), no for-loops over files, no
+`cd`. Aggregating across a *set of files* is now the clearest repeat-offender category (3rd variant:
+count, then status-check).
+
+### Recurrence 2026-06-30: worker-alive + GPU-status check via echo/pgrep/ssh/grep -v/head
+While a long translate run was blowing the GPU fan, the agent repeatedly needed "is the worker process
+still alive locally, and what is the remote GPU doing?" and wrote:
+`echo "=== local procs ==="; pgrep -af 'at.scala|scala-cli|autotranslate' | grep -v grep | head; echo "=== GPU ==="; ssh bjornyx.local nvidia-smi --query-gpu=utilization.gpu,memory.used --format=csv,noheader | head -2`
+— echo section headers + `pgrep` + `grep -v grep` + `head` + a remote `ssh nvidia-smi`. BR flagged WR
+data and suggested a dedicated scratch tool. This is a DISTINCT, recurring need from the file-aggregation
+ones: a **job/GPU health probe** during long autotranslate runs (checked many times per long run). Good
+fit for a small typed scratch program, e.g. `gpu-status.scala` (and/or `tt gpu`): one call that prints
+{local at.scala/scala-cli PIDs or "none", modly GPU util/mem/temp/fan via ssh, and the last line of
+scratch/progress.txt} as a compact status block — no echo/pgrep/ssh/grep/head bundling. Pairs naturally
+with the honest progress bar already in scratch/progress.txt (the right monitoring signal; the agent had
+been polling a grep-filtered task-output file instead, which stays empty until the run ends — itself a
+process-smell worth noting). Two concrete autotranslate-diagnostics asks emerged this session: (a) this
+job/GPU probe, (b) a per-model-call key log so a runaway ("why 35 calls?") is instantly diagnosable.
+
+### Recurrence 2026-06-30: passive "I'll wait for the notification" instead of instrumenting
+Repeatedly, while a long run was in flight, the agent emitted filler turns ("I'll stop polling and wait
+for the completion notification", "waiting for the run to complete") AND kept re-Reading a grep-filtered
+task-output file that stays EMPTY until the run ends — so the reads were pure noise. BR flagged WR data:
+the habit should be to **instrument and read the instruments**, not narrate waiting. The right signals
+already exist this session: `scratch/progress.txt` (honest progress bar: %/model/cache/fb/ETA/current-file)
+and the new `scratch/model-calls.txt` (per-model-call keys). Both are the correct thing to Read on a tick;
+the grep-filtered stdout is the wrong thing. Notably, reading the INSTRUMENTS is what actually solved the
+session's hardest bug: progress.txt revealed a runaway (model count climbing, stuck on one file), and
+model-calls.txt revealed the ROOT CAUSE — the translate cache is keyed on the *masked* unit (`__C<n>__`
+with GLOBAL placeholder numbers), so inserting an `\ifswedish` clamp renumbers every downstream placeholder
+and cache-misses the whole rest of the file → a re-translation cascade (the repeated "why is the GPU fan
+blowing" events trace to this). Lessons: (1) default to instruments (progress.txt / model-calls.txt /
+the proposed gpu-status), never filler-wait + re-poll empty stdout; (2) don't pipe long-run stdout through
+a tail-only `grep` and then poll it — either let it stream or rely on the progress file; (3) good
+instrumentation pays for itself — the per-call log BR requested directly cracked a multi-hour mystery.
+
+### Recurrence 2026-06-30: verify rendered-PDF text via cd/pdftotext/grep/head
+To confirm a LaTeX fix (a `~` hard-space in a clamped heading) actually rendered, the agent wrote
+`cd compendium-en && pdftotext compendium1-en.pdf - | grep -iE 'Exerciseexpression|Exercise expression|Exercise [a-z]' | head -5`
+— `cd` + `pdftotext … -` (stdout) + pipe to `grep` + `head`. BR flagged WR data. Double smell: (a) the
+bundle itself; (b) it didn't even work — the regex returned prose "exercise" mentions, not the SECTION
+HEADING, so the check was inconclusive. The repo already has a pdftotext-based path (`--pdf-swedish`),
+so the typed fix is right there: add a `--pdf-grep <pdf> <regex>` (or `tt pdf grep <pdf> <regex>`) mode
+that runs pdftotext once and returns matching rendered lines — no cd/pipe/head, and reusable for every
+"did X render?" check (headings, spacing, a specific translated string). Pairs with the earlier asks
+(gpu-status, model-call log) as the third concrete autotranslate-diagnostics tool. Meta-pattern across
+today's entries: the agent keeps hand-assembling shell pipelines for VERIFICATION/INSPECTION tasks
+(count matches, per-file status, GPU health, rendered-PDF text) — each is a small typed tool waiting to
+be written, and each bundle also tends to be subtly wrong (latin1 diacritics, wrong regex, stale logs).
+
+### Recurrence 2026-06-30: git commit via cd && add && commit && push | tail (regression)
+`cd <repo> && git add <files> && git commit -m "…" && git push 2>&1 | tail -1` — `cd` + `&&`-chained
+add/commit/push + `| tail`. This REGRESSED from the established discipline used earlier the same session
+(bare `git -C <abs-path> commit …` then `git -C <abs-path> push`). The repo rule is explicit: bare
+`git -C <abs-path>`, no `cd`/`&&`/`;` chains (commit-no-claude-credit / introprog-build-and-sync). Note
+the `cd` also triggers the cwd-reset guard each time. Clean form: `git -C <path> commit <files> -m "…"`
+(commit takes pathspecs, so no separate `add` for tracked files) as ONE bare command, then
+`git -C <path> push` as a second. The `| tail -1` on push is the only arguably-useful piece (push is
+chatty); a typed `tt git push <path>` returning just the result line would remove even that. Root cause
+is the same momentum smell as the rest: under flow, the agent reaches for `cd && a && b && c` instead of
+two bare `git -C` calls. Cheapest fix is pure discipline (no new tool needed): bare `git -C`, never `cd`.
+
+### Note 2026-06-30: confirmation guard FALSE POSITIVE on `<->` in a commit MESSAGE (not a shell reflex)
+A clean bare `git -C <path> commit <files> -m "…"` got flagged by the confirmation guard as "Contains zsh
+<N-M> numeric-range glob". Cause: the commit MESSAGE prose contained `Swedish<->English`, and `<->` is a
+zsh glob token (`<->` matches any non-negative integer; `<1-10>` is a numeric range). The guard does a
+STATIC scan of the whole command string and matches `<->` regardless of quoting — even though it sits
+inside a double-quoted `-m "…"` argument where zsh would never expand it. BR asked, reasonably, "why does
+it think you reflex into zsh? this is a clean git -C" — answer: it's the message text, not the command.
+Takeaways: (1) DISCIPLINE — keep glob-looking punctuation out of command strings, especially commit
+messages: write `Swedish/English` or `sv to en`; avoid `<->`, `<N-M>`, bare `*?[]{}` in -m text.
+(2) The guard could skip quoted `-m`/message args (treat commit bodies as opaque) — this false positive
+recurs for any commit message using `<->`/`<n-m>` range notation. Cosmetic, no risk, but the kind of thing
+that stalls an away-from-keyboard run if it needs confirmation.
+
+### Recurrence 2026-06-30: for-loop over files to pull override keys (4th of the aggregation kind)
+`for f in w07-sequences-exercise w10-inheritance-exercise; do echo "=== $f ==="; grep -A1 "sv-fallback | …/$f" override-suggestions.txt | grep 'SV |' | grep -vE '⏎|begin{|code|' | head -8; done`
+— a `for` over a file set + `echo` headers + chained `grep | grep | grep -v | head`. BR flagged WR data.
+This is the SAME "aggregate/extract across a SET" category already logged 3× (count, status-check, this).
+It recurs specifically in the override-grind loop: "for each target file, show its clean single-line
+fallback keys". The clean end-state is a typed query over override-suggestions.txt, e.g.
+`tt sweep keys <file> [--single-line]` returning that file's clean override keys (no `for`/`echo`/`grep`
+pipeline, and it could honor the ⏎/code filters as flags). Until then: ONE bare grep per file (no loop),
+or operate on the whole file and read it. The aggregation-across-a-set category is now the dominant,
+most-repeated friction of the session — strongest signal for a small typed "query the sweep / a dir / a
+file set" tool.
+
+### Recurrence 2026-06-30: piped a scratch's stdout through `| grep -v | tail` to suppress noise
+Running a brand-new scratch (`token-usage.scala`) for the first time, the agent wrote
+`scala-cli run token-usage.scala 2>&1 | grep -v -iE 'warning|deprecat|sun.misc|maintainers|^$' | tail -20`
+to hide scala-cli/JVM noise (Unsafe warning + "outdated dep" hints). BR flagged WR data: *"you did a pipe
+to grep; should use some scala tool."* DISTINCT from the aggregation category — there was nothing to
+aggregate; the `grep -v` was **pure cosmetic noise-suppression of a tool the agent controls**. Correct
+moves: (a) run the scratch **bare** and just Read the output — the warnings are harmless and the scratch
+prints its own clean summary; (b) if the noise bothers, fix it at the SOURCE. Fixes applied immediately:
+bumped the scratch's deps (os-lib 0.11.8, ujson 4.4.3) to silence scala-cli's outdated-hints; the JVM
+`sun.misc.Unsafe` warning is on stderr and is simply ignored. Discipline: **never pipe a scala-cli scratch
+through grep/tail to clean it up** — run bare + Read; if it's noisy, fix the scratch, don't add shell.
+genscalator angle: a `tt run <scratch.scala>` runner that executes a scala-cli file and returns only its
+stdout (warnings stripped) would remove the temptation entirely — exact same shape `sbt-task.scala` already
+provides for sbt tasks. (Meta: this is the FIRST WR event whose tool — `token-usage.scala` — is itself a
+token-introspection instrument; the friction was in *launching* it, not the tool.)
+
+### Recurrence 2026-06-30: repo-overview (list md + recent commits) via cd && ls && echo && git log
+Prepping the genscalator commit, the agent wanted "which top-level `.md` files exist + the last few commits"
+and wrote `cd <repo> && ls *.md && echo "---recent log---" && git log --oneline -8` — `cd` + `&&` chain +
+`ls` glob + `echo` separator. BR flagged WR data (*"we might still need a tool that helps you do what you
+want without the cd echo stuff"*) and confirmed the **goal** was good (he wants to see commits) — only the
+**means** is the smell. Notably the agent had used a clean bare `git -C <abs-path> status --short` just ONE
+call earlier, then regressed to `cd && … && …` — same momentum-regression as the git-commit entry above.
+This is a **repo-orientation** need (distinct from the per-file-aggregation category): "give me a compact
+snapshot of repo X" = {changed/untracked files, last N commits, maybe tracked top-level docs} in ONE bare,
+allowlistable call against an **arbitrary path** (not cwd). Candidate typed primitive: **`tt git overview
+<path> [-n N]`** (or `tt repo status <path>`) → one block: `git -C` status (short) + last N `--oneline`
+commits + optionally a doc-file list — no `cd`, no `echo` header, no `&&`. Until then the discipline is the
+established one: bare `git -C <path> status --short` and bare `git -C <path> log --oneline -8` as **two
+separate calls** (the harness shows both outputs); `ls` of tracked docs → `git -C <path> ls-files '*.md'`
+bare, or just the editor's directory view. Root cause unchanged: under flow the agent bundles `cd && a && b`
+instead of issuing each read-only probe as its own bare command. Strengthens the case for a tiny typed
+`git`/`repo` overview tool, since "show me the state of repo X" recurs at every commit/checkpoint.
