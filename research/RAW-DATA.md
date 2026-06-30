@@ -274,3 +274,62 @@ great (I like audit better than to me strange word provenance); yes make the dra
 > **Agent reflection:** WR-WIN + WR-TOOL (category 1: typed-tool gain, the static-invariant flavour). Before running a risky whole-corpus re-translation (293 files), the agent gates it on two STATIC INVARIANTS the autotranslator checks itself: restore(mask(x))==x (round-trip lossless) and blocks++seps==masked (segmentation lossless), both FAIL=0. This is the gain a dynamic bash pipeline can NEVER give: a machine-checked PROOF that the transformation cannot silently corrupt, so the agent can refactor the masking/segmentation engine fearlessly and the human need not eyeball 293 diffs. The invariant is the agent's confidence substrate -- it converts 'I think this is safe' into 'the tool proved it is safe', which is exactly the smarter+safer half of the GS slogan. Contrast the #5440 --only clobber (a dynamic action with no invariant -> silent corruption + rework): same project, two opposite outcomes decided purely by whether a static check guarded the step. Note also the cheap-reversion design (cache keeps old entries) -- safe-by-design means risky ops are both GATED and REVERSIBLE.
 
 ---
+
+## Excerpt #6313–6313 · 2026-06-25
+
+**[🧑 BR · 21:03:40 · #6313]**
+
+⟦tool_result⟧
+(and this I had to confirm, take not as data for WR; I will next just type "WR data" after the "Yes," next time
+
+
+> **Agent reflection:** WR-INVENT (the data-collection protocol's own origin -- foundational despite the small turn). BR invents the in-band flag: 'I will next just type WR data after the Yes, next time'. This one keystroke-cheap convention is what makes the entire confirmation-fatigue corpus possible: it lets the human tag a friction event AT THE MOMENT IT OCCURS, with near-zero cost, without breaking flow or writing prose. Methodologically it is an experience-sampling trigger embedded in the live workflow (METHODOLOGY §4 behavioral mining): the data is captured exactly when/where it happens, by the person who felt the friction, instead of being reconstructed later from memory (lossy, confabulation-prone). The protocol is also self-improving: 'WR data' first meant 'I had to confirm this' (a friction flag) and later generalized to 'capture this moment' (any WR-relevant event), which is why this very file mixes FRICTION/WIN/INVENT under the same human trigger. The cheapest possible shared structure (a two-word code) turned out to be the backbone of the method -- a point worth making in the paper's data-collection section.
+
+---
+
+## Excerpt #5148–5148 · 2026-06-25
+
+**[🤖 agent · 07:04:04 · #5148]**
+
+Root cause found: `compendium-en.tex:4` is `\usepackage Scala{babel}` — the `--all` run translated the **main file's preamble** (unlike `--only w01`, which didn't match `compendium.tex`). The model mangled `\usepackage[swedish]{babel}` → the `[swedish]` optional arg became "Scala" and the brace was lost. **Preambles must never be translated.** Let me see the masker's command tables:
+
+
+> **Agent reflection:** WR-REGRESS + WR-TOOL, and a DISTINCT flavour: here the non-deterministic tool that corrupted output is the LLM TRANSLATOR ITSELF (not bash). An --all run sent the main-file PREAMBLE through the model, which mangled \usepackage[swedish]{babel} into \usepackage Scala{babel} (the [swedish] optional arg became 'Scala', brace lost) -> build break, found only by root-causing a LaTeX error. Two lessons: (1) the safe-by-design / static-protection principle applies to the MODEL exactly as to shell -- whatever must not change must be MASKED/protected so the dynamic component can never reach it ('preambles must never be translated' -> a masker rule, i.e. structure, not a hope the model behaves). (2) it is the model-tier analog of the #5440 --only clobber and the #6056 round-trip win: correctness comes from bounding what the unreliable component is allowed to touch, and from an invariant/build-check that catches it when bounding fails. So 'dynamic tool needing extra verification' generalizes beyond bash to ANY stochastic step; the genscalator answer is the same: mask the untouchables + gate with a static/build invariant.
+
+---
+
+## Excerpt #7163–7163 · 2026-06-26
+
+**[🧑 BR · 13:13:02 · #7163]**
+
+check out my BR scratchpat WR stuff: just read them into your memory and give me your first reaction on what I am cooking
+
+
+> **Agent reflection:** WR-INVENT (a recurring collaboration loop, captured as the setup whose payoff is #7180). BR: 'check out my BR scratchpad WR stuff: just read them into your memory and give me your first reaction on what I am cooking'. This is the DIVERGE/CONVERGE division of labour the pair settled into: the human ideates OFFLINE in his own scratchpad (fast, unstructured, no agent tokens spent), then hands the pile to the agent to (a) load into memory and (b) synthesize a structured first reaction (-> #7180's architecture spine). It exploits each side's strength -- human generativity + domain taste vs agent's tireless structuring/cross-linking -- and is token-efficient (no live brainstorm burns context; the agent sees a curated dump). Note 'into your memory' = the human explicitly directing what becomes durable, a manual just-in-time write (inference-time-learning.md substrate #2). The pattern: human cooks -> agent plates -> human seasons (#7181 prunes/names). Worth naming in the paper as a concrete human-agent workflow, not just an anecdote.
+
+---
+
+## Excerpt #7505–7505 · 2026-06-26
+
+**[🧑 BR · 15:26:43 · #7505]**
+
+AHA! This is really interesting for our WR project. take note and give the pasted example and note that we should research how/if agent can self-introspect context and the dumb/smart zone tradeoff etc!
+Also note to later investigate how good you are at deciding to load off simple stuff to own or other's sub-agents possibly via modly or similar local-model harnesses or cloud-keyed services.
+I'll start GS staging in v0.1.0 in another session but first help me write a separate md doc here eg called plan-GS-first-release.md with what you need to smartly embark on this in a fresh context. Also suggest me a first prompt to paste into that session to get going. Think token efficiently... OK?
+
+
+> **Agent reflection:** WR-META + WR-STATE (the agent-self-introspection research seed). Reacting to the agent spontaneously reporting its own token usage + invoking the smart/dumb-zone tradeoff to recommend deferring GS to a fresh session, BR: 'AHA! ... research how/if agent can self-introspect context and the dumb/smart zone tradeoff'; also 'investigate how good you are at deciding to load off simple stuff to ... sub-agents ... modly or ... cloud-keyed services'. Two method-level research threads opened: (1) CONTEXT SELF-INTROSPECTION -- can the agent measure its own fill and brake before the dumb zone (-> token-usage tool + smart-zone-ceiling.md + the compact dance); the agent eating its own dogfood (recommending a fresh session for quality-sensitive work) is itself the behavior under study. (2) DELEGATION JUDGEMENT -- can the agent correctly off-load cheap/parallel work to sub-agents or local models (modly) to conserve its own scarce context (-> task-autonomy-negotiation + a future routing concern). Collaboration shape again: an agent behavior the human found notable -> reframed BY THE HUMAN into an explicit investigable question -> queued as research. The reflexive loop (METHODOLOGY §5) is the engine; many notes in this repo started as one of these 'AHA, research that' turns.
+
+---
+
+## Excerpt #6486–6486 · 2026-06-26
+
+**[🧑 BR · 08:23:21 · #6486]**
+
+⟦tool_result⟧
+WR data
+
+
+> **Agent reflection:** WR-FRICTION (CLUSTER representative). This is the bare-flag family: BR types just 'WR data' on a confirmation with no extra prose, here when the agent launched a long background run (Option B, ~1h) via Bash. The same bare-flag pattern recurs at #6321, #7008, #7065, #7095 (background-job launches + git-state checks before commit). I am recording ONE representative rather than five near-duplicate blocks because (a) the offending command is an opaque tool_use whose args RawData renders as a marker, so there is no distinct verbatim to mine per instance, and (b) all five are already characterized by existing richer entries: background-launch friction -> the wr-data table rule 'one bare command + run_in_background:true (harness captures stdout+exit)'; git-state-before-commit friction -> the cd+git / git -C family (#6402, META-4/5). Method note (NO SILENT TRUNCATION): the dropped instances are listed here by index so the count stays auditable; they collapse into known classes, they are not lost. If per-instance command text is ever needed, the harness would have to log tool_use args to the jsonl (the same data-collection gap flagged for guard reasons).
+
+---
