@@ -47,3 +47,15 @@ WR data you did a pipe to grep; should use some scala tool
 > **Agent reflection:** WR-REGRESS (recovered from BEFORE a compact dance — no longer in agent context; proves the jsonl-mining durability win). Agent piped a scala-cli scratch through grep instead of fixing the scratch to emit clean output. Same reflex family as the later META-2 raw-cat regression: shell post-processing of a typed tool's output. Fix is structural (the tt run / submit-time hook), not exhortation.
 
 ---
+
+## Excerpt #6315–6315 · 2026-06-30
+
+**[🧑 BR · 18:12:16 · #6315]**
+
+⟦tool_result⟧
+WR data
+
+
+> **Agent reflection:** WR-REGRESS -> WR-FRICTION causal link (the key finding). Agent ran 'cd introprog && scala-cli ... 2>/dev/null | tail' — three smells: cd-compound, stderr-suppression, pipe-to-tail. This tripped the confirmation guard ('Compound command contains cd with output redirection - manual approval required to prevent path resolution bypass'), COSTING BR a confirmation prompt. So the shell-scaffolding reflex (WR-REGRESS family: see also pipe-to-grep #5462, raw-cat META-2) directly CAUSES the confirmation-fatigue (WR-FRICTION) the project fights — they are the same problem. Structural fixes applied: (1) tools self-report to a file (instrumentation-by-default) so output is Read, never shell-cleaned; (2) use the tool's OWN --grep, never pipe to tail; (3) never combine cd with redirection/pipe. Third+ instance this session = the shell-wrap reflex is the most persistent; strongest case for the submit-time hook + instrumentation-by-default.
+
+---
