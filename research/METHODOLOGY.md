@@ -22,3 +22,5 @@ I also want you to reflect on what use you had of the statically typed language 
 
 
 AGENT: take it from here while I eat
+
+NOTE ALSO: can we have a policy for how we write commit message that improves our ballgame state? handover cues etc (see commit on this file)
