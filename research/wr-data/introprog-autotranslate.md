@@ -299,3 +299,18 @@ only an external, submit-time structural intercept can. The hook must cover not 
 mundane `cat`/`head`/`tail`/`grep`/`find -exec` file-read reflexes too, redirecting them to Read/typed tools.
 This is now the canonical motivating example for genscalator's item-D submit-time hook: "salience is not the
 variable; structure is." (Meta-meta: the agent needed the human as the structural intercept BOTH times today.)
+
+### META-5 2026-06-30: compound `git checkout && cd && scala-cli` tripped a guard (reason LOST — flushed past)
+5th shell-hygiene flag. Reverting a file to re-apply a glossary fix, the agent ran
+`git -C X checkout <sha> -- file && cd X && scala-cli run …` — a compound mixing `git checkout` (destructive:
+discards working tree) with a `cd`-chain. A guard fired but BR clicked through before capturing the reason
+("clicked too fast"). Two findings: (1) **the rule hardens to "ONE bare command per call; never chain cd/git/
+tools with &&"** — safe exceptions are a pure `git -C … && git -C …` chain (no cd) and a single
+`cd <proj> && scala-cli` (no redirect); `git checkout -- file` is destructive on its own. The agent then
+committed the fix as THREE separate bare `git -C` calls (add / commit / push) — clean, no trip. (2) **A guard
+reason that flashes by uncaptured is LOST data** — confirmation prompts are ephemeral; if the human doesn't
+paste them they're gone, AND `RawData.scala` can't recover them because the guard reason isn't written to the
+session jsonl (and the very latest turn lags the jsonl flush anyway). Methodological ask: the harness should
+**log guard reasons + outcomes to the jsonl** so the friction corpus is complete and minable, instead of
+depending on the human to hand-copy each prompt. This is the data-collection analog of the visibility bias
+(METHODOLOGY §4): silent/ephemeral events are under-captured; close it by logging at the source.
