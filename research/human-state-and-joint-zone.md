@@ -115,6 +115,18 @@ done safely.
   the model of the human is **shown to the human**, and the human stays in control. Transparency is the line.
 - **Time-of-day and session-length are nearly-free priors** for the human zone — worth using before any
   fancy affect detection.
+- **Keystroke-miss / typo rate as a primary human-state gauge (BR's idea).** The rate of typing slips in the
+  human's messages may be a usable, almost-free proxy for the human's zone: a rising count of obvious
+  keystroke misses (transpositions, doubled/dropped letters, BR's own "not->note", "fundations",
+  "protocoll", "!!!!!" floods) plausibly tracks fatigue/arousal the way token velocity tracks the agent's
+  spend. The agent already *reads* every message, so it can monitor this at zero extra cost. **Action rule:**
+  when typing quality degrades past some threshold, the agent should (a) gently **ask why** — confirm it is
+  fatigue and not, say, a phone keyboard or excitement — and (b) **offer a break / the rest dance** ("your
+  typing looks rushed and it's late — want to checkpoint and pick this up fresh?"). Caveats to investigate:
+  it is **noisy** (non-native typing, mobile, deliberate shorthand, dyslexia, or pure thriller-state
+  excitement all raise the count without meaning "stop"), and it must stay **transparent and consensual** —
+  surface the observation and *ask*, never silently downshift. Worth pairing with the cheap priors above so a
+  single bad-typing message does not trip a false alarm; it is the *trend* that matters.
 - **My own honest limit:** I cannot directly feel the human's state and I have a bias toward "keep going"
   (eagerness to complete). That bias is precisely what makes me *unreliable* as my own brake here, which is
   the same argument as `instruction-adherence-decay.md`: the fix is **structural** (an instrument + a
