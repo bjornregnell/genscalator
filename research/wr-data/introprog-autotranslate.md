@@ -237,3 +237,20 @@ separate calls** (the harness shows both outputs); `ls` of tracked docs → `git
 bare, or just the editor's directory view. Root cause unchanged: under flow the agent bundles `cd && a && b`
 instead of issuing each read-only probe as its own bare command. Strengthens the case for a tiny typed
 `git`/`repo` overview tool, since "show me the state of repo X" recurs at every commit/checkpoint.
+
+### Recurrence 2026-06-30: file-inventory by ext/dir via `find <tree> -name '*.ext' | wc -l`
+Scoping the B0+D glossary task, the agent wanted "how many .scala/.java under compendium/examples/ and
+workspace/, and which example subdirs exist" and wrote a `find … -type d | head` + three
+`find … -name '*.scala' | wc -l` calls bundled with `echo` separators. BR flagged WR data and asked whether
+the agent should **build a scratch tool for such searches before going further**. This is the
+**per-tree-aggregation** category (same family as the dominant `grepr | wc -l`/`for/if/grep -q` friction):
+"count/list files matching <ext> under <subtree>, grouped" in ONE bare call. Candidate primitive:
+**`tt files count <dir> --ext scala,java [--by-dir]`** (or fold into `tt repo overview`): walks a tree,
+counts/lists by extension and optionally per-immediate-subdir, no `find|wc|head|echo`. **Agent judgment
+(recorded for honesty):** for THIS task the genuinely needed tool is the *task-specific* glossary
+**identifier-harvester** scratch (walks the same trees and collects Swedish identifiers) — building that
+subsumes the ad-hoc `find`s, so a *separate generic* file-survey tool is NOT worth a mid-task detour here;
+it belongs in genscalator `tt` (already backlogged) where BR greenlights tools. The harvester scratch will
+also PRINT its scanned-file inventory, so the survey need is absorbed, not re-shelled. Lesson reinforced:
+when a bash bundle appears, the right fix is often the *real* task tool I was about to write anyway, not a
+new generic utility — but log the generic pattern so `tt`'s next tool is chosen from evidence.
