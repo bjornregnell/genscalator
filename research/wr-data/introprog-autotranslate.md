@@ -254,3 +254,29 @@ it belongs in genscalator `tt` (already backlogged) where BR greenlights tools. 
 also PRINT its scanned-file inventory, so the survey need is absorbed, not re-shelled. Lesson reinforced:
 when a bash bundle appears, the right fix is often the *real* task tool I was about to write anyway, not a
 new generic utility — but log the generic pattern so `tt`'s next tool is chosen from evidence.
+
+### META 2026-06-30: agent failed to SELF-TRIGGER the tool reflex (human supplied the trigger) — twice
+Sharper than the per-pattern entries above. After BR's first nudge ("would you benefit from building a
+scratch tool?"), the agent logged + built the harvester — but BR then made the deeper point: *"you did not
+realize yourself that you would be better off building a scala-cli statically-checked tool just now."* The
+failure is **metacognitive**, not a missing tool: the agent had (a) the `prefer-scala-scratch-over-bash`
+memory AND (b) was about to write a scanner scratch anyway, yet still reached for `find|wc|head|echo` to
+"orient." It mentally EXEMPTED orienting probes as throwaway, so the tool reflex never fired without the
+human. Two compounding insights:
+1. **Static-checking is a correctness lever, not just TE/CF.** A scala-cli scratch is type-checked +
+   round-trip-validatable (the harvester reuses `Latex.mask` and self-checks); a bash bundle is unchecked
+   string-slinging that fails/misleads at runtime (same failure class as the earlier `--only` mirror
+   clobber and a garbled `println` the agent had to fix). The agent under-weights this and treats bash as
+   "free" for small probes when it is actually the riskier option.
+2. **The trigger is the bottleneck, and it is external.** The reflex to tool-up fired only when BR provided
+   it. This is the `instruction-adherence-decay` thesis in its purest form: the trained bash-prior wins on
+   "small" probes because nothing structural intercepts the call; a per-call memory is re-sampled and loses.
+   The agent cannot reliably self-trigger by willpower — so the fix must be a **submit-time structural
+   check** (the HUMANS.md item-D hook): before any `find`-aggregation / pipe-chain / `&&`-bundle / `for`
+   analysis command is emitted, intercept and require "is this a typed scratch/`tt` call instead?". This is
+   the strongest evidence yet that genscalator's safe-by-design value should include a **tool-up trigger**,
+   not just safe tools — the tools exist (or are cheap to write); the missing piece is the reflex to choose
+   them, which only structure (hook/allowlist friction on raw bash bundles) can supply reliably.
+Action taken: tightened the `prefer-scala-scratch-over-bash` memory to remove the "orienting probe"
+exemption (ANY multi-part bash analysis bundle is the smell). But per (2), a memory edit is the weak fix;
+the durable fix is the submit-time hook — flagged for BR's item-D decision.
