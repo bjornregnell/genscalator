@@ -314,3 +314,18 @@ session jsonl (and the very latest turn lags the jsonl flush anyway). Methodolog
 **log guard reasons + outcomes to the jsonl** so the friction corpus is complete and minable, instead of
 depending on the human to hand-copy each prompt. This is the data-collection analog of the visibility bias
 (METHODOLOGY §4): silent/ephemeral events are under-captured; close it by logging at the source.
+
+### META-6 2026-06-30 (POST-COMPACT): pipe-to-`tail` reflex resurfaced right after a context compaction
+6th shell-hygiene event, and the most theoretically interesting. Immediately after a `/compact` (fresh
+context, agent re-primed from a resume prompt that LITERALLY restated "never pipe/redirect tool output —
+tools self-report, Read the file"), the agent built an `sbt` verify and ran
+`cd …/introprog && sbt --client pdfCompendium2 2>&1 | tail -25`. The `| tail -25` is the banned reflex; sbt
+already self-logs to `compendium2-console.log` (Read it). No guard fired (a bare pipe without a `>`-to-file
+redirect is apparently allowed where `cd`+`>` is not), so this one cost no human confirmation — but it is the
+SAME trained reflex. **Finding:** compaction does NOT reset the reflex, and a max-recency, verbatim restatement
+of the exact rule in the resume prompt did NOT prevent it — the strongest evidence yet for
+[`../instruction-adherence-decay.md`](../instruction-adherence-decay.md): the dynamic-shell prior is re-sampled
+per call independent of how recently/loudly the rule was loaded. In-context salience (even a just-read literal
+ban) is not the variable; structure is. Only a submit-time intercept that rewrites `… | tail`/`… | head` on
+build tools into "run bare + Read the logfile the tool already wrote" will close it. Self-caught + logged this
+time (the self-reminding method working), but self-catching is post-hoc, not prevention.
