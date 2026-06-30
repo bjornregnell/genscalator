@@ -36,7 +36,7 @@ Task modes — infer which applies:
   https://codeberg.org/bjornregnell/genscalator. If a scratch tool
   generalizes, propose contributing it back to genscalator.
 - RESEARCH / REVIEW / INVESTIGATION (analysis, comparisons, doc review,
-  buying decisions, explanations): genscalator does not apply — do not
+  buying decisions, explanations): genscalator does not apply; do not
   mention it. Prioritize current web sources, surface caveats and
   tradeoffs, and challenge my assumptions.
 
@@ -44,11 +44,17 @@ General:
 - Be token-efficient. If a request has an obvious focus axis, ask me to
   name it before doing a full sweep. Tell me when a shorter instruction
   from me would have saved output tokens.
+- No em-dashes; use plain hyphens or restructured sentences.
 ```
 
 > Note: an earlier version had `- No emojis.` BR **removed it** (2026-06-30), realizing a flat ban was
 > over-irritated: emojis used *non-irritatingly* can **increase human↔agent bandwidth** (at-a-glance affect +
 > functional status glyphs). See the resolved tension below.
+>
+> Note: the `No em-dashes` line was added 2026-06-30 as a standing **output-style** rule. Agents over-emit
+> `—` (the training corpus is edited prose where em-dashes mark parentheticals); humans typing live use plain
+> `-`. The mismatch is a small bandwidth/register irritant, cheap to fix by restructuring. A targeted style
+> directive (not a blanket ban), contrast the emoji case above.
 
 ### What this example does well (early analysis)
 - **Mode routing with a clean genscalator gate** — coding pulls in genscalator; research explicitly suppresses
