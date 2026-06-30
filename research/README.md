@@ -60,6 +60,14 @@ an agent's working context during ordinary tool use.
   dynamic-shell bundles despite explicit rules (even one call after doing it right)? No external guardrail —
   trained-prior reflex re-sampled per call; the fix is structural (tool+allowlist+hook), not more exhortation.
   The foundational justification for genscalator's whole safe-by-design method; confirms the *Habit/Reflex* split.
+- [`task-autonomy-negotiation.md`](task-autonomy-negotiation.md) — per task, where does it sit between a
+  hand-over **ralph-loop** (little human check) and an active **ballgame** (human in every volley)? Verifiability
+  is the deciding signal; the agent should *propose* the mode and the human confirm. Spends the scarce resource
+  (human attention) only where it changes the outcome. Generalizes the *ralph loop* glossary into a spectrum.
+- [`shared-file-editing-protocol.md`](shared-file-editing-protocol.md) — when human and agent edit the same
+  file (HUMANS.md), how to avoid the agent clobbering live human edits? Section-zones fail (editors save whole
+  buffers), so partition must be file-level. Opt A (inbox) is safest but adds harvest churn; Opt C (two-writer +
+  editor disk-vs-buffer safeguard) is lowest-churn but editor-dependent. Lowest *total* friction is open.
 
 ## Data
 - [`wr-data/`](wr-data/) — **WR** (Workflow Research) log of confirmation/approval events from real
