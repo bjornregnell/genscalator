@@ -56,6 +56,10 @@ an agent's working context during ordinary tool use.
   surfaces (global instructions, AGENTS.md/CLAUDE.md, SKILL.md, MEMORY.md+memory, system prompt) compose,
   conflict, and **rank**? Which are always-on vs lazy, and where's the redundancy/drift? The governance layer;
   companion to `instructions-for-claude.md`.
+- [`instruction-adherence-decay.md`](instruction-adherence-decay.md) — *why* does the agent keep regressing to
+  dynamic-shell bundles despite explicit rules (even one call after doing it right)? No external guardrail —
+  trained-prior reflex re-sampled per call; the fix is structural (tool+allowlist+hook), not more exhortation.
+  The foundational justification for genscalator's whole safe-by-design method; confirms the *Habit/Reflex* split.
 
 ## Data
 - [`wr-data/`](wr-data/) — **WR** (Workflow Research) log of confirmation/approval events from real

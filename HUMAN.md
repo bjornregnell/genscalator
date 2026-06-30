@@ -33,6 +33,10 @@
       compose + rank. Includes my best-guess **authority order** — sanity-check it against your understanding.
 - [ ] `research/smart-zone-ceiling.md`, `research/communication-bandwidth.md`, `research/token-budget-awareness.md`,
       `research/instrumentation-by-default.md` — skim; flag anything off.
+- [ ] `research/instruction-adherence-decay.md` — **why I keep regressing to dynamic shell** (your question).
+      Argues it's trained-prior reflex (no external guardrail), so the fix is structural (tool+allowlist+hook),
+      not more rules. This is the *justification for genscalator's whole method* — worth your read + steer on
+      whether to prototype the **submit-time hook** (item D).
 
 ### C. Decisions I'm waiting on you for
 - [ ] **`AGENTS.md` vs `CLAUDE.md` canonicalization** — pick one as source of truth (symlink/include the
