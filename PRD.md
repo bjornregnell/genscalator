@@ -49,13 +49,16 @@ The complexity risk ("too much machinery") is real **only** if we import the who
   - ENT: Goal, Feature, Function, Stakeholder, ...
   - REL: has, requires, ...
   - ATTR: Spec, ...
-* **Proposed extensions (agent, 2026-07-01 — for BR review; grounded in `research/`):**
-  - ENT: **BadGoal** (a goal we do NOT want, e.g. of the BHH — one word per BR), **Capability** (umbrella) with **Tool** (a tt tool) and **Skill**, **Metric** (a measurable target), **Risk**, **Assumption**, **Constraint**, **Term** (glossary term).
-  - REL: **mitigates** (`Feature mitigates BadGoal` — makes "safe by design" traceable), **conflictsWith** (`Goal conflictsWith BadGoal`), **verifies** (`Metric verifies Goal`), **refines** / **derivedFrom** (Goal → Feature → Function traceability), **owns** (`Stakeholder owns Goal`).
-  - ATTR: **Gist** (one-line intent, BR-introduced), **Rationale** (the *why*), **Status** (open/shipped/cancelled — or model via the FUTURE/PAST headings), **Example**.
+* **Mapping to reqT's existing vocabulary (agent review 2026-07-01 → `research/reqt-lang-review.md`; MAP not FORK).** Almost everything we need already exists in reqT's meta-model with the standard KAOS/i*/GRL semantics — so we use those rather than invent:
+  - anti-goal ("BadGoal") → a **`Goal` owned by an adversarial stakeholder that our Features `hurt`** (BR decision 2026-07-01: model as *Goal-we-Hurt*, NOT a new `BadGoal` concept, NOT `Barrier`).
+  - `mitigates` / `conflictsWith` → **`Hurts`** ("negative influence; a goal hinders another"); positive contribution → **`Helps`**.
+  - `verifies` → **`Verifies`** ✅ ("a test verifies a feature"); `Rationale` → **`Why`** ✅; `Metric` → **`Target`** / **`Quality`** (+ `Min`/`Max`/`Value`).
+  - already present, used as-is: `Goal`, `Feature`, `Function`, `Stakeholder`, `Risk`, `Term`, `Gist`, `Example`, `Spec`, `Prio`, `Requires`, `Has`.
+  - genscalator product nouns (`Tool`, `Skill`) → map to **`Component`** / **`Function`** for now (propose a domain vocabulary upstream only if the mapping loses meaning); "agent capabilities" stays the prose umbrella word.
+  - `Status` → the FUTURE/PAST headings already encode lifecycle (or `Deprecated`); no new attr.
 
 *TAP:* To Agent Plan: investigate what more entities, relations, attributes agent thinks we need from the reqT-lang meta model
-  *(agent first pass done above under "Proposed extensions"; the highest-value adds are `mitigates`/`conflictsWith`/`verifies` because they turn the threat model + measurement research into traceability. Open for BR to prune/rename.)*
+  *(agent review done → `research/reqt-lang-review.md`: MAP not FORK — reqT already has what we need. Only open item: whether an explicit `Antigoal` EntType is worth adding upstream; BR chose to model anti-goals as Goal-we-Hurt for now, so NO new concept. reqT-lang parser feedback filed as issue reqT/reqT-lang#15.)*
 
 **reqT-lang language specification:**
 
@@ -77,9 +80,9 @@ The complexity risk ("too much machinery") is real **only** if we import the who
   * Goal: tokenEfficiency
   * Goal: safeActionsRunWithoutConfirmation
 * Stakeholder: bhh has
-  * Comment: BHH = Black Hat Hacker; an ADVERSARIAL stakeholder — we design AGAINST these.
-  * BadGoal: controlHumanSystem
-  * BadGoal: exfiltrateSecrets
+  * Comment: BHH = Black Hat Hacker; an ADVERSARIAL stakeholder — these are anti-goals we design AGAINST (Features `hurt` them), NOT goals we pursue.
+  * Goal: controlHumanSystem
+  * Goal: exfiltrateSecrets
 
 ## General goals (stable over time)
 
@@ -87,23 +90,23 @@ The complexity risk ("too much machinery") is real **only** if we import the who
   * Spec: The agent accomplishes a task with the fewest tokens that preserves quality — cheap-but-clear over verbose, typed tools over shell scaffolding, and self-pacing to stay in the smart zone (context fill below the L ceiling).
   * Rationale: fewer tokens = lower cost AND better quality (a full context degrades into the dumb zone).
 * Goal: safeGeneration has
-  * Spec: Generated code and agent actions never advance a BHH BadGoal. Precisely: the human's no-CF/no-review-overload goals and the agent's convenience goals are met WITHOUT ever widening the BHH attack surface. A safe action should be provably safe (statically analyzable) so it needs no per-action confirmation.
-  * Metric: confirmationsPerSession
-  * Metric: guardTripsPerSession
+  * Spec: Generated code and agent actions never advance a bhh anti-goal. Precisely: the human's no-CF/no-review-overload goals and the agent's convenience goals are met WITHOUT ever widening the bhh attack surface. A safe action should be provably safe (statically analyzable) so it needs no per-action confirmation.
+  * Target: confirmationsPerSession
+  * Target: guardTripsPerSession
 * Goal: jointHumanAgentProductivity has
   * Spec: The human-agent pair produces more, and more reliable, software per unit of scarce resource (human attention, tokens, wall-clock) than either alone or than the out-of-the-box baseline. This is the down-to-earth backbone thesis.
-  * Metric: tokensToGreen
-  * Metric: brokenBuildIterations
+  * Target: tokensToGreen
+  * Target: brokenBuildIterations
 
-## Safe-by-design as traceability (worked example of the proposed relations)
+## Safe-by-design as traceability (worked example, in reqT's EXISTING relations)
 
-* Feature: safeByDesignTooling mitigates BadGoal: controlHumanSystem
 * Feature: safeByDesignTooling has
   * Gist: tt tools that are statically analyzable + effect-declared, so trust is granted once, not per action.
-  * Spec: Each tt tool is a literal, single, typed command that declares its effects (--sandboxed / --safe-mode / --audit). Because the confirmation-guard can PROVE such a command safe, it runs without a prompt — so cutting confirmation fatigue never forces a fatigued "always allow" that could serve a BHH BadGoal.
-  * verifies: Metric: confirmationsPerSession
-* Goal: avoidConfirmationFatigue conflictsWith BadGoal: controlHumanSystem
-  * Comment: the #6305 hazard — a CF-driven "always allow" is a BadGoal being served by fatigue; safeByDesignTooling is how we resolve the conflict without a prompt.
+  * Spec: Each tt tool is a literal, single, typed command that declares its effects (--sandboxed / --safe-mode / --audit). Because the confirmation-guard can PROVE such a command safe, it runs without a prompt — so cutting confirmation fatigue never forces a fatigued "always allow" that could serve the bhh controlHumanSystem goal.
+* Feature: safeByDesignTooling hurts Goal: controlHumanSystem
+* Feature: safeByDesignTooling helps Goal: avoidConfirmationFatigue
+* Target: confirmationsPerSession verifies Goal: safeGeneration
+  * Comment: the confirmation-fatigue hazard — a CF-driven "always allow" is a bhh goal served by fatigue; safeByDesignTooling `hurts` that adversary goal AND `helps` the human's no-CF goal, and the confirmationsPerSession target `verifies` safeGeneration. All in existing reqT relations (hurts/helps/verifies).
 
 ## FUTURE
 
