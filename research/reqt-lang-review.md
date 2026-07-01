@@ -71,6 +71,20 @@ Strengths: dependency-free recursive-descent over indentation levels; nesting vi
 3. **Baseline test:** feed this repo's `PRD.md` to the current parser; every element that lands as `Text` is
    either a term to map (per the table) or a real gap — the strict mode automates finding them.
 
+## Working model (BR 2026-07-01): in-source the parser as a tt tool, contribute back via issues → verified PRs
+reqT-lang is used by the reqT desktop tool, so changing it cascades release + docs work over there. So we do NOT
+edit reqT-lang directly. Instead:
+- **Vendor** a PRISTINE copy of reqT-lang's `src/main/scala` into `tools/reqt-vendored/` (a clean base for a
+  future upstream diff). Only `05-Quper.scala` was pruned (needs `scala-xml` for SVG; irrelevant to parsing).
+- **`tt reqt`** (`tools/reqt.scala`) uses the vendored parser; the strict/lint check is a **wrapper** over it
+  (does NOT fork the parser logic), so the vendored copy stays diff-clean. `tt reqt lint FILE` flags Text attrs
+  that look like an un-recognized concept (typo / un-mapped term) — it caught a real `Rationale`→`Why` miss in
+  the PRD on first run.
+- **Contribute back**: file ISSUES upstream (free — no release work; parser feedback = reqT/reqT-lang#15), and
+  only later, when a change is verified against reqT's release constraints, propose a PR. The NATIVE in-parser
+  strict mode is what #15 proposes; prototyping it would edit the vendored copy, and that diff becomes the PR.
+
 ## Status
-Open (2026-07-01). What shipped: nothing yet (review note). Next: on BR's word, revise the PRD to the mapped
-vocabulary and prototype the parser strict mode in the reqT-lang clone.
+Open (2026-07-01). **Shipped:** PRD revised to mapped vocabulary (`d4aa02d` + `Rationale→Why`); reqT-lang review
+issue **reqT/reqT-lang#15**; `tt reqt` tool + vendored parser. **Next:** on BR's word, prototype the native
+in-parser strict mode in the vendored copy for the eventual PR.

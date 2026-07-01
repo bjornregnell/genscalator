@@ -88,7 +88,7 @@ The complexity risk ("too much machinery") is real **only** if we import the who
 
 * Goal: tokenEfficiency has
   * Spec: The agent accomplishes a task with the fewest tokens that preserves quality — cheap-but-clear over verbose, typed tools over shell scaffolding, and self-pacing to stay in the smart zone (context fill below the L ceiling).
-  * Rationale: fewer tokens = lower cost AND better quality (a full context degrades into the dumb zone).
+  * Why: fewer tokens = lower cost AND better quality (a full context degrades into the dumb zone).
 * Goal: safeGeneration has
   * Spec: Generated code and agent actions never advance a bhh anti-goal. Precisely: the human's no-CF/no-review-overload goals and the agent's convenience goals are met WITHOUT ever widening the bhh attack surface. A safe action should be provably safe (statically analyzable) so it needs no per-action confirmation.
   * Target: confirmationsPerSession
