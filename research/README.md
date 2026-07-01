@@ -95,7 +95,7 @@ an agent's working context during ordinary tool use.
   structure-beats-prose thesis. Review verdict: **MAP not FORK** — reqT already has our needs (`Hurts`/`Helps` =
   mitigates/conflicts, `Verifies`, `Why`, `Target`/`Quality`, `Barrier`, `Risk`, `Term`); model anti-goals as a
   Goal-we-`Hurt`, no new concepts. Top parser proposal (filed as reqT/reqT-lang#15): an opt-in strict/lint mode so
-  unknown terms don't silently become `Text`. Working model: vendor the parser as a `tt reqt` tool, contribute back
+  unknown terms don't silently become `Text`. Working model: vendor the parser as a `tt parsereqt` tool, contribute back
   via issues → verified PRs.
 
 ## Data

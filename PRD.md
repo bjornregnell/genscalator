@@ -118,11 +118,11 @@ The complexity risk ("too much machinery") is real **only** if we import the who
 
 * Feature: reqTParser has
   * Gist: write a typed tool for parsing reqT-lang reqts
-  * Spec: A `tt reqt` tool that parses the reqT-lang markdown subset (this PRD's ENT/REL/ATTR bullet grammar) into a typed model, validates it (well-formed ids in camelCase, known ENT/REL/ATTR or a clear "unknown term" error), and answers queries the agent needs: list goals/features, trace `requires`/`refines`, find orphans, and check every `BadGoal` is `mitigates`-linked by some `Feature`. Be inspired by / reuse the reqT-lang Scala parser (`05-MarkdownParser.scala`) rather than re-inventing the grammar; typed args per `research/tt-typed-args.md`; one-line friendly errors, never a stack trace.
+  * Spec: A `tt parsereqt` tool that parses the reqT-lang markdown subset (this PRD's ENT/REL/ATTR bullet grammar) into a typed model, validates it (well-formed ids in camelCase, known ENT/REL/ATTR or a clear "unknown term" error), and answers queries the agent needs: list goals/features, trace `requires`/`refines`, find orphans, and check every `BadGoal` is `mitigates`-linked by some `Feature`. Be inspired by / reuse the reqT-lang Scala parser (`05-MarkdownParser.scala`) rather than re-inventing the grammar; typed args per `research/tt-typed-args.md`; one-line friendly errors, never a stack trace.
   * Spec: **Baseline / ground truth** — feed THIS `PRD.md` to the *current* reqT-lang parser and treat the model it yields as the acceptance fixture. Where our subset diverges from what the parser accepts, resolve each divergence as EITHER a PRD fix OR a proposed improvement to the reqT-lang repo (see the review note below).
   * requires: Function: reqtLangGrammar
   * verifies: Assumption: prdParsesUnderReqTLang
-* Comment: reqT-lang parser review DONE → filed as reqT/reqT-lang#15 (strict/lint mode + source positions + id-handling); see research/reqt-lang-review.md. Working model: the vendored parser is the `tt reqt` tool.
+* Comment: reqT-lang parser review DONE → filed as reqT/reqT-lang#15 (strict/lint mode + source positions + id-handling); see research/reqt-lang-review.md. Working model: the vendored parser is the `tt parsereqt` tool.
 
 * Goal: verifiedTypedTools
 * Feature: typedToolsTestSuite has

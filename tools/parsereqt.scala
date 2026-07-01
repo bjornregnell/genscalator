@@ -1,7 +1,7 @@
 //> using scala 3.8.4
 //> using file reqt-vendored
 
-// tt reqt — parse / lint reqT-lang requirements (e.g. this repo's PRD.md).
+// tt parsereqt — parse / lint reqT-lang requirements (e.g. this repo's PRD.md).
 //
 // WORKING MODEL (BR 2026-07-01): reqT-lang is used by the reqT desktop tool, so changing it cascades
 // release + docs work over there. So we IN-SOURCE it: `reqt-vendored/` is a PRISTINE copy of reqT-lang's
@@ -30,7 +30,7 @@ def lint(m: Model): List[String] =
       case _ => Vector.empty
   walk(m.elems).toList
 
-@main def run(args: String*): Unit =
+@main def requirementsMarkdownParser(args: String*): Unit =
   args.toList match
     case "parse" :: path :: _ =>
       val m = MarkdownParser.parseModel(readFile(path))
@@ -42,5 +42,5 @@ def lint(m: Model): List[String] =
       ws.foreach(w => println(s"  [lint] $w"))
       println(s"reqt lint: ${ws.size} unknown-concept fall-through(s) in $path  (real Swedish? typo? un-mapped term?)")
     case _ =>
-      println("usage: tt reqt parse FILE | tt reqt lint FILE")
+      println("usage: tt parsereqt parse FILE | tt parsereqt lint FILE")
       sys.exit(2)

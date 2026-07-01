@@ -76,8 +76,9 @@ reqT-lang is used by the reqT desktop tool, so changing it cascades release + do
 edit reqT-lang directly. Instead:
 - **Vendor** a PRISTINE copy of reqT-lang's `src/main/scala` into `tools/reqt-vendored/` (a clean base for a
   future upstream diff). Only `05-Quper.scala` was pruned (needs `scala-xml` for SVG; irrelevant to parsing).
-- **`tt reqt`** (`tools/reqt.scala`) uses the vendored parser; the strict/lint check is a **wrapper** over it
-  (does NOT fork the parser logic), so the vendored copy stays diff-clean. `tt reqt lint FILE` flags Text attrs
+- **`tt parsereqt`** (`tools/parsereqt.scala`, `@main def requirementsMarkdownParser`) uses the vendored parser;
+  the strict/lint check is a **wrapper** over it (does NOT fork the parser logic), so the vendored copy stays
+  diff-clean. `tt parsereqt lint FILE` flags Text attrs
   that look like an un-recognized concept (typo / un-mapped term) — it caught a real `Rationale`→`Why` miss in
   the PRD on first run.
 - **Contribute back**: file ISSUES upstream (free — no release work; parser feedback = reqT/reqT-lang#15), and
@@ -86,5 +87,5 @@ edit reqT-lang directly. Instead:
 
 ## Status
 Open (2026-07-01). **Shipped:** PRD revised to mapped vocabulary (`d4aa02d` + `Rationale→Why`); reqT-lang review
-issue **reqT/reqT-lang#15**; `tt reqt` tool + vendored parser. **Next:** on BR's word, prototype the native
+issue **reqT/reqT-lang#15**; `tt parsereqt` tool + vendored parser. **Next:** on BR's word, prototype the native
 in-parser strict mode in the vendored copy for the eventual PR.

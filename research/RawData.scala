@@ -74,7 +74,7 @@ def mdTurn(t: Turn): String =
   val who = if t.role == "user" then "🧑 BR" else "🤖 agent"
   s"**[$who · ${fmtTs(t.ts)} · #${t.idx}]**\n\n${t.text}\n"
 
-@main def run(args: String*): Unit =
+@main def mineRawData(args: String*): Unit =
   val a = args.toList
   def flag(f: String): Boolean = a.contains(f)
   def valOf(f: String): Option[String] =

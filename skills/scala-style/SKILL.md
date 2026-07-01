@@ -23,6 +23,15 @@ black-and-white.
 - Top-level functions + a single `@main`; expressions over statements; small named helpers over long
   blocks. **Avoid big frameworks** — one you'd have to reverse-engineer is a token-efficiency sink for the
   next reader (human or agent).
+- **Name the `@main` for what the tool DOES — and make it globally unique.** `tt` dispatches by *filename*
+  (`tt foo` runs `tools/foo.scala`), so the `@main` name is never what you type at the CLI — it's free to be
+  a long, descriptive verb-phrase (`requirementsMarkdownParser`, not `run`/`main`/`go`). This is not just
+  taste: an IDE (Metals) and any multi-file build compile the whole `tools/` (+ neighbouring `research/`)
+  tree as **one target**, so every `@main` shares **one global scope**. Two files with `@main def run` become
+  illegal overloads split across files ("run is already defined"). So: (a) unique across the whole toolbox —
+  a generic `run`/`main` WILL collide; (b) descriptive of the tool's job; (c) **must not clash with an
+  imported package or type** — e.g. a tool that does `import reqt.*` cannot be `@main def reqt` (shadows the
+  package). A descriptive name satisfies all three for free.
 - **Scope imports to where they're used.** Put a one-off `import` in the block/method that needs it (e.g.
   `import scala.jdk.CollectionConverters.*` inside the single function using it), not at the top — narrower
   scope means less name pollution and fewer surprising extensions/implicits in scope, and the reader sees
@@ -63,8 +72,8 @@ black-and-white.
 ```scala
 //> using scala 3.8.4
 //> using jvm 21
-// pure tool: read → compute → print
-@main def run(path: String, pat: String): Unit =
+// pure tool: read → compute → print. @main name = what it DOES, globally unique (see §1), NOT `run`.
+@main def grepLatin1(path: String, pat: String): Unit =
   val hits = readLatin1(path).linesIterator.zipWithIndex
     .collect { case (l, i) if l.matches(s".*$pat.*") => s"${i + 1}:$l" }
     .toList

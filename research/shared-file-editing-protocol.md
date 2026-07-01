@@ -65,7 +65,7 @@ curation or heterogeneous tooling favours A. This wants **measuring**, not guess
 ## Observed instance (2026-07-01): the shaky PRD handover — live evidence for a low-ceremony C
 The agent and BR used an EXPLICIT handover on `PRD.md` ("I won't touch it until you say so" / "PRD is yours
 again"). It went shaky: the agent handed PRD back after a revision, then **re-edited it minutes later** (a `tt
-reqt lint` run caught a `Rationale→Why` miss) **without re-taking the handshake** — a real protocol slip. No
+parsereqt lint` run caught a `Rationale→Why` miss) **without re-taking the handshake** — a real protocol slip. No
 work was lost only because BR happened not to be editing. Notably the slip occurred because a **multi-step agent
 task (go 1 → go 2) spanned the handover boundary**: the agent released the lock after step 1, then a later step
 needed the file again.
