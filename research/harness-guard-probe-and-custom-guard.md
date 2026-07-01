@@ -33,9 +33,30 @@
      *statically* safe → silent by construction.
   3. **Measure** against the `wr-data/` confirmation ledger: does the custom guard eliminate real prompts
      without admitting an unsafe action?
-- **Status:** open (proposed 2026-07-01, BR). Feasibility of the sub-session driver flagged HIGH, unverified.
-- **Findings:** (grows)
-- **What shipped:** (nothing yet)
+- **Status:** open (proposed 2026-07-01, BR). Feasibility RESOLVED (2026-07-01): HIGH, but the *sensor* must be
+  the Agent SDK `canUseTool` callback, NOT raw CLI stream-json (which blocks instead of emitting an event).
+- **Findings (2026-07-01, via claude-code-guide):**
+  - Raw headless `claude -p --output-format stream-json` does **not** surface a distinct permission-request
+    event; an unapproved tool **blocks** stdin/stdout under `--permission-mode default` (measurable: it hangs).
+    So raw CLI piping is a poor guard sensor.
+  - Permission/guard evaluation is **identical headless vs interactive** (same hooks → deny → ask → mode →
+    allow → fallback flow); only the prompt *surface* differs. ⇒ a probe CAN measure the same guard the user
+    sees. Good.
+  - permission modes: `default` (writes/cmds prompt) | `acceptEdits` | `plan` | `auto` (Sonnet-4.6+ classifier)
+    | `dontAsk` (silent deny of anything not allow-listed) | `bypassPermissions` (auto-approve).
+  - The clean, documented sensor is the **Agent SDK `canUseTool` callback** (TS/Python): fires BEFORE tool
+    execution with `(toolName, input, ctx)`; can log / allow / deny → this IS the guard-trip signal. The raw-CLI
+    analogue is `--permission-prompt-tool <mcpTool>` (routes decisions to an MCP tool) but is underdocumented.
+  - Undocumented gaps: the `--input-format stream-json` multi-turn *input* schema; `--permission-prompt-tool`
+    wiring. So multi-turn raw-CLI driving is not doc-supported — another reason to use the SDK.
+- **Decision — architecture (agent, 2026-07-01):** the permission **sensor** is a thin **Agent-SDK
+  `canUseTool` harness** (Python/TS), not raw CLI piping. The Scala `claudeHeadlessDriver` / `tt` layer
+  **orchestrates + analyzes** (spawns the SDK harness as a subprocess, feeds it the probe corpus, collects the
+  JSON verdicts); **cask server = phase 2**. So: *subprocess-first, SDK-`canUseTool` sensor* — NOT the pure
+  os.proc-drives-CLI path sketched above (kept for non-permission probes only). Caveat to verify empirically:
+  confirm `canUseTool` engages the SAME static bash-safety classifier the interactive TUI uses (docs say the
+  eval flow is identical; test on the false-positive corpus before trusting it).
+- **What shipped:** (nothing yet — prototype pending BR go)
 
 ## Scala abstraction: `claudeHeadlessDriver` (design sketch, BR 2026-07-01 — "fabeling")
 Wrap the headless call in a **typed Scala API**, not ad-hoc `claude -p` shell, so probing is reproducible and
