@@ -87,6 +87,16 @@ an agent's working context during ordinary tool use.
   file (HUMANS.md), how to avoid the agent clobbering live human edits? Section-zones fail (editors save whole
   buffers), so partition must be file-level. Opt A (inbox) is safest but adds harvest churn; Opt C (two-writer +
   editor disk-vs-buffer safeguard) is lowest-churn but editor-dependent. Lowest *total* friction is open.
+- [`tt-typed-args.md`](tt-typed-args.md) — should `tt` tools adopt Scala `@main` typed params (auto-parse + fail
+  fast, but basic-types-only/positional), roll their own typed-arg layer (flags/subcommands/ranges/validators), or
+  mix? Typed, checked args at the tool boundary = the *smarter+safer* pillars applied to the CLI itself; candidate
+  to graduate into the `scala-style` skill.
+- [`reqt-lang-review.md`](reqt-lang-review.md) — using reqT-lang for genscalator's own PRD dogfoods the
+  structure-beats-prose thesis. Review verdict: **MAP not FORK** — reqT already has our needs (`Hurts`/`Helps` =
+  mitigates/conflicts, `Verifies`, `Why`, `Target`/`Quality`, `Barrier`, `Risk`, `Term`); model anti-goals as a
+  Goal-we-`Hurt`, no new concepts. Top parser proposal (filed as reqT/reqT-lang#15): an opt-in strict/lint mode so
+  unknown terms don't silently become `Text`. Working model: vendor the parser as a `tt reqt` tool, contribute back
+  via issues → verified PRs.
 
 ## Data
 - [`wr-data/`](wr-data/) — **WR** (Workflow Research) log of confirmation/approval events from real

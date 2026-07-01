@@ -127,6 +127,16 @@ The corpus is captured two complementary ways, each honest about what it is:
    The two modes are complementary: in-situ catches what the human noticed live; sweeps recover what a compaction
    would have buried *and* surface cross-cutting patterns no single moment shows.
 
+3. **Queue-then-harvest (the concurrent-editing safeguard).** When a `WR data` flag arrives *while the human is
+   editing the WR files* (RAW-DATA.md, wr-data/), the agent must NOT `--append` to those files — it would risk
+   clobbering the human's open editor buffer (the exact `shared-file-editing-protocol.md` hazard), and the live
+   turn lags the jsonl flush anyway. So the agent (a) acknowledges + reflects in chat, (b) appends the flag to an
+   **inbox it owns** (a file in the work repo, not a WR file), and (c) once the human says the WR edits are
+   *committed*, mines the flagged turns verbatim via `RawData.scala` and moves them into RAW-DATA.md, then clears
+   the inbox. This preserves the mined-verbatim honesty *and* the two-writer discipline; it is the inbox pattern
+   from `shared-file-editing-protocol.md`, dogfooded. Explicit handovers ("I will not touch X until you say so")
+   make the lock unambiguous.
+
 **Language-for-transparency [BR].** The human is more fluent in Swedish but **deliberately writes English** in
 these sessions so the primary corpus is directly quotable and reviewer-readable without a translation step. This
 is a worked instance of the `communication-bandwidth.md` trade-off where **data transparency/reviewability
