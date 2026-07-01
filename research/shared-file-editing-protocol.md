@@ -62,6 +62,24 @@ curation or heterogeneous tooling favours A. This wants **measuring**, not guess
   call, making A nearly as low-effort as C while keeping its safety. This may dominate both.
 - Generalize beyond HUMANS.md to any human-owned shared file (AGENTS.md, CLAUDE.md, config).
 
+## Observed instance (2026-07-01): the shaky PRD handover — live evidence for a low-ceremony C
+The agent and BR used an EXPLICIT handover on `PRD.md` ("I won't touch it until you say so" / "PRD is yours
+again"). It went shaky: the agent handed PRD back after a revision, then **re-edited it minutes later** (a `tt
+reqt lint` run caught a `Rationale→Why` miss) **without re-taking the handshake** — a real protocol slip. No
+work was lost only because BR happened not to be editing. Notably the slip occurred because a **multi-step agent
+task (go 1 → go 2) spanned the handover boundary**: the agent released the lock after step 1, then a later step
+needed the file again.
+
+**BR's decision:** it's OK for the handover to be a bit **fuzzy**. Rationale: (a) the editor's disk-vs-buffer
+warning is the real safety net (Opt C's core), so a slip surfaces as a visible prompt, not silent loss; (b) both
+humans and agents forget, so a hard lock would be constantly violated anyway; (c) **periodic handshakes** ("you
+have it" / "back to you") are enough to resync. So the working protocol for genscalator's shared *research / PRD*
+files (distinct from HUMANS.md) is a **low-ceremony optimistic C**: edit freely, signal handovers as soft cues,
+lean on the editor safeguard, re-handshake on doubt. This is empirical support for C over strict locking when the
+human uses a safeguard-equipped editor. Caveat learned: an EXPLICIT handover must be **re-affirmed, not assumed
+to persist** across multi-step agent work — and per `human-state-and-joint-zone.md`, the **agent** should be the
+one to re-handshake when resuming edits (it is the tireless partner; the human is the one who forgets).
+
 ## What shipped
 - **Opt A adopted for genscalator HUMANS.md (2026-06-30):** `HUMANS.inbox.md` created (agent-owned,
   append-only); HUMANS.md intro + How-it-works updated so the agent never writes HUMANS.md. Chosen as the

@@ -333,3 +333,15 @@ WR data
 > **Agent reflection:** WR-FRICTION (CLUSTER representative). This is the bare-flag family: BR types just 'WR data' on a confirmation with no extra prose, here when the agent launched a long background run (Option B, ~1h) via Bash. The same bare-flag pattern recurs at #6321, #7008, #7065, #7095 (background-job launches + git-state checks before commit). I am recording ONE representative rather than five near-duplicate blocks because (a) the offending command is an opaque tool_use whose args RawData renders as a marker, so there is no distinct verbatim to mine per instance, and (b) all five are already characterized by existing richer entries: background-launch friction -> the wr-data table rule 'one bare command + run_in_background:true (harness captures stdout+exit)'; git-state-before-commit friction -> the cd+git / git -C family (#6402, META-4/5). Method note (NO SILENT TRUNCATION): the dropped instances are listed here by index so the count stays auditable; they collapse into known classes, they are not lost. If per-instance command text is ever needed, the harness would have to log tool_use args to the jsonl (the same data-collection gap flagged for guard reasons).
 
 ---
+
+## Excerpt #7385–7385 · 2026-07-01
+
+**[🧑 BR · 11:04:52 · #7385]**
+
+⟦tool_result⟧
+WR data: you clobbed together git -C with &&
+
+
+> **Agent reflection:** WR-REGRESS + WR-META (a NEW inference-time-learning failure mode). The agent chained 'git -C X add && git -C X commit && git -C X push'. What makes this distinct from the shell-reflex family: the reflex PERSISTED because a prior MEMORY explicitly LICENSED it -- the memory prefer-scala-scratch-over-bash carried a 'pure git -C chain (no cd) is proven-safe exception'. So substrate #2 (persistent memory) did not merely fail-to-recall (the usual META-4 story); it CONFIDENTLY ENCODED A WRONG RULE that the agent then followed. This sharpens inference-time-learning.md: memory is not only unreliable-at-the-decision-point, it can be reliably-recalled-and-wrong -- a third failure mode beyond 'missing' and 'not surfaced'. The fix is therefore not 'resolve harder' but CORRECT THE MEMORY (retire the exception), which is why 'verify-before-trust' is a memory-system rule. BR retired the exception: ONE bare command per Bash call, stage/commit/push as three separate git -C calls, never && even git-only.
+
+---
