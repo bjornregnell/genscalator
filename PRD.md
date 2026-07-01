@@ -122,7 +122,14 @@ The complexity risk ("too much machinery") is real **only** if we import the who
   * Spec: **Baseline / ground truth** — feed THIS `PRD.md` to the *current* reqT-lang parser and treat the model it yields as the acceptance fixture. Where our subset diverges from what the parser accepts, resolve each divergence as EITHER a PRD fix OR a proposed improvement to the reqT-lang repo (see the review note below).
   * requires: Function: reqtLangGrammar
   * verifies: Assumption: prdParsesUnderReqTLang
-* Comment: reqT-lang parser review — BR wants agent input on the parser at https://github.com/reqT/reqT-lang (clone: /home/bjornr/git/hub/reqT/reqT-lang); proposed improvements may be committed there. Agent review pending (queued after this PRD fold).
+* Comment: reqT-lang parser review DONE → filed as reqT/reqT-lang#15 (strict/lint mode + source positions + id-handling); see research/reqt-lang-review.md. Working model: the vendored parser is the `tt reqt` tool.
+
+* Goal: verifiedTypedTools
+* Feature: typedToolsTestSuite has
+  * Design: testTooling has
+    * Gist: use [mUnit](https://docs.scala-lang.org/toolkit/testing-intro.html) for test suites
+    * Why: its a curated part of the Scala toolbox
+* Comment: (agent) suggest linking these — `Feature: typedToolsTestSuite verifies Goal: verifiedTypedTools`, and `verifiedTypedTools helps safeGeneration + jointHumanAgentProductivity`. Rationale: typed tools are only HALF the safety story — static types catch TYPE errors, mUnit tests catch LOGIC errors; a tool without tests is unverified. Bonus: the suites double as the AGENT's own self-verification / regression signal before it ships a tool change (inference-time-learning.md §7). mUnit is the right pick (Scala Toolkit, zero-config with scala-cli via `//> using test.dep org.scala-lang::munit`). Prune the links if undesired.
 
 ## PAST
 
