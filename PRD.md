@@ -70,6 +70,16 @@ The complexity risk ("too much machinery") is real **only** if we import the who
   - Syntax: https://github.com/reqT/reqT-lang/blob/main/src/main/scala/05-MarkdownParser.scala
 
 
+### reqT-lang syntax rules the agent MUST follow (empirically verified via `tt parsereqt`; → future reqt-lang skill)
+
+Learned by running snippets through the REAL parser (`tt parsereqt parse FILE`), not by guessing. Belongs in the reqt-lang skill; kept here for now.
+
+1. **Relations bind two entities — NEVER list a relation under `has`.** A bullet like `* requires: Feature: X` placed *inside* a `Feature: Y has` block does NOT create a relation: the parser turns it into an inert `StrAttr(Text, "requires: Feature: X")` and the relation is SILENTLY LOST. And because `requires`/`verifies`/`helps` are lowercase, `lint`'s `^[A-Z]` concept-like check does NOT flag them. Verified: buggy snippet parsed to `...Has,Model(...,StrAttr(Text,"  requires: Feature: dep"),...)`.
+2. **Write a relation as its own top-level clause: an `ENT REL` line whose indented children are the target(s).** A relation binds its owner to ONE OR MORE sub-elements — exactly the way `has` binds many attrs/entities (rule 3). Short single-target form: `* Feature: ttConfigFile requires Feature: configInArgsNotEnv` → `Rel(...,Requires,Model(Ent(Feature,configInArgsNotEnv)))`. Multi-target form: a `* Feature: cfg requires` bullet with indented `* Feature: dep1` and `* Feature: dep2` children → `Rel(...,Requires,Model(Ent(Feature,dep1),Ent(Feature,dep2)))` (BOTH bound). Both verified.
+3. **`has` holds the owner's ATTRs and sub-ENTs.** Under `* Feature: F has`, indented bullets (`Gist`, `Spec`, `Comment`, `Idea: k has Gist: ...`) attach to F; a sub-entity may nest its own inline `has` (`Idea: k has Gist: g` → F has Idea k, and Idea k has Gist g). Verified.
+4. **An unknown or typo'd leading `Word:` falls through to `Text`** (parser ~line 188). `lint` catches only the CAPITALIZED ones (`Feautre:`, `BadGoal:`); a lowercase mis-relation slips through silently — so verify structural edits by PARSING, not eyeballing.
+5. **Method: when unsure, `tt parsereqt parse <snippet>` and read the `Model(...)`.** The parser is ground truth; do not trust a mental model of the grammar.
+
 ## Stakeholders and their goals (from `research/`: agent-is-the-tool-user + BHH threat model)
 
 * Stakeholder: human has
@@ -153,7 +163,6 @@ The complexity risk ("too much machinery") is real **only** if we import the who
   * Gist: a simple, discovered project config file for STABLE tt settings (defaults, tool dir) — replacing ambient env for non-per-invocation config; complements Feature: configInArgsNotEnv.
   * Spec: A `tt.conf` at the repo/toolbox root, discovered by walking UP from the cwd (self-locating like the `tt` launcher; its LOCATION marks the root, so `tools/` resolves relative to it). Precedence: explicit arg/flag > config file > built-in default. Ordinary config never comes from ambient env (env stays only for human trust boundaries, per configInArgsNotEnv).
   * Spec: FORMAT — a minimal `key = value` line format with `#` comments, parsed by a small zero-dep helper in `lib.scala` (~10 lines). NOT YAML/TOML: those need a parser dependency and carry spec/footgun complexity (YAML indentation + type-coercion "Norway problem") that a handful of keys do not justify — against the lean-deps + statically-analyzable ethos. (java.util.Properties is a zero-dep fallback if we would rather not hand-write a parser, but a controlled `key = value` dogfoods the "typed tool parses a simple text format" pattern, cf. reqT-lang.) Example: `tools = ./tools`, `default.eager = false`.
-  * requires: Feature: configInArgsNotEnv
   * Comment: candidate config keys (BRAINSTORM — `Idea` = "a concept or thought, potentially interesting", per `tools/reqt-vendored/02-meta-model.scala`; these are exploratory, NOT yet committed keys):
   * Idea: toolsPath has Gist: location of the toolbox `tools/` dir — the original driver, replaces the TT_TOOLS env reach; defaults to `./tools` relative to the config file.
   * Idea: scalaVersion has Gist: single source for the Scala version the tools compile with, so a bump (e.g. 3.8.4 → 3.9.0-RC1) happens in ONE place instead of every per-file `//> using scala`.
@@ -166,6 +175,7 @@ The complexity risk ("too much machinery") is real **only** if we import the who
   * Idea: logLevel has Gist: verbosity of the gate banner + hints (quiet/normal/verbose), so the human can dial down chatter.
   * Idea: subprocessTimeoutSeconds has Gist: default timeout for effectful drivers (verify, os.proc runs) so a hung child fails cleanly instead of blocking.
   * Comment: SAFETY CAUTION (ties to configInArgsNotEnv): the verify executable-allowlist must NEVER become a config key — a config-redirectable allowlist location would let the agent point verify at a permissive list = self-authorization. Trust boundaries stay human-env/human-file, never agent-editable config.
+* Feature: ttConfigFile requires Feature: configInArgsNotEnv
 * Feature: ttConfigFile helps Goal: tokenEfficiency
   * Comment: a discovered config file is auditable (a readable file in the repo) and statically analyzable, unlike ambient env, and removes the need to re-pass stable settings on every invocation.
 
