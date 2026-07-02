@@ -18,14 +18,21 @@ def readFile(p: String): String =
   try src.mkString finally src.close()
 
 /** Wrapper strict/lint: a bullet whose leading `Word:` is not a known concept falls through to a Text attr
-  * (parser ~line 188). We flag Text attrs that look like a concept declaration (`Capitalized: ...`) so typos
-  * (`Feautre:`) and un-mapped terms (`BadGoal:`) surface instead of silently vanishing. */
+  * (parser ~line 188). We flag two kinds of silent fall-through so they surface instead of vanishing:
+  *   (1) CONCEPT-like `Capitalized: ...` — typos (`Feautre:`) and un-mapped terms (`BadGoal:`);
+  *   (2) a lowercase RELATION keyword written as a bullet (`requires: ...`, `verifies: ...`) — this happens
+  *       when a relation is listed UNDER a `has` block instead of as its own top-level `ENT REL` clause; the
+  *       relation is then LOST to Text. The trailing `:` requirement keeps prose like "is a…"/"has many…"
+  *       from false-tripping. Both cases are evidence for the strict-mode ask in reqT/reqT-lang#15. */
 val conceptLike = "^[A-Z][A-Za-z0-9]*:".r
+val relLike = "^(binds|deprecates|excludes|has|helps|hurts|impacts|implements|interactsWith|is|precedes|relatesTo|requires|verifies):".r
 def lint(m: Model): List[String] =
   def walk(elems: Vector[Elem]): Vector[String] =
     elems.flatMap:
       case StrAttr(Text, v) if conceptLike.findFirstIn(v.trim).isDefined =>
         Vector(s"unknown concept '${v.trim.takeWhile(_ != ':')}' kept as Text: ${v.trim.take(70)}")
+      case StrAttr(Text, v) if relLike.findFirstIn(v.trim).isDefined =>
+        Vector(s"relation '${v.trim.takeWhile(_ != ':')}' LOST to Text — write it as a top-level 'ENT ${v.trim.takeWhile(_ != ':')} ENT' clause, not under has: ${v.trim.take(70)}")
       case Rel(_, _, sub) => walk(sub.elems)
       case _ => Vector.empty
   walk(m.elems).toList

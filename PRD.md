@@ -179,6 +179,14 @@ Learned by running snippets through the REAL parser (`tt parsereqt parse FILE`),
 * Feature: ttConfigFile helps Goal: tokenEfficiency
   * Comment: a discovered config file is auditable (a readable file in the repo) and statically analyzable, unlike ambient env, and removes the need to re-pass stable settings on every invocation.
 
+* Feature: parserFallthroughMarker has
+  * Gist: the parser marks every silent Text fall-through with a searchable sentinel, so even a plain (non `--lint`) parse is greppable — total parsing preserved, NO metamodel change.
+  * Spec: when the parser degrades an unrecognized or mis-formed bullet to a `Text` attribute, it prefixes the value with a distinctive searchable sentinel — e.g. `<<<reqt-fallthrough: run tt parsereqt lint>>>`. The parser still NEVER errors (permissive by design when not in `--lint` mode); the sentinel just makes a drop findable by a plain `grep '<<<reqt-fallthrough'` over BOTH the source `.md` and the parsed model, so a silent fall-through can never ship unnoticed.
+  * Spec: NOT a metamodel type. `Failure` is a DOMAIN concept ("A description of a runtime error that prevents the normal execution of a system", per `tools/reqt-vendored/02-meta-model.scala`); parse-status is meta-meta and stays OUT of the metamodel. The sentinel lives inside `Text`; `--lint` remains the rich report (already extended to flag lowercase relation-keyword fall-throughs); this marker is the zero-tooling breadcrumb. Parser-side emission modifies the vendored parser → propose UPSTREAM (reqT/reqT-lang#15), not a local fork.
+  * Why: a SILENT fall-through gets shipped — the ttConfigFile + reqTParser "relation lost to Text under has" bug proved it; a searchable breadcrumb makes the always-parse guarantee safe.
+* Feature: parserFallthroughMarker relatesTo Feature: reqTParser
+* Feature: parserFallthroughMarker helps Goal: jointHumanAgentProductivity
+
 ## PAST
 
 Here are requirements that are either implemented or cancelled. Move requirements from FUTURE to PAST as the move on.
