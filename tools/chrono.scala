@@ -64,6 +64,22 @@ def parseThinkMs(s: String): Long =
       println(fmt(ms.toLong))
     case "think" :: v :: _ => // parse a think-duration to ms (debug/test util, inverse of fmt)
       println(parseThinkMs(v).toString)
+    case "report" :: _ => // summarise the round log: n, mean/median round, and think/human split where recorded
+      if !Files.exists(logFile) then println("chrono report: no log yet")
+      else
+        val rows = Files.readString(logFile).linesIterator.drop(1).filter(_.trim.nonEmpty)
+          .map(_.split("\t", -1)).filter(_.length >= 3).toList
+        def mean(xs: Seq[Long]): Long = if xs.isEmpty then 0L else xs.sum / xs.size
+        val elapsed = rows.flatMap(a => a(2).toLongOption)
+        val n = elapsed.size
+        val median = if n == 0 then 0L else elapsed.sorted.apply(n / 2)
+        val thinkPairs = rows.filter(a => a.length > 4 && a(4).trim.nonEmpty)
+          .flatMap(a => for e <- a(2).toLongOption; t <- a(4).toLongOption yield (e, t))
+        println(s"chrono report: $n rounds")
+        if n > 0 then println(s"  round: mean ${fmt(mean(elapsed))}, median ${fmt(median)}")
+        if thinkPairs.nonEmpty then
+          println(s"  think: mean ${fmt(mean(thinkPairs.map(_._2)))} (n=${thinkPairs.size} with --think)")
+          println(s"  human: mean ${fmt(mean(thinkPairs.map((e, t) => math.max(0, e - t))))} (round - think)")
     case _ =>
-      println("usage: chrono start [label] | stop [--think <dur>] | now | fmt <ms> | think <dur>   (spans -> chrono-log.tsv)")
+      println("usage: chrono start [label] | stop [--think <dur>] | now | fmt <ms> | think <dur> | report")
       sys.exit(2)

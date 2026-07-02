@@ -357,3 +357,8 @@ class CliSuite extends munit.FunSuite:
     assertEquals(run("chrono", "think", "1m")._2, "60000")
     assertEquals(run("chrono", "think", "90")._2, "90000")
   }
+  test("chrono report: runs and summarises (exit 0)") {
+    val (code, out, _) = run("chrono", "report")
+    assertEquals(code, 0)
+    assert(clue(out).toLowerCase.contains("report"))
+  }
