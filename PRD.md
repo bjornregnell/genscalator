@@ -139,6 +139,36 @@ The complexity risk ("too much machinery") is real **only** if we import the who
 * Feature: outputShapingFlags helps Goal: safeGeneration
   * Comment: fewer piped/compound shell commands = fewer confirmation-guard trips and less scaffolding to review; the shaping flags compose with the `--eager`/stream decision already planned for the edge.
 
+* Feature: configInArgsNotEnv has
+  * Gist: configuration comes from explicit command-line args/flags (or a discovered config FILE, v0.2.0), NOT ambient environment variables.
+  * Spec: A tool's behaviour is determined by its argv + defaults, not by hidden env state. Prefer an explicit `--tools <dir>` / positional arg / `-D` property over reading `SOME_ENV`. Rationale: env vars are ambient — they persist across calls, leak to child processes, and are INVISIBLE to the static confirmation-guard (which reasons only about the literal command), so env-configured behaviour is unauditable and non-reproducible from the command alone.
+  * Spec: DELIBERATE EXCEPTION — human TRUST BOUNDARIES stay env (or a human-owned file), NOT agent args. The verify tool's executable allowlist `TT_VERIFY_ALLOW` is env-set precisely so the agent CANNOT widen it via an agent-authored flag; there the whole point is that the config sits OUTSIDE the agent's arg surface. Rule of thumb: agent-relevant config → args/config-file; human-only authorization → env/human-file.
+  * Why: WR-REGRESS — the agent passed the tools dir via a `TT_TOOLS` env var to run the test suite instead of an explicit arg (see research/wr-data).
+* Feature: configInArgsNotEnv helps Goal: safeGeneration
+* Feature: configInArgsNotEnv helps Goal: tokenEfficiency
+
+### Release v0.2.0
+
+* Feature: ttConfigFile has
+  * Gist: a simple, discovered project config file for STABLE tt settings (defaults, tool dir) — replacing ambient env for non-per-invocation config; complements Feature: configInArgsNotEnv.
+  * Spec: A `tt.conf` at the repo/toolbox root, discovered by walking UP from the cwd (self-locating like the `tt` launcher; its LOCATION marks the root, so `tools/` resolves relative to it). Precedence: explicit arg/flag > config file > built-in default. Ordinary config never comes from ambient env (env stays only for human trust boundaries, per configInArgsNotEnv).
+  * Spec: FORMAT — a minimal `key = value` line format with `#` comments, parsed by a small zero-dep helper in `lib.scala` (~10 lines). NOT YAML/TOML: those need a parser dependency and carry spec/footgun complexity (YAML indentation + type-coercion "Norway problem") that a handful of keys do not justify — against the lean-deps + statically-analyzable ethos. (java.util.Properties is a zero-dep fallback if we would rather not hand-write a parser, but a controlled `key = value` dogfoods the "typed tool parses a simple text format" pattern, cf. reqT-lang.) Example: `tools = ./tools`, `default.eager = false`.
+  * requires: Feature: configInArgsNotEnv
+  * Comment: candidate config keys (BRAINSTORM — `Idea` = "a concept or thought, potentially interesting", per `tools/reqt-vendored/02-meta-model.scala`; these are exploratory, NOT yet committed keys):
+  * Idea: toolsPath has Gist: location of the toolbox `tools/` dir — the original driver, replaces the TT_TOOLS env reach; defaults to `./tools` relative to the config file.
+  * Idea: scalaVersion has Gist: single source for the Scala version the tools compile with, so a bump (e.g. 3.8.4 → 3.9.0-RC1) happens in ONE place instead of every per-file `//> using scala`.
+  * Idea: defaultEager has Gist: default output mode for the monolith edge — stream (lazy) vs collect (eager); overridable per call by `--eager`.
+  * Idea: defaultLimit has Gist: default `--limit` (head) the shared edge applies so large outputs do not flood the agent's context unless a call opts out; ties to Feature: outputShapingFlags.
+  * Idea: maxOutputBytes has Gist: hard truncation ceiling on any tool's output (protects agent context / tokenEfficiency) — a safety cap, distinct from the defaultLimit default.
+  * Idea: defaultExtensions has Gist: default file-extension filter for `grepr`/`files` (e.g. `.scala,.md`) so common searches need not repeat it.
+  * Idea: auditLogPath has Gist: file the shared gate appends each tool invocation to — the session-visibility banner's durable sink, doubling as WR-instrumentation.
+  * Idea: colorOutput has Gist: ANSI colour on/off/auto — a human terminal wants colour, an agent parsing stdout usually wants it off.
+  * Idea: logLevel has Gist: verbosity of the gate banner + hints (quiet/normal/verbose), so the human can dial down chatter.
+  * Idea: subprocessTimeoutSeconds has Gist: default timeout for effectful drivers (verify, os.proc runs) so a hung child fails cleanly instead of blocking.
+  * Comment: SAFETY CAUTION (ties to configInArgsNotEnv): the verify executable-allowlist must NEVER become a config key — a config-redirectable allowlist location would let the agent point verify at a permissive list = self-authorization. Trust boundaries stay human-env/human-file, never agent-editable config.
+* Feature: ttConfigFile helps Goal: tokenEfficiency
+  * Comment: a discovered config file is auditable (a readable file in the repo) and statically analyzable, unlike ambient env, and removes the need to re-pass stable settings on every invocation.
+
 ## PAST
 
 Here are requirements that are either implemented or cancelled. Move requirements from FUTURE to PAST as the move on.
