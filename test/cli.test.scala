@@ -311,3 +311,25 @@ class CliSuite extends munit.FunSuite:
     assertEquals(code, 2)
     assert(clue(out).toLowerCase.contains("classify"))
   }
+
+  // --- htmltext (strip a saved HTML page to readable text) ---
+  test("htmltext: strips head/script/tags, decodes entities, keeps body text") {
+    val f = os.temp(
+      contents = "<html><head><title>t</title><style>.x{}</style></head><body><script>var a=1;</script>" +
+        "<h1>Hello</h1><p>World &amp; more</p></body></html>",
+      suffix = ".html")
+    try
+      val (code, out, _) = run("htmltext", f.toString)
+      assertEquals(code, 0)
+      assert(clue(out).contains("Hello"))
+      assert(clue(out).contains("World & more")) // entity decoded
+      assert(!clue(out).contains("var a=1")) // script body dropped
+      assert(!clue(out).contains(".x{}")) // style dropped
+      assert(!clue(out).contains("<h1>")) // tags removed
+    finally os.remove(f)
+  }
+  test("htmltext with no args prints usage and exits 2") {
+    val (code, out, _) = run("htmltext")
+    assertEquals(code, 2)
+    assert(clue(out).toLowerCase.contains("usage"))
+  }
