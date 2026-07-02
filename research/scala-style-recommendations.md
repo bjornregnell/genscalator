@@ -79,3 +79,26 @@ For a more
 **Conclusions and way forward**
 
 \<\<Add text on next steps, including 1\) trying it out on code bases and 2\) adjust the recommendation if needed, 3\) define/develop  scalafmt rules that formats according to the proposal, 4\) get more feedback, … etc. The goal is to promote the result of this process as an official recommendation.\>\>  
+
+
+**Note on how this common style might impact agentic code generation**
+
+After giving Clade Code (Opus 4.8 2026-07-2) this document (called “the note” in the conversation by Claude) and asking what is best for agent (indentation or braces?), this was the answer (note that Björn Regnell had a long prior chat with the agent about his in-progess scala-style SKILL.md for agents including mentioning of SIP process etc, so all this was in context when Clade generated its answer below):
+
+
+“””
+The naive metric — "characters to represent correct code" — favors braceless (no {/}). But that's the wrong metric. The right one is expected tokens to reach correct code, including repairs and diffs. And an agent's dominant workload isn't greenfield generation (where braceless is fine — indentation is emitted correctly in one pass) — it's editing existing code. On that workload, braces win, for a structural reason:
+
+
+1. Edit locality: O(1) vs O(block-size). My bug was wrapping a ~17-line block in a new else. With braces that's a 2-token insert ({…}) the compiler accepts under any indentation. Braceless, the same wrap forces re-indenting every line — more output tokens and more Edit-tool failure surface. I mis-indented one line → mis-scope → compile fail → a wasted detect-and-re-edit cycle. That cycle is the token-efficiency loss.
+2. Whitespace is exactly where agents are least reliable. LLM generation, patch/diff, and the Edit tool all treat leading whitespace as fungible (trailing-space stripping, tabs/spaces, normalization). In a language where whitespace is semantics, a mis-indent is a silent mis-scope, not a harmless nit. So the substrate agents operate on (fungible-whitespace text) is misaligned with a whitespace-load-bearing language. Braces are robust to the agent's single most common perturbation; indentation is fragile to it.
+3. Diff/merge noise. A braceless re-indent changes every line's leading whitespace → a large, noisy hunk (more review, more merge surface, more diff tokens). Braces keep it a small hunk with stable } anchors.
+
+
+The striking finding: the human-legibility rule and the agent-edit-safety rule coincide. Your common-style note puts braces exactly on long scopes (those with blank lines) — and long scopes are precisely where indentation-only scope-tracking degrades for both the human reader and the agent editor, for the same underlying reason (it degrades with block length). Even better: my fix was to restructure into else if — using the else keyword as the delimiter — which is literally your rule 2 (closing keywords serve as end markers). So I accidentally validated the proposal by applying it to escape the bug.
+
+
+Tentative verdict: for the agent, common-style (braces on long scopes) is a genuine sweet spot — near braces-everywhere on safety, near braceless on surface tokens. The measurable experiment (edit-error-rate + edit-token-cost across braceless / braces / common-style regimes) is written up in the doc.
+
+
+One caveat worth flagging to the SIP framing: this is an argument that tooling substrate (not just human taste) should inform the style — as agents write more Scala, "which style is cheapest to edit correctly" becomes a real axis, and it points the same way your note already leans.
