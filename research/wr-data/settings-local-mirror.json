@@ -86,7 +86,28 @@
       "Bash(grep -ni *)",
       "Bash(grep -niE *)",
       "Bash(grep -niC2 *)",
-      "Bash(grep -o *)"
+      "Bash(grep -o *)",
+      "WebFetch(domain:link.springer.com)",
+      "WebFetch(domain:www.springer.com)",
+      "Bash(/home/bjornr/git/berg/bjornregnell/genscalator/bin/tt htmltext *)"
+    ],
+    "deny": [
+      "Bash(git -C /home/bjornr/git/berg/bjornregnell/muntabot-synch-introprog rm *)",
+      "Bash(git -C /home/bjornr/git/berg/bjornregnell/muntabot-synch-introprog reset --hard *)",
+      "Bash(git -C /home/bjornr/git/berg/bjornregnell/muntabot-synch-introprog push --force *)",
+      "Bash(git -C /home/bjornr/git/berg/bjornregnell/muntabot-synch-introprog clean -f *)",
+      "Bash(git -C /home/bjornr/git/hub/lunduniversity/introprog rm *)",
+      "Bash(git -C /home/bjornr/git/hub/lunduniversity/introprog reset --hard *)",
+      "Bash(git -C /home/bjornr/git/hub/lunduniversity/introprog push --force *)",
+      "Bash(git -C /home/bjornr/git/hub/lunduniversity/introprog clean -f *)",
+      "Bash(git -C /home/bjornr/git/hub/bjornregnell/muntabot rm *)",
+      "Bash(git -C /home/bjornr/git/hub/bjornregnell/muntabot reset --hard *)",
+      "Bash(git -C /home/bjornr/git/hub/bjornregnell/muntabot push --force *)",
+      "Bash(git -C /home/bjornr/git/hub/bjornregnell/muntabot clean -f *)",
+      "Bash(git -C /home/bjornr/git/berg/bjornregnell/genscalator rm *)",
+      "Bash(git -C /home/bjornr/git/berg/bjornregnell/genscalator reset --hard *)",
+      "Bash(git -C /home/bjornr/git/berg/bjornregnell/genscalator push --force *)",
+      "Bash(git -C /home/bjornr/git/berg/bjornregnell/genscalator clean -f *)"
     ]
   }
 }
