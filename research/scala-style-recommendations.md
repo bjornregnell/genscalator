@@ -1,0 +1,81 @@
+# Towards a Common Scala Style Recommendation 
+
+Martin Odersky, Björn Regnell, Rex Kerr
+
+January 7, 2026
+
+Lates version of this document [here at google docs](https://docs.google.com/document/d/14ZBGKNHUW4d8hDWIi5i6QquClX3_iXva-iMy5KpFU3I/edit?usp=sharing).
+
+
+The question whether to use indentation or braces currently divides the Scala community. One particular problem is that it is perceived as a battle between two different and incompatible styles. But with some modest shifts in details we might be able to overcome that divide and turn it into a matter of degree. This document proposes a path towards a common Scala style that could be used as a recommendation in contexts where an agreed compromise between the braceless and bracefull styles is needed. The goal is to provide a balanced style option that both sides of the divide can appreciate. 
+
+A good analogue is comparing with parentheses. Some people write more parentheses than others, but that’s not perceived as a style break. For instance, one person might write:
+
+    x \< (n \+ 1\)
+
+But the other person might prefer to drop the redundant parentheses and write:
+
+    x \< n \+ 1
+
+It does not really matter, either way is fine and legible. We should get to a point where one can write:
+
+    **def** fn(x: Int) \=   
+    **val** y \= x \+ 1  
+    y \* y
+
+Or one can use braces and write:
+
+    **def** fn(x: Int) \= {  
+    **val** y \= x \+ 1  
+    y \* y  
+  }
+
+Like for parentheses, it does not really matter, either style is legible. There’s universal agreement that even code with braces should be properly indented, so braces are redundant, just like parentheses sometimes are. 
+
+There is another problem though, which is that braces often enclose long code blocks and relying on indentation alone sometimes makes it hard to discern the program’s nesting structure. End markers were invented to solve that problem. But once one uses end markers one does adopt a style which is significantly different from braces, so the split into two styles becomes a problem.
+
+The proposal for a common style avoids end markers, and relies on braces to delimit long blocks of code instead. To make this proposal robust, we have to define what a long block is. A definition which we find to work well in practice is to define a long block as a block that contains blank lines: Once one adds blank lines it becomes much harder to discern indentation, so an additional scope delimiter is helpful. 
+
+Based on these considerations, here is a an initial proposal of a set of recommendations for a common Scala style:
+
+1. Prefer braces over end markers.  
+2. Use braces around a long scope that is not terminated by some keyword. A long scope is a scope that contains blank lines which are not already embedded in a nested construct.  However, braces are not necessary if the scope is already terminated by a closing keyword such as  **else**, **do**, **yield**, **case**, or **catch** since that keyword effectively serves as the end marker for the scope.  
+3. Do consider inserting blank lines following logical structure to make up for the lack of vertical whitespace that was enforced previously by closing braces.  
+4. You can also add braces where it aids understanding.  
+5. Prefer the new control constructs (e.g. **if-then-else**, rather than **if(...)-else**).  
+6. For classes and function calls with short bodies: Use \`:\` plus indent or braces as you prefer (no recommendation given). Some of the authors of this note do use \`:\` in these places and find that it usually improves legibility. But others might disagree.
+
+The systematic application of these rules produces a style that is quiet and clear. 
+
+Some people may prefer end markers to braces for long scopes, but we have to be aware that this will cause a split in styles. So the common recommendation avoids end markers. 
+
+**Tool support:** There should be formatting support for these recommendations. In IDEs it would be helpful if we could mark a multiline block, type an opening brace and have the block enclosed in properly aligned braces. For people who are used to end markers, it might also be helpful if an IDE would show them in light grey as comments, similar to how it shows implicit arguments. Something like
+
+    } // end myFunction
+
+Here is a a code snippet that follows these recommendations:
+
+     **object Foo {**
+
+ **def bar() \=**  
+   **while condition do {**  
+     **if baz then**  
+       **val text \= getDataFromSomewhere()**  
+       **val arg \= argParser.process(text)**
+
+       **quux(arg)**  
+     **else**  
+       **bippy()**
+
+     **doSomethingElse()**  
+   **}**  
+    
+
+ **def baz() \= someOtherThing()**  
+     **}**
+
+For a more 
+
+**Conclusions and way forward**
+
+\<\<Add text on next steps, including 1\) trying it out on code bases and 2\) adjust the recommendation if needed, 3\) define/develop  scalafmt rules that formats according to the proposal, 4\) get more feedback, … etc. The goal is to promote the result of this process as an official recommendation.\>\>  
