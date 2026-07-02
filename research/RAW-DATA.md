@@ -473,3 +473,227 @@ AARGH while leaving the room this WR Data its an "until grep -q "=== exit=" /tmp
 > **Agent reflection:** WR-REGRESS plus WR-METHOD (harness affordance ignored). Launched a job in the background correctly, then bolted on a busy-wait spin loop that re-polls the task file instead of ending the turn and letting the harness background-completion notification re-invoke the agent (which fired seconds later). Triply wrong: redundant (completion is pushed, not polled), wasteful (a no-sleep spin pegs a CPU core, on a box that had just crashed from resource pressure), and it blocks the turn. New reflex class: waiting for async work is run-in-background plus end-the-turn, or the Monitor tool for external conditions, never a poll loop or a foreground sleep. Did the hard part right, then negated it with a manual poll.
 
 ---
+
+## Excerpt #4764–4764 · 2026-06-30
+
+**[🧑 BR · 12:18:55 · #4764]**
+
+⟦tool_result⟧
+WR data " Contains zsh <N-M> numeric-range glob"  WHy does the confirmation guard say that you reflex into zsh??  this looks like a clean git -C
+
+
+> **Agent reflection:** WR-FRICTION. BR asked why the guard flags the numeric-range glob form; a false-positive family member (a sound analyzer must treat the angle-bracket form as a zsh glob). The fix is re-notation, not agent behavior change.
+
+---
+
+## Excerpt #6129–6129 · 2026-06-30
+
+**[🧑 BR · 17:08:11 · #6129]**
+
+⟦tool_result⟧
+WR data; would you benefit from building a scratch tool for such searches first before going further?
+
+
+> **Agent reflection:** WR-TOOL plus WR-METHOD. BR: would you benefit from building a scratch search tool first. The human prompts the agent to tool-up rather than reach for raw shell; the agent does not reliably self-trigger this.
+
+---
+
+## Excerpt #6323–6323 · 2026-06-30
+
+**[🧑 BR · 18:14:42 · #6323]**
+
+⟦tool_result⟧
+WR data gurad says reason is " Compound command contains cd with output redirection - manual approval required to prevent path resolution bypass"
+
+
+> **Agent reflection:** WR-REGRESS plus WR-FRICTION. cd combined with output redirection tripped the path-resolution guard; the durable fix is a tool that self-reports to a file, not shell plumbing around the run.
+
+---
+
+## Excerpt #6819–6819 · 2026-06-30
+
+**[🧑 BR · 20:46:40 · #6819]**
+
+⟦tool_result⟧
+WR data , guard says "Multiple directory changes in one command require approval for clarity"
+
+
+> **Agent reflection:** WR-REGRESS. Multiple directory changes in one command required approval; the rule is one bare command per call and git dash-C for repos, never chained directory changes.
+
+---
+
+## Excerpt #6942–6942 · 2026-06-30
+
+**[🧑 BR · 21:03:23 · #6942]**
+
+⟦tool_result⟧
+WR data, guard: "Newline followed by # inside a quoted argument can hide arguments from path validation"  this seams we need to discuss if drow the hashes , ooops for this guard; do you knwo why this is deemed so bad and can we get around it?
+
+
+> **Agent reflection:** WR-FRICTION. An earlier newline-then-hash guard trip (a comment that could hide arguments); same false-positive family as the arrow-glob and equals-expansion forms, all fixed by re-notation.
+
+---
+
+## Excerpt #7330–7330 · 2026-07-01
+
+**[🧑 BR · 10:52:07 · #7330]**
+
+great!  WR: note that your rationale for using reqT reasoned above is important when we start writing our first research paper
+and yes fold into PRD.md your review comments and paste your thinking in the commit message body.
+
+And go on as you wish on the PRD.md and add to PRD.md to write a reqt in reqT-lang like so (or similar)
+* Feature: reqTParser parser has 
+  * Gist: write typed tool for parsing reqT-lang reqts
+  * Spec: <you write more details here including that you should be inspired by the reqT-lang parse> and we could see what you get from just feeding our PRD.md to the current parser as a baseline/ground truth
+
+Note also that I want your review input on the reqT-lang parser and we might commit your proposed improvements to reqT-lang repo https://github.com/reqT/reqT-lang   cloned and up to date here: /home/bjornr/git/hub/reqT/reqT-lang
+
+whats next? (I have more steps on genscalator for me to work on before our Fyle chat, but you should do something useful meanwhile, and I will not touch the PRD.md doc until you say so (WR-data: explicit handover))
+
+
+> **Agent reflection:** WR-META. BR: the agent rationale for using reqT is important when we start writing requirements. Flagging a reasoning artifact worth preserving for later reuse.
+
+---
+
+## Excerpt #7639–7639 · 2026-07-01
+
+**[🧑 BR · 12:13:46 · #7639]**
+
+⟦tool_result⟧
+WR data ; cd && ./bin/tt | grep | head  -> candidate for tt ?  how can you chain tt ? shold you pipe from one tt to another? (lots of questions :) )
+
+
+> **Agent reflection:** WR-TOOL. BR: a shell chain of tt piped to grep piped to head is a candidate for tt. The output-shaping pipes (grep context, head) should be native tt flags so no shell chaining is needed.
+
+---
+
+## Excerpt #8017–8017 · 2026-07-01
+
+**[🧑 BR · 15:57:59 · #8017]**
+
+⟦tool_result⟧
+WR data  " Contains zsh =cmd equals expansion"
+
+
+> **Agent reflection:** WR-FRICTION plus WR-REGRESS. A grep pattern with a leading-equals literal tripped the zsh equals-expansion guard; compounded by speculative pattern padding (grep only known tokens) and raw grep instead of the allowlisted tt text grepr.
+
+---
+
+## Excerpt #8086–8086 · 2026-07-01
+
+**[🧑 BR · 16:13:08 · #8086]**
+
+⟦tool_result⟧
+WR data "Compound command contains cd with output redirection - manual approval required to prevent path resolution bypass"
+
+
+> **Agent reflection:** WR-REGRESS plus WR-FRICTION. A single call stacked a directory change plus a redirect plus a pipe plus a semicolon-chained word-count; the detour was to capture buffered stdout, whose right fix is a tool file-sink, not shell plumbing.
+
+---
+
+## Excerpt #8730–8730 · 2026-07-02
+
+**[🧑 BR · 09:41:51 · #8730]**
+
+⟦tool_result⟧
+WR data
+
+
+> **Agent reflection:** WR-REGRESS. Invented a tt files find subcommand without checking the tool verbs, then bundled a raw-find fallback; should have listed a known directory or read the tool help first (speculative tool invocation).
+
+---
+
+## Excerpt #5495–5495 · 2026-06-30
+
+**[🧑 BR · 14:48:04 · #5495]**
+
+WR: can we make a tool that estimates the smart-zone/dumb-zone cut percentage? we should not in the genscalator research list that we should investigate a measure for this; and add a concept for it in foundations; what shall we call the ratio of context we can use before you enter the dumb zone?
+
+
+> **Agent reflection:** WR-TOOL. BR: can we make a tool that estimates the smart-zone dumb-zone cut percentage. A self-measurement instrument the agent lacks; relates to the context-paste dance and the model-readable-context-hook idea.
+
+---
+
+## Excerpt #5655–5655 · 2026-06-30
+
+**[🧑 BR · 15:22:25 · #5655]**
+
+⟦tool_result⟧
+WR data; I want to see comits on genscalator so that's good; but we might still need a tool that helps you do what you want without the cd echo stuff
+
+
+> **Agent reflection:** WR-METHOD. BR wants to SEE commits on genscalator (good) but flagged the agent may still need to reduce confirmation friction; the visibility-versus-friction tension that later drove the git-loosening for AFK autonomy.
+
+---
+
+## Excerpt #9503–9503 · 2026-07-02
+
+**[🧑 BR · 13:45:58 · #9503]**
+
+⟦tool_result⟧
+WR data " Newline followed by # inside a quoted argument can hide arguments from path validation"
+
+
+> **Agent reflection:** WR-REGRESS. A commit message body line began with a hash-prefixed turn index, so the newline-then-hash guard fired; a documented rule (confirmation-guard section 5) relapsed on benign content. Fix: never start a commit-body line with a hash.
+
+---
+
+## Excerpt #9576–9576 · 2026-07-02
+
+**[🧑 BR · 13:53:32 · #9576]**
+
+⟦tool_result⟧
+WR data  -its an rm -f on the tmp; human have not realized such stuff needs to go to settings to prevent env guard if possible
+
+
+> **Agent reflection:** WR-FRICTION plus WR-TOOL. rm dash f on gitignored tmp fixtures tripped the destructive-op guard; the cleanup was also unnecessary since gitignored scratch is disposable in place. Fix: leave scratch, or a scoped rm-tmp allow-rule (which BR asked to add).
+
+---
+
+## Excerpt #9693–9693 · 2026-07-02
+
+**[🧑 BR · 16:53:58 · #9693]**
+
+⟦tool_result⟧
+WR data " Contains zsh =cmd equals expansion"
+
+
+> **Agent reflection:** WR-REGRESS plus WR-FRICTION. The commit message documenting the equals-expansion and arrow-glob guard families spelled the literal trap tokens and re-tripped the guard: peak meta-irony. Both in-context and memory held the rule and neither gated it; strongest same-turn argument for a submit-time rewriter.
+
+---
+
+## Excerpt #9716–9716 · 2026-07-02
+
+**[🧑 BR · 16:56:02 · #9716]**
+
+> I actually completed items 1, 5, 7, 8 + his mirror request.
+AHA great progress actually
+
+
+> **Agent reflection:** WR-ENV plus WR-META. The ghost-text UI-lag desync is bidirectional: here a stale early-state view made a productive run look stalled (opposite of the earlier done-looks-running case), and the agent-restates-terminal-state mitigation worked instantly (BR: AHA great progress actually). Treat the returning human mental model as stale by default.
+
+---
+
+## Excerpt #9811–9811 · 2026-07-02
+
+**[🧑 BR · 17:11:01 · #9811]**
+
+⟦tool_result⟧
+WR data
+
+
+> **Agent reflection:** WR-REGRESS. The build-result check was a shell-reflex stack (raw grep, a dot-dot path traversal, a semicolon chain, an echo header) that also failed because the hand-built path resolved to nothing. Momentum relapse right after a long-awaited build; the clean forms were all to hand.
+
+---
+
+## Excerpt #222–222 · 2026-06-26
+
+**[🧑 BR · 20:52:06 · #222]**
+
+⟦tool_result⟧
+WR data
+
+
+> **Agent reflection:** WR-FRICTION (CLUSTER representative). The bare-flag tail: BR types just WR data on a confirmation with no elaboration, collapsing into already-characterized classes (background-launch and git-state friction, raw-grep, cd-compounds). Near-duplicate bare-flag indices in this session: 178, 222, 1349, 1849, 1868, 1898, 1914, 2824, 3086, 3945, 3953, 4259, 7055, 7657, 1356. Recorded as one representative per the no-silent-truncation rule.
+
+---
