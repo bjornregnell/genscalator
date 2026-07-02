@@ -78,7 +78,15 @@
       "Bash(/home/bjornr/git/berg/bjornregnell/genscalator/bin/tt text *)",
       "Bash(/home/bjornr/git/berg/bjornregnell/genscalator/bin/tt newtool *)",
       "Bash(rm -f /home/bjornr/git/berg/bjornregnell/genscalator/tmp/*)",
-      "Bash(rm -f /home/bjornr/git/berg/bjornregnell/muntabot-synch-introprog/tmp/*)"
+      "Bash(rm -f /home/bjornr/git/berg/bjornregnell/muntabot-synch-introprog/tmp/*)",
+      "Bash(grep -c *)",
+      "Bash(grep -cE *)",
+      "Bash(grep -n *)",
+      "Bash(grep -nE *)",
+      "Bash(grep -ni *)",
+      "Bash(grep -niE *)",
+      "Bash(grep -niC2 *)",
+      "Bash(grep -o *)"
     ]
   }
 }
