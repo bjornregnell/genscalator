@@ -83,7 +83,7 @@ For a more
 
 **Note on how this common style might impact agentic code generation**
 
-After giving Clade Code (Opus 4.8 2026-07-2) this document (called “the note” in the conversation by Claude) and asking what is best for agent (indentation or braces?), this was the answer (note that Björn Regnell had a long prior chat with the agent about his in-progess scala-style SKILL.md for agents including mentioning of SIP process etc, so all this was in context when Clade generated its answer below):
+After giving Claude Code (Opus 4.8 2026-07-02) this document (called “the note” in the conversation by Claude) and asking what is best for agent (indentation or braces?), this was the answer (note that Björn Regnell had a long prior chat with the agent about his in-progress scala-style SKILL.md for agents including mentioning of SIP process etc, so all this was in context when Claude generated its answer below):
 
 
 “””
