@@ -123,6 +123,37 @@ Use the **full Codeberg URL with `.git`** — the short `owner/repo` form resolv
 Details, the recommended allowlist, and caveats: [`docs/claude-plugin.md`](docs/claude-plugin.md).
 (You still need `scala-cli` + a JDK installed.)
 
+### Recommended Claude Code settings (initial cut)
+
+To get the low-friction, safe-by-design payoff, add a **narrow** allowlist to `.claude/settings.local.json` that
+trusts the *typed tools* while keeping raw shell and destructive ops gated. Essentials:
+```json
+{
+  "permissions": {
+    "allow": [
+      "Bash(tt *)",
+      "Bash(scala-cli *)",
+      "Bash(scalex *)",
+      "Bash(git -C /ABSOLUTE/PATH/TO/YOUR/REPO *)",
+      "Bash(rm -f /ABSOLUTE/PATH/TO/YOUR/REPO/tmp/*)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(git push --force *)",
+      "Bash(git reset --hard *)"
+    ]
+  }
+}
+```
+Principles: **allow the typed tools, not raw shell** (so `tt text grepr` runs silently but `grep -rnE` still
+prompts); **scope `git`/`rm` by absolute path**, never broad `Bash(git *)`/`Bash(rm *)`; and **keep destructive +
+catastrophic ops gated** even when you want low friction. Replace the placeholder paths with your repo's absolute
+path(s). This is a starting point, not the full story — the why, safe-growth strategy, and open questions (tiers,
+a `tt init-settings` scaffolder, deny-list defaults) are in
+[`research/recommended-plugin-settings.md`](research/recommended-plugin-settings.md); the fuller allowlist +
+caveats are in [`docs/claude-plugin.md`](docs/claude-plugin.md). *(Initial cut — expect refinement as we prune
+the essentials and possibly ship a merge-able settings fragment.)*
+
 **Add the Scala-code companions.** This plugin installs `tt` only — it does **not** pull in the companions
 transitively (Claude Code plugins can't install other plugins or system tools). Add them yourself:
 ```
