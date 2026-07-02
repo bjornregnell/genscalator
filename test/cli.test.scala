@@ -351,3 +351,9 @@ class CliSuite extends munit.FunSuite:
     assertEquals(code, 2)
     assert(clue(out).toLowerCase.contains("usage"))
   }
+  test("chrono think: parses a relayed think-time to ms") {
+    assertEquals(run("chrono", "think", "30s")._2, "30000")
+    assertEquals(run("chrono", "think", "1m18s")._2, "78000")
+    assertEquals(run("chrono", "think", "1m")._2, "60000")
+    assertEquals(run("chrono", "think", "90")._2, "90000")
+  }
