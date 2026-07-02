@@ -22,4 +22,19 @@ tool="$1"; shift
 # Guardrail: tool must be a bare identifier (no '/', no '..') so we can only run TOOLS/<name>.scala.
 [[ "$tool" =~ ^[a-zA-Z][a-zA-Z0-9_-]*$ ]] || { echo "tt: invalid tool name '$tool'"; exit 2; }
 [[ -f "$TOOLS/$tool.scala" ]] || { echo "tt: no such tool '$tool' in $TOOLS"; exit 2; }
-exec scala-cli run "$TOOLS/$tool.scala" -- "$@"
+# Per-run timing (feedback kind b): time the whole invocation — note this is dominated by scala-cli/JVM
+# startup+compile, NOT the tool logic — print a one-line summary to stderr (keeps stdout = tool output
+# clean), and append to a perf log (gitignored tmp/ by default; override with TT_PERF_LOG). Opt out: TT_TIME=0.
+start=$(date +%s%N)
+set +e
+scala-cli run "$TOOLS/$tool.scala" -- "$@"
+rc=$?
+set -e
+if [[ "${TT_TIME:-1}" != "0" ]]; then
+  ms=$(( ($(date +%s%N) - start) / 1000000 ))
+  printf 'tt %s: %d.%03ds\n' "$tool" $((ms / 1000)) $((ms % 1000)) >&2
+  log="${TT_PERF_LOG:-$TOOLS/../tmp/tt-perf.tsv}"
+  { mkdir -p "$(dirname "$log")" && printf '%s\t%s\t%d\t%s\n' \
+      "$(date '+%Y-%m-%d %H:%M:%S')" "$tool" "$ms" "$*" >> "$log"; } 2>/dev/null || true
+fi
+exit $rc

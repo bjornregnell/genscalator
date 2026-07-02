@@ -47,6 +47,8 @@ def iso(ms: Long): String =
       println(s"chrono: elapsed ${fmt(elapsed)}${if label.nonEmpty then s"  [$label]" else ""} (logged)")
     case "now" :: _ =>
       println(iso(now))
+    case "fmt" :: ms :: _ => // format a duration in ms (debug/test util for the pure formatter)
+      println(fmt(ms.toLong))
     case _ =>
-      println("usage: chrono start [label] | stop | now   (stopwatch; completed spans appended to chrono-log.tsv)")
+      println("usage: chrono start [label] | stop | now | fmt <ms>   (stopwatch; spans appended to chrono-log.tsv)")
       sys.exit(2)

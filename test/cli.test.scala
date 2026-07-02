@@ -333,3 +333,21 @@ class CliSuite extends munit.FunSuite:
     assertEquals(code, 2)
     assert(clue(out).toLowerCase.contains("usage"))
   }
+
+  // --- chrono (stopwatch) — fmt is the pure formatter; now/usage are the CLI contract ---
+  test("chrono fmt: formats ms as a compact duration") {
+    assertEquals(run("chrono", "fmt", "1000")._2, "1.00s")
+    assertEquals(run("chrono", "fmt", "45000")._2, "45s")
+    assertEquals(run("chrono", "fmt", "65000")._2, "1m 5s")
+    assertEquals(run("chrono", "fmt", "78000")._2, "1m 18s")
+  }
+  test("chrono now: prints a timestamp, exit 0") {
+    val (code, out, _) = run("chrono", "now")
+    assertEquals(code, 0)
+    assert(clue(out).matches("""\d{4}-\d\d-\d\d \d\d:\d\d:\d\d"""))
+  }
+  test("chrono with no args prints usage and exits 2") {
+    val (code, out, _) = run("chrono")
+    assertEquals(code, 2)
+    assert(clue(out).toLowerCase.contains("usage"))
+  }
