@@ -17,6 +17,19 @@ import agenttools.Lib
       for (line, i) <- Lib.readLatin1(file).linesIterator.zipWithIndex if re.findFirstIn(line).isDefined do
         println(f"${i + 1}%6d: $line")
 
+    case "context" :: file :: pat :: rest => // grep -C N: matching lines with N lines of context (default 2)
+      val n = rest.headOption.flatMap(_.toIntOption).filter(_ >= 0).getOrElse(2)
+      val re = pat.r
+      val lines = Lib.readLatin1(file).linesIterator.toVector
+      val hits = lines.indices.iterator.filter(i => re.findFirstIn(lines(i)).isDefined).toSet
+      // union each hit's ±n window, then print in order; ':' marks a match line, '-' context, '--' a gap
+      val show = hits.flatMap(i => math.max(0, i - n) to math.min(lines.length - 1, i + n)).toVector.sorted
+      var prev = -2
+      for i <- show do
+        if prev >= 0 && i != prev + 1 then println("--")
+        println(f"${i + 1}%6d${if hits(i) then ":" else "-"} ${lines(i)}")
+        prev = i
+
     case "freq" :: file :: pat :: Nil => // histogram of the match (or capture group 1) — like sort|uniq -c|sort -rn
       val counts = pat.r.findAllMatchIn(Lib.readUtf8(file))
         .map(m => if m.groupCount >= 1 && m.group(1) != null then m.group(1) else m.matched)
@@ -58,6 +71,7 @@ import agenttools.Lib
       println("""texttool — typed grep/awk replacement (pure)
         |  text count <file> <regex>          count regex matches            (grep -c)
         |  text match <file> <regex>          print matching lines, numbered (grep -n)
+        |  text context <file> <regex> [N]    matching lines with N context lines (grep -C N, default 2)
         |  text freq  <file> <regex>          histogram of match / group(1)  (sort|uniq -c|sort -rn)
         |  text grepr <dir> <ext[,ext2…]> <regex>  recursive search, file:line:match (grep -r --include)
         |  text cols  <file> <sep> <i...>     extract 1-based fields, tab-joined (cut/awk)""".stripMargin)

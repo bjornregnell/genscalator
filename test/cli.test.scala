@@ -62,6 +62,25 @@ class CliSuite extends munit.FunSuite:
       assert(!clue(out).contains("skip.txt"))
     finally os.remove.all(d)
   }
+  test("text context: prints a match with N lines of context, excludes beyond N") {
+    val f = os.temp(contents = "l1\nl2\nNEEDLE\nl4\nl5\n", suffix = ".txt")
+    try
+      val (code, out, _) = run("text", "context", f.toString, "NEEDLE", "1")
+      assertEquals(code, 0)
+      assert(clue(out).contains("NEEDLE"))
+      assert(clue(out).contains("l2")) // 1 before
+      assert(clue(out).contains("l4")) // 1 after
+      assert(!clue(out).contains("l1")) // 2 before — outside N=1
+      assert(!clue(out).contains("l5")) // outside
+    finally os.remove(f)
+  }
+  test("text context: separates non-contiguous match groups with --") {
+    val f = os.temp(contents = "HIT\nx\nx\nx\nx\nHIT\n", suffix = ".txt")
+    try
+      val (_, out, _) = run("text", "context", f.toString, "HIT", "1")
+      assert(clue(out).contains("--")) // two groups with a gap between
+    finally os.remove(f)
+  }
   test("text with no args prints usage (does not crash)") {
     val (_, out, _) = run("text")
     assert(clue(out).toLowerCase.contains("count")) // usage lists subcommands
