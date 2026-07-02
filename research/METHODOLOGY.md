@@ -140,6 +140,15 @@ The corpus is captured two complementary ways, each honest about what it is:
    The two modes are complementary: in-situ catches what the human noticed live; sweeps recover what a compaction
    would have buried *and* surface cross-cutting patterns no single moment shows.
 
+### Controlled variable: hold the base model constant during a data-collection window
+The **base model is an independent variable that must be controlled**, not allowed to drift. Much of what the WR
+corpus measures — shell-reflex relapse rate, guard-trip frequency, typed-path adoption, meta-introspection — is
+*itself* model-dependent, so swapping the model mid-study confounds every before/after comparison. **Decision (BR
+2026-07-02): stay on Opus 4.8 for the first paper's collection window; a model change is a deliberate, logged A/B
+EVENT (date + turn), never a silent drift.** The mirror-image experiment — hold the *substrate* constant and vary
+the *model* — is its own research topic ([`model-capability-and-leverage.md`](model-capability-and-leverage.md)):
+how a more vs less capable model leverages the same genscalator tools.
+
 3. **Queue-then-harvest (the concurrent-editing safeguard).** When a `WR data` flag arrives *while the human is
    editing the WR files* (RAW-DATA.md, wr-data/), the agent must NOT `--append` to those files — it would risk
    clobbering the human's open editor buffer (the exact `shared-file-editing-protocol.md` hazard), and the live
