@@ -164,6 +164,35 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   Examples: appending `| head`/`| wc -l`; adding `2>/dev/null`; guessing a glob `"*.scala"`.
   **Not a synonym for habit:** habit = the strategy, reflex = the twitch. They need *different* fixes —
   habits → change the default tool; reflexes → make the typed path frictionless so it becomes the new reflex.
+- **Prosthetic habit** — an **external structure that acts as an agent reflex the agent cannot grow internally.**
+  A human compiles a deliberate lesson into a new *automatic* habit (deliberation → automaticity); the agent
+  can't — its lessons stay *retrieval-dependent knowledge* that fails under momentum. So a submit-time hook, or a
+  typed tool that is the only allowlisted path, is installed **externally** to do the job a compiled habit would:
+  the safe move happens automatically without depending on the agent recalling a rule at the instant of action.
+  (The Reflex entry's "make the typed path the new reflex" is the prototype.)
+- **Structural vs knowledge safeguard** — the two tiers of reflex-safeguard, sorted by reliability. **Structural**
+  safeguards (the allowlist making the safe path frictionless, a submit-time splitter, a tool that is the *only*
+  path) are *retrieval-independent* → they reliably beat the reflex. **Knowledge** safeguards (a rule in a memory
+  file, a WR-data note, self-reminding) are *retrieval-fragile* → they leak under momentum. Evidence: the raw-grep
+  reflex was beaten once we *structuralized* the typed path; `git … && …` persists because it is still only
+  knowledge. **Rule:** weight toward structural safeguards, treat knowledge ones as backup.
+- **Coupled-system capability** — the agent's effective capability is a property of the **pairing** — model ×
+  externalized substrate (memories, RAW-DATA, tools, methodology) × the human collaborator — **not of the model
+  alone.** Functionalist / extended-mind: capability is *behavioral*, measured by what the coupled system reliably
+  does, so a weaker base model with rich substrate can out-perform a stronger *bare* one. Keep the **address**
+  honest: when we say "the agent got smarter," what improved is the pairing; the model's weights never changed.
+- **Extrinsic-volatile plasticity** — *where the agent's learning lives.* A human's plasticity is **intrinsic +
+  persistent** (the brain updates and stays updated across contexts for free); the agent's is **extrinsic +
+  volatile** — the weights never move, the "learning" sits in context + external files and **evaporates at
+  compaction / session end unless deliberately externalized** (→ memory, RAW-DATA, structure). This is *why* the
+  substrate layers matter: they are the durable plasticity the model lacks internally.
+- **Substrate-as-multiplier** — the externalized methodology is a **multiplier on model capability, not a
+  substitute for it.** It wins decisively on tasks dominated by accumulated context, methodology, verification,
+  and human steering (most real engineering), so *(weaker × rich substrate)* can beat *(stronger × none)*; but a
+  bare stronger model still wins an isolated **raw-capability spike** (substrate amplifies and directs capability,
+  it doesn't manufacture reasoning that isn't there). Since *strongest × richest* always wins, the leverage is
+  **model-agnostic** — the bet does not depend on models plateauing. See the capability + stove-reflex excerpts
+  in `research/RAW-DATA.md`.
 - **Ralph loop** — running the agent autonomously in a loop on a fixed, well-scoped goal until acceptance
   criteria are met, with **no per-step human approval** — the human hands the task over completely and
   walks away (named after the brute-force "just keep going until done" technique). A ralph loop is **only
