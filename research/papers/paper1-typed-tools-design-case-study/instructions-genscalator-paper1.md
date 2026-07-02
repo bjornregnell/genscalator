@@ -24,54 +24,48 @@ This is a stub. More will come.
 
 ### Agent summary of REJ / Springer Nature rules (2026-07-02)
 
-> **Fetch caveat (honesty):** all three linked pages redirect through Springer's login gateway
-> (`idp.springer.com/authorize`), so they could **not** be fetched directly (they need a browser cookie
-> session). The summary below is compiled from **current knowledge of Springer Nature's standard journal
-> policies + the REJ (Requirements Engineering journal) profile**, NOT from a fresh fetch — **BR should verify
-> the specifics (esp. blind-review mode, length, and the exact LaTeX template) against the live pages in a
-> browser** before submission. Points that most need live confirmation are marked **[VERIFY]**.
+> **Source:** extracted from the saved *Submission guidelines — Requirements Engineering* page (BR's Firefox
+> "Save Page As", committed in this folder). Confirmed facts below (no longer guesses). The Springer LaTeX
+> template is present in [`sn-article-template/`](sn-article-template/).
 
-#### REJ scope & fit — is this paper a good match?
-- **DO** target it as a **case study / empirical or action-research paper** — REJ explicitly publishes RE
-  research including *methods, tools, empirical studies, experience reports and case studies* across elicitation,
-  specification, analysis, validation and management. A **meta-level agentic-RE case study** (agents expressing
-  their own requirements in reqT + building typed tools) is a novel, in-scope angle.
-- **DO** foreground the **RE contribution** (requirements method, reqT dogfooding, the human–agent requirements
-  loop), not just the tooling/AI — REJ is an RE venue, so the RE framing must lead. **[VERIFY]** current aims &
-  scope wording + accepted article types.
+#### ✅ DO
+- **Format: LaTeX, `\documentclass{sn-jnl}`** (Springer Nature template, encouraged) — you have it in
+  `sn-article-template/`. Word (`.docx`) is also accepted. **Always submit editable source files** at every
+  submission/revision, or the article is **not** reviewed.
+- **Abstract 150–250 words**, with no undefined abbreviations or unspecified references.
+- **4–6 keywords** (for indexing).
+- **Title page (separate, NOT in the anonymized manuscript):** title (concise, informative), author name(s),
+  affiliation(s), corresponding author + active email, and the **16-digit ORCID** (BR: `0000-0002-9380-6120`);
+  put acknowledgements/disclosures/funding here too.
+- **"Statements and Declarations"**: provide the required declarations; **Author Contributions** and **Competing
+  Interests** are entered **via the submission-system interface** (the new SNAPP system), not the manuscript —
+  only interface-entered info appears in the published version. Keep them at hand. Manuscripts missing required
+  declarations are **returned as incomplete**.
+- **Document the LLM/agent use in the Methods section** — REQUIRED here. (The exemption for "AI-assisted copy
+  editing" covers only readability/grammar fixes to human-written text; it explicitly **excludes** "generative
+  editorial work and autonomous content creation" — which is exactly what our agent does, so it must be
+  disclosed.) This is a strength: the agent *is* the study, and the WR/`RAW-DATA.md` corpus is the raw evidence.
+- **Frame as an RE contribution** (the reqT dogfooding + human–agent requirements loop leads), suited to REJ's
+  empirical / case-study / experience-report scope.
+- **Get permission** for any reused figures/tables/text passages already published elsewhere.
 
-#### Manuscript format & submission
-- **DO** use the **Springer Nature LaTeX template** (the `sn-jnl` / Springer article class) or Word; include a
-  ~150–250-word abstract and **4–6 keywords**; standard structure (Intro, Background/Related Work, Approach,
-  Evaluation, Discussion, Threats to Validity, Conclusion). **[VERIFY]** exact template + any length guidance
-  (REJ has no hard page limit but expects concision).
-- **DO** add a **Declarations** section: competing interests, funding, ethics, **data availability** (point to the
-  genscalator repo) and **code availability** (the public Codeberg repo — a reproducibility asset).
-- **DO** cite own relevant work (reqT + BR's RE papers) — ORCID `0000-0002-9380-6120`.
-- **DON'T** submit simultaneously to another venue (no duplicate/concurrent submission); **DON'T** exceed what's
-  needed (concise > padded). **[VERIFY: blind review]** — if REJ uses **double-blind**, anonymize: remove author
-  names/affiliations and **mask self-citations** ("Author et al.") including the reqT references; if single-blind,
-  normal citations are fine. Confirm which, as it changes how the reqT credit is written.
+#### ⛔ DON'T
+- **DON'T reveal author identity — REJ is DOUBLE-BLIND (double-anonymous).** Remove all author names,
+  affiliations and identifying info from the manuscript **and all accompanying files** (incl. figures/supplementary).
+  Crucially: *"Authors should avoid citing their own work in a way that could reveal their identity"* — so the
+  **reqT + BR self-citations must be written in a non-identity-revealing way** (neutral third person; avoid "in
+  our prior work…"; don't let the citation pattern out you). This is the single biggest drafting constraint.
+- **DON'T list the LLM/agent as an author** — LLMs (ChatGPT/Claude) do **not** satisfy authorship criteria,
+  because authorship carries accountability that cannot apply to an LLM. Humans remain fully accountable for the
+  final text and must agree it reflects their original work.
+- **DON'T submit if published before or under consideration elsewhere** (submission implies neither); co-author +
+  institutional approval implied.
 
-#### AI / LLM use (critical — this paper both USES and STUDIES an AI agent)
-- **DON'T** list the AI agent (Claude/LLM) as an **author** — Springer Nature does not permit AI/LLMs as authors
-  (they cannot take responsibility, consent, or hold accountability). BR (and co-authors) are the accountable
-  authors.
-- **DO** **disclose** the AI use explicitly — describe *which* tool/model + version and *how* it was used, in the
-  **Methods** (since here the agent is part of the research method/subject) and/or a statement/Acknowledgement.
-  Given the agent is the **object of study**, transparent description of the human–agent collaboration (which the
-  WR / `RAW-DATA.md` corpus already documents) is both required *and* a strength.
-- **DO** take **full author accountability** for all content, including AI-assisted or AI-generated text/code.
-- **DON'T** use AI to fabricate/falsify data or results; **DON'T** present AI-generated **images/figures** as
-  data (AI images are generally disallowed unless the AI output *is* the research subject — likely fine here for
-  illustrating agent behaviour, but label clearly). **[VERIFY]** the exact wording of the AI-images clause.
+#### Two previously-open items — now RESOLVED
+- **Blind review = DOUBLE-BLIND** → anonymize everything + write the reqT self-citations to not reveal identity.
+- **Template = `sn-jnl`** → in `sn-article-template/`.
 
-#### Integrity & reproducibility (general Springer)
-- **DO** ensure originality (plagiarism/self-plagiarism screened via iThenticate); disclose any prior
-  workshop/preprint version. **DO** make data + code available (the open repos help). **DON'T** reuse figures/text
-  from prior work without permission/citation.
-
-**Net:** nothing here blocks the paper; the two live-verify items that materially affect drafting are
-**(a) blind-review mode** (affects self-citation of reqT) and **(b) the exact Springer LaTeX template**. The AI
-disclosure is straightforward and, for this paper, a feature rather than a hurdle.
+**Net:** nothing blocks the paper. The load-bearing drafting constraint is the **double-blind self-citation of
+reqT**; the AI disclosure (LLM use in Methods, no LLM author, human accountability) is straightforward and, for
+this paper, a feature.
 
