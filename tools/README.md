@@ -98,6 +98,39 @@ tt verify --exit 0 --out 8 -- scala-cli run tools/text.scala -- grepr /abs/tools
 tt verify -- tt files /abs/src .scala --count
 ```
 
+### guardcheck — flag guard-trip / banned-reflex patterns (PURE)
+```
+guardcheck cmd <shell-command>       # flag &&, ;, $(, backtick, |head, raw grep -r, line-leading #, …
+guardcheck msg <commit-message>      # flag patterns that trip the commit guard (e.g. a #N turn index)
+```
+A prosthetic for the confirmation-guard feedback the agent can't see. Exit 0 clean / 1 flagged / 2 usage.
+
+### typo — keyboard-aware typo classifier (PURE)
+```
+typo adjacent <a> <b>                # are keys a,b adjacent on the Swedish QWERTY layout?
+typo classify <typed> <intended>     # adjacency / transposition / deletion / insertion / substitution-far / complex
+```
+Feeds the human-fatigue / mutual-degradation gauge (BR's idea): the typo *kind* hints at tiredness.
+
+### htmltext — strip a saved HTML page to readable text (PURE)
+```
+htmltext <in.html> [out.file]        # drop head/script/style/svg, block tags → newlines, decode entities
+```
+Turns a Firefox "Save Page As" dump (e.g. journal guidelines) into plain text without the JS/CSS bloat.
+
+### chrono — stopwatch for timing work spans (EFFECTFUL: state + log)
+```
+chrono start [label] | stop [--think <dur>] | now | fmt <ms> | think <dur> | report
+```
+Times a human-agent-human round (or any span); `stop --think 30s` also records the relayed think-time and prints
+the `round = think + human` split; spans append to `chrono-log.tsv`; `report` summarizes. (The agent can't
+perceive its own think-time — this plus a human relay reconstruct a full round.)
+
+### parsereqt — parse reqT model text (PURE)
+```
+parsereqt <file>                     # parse reqT model text into a structured form
+```
+
 ## Companion: scalex
 The `tt` tools are **textual** — grep/awk/cut over any file. For **Scala code structure** the companion
 is **[scalex](https://github.com/nguyenyou/scalex)**: "grep, but it understands Scala's AST." It parses
@@ -131,6 +164,12 @@ diagnostics, refactors). Full guide: [`../docs/tool-selection.md`](../docs/tool-
 - `text.scala` — the grep/awk replacement.
 - `log.scala` — the build/run-log analyzer.
 - `verify.scala` — the run-and-verify driver (effectful; os-lib).
+- `files.scala` — the find / grep -l replacement.
+- `guardcheck.scala` — guard-trip / banned-reflex flagger.
+- `typo.scala` — keyboard-aware typo classifier.
+- `htmltext.scala` — HTML→text stripper.
+- `chrono.scala` — stopwatch (effectful: state + log).
+- `parsereqt.scala` — reqT model parser.
 - `newtool.scala` — the generator.
 - `template.scala.txt` — starter template (latest Scala header, lib include, dispatch skeleton).
 
