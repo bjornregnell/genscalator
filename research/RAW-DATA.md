@@ -697,3 +697,24 @@ WR data
 > **Agent reflection:** WR-FRICTION (CLUSTER representative). The bare-flag tail: BR types just WR data on a confirmation with no elaboration, collapsing into already-characterized classes (background-launch and git-state friction, raw-grep, cd-compounds). Near-duplicate bare-flag indices in this session: 178, 222, 1349, 1849, 1868, 1898, 1914, 2824, 3086, 3945, 3953, 4259, 7055, 7657, 1356. Recorded as one representative per the no-silent-truncation rule.
 
 ---
+
+## Excerpt #10106–10107 · 2026-07-02
+
+**[🤖 agent · 18:04:10 · #10106]**
+
+Real number's in: **468.9k / 1M = 47%** — and the compact trigger is 0.8·L = **800k (80%)**. So we're **well below the trigger with ~331k of runway left**. **No compact dance needed.** 🎉
+
+And there's the lesson, cleanly reconfirmed: the session *felt* enormous (~10k turns, many compactions) but fill is only 47% — the qualitative "we're deep" sense **over-reads** actual fill (big outputs read once are cheap against a 1M window). This is the second clean instance of the [[propose-compact-dance-at-trigger]] "know your L" caveat — last time I overshot 4× at 25%; this time I raised it as a *question* (correctly, since I can't self-measure) and the paste settled it at a comfortable 47%. The `/context`-paste dance did its job: I don't act on the felt sense, I act on the number.
+
+Minor housekeeping the paste surfaced: **file re-reads are ~7% (67.5k)** of context — I'll be more disciplined (reference earlier reads, use offset/limit) rather than re-reading whole files.
+
+So: plenty of headroom, everything's committed + pushed across all three repos (introprog `13d7ac62`, genscalator `fa3866d`, work repo `cee5ce1`). What's next?
+
+**[🧑 BR · 18:06:59 · #10107]**
+
+put what you just wrote in RAW-DATA as this is WR data; you are exposing an increased level of introspection capability is my subjective assessment of this (as I remeber it, in the begining of our genscalator work you did not as spontaneously as now reason at meta-level on your own introspection)
+
+
+> **Agent reflection:** WR-META (SPECIAL, self-referential). BR's subjective longitudinal assessment: the agent now reasons at the meta-level about its OWN introspection more spontaneously than early in the genscalator work (here: acting on the measured 47 percent rather than the felt sense, and naming the felt-versus-actual fill gap unprompted). Honest mechanism analysis (itself an instance of the phenomenon): a fixed-weights model does not gain capability within a project, so the likely cause is SUBSTRATE-SCAFFOLDING plus topical priming, not intrinsic growth. The accumulated externalized methodology (memories, RAW-DATA, the named rituals such as the compact dance and the context-paste dance, and BR's own modeling of agent introspection) primes and cues meta-reasoning the bare model would not surface as readily; and doing introspection research all session keeps meta-cognition topically salient. So the increase is real as BEHAVIOR but is elicited by the collaboration's accumulated frame rather than a change in the model. Closes a loop with the introspection-blind-spot thread (the quantitative self-measurement gap and the context-paste dance): the agent has a partial, improvable self-model of PROCESS that the shared substrate can scaffold upward, even while the self-model of RESOURCE STATE stays absent. Research angle: measure whether meta-introspection frequency or quality rises with accumulated project substrate, controlling for topical priming, across sessions.
+
+---
