@@ -283,3 +283,31 @@ class CliSuite extends munit.FunSuite:
     assertEquals(code, 2)
     assert(clue(out).toLowerCase.contains("usage"))
   }
+
+  // --- typo (keyboard-aware typo classifier for the fatigue gauge; tests keyed to BR's real typos) ---
+  test("typo adjacent: i and o are Swedish-QWERTY neighbors") {
+    val (code, out, _) = run("typo", "adjacent", "i", "o")
+    assertEquals(code, 0)
+    assertEquals(out, "yes")
+  }
+  test("typo adjacent: q and p are not neighbors") {
+    val (_, out, _) = run("typo", "adjacent", "q", "p")
+    assertEquals(out, "no")
+  }
+  test("typo classify: identofy->identify is an adjacency slip (i->o, BR's real typo)") {
+    val (_, out, _) = run("typo", "classify", "identofy", "identify")
+    assertEquals(out, "adjacency")
+  }
+  test("typo classify: tierd->tired is a transposition (BR's real typo)") {
+    val (_, out, _) = run("typo", "classify", "tierd", "tired")
+    assertEquals(out, "transposition")
+  }
+  test("typo classify: compedium->compendium is a deletion (BR's real typo)") {
+    val (_, out, _) = run("typo", "classify", "compedium", "compendium")
+    assertEquals(out, "deletion")
+  }
+  test("typo with no args prints usage and exits 2") {
+    val (code, out, _) = run("typo")
+    assertEquals(code, 2)
+    assert(clue(out).toLowerCase.contains("classify"))
+  }
