@@ -2,6 +2,21 @@
 
 This is our scratchpad for human-agent paper-writing.
 
+### Decisions (BR 2026-07-02) — read this first
+- **Target venue:** **Springer Nature Requirements Engineering journal (REJ)**.
+- **Working title:** BR keeps his own **first attempt** (below) over the agent-brainstormed variants — he prefers
+  it for reasons he will elaborate later. Do NOT re-litigate the title.
+- **Scope / focus of the FIRST paper (keep it grounded, NOT "too philosophical"):** the **`tt` tools to achieve
+  qualities** (safety, token efficiency, …), the **meta-level requirements-engineering angle**, and **what we
+  leverage by using reqT-lang** (expressing genscalator's own requirements in reqT, the dogfooding recursion).
+  That is the main line.
+- **What is OUT of the first paper (or at most a speculative Discussion section):** the philosophical arc from
+  this session — coupled-system capability, extrinsic-volatile plasticity, the prosthetic-habit / structural-vs-
+  knowledge-safeguard thesis, inference-time-learning as "the" thesis. **BR's hunch: this is a SEPARATE (second)
+  paper.** It may appear briefly + speculatively in the REJ paper's Discussion, but must not become the focus.
+  The RAW-DATA capability excerpts + the foundations glossary hold that material for the second paper.
+- **Method framing:** design-science / action-research case study (as below).
+
 ### First paper on genscalator: a case study in design science  action research mode
 
 
