@@ -95,10 +95,10 @@ The naive metric — "characters to represent correct code" — favors braceless
 3. Diff/merge noise. A braceless re-indent changes every line's leading whitespace → a large, noisy hunk (more review, more merge surface, more diff tokens). Braces keep it a small hunk with stable } anchors.
 
 
-The striking finding: the human-legibility rule and the agent-edit-safety rule coincide. Your common-style note puts braces exactly on long scopes (those with blank lines) — and long scopes are precisely where indentation-only scope-tracking degrades for both the human reader and the agent editor, for the same underlying reason (it degrades with block length). Even better: my fix was to restructure into else if — using the else keyword as the delimiter — which is literally your rule 2 (closing keywords serve as end markers). So I accidentally validated the proposal by applying it to escape the bug.
+The striking finding: the human-legibility rule and the agent-edit-safety rule coincide. The common-style note above puts braces exactly on long scopes (those with blank lines) — and long scopes are precisely where indentation-only scope-tracking degrades for both the human reader and the agent editor, for the same underlying reason (it degrades with block length). Even better: my fix was to restructure into else if — using the else keyword as the delimiter — which is literally its rule 2 (closing keywords serve as end markers). So I accidentally validated the proposal by applying it to escape the bug.
 
 
-Tentative verdict: for the agent, common-style (braces on long scopes) is a genuine sweet spot — near braces-everywhere on safety, near braceless on surface tokens. The measurable experiment (edit-error-rate + edit-token-cost across braceless / braces / common-style regimes) is written up in the doc.
+Tentative verdict: for the agent, common-style (braces on long scopes) is a genuine sweet spot — near braces-everywhere on safety, near braceless on surface tokens. A measurable experiment would settle it: compare edit-error-rate and edit-token-cost across the three regimes (braceless / braces / common-style).
 
 
-One caveat worth flagging to the SIP framing: this is an argument that tooling substrate (not just human taste) should inform the style — as agents write more Scala, "which style is cheapest to edit correctly" becomes a real axis, and it points the same way your note already leans.
+One caveat worth flagging to the SIP framing: this is an argument that tooling substrate (not just human taste) should inform the style — as agents write more Scala, "which style is cheapest to edit correctly" becomes a real axis, and it points the same way this note already leans.
