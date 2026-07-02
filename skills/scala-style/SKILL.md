@@ -38,6 +38,11 @@ black-and-white.
   the dependency right where it bites. Keep genuinely repo-wide imports at the top.
 - Latest **stable** Scala (re-check per project). Reach first for the **JDK + the `tt` toolbox** — they
   cover most needs.
+- **Wrap raw JDK APIs in a thin Scala abstraction** (e.g. `LibJVM.scala`) rather than calling
+  `java.nio`/`java.net`/`Executors` directly all over the tools. A one-screen wrapper that exposes a Scala
+  idiom (named results, `Using` for resources, our own naming) buys three things: one place to refactor, the
+  leverage of Scala idioms over Java ergonomics, and a **far easier Scala Native port** (swap the wrapper, not
+  every call site). Keep it THIN — wrap only what we actually use; don't build a JDK-shaped framework.
 - **Deps are allowed, chosen with care.** A small, well-understood Maven Central library (Scala or Java)
   beats hand-rolling something fiddly. Prefer Scala libs published **for Scala 3** and **for both JVM and
   Native** (keeps the native-compilation roadmap open). Pick libs you can read and explain.
@@ -67,6 +72,26 @@ black-and-white.
   `scala-cli`/`pdflatex`, spawn processes via os-lib `os.proc`). The point isn't "effects are bad" — it's
   that a visible effect *boundary* keeps the pure core reviewable and Safe-mode-trackable. Drivers
   root-find (walk up) and stay outside Safe mode.
+
+## 4. Name your types — aliases now, opaque/case classes when they earn it
+- **Give basic types good names with `type`.** A bare `String`/`Int` in a signature says nothing; `type
+  ToolName = String` documents intent AND opens a cheap refactor path — swap the alias for a `case class` or
+  `opaque type` later and most call sites stand. Reach for a `type` alias whenever a primitive plays a
+  specific role (`ToolName`, `Relpath`, `LineNo`).
+- **Opaque types when allocation cost really matters.** Scala 3 `opaque type Name = String` gives real
+  compile-time type safety at **zero allocation cost** — at runtime the value *is* the underlying `String`/`Int`,
+  but the compiler restricts what you can do with it to the operations you expose (enforced by scoping, not by
+  a wrapper object). Use them for simple data on a **hot path** where a wrapper `case class` allocation would
+  hurt. Off the hot path a `case class` is clearer (named fields, pattern-matching) — prefer it there. Rule of
+  thumb: `type` alias for a name; `opaque type` for safety-without-allocation on a hot path; `case class` when
+  you want structure and aren't allocation-bound.
+- **Prefer NAMED tuples over unnamed ones** in `def` args and return types (Scala 3). `def segment(...):
+  (blocks: Seq[String], seps: Seq[String])` self-documents and lets the caller write `r.blocks`; an unnamed
+  `(Seq[String], Seq[String])` forces the reader to decode `._1`/`._2`. **This matters MOST when the members
+  share a type** (`(Seq[String], Seq[String])`, `(Int, Int)`): with same-typed slots the compiler can't catch
+  a swapped order, so an unnamed tuple invites silent order-confusion bugs for humans AND agents — names make
+  the order self-checking. Reserve unnamed tuples for local, throwaway pairing. A named tuple is also a
+  zero-cost stepping stone to a `case class` if the shape grows.
 
 ## Shape
 ```scala
