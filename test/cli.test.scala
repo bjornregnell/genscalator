@@ -101,3 +101,129 @@ class CliSuite extends munit.FunSuite:
     assertEquals(code, 2)
     assert(clue(err).toLowerCase.contains("usage"))
   }
+
+  /** Run a tool subprocess with an explicit cwd (newtool writes tools/<name>.scala RELATIVE to cwd). */
+  private def runIn(cwd: os.Path, tool: String, args: String*): (Int, String, String) =
+    val r = os.proc("scala-cli", "run", (toolsDir / s"$tool.scala").toString, "--", args)
+      .call(cwd = cwd, check = false, stdout = os.Pipe, stderr = os.Pipe)
+    (r.exitCode, r.out.text().trim, r.err.text().trim)
+
+  // --- parsereqt (reqT-lang parse + lint over the vendored parser) ---
+  // Fixtures use verified reqT-lang syntax; behaviors were confirmed against `tt parsereqt` before encoding here.
+  test("parsereqt parse: reports a top-level elem count, exit 0") {
+    val f = os.temp(contents = "* Feature: alpha\n* Feature: beta requires Feature: alpha\n", suffix = ".md")
+    try
+      val (code, out, _) = run("parsereqt", "parse", f.toString)
+      assertEquals(code, 0)
+      assert(clue(out).contains("reqt parse:"))
+      assert(clue(out).contains("top-level elems"))
+    finally os.remove(f)
+  }
+  test("parsereqt lint: a clean model reports 0 fall-throughs") {
+    val f = os.temp(contents = "* Feature: alpha\n* Feature: beta requires Feature: alpha\n", suffix = ".md")
+    try
+      val (code, out, _) = run("parsereqt", "lint", f.toString)
+      assertEquals(code, 0)
+      assert(clue(out).contains("0 unknown-concept fall-through"))
+    finally os.remove(f)
+  }
+  test("parsereqt lint REGRESSION: a relation under `has` is flagged as LOST to Text") {
+    // The silent-data-loss case reqT/reqT-lang#15 targets: a relation keyword written as an indented bullet
+    // under a `has` block degrades to a Text attr (the relation is LOST). This locks the lint detection so a
+    // future parser/wrapper change can't silently stop catching it. Verified live: `tt parsereqt lint` emits
+    // "relation 'requires' LOST to Text" for exactly this input.
+    val f = os.temp(contents = "* Feature: alpha has\n    * requires: Feature: beta\n", suffix = ".md")
+    try
+      val (code, out, _) = run("parsereqt", "lint", f.toString)
+      assertEquals(code, 0)
+      assert(clue(out).contains("relation 'requires' LOST to Text"))
+      assert(clue(out).contains("1 unknown-concept fall-through"))
+    finally os.remove(f)
+  }
+  test("parsereqt lint: a Capitalized typo is flagged as an unknown concept") {
+    val f = os.temp(contents = "* Feautre: alpha\n", suffix = ".md")
+    try
+      val (_, out, _) = run("parsereqt", "lint", f.toString)
+      assert(clue(out).contains("unknown concept 'Feautre'"))
+    finally os.remove(f)
+  }
+  test("parsereqt with no args prints usage and exits 2") {
+    val (code, out, _) = run("parsereqt")
+    assertEquals(code, 2)
+    assert(clue(out).toLowerCase.contains("usage"))
+  }
+
+  // --- log (build/run log analyzer) ---
+  test("log summary: counts errors and warnings with a verdict") {
+    val f = os.temp(contents = "[error] boom\n[warn] careful\nall good\n", suffix = ".log")
+    try
+      val (code, out, _) = run("log", "summary", f.toString)
+      assertEquals(code, 0)
+      assert(clue(out).contains("1 errors, 1 warnings"))
+    finally os.remove(f)
+  }
+  test("log errors: shows only the error bucket") {
+    val f = os.temp(contents = "[error] boom\n[warn] careful\n", suffix = ".log")
+    try
+      val (_, out, _) = run("log", "errors", f.toString)
+      assert(clue(out).contains("=== errors: 1"))
+      assert(clue(out).contains("boom"))
+    finally os.remove(f)
+  }
+  test("log --error: a custom pattern adds matches on top of the defaults") {
+    val f = os.temp(contents = "kaboom here\nfine line\n", suffix = ".log")
+    try
+      val (_, out, _) = run("log", "errors", f.toString, "--error", "kaboom")
+      assert(clue(out).contains("=== errors: 1"))
+      assert(clue(out).contains("kaboom"))
+    finally os.remove(f)
+  }
+  test("log --cap with a non-integer exits 2") {
+    val f = os.temp(contents = "[error] x\n", suffix = ".log")
+    try
+      val (code, _, err) = run("log", "summary", f.toString, "--cap", "notanint")
+      assertEquals(code, 2)
+      assert(clue(err).toLowerCase.contains("cap"))
+    finally os.remove(f)
+  }
+  test("log with no file argument exits 2") {
+    val (code, _, err) = run("log")
+    assertEquals(code, 2)
+    assert(clue(err).nonEmpty)
+  }
+
+  // --- newtool (scaffold generator; writes tools/<name>.scala relative to cwd) ---
+  test("newtool: scaffolds a tool from the template into tools/ under cwd") {
+    val work = os.temp.dir()
+    try
+      os.makeDir.all(work / "tools")
+      os.write(work / "tools" / "template.scala.txt", "// __NAME__ tool\n@main def __NAME__() = println(\"__NAME__\")\n")
+      val (code, out, _) = runIn(work, "newtool", "mytool")
+      assertEquals(code, 0)
+      val made = work / "tools" / "mytool.scala"
+      assert(os.exists(made))
+      assert(clue(os.read(made)).contains("mytool"))
+      assert(!clue(os.read(made)).contains("__NAME__")) // placeholder substituted
+    finally os.remove.all(work)
+  }
+  test("newtool: refuses to overwrite an existing tool file (exit 1)") {
+    val work = os.temp.dir()
+    try
+      os.makeDir.all(work / "tools")
+      os.write(work / "tools" / "template.scala.txt", "// __NAME__\n")
+      os.write(work / "tools" / "dup.scala", "// already here\n")
+      val (code, _, err) = runIn(work, "newtool", "dup")
+      assertEquals(code, 1)
+      assert(clue(err).contains("refusing"))
+    finally os.remove.all(work)
+  }
+  test("newtool: rejects a non-identifier tool name") {
+    val work = os.temp.dir()
+    try
+      os.makeDir.all(work / "tools")
+      os.write(work / "tools" / "template.scala.txt", "// __NAME__\n")
+      val (code, _, err) = runIn(work, "newtool", "9bad")
+      assert(clue(code) != 0)
+      assert(clue(err).contains("bad tool name"))
+    finally os.remove.all(work)
+  }
