@@ -76,11 +76,11 @@ def buildPrompt(before: String, instruction: String, regime: String): String =
   val tmp = os.temp.dir(prefix = "ivb-sweep")
   var n = 0
   for
+    model <- models // outermost so each model loads into the GPU once (no thrashing)
     task <- tasks
     regime <- Regimes
     beforeF = task / s"before.$regime.scala"
     if os.exists(beforeF) && os.exists(task / "probe.scala") && os.exists(task / "expected.txt")
-    model <- models
     run <- 1 to R
   do
     n += 1
