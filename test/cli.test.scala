@@ -227,3 +227,40 @@ class CliSuite extends munit.FunSuite:
       assert(clue(err).contains("bad tool name"))
     finally os.remove.all(work)
   }
+
+  // --- guardcheck (flags guard-trip / banned-reflex patterns; the "prosthetic perception" of guard feedback) ---
+  // Trap inputs are safe here: they are Scala string literals passed via os.proc, never a Bash-tool shell arg.
+  test("guardcheck cmd: flags an && command chain (exit 1)") {
+    val (code, out, _) = run("guardcheck", "cmd", "git add . && git commit")
+    assertEquals(code, 1)
+    assert(clue(out).contains("&& command chain"))
+  }
+  test("guardcheck cmd: a clean git -C command passes (exit 0)") {
+    val (code, out, _) = run("guardcheck", "cmd", "git -C /tmp/x status")
+    assertEquals(code, 0)
+    assert(clue(out).contains("clean"))
+  }
+  test("guardcheck cmd: flags command substitution") {
+    val (code, out, _) = run("guardcheck", "cmd", "x=$(find .)")
+    assertEquals(code, 1)
+    assert(clue(out).contains("command substitution"))
+  }
+  test("guardcheck cmd: flags a pipe to head") {
+    val (_, out, _) = run("guardcheck", "cmd", "ps aux | head")
+    assert(clue(out).contains("pipe to head"))
+  }
+  test("guardcheck msg: flags a line-leading # (newline-then-#)") {
+    val (code, out, _) = run("guardcheck", "msg", "#8017 harvest done")
+    assertEquals(code, 1)
+    assert(clue(out).contains("line-leading #"))
+  }
+  test("guardcheck msg: clean prose passes (exit 0)") {
+    val (code, out, _) = run("guardcheck", "msg", "harvest turn 8017 done")
+    assertEquals(code, 0)
+    assert(clue(out).contains("clean"))
+  }
+  test("guardcheck with no args prints usage and exits 2") {
+    val (code, out, _) = run("guardcheck")
+    assertEquals(code, 2)
+    assert(clue(out).toLowerCase.contains("usage"))
+  }
