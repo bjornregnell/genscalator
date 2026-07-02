@@ -345,3 +345,131 @@ WR data: you clobbed together git -C with &&
 > **Agent reflection:** WR-REGRESS + WR-META (a NEW inference-time-learning failure mode). The agent chained 'git -C X add && git -C X commit && git -C X push'. What makes this distinct from the shell-reflex family: the reflex PERSISTED because a prior MEMORY explicitly LICENSED it -- the memory prefer-scala-scratch-over-bash carried a 'pure git -C chain (no cd) is proven-safe exception'. So substrate #2 (persistent memory) did not merely fail-to-recall (the usual META-4 story); it CONFIDENTLY ENCODED A WRONG RULE that the agent then followed. This sharpens inference-time-learning.md: memory is not only unreliable-at-the-decision-point, it can be reliably-recalled-and-wrong -- a third failure mode beyond 'missing' and 'not surfaced'. The fix is therefore not 'resolve harder' but CORRECT THE MEMORY (retire the exception), which is why 'verify-before-trust' is a memory-system rule. BR retired the exception: ONE bare command per Bash call, stage/commit/push as three separate git -C calls, never && even git-only.
 
 ---
+
+## Excerpt #7105–7105 · 2026-07-01
+
+**[🧑 BR · 09:31:39 · #7105]**
+
+⟦tool_result⟧
+WR data; is this a tt candidate?
+
+
+> **Agent reflection:** WR-TOOL. Raw single-file context-grep; BR asked 'is this a tt candidate?'. Yes: tt text grepr lists matches but lacks a surrounding-context window; the missing capability is the context-lines feature of grep. Candidate: add a context-lines flag to tt text grepr. A one-shot single-file grep is the borderline-allowed case; the clean fix is the tool flag.
+
+---
+
+## Excerpt #7417–7417 · 2026-07-01
+
+**[🧑 BR · 11:20:38 · #7417]**
+
+⟦tool_result⟧
+WR data on your previous attempt that fails because (as you wrote) "The Bash sandbox can't see that /tmp scratchpad path. Let me put the body file in a repo dir the sandbox shares, then create the issue"
+
+
+> **Agent reflection:** WR-FRICTION plus WR-REGRESS. Wrote a gh issue body to the scratchpad temp dir, then the gh body-file read failed because the Bash sandbox cannot see that temp path. A standing ENV instruction (use the scratchpad for temp files) directly conflicts with the sandbox reality, and the agent followed the wrong authority. Bash-facing temp files must live in an in-repo path (memory prefer-inrepo-tmp-over-slash-tmp).
+
+---
+
+## Excerpt #8535–8535 · 2026-07-02
+
+**[🧑 BR · 08:42:33 · #8535]**
+
+⟦tool_result⟧
+WR data "Contains shell syntax (string) that cannot be statically analyzed"
+
+
+> **Agent reflection:** WR-REGRESS plus WR-FRICTION. A command-substitution-into-a-variable form (capture a find result in a var, then reuse it) which the static guard cannot analyze. New guard-trip class: dynamic substitution (command substitution, backticks, variable-capture-then-reuse) is unanalyzable by construction and the guard should distrust it, not a false positive. Triply avoidable: the path was already known from memory, listing a directory is what the Glob and Read tools are for, and even in bash a single bare listing of the literal path sufficed.
+
+---
+
+## Excerpt #8875–8875 · 2026-07-02
+
+**[🧑 BR · 10:03:46 · #8875]**
+
+WR data - a special one; we reached a new level of introspection regarding token efficiency and context introspection method/lesson and we need a slash-context paste dance
+
+
+> **Agent reflection:** WR-META plus WR-METHOD (SPECIAL, the context-paste dance). Asked 'are we approaching compact?', the agent estimated 'past 0.8 of L' from a felt sense; BR's context paste showed 250.5k of 1000k, i.e. 25 percent. The agent overshot the fill fraction about fourfold by anchoring on a habitual 200k window and forgetting that L is 1M for this model. Lesson: an agent can introspect its state qualitatively but has no reliable quantitative self-access to tokens-consumed or to L, a structural blind spot. Ritual: the context-paste dance, where the human pastes the context readout and the agent reads the real number before deciding, the sibling of the compact dance. Argues for a model-readable context hook. Memory propose-compact-dance-at-trigger updated with the know-your-L caveat.
+
+---
+
+## Excerpt #8936–8936 · 2026-07-02
+
+**[🧑 BR · 10:51:11 · #8936]**
+
+(I was actually confused by the greyd out suggested preprompt that shows up after the ❯  that said to wait for bild) WR data
+
+
+> **Agent reflection:** WR-ENV plus WR-META (third-actor state desync). BR read that 'the build takes for ages' but the build had finished and the commit was already made. Cause: the greyed-out suggested-next-prompt ghost text still carried an earlier 'wait for the build' cue and had not refreshed. A third actor, the harness suggestion engine, injected a stale state cue, distinct from agent compaction-loss and human projection. Mitigations: invalidate suggestion text on task-state change, and the agent should defensively re-state terminal state changes such as 'build done, committed at this sha'.
+
+---
+
+## Excerpt #9018–9018 · 2026-07-02
+
+**[🧑 BR · 11:19:41 · #9018]**
+
+⟦tool_result⟧
+and it was the gnome session that crashed so check my box for health (low memory no stale processes)  AND WR data on this chained stuff with ;
+
+
+> **Agent reflection:** WR-REGRESS. A semicolon-chained recovery probe (several commands joined in one call) during a GNOME-crash triage. New axis for the reflex-trigger model: urgency and incident-context re-dominate the trained bash prior, adding to the velocity and mode-switch axes, none of which the 'smart-to-dumb zone by token fill' hypothesis predicts. The reflex surfaces exactly when deliberate rule-checking is least available, reinforcing the structural-fix argument (a submit-time command-splitting hook). Meta: BR captured this datum while mid-incident himself.
+
+---
+
+## Excerpt #9031–9031 · 2026-07-02
+
+**[🧑 BR · 11:22:01 · #9031]**
+
+⟦tool_result⟧
+WR data ; ok to confirm on ps as that's new but you should need the head if we had the right tt tool ?
+
+
+> **Agent reflection:** WR-TOOL. A process listing shaped with a pipe to head for box health; BR: 'ok to confirm on ps as that is new but you shouldnt need the head if we had the right tt tool'. Raw ps is fine, no typed equivalent exists; the pipe-to-head is the output-shaping step a typed tool should absorb as a native flag. Generalized insight: typed tools should absorb the common shaping pipes as first-class flags, namely a limit flag (head), a tail flag, a count flag, a sort flag, and a context flag. Put them in the shared edge so every tool self-limits, self-counts and self-sorts, and the agent never needs the shaping pipes. Candidate: a tt proc top tool with by-rss and limit flags.
+
+---
+
+## Excerpt #9059–9059 · 2026-07-02
+
+**[🧑 BR · 11:27:24 · #9059]**
+
+⟦tool_result⟧
+WR data; we should prefer config stuff in args not in env vars !!!  note this a a reqt in PRD
+
+
+> **Agent reflection:** WR-REGRESS graduated to structure. Passed the tools-dir config as an environment variable instead of an argument. BR: 'we should prefer config stuff in args not in env vars, note this a reqt in PRD'. Config belongs in arguments (explicit, local, statically analyzable by the guard), not the environment (ambient, invisible, non-reproducible from the command alone). Exception: human trust boundaries, where verify.scala's allow-list is env-set on purpose, outside the agent's argument surface. Graduated the same turn into two PRD requirements: configInArgsNotEnv for v0.1.0 and ttConfigFile for v0.2.0, friction to WR flag to PRD Feature, genscalator's own thesis dogfooded.
+
+---
+
+## Excerpt #9269–9269 · 2026-07-02
+
+**[🧑 BR · 12:06:57 · #9269]**
+
+WR data: an "AFK menu" is a cool thing to help human not get chat fatugue by agent helping human to get AFK with no worries
+
+
+> **Agent reflection:** WR-META plus WR-INVENT (the AFK menu ritual). Before going AFK, BR asked for a list of AT and WR work to do while away that he could review before giving the go; the agent produced a risk-tagged scannable menu. BR: 'an AFK menu is a cool thing to help human not get chat fatigue by agent helping human to get AFK with no worries'. The bottleneck to delegation is two costs, specification (wording the tasks) and trust or worry (will it go wrong while away). The menu attacks both: pre-specified pick-a-number options (near-zero chat fatigue) plus explicit per-item risk tags and green-or-draft guarantees (disengage with no worries). A third gap-covering ritual alongside the compact dance and the context-paste dance, but covering a human transition and attention cost rather than an agent introspection gap.
+
+---
+
+## Excerpt #9309–9309 · 2026-07-02
+
+**[🧑 BR · 12:15:11 · #9309]**
+
+WR data: we need differnet thresholds for compact dance based on AFK or not
+
+
+> **Agent reflection:** WR-METHOD (refines propose-compact-dance-at-trigger). BR: 'we need different thresholds for compact dance based on AFK or not'. The compact dance requires the human (who runs the compact and pastes the resume prompt), so the safe threshold scales with how present the human is. Two regimes: human present means dance at 0.8 of L (it can fire late and still finish in the smart zone); human AFK means the dance is unavailable, so pre-emptively compact before leaving and adopt a conservative stop-and-handoff threshold well below 0.8 of L (about 0.6 to 0.7 of L, or an absolute 750k on a 1M window) at which the agent halts, checkpoints and waits rather than compacting. General principle: the less available the human, the lower and more conservative the agent's context threshold.
+
+---
+
+## Excerpt #9389–9389 · 2026-07-02
+
+**[🧑 BR · 12:23:01 · #9389]**
+
+⟦tool_result⟧
+AARGH while leaving the room this WR Data its an "until grep -q "=== exit=" /tmp/claude-1000/-home-bjornr-git-berg-bjornregnell-muntabot-synch-introprog/3b97e878-9eea-42d5-b08e-f6188c57b187/tasks/bbof9r499.output 2>/dev/null; do :; done" now must rush to meeting
+
+
+> **Agent reflection:** WR-REGRESS plus WR-METHOD (harness affordance ignored). Launched a job in the background correctly, then bolted on a busy-wait spin loop that re-polls the task file instead of ending the turn and letting the harness background-completion notification re-invoke the agent (which fired seconds later). Triply wrong: redundant (completion is pushed, not polled), wasteful (a no-sleep spin pegs a CPU core, on a box that had just crashed from resource pressure), and it blocks the turn. New reflex class: waiting for async work is run-in-background plus end-the-turn, or the Monitor tool for external conditions, never a poll loop or a foreground sleep. Did the hard part right, then negated it with a manual poll.
+
+---
