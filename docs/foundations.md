@@ -176,6 +176,16 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   file, a WR-data note, self-reminding) are *retrieval-fragile* → they leak under momentum. Evidence: the raw-grep
   reflex was beaten once we *structuralized* the typed path; `git … && …` persists because it is still only
   knowledge. **Rule:** weight toward structural safeguards, treat knowledge ones as backup.
+- **Substrate (agent)** — the **externalized state, knowledge, and structure the agent reads and acts on.**
+  Because the model's weights are fixed, the substrate is where the agent's effective *memory*, learning, and
+  operating rules actually live — its **extrinsic-volatile-plasticity** organ. It is **layered by durability** (the
+  *substrate hierarchy*): (1) **in-context** — the conversation window: richest but **volatile**, lost at
+  compaction / `/clear` / a crash; (2) **memory** — memory files, auto-loaded, persist across sessions; (3)
+  **structure** — the `tt` tools, hooks, allowlist, settings, and committed docs (RAW-DATA, notes, this glossary):
+  most durable AND behavior-*gating*. Higher layers make a lesson **stick** harder — a rule in *structure* fires
+  without recall, a rule only *in-context* evaporates (see **structural vs knowledge safeguard**). The substrate is
+  the address of **coupled-system capability** and the thing **substrate-as-multiplier** multiplies; externalizing
+  onto it is how a volatile in-context arc is made crash- and compaction-recoverable.
 - **Coupled-system capability** — the agent's effective capability is a property of the **pairing** — model ×
   externalized substrate (memories, RAW-DATA, tools, methodology) × the human collaborator — **not of the model
   alone.** Functionalist / extended-mind: capability is *behavioral*, measured by what the coupled system reliably
