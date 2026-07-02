@@ -109,6 +109,19 @@ The corpus is captured two complementary ways, each honest about what it is:
    *retroactive fix* to the prior turn, not as new work). These are **experience-sampling triggers embedded in
    the workflow**: data is tagged when/where it happens, by the person who felt it, not reconstructed later.
 
+   **1b. Queued in-situ (agent-owned inbox → deferred harvest).** When the human is *concurrently editing the WR
+   research files themselves* (`RAW-DATA.md` / this file), the agent must NOT write a flagged moment straight to
+   the corpus: a live append would risk clobbering the human's open editor buffer (the shared-file-editing
+   hazard — see `shared-file-editing-protocol.md`), and the live turn lags the `.jsonl` flush anyway (so a
+   `RawData` mine would miss the just-flagged turn). So the agent **queues** each flag — verbatim gist +
+   reflection — into an **inbox it alone writes** (`muntabot-synch-introprog/notes/wr-inbox.md`, a *different*
+   repo), while acknowledging + reflecting in chat immediately. Once the human's concurrent WR edits are
+   committed **and** the flagged turns have flushed, the agent runs the mode-2 sweep over the queued items
+   (mine verbatim via `RawData.scala` → append to `RAW-DATA.md` → clear the inbox). The inbox is thus a
+   **write-buffer that decouples live flagging from corpus writes** whenever writer-contention or flush-lag would
+   otherwise corrupt or drop data — itself an instance of the shared-file-editing protocol, dogfooded. (Worked
+   example: the 2026-07-02 AFK run queued ~20 flags this way, then harvested 11 in one sweep.)
+
 2. **Retrospective sweeps (batch, agent-mined).** Between or after sessions the agent mines the `.jsonl` with
    `RawData.scala` in **focused batches, each with a *declared focus***, so coverage is auditable rather than
    ad-hoc and a reviewer can see the lens (and its blind spots). The sweeps run on 2026-06-30, as a worked

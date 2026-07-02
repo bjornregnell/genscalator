@@ -24,8 +24,12 @@ Every prompt is one of two categories, and they need **opposite** fixes:
 
 - **TRUE POSITIVE (agent earned it).** The command really is outside the safe envelope, or is ambiguous in a
   way the agent could have avoided: the shell-reflex family - `cd`+redirect, `cd`+git, pipe-to-`tail`, chained
-  `cd`. Fix = **change AGENT BEHAVIOR** (`git -C`, one bare command, tools self-report to a file). Coded
-  **WR-REGRESS**; the durable cure is structural (submit-time hook), per `instruction-adherence-decay.md`.
+  `cd`, **command substitution / backticks / capture-then-reuse (`d=$(find …); … "$d"`)**, and **destructive
+  ops (`rm …`)**. Fix = **change AGENT BEHAVIOR** (`git -C`, one bare command, tools self-report to a file, list
+  dirs with Glob/Read not `$(…)`, don't `rm` disposable scratch). Coded **WR-REGRESS**; the durable cure is
+  structural (submit-time hook), per `instruction-adherence-decay.md`. NB: command-substitution is genuinely
+  unanalyzable **by construction** (the executed text is computed at runtime), so there the guard is *correct* to
+  distrust - it is a true positive, not a mis-fire; the fix is to not write dynamic shell, not to re-notate it.
 - **FALSE POSITIVE (harness mis-fired).** The command is benign but contains a token pattern the conservative
   parser cannot disambiguate from an attack: `<N-M>` (zsh numeric-range glob), `\n#` (a comment that could hide
   args), `$VAR` (an expansion unknown at analysis time). Fix = **change OUR NOTATION / tooling** so the safety
@@ -42,7 +46,8 @@ analyzer must assume the worst**:
 | pattern | why the analyzer can't prove it safe |
 |---------|--------------------------------------|
 | `$TT` / any `$VAR` | the expansion is unknown at analysis time - could resolve to *any* path |
-| `<N-M>` | zsh reads it as a numeric-range glob - could expand to many filenames |
+| `=word` (leading `=`, e.g. `=OVERRIDE=`, `=cmd`) | zsh **equals-expansion**: a word starting with `=` resolves to the path of a command (`=ls` -> `/usr/bin/ls`), so the analyzer must treat it as an unknown filename expansion |
+| `<N-M>` / `<->` / `<-` | zsh reads the angle-bracket forms as numeric/range globs - could expand to many filenames (all three variants trip it) |
 | `\n#` inside a quoted arg | `#` starts a comment at a word boundary unquoted; inside quotes it is literal - analyzer and shell can **disagree**, so a `\n# ...` could hide real args from validation while the shell still runs them (a parser-differential bypass; comments run to end-of-line, so a newline-led `#` can swallow a whole injected line) |
 | `cd X && cmd` | `cmd`'s path resolution depends on the `cd`, so the analyzer cannot validate `cmd`'s paths against the *real* cwd |
 | multiple `cd` in one command | the effective cwd at each step is path-dependent and hard to track soundly |
@@ -67,7 +72,20 @@ viewed from two sides: a command the analyzer can prove safe is both.
 
 ## 5. The avoidance ruleset (living; each entry is a FALSE-POSITIVE fix)
 Conventions that keep benign commands provable, derived from observed guard fires:
-- ranges `N..M` (or two ints), **never** `<N-M>` - zsh numeric glob.
+- ranges `N..M` (or two ints), **never** `<N-M>` / `<->` / `<-` - all three angle-bracket forms are zsh
+  numeric/range globs. (Fine in FILE content; in a commit `-m` or grep pattern, rephrase to "the arrow form".)
+- **no word starting with `=`** in a shell arg (`=OVERRIDE=`, `=cmd`) - zsh equals-expansion. (Fine in FILE
+  content; in a commit `-m` or grep pattern, rephrase or drop the leading `=`.) Also **don't invent-and-search**
+  speculative marker literals - grep only KNOWN real tokens.
+- **no command substitution / backticks / `x=$(…)` then `$x`** - genuinely dynamic (the guard is *right* to
+  distrust, §2 TRUE POSITIVE): list a directory with the Glob/Read tools or pass a **literal** path; never
+  capture-then-reuse in a shell string.
+- **don't `rm` gitignored scratch** - `tmp/` is disposable-in-place, so leave it (overwritten next run). If a
+  cleanup is genuinely wanted, add a **scoped** allow-rule (`Bash(rm -f <repo>/tmp/*)`), never a broad `rm`.
+  (This is a TRUE-positive gate the human relaxes deliberately for a proven-safe path - like the AFK
+  git-loosening - not a false-positive re-notation. See the settings mirror `wr-data/settings-local-mirror.json`.)
+- **wait for async work with `run_in_background` + END TURN** (the harness push-notifies on completion), or the
+  `Monitor` tool - never a `while/until … do … done` poll or a foreground `sleep`-poll (a blocking shell loop).
 - **no body line starts with `#`** inside a quoted arg (commit messages etc.); write `- #N` or `turn N` -
   comment-hiding bypass. (Keep `#N` freely in FILE content - it only bites inside shell-quoted args.)
 - `git -C <abs>` , never `cd X && git` - untrusted-hooks + cd path-resolution.
