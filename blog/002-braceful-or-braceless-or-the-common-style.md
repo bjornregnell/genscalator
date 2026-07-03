@@ -174,11 +174,11 @@ lesson: *small model-sets mislead.*
 *Figure 1 — **Edit-error rate = failed attempts ÷ total attempts** (shown as a %). One attempt "fails" if it does
 not compile **or** compiles but changes the wrong scope (a mis-scope); it "passes" only if it compiles **and**
 behaves like the oracle on a probe input. Each bar pools all 7 local models × 6 repeats = **42 attempts** (so a
-bar reading 60% = 25 of 42 failed). The three sizes are three separate but identically-shaped programs — the same
-`scan` function whose `if`/`else-if` character-dispatch chain is **2 branches** long (`a`,`b` — **small**),
-**5** (`a`–`e` — **medium**), or **10** (`a`–`j` — **large**). The edit is identical each time (wrap that whole
-chain in a new `else`); a longer chain just means a longer block, so more lines a braceless edit must re-indent.
-Braceless is costliest at every size, and the rate climbs as the block grows. The full programs are in Appendix A.*
+bar reading 60% = 25 of 42 failed). Each label on the x-axis is a **separate test program** (shown in full in Appendix A): the same `scan` function
+at three block sizes, where `(a)`, `(a–e)`, `(a–j)` say how far its `if`/`else-if` character-dispatch chain runs —
+**2 branches** (`a`,`b` — small), **5** (`a`–`e` — medium), **10** (`a`–`j` — large). The edit is identical for
+all three (wrap that whole chain in a new `else`); a longer chain is just a longer block, so more lines a
+braceless edit must re-indent. Braceless is costliest at every size, and the rate climbs as the block grows.*
 
 **What the separation revealed (the real finding).** Splitting emission from correctness dissolved the aggregate
 into something sharper. Emission was near-perfect for everyone **except** aya-expanse, which literally **cannot
@@ -214,20 +214,47 @@ opposite of the thesis. There is no universal "braces are safer for agents" law 
 **RQ3 — the frontier.** Opus 4.8 scored **27/27 PASS**: 100% emission-conformant and 100% edit-correct in every
 style, task, and size. For a strong model, the style simply does not matter here.
 
-### 5.5 Threats to validity
+### 5.5 Can we trust these results?
 
-These are load-bearing; the result is a **pilot**, not a verdict:
+A pilot is only as good as its caveats, so here they are in plain terms, grouped by the three questions a sceptic
+should ask.
 
-- **One edit family** (wrap-in-`else`) and only 3 tasks — other edits (extract, add-branch, rename-reindent) may
-  behave differently.
-- **Emission is a proxy** (a brace-signature check), not a perfect measure of "is this really that style."
-- The **common style was under-tested**: the tasks had no blank-line scopes, so "common" and "braceless" started
-  from the same file — common differed only as an instruction, not as distinct code. Fixing this needs
-  blank-line tasks.
-- **R = 6** locally (R = 3 for Opus), single session, one GPU box. Rates are indicative, not tight.
-- Local models' raw "error rate" is heavily confounded by **emission ability** — a model that cannot emit a
-  style scores 100% "error" regardless of its editing skill. (That confound *is* the finding, but it means the
-  raw aggregate must be read with care.)
+**1. How far do these numbers generalise?** *(the limits on reading anything universal into them — what
+researchers call external validity.)*
+- **One kind of edit.** Every task is the same move: wrap a block in a new `else`. Other edits (extract a helper,
+  add a `case`, rename-and-reindent) could behave differently — braceless might even *win* on some.
+- **Three programs, one language.** Three sizes of one function skeleton, all in Scala. Nothing here speaks to
+  other languages, or to code that looks nothing like a dispatch chain.
+- **A particular line-up of models.** Seven small local models plus one frontier anchor, run once, six tries
+  each. Models change monthly, and a different set can move the aggregate — a *smaller* set already did (the
+  cautionary tale above). Read the numbers as "what happened with these models," not "how LLMs are."
+
+**2. Is it really the *style* causing the differences — or something else?** *(confounds — internal validity.)*
+- **Can-it-even-write-it vs can-it-edit-it.** The big one: a model that simply *cannot produce* a style scores
+  100% "error" no matter how good its editing is (aya-expanse on braceless). Raw error-rate mixes "couldn't
+  write it" with "wrote it wrong" — which is exactly why the analysis **splits emission from correctness**. The
+  raw aggregate still has to be read with that in mind.
+- **Was the prompt equally fair to each style?** The instruction has to be equally clear and idiomatic for
+  braceless, braces, and common — otherwise the effect could be "which wording was clearest," not "which style
+  is costlier." Piloting the prompt guards against this; it doesn't fully remove it.
+- **"Common" wasn't truly distinct here.** These tasks have no blank-line scopes, so the *common* variant started
+  from the same file as braceless — it differed only as an instruction, not as different code. Treat the common
+  numbers as provisional until blank-line tasks exist.
+
+**3. Are we measuring the right thing?** *(does "error-rate" fairly stand in for "edit cost" — construct
+validity.)*
+- **Error-rate isn't the whole cost.** We score pass/fail on the first attempt. Real edit cost also includes
+  tokens spent and repair cycles after a miss — recorded in the raw data, but not the headline here.
+- **"Emitted the style" is a heuristic.** Whether an output "is" a given style is judged by a brace-signature
+  check, not a full parse — good enough as a proxy, not a definition.
+- **"Correct" rests on one probe input.** The behavioural check runs the edited function on a fixed input; a bug
+  that only shows on *other* inputs would slip through. (It still beats a compile-only check, which misses
+  silent mis-scopes entirely.)
+
+None of this sinks the headline direction — braceless costs more to edit for weaker models, and the effect
+vanishes at the frontier — but it does make this a **pilot that points the way, not a verdict.** The cure for
+every item above is the same: more edit kinds, tasks with real blank-line scopes, more models across vendors,
+and larger runs.
 
 ### 5.6 Reproduce it yourself
 
