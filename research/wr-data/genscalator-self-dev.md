@@ -214,3 +214,29 @@ regression — self-inflicted, by writing `<->` in prose that the shell analyzer
 - **Immediate agent rule:** don't put `<->`, bare `*`, backticks, or `{…}` in commit-message prose — write
   `↔` / "between X and Y" / spelled-out forms. The false positive is cosmetic here, but it's a **standing
   tripwire** for as long as commits go through bash.
+
+### `xargs` (+ `cd && ls | … | grep`) reflex for a file-list — dual-use command-runner (2026-07-03, BR-spotted)
+While verifying doc filenames for the PRD review, the agent ran
+`cd genscalator && ls -1 research/*.md | xargs -n1 basename | grep -iE '…'` — reaching for **`xargs`** (inside a
+`cd &&` + `ls | … | grep` chain) just to *list and filter filenames*. BR: *"what is xargs? tool candidate?"*
+
+- **What `xargs` is:** it reads items from stdin and turns them into **arguments** for a command, running it once
+  per item/batch (`-n1` = one per call). Powerful glue — and a textbook dual-use footgun on TWO axes: (1) it
+  **executes commands**, so `xargs rm`, `xargs -I{} sh -c '…'` is **arbitrary exec + mass-application** over many
+  inputs (a BHH `controlHumanSystem` / mass-action vector); (2) it **word-splits** on whitespace, so a filename
+  with a space/newline silently breaks or mis-targets it (`-0`/`-d` only partly fix). So `Bash(xargs *)` is
+  **un-allowlistable** for the same reason as `sed`/`curl`: the *rule* can't be proven safe even when the *call*
+  is.
+- **Tool candidate — but NOT by wrapping `xargs`.** Like `sed`, xargs is a **command-runner**; a safe wrapper
+  would have to re-parse arbitrary commands (dead end). The *need* here — "list files by glob, show basenames,
+  filter by pattern" — is a typed **`tt files` / `tt text`** job that iterates INTERNALLY with no shell. Same
+  conclusion as the sed entry above: **typed verbs, safe by construction — not wrap-the-dangerous-DSL.** xargs is
+  the clearest case yet, because its danger literally *is* "run this command over many inputs." It joins
+  `curl`/`sed`/`awk`/`grep`/`python` on the named dynamic-shell hazard list (cf. blog `000-why-genscalator.md`).
+- **Adherence-decay, owned:** this is the agent's **2nd** shell-munging reflex this session (sed for a label
+  prefix; now `cd && ls | xargs | grep` for a file list) — and it happened **mid-AFK-run while building the
+  anti-dynamic-shell project itself.** The command also violated the **no-`cd` / one-bare-command** rule (the
+  `cd` reset the shell cwd, per the harness note). Lesson, again structural not willpower: knowing the rule does
+  not stop the reflex — the typed tools (`tt files` with list/basename/filter) must **exist and be the path of
+  least resistance**, or the reflex wins. *Logging is not fixing* (cf. the cross-repo-tt entry): the signal is to
+  ship `tt files`.
