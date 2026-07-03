@@ -23,7 +23,10 @@ def groupedBar(title: String, subtitle: String, groups: List[String],
   val padL = 54; val padR = 18; val padT = 56; val padB = 108
   val plotH = 230
   val plotW = groupW * groups.size
-  val (w, h) = (padL + plotW + padR, padT + plotH + padB)
+  // canvas must fit the widest of {plot, title, subtitle} so long subtitles never clip at the viewBox edge
+  val textW = math.max(title.length * 9.6, subtitle.length * 6.5)
+  val w = math.max(padL + plotW + padR, (padL + textW + padR).toInt)
+  val h = padT + plotH + padB
   val sidePad = 9; val barGap = 3
   val barW = (groupW - 2 * sidePad - 2 * barGap) / 3.0
   val sb = new StringBuilder
