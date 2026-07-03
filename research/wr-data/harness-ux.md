@@ -85,3 +85,67 @@ human mis-attributes it. Cross-ref [`../human-state-and-joint-zone.md`](../human
 done thinking") that implies model introspection — a neutral "working… (Ns)" removes the false self-report reading.
 **Agent-side:** when asked about these strings, be honest that they are harness heuristics the model can neither see
 nor steer — do **not** confabulate a reason for a flip.
+
+---
+
+## `cd` + output redirection tripped a path-resolution-bypass guardrail (2026-07-03, BR-reported)
+
+**Symptom.** A pure *inspection* command — `cd /abs/introprog && ls *.sh Makefile … 2>/dev/null; ls compendium/*.tex …`
+— triggered a manual-approval prompt: *"Compound command contains cd with output redirection — manual approval
+required to prevent path resolution bypass."* Nothing was created, deleted, or moved; the command only listed files.
+
+**Honest mechanism.** The guardrail fires on the *shape* (`cd` composed with a redirection `2>/dev/null` in one
+compound), not the *effect*. The concern is legitimate in general — `cd` moves the resolution root, so a later
+redirection `> file` in the same compound could write somewhere the static analyzer didn't expect (path-resolution
+bypass). But here the redirection was a benign `2>/dev/null` on a read-only `ls`, so the *shape* matched a hazard
+class the *effect* never entered. Same false-positive family as the `simple_expansion` and `<->` cases: the analyzer
+classifies syntax, and I supplied syntax that *looks* like the hazard.
+
+**Why it's my reflex, not the guardrail's fault.** The `cd &&` compound was **unnecessary** — every path in that
+command could have been absolute in a single bare command with no `cd` at all (`ls /abs/introprog/*.sh …`). I reach
+for `cd X && …` out of shell habit; the only place I *genuinely* need cwd=introprog is `sbt --client`, which takes
+no redirection and so never trips this. So the friction is self-inflicted: the typed-tool / bare-absolute-path
+discipline (cross-ref [`genscalator-self-dev.md`](genscalator-self-dev.md), the compound-shell reflex thread)
+dissolves it entirely. Third instance this session of the same root cause — **compound shell constructs are my
+recurring collision point with the permission layer**, and the cure is always "emit simpler syntax," never "argue
+with the guardrail."
+
+**Upstream ask.** Distinguish `cd` composed with a *writing* redirection (`>`, `>>`, `tee` — the actual bypass) from
+`cd` composed with a *discarding/reading* one (`2>/dev/null`, `< file`); the latter cannot write outside the
+resolved root and needn't prompt. **Agent-side (the real fix):** default to bare, absolute-path, single commands;
+reserve `cd` for the narrow tools that require cwd and never pair it with a redirection.
+
+---
+
+## Input-focus race: an in-flight Enter meant for the message box lands on a confirmation dialog (2026-07-03, BR-reported)
+
+**Symptom.** BR was composing his own message while an agent tool-confirmation prompt appeared; he "happened to
+press Enter just when I was ready" and the keystroke went to the *confirmation* instead of his message box — his
+message was "lost in the feed" and a pending approve/deny was resolved by an Enter he never intended for it. BR:
+*"bad UX risk, to be racing with confirmation and accidentally press enter to the wrong input; this is actually
+bad."* The confirmation in question was triggered by an **avoidable** agent command — a `sed -n '/…/,$p'` (the `$`
+tripped the analyzer) that should have been a `Read`/`tt text` call in the first place (cross-ref the
+scratch-over-bash and compound-shell reflex threads).
+
+**Why it's serious (not cosmetic).** This is a **safety** race, not just annoyance. The whole point of a
+confirmation prompt is a deliberate human review gate; if a keystroke intended for a *different* input can silently
+satisfy that gate, the gate's guarantee is void — a command can be approved (or denied) with zero actual review,
+precisely when the human's attention is elsewhere (composing). It is the input-channel analogue of clickjacking:
+the decision UI captures intent aimed at a sibling UI. Worse under AFK/long-run conditions, where the human types
+messages *asynchronously* to a stream of agent actions, so message-composition and confirmation-arrival routinely
+overlap.
+
+**Two independent failure surfaces.** (1) **Harness:** the confirmation dialog and the message composer share a
+focus/return-key path with no debounce or focus-guard, so a race exists at all. (2) **Agent:** every avoidable
+confirmation prompt *opens* a race window; the metachar/bash-hack reflex (here: `sed …$p`) manufactures prompts
+that needn't exist. Fewer prompts ⇒ fewer windows. The two compound: the agent's noise raises the *rate* of the
+harness's race.
+
+**Upstream ask.** (a) Debounce/guard the confirmation control: ignore an Enter for ~Nms after the dialog appears,
+and/or require the confirmation to be *explicitly focused* (not inherit a return-key aimed at the composer); (b)
+never let a keystroke buffered for the message box be redirected to a just-appeared modal — route it to whichever
+input was focused when the key was pressed, not when it was processed. **Agent-side (the real, in-my-control fix):**
+drive confirmation frequency toward zero — use `Read`/`tt` typed tools instead of `sed`/`grep`/`awk` bash-hacks, and
+bare single commands instead of metachar/compound ones, so the review gate only ever appears for actions that
+genuinely warrant a human decision. Cross-ref [`genscalator-self-dev.md`](genscalator-self-dev.md) and
+[`../human-state-and-joint-zone.md`](../human-state-and-joint-zone.md) (perception/attention gaps under long runs).
