@@ -44,6 +44,15 @@ Whenever you build or scaffold a new tool, pause and classify it:
 Fewer dangerous, dynamic commands → fewer approval prompts → less **confirmation fatigue**, and the
 typed path stays reviewable and reusable.
 
+## Comms shorthand (both directions)
+Emit and parse standard chat/dev acronyms **without expansion** — a communication-bandwidth + TE lever
+(fewer tokens, less human typing, same intent). Expand only a genuinely ambiguous one. Common set:
+**BRB** be right back · **AFK** away from keyboard · **WDYT** what do you think · **LGTM / SGTM** looks /
+sounds good to me · **ACK / NACK** acknowledged / rejected · **IMO** in my opinion · **FWIW** for what it's
+worth · **TL;DR** short summary · **FYI** · **PTAL** please take a look · **AFAICT** as far as I can tell ·
+**IIRC** if I recall correctly · **WRT** with respect to · **WDYM** what do you mean · **ETA** ·
+**WIP** work in progress · **repro** reproduce · **PR** pull request. Full list: [`docs/foundations.md`](docs/foundations.md#glossary) → *Comms shorthand*.
+
 ## Read more
 - [`tools/README.md`](tools/README.md) — the `tt` toolbox cheat-sheet (`text`, `files`, `newtool`) + the *Companion: scalex* section.
 - [`docs/tool-selection.md`](docs/tool-selection.md) — which tool for which question (`tt` vs `scalex` vs Metals).
