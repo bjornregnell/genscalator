@@ -122,10 +122,10 @@ reproducible.
 
 ### 5.1 Research questions
 
-- **RQ1 (emission):** Can a given AI model reliably *produce* code in a requested style at all?
-- **RQ2 (correctness given emission):** *Among* outputs that do use the requested style, does the style affect
+- **RQ1 (style adherence):** Can a given AI model reliably *produce* code in a requested style at all?
+- **RQ2 (correctness given adherence):** *Among* outputs that do use the requested style, does the style affect
   how often the edit is *correct* — and does any gap grow with block size?
-- **RQ3 (capability):** Does a strong frontier AI model reach near-perfect emission and low, style-insensitive
+- **RQ3 (capability):** Does a strong frontier AI model reach near-perfect style adherence and low, style-insensitive
   error — i.e. does the style effect disappear as capability rises?
 
 Separating RQ1 from RQ2 matters because "the model got it wrong" hides two very different failures: a model that
@@ -134,10 +134,10 @@ exactly the trap the pilot fell into (below).
 
 ### 5.2 Hypotheses
 
-- **H1:** emission depends on model × style — some models simply cannot emit some styles.
-- **H2:** controlling for emission, braceless edits are at least as error-prone as braceful, and the gap grows
+- **H1:** style adherence depends on model × style — some models simply cannot produce some styles.
+- **H2:** controlling for style adherence, braceless edits are at least as error-prone as braceful, and the gap grows
   with block size.
-- **H3:** a frontier model (Opus 4.8) shows near-ceiling emission and low, style-insensitive error.
+- **H3:** a frontier model (Opus 4.8) shows near-ceiling style adherence and low, style-insensitive error.
 
 ### 5.3 Data collection
 
@@ -147,11 +147,11 @@ agent the "before" file rendered in one style plus a style-neutral instruction, 
 grades it automatically with a script that (a) checks it **compiles** and (b) runs a **behavioural probe** —
 does the edited function actually produce the oracle's output? Outcomes: **PASS**, **FAIL_COMPILE** (a loud
 error), or **FAIL_MISSCOPE** (compiles but wrong — the *silent* hazard). A second measurement records
-**emission-conformance**: did the output actually use the requested style?
+**style adherence**: did the output actually use the requested style?
 
-- **Subjects:** 7 local open models run on a GPU box (the qwen2.5 family incl. coder variants, gemma2/gemma3,
-  aya-expanse), plus a frontier anchor, **Claude Opus 4.8**, run through a subagent workflow on the identical
-  tasks.
+- **Subjects:** 7 local open models run on a single **6 GB-VRAM** consumer GPU — which is why they are all small
+  (a 6 GB card only fits small, quantised models): the qwen2.5 family (incl. coder variants), gemma2/gemma3, and
+  aya-expanse. Plus a frontier anchor, **Claude Opus 4.8**, run through a subagent workflow on the identical tasks.
 - **Volume:** 7 × 3 tasks × 3 styles × 6 repeats = **378 local cells**, plus 27 Opus cells.
 - Raw rows: [`results-raw.tsv`](../research/experiments/indent-vs-braces/results-raw.tsv). (A note on
   terminology: the code and raw data call the style variable `regime`; the prose now says *style*.)
@@ -189,9 +189,9 @@ plus five — so they are nested versions of one program, not three different sn
 all three (wrap the whole chain in a new `else`); a longer chain is just a longer block, so more lines a braceless
 edit must re-indent. Braceless is costliest at every size, and the rate climbs as the block grows.*
 
-**What the separation revealed (the real finding).** Splitting emission from correctness dissolved the aggregate
-into something sharper. Emission was near-perfect for everyone **except** aya-expanse, which literally **cannot
-produce braceless code** (0/18) — it always emits braces. Once you look only at outputs that *did* use the
+**What the separation revealed (the real finding).** Splitting style adherence from correctness dissolved the aggregate
+into something sharper. Style adherence was near-perfect for everyone **except** aya-expanse, which literally **cannot
+produce braceless code** (0/18) — it always produces braces. Once you look only at outputs that *did* use the
 requested style, the picture is **bidirectional and model-specific**:
 
 ![Edit-error rate by model and style — the effect flips per model.](figures/fig-model-style.svg)
@@ -200,11 +200,11 @@ requested style, the picture is **bidirectional and model-specific**:
 **18 attempts** = 3 task sizes × 6 repeats). The two 100% bars point **opposite** ways —
 aya-expanse fails every braceless edit, gemma3 fails every braceful edit — while the qwen-coder variants sit near
 zero everywhere (strong coders are style-robust). A single averaged "braces vs braceless" number would hide all
-of this, which is why the table below decouples emission from correctness.*
+of this, which is why the table below decouples style adherence from correctness.*
 
 | model | braceless | braceful | common |
 |---|---|---|---|
-| aya-expanse:8b | *(cannot emit)* | 100% | 89% |
+| aya-expanse:8b | *(cannot produce)* | 100% | 89% |
 | gemma2:9b | 33% | 83% | 33% |
 | gemma3:latest | 39% | **0%** | 44% |
 | qwen2.5-coder:7b | 83% | 100% | 94% |
@@ -214,13 +214,13 @@ of this, which is why the table below decouples emission from correctness.*
 *(conditional correctness = PASS given the output used the requested style; selected rows — full table in the
 results file.)*
 
-Look at the extremes. `aya-expanse` fails braceless 100% — but that is an **emission** failure (it can't produce
-the style), not an editing failure. `gemma3` fails braceful 100% — but it emits braceful perfectly and then
+Look at the extremes. `aya-expanse` fails braceless 100% — but that is a **style-adherence** failure (it can't produce
+the style), not an editing failure. `gemma3` fails braceful 100% — but it produces braceful perfectly and then
 **botches every edit**, a pure **correctness** failure. "Error rate" had been silently averaging two completely
 different mechanisms. And `qwen2.5:7b` actively edits **braceless better than braceful** (72% vs 39%) — the
 opposite of the thesis. There is no universal "braces are safer for agents" law at the per-model level.
 
-**RQ3 — the frontier.** Opus 4.8 scored **27/27 PASS**: 100% emission-conformant and 100% edit-correct in every
+**RQ3 — the frontier.** Opus 4.8 scored **27/27 PASS**: 100% style-adherent and 100% edit-correct in every
 style, task, and size. For a strong model, the style simply does not matter here.
 
 ### 5.5 Can we trust these results?
@@ -241,7 +241,7 @@ researchers call external validity.)*
 **2. Is it really the *style* causing the differences — or something else?** *(confounds — internal validity.)*
 - **Can-it-even-write-it vs can-it-edit-it.** The big one: a model that simply *cannot produce* a style scores
   100% "error" no matter how good its editing is (aya-expanse on braceless). Raw error-rate mixes "couldn't
-  write it" with "wrote it wrong" — which is exactly why the analysis **splits emission from correctness**. The
+  write it" with "wrote it wrong" — which is exactly why the analysis **splits style adherence from correctness**. The
   raw aggregate still has to be read with that in mind.
 - **Was the prompt equally fair to each style?** The instruction has to be equally clear and idiomatic for
   braceless, braces, and common — otherwise the effect could be "which wording was clearest," not "which style
@@ -278,7 +278,7 @@ Everything needed to re-run or re-analyse this lives in the repository under
   (so "correct" means *behaves* like the oracle, not *looks* like it).
 - **Sweep runner** — `sweep.scala`: loops `task × style × model × R`, prompts each local model (via Ollama/modly),
   grades, appends rows to the TSV.
-- **Analysis + figures** — `analyze.scala` (the tables) and `charts.scala` (Figures 1–2 above, generated straight
+- **Analysis + figures** — `analyze.scala` (the tables) and `charts.scala` (Figures 1–3 above, generated straight
   from `results-raw.tsv`).
 
 End-to-end: point `sweep.scala` at your models, then `scala-cli run sweep.scala -- 6 <models…>` →
