@@ -80,3 +80,20 @@ needs new `tt` tools, and the `tt` tools that remain should *themselves* follow 
   confirmation. For **WR** it's the *design-principle layer* of the thesis: the WR-data enumerates the
   friction events; this note names the upstream practice that prevents a whole category of them, and guides
   which `tt` tools are still worth building (and how they should behave).
+
+## Terminology — *measuring* (external) vs *introspection* (self) (2026-07-03, BR)
+While an AT slide build ran on the flaky-hot box, BR asked for the box's temperature; the agent almost filed it
+under "box introspection." BR corrected: *"it is not box introspection (the box is dumb) — it is box measuring."*
+The distinction is worth fixing in the vocabulary:
+- **Measuring / instrumentation / telemetry** — reading an **external** system's exposed signals (box CPU temp
+  via `/sys/class/thermal`, GPU util via `nvidia-smi`, a build's error count). The target is **dumb** — it has
+  no self, just sensors — so there is nothing to "introspect"; you point an instrument at it and read.
+- **Introspection** — a system examining its **own** internal state. Needs a *self*, so it is reserved for the
+  **agent** (its context, its token velocity, its reasoning) — never for a dumb substrate.
+- **The load-bearing asymmetry (feeds blog 001 / the rot-meter blindness thesis):** the agent can **trivially
+  measure the dumb box** (38 °C, read in one call) yet **cannot introspect its own context usage** — *the sensor
+  exists for the mindless thing and is missing for the mindful one.* Measuring-outward is easy (the world exposes
+  sensors); introspecting-inward is hard (no privileged self-channel). So "instrumentation-by-default" splits in
+  two: the agent should **measure** external state freely, but its **self**-instruments (usage, rot) are the ones
+  that need an external observer (the human, a durable file) precisely because true introspection is unreliable
+  from inside a degrading system. Keep the words distinct: don't call measuring a dumb box "introspection."
