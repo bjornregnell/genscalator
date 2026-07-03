@@ -42,9 +42,13 @@ an agent's working context during ordinary tool use.
 - [`token-budget-awareness.md`](token-budget-awareness.md) — how can an agent become aware of its
   token-spending *rate* across nested limits (context window / session / weekly cap) and *pace* itself, so
   inefficient/brittle spend never causes a hard halt mid-task? The liveness/governance layer of the thesis.
-- [`smart-zone-ceiling.md`](smart-zone-ceiling.md) — can we *estimate* **L**, the context-fill fraction at
+- [`smart-zone-ceiling.md`](smart-zone-ceiling.md) — can we *estimate* **Z**, the context-fill fraction at
   which the agent crosses smart→dumb zone, so an instrument can warn/brake before degradation rather than at
   the hard limit? Turns the ~30% folklore boundary into a measurable brake threshold (pairs with `token-usage`).
+- [`proactive-compaction-point.md`](proactive-compaction-point.md) — should we compact *proactively* (before
+  the reactive `0.8·Z` brake fires), and when? Argues **lazy** compaction (under-compacting is reversible,
+  over-compacting is not) with one exception — the **consolidation point** (a durability predicate: committed +
+  pushed + notes-updated). Also where the `L → Z` rename was decided.
 - [`communication-bandwidth.md`](communication-bandwidth.md) — for a non-native-English human + an
   English-centric agent, what's the bandwidth- and TE-optimal language *per direction*? The linguistic
   dimension of the human↔agent channel (human L1 in, agent cheapest-clear out; ask when L1 is idiosyncratic).

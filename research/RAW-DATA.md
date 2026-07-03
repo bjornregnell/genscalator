@@ -11,6 +11,15 @@ lossy and, per [`METHODOLOGY.md`](METHODOLOGY.md) §5, confabulation-prone). The
 clearly-separated `> **Agent reflection:**` annotations. So: *excerpt = objective (mined); reflection =
 subjective (labelled).* This is METHODOLOGY §4 (behavioral mining over self-report) applied to data capture.
 
+**Append-only + mining-only (rule, 2026-07-03, BR).** This file is **append-only**: never edit or delete an
+existing excerpt or reflection. Datapoints are added *only* by re-running the `RawData.scala` miner (excerpts)
+plus a labelled reflection — never hand-typed or retro-"fixed". If we later change our minds about something
+recorded here (a renamed term, a revised reading), that change is logged as a **new** datapoint elsewhere (a
+`wr-data/` note), **not** a back-patch of the old row. Rationale — research integrity: *it is what it is*; a
+human (or agent) changing their mind is **itself data**, and silently rewriting history would destroy the very
+signal we study. Concrete case: the smart-zone ceiling symbol was renamed **L → Z** on 2026-07-03 and every
+*other* doc was updated, but the old `L` rows in this file stay exactly as they were.
+
 **Workflow.**
 ```
 scala-cli run research/RawData.scala -- --list --grep "WR data"        # find turn indices

@@ -92,7 +92,7 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
 - **Comms shorthand (human↔agent)** — a shared vocabulary of standard chat/dev **acronyms** both roles emit
   and parse *without expansion*, a direct **communication-bandwidth** + **TE** lever: fewer tokens (and less
   human typing) carry the same intent, in both directions. Distinct from the project's *coined* terms
-  (**CF**, **TE**, **L**, **WR**, **AT**, **BHH**, **BadGoal**, **ralph loop** …) which name domain concepts —
+  (**CF**, **TE**, **Z**, **WR**, **AT**, **BHH**, **BadGoal**, **ralph loop** …) which name domain concepts —
   this entry is generic conversational glue. Both sides may use these freely; when a token is genuinely
   ambiguous in context, expand it once. Common set:
   - *Presence / status:* **BRB** be right back · **AFK** away from keyboard · **OOO** out of office ·
@@ -104,7 +104,7 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   - *Meta / reference:* **TL;DR** short summary · **FYI** for your information · **ICYMI** in case you missed it ·
     **PTAL** please take a look · **AFAICT** as far as I can tell · **IIRC** if I recall correctly ·
     **AFAIK** as far as I know · **WRT** with respect to · **WDYM** what do you mean · **IDK** I don't know ·
-    **N/A** not applicable · **e.g. / i.e.** for example / that is.
+    **RQ** research question · **N/A** not applicable · **e.g. / i.e.** for example / that is.
   - *Dev-flavored:* **PR** pull request · **MR** merge request · **RC** release candidate · **repro** reproduce ·
     **rebase / squash** git ops · **YAGNI** you aren't gonna need it · **DRY** don't repeat yourself.
 - **Token efficiency (TE)** — achieving a task with fewer model tokens (input + output). A committed,
@@ -131,15 +131,15 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   subagents for big sweeps, and **checkpoint + compact before rot sets in**, not after. TE's smart-zone
   pressure exists precisely to *slow* context rot; instrumentation-by-default and the `tt` tools reduce the
   low-signal bloat that *accelerates* it.
-- **Smart-zone ceiling (L)** — the fraction of the context window an agent can fill *before* it crosses from
+- **Smart-zone ceiling (Z)** — the fraction of the context window an agent can fill *before* it crosses from
   the **smart zone** into the **dumb zone**: the **usable working-context ratio**. Names the "X%" boundary
-  in *Smart zone / dumb zone* as a quantity — if L ≈ 0.3, the agent stays sharp up to ~30% fill and
+  in *Smart zone / dumb zone* as a quantity — if Z ≈ 0.3, the agent stays sharp up to ~30% fill and
   **context rot** dominates beyond it (so a 1M window has a *usable* budget of ~300k, not 1M — *effective
-  context ≪ advertised context*). L is **model- and task-dependent** and currently a **blind spot**: an
-  agent can read its fill % (a `token-usage`-style instrument) but **not its own L**, so it can't tell how
+  context ≪ advertised context*). Z is **model- and task-dependent** and currently a **blind spot**: an
+  agent can read its fill % (a `token-usage`-style instrument) but **not its own Z**, so it can't tell how
   close to the edge it is (see research `smart-zone-ceiling.md`). Practical use: compare live fill % against
-  an estimated L and **brake** (checkpoint + compact) as fill nears L — not as it nears 100%. The region
-  below L is the *smart-zone budget*; alias *usable-context ratio*.
+  an estimated Z and **brake** (checkpoint + compact) as fill nears Z — not as it nears 100%. The region
+  below Z is the *smart-zone budget*; alias *usable-context ratio*.
 - **Token velocity (burn rate)** — the *first derivative* of cumulative token spend, dS/dt: how fast the
   budget is being consumed (tokens per unit wall-clock, or per turn/step). "Burn rate" with the derivative
   made explicit. Per-*time* measure; distinguish its per-*work* cousin **spend efficiency** = dS/d(progress)
@@ -163,7 +163,7 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   *committed* where the repo allows; **(2) prompt** — the agent hands the human a **paste-after-compact
   prompt** that points at those durable artifacts and names the next action; **(3) compact** — the *human*
   triggers the compaction; **(4) paste** — the human pastes the prompt, re-seeding the fresh context from the
-  durable state, not from the lossy summary. Initiated when fill nears the **smart-zone ceiling (L)** (read it
+  durable state, not from the lossy summary. Initiated when fill nears the **smart-zone ceiling (Z)** (read it
   off a `token-usage`-style instrument), *before* **context rot** sets in. **Safe-recovery invariant:** the
   truth lives in **committed files + memory**, never only in the chat — so even a total context loss (crash,
   cap halt, a summary that drops a thread) recovers by reading the resume note. The pasted prompt is a
@@ -173,13 +173,13 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   **compact trigger** (next).
 - **Compact trigger** — the context-fill level at which the agent should **proactively propose the compact
   dance**, rather than waiting until it is already degrading. Set at a **safety margin below the smart-zone
-  ceiling**: **fill ≥ 0.8·L** (with L≈0.3, ≈24% of a 1M window). The 0.8 margin exists because the *dance
+  ceiling**: **fill ≥ 0.8·Z** (with Z≈0.3, ≈24% of a 1M window). The 0.8 margin exists because the *dance
   itself costs turns* (save + write the resume prompt) — you want it to **complete inside the smart zone**,
   not begin at the edge of the dumb zone. It is the named behavioral bind on the `⚠ approaching` band a
-  `token-usage`-style instrument already reports (`fill/L ≥ 0.8` → warn; `≥ 1.0` → over). **Agent
-  responsibility:** periodically read fill/L (cheap, read-only) and, on first crossing the compact trigger,
+  `token-usage`-style instrument already reports (`fill/Z ≥ 0.8` → warn; `≥ 1.0` → over). **Agent
+  responsibility:** periodically read fill/Z (cheap, read-only) and, on first crossing the compact trigger,
   *suggest the dance* — not silently push on (that is how a long run drifts into **context rot**). Distinct
-  from L (the *boundary*) and from the dance (the *ritual*): the trigger is *when to start the ritual*.
+  from Z (the *boundary*) and from the dance (the *ritual*): the trigger is *when to start the ritual*.
 - **Habit (agent)** — a *learned default strategy* the agent reaches for. Examples: "munge text with
   grep/awk/sed", "count by piping to `wc -l`", "wrap work in `cd … && … > log`".
 - **Reflex (agent)** — a *fast, sub-deliberative trigger* inside a habit, fired before thinking.

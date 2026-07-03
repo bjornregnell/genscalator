@@ -62,6 +62,7 @@ the destination host.) — Dogfood note: the release itself was cut with this ve
 Two positive data points (not friction — evidence the confirmation model is well-placed, the flip side of the CF hazard):
 - **Version/capability probes (`gh --version`, `tea --version`) should be safe** — read-only, no side effects, just capability detection. Candidate: **allowlist the *specific* binaries we probe** (`gh`, `tea`, `scala-cli`, `scalex`, `tt`) for `--version`/`--help`. CAVEAT: a blanket `Bash(* --version)` is **not** strictly safe — it still *executes an arbitrary binary*, and a malicious `foo` can ignore `--version` and do anything. So narrow per-binary probe entries, not a universal wildcard. (Safe-by-design principle: the *rule* must be provably safe, not just the intended call — same lesson as the curl entry below.)
 - **Reading OUTSIDE the allowed working dirs correctly prompted** (`/etc/os-release`), and BR judged the prompt **appropriate** — a meaningful boundary crossing, not rubber-stamp noise. Positive signal that the **directory-scope guard is well-calibrated**: it fires on genuine out-of-tree access (where the human *wants* a say) without drowning in-tree work in prompts. This is the *good* end of the CF spectrum — few, meaningful approvals — that safe-by-design aims for.
+- **NEGATIVE counterpart — the "allow all edits" affordance reads as scary (2026-07-03, BR).** On a first edit prompt, the accept-all choice is worded **"Yes, allow all edits during this session (shift+tab)"**. BR flagged the wording as **alarming**: *"all"* is unbounded — does it include files **outside this repo** (`~/.ssh`, keyring, dotfiles)? The label doesn't disclose the **blast radius**, so the cautious human declines and keeps clicking. **Ask surfaced:** offer a **scoped** grant — *"allow all edits **in this repo/dir** this session"* — so the human can grant frictionlessly *without* signing a blank cheque. A *coarse* affordance pushes users to either rubber-stamp (CF-collapse) or prompt forever (CF-fatigue); a **directory-scoped** grant is the safe-by-design middle. **Perception gap:** edits ARE dir-scoped by the working-dir guard in practice — the guard is *safer than its own UI label admits*; the fix is mostly **wording** (state the scope) + optionally a genuinely repo-scoped accept.
 
 ### curl / HTTP GET → `tt web` + `tt forge` (2026-07-03)
 A different WR flavour: not a *bundling* prompt but a **dual-use-binary allowlisting** hazard. Fetching a
@@ -72,3 +73,16 @@ a narrow typed tool that declares its effects**: `tt web get` (read-only, capped
 generic case, and `tt forge` (Gitea/Codeberg releases/tags) for the domain need that surfaced here (creating
 the missing v0.8.0 release without hand-curling a token). Same pattern as `tt verify` replacing the
 `cd && … > log; echo $?` bundle: a bare binary the guard can't prove safe → a typed command it can.
+
+### Notation rename `L → Z` + `RAW-DATA.md` made append-only (2026-07-03, BR)
+Not a friction event — a **vocabulary + data-integrity** decision, logged here (the hand-authored WR home) per
+BR's instruction to *"note a new WR-DATA note that we changed the name"* rather than patch the raw log. The
+smart-zone ceiling symbol **L** was renamed **Z** ("smart-**Z**one ceiling"; BR's rationale: there are two
+zones, and a lone `Z` *stands out* and reads as sitting **between** smart and dumb, where a lone `L` was noise).
+Applied repo-wide — **except [`RAW-DATA.md`](../RAW-DATA.md)**, which BR simultaneously declared **append-only**:
+raw datapoints are **never** retro-edited or "fixed"; a change of mind is logged as **new** data, because
+*"humans change their mind and that's also data."* Clean statement of a research-integrity invariant to keep:
+**the raw log is immutable; corrections are forward-only.** Meta worth keeping: the agent's reflex was *"just
+fix all the L's everywhere for consistency"* — BR's guard against retro-editing the *raw* log is exactly the
+discipline that keeps the study honest. **Consistency pressure vs. evidentiary integrity — on raw data,
+integrity wins.** (The rename itself was safe to do everywhere else: those are *living* docs, not evidence.)

@@ -27,11 +27,11 @@ Here are the actual TODO of genscalator, so this document is both a template exa
 ### To review — session 2026-06-30 (foundations concepts + research notes)
 
 #### A. Ratify glossary concepts (`docs/foundations.md`) — names + definitions are yours to veto
-- [ ] **Smart-zone ceiling (L)** — the usable working-context ratio (~0.3) before the dumb zone. (You already
+- [ ] **Smart-zone ceiling (Z)** — the usable working-context ratio (~0.3) before the dumb zone. (You already
       picked this name over "lucidity ceiling".) Confirm the definition reads right.
 - [ ] **Compact dance** — the save→prompt→compact→paste ritual + the *recovery invariant* (truth in committed
       files + memory, the pasted prompt is only convenience). Your term; confirm wording.
-- [ ] **Compact trigger** — propose the dance at **fill ≥ 0.8·L**. Your chosen name. OK as the threshold?
+- [ ] **Compact trigger** — propose the dance at **fill ≥ 0.8·Z**. Your chosen name. OK as the threshold?
 - [ ] **Communication bandwidth (human↔agent)** — per-direction language/TE channel (you write L1, I answer
       cheap-clear; ask on idiosyncratic Swedish).
 - [ ] **Token velocity / Token acceleration / Context rot** — the dS/dt, d²S/dt², and the rot framing. Confirm

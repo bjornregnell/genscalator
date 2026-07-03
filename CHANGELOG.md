@@ -9,10 +9,10 @@ file before adopting a new version: it changes the agent's operating rules, so r
 ## Unreleased — docs + research accretion (introprog session 2026-06-30)
 Docs/research only — no tool/version change. Human review pending (see [`HUMANS.md`](HUMANS.md)).
 - **`docs/foundations.md` glossary — new agent-introspection concepts:** **Context rot**, **Token velocity**,
-  **Token acceleration**, **Smart-zone ceiling (L)** (usable working-context ratio before the dumb zone),
+  **Token acceleration**, **Smart-zone ceiling (Z)** (usable working-context ratio before the dumb zone),
   **Communication bandwidth (human↔agent)** (per-direction language/TE channel), **Compact dance** (the
   save→prompt→compact→paste hand-off ritual, with a committed-files-are-the-guarantee recovery invariant),
-  **Compact trigger** (propose the dance at fill ≥ 0.8·L).
+  **Compact trigger** (propose the dance at fill ≥ 0.8·Z).
 - **New research notes:** `instrumentation-by-default.md`, `token-budget-awareness.md`, `smart-zone-ceiling.md`,
   `communication-bandwidth.md`, `instructions-for-claude.md` (the global custom-instructions field; includes
   BR's current instructions as a worked example), `instruction-surfaces-precedence.md` (how AGENTS.md /
@@ -27,13 +27,22 @@ Docs/research only — no tool/version change. Human review pending (see [`HUMAN
   editing; Opt A/B/C trade-offs; the HUMANS.md/HUMANS.inbox.md split), `human-state-and-joint-zone.md` (model
   the human's smart/dumb zone + the joint (human,agent) 2x2; agent-as-stabilizer; thriller state; rest dance).
   Plus the **HUMANS.md + HUMANS.inbox.md** collaboration protocol (Opt A file-level partition).
+- **Notation rename `L → Z`** — the smart-zone ceiling symbol is now **Z** (smart-**Z**one ceiling; a lone `Z`
+  is visually salient and reads as *sitting between* the smart and dumb zones, where a lone `L` was noise).
+  Renamed repo-wide (`docs/foundations.md`, `smart-zone-ceiling.md`, `human-state-and-joint-zone.md`,
+  `research/README.md`, `HUMANS.md`, `PRD.md`, this file) — **except `research/RAW-DATA.md`**, now declared
+  **append-only** (a change of mind is logged as new data, never a retro-patch of raw datapoints).
+- **New research note** `proactive-compaction-point.md` — lazy-vs-proactive compaction; a durability-gated
+  *consolidation point* as a second (proactive) compact trigger beside the reactive `fill ≥ 0.8·Z` brake; the
+  "compaction should be sleep, not collapse" framing. Plus **RQ** (research question) added to the
+  comms-shorthand glossary.
 
 ## v0.8.0 — 2026-07-03
 - **Comms shorthand (human↔agent)** — a shared vocabulary of standard chat/dev acronyms (BRB, AFK, WDYT,
   LGTM/SGTM, ACK/NACK, TL;DR, PTAL, AFAICT, IIRC, WRT, WIP, repro, PR …) both roles emit and parse *without
   expansion*, as a communication-bandwidth + TE lever. New **`docs/foundations.md`** glossary entry (four
   groups: presence/status, opinion/agreement, meta/reference, dev-flavored; distinct from the project's
-  coined terms CF/TE/L/WR/AT/BHH) **plus** an always-on **`AGENTS.md`** section (18 inline acronyms for
+  coined terms CF/TE/Z/WR/AT/BHH) **plus** an always-on **`AGENTS.md`** section (18 inline acronyms for
   zero-load use, pointing at the full glossary list). Operating-rules change → version bump.
 
 ## v0.7.0 — 2026-06-27

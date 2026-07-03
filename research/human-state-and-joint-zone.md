@@ -84,7 +84,7 @@ This is the payoff. Concrete mechanisms, most already latent in genscalator:
   drip-feed micro-approvals. Directly drains the CF state.
 - **Detect depletion from cheap signals** — rising typo rate (BR's own "not->note" mid-flow), terse or
   `!!!!`-heavy messages, late hour / long session, growing latency, contradictory steers. Analogous to
-  estimating **L** for the agent, this is estimating the *human's* zone from observable proxies.
+  estimating **Z** for the agent, this is estimating the *human's* zone from observable proxies.
 - **Protect ambition timing** — do NOT embark on an unrealistically complex, hard-to-review task when the
   human shows fatigue signals or it is late; defer ambition to a fresh session. (Ties to the precommitment
   point: don't let a thrilled-but-tiring human commit the dumb-zone self to something unrevisable.)
@@ -108,7 +108,7 @@ done safely.
   shared state is a cleaner framing than "the agent has a context window and the human is just... there."
 - **A "human-state gauge" as a sibling to `token-usage`.** Can the agent estimate the human's zone from
   time-of-day, session length, message cadence, typo/affect markers — and surface it (never covertly act on
-  it)? Same design as estimating L: a cheap, transparent, read-only instrument.
+  it)? Same design as estimating Z: a cheap, transparent, read-only instrument.
 - **The care-vs-manipulation boundary is a real ethical edge.** An agent modeling and nudging a human's
   energy must **surface, not steer** — "you have been at this 3 hours and the typos are climbing; want to
   checkpoint?" is care; silently dumbing down work to keep the human placid is manipulation. The invariant:
