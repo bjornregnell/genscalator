@@ -30,8 +30,21 @@ private def forgeUsage(): Nothing = die(
     "  BASE defaults to https://codeberg.org; release-create reads the token from env CODEBERG_TOKEN or FORGE_TOKEN (never a flag)."
 )
 
+// Token comes ONLY from a FIXED set of human-set env-var names — never a flag, and never an agent-nameable
+// var (an agent-chosen var name + an agent-chosen --url would let it POST an arbitrary secret to an
+// arbitrary host = exfiltration). Fixed names keep the authorization a human boundary.
+private val TokenEnvNames = List("GENSCALATOR_CODEBERG_TOKEN", "CODEBERG_TOKEN", "FORGE_TOKEN")
 private def token: Option[String] =
-  List("CODEBERG_TOKEN", "FORGE_TOKEN").iterator.flatMap(sys.env.get).map(_.trim).find(_.nonEmpty)
+  TokenEnvNames.iterator.flatMap(sys.env.get).map(_.trim).find(_.nonEmpty)
+
+// The token may only be sent to a TRUSTED host — so the agent cannot redirect it to an attacker host via
+// --url. Default: codeberg.org. The HUMAN (not a flag) extends the set via env TT_FORGE_HOSTS (comma-sep).
+private def trustedHosts: Set[String] =
+  val extra = sys.env.getOrElse("TT_FORGE_HOSTS", "").split(",").iterator.map(_.trim).filter(_.nonEmpty).toSet
+  Set("codeberg.org") ++ extra
+
+private def hostOf(url: String): String =
+  Try(Option(java.net.URI(url).getHost)).toOption.flatten.getOrElse("")
 
 private def splitRepo(s: String): (String, String) =
   s.split("/") match
@@ -124,8 +137,13 @@ private def releaseCreate(args: List[String]): Unit =
   val (owner, repo) = splitRepo(o.repo.getOrElse(forgeUsage()))
   val tag        = o.tag.getOrElse(forgeUsage())
   val tok = token.getOrElse(die(
-    "release-create needs a token — the HUMAN sets env CODEBERG_TOKEN (or FORGE_TOKEN); it is deliberately\n" +
+    s"release-create needs a token — the HUMAN sets one of env ${TokenEnvNames.mkString(", ")}; it is deliberately\n" +
       "  NOT a flag, so the agent cannot self-authorize. Create one at Codeberg → Settings → Applications (write:repository)."))
+  val url  = s"${apiBase(o.base)}/repos/$owner/$repo/releases"
+  val host = hostOf(url)
+  if !trustedHosts.contains(host) then die(
+    s"refusing to send the token to untrusted host '$host'. Trusted: ${trustedHosts.toVector.sorted.mkString(", ")}.\n" +
+      "  The HUMAN may extend the set via env TT_FORGE_HOSTS (comma-separated) — not a flag.")
   val bodyText = o.bodyFile match
     case Some(f) => Try(os.read(os.Path(f, os.pwd))).getOrElse(die(s"cannot read --body-file '$f'"))
     case None    => o.body.getOrElse("")
@@ -137,7 +155,6 @@ private def releaseCreate(args: List[String]): Unit =
     "draft"      -> o.draft
   )
   o.target.foreach(c => payload("target_commitish") = c)
-  val url = s"${apiBase(o.base)}/repos/$owner/$repo/releases"
   System.err.println(s"forge: [audit] POST $url  tag=$tag name=${o.name.getOrElse(tag)} prerelease=${o.prerelease} draft=${o.draft}")
   val r = Try(requests.post(url, data = ujson.write(payload),
     headers = Map("Content-Type" -> "application/json", "Authorization" -> s"token $tok"),
