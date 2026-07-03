@@ -1,13 +1,40 @@
 # Why genscalator?
 
-> **Status: initialized 2026-07-03 (outline).** Slot reserved for the project's foundational "why" — the intro
-> a newcomer reads first. Outline below; to be drafted.
+> **Status: initialized 2026-07-03 (personal intro drafted; rest outline).** Slot reserved for the project's
+> foundational "why" — the intro a newcomer reads first. The personal backstory below is written; the mission
+> bullets and the rest are still outline, to be drafted.
 > **Audience:** newcomers to genscalator; developers building or using coding agents; anyone worn down by
 > brittle agent shell usage or confirmation fatigue; teams weighing typed, safe-by-design tooling for
 > AI-assisted development.
 > Sources: `docs/foundations.md`,
 > `research/METHODOLOGY.md`, `research/instrumentation-by-default.md`,
 > `research/confirmation-guard-static-analysis.md`, `research/wr-data/`.
+
+## The personal why
+
+I am an old software engineering professor approaching emeritus status (i.e. the freedom of being retired). I
+have had some bad, bad luck on research funding over the last years (many of my colleagues agree with me that
+the Swedish research funding system is broken). Instead I have, during the last decade, had *great* fun together
+with all my students and colleagues at Lund University (Sweden) doing a great deal of course development and
+teaching in introductory programming and advanced-level software requirements engineering and research
+methodology. A while ago a dear friend and colleague asked me "what will be your last big project before you
+retire?" and it struck me that I really needed to think carefully about that (human tissue inevitably,
+eventually degrading beyond repair).
+
+After some careful thinking — in parallel with starting to develop my agentic software engineering skills on pet
+projects — I realized that my next big project must be: **`genscalator`** — power-tools for human-agent
+collaboration productivity. Why? While over weeks developing an increasingly more productive code generation
+workflow together with [Anthropic's Claude Code](https://en.wikipedia.org/wiki/Claude_(AI)), I also got caught
+in real UX problems and pitfalls, and the agent repeatedly did some really stupid things with brittle, unsafe
+dynamic tools such as bash, awk, sed and python. The agent even got dragged down a rabbit hole trying to fix its
+own bugs while it got exhausted in an agent sickness known as *context rot* (there is no Wikipedia article on
+this at the time of writing, but you can search for it or ask an AI near you).
+
+This is what I saw as an (to me) obvious mission for genscalator:
+  * TODO
+
+But I also realized, in my collaboration with Claude, that what we really were trying to do is to break the
+teaching-learning boundary between training and inference.
 
 ## The one-line answer
 Coding agents default to **dynamic shell** — re-emitting brittle `bash` every turn — and that quiet default
