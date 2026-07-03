@@ -7,6 +7,7 @@ dynamic-shell friction the toolbox exists to remove.
 | when | context | action | command (offending form) | why-prompted | candidate-tool / fix | status |
 |------|---------|--------|--------------------------|--------------|----------------------|--------|
 | 2026-06-27 | genscalator self-dev | Verify the `tt text grepr` change: run 3 cases (multi-ext, single-ext back-compat, bad-dir) and check the exit code | `echo "=== …"; scala-cli run …/text.scala -- grepr … ; echo "=== …"; scala-cli run … ; echo "exit=$?"` | `;`-chained compound + multiple `echo` headers + `$?` — each `scala-cli run` alone matches `Bash(scala-cli run *)`, but the bundle is **not statically allowlistable**, so it prompts | (1) **rule**: one bare `scala-cli run …` per call — no `echo`/`;`/`$?` scaffolding (the violation was mine: AGENTS.md already says this). (2) **tool**: the roadmapped **run-and-verify driver** — a typed `tt` tool taking `tool + args + expected` that runs it and prints pass/fail, collapsing the echo+run+check bundle into one allowlistable call | rule (+ tool idea → roadmap) |
+| 2026-07-03 | genscalator self-dev | Check Codeberg release state (to align PRD versioning) — query the releases API + list remote tags | `curl -s "https://codeberg.org/api/v1/repos/bjornregnell/genscalator/releases?limit=50"` | The call itself was a low-risk **read-only GET to a public API**, but the *category* is not safe: a `Bash(curl *)` allowlist entry blanket-approves every dual-use `curl` — **exfiltrate secrets** (`-d @~/.ssh/…`), **RCE** (`curl … \| sh`), **SSRF** (`169.254.169.254`, `localhost`), credential headers, uploads. **"This call was safe" ≠ "the allowlist rule is safe."** curl is a textbook BHH-BadGoal vector (controlHumanSystem / exfiltrateSecrets / persistence). | (1) **`tt web get <url>`** — safe read-only HTTP: **GET only** (no POST/PUT/upload), no credential/cookie headers, **size cap**, optional **`--host` allowlist**, no shell → `Bash(tt web get *)` is blanket-allowable while bare `curl` stays OUT of the allowlist. (2) **`tt forge <verb>`** — Codeberg/Gitea domain tool (releases/tags list + create-release) for the recurring need this event exposed; the create path is effectful → `--audit`, human-owned token via env (cf. `TT_VERIFY_ALLOW`, `configInArgsNotEnv`). | candidate (WR-TOOL) |
 
 ## Narrative
 This event is a clean instance of WR flavour #2 from the introprog case study
@@ -21,3 +22,13 @@ verifying a tool's behaviour is a recurring need that currently invites an `echo
 an allowed command (no shell), checks exit/stdout/stderr, and prints PASS/FAIL. This closes the candidate:
 the `echo`+`;`+`$?` bundle is now replaced by `tt verify --exit 0 --out … -- <cmd>`. The friction event →
 tool loop, end to end.
+
+### curl / HTTP GET → `tt web` + `tt forge` (2026-07-03)
+A different WR flavour: not a *bundling* prompt but a **dual-use-binary allowlisting** hazard. Fetching a
+public API with `curl` is fine *as a call*, but the safe-by-design question is about the **allowlist rule**,
+not the call: `Bash(curl *)` would approve exfiltration (`-d @secret`), `curl | sh` RCE, and SSRF to
+internal hosts. The genscalator answer is the usual one — **replace the un-allowlistable dual-use tool with
+a narrow typed tool that declares its effects**: `tt web get` (read-only, capped, host-allowlistable) for the
+generic case, and `tt forge` (Gitea/Codeberg releases/tags) for the domain need that surfaced here (creating
+the missing v0.8.0 release without hand-curling a token). Same pattern as `tt verify` replacing the
+`cd && … > log; echo $?` bundle: a bare binary the guard can't prove safe → a typed command it can.
