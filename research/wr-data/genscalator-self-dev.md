@@ -253,3 +253,22 @@ reflex lives in the model's priors, not in a lapse of attention, so **awareness 
 it.** That is the strongest argument for the structural fix: ship `tt files`/`tt text` and make them
 lower-friction than the shell, because the agent *will* reach for the shell otherwise. Blog-worthy framing: *the
 agent building the cure kept catching the disease in itself* — n=3 in one session is data, not anecdote.
+
+### `for`-loop + `$f` expansion to verify figures — 4th shell reflex; harness names it "simple_expansion" (2026-07-03, BR-spotted)
+Verifying that the regenerated SVGs carried the right style label, the agent ran a
+**`for f in …; do … grep … "$f" … | sort | uniq …; done`** loop — a shell **for-loop** + **`$f` variable
+expansion** + a `grep|sort|uniq` pipeline — just to check three files. The permission engine surfaced
+**"Contains simple_expansion"** as its reason for not auto-approving.
+- **What `simple_expansion` is:** a **tree-sitter-bash grammar node** — a bare `$f` variable reference (vs
+  `${f}`, which is the `expansion` node). Claude Code parses each bash command into that AST to decide if it
+  matches an allowlist rule; a command containing `simple_expansion` **cannot be statically matched** to a literal
+  rule, because the variable's *value* — hence the command's real effect — is unknown at check time. Same
+  unprovability as `sed`/`curl`/`xargs`: the *rule* can't be certified even when the *call* is benign. (The reason
+  string leaking a parser node-name to the human is logged as a UX facet in [`harness-ux.md`](harness-ux.md).)
+- **4th shell-munging reflex this session** (sed → xargs → `git|grep` → now `for`/`$f`/`grep|sort|uniq`), and
+  again on a **read-only verification** the typed path already covers: `tt text grepr` (recursive pattern scan) or
+  a 3-line scala-cli scratch that reads the SVGs and asserts the label. **n=4** confirms the n=3 claim — the reflex
+  is in the model's priors; awareness does not suppress it; only a lower-friction typed tool wins.
+- **Sharpened pattern:** the agent reaches for shell iteration/expansion specifically on **verification** sub-tasks
+  ("check that N files each contain X"). That is the exact shape a `tt files` / `tt verify --each` / `tt text
+  grepr --count` should own — the recurring need that keeps re-summoning the shell.

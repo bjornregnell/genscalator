@@ -244,8 +244,56 @@ privacy duty because it is about a person.**
 from text alone; per-code false-positive cost (a wrong FATIGUED nudge is cheap + consensual; a wrong
 raise-verify-bar is nearly free — which codes tolerate error, which don't?).
 
+## 8. Discrete rot self-catching vs continuous level-gauging — the human prompt as the trigger (2026-07-03, BR)
+During a long blog-002 review the agent emitted a **nonsensical edit** (a `PLACEHOLDER_DO_NOT_MATCH` string that
+failed as a no-op) — a genuine **degradation signature** — while BR simultaneously asked *"hope no context rot?"*.
+Unpacking what happened refines the "the human holds the gauge" model from `smart-zone-ceiling.md`:
+- **Two distinct capabilities, not one.** (1) **Continuous level-gauging** — "how rotted / how full am I *right
+  now*" — is the part that is **unreliable from within** a degrading system (the blindness thesis; needs the
+  external context meter the human relays). (2) **Discrete event-catching** — "was *that specific action*
+  nonsensical" — the agent **can** do: it can inspect its own just-emitted output and judge the PLACEHOLDER edit as
+  garbage, and reason about *why*. Error-detection at the **event level** survives even where level-*estimation*
+  fails.
+- **The human's question is the TRIGGER.** The agent does not run that self-audit continuously; BR's "context rot?"
+  prompt **cued** it, and then the internal check worked. Detection here was **joint**: external nudge + internal
+  fine-grained audit. This sharpens "the human holds the gauge" → the human's real leverage is not only *measuring*
+  the agent's state, it is **triggering the agent's own (capable) self-inspection** with a cheap prompt.
+- **Design implication.** An **L0/L1 self-check is viable for discrete rot signatures** (nonsensical/no-op/PLACEHOLDER
+  output, contradictions, repetition) even though a **continuous level estimate is not** — so a standing rule can ask
+  the agent to *audit its last action on request, or on a cheap periodic ping*, and a human habit of "check
+  yourself" becomes a **high-value, near-free trigger**. It is the **event-triggered** companion to the
+  level-triggered **compact dance** (cf. [[propose-compact-dance-at-trigger]]) — and an instance of §4
+  *agent-as-stabilizer* turned on the agent **itself**, activated by a human ping. (Caveat: this is the agent
+  *catching a discrete slip*, not *proving itself healthy* — absence of a caught slip is not evidence of no rot; the
+  continuous gauge still has to come from outside.)
+
+## 9. General conclusion — rot-vigilance is a JOINT duty, and the recovery kit is durable state (2026-07-03, BR)
+The single most important operating principle to fall out of this note and §8:
+- **Context rot is a shared failure mode, so vigilance must be mutual.** *Both* the human and the agent have to
+  watch for suspected rot — the agent for its own discrete slips (§8), the human for the drift the agent can't
+  gauge from within. Neither alone is a reliable detector: the agent is blind to its continuous level, the human is
+  not staring at every token. It takes **both** watching to keep catching it.
+- **The catastrophe is when both are tired and both miss it.** That is precisely the **COLLAPSE** field of the §3
+  matrix (human-dumb + agent-dumb) realised through a *missed rot signal*: a degraded agent emits trash, a depleted
+  human ratifies it, and the repo decays. Fatigue on either side is survivable; fatigue on **both** that lets a rot
+  signal slip through is where real damage happens.
+- **Recovery is bought with durable-state redundancy, laid down BEFORE collapse.** The reliable escape is not
+  "try harder to notice" (adherence-decay says willpower fails) — it is a **standing habit of externalising state
+  often**, so that even if a rotted stretch happens, little is lost and a fresh self can resume clean:
+  1. **`commit + push` often** — frequent atomic checkpoints of stable products; a bad stretch can be discarded back
+     to the last good commit instead of contaminating everything.
+  2. **Save to memory** — durable facts/decisions survive the session and a compact, so the next (fresh) context
+     starts informed, not amnesiac.
+  3. **Write resume prompts** — an explicit handoff (state + pending tasks + constraints) means exiting/compacting
+     costs ~nothing; the [[exit-resume-dance]] / compact dance are cheap *because* the resume prompt exists.
+  Together these make **"stop and come back fresh"** a zero-loss move — which is what lets either party actually
+  *act* on a rot suspicion instead of pushing through it. The recovery kit is the precommitment (§2) the smart-zone
+  self leaves for its future degraded self. Cross-ref [[propose-compact-dance-at-trigger]], [[exit-resume-dance]],
+  `instruction-adherence-decay.md`.
+
 ## What shipped
 - Nothing yet (research note only). Graduation candidates: the glossary terms above; a `tt human-state` /
   `tt restcheck` read-only gauge sibling to `token-usage`; a standing AGENTS.md rule "propose the rest dance
-  on fatigue signals" paired with the compact-trigger rule. Pairs with `task-autonomy-negotiation.md`
+  on fatigue signals" paired with the compact-trigger rule; and (from §8) a "**audit your last action on request /
+  on a periodic ping**" self-check rule for discrete rot signatures. Pairs with `task-autonomy-negotiation.md`
   (attention triage), `smart-zone-ceiling.md` (the agent-side gauge), and the compact-dance glossary.
