@@ -52,6 +52,7 @@
       "Bash(git -C /home/bjornr/git/hub/lunduniversity/introprog *)",
       "Bash(git -C /home/bjornr/git/hub/bjornregnell/muntabot *)",
       "Bash(git -C /home/bjornr/git/berg/bjornregnell/genscalator *)",
+      "Bash(git -C /home/bjornr/git/berg/bjornregnell/papers *)",
       "Edit(//home/bjornr/git/hub/lunduniversity/introprog/autotranslate/**)",
       "Write(//home/bjornr/git/hub/lunduniversity/introprog/autotranslate/**)",
       "Edit(//home/bjornr/git/berg/bjornregnell/muntabot-synch-introprog/**)",
@@ -89,7 +90,15 @@
       "Bash(grep -o *)",
       "WebFetch(domain:link.springer.com)",
       "WebFetch(domain:www.springer.com)",
-      "Bash(/home/bjornr/git/berg/bjornregnell/genscalator/bin/tt htmltext *)"
+      "Bash(/home/bjornr/git/berg/bjornregnell/genscalator/bin/tt htmltext *)",
+      "Bash(/home/bjornr/git/berg/bjornregnell/genscalator/bin/tt chrono *)",
+      "Bash(ssh *)",
+      "WebFetch(domain:dl.gitea.com)",
+      "Bash(/home/bjornr/git/berg/bjornregnell/genscalator/tools/tt forge *)",
+      "Bash(/home/bjornr/git/berg/bjornregnell/genscalator/tools/tt web *)",
+      "Bash(/home/bjornr/git/berg/bjornregnell/genscalator/tools/tt parsereqt *)",
+      "Bash(tt parsereqt *)",
+      "Bash(tt forge *)"
     ],
     "deny": [
       "Bash(git -C /home/bjornr/git/berg/bjornregnell/muntabot-synch-introprog rm *)",
@@ -107,7 +116,11 @@
       "Bash(git -C /home/bjornr/git/berg/bjornregnell/genscalator rm *)",
       "Bash(git -C /home/bjornr/git/berg/bjornregnell/genscalator reset --hard *)",
       "Bash(git -C /home/bjornr/git/berg/bjornregnell/genscalator push --force *)",
-      "Bash(git -C /home/bjornr/git/berg/bjornregnell/genscalator clean -f *)"
+      "Bash(git -C /home/bjornr/git/berg/bjornregnell/genscalator clean -f *)",
+      "Bash(git -C /home/bjornr/git/berg/bjornregnell/papers rm *)",
+      "Bash(git -C /home/bjornr/git/berg/bjornregnell/papers reset --hard *)",
+      "Bash(git -C /home/bjornr/git/berg/bjornregnell/papers push --force *)",
+      "Bash(git -C /home/bjornr/git/berg/bjornregnell/papers clean -f *)"
     ]
   }
 }
