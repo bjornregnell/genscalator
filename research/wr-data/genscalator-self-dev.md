@@ -214,6 +214,14 @@ regression — self-inflicted, by writing `<->` in prose that the shell analyzer
 - **Immediate agent rule:** don't put `<->`, bare `*`, backticks, or `{…}` in commit-message prose — write
   `↔` / "between X and Y" / spelled-out forms. The false positive is cosmetic here, but it's a **standing
   tripwire** for as long as commits go through bash.
+- **RECURRED 2026-07-03, BR-spotted — and hardening-danced.** The agent wrote **`002<->003`** in a genscalator
+  commit message, re-tripping *"Contains zsh <N-M> numeric-range glob"* — the very mistake this entry documents,
+  repeated *while committing the hardening-dance work.* Root cause = same as the grepr arg-order misfire: the rule
+  lived **only here** (a recalled research file), **not in the always-on layer**, so it wasn't in context at commit
+  time. BR asked *"do you have rules on `<N-M>` in substrate? hardening dance?"* → the [[hardening-dance]] fix:
+  promoted the rule to a **MEMORY.md index line (always loaded)** + memory `commit-msg-no-shell-metachars`. Clean
+  confirmation of the pattern: **a rule buried below the always-on layer does not fire** — enforcement must live
+  where it's always in context, or the reflex wins. (Durable cure still: `tt git commit` taking the message as data.)
 
 ### `xargs` (+ `cd && ls | … | grep`) reflex for a file-list — dual-use command-runner (2026-07-03, BR-spotted)
 While verifying doc filenames for the PRD review, the agent ran
