@@ -272,3 +272,43 @@ expansion** + a `grep|sort|uniq` pipeline — just to check three files. The per
 - **Sharpened pattern:** the agent reaches for shell iteration/expansion specifically on **verification** sub-tasks
   ("check that N files each contain X"). That is the exact shape a `tt files` / `tt verify --each` / `tt text
   grepr --count` should own — the recurring need that keeps re-summoning the shell.
+
+### The typed tool has its OWN arg-order friction — `tt text grepr` fought grep-prior (2 misfires) (2026-07-03, BR-spotted)
+Searching the notes dir for a task definition, the agent called `tt text grepr -i culture <dir>`, then
+`tt text grepr <regex> <dir>` — **both wrong**. grepr's signature is `grepr <dir> <ext[,ext2…]> <regex>` (dir
+**first**, regex **last**, explicit ext list). The agent's `grep` muscle-memory (`grep [-i] <pattern> <path>`)
+misfired twice before the usage dump corrected it.
+- **The sharp point:** typed tools kill the *security/allowlist* problem (safe by construction) but can introduce a
+  *usability* one. A tool whose positional order **diverges from the ubiquitous convention it replaces**
+  (`grep <pattern> <path>`) fights the agent's — and the human's — trained prior, so the tool that exists to be
+  frictionless costs two fumbles. **Safe-by-construction ≠ ergonomic-by-construction.**
+- **What saved it:** grepr **dumped its usage** on the malformed call (self-documenting) and the first error was
+  specific (*"pass an absolute path"*). Recovery was fast — but only because the tool fails **loud + helpful**.
+  Keep that invariant: a typed tool MUST print its own usage on any arg-shape error.
+- **Design levers (best first):** (1) **match the muscle-memory order** — `grepr <pattern> <paths…>` like grep,
+  with ext as an optional `--ext` flag, so the prior transfers for free; (2) failing that, **order-tolerant
+  dispatch** (detect which positional is the regex vs the dir); (3) at minimum, the loud usage-dump (already
+  present). **General rule for the whole `tt` surface:** a safe tool that replaces a famous unsafe one should
+  **mirror its call shape**, or it trades allowlist-friction for recall-friction.
+- **Meta:** this is friction on the *cure itself* — "ship a typed tool" is necessary but not sufficient; the typed
+  tool's **CLI ergonomics** decide whether the reflex actually migrates off the shell. A grep-shaped `grepr` would
+  have worked on the first try.
+
+**Root-caused with BR — intent-without-signature in always-on context (2026-07-03).** BR asked *"is there something
+in memory/md that makes you do this?"* — and there is, but the instruction is *correct*; the gap is **where it
+lives**. The memory `use-tt-grepr-not-raw-grep`'s **body** documents the right shape (`grepr <ABS-dir> <ext>
+<regex>`), but only its **one-line MEMORY.md index hook** ("use grepr, not grep") is *always* loaded; the full
+signature is a recalled body that **wasn't in context at call time.** So the always-on layer carried the **intent**
+without the **call shape**, and grep-prior filled the gap wrongly. **General rule:** an always-loaded "use tool X"
+directive MUST carry X's *call shape*, or it actively manufactures the misfire — the intent primes the action, the
+missing signature invites the wrong prior. **Fix applied:** the signature is now IN the index hook
+(`grepr <ABS-dir> <ext> <regex>`, dir-first/regex-last, "not grep order").
+
+**BR's env angle — kill the `TT_TOOLS=` prefix reflex (2026-07-03).** The `TT_TOOLS=…/genscalator/tools` the agent
+reflexively prepended is itself a **non-allowlistable env-assignment inside the gated command** (cf. the cross-repo
+entry above). Two better paths: (1) **export `TT_TOOLS` once in the environment** — approved settings `env` block or
+`.bashrc` + the [[exit-resume-dance]] — so every `tt` call is **bare and allowlistable**, no per-call prefix, no
+decision (the env-*inheritance* principle from Finding A); (2) the real tool-side fix, **walk-up-from-cwd
+discovery**. **NB:** for `tt text` specifically NEITHER is needed — `text.scala` is propagated to the work repo, so
+bare `tt text grepr` resolves; the prefix here was pure over-caution, an *extra* self-inflicted friction on top of
+the arg-order one.

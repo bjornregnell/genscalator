@@ -182,6 +182,10 @@ done safely.
 - **Agent-as-stabilizer** — the agent's duty, given it does not tire, to help keep the human in the smart
   zone (monitor human state, cut event rate, time ambition, offer the rest dance).
 - **Rabbit-hole digging / circular digging / repo-trashing** — the agent dumb-zone degradation ladder.
+- **Hardening dance** (BR-ratified 2026-07-03) — the agent audits its own **persistent config** (memory,
+  instructions, tool signatures, allowlists) for latent misfire-causes/risks and **amends them** → durable fix.
+  The durable-config member of the dance family (transient cousins: compact / rest / exit-resume). Human-triggerable
+  (*"is something in your config making you do this?"*); security-surface changes stay human-approved. See §8.
 
 ## 7. RQ (2026-07-03, BR) — which human states to detect, under what coding scheme, and the privacy line
 Three linked questions: **(a)** which human states are worth detecting, **(b)** what *coding scheme* structures
@@ -266,6 +270,32 @@ Unpacking what happened refines the "the human holds the gauge" model from `smar
   *agent-as-stabilizer* turned on the agent **itself**, activated by a human ping. (Caveat: this is the agent
   *catching a discrete slip*, not *proving itself healthy* — absence of a caught slip is not evidence of no rot; the
   continuous gauge still has to come from outside.)
+- **Extension — from catching a slip to REPAIRING its cause (2026-07-03, BR: "human can prompt agent to scan its
+  stuff and then avoid unsmart actions in the future").** A step beyond the discrete event-catch: when the human
+  prompts the agent to inspect not its last *action* but its own **persistent configuration** — *"is something in
+  your memory/instructions making you do this?"* — the agent can audit its own memory/md scaffolding, find the
+  **structural cause**, and **fix it**, so the unsmart action is avoided *in future*, not merely undone now.
+  Concrete instance this session: after a repeated `tt text grepr` arg-order misfire, BR asked exactly that; the
+  agent found that its always-loaded memory hook said *use tool X* **without X's call-shape**, so a wrong prior
+  (grep order) filled the gap — and moved the signature INTO the hook. The transient fix (catch the slip) became a
+  **durable** one (edit the config that produced it). So the human's **meta-question is the highest-leverage
+  trigger** in this family: it doesn't recover one action, it edits the agent's *future behaviour* through its
+  **editable memory**. This is exactly the self-improvement loop the project rests on — *editable memory + a human
+  willing to point at it* — and the structural cousin of the discrete event-catch above. Cross-ref
+  [[use-tt-grepr-not-raw-grep]] and `wr-data/genscalator-self-dev.md` (the grepr root-cause: intent-without-signature
+  in always-on context).
+- **Trigger refinement — a "bad" regression is NOT always rot; it may be the SUBSTRATE (BR 2026-07-03).** BR's rule:
+  on **any** "bad" behavioural regression (however "bad" is judged), run the **Hardening dance** — do not just
+  assume context rot and reach for the compact dance. A regression has (at least) two root causes with **different
+  cures:** (1) **transient context rot** → compact dance; (2) **lingering persistent substrate** — a stale/wrong
+  memory, a mis-shaped instruction, a bad allowlist, an intent-without-signature hook (BR's "agent stuff" = the
+  **substrate**, the durable config layer). **Diagnostic tell:** *a regression that survives a compact is substrate,
+  not rot.* **Sharp consequence:** the compact/resume recovery **reloads the substrate verbatim**, so a bug that
+  lives in the substrate is **immune to compact/resume** and will be faithfully **reproduced** in the fresh context —
+  it can only be fixed by **editing the substrate = the Hardening dance.** So the recovery kit
+  ([[joint-rot-vigilance-recovery-kit]]) cures *rot* but NOT *substrate* bugs: "come back fresh" + the same memory =
+  the same bug. Practical rule: **on a regression, don't presume rot — audit the substrate (in parallel with, or
+  before, compacting).**
 
 ## 9. General conclusion — rot-vigilance is a JOINT duty, and the recovery kit is durable state (2026-07-03, BR)
 The single most important operating principle to fall out of this note and §8:
