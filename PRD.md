@@ -2,6 +2,33 @@
 
 This document includes requirements for the genscalator product including all typed tools (TT or tt) and other **agent capabilities** — skills, plugins, and other artifacts (often in markdown or Scala code) that help **escalate human-agent code generation to the next level**. ("agent capabilities" is the proposed umbrella word for line-3's open question: a tt tool, a skill, and a plugin each *is-a* Capability; see the `Capability`/`Tool`/`Skill` entities below.)
 
+## How to read this document
+
+**If you just want the gist:** read the **Gist** and **Spec** lines under each `Goal` / `Feature` and skip the
+relation clauses (`X helps / hurts / requires Y`) — those encode machine-checkable traceability, not prose you
+must read linearly. A human can read this whole file as lightly-structured prose; an agent can parse it.
+
+**Structure of this document:** *Stakeholders → their Goals* (who wants what) come first; then **FUTURE** — the
+roadmap of what is **not yet built**, grouped by release; then **PAST** — what has **shipped**, kept as the
+requirements-form mirror of [`CHANGELOG.md`](CHANGELOG.md). Requirements move FUTURE → PAST as they ship. The
+notation is **reqT-lang**, a small markdown subset for requirements, explained in **META** just below.
+
+**Related documents** (this PRD is only the requirements *spine* — the rest live elsewhere by design, so look
+here when the PRD leans on them):
+- [`docs/foundations.md`](docs/foundations.md) — the **glossary** + goals/stakeholders rationale in plain prose.
+  Read it first if a term here is unfamiliar (smart zone / **Z** ceiling, confirmation fatigue, the compact /
+  rest / AFK dances, **BHH**/BadGoal, safe-by-design …).
+- [`CHANGELOG.md`](CHANGELOG.md) — the shipped history; the PRD's **PAST** section mirrors it in requirements form.
+- `research/` — the investigations behind the requirements: e.g. `scala-style-evolution.md` /
+  `scala-style-recommendations.md`, `smart-zone-ceiling.md`, `human-state-and-joint-zone.md`,
+  `proactive-compaction-point.md`, `reqt-lang-review.md`, `METHODOLOGY.md`.
+- `research/wr-data/` — the raw **evidence** (Workflow-Research friction logs) the requirements are grounded in.
+- `blog/` — the narrative, outside-reader versions of these ideas.
+- [`README.md`](README.md) — what the product is and how to run `tt`.
+
+**Role split** (keeps this document focused): **PRD = requirements spine · `research/` = investigations ·
+`wr-data/` = evidence · `docs/foundations.md` = glossary · `memory` = agent ops.**
+
 *TAP:* To Agent Plan: refactor this whole repo so that things that belong here are moved here
 
 ## META
