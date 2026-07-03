@@ -322,3 +322,40 @@ decision (the env-*inheritance* principle from Finding A); (2) the real tool-sid
 discovery**. **NB:** for `tt text` specifically NEITHER is needed — `text.scala` is propagated to the work repo, so
 bare `tt text grepr` resolves; the prefix here was pure over-caution, an *extra* self-inflicted friction on top of
 the arg-order one.
+
+---
+
+## JVM `sun.misc.Unsafe` deprecation noise on every `tt`/scala-cli call (2026-07-03, BR-flagged "WR data")
+
+*(Target inferred from the immediate output — BR flagged this tersely right after two `tt git` commits whose only
+notable feature was four WARNING lines each; correct me if a different datapoint was meant.)*
+
+**Symptom.** Every `tt <tool>` (and every bare `scala-cli run`) prints, unconditionally, to stderr:
+`WARNING: A terminally deprecated method in sun.misc.Unsafe has been called … objectFieldOffset … will be removed
+in a future release … Please consider reporting this to the maintainers of scala.runtime.LazyVals$`. Four lines,
+every invocation, from **JVM 25 + scala-library internals** — nothing to do with the tool being run.
+
+**Why it costs (cry-wolf).** The lines are (a) **high-frequency** — they ride on literally every tool call; (b)
+**alarming-sounding** — "terminally deprecated", "will be removed", "report this to the maintainers" reads like an
+action item; (c) **not actionable by us** — it's `scala.runtime.LazyVals$` in the stdlib on JDK 25, fixed only by a
+future Scala/JDK, not by our code. So they train the reader (human and agent) to **skim past WARNING lines** — the
+same desensitization family as the guard-jargon reason-strings and the "0 errors" false-positive thread: a loud
+signal that is almost always noise erodes attention for the rare real one. It also **buries the tool's actual
+output** in the scrollback and inflates every transcript.
+
+**The tension with our own rule.** memory + skills/scala-style say *do not `2>/dev/null`; tolerate benign JVM
+warnings* — precisely so we don't mask real stderr. But that rule assumed benign warnings are **rare**; here they
+are **per-call and constant**, so "tolerate" degrades into "ignore all stderr," which is the failure mode the rule
+exists to prevent. Blanket suppression is wrong (hides real warnings); doing nothing is wrong (cry-wolf). The gap is
+that neither pole fits a **known-benign, known-constant, known-un-actionable** source.
+
+**Upstream ask + agent-side fix.** (a) **Toolchain:** the JDK emits this once-per-JVM; the right lever is a targeted
+JVM-launch flag baked into the `tt` launcher's `scala-cli run … --java-opt` (suppress **by name**, not `2>/dev/null`,
+so genuine warnings stay visible). **CAVEAT — tested, not solved:** the obvious candidate
+`--java-opt=--sun-misc-unsafe-memory-access=allow` is **REJECTED** on the JDK here (`Unrecognized option: … Could
+not create the Java Virtual Machine`), so that exact flag is wrong for this build (JVM 25 / Scala 3.8.4) — the
+correct suppression option is **TBD** (do NOT ship the guessed flag; it breaks the launch). Left as a bounded
+follow-up, not applied. (b) This is another argument for the **native `tt` binary** ([[DESIGN-single-dispatcher]]):
+a compiled binary doesn't route through the scala-cli/JVM-warning path at all — it sidesteps the whole issue without
+needing to find the flag. (c) **Agent-side (in-hand now):** state plainly that these four lines are inert
+JVM-internal noise and do **not** treat them as findings — do not confabulate an action from them.

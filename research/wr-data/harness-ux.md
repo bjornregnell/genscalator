@@ -149,3 +149,14 @@ drive confirmation frequency toward zero — use `Read`/`tt` typed tools instead
 bare single commands instead of metachar/compound ones, so the review gate only ever appears for actions that
 genuinely warrant a human decision. Cross-ref [`genscalator-self-dev.md`](genscalator-self-dev.md) and
 [`../human-state-and-joint-zone.md`](../human-state-and-joint-zone.md) (perception/attention gaps under long runs).
+
+**Reinforcement — the AGENT-INITIATED variant (2026-07-03, same session, BR-reported twice).** The mirror image of
+the above: an **agent-triggered modal** (an `AskUserQuestion` popup with options) appeared **while BR was mid-typing
+his own message and interrupted his typing** — *"came while I was typing and interrupted my typing, bad UX."* Same
+focus-steal, opposite initiator: here the *agent* opens a modal that grabs the input channel the human is actively
+using. It compounds a directive BR gave one message earlier (*"don't disrupt your current work"*). **Two agent-side
+rules, both in my control:** (1) during an autonomous / AFK run, do **not** fire an interrupting question-modal for
+*minor* disambiguation — make a reasonable default and surface the choice as **plain text** the human can answer at
+leisure (no focus-steal); reserve modals for genuine blockers. (2) A clarifying question is itself a *disruption
+cost* — weigh it against just proceeding. **Harness-side ask:** an agent-initiated modal should not seize keyboard
+focus from an in-progress human compose buffer — queue it, or show it non-modally, until the human's input is idle.
