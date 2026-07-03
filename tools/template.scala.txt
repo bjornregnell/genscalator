@@ -3,14 +3,25 @@
 //> using file lib.scala
 
 // __NAME__ — <one-line purpose>. PURE: reads input, computes, prints; no other effects.
-//   scala-cli run tools/__NAME__.scala -- <args>
+//   tt __NAME__ <args>
 import agenttools.Lib
 
-@main def __NAME__(args: String*): Unit =
-  args.toList match
-    case file :: Nil =>
-      val text = Lib.readUtf8(file)
-      // TODO: compute from `text` and print a clean === result ===
-      println(s"${text.linesIterator.size} lines")
-    case _ =>
-      println("usage: __NAME__ <file>")
+// Helpers live INSIDE this object so top-level names don't collide with the other tools when the toolbox
+// compiles as one unit (scala-cli compile tools / the Scala MCP). Only the @main entry is top-level.
+// See skills/scala-style §1.
+object __OBJ__ {
+  def dispatch(args: String*): Unit =
+    args.toList match
+      case file :: Nil =>
+        val text = Lib.readUtf8(file)
+        // TODO: compute from `text` and print a clean === result ===
+        println(s"${text.linesIterator.size} lines")
+      case _ =>
+        println("usage: __NAME__ <file>")
+        sys.exit(2)
+}
+
+// TODO rename __MAIN__ to a descriptive verb-phrase (what the tool DOES) — unique across the toolbox and
+// differing from the object name by more than case. `tt` dispatches by FILENAME, so this name is free to be
+// long/descriptive. See skills/scala-style §1.
+@main def __MAIN__(args: String*): Unit = __OBJ__.dispatch(args*)

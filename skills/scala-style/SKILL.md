@@ -20,18 +20,29 @@ make the tradeoff **consciously and locally**, and leave a one-line comment sayi
 black-and-white.
 
 ## 1. Direct style, lean dependencies
-- Top-level functions + a single `@main`; expressions over statements; small named helpers over long
-  blocks. **Avoid big frameworks** — one you'd have to reverse-engineer is a token-efficiency sink for the
-  next reader (human or agent).
+- **Helpers live inside `object ToolName`; only the `@main` (and any genuinely-public, reusable API) stays
+  top-level.** A top-level `private def` still lands in the *package* scope, so when the whole `tools/` (or
+  the Metals/BSP workspace) compiles as **one target**, two files that each declare a top-level `usage`
+  /`fail`/`run`/`freeGb` collide: *"fail is already defined … overloaded methods must all be defined in the
+  same group of toplevel definitions."* Running one file standalone (`tt foo`) hides it; a whole-toolbox
+  compile (`scala-cli compile tools`, or the Scala MCP) surfaces it. Fix by scoping: wrap every helper in
+  `object ToolName { … }` (brace-delimited — a long scope earns braces), so `fail` becomes `ToolName.fail`
+  and pollutes nothing. Put the former `@main` body in an object method (`def dispatch`/`run`) and leave a
+  one-line top-level `@main` that delegates: `@main def descriptiveName(args: String*) = ToolName.dispatch(args*)`.
+  Top-level is reserved for two things only — the `@main`, and a genuinely *public, reusable* pure function
+  (e.g. `stripHtml` in `htmltext.scala`, `Lib.readLatin1`) that legitimately shapes an API; everything else
+  is an internal and belongs in the object. Expressions over statements; small named helpers over long blocks.
+  **Avoid big frameworks** — one you'd have to reverse-engineer is a token-efficiency sink for the next reader.
 - **Name the `@main` for what the tool DOES — and make it globally unique.** `tt` dispatches by *filename*
   (`tt foo` runs `tools/foo.scala`), so the `@main` name is never what you type at the CLI — it's free to be
-  a long, descriptive verb-phrase (`requirementsMarkdownParser`, not `run`/`main`/`go`). This is not just
-  taste: an IDE (Metals) and any multi-file build compile the whole `tools/` (+ neighbouring `research/`)
-  tree as **one target**, so every `@main` shares **one global scope**. Two files with `@main def run` become
-  illegal overloads split across files ("run is already defined"). So: (a) unique across the whole toolbox —
-  a generic `run`/`main` WILL collide; (b) descriptive of the tool's job; (c) **must not clash with an
-  imported package or type** — e.g. a tool that does `import reqt.*` cannot be `@main def reqt` (shadows the
-  package). A descriptive name satisfies all three for free.
+  a long, descriptive verb-phrase (`requirementsMarkdownParser`, `stripHtml`; not `run`/`main`/`go`). Because
+  the whole tree compiles as one target, every `@main` shares one global scope. So: (a) unique across the
+  whole toolbox — a generic `run`/`main` WILL collide; (b) descriptive of the tool's job; (c) **must not
+  clash with an imported package or type** — a tool that does `import reqt.*` cannot be `@main def reqt`
+  (shadows the package); (d) **must differ from its own `object` name by more than case** — `object
+  Guardcheck` + `@main guardCheck` generate `.class` files that collide on case-insensitive filesystems
+  (macOS/Windows), and the compiler warns *"Generated class … differs only in case."* Pick a distinct
+  verb-phrase (`checkGuardPatterns`), not the object word re-cased. A descriptive name satisfies all four for free.
 - **Scope imports to where they're used.** Put a one-off `import` in the block/method that needs it (e.g.
   `import scala.jdk.CollectionConverters.*` inside the single function using it), not at the top — narrower
   scope means less name pollution and fewer surprising extensions/implicits in scope, and the reader sees
