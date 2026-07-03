@@ -133,3 +133,12 @@ typed *out*, IO and parsing both centralized, tool body pure. So the "best way f
 single-dispatcher (structure) + typed-arg layer (input) + `Either[ToolError, ToolResult]` (output) + native binary
 (packaging) + `Iterator` streaming (where it pays). **Morning task:** re-read `tt-typed-args.md` alongside this doc
 and settle the consolidated architecture before writing `tt.scala` (both share the dispatcher as the seam).
+
+### Hardening to fold in — `tt git` commits are not atomic to `--add` (BR-observed 2026-07-03)
+`git.scala` stages the `--add` paths then runs `git commit -F <msg>` with **no pathspec**, so it commits
+**everything staged**, not just what was `--add`'d. BR had a one-word blog-002 edit already staged; it rode into a
+blog-003-titled commit (`a91f764`) — harmless there, but the same class as the 2fc896b mislabel: a commit whose
+contents exceed its message. **Fix:** when `--add` paths are given, scope the commit to them —
+`git commit -F <msg> -- <adds...>` — so tt git commits are **atomic to exactly the requested paths** and can never
+sweep in unrelated staged changes. (When no `--add` is given — the "stage separately" mode — keep committing the
+staged set, but that mode is the caller's explicit choice.) Small, worth doing as part of the git.scala rewrite.
