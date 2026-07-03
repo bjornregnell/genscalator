@@ -93,6 +93,12 @@ Learned by running snippets through the REAL parser (`tt parsereqt parse FILE`),
   * Comment: BHH = Black Hat Hacker; an ADVERSARIAL stakeholder — these are anti-goals we design AGAINST (Features `hurt` them), NOT goals we pursue.
   * Goal: controlHumanSystem
   * Goal: exfiltrateSecrets
+* Stakeholder: agentHarnessProvider has
+  * Gist: the company or community that offer the agent harness, e.g. Anthropic (Claude Code) — and other CLI/IDE/agent runtimes.
+  * Comment: the stakeholder who alone can build the L3 "substrate signals" (attention, compaction-discard manifest, true usage) behind a real context-rot meter (see `research/smart-zone-ceiling.md`); we cannot force it, so genscalator builds the L0/L1/L2 slice (Feature: contextRotMeter) itself and files L3 as an upstream ask.
+  * Goal: retainUserTrust
+  * Goal: maximizeUsefulAutonomy
+  * Goal: manageInferenceCost
 
 ## General goals (stable over time)
 
@@ -107,6 +113,12 @@ Learned by running snippets through the REAL parser (`tt parsereqt parse FILE`),
   * Spec: The human-agent pair produces more, and more reliable, software per unit of scarce resource (human attention, tokens, wall-clock) than either alone or than the out-of-the-box baseline. This is the down-to-earth backbone thesis.
   * Target: tokensToGreen
   * Target: brokenBuildIterations
+* Goal: retainUserTrust has
+  * Gist: (agentHarnessProvider) users grant the agent latitude only if it is safe by DEFAULT — few but meaningful confirmations, no surprising or dangerous unprompted actions. Trust is the provider's licence to operate; one bad autonomous action spends it. Aligns with the human's avoidConfirmationFatigue and with safeGeneration.
+* Goal: maximizeUsefulAutonomy has
+  * Gist: (agentHarnessProvider) the agent completes as much USEFUL work UNATTENDED as possible without harm or bad halts — product value scales with how much a human can safely delegate. In tension with retainUserTrust (more autonomy = more trust at stake) and bounded by manageInferenceCost; the resolution is safe-by-design + self-governance (self-brake before drift or an uncommitted halt).
+* Goal: manageInferenceCost has
+  * Gist: (agentHarnessProvider) steward compute / context / token cost across the fleet — WHY context management (compaction, caching, truncation) lives in the harness, not the model. Leaner context also serves quality (smaller working set = less rot), so cost and jointHumanAgentProductivity are usually aligned, not opposed.
 
 ## Safe-by-design as traceability (worked example, in reqT's EXISTING relations)
 
