@@ -65,7 +65,6 @@
       "Bash(scalex *)",
       "WebFetch(domain:scalameta.org)",
       "WebFetch(domain:arxiv.org)",
-      "Bash(tt text *)",
       "WebFetch(domain:codeberg.org)",
       "Bash(latexmk -pdf -interaction=nonstopmode cover-A3-part1-en.tex)",
       "Bash(latexmk -pdf -interaction=nonstopmode cover-A3-part2-en.tex)",
@@ -93,8 +92,10 @@
       "Bash(/home/bjornr/git/berg/bjornregnell/genscalator/tools/tt forge *)",
       "Bash(/home/bjornr/git/berg/bjornregnell/genscalator/tools/tt web *)",
       "Bash(/home/bjornr/git/berg/bjornregnell/genscalator/tools/tt parsereqt *)",
-      "Bash(tt parsereqt *)",
-      "Bash(tt forge *)"
+      "Bash(tt *)"
+    ],
+    "ask": [
+      "Bash(tt forge release-create *)"
     ],
     "deny": [
       "Bash(git rm *)",
