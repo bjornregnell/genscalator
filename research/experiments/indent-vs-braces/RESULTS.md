@@ -1,6 +1,6 @@
 # Results — braces vs indentation (agent edit-cost)
 
-## Pilot experiments 
+## Pilot experiment 
 
 ### Run 1+2 — 2026-07-03 (local-model axis, autonomous overnight)
 
