@@ -85,6 +85,24 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   agent writes the cheapest-yet-clear language (English for a strong-L2 human), switching to the human's L1
   when nuance/review-precision justifies it. Also a *smart-zone* lever (cheaper language → more smart-zone
   budget). See research `communication-bandwidth.md`.
+- **Comms shorthand (human↔agent)** — a shared vocabulary of standard chat/dev **acronyms** both roles emit
+  and parse *without expansion*, a direct **communication-bandwidth** + **TE** lever: fewer tokens (and less
+  human typing) carry the same intent, in both directions. Distinct from the project's *coined* terms
+  (**CF**, **TE**, **L**, **WR**, **AT**, **BHH**, **BadGoal**, **ralph loop** …) which name domain concepts —
+  this entry is generic conversational glue. Both sides may use these freely; when a token is genuinely
+  ambiguous in context, expand it once. Common set:
+  - *Presence / status:* **BRB** be right back · **AFK** away from keyboard · **OOO** out of office ·
+    **EOD** end of day · **ETA** estimated time of arrival · **WIP** work in progress · **RN** right now ·
+    **TODO** to do (left) · **NM** never mind.
+  - *Opinion / agreement:* **WDYT** what do you think · **IMO / IMHO** in my (humble) opinion ·
+    **LGTM** looks good to me · **SGTM** sounds good to me · **ACK / NACK** acknowledged / rejected ·
+    **+1 / -1** agree / disagree · **FWIW** for what it's worth · **OTOH** on the other hand · **NBD** no big deal.
+  - *Meta / reference:* **TL;DR** short summary · **FYI** for your information · **ICYMI** in case you missed it ·
+    **PTAL** please take a look · **AFAICT** as far as I can tell · **IIRC** if I recall correctly ·
+    **AFAIK** as far as I know · **WRT** with respect to · **WDYM** what do you mean · **IDK** I don't know ·
+    **N/A** not applicable · **e.g. / i.e.** for example / that is.
+  - *Dev-flavored:* **PR** pull request · **MR** merge request · **RC** release candidate · **repro** reproduce ·
+    **rebase / squash** git ops · **YAGNI** you aren't gonna need it · **DRY** don't repeat yourself.
 - **Token efficiency (TE)** — achieving a task with fewer model tokens (input + output). A committed,
   compiled tool beats re-emitting brittle bash every time. **Two distinct pressures, usually aligned but
   not always:** (a) **$cost** — total tokens billed; (b) **smart-zone** — keeping *working* context small
