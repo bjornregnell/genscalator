@@ -1,6 +1,6 @@
 # Agent context rot resembles human fatigue — here is how agents and humans can help each other
 
-> **Status: DRAFT / seed (2026-07-03).** First post, dumped near-verbatim from a live human↔agent working
+> **Status: drafted 2026-07-03 (seed).** First post, dumped near-verbatim from a live human↔agent working
 > session. This opening argument grew out of one question — *why can't an agent see its own context usage?* —
 > and lands on the mutual-help thesis in the title. The fuller structure (the four-axis rot↔fatigue parallel,
 > the sleep-vs-compact disanalogy, the reciprocal-help protocols) is outlined at the end, still to be written.
