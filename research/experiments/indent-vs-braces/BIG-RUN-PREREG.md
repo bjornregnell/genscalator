@@ -40,6 +40,34 @@ stands. It executes blog 002 §7's "more models, across vendors, for power."
   calc wants. If the pullable count falls short, we **report at the achieved n and flag under-power**; we do **not**
   crank R to compensate (that would be pseudoreplication).
 
+## 3-FROZEN. The exact confirmatory model list + seed (committed 2026-07-03, BEFORE any data)
+
+**This block is the anti-fishing freeze.** Committed before the sweep runs. The list below is the confirmatory
+set; the analysis seed is `SEED = 20260703` (also hard-coded in `significance.scala`). No entry is added or
+removed after data is seen. **No-drop rule:** every model that pulls AND runs is in the analysis; a model that
+fails to pull or fails to load is LOGGED as such (RQ1 datum), never silently replaced by a substitute.
+
+- **SEED (Monte-Carlo permutation):** `20260703`  ·  **R (repeats/cell):** `6`  ·  **task family:** wrap-in-`else`,
+  3 sizes (small/med/large) × 3 styles (braceless/braces/common).
+- **Pilot 7 (EXCLUDED from confirmatory, reported separately as SECONDARY):** qwen2.5:3b, qwen2.5:7b,
+  qwen2.5-coder:7b, qwen-coder-local:latest, gemma2:9b, gemma3:latest, aya-expanse:8b.
+- **Confirmatory set — 56 candidates, all ≤ ~8B, disjoint from the pilot 7:**
+  ```
+  qwen2.5:0.5b qwen2.5:1.5b qwen2.5-coder:0.5b qwen2.5-coder:1.5b qwen2.5-coder:3b
+  qwen2:0.5b qwen2:1.5b qwen2:7b codeqwen:latest
+  gemma3:1b gemma3:4b gemma2:2b gemma:2b gemma:7b codegemma:2b codegemma:7b
+  llama3.2:1b llama3.2:3b llama3.1:8b tinyllama:latest codellama:7b
+  phi3:3.8b phi3.5:latest phi:latest
+  mistral:7b dolphin-mistral:7b openhermes:latest zephyr:7b neural-chat:latest openchat:latest wizardlm2:7b
+  deepseek-coder:1.3b deepseek-coder:6.7b deepseek-r1:1.5b deepseek-r1:7b deepseek-r1:8b
+  starcoder2:3b starcoder2:7b granite-code:3b granite-code:8b granite3.1-dense:2b granite3.1-dense:8b
+  stablelm2:1.6b smollm2:1.7b orca-mini:3b yi:6b internlm2:latest hermes3:8b
+  falcon3:3b falcon3:7b exaone3.5:2.4b exaone3.5:7.8b nemotron-mini:latest command-r7b:latest dolphin3:8b sqlcoder:7b
+  ```
+- Pulls are gated by `tt box pull <model> --min-free-gb <floor>` (host-pinned, disk-guarded); pull outcomes are
+  recorded so the achieved n and any failures are auditable. If achieved n < power target we **report under-power**,
+  we do NOT crank R.
+
 ## 4. Tasks + repeats (frozen)
 - **PRIMARY:** the SAME task family as the pilot — wrap-in-`else`, 3 sizes (small/med/large), 3 styles — a direct
   out-of-sample confirmation.
