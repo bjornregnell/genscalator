@@ -125,3 +125,21 @@ genscalator && tt parsereqt` "just works" and stays allowlistable, matching the 
 the repo I'm standing in*. (Alternatives: a genscalator-local `tt` on `PATH`, or a per-repo symlink — but
 cwd-walk-first is the general fix.) Cross-ref [`../subagent-genscalator-propagation.md`](../subagent-genscalator-propagation.md)
 — the same *"which toolbox am I talking to?"* ambiguity that cross-repo tool propagation creates.
+
+**Addendum (2026-07-03, 2nd occurrence + stderr-noise wrinkle).** Re-hit on the next `parsereqt lint`, and the
+workaround grew a **third** non-allowlistable part: `TT_TOOLS=… tt parsereqt lint <ABS-PATH> 2>/dev/null`. The
+`2>/dev/null` is a fresh reflex, and the tool *caused* it: the vendored parser dumps ~15 lines of **scala-cli
+compile warnings** every run (package-name encoding on `NN-name$package`; `method next must be called with ()`
+in `reqt-vendored/*`) — noise the agent cannot act on, so it reflexively silences stderr. A call that *should*
+be the clean allowlistable `tt parsereqt lint FILE` thus accretes **three** un-allowlistable modifiers:
+`TT_TOOLS=` (cross-repo, above), an absolute path (cwd isn't the repo), and `2>/dev/null` (warning-spam).
+**Two fixes, both tool-side:** (1) cross-repo discovery = **walk up from cwd** (above); (2) the tool should
+**quiet the vendored warnings itself** — suppress them in its `using` directives or a `--quiet` default — so
+the agent never reflexes `2>/dev/null`. **General WR lesson:** *every line of un-actionable tool stderr trains
+a stderr-hiding reflex* — the quiet cousin of instrumentation-by-default: a typed tool should emit **only** what
+the caller can act on. Cross-ref the pipe-to-grep / `2>/dev/null` noise-suppression events in
+[`introprog-autotranslate.md`](introprog-autotranslate.md). **3rd occurrence, same session:** every
+`parsereqt lint` re-pays all three modifiers — the friction is confirmed **per-invocation**, and *logging is
+not fixing*. The signal is to **implement** the tool-side fixes now (walk-up-from-cwd in the `tt` launcher +
+quiet the vendored warnings), not to log a 4th time. Adherence-decay's cousin: a documented-but-unremoved
+friction keeps costing until it is made **structural**.
