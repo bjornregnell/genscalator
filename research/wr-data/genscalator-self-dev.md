@@ -86,3 +86,22 @@ raw datapoints are **never** retro-edited or "fixed"; a change of mind is logged
 fix all the L's everywhere for consistency"* — BR's guard against retro-editing the *raw* log is exactly the
 discipline that keeps the study honest. **Consistency pressure vs. evidentiary integrity — on raw data,
 integrity wins.** (The rename itself was safe to do everywhere else: those are *living* docs, not evidence.)
+
+### "Memory hygiene" is a discretionary practice, not a skill → externalize it (2026-07-03, BR WR-Q)
+BR caught the agent narrating *"memory hygiene: stale symbols confuse future sessions"* as if it were a
+dependable capability, and asked: built-in skill, or do we externalize it? **Honest status: NOT a built-in
+skill and nothing automated forced it.** It came from the generic **memory-management guidance** in the agent's
+system prompt (*update/delete stale memories; verify a named flag/file still exists before recommending it*) —
+but that guidance is **advisory**: whether it runs depends on the agent *choosing* to grep the memory store
+after a rename. This time it did (`grep \bL\b memory/`); next time it might not. So it's the
+**adherence-decay / trained-reflex** failure mode ([`../instruction-adherence-decay.md`](../instruction-adherence-decay.md)):
+a good practice that lives only as words is unreliable. **Externalize it**, cheapest-first: (a) a **written
+rule** — "on any rename/rescope/delete of a coined term, flag, or file, sweep BOTH the repo AND
+`~/.claude/.../memory` for stale refs before finishing" (cheap, but same decay weakness); (b) the
+**instrumentation-by-default** answer — a `tt` **rename / stale-ref** tool that does word-boundary rename across
+a fileset AND reports hits, incl. an opt-in path to scan the out-of-repo memory dir; (c) best: **tool detects
+(reliable), rule points at it (discoverable)** — same pattern as `tt verify`/`tt grepr` replacing bash reflexes.
+**Meta:** the agent's *self-report* ("I keep memory tidy") over-claimed vs. its *actual mechanism*
+(discretionary) — a clean METHODOLOGY §4 point (trust behavior over self-report) turned on the agent itself.
+The memory-store-is-outside-the-repo detail is the crux: repo tools/guards don't reach `~/.claude`, so stale
+memory is a **structural blind spot**, not just a discipline lapse. Candidate WR-TOOL: `tt rename`.
