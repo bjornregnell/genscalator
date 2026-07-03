@@ -78,9 +78,16 @@ def buildPrompt(before: String, instruction: String, style: String): String =
 
 @main def sweepMain(args: String*): Unit =
   val R = args.headOption.flatMap(_.toIntOption).getOrElse(6)
-  val models = args.drop(1).headOption.map(_.split(",").toList).getOrElse(DefaultModels)
+  // 2nd arg: comma-separated model list, OR "@path" to read one-model-per-line from a file (the frozen list).
+  val models = args.drop(1).headOption match
+    case Some(a) if a.startsWith("@") => os.read.lines(os.Path(a.drop(1), os.pwd)).map(_.trim).filter(_.nonEmpty).toList
+    case Some(a)                      => a.split(",").toList
+    case None                         => DefaultModels
+  // 3rd arg: output TSV filename (default results-main.tsv). The big run uses results-bigrun.tsv to keep the
+  // confirmatory data separate from the pilot's results-main.tsv.
+  val outName = args.drop(2).headOption.getOrElse("results-main.tsv")
   val tasks = os.list(Root / "tasks").filter(os.isDir).sorted
-  val out = Root / "results-main.tsv"
+  val out = Root / outName
   if !os.exists(out) then os.write(out, "task\tstyle\tmodel\trun\temitted\tgraded\tout_tokens\tdiff_lines\n")
   val tmp = os.temp.dir(prefix = "ivb-main")
   var n = 0
