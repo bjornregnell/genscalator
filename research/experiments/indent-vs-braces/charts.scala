@@ -11,6 +11,9 @@ case class Row(task: String, style: String, model: String, graded: String)
 
 val styles = List("braceless", "braces", "common")
 val col = Map("braceless" -> "#e15759", "braces" -> "#4e79a7", "common" -> "#59a14f")
+// Data keys match the TSV `regime` column ("braces"); the blog prose calls that style "braceful".
+// Remap only the RENDERED label so charts read consistently with the text. Identity for all other keys.
+def styleLabel(s: String): String = Map("braces" -> "braceful").getOrElse(s, s)
 
 def esc(s: String): String = s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 def n(d: Double): String = f"$d%.1f"
@@ -54,7 +57,7 @@ def groupedBar(title: String, subtitle: String, groups: List[String],
   for (st, si) <- styles.zipWithIndex do
     val lx = padL + si * 118
     sb ++= s"""<rect x="$lx" y="${ly - 11}" width="13" height="13" fill="${col(st)}" rx="2"/>"""
-    sb ++= s"""<text x="${lx + 18}" y="$ly" font-size="12.5" fill="#333">${esc(st)}</text>"""
+    sb ++= s"""<text x="${lx + 18}" y="$ly" font-size="12.5" fill="#333">${esc(styleLabel(st))}</text>"""
   sb ++= "</svg>\n"
   sb.toString
 
@@ -90,7 +93,7 @@ def stackedBar(title: String, subtitle: String, groups: List[String],
       if v >= 0.05 then
         sb ++= s"""<text x="${n(cx)}" y="${n(y + segH / 2 + 4)}" font-size="11" font-weight="600" fill="#ffffff" text-anchor="middle">${(v * 100).round}%</text>"""
       yBottom = y
-    sb ++= s"""<text x="${n(cx)}" y="${padT + plotH + 17}" font-size="12.5" fill="#333" text-anchor="middle">${esc(g)}</text>"""
+    sb ++= s"""<text x="${n(cx)}" y="${padT + plotH + 17}" font-size="12.5" fill="#333" text-anchor="middle">${esc(styleLabel(g))}</text>"""
   val ly = padT + plotH + 62
   for ((seg, si) <- segs.zipWithIndex) do
     val (segLabel, color) = seg

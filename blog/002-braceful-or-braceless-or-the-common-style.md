@@ -27,12 +27,18 @@ interesting than "braces win" or "indentation wins":
 
 - Across a range of *smaller, local* models, braceless code was **costlier to edit** — but the effect was
   **bidirectional per model** and dominated by whether a model can reliably *produce* a given style at all.
-- At the frontier, the effect **vanishes**: a strong model (Claude Opus 4.8) edited every style flawlessly.
+- At the frontier (the strongest current models), the effect **vanishes**: a strong model (Claude Opus 4.8)
+  edited every style flawlessly.
 - So the practical rule is not "always braces." It is: **design the code style for the *weakest* agent you
   expect to edit the code, not the strongest** — and a **"common style"** that mixes braces and indentation by
   a simple rule serves humans and agents at the same time.
 
-Let me build that up from scratch.
+> **Said plainly, up front:** this is a **small pilot, and its differences are _not_ statistically significant.**
+> With only seven local models, an exact permutation test that respects the design cannot rule out chance (omnibus
+> **p ≈ 0.46**; full analysis in [§5.5](#55-could-this-just-be-chance)). LLMs are stochastic, and a handful of them
+> is too few to prove a style effect. What is worth sharing here is the **experimental design and the direction of
+> the outcome** — as a template and a hypothesis for larger studies — **not** a settled result. Please read the
+> rest with that caveat in the foreground.
 
 ## 1. Two syntaxes, one language
 
@@ -142,10 +148,11 @@ exactly the trap the pilot fell into (below).
 ### 5.3 Data collection
 
 The task is a **structural edit** — the class where whitespace is load-bearing: wrap an existing block in a new
-`else` branch, at three growing block sizes (small, medium, large). Each cell of the experiment gives a fresh
-agent the "before" file rendered in one style plus a style-neutral instruction, takes one edit attempt, then
-grades it automatically with a script that (a) checks it **compiles** and (b) runs a **behavioural probe** —
-does the edited function actually produce the oracle's output? Outcomes: **PASS**, **FAIL_COMPILE** (a loud
+`else` branch, at three growing block sizes (small, medium, large). Each cell of the experiment (one
+model × task × style × repeat combination) gives a fresh agent the "before" file rendered in one style plus a
+style-neutral instruction, takes one edit attempt, then grades it automatically with a script that (a) checks it
+**compiles** and (b) runs a **behavioural probe** — does the edited function actually produce the output of the
+**oracle** (the known-correct reference version of the edit)? Outcomes: **PASS**, **FAIL_COMPILE** (a loud
 error), or **FAIL_MISSCOPE** (compiles but wrong — the *silent* hazard). A second measurement records
 **style adherence**: did the output actually use the requested style?
 
@@ -223,7 +230,55 @@ opposite of the thesis. There is no universal "braces are safer for agents" law 
 **RQ3 — the frontier.** Opus 4.8 scored **27/27 PASS**: 100% style-adherent and 100% edit-correct in every
 style, task, and size. For a strong model, the style simply does not matter here.
 
-### 5.5 Can we trust these results?
+### 5.5 Could this just be chance?
+
+A fair reflex, and an important one: **LLMs are stochastic** — ask the same model to make the same edit twice and
+you can get different answers. So how do we know the braceless-costs-more gap in Figure 2 isn't just the roll of
+the dice? The only honest answer is a **significance test**, and the design forces one careful choice before we
+run it.
+
+**What counts as one independent data point?** Not one of the 378 cells. The six repeats and three sizes *inside a
+single model* are not independent — a model that is bad at braceless tends to fail its braceless cells together, in
+a clump. Treating all 378 as independent coin-flips is a classic mistake (*pseudoreplication*): it counts the same
+underlying behaviour many times over and makes any difference look far more certain than it is. The honest unit of
+replication is the **model** — so we have **n = 7**, not 378.
+
+**The test.** Blocking by model, we ask: if style truly had no effect, how often would randomly relabelling the
+style tags *within each model* produce an aggregate gap as large as the one we saw? Because n is small we can
+enumerate the null distribution **exactly** — all 6⁷ = 279,936 within-model relabellings for the omnibus test, all
+2⁷ = 128 sign-flips for each pairwise one. It is **non-parametric** (assumes no bell curve) and **deterministic**:
+no random seed, so anyone re-running [`significance.scala`](../research/experiments/indent-vs-braces/significance.scala)
+gets identical p-values. A **Friedman test** (the standard non-parametric blocked ANOVA) is reported alongside as a
+familiar cross-check.
+
+**The result — stated plainly, because a null result matters as much as a positive one:**
+
+| comparison | gap in pass-rate | p (exact) |
+|---|---|---|
+| **any style effect at all** (omnibus) | — | **0.46** |
+| braceless vs braceful | −17.5 pp | 0.42 |
+| braceless vs common | −15.9 pp | 0.28 |
+| braceful vs common | +1.6 pp | 0.91 |
+
+*(Friedman cross-check: χ² = 2.79, df = 2, p = 0.25 — same verdict. "pp" = percentage points.)*
+
+**With these seven models, the style effect is not statistically significant.** The 17-point aggregate gap is real
+*as a description of what these particular runs did*, but we **cannot rule out chance** as its source. And the reason
+it falls short of significance is exactly the bidirectionality of Figure 3: the gap is driven by a couple of models
+(aya-expanse, gemma2) and **reverses** in others (gemma3, qwen2.5:7b), so once each model gets a single vote, the
+styles become statistically hard to tell apart.
+
+**The cautionary flip-side, in one number.** Run the *wrong* test — pool all 378 cells as if independent — and a
+chi-square returns p ≈ 0.008, i.e. "highly significant." That p-value is an illusion manufactured by
+pseudoreplication; it double-counts non-independent cells. The distance between **0.008 (wrong) and 0.46 (right)**
+is the whole methodological point: with clustered data, *the choice of analysis unit decides the answer.*
+
+So this does not overturn the descriptive finding or the design rule — it **bounds** them, turning "braceless is
+costlier to edit" from a proven law into a **suggestive direction that a larger, multi-vendor model set would be
+needed to confirm.** (The frontier anchor sits outside this test: Opus 4.8's 27/27 has no variance to test — its
+perfection is a description, not a significance claim.) The other reasons for caution are next.
+
+### 5.6 Can we trust these results?
 
 A pilot is only as good as its caveats, so here they are in plain terms, grouped by the three questions a sceptic
 should ask.
@@ -265,7 +320,7 @@ vanishes at the frontier — but it does make this a **pilot that points the way
 every item above is the same: more edit kinds, tasks with real blank-line scopes, more models across vendors,
 and larger runs.
 
-### 5.6 Reproduce it yourself
+### 5.7 Reproduce it yourself
 
 Everything needed to re-run or re-analyse this lives in the repository under
 [`research/experiments/indent-vs-braces/`](../research/experiments/indent-vs-braces/):
@@ -276,16 +331,17 @@ Everything needed to re-run or re-analyse this lives in the repository under
 - **Task corpus** — `tasks/`: the *before* files per style + the style-neutral edit instruction + the oracle.
 - **Grader** — `grade.scala`: compiles the candidate and a probe, runs a behavioural probe, and emits the grade
   (so "correct" means *behaves* like the oracle, not *looks* like it).
-- **Sweep runner** — `sweep.scala`: loops `task × style × model × R`, prompts each local model (via Ollama/modly),
-  grades, appends rows to the TSV.
-- **Analysis + figures** — `analyze.scala` (the tables) and `charts.scala` (Figures 1–3 above, generated straight
-  from `results-raw.tsv`).
+- **Sweep runner** — `sweep.scala`: loops `task × style × model × R` (where **R = the number of repeats** per
+  cell), prompts each local model (via Ollama/modly), grades, appends rows to the TSV.
+- **Analysis + figures** — `analyze.scala` (the tables), `charts.scala` (Figures 1–3 above), and
+  `significance.scala` (the §5.5 permutation tests) — all generated straight from `results-raw.tsv`.
 
 End-to-end: point `sweep.scala` at your models, then `scala-cli run sweep.scala -- 6 <models…>` →
 `scala-cli run analyze.scala` → `scala-cli run charts.scala -- results-raw.tsv figures/`. The Opus-4.8 anchor ran
 the *identical* tasks × styles through a subagent workflow, graded by the same `grade.scala`. If you change one
-thing, change **R and the model set** and watch the aggregate move — that is the cautionary tale (a 4-model run
-gave the opposite "silent-misscope" headline) reproduced as a knob you can turn.
+thing, change **the number of repeats** (the `6` in the command above) **and the model set**, then watch the
+aggregate move — that is the cautionary tale (a 4-model run gave the opposite "silent-misscope" headline)
+reproduced as a knob you can turn.
 
 ## 6. What it means
 
@@ -309,7 +365,38 @@ that pleases no one; it is the rule that makes the human-legibility case and the
 *coincide* — now with data showing where that coincidence actually bites, and where (at the frontier) it stops
 mattering.
 
-## 7. Beyond Scala
+## 7. What would make this a verdict — future work
+
+This is a pilot, and §5.5 was blunt: with seven models the effect is not significant. That is a **map of exactly
+what a follow-up needs**, roughly in order of leverage:
+
+- **More models, across vendors — for statistical power.** The null result is as much a *power* problem as an
+  *effect* problem: seven clustered models is too few to distinguish a real 17-point gap from chance. A few dozen
+  models spanning vendors and sizes (not just what fits on one 6 GB card) would either push the omnibus p down or
+  settle that the effect really is negligible — both are useful answers.
+- **More kinds of edit.** Every task here is one move — *wrap a block in a new `else`*. Extract-a-helper,
+  add-a-`case`, rename-and-reindent, merge-two-branches each stress whitespace differently, and braceless may well
+  **win** on some. A style verdict needs an edit *suite*, not a single operation.
+- **Tasks with real blank-line scopes — so "common" is genuinely distinct.** Here the common variant differed from
+  braceless only as an *instruction*, because these programs have no blank-line blocks for the "braces on long
+  scopes" rule to bite on. Tasks that actually contain long, blank-line-separated blocks would test the common
+  style as *different code*, not a different prompt.
+- **Cost beyond pass/fail.** We score the first attempt as pass/fail. Real edit cost also includes **tokens spent**,
+  **repair cycles** after a miss (a multi-turn fix-it-until-green loop), and **wall-clock time** — the last is not
+  even recorded yet (`sweep.scala` has no elapsed column; adding one and re-running is cheap and local). A fuller
+  study reports a cost *vector*, not one bit.
+- **A stronger correctness oracle.** "Correct" currently rests on one probe input; a bug that only shows on other
+  inputs slips through. Property-based or multi-input probes would harden the grade.
+- **Beyond one language.** Significant indentation is not unique to Scala (Python, Haskell, F#, Nim…). Whether the
+  edit-cost asymmetry generalises is an open, testable question.
+- **Preregistration and the reflexivity guard, scaled up.** The design should be fixed *before* the run, and the
+  "don't let the agent grade its own homework" firewall (automatic behavioural grader, public raw data) matters
+  more, not less, as the model set grows to include the vendors doing the building.
+
+None of this is exotic — it is the ordinary path from a suggestive pilot to a result you could stake a style policy
+on. The contribution of *this* post is the **design, the harness, and an honest null**; the verdict is future work.
+
+## 8. Beyond Scala
 
 The general point outlives this one language. When agents are primary authors and editors, **readability becomes
 a two-audience problem**: a syntax choice is now also an *ergonomics* choice for the models that will maintain the
@@ -318,7 +405,7 @@ substrate, not just for human taste." Scala, with two syntaxes for one language 
 (the SIP committee), is an unusually good laboratory for asking the question out loud. Consider this post one
 experiment in doing exactly that.
 
-## 8. How this post was made
+## 9. How this post was made
 
 In the spirit of open disclosure about AI's role (and following the substance of Springer's guidance on AI use
 in research), here is an honest account — because this post is, itself, an example of the collaboration it
