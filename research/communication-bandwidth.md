@@ -42,9 +42,19 @@ he can drop capitalization and type prose **all-lowercase**, using `.` `,` `?` a
   prose nicer for the human to read. So the optimum is **human writes lowercase (saves fingers), agent writes
   properly-cased prose (saves nothing, reads better).** Each side optimizes its own cheap axis; neither pays
   for the other's preference.
+- **Mobile / remote-control amplifies the motor axis:** when the human drives the agent from a **phone**
+  (e.g. the Claude Android app, controlling a session remotely), human input gets **even costlier and more
+  error-prone** — thumb-typing is slow, and **phone autocorrect can silently corrupt** technical terms, code
+  identifiers, flags, and paths (exactly the case-exact tokens above), inserting errors the human didn't
+  intend and may not notice. Implications: (a) the "minimize human keystrokes" pressure is **much stronger**
+  on mobile, so lowercase-in + comms-shorthand + terse phrasing pay off more; (b) the agent should be
+  **more tolerant of typos/mangling and more willing to infer intent** from mobile input, while (c) **raising
+  its confirm-before-acting bar for anything a mis-autocorrected token would make destructive** (a corrupted
+  path/flag/identifier). Net: mobile shifts the channel further toward "human sends cheap, noisy, low-effort
+  input; agent does more reconstruction + a sanity check on high-stakes tokens."
 - **Generalization:** "cheapest-for-human" = min over *all* human costs (language fluency **and** motor
-  effort **and** cognitive load), not just token count. The token-optimal channel is agent-side; the
-  human-side channel should minimize *human* effort, whatever form that takes.
+  effort **and** cognitive load **and** device/context), not just token count. The token-optimal channel is
+  agent-side; the human-side channel should minimize *human* effort, whatever form that takes.
 
 ## Open directions
 - A **switch heuristic** for the agent: default to the cheap output language; flip to human-L1 output when
