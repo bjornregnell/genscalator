@@ -171,8 +171,13 @@ lesson: *small model-sets mislead.*
 
 ![Edit-error rate by block size and style — braceless is worst at every size and error rises with size.](figures/fig-size-style.svg)
 
-*Figure 1 — Edit-error rate (fails ÷ attempts), all 7 local models pooled, by block size. Braceless is costliest
-at every size, and the rate climbs as blocks grow — the "gap grows with size" prediction, made visible.*
+*Figure 1 — **Edit-error rate = failed attempts ÷ total attempts** (shown as a %). One attempt "fails" if it does
+not compile **or** compiles but changes the wrong scope (a mis-scope); it "passes" only if it compiles **and**
+behaves like the oracle on a probe input. Each bar pools all 7 local models × 6 repeats = **42 attempts** (so a
+bar reading 60% = 25 of 42 failed). The three sizes are the **same** wrap-in-`else` edit applied to an
+`if`/`else-if` character-dispatch block of growing length: the chain covers letters `a` (**small**, ~5 lines),
+`a`–`e` (**medium**, ~15 lines), or `a`–`j` (**large**, ~40 lines) — so a bigger block means more lines a
+braceless edit must re-indent. Braceless is costliest at every size, and the rate climbs as the block grows.*
 
 **What the separation revealed (the real finding).** Splitting emission from correctness dissolved the aggregate
 into something sharper. Emission was near-perfect for everyone **except** aya-expanse, which literally **cannot
@@ -181,7 +186,8 @@ requested style, the picture is **bidirectional and model-specific**:
 
 ![Edit-error rate by model and style — the effect flips per model.](figures/fig-model-style.svg)
 
-*Figure 2 — Raw edit-error rate per model, all 7 local models. The two 100% bars point **opposite** ways —
+*Figure 2 — Raw edit-error rate per model (same measure as Fig. 1: failed ÷ total attempts; here each bar =
+**18 attempts** = 3 task sizes × 6 repeats). The two 100% bars point **opposite** ways —
 aya-expanse fails every braceless edit, gemma3 fails every braceful edit — while the qwen-coder variants sit near
 zero everywhere (strong coders are style-robust). A single averaged "braces vs braceless" number would hide all
 of this, which is why the table below decouples emission from correctness.*
