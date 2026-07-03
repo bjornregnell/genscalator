@@ -29,6 +29,13 @@ models, or stop the moment it looks good.)
 - **Primary test:** paired permutation, braceless vs braceful pass-rate, **blocked by model** (the model is the unit
   of replication — pooling cells is the pseudoreplication that faked p = 0.008 in 002 §5.5).
 - **Power basis:** the pilot's effect size is small (d ≈ 0.37, inflated by outliers) → ~55 models for 80% power.
+- **The frozen sample (committed before any data):** **56 candidate models**, all ≤ ~8B (quantised, to fit the
+  6 GB card), **disjoint from the pilot 7**, picked for family/vendor diversity — Qwen, Gemma, Llama, Phi, Mistral,
+  DeepSeek, StarCoder2, Granite, plus a long tail of community fine-tunes. The exact tag list and the seed are frozen
+  in `BIG-RUN-PREREG.md` §3-FROZEN and in `models-frozen.txt`. **No-drop rule:** every model that pulls *and* runs is
+  in the analysis; a model that cannot be pulled or will not load is logged as such (itself an adherence datum), never
+  quietly swapped for a friendlier one. 56 candidates brackets the ~55 the power calc wants — the run sits honestly at
+  the *edge* of being able to reach significance, which is the informative place to be.
 
 ## Hardware & feasibility — why the "lame GPU" is actually on-target
 
@@ -54,6 +61,33 @@ capability gradient), which is what bigger hardware would add.
 
 Frozen in the prereg (H1 adherence · H2 primary: braceless ≥ braceful error, controlling for adherence · H3
 frontier: style-insensitive at the top). See `BIG-RUN-PREREG.md` §1–2.
+
+## How significance will be judged (and why the p-value can be trusted)
+
+The primary test is the same one 002 used — a **paired permutation test, blocked by model** — but the honest sample
+size forces one change to the machinery. At ~50 models the *exact* enumeration 002 relied on (walk all 6ⁿ ways of
+relabelling the styles within each model) is impossible: 6⁵⁰ is an astronomically large number. So the frozen
+analysis switches to a **seeded Monte-Carlo permutation** — draw 100 000 random relabellings from the very same null
+distribution, with a **committed random seed** (`20260703`) so the resulting p-value is reproducible to the digit by
+anyone who re-runs the script.
+
+Two safeguards travel with that switch:
+
+- **The Monte-Carlo was validated against the exact truth on the pilot.** Run on the 7-model pilot (where exact
+  enumeration is still feasible), the seeded Monte-Carlo reproduces the exact permutation p-values — omnibus **0.460
+  vs the exact 0.457**, and all three pairwise tests within ±0.002. So the sampler is not adding bias; it is the
+  identical test, merely *sampled* instead of *enumerated*. Only once that agreement held did we freeze it as the
+  big-run analysis path.
+- **The pseudoreplication foil stays on screen.** The same script still prints the naive "pool every cell as
+  independent" chi-square — the one that faked **p ≈ 0.008** in [002 §5.5](002-braceful-or-braceless-or-the-common-style.md)
+  — right next to the correct model-blocked test, as a permanent reminder of the mistake we are refusing to make.
+
+Plain-language glosses (as in 002, repeated here for readers who land directly on 003): a **permutation test** makes
+no bell-curve assumption — it shuffles the style labels many times and asks how often chance alone yields an effect as
+large as the one observed; that fraction *is* the p-value. **Blocked by model** means the shuffling happens only
+*within* each model, never across them, because the model is the unit that genuinely repeats. **Monte-Carlo** is what
+you do when there are too many shuffles to list them all — sample a large random subset instead — and the **seed** is
+the fixed starting number that makes that random sample reproducible.
 
 ## Results — _TBD after the run_
 
