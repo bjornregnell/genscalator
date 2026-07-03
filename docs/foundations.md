@@ -180,6 +180,21 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   responsibility:** periodically read fill/Z (cheap, read-only) and, on first crossing the compact trigger,
   *suggest the dance* — not silently push on (that is how a long run drifts into **context rot**). Distinct
   from Z (the *boundary*) and from the dance (the *ritual*): the trigger is *when to start the ritual*.
+- **Memory hygiene (agent)** — keeping the agent's **durable memory store** (the persistent `MEMORY.md` + the
+  memory files a session reloads) **consistent with current reality**: when a coined term is *renamed*, a file
+  or flag *moved/deleted*, or a decision *reversed*, sweep the store for stale references and update or remove
+  them, so a *future* session isn't re-seeded with facts that were true once but aren't now (a memory can
+  outlive the thing it names — cf. "verify a named flag/file still exists before recommending it"). The
+  memory-store analogue of not letting docs rot. **Honest status (2026-07-03):** currently a **discretionary
+  practice**, *not* a built-in skill or automated check — it follows from *advisory* memory-management
+  guidance, so whether it runs depends on the agent *choosing* to grep the store after a change (an
+  **adherence-decay** risk; `research/instruction-adherence-decay.md`). Externalization candidate: a written
+  sweep-rule **plus** a `tt rename`/stale-ref **tool** — and note the store lives *outside* the repo (in
+  `~/.claude/…`), so repo guards/tools don't reach it by default: a **structural blind spot**, not just a
+  discipline lapse. **Contrast — append-only raw data:** *living* memory is kept **current** (edit it to match
+  truth); the **raw research log** (`research/RAW-DATA.md`) is **immutable** (never retro-edit — a change of
+  mind is logged as *new* data). Same goal (an honest record), opposite mechanism: one tracks the *present*,
+  the other preserves the *past*.
 - **Habit (agent)** — a *learned default strategy* the agent reaches for. Examples: "munge text with
   grep/awk/sed", "count by piping to `wc -l`", "wrap work in `cd … && … > log`".
 - **Reflex (agent)** — a *fast, sub-deliberative trigger* inside a habit, fired before thinking.
