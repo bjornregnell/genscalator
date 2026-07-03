@@ -105,3 +105,23 @@ a fileset AND reports hits, incl. an opt-in path to scan the out-of-repo memory 
 (discretionary) — a clean METHODOLOGY §4 point (trust behavior over self-report) turned on the agent itself.
 The memory-store-is-outside-the-repo detail is the crux: repo tools/guards don't reach `~/.claude`, so stale
 memory is a **structural blind spot**, not just a discipline lapse. Candidate WR-TOOL: `tt rename`.
+
+### `tt` cross-repo tool resolution — genscalator-only tools invisible to bare `tt` (2026-07-03)
+Validating the PRD (`tt parsereqt lint PRD.md`) failed: `tt: no such tool 'parsereqt' in
+…/muntabot-synch-introprog/tools`. Root cause (from the launcher source): `~/.local/bin/tt` **self-locates**
+its `TOOLS` dir to *the dir the launcher script really lives in* (follows symlinks) — here the **work repo's**
+`tools/` (the symlink target) — **not the cwd**. So `cd genscalator && tt parsereqt` still looks in the
+work-repo toolbox. `tt text grepr` earlier *seemed* to work only because `text.scala` exists in **both** repos
+(propagated); `parsereqt.scala` lives **only in genscalator**, so it was invisible. Workaround that worked:
+`TT_TOOLS=…/genscalator/tools tt parsereqt lint <ABS-path-to-PRD>` (override the tools dir **and** pass an
+absolute file path, since cwd isn't the tool's repo). **WR tension (the sharp part):** the whole `tt` design
+goal is *"run from ANY repo as ONE literal, statically-analyzable command"* so it matches a precise allowlist
+(`Bash(tt parsereqt *)`) with **no shell variable** in the gated command. The multi-repo reality —
+**genscalator = canonical toolbox source; the work repo = a propagated *subset*** — **defeats that**: reaching a
+genscalator-only tool needs a `TT_TOOLS=…` prefix, i.e. a **shell variable back in the gated command → forces
+manual confirmation**, exactly what the launcher exists to avoid. **Candidate fix:** tt discovery should **walk
+UP from cwd for a repo-local `tools/` FIRST**, then fall back to the script-dir/symlink target — so `cd
+genscalator && tt parsereqt` "just works" and stays allowlistable, matching the mental model *run the tool of
+the repo I'm standing in*. (Alternatives: a genscalator-local `tt` on `PATH`, or a per-repo symlink — but
+cwd-walk-first is the general fix.) Cross-ref [`../subagent-genscalator-propagation.md`](../subagent-genscalator-propagation.md)
+— the same *"which toolbox am I talking to?"* ambiguity that cross-repo tool propagation creates.
