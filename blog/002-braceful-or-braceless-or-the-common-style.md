@@ -174,10 +174,11 @@ lesson: *small model-sets mislead.*
 *Figure 1 — **Edit-error rate = failed attempts ÷ total attempts** (shown as a %). One attempt "fails" if it does
 not compile **or** compiles but changes the wrong scope (a mis-scope); it "passes" only if it compiles **and**
 behaves like the oracle on a probe input. Each bar pools all 7 local models × 6 repeats = **42 attempts** (so a
-bar reading 60% = 25 of 42 failed). The three sizes are the **same** wrap-in-`else` edit applied to an
-`if`/`else-if` character-dispatch block of growing length: the chain covers letters `a` (**small**, ~5 lines),
-`a`–`e` (**medium**, ~15 lines), or `a`–`j` (**large**, ~40 lines) — so a bigger block means more lines a
-braceless edit must re-indent. Braceless is costliest at every size, and the rate climbs as the block grows.*
+bar reading 60% = 25 of 42 failed). The three sizes are three separate but identically-shaped programs — the same
+`scan` function whose `if`/`else-if` character-dispatch chain is **2 branches** long (`a`,`b` — **small**),
+**5** (`a`–`e` — **medium**), or **10** (`a`–`j` — **large**). The edit is identical each time (wrap that whole
+chain in a new `else`); a longer chain just means a longer block, so more lines a braceless edit must re-indent.
+Braceless is costliest at every size, and the rate climbs as the block grows. The full programs are in Appendix A.*
 
 **What the separation revealed (the real finding).** Splitting emission from correctness dissolved the aggregate
 into something sharper. Emission was near-perfect for everyone **except** aya-expanse, which literally **cannot
@@ -315,3 +316,104 @@ tool grade its own homework — you are reading the right blog. That is much of 
   [`results-raw.tsv`](../research/experiments/indent-vs-braces/results-raw.tsv).
 - Background: [`../research/scala-style-evolution.md`](../research/scala-style-evolution.md),
   [`../research/scala-style-recommendations.md`](../research/scala-style-recommendations.md).
+
+## Appendix A — the test programs (and why each is shaped that way)
+
+The full corpus — all three sizes × three styles, the oracle `after.*` files, and the behavioural `probe.scala` —
+is in the repo under
+[`research/experiments/indent-vs-braces/tasks/`](../research/experiments/indent-vs-braces/tasks/). This appendix
+shows the essentials and, for each design choice, *what it buys the experiment*.
+
+### A.1 The edit — and why this one
+
+Every cell asks the agent for the **same** edit, from `instruction.md`:
+
+> Edit `scan` so the character transformation only happens when `upper` is true. Inside the `while` loop, wrap
+> the existing character dispatch (the `if c == 'a' … else sb += c` chain **and** the `i += 1` after it) so it
+> runs only when `upper` is true; when `upper` is false, append the character unchanged and advance.
+
+**Why this edit.** It is a *structural* edit — **wrap an existing block in a new enclosing scope** — the one class
+of change where indentation is load-bearing. It is deliberately the operation that most **separates** the two
+styles: a braceless editor must **re-indent every line of the block** to push it one level deeper, while a
+braceful editor just adds `{ … }` and the block's own indentation is irrelevant to the compiler. (It is also the
+exact shape of the real 2026-07-02 mis-scope bug that motivated the study.) The `upper` guard gives the edit a
+**clear behavioural oracle** — the output differs for `upper=true` vs `false` — so a probe can check the edit is
+*correct*, not merely that it compiles.
+
+Small program (`a`,`b`), before:
+
+```scala
+def scan(s: String, upper: Boolean): String =
+  val sb = StringBuilder()
+  var i = 0
+  while i < s.length do
+    val c = s(i)
+    if c == 'a' then sb ++= "A"
+    else if c == 'b' then sb ++= "B"
+    else sb += c
+    i += 1
+  sb.toString
+```
+
+A correct braceless edit — note **every dispatch line moved one level deeper** under the new `if upper then`:
+
+```scala
+def scan(s: String, upper: Boolean): String =
+  val sb = StringBuilder()
+  var i = 0
+  while i < s.length do
+    val c = s(i)
+    if upper then
+      if c == 'a' then sb ++= "A"
+      else if c == 'b' then sb ++= "B"
+      else sb += c
+      i += 1
+    else
+      sb += c
+      i += 1
+  sb.toString
+```
+
+Get one line's indentation wrong here and a statement silently escapes its branch — it still compiles, but
+mis-behaves. That is the *silent mis-scope* the grader's behavioural probe exists to catch; a compile-only check
+would wave it through.
+
+### A.2 The three sizes — and why three
+
+The three tasks are **identical in every respect except the length of the dispatch chain**: `a`,`b` (small,
+2 branches), `a`–`e` (medium, 5), `a`–`j` (large, 10). Large, before:
+
+```scala
+def scan(s: String, upper: Boolean): String =
+  val sb = StringBuilder()
+  var i = 0
+  while i < s.length do
+    val c = s(i)
+    if c == 'a' then sb ++= "A"
+    else if c == 'b' then sb ++= "B"
+    else if c == 'c' then sb ++= "C"
+    else if c == 'd' then sb ++= "D"
+    else if c == 'e' then sb ++= "E"
+    else if c == 'f' then sb ++= "F"
+    else if c == 'g' then sb ++= "G"
+    else if c == 'h' then sb ++= "H"
+    else if c == 'i' then sb ++= "I"
+    else if c == 'j' then sb ++= "J"
+    else sb += c
+    i += 1
+  sb.toString
+```
+
+**Why vary size at all.** A single program tells you *whether* braceless is costlier, but not whether the cost
+**scales** with the block. The braceless-re-indent argument predicts the gap should **grow with block length**
+(more lines to re-indent = more chances to slip). Making chain-length the *only* thing that changes turns "size"
+into a clean covariate: any error-rate difference across small/medium/large is attributable to length, not to
+different logic. That is exactly the trend Figure 1 tests — and finds.
+
+### A.3 The three styles, and the oracle
+
+Each size exists in **three style variants** (`before.braceless` / `before.braces` / `before.common`) — the
+experiment's independent variable — so the identical edit can be measured in each surface syntax. Grading is by a
+**behavioural `probe.scala`** that runs the edited `scan` on a fixed input and compares its output to the oracle
+`after.*`; "correct" therefore means *behaves right*, not *looks right* — the only way to tell a real PASS from a
+silent mis-scope. All variants, oracles, and probes are in the repo `tasks/` directory.
