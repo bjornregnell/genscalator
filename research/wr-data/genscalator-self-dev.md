@@ -37,7 +37,11 @@ cause here:** the export was added to `~/.bashrc` *after* the `claude` process l
 process start, so a live process never sees a later `.bashrc` edit. Options, cleanest first:
 (a) **PREFERRED — relaunch the agent from an env that already carries the secret:** exit + `claude --resume`
 from a terminal where the export has run; the agent process inherits it and ALL child Bash shells inherit it
-for free (no guard issue, no per-call trick). Env *inheritance* beats per-call sourcing. (b) per-call
+for free (no guard issue, no per-call trick). Env *inheritance* beats per-call sourcing. **CONFIRMED
+(2026-07-03):** attempt 1 failed (BR forgot to `source ~/.bashrc` first → token absent; caught by the
+`tt forge whoami` first-action check — safety net working); attempt 2, after sourcing, `tt forge whoami`
+returned `authenticated as bjornregnell … (token from env GENSCALATOR_CODEBERG_TOKEN)` and effectful forge
+ops now run BARE. Cross-ref [[exit-resume-dance]]. (b) per-call
 **`bash -ic '…'`** (force interactive → `.bashrc` sources → export runs) — the in-session workaround when
 relaunching isn't worth it (what we used tonight). (c) human exports the secret above the interactive-guard
 or in a profile the agent's non-interactive shell loads. Candidate: an AGENTS/tool note on "human-env secrets
