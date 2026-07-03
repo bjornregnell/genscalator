@@ -22,7 +22,7 @@ and the *compact dance* / *exit-resume dance* memories.
 | **Z** | **smart-zone ceiling** — fill fraction where quality starts degrading (context rot); sits between the smart and dumb zones (renamed from **L**, 2026-07-03) | ~0.30 **prior**, unmeasured |
 | **0.8·Z** | **reactive brake** = existing *compact trigger* — hygiene-compact before hitting the ceiling | — |
 | **floor** | fixed overhead that survives *any* compact (system prompt + tools + memory + skills) | ~23k (~2.3% of W) |
-| **consolidation point** *(proposed)* | **proactive** compact trigger — durability-gated, NOT fill-gated (below) | — |
+| **consolidation point** *(adopted 2026-07-03)* | **proactive** compact trigger — durability-gated, NOT fill-gated (below) | — |
 
 The 2026-07-03 compact exposed the **floor**: 46.1k after compact, of which ~23k is fixed overhead you can
 *never* compact away. So the practical minimum is ~23k, not zero, and only ~23k of that 46k was surviving
@@ -114,4 +114,5 @@ repo (`docs/foundations.md`, `smart-zone-ceiling.md`, `human-state-and-joint-zon
   cheap to compact now" nudge. The agent can self-check the durability predicate (git clean? pushed? memory
   written?) far more reliably than it can see fill — so the proactive signal is *more* actionable for the agent
   than the reactive one (which needs the human to relay fill; cf. the perception-gap notes).
-- **Decision still open for BR:** adopt "**consolidation point**" as the name for the proactive trigger?
+- **Naming — DONE (2026-07-03):** "**consolidation point**" adopted as the name for the proactive trigger
+  (now a glossary term in `docs/foundations.md`).

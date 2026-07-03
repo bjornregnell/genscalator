@@ -71,6 +71,43 @@ reference frame** — the core mechanism of the joint zone (`human-state-and-joi
 an outside observer is not a failure of the design; it is the *general shape* of measuring any system from
 inside itself.
 
+## Why is the agent blind to its own state — bug or feature? (why L3 is unbuilt) (2026-07-03, BR RQ)
+BR: *why hasn't Anthropic given the agent power to read its own context usage — it is a read, no hazard?* Best
+reasoning (speculative — no inside knowledge):
+- **The hazard is reflexivity, not the read.** The read is harmless; *conditioning behavior* on a live
+  self-metric is not. A model that sees its own usage will *reason about it, badly* — the same failure as this
+  session's think-time→"rot" confabulation. Given a number it over-reads *quantity* as *quality* (usage ≠ rot),
+  rushes, truncates early, or games the metric. **Self-measurement can make behavior worse.**
+- **It is mostly architectural, not policy.** "Fill %" is a **serving-layer accounting artifact**
+  (tokenization, window size, KV/prefix-cache, system vs tool-defs vs images) — the model generating tokens has
+  **no privileged channel to its own KV-cache occupancy**. Only the harness knows; injecting it accurately each
+  turn costs tokens and is stale the instant generation starts. Less *withheld* than *not wired in*.
+- **Separation of concerns.** Context management is the *harness's* job (compact / truncate / RAG); the model's
+  is the task. Exposing fill invites the model to self-manage the substrate it runs on — which the harness does
+  better.
+- **The elegant read:** Anthropic *did* build the gauge — `/context` — and pointed it at the **human**, not the
+  model. That is exactly sub-RQ b's conclusion: reliable self-measurement is impossible from inside a degrading
+  system, so the meter belongs with the **external, undegraded observer**. Perhaps not an oversight but the
+  same principle, instantiated: *the human holds the gauge because the human is the sober friend.*
+- **Where it breaks (the autonomy gap):** under AFK / ralph-loop there is no human to read `/context`, and the
+  agent then *does* need to self-gauge to avoid halting uncommitted. The fix is not the precise % (ruminatable)
+  but a **coarse brake** ("near the edge → checkpoint + compact") — what genscalator's `token-usage --ceiling`
+  synthesizes. Correct split: **discrete brake → agent; continuous gauge → human.**
+- **BR's take (the L3 demand, sharpened):** *Anthropic **should** build us a context-**rot** meter; or the
+  harness may already have the signals and just not surface/use them well enough for either of us to notice.*
+  If true, **L3 is less "build new physics" than "surface what the serving layer already sees"** — a far
+  cheaper ask (exposure + good use, not new measurement), and the single highest-leverage move for agent
+  self-governance.
+- **BR's punchline — but we don't control Anthropic, so we build it ourselves.** We cannot force L3, so
+  genscalator builds the **buildable slice** now: **L0 + L1 as `tt rotcheck`** + the **L2 human protocol**
+  (roadmapped `contextRotMeter`, PRD v0.11.0). L3 stays an upstream *ask* we file but do not block on. The
+  agent-facing coarse brake (`token-usage --ceiling`) is the usage-side prototype of the same stance.
+
+**Answer to "bug or feature?":** *feature* for the reflexivity + external-observer reasons (keep a degrading
+agent from misreading a self-metric), but a **gap** for autonomy — where a coarse agent-facing brake, plus an
+Anthropic-built (or at least Anthropic-*surfaced*) L3 rot signal, would genuinely help. Until then: **build our
+own.**
+
 ## Plan / candidate estimators (to explore)
 1. **Calibration probes (in-session, cheap).** Periodically inject a tiny **recall/consistency self-check**
    — recall an earlier decision/constraint, or a planted fact ("canary") from N turns ago — and record the

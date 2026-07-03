@@ -190,6 +190,15 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   responsibility:** periodically read fill/Z (cheap, read-only) and, on first crossing the compact trigger,
   *suggest the dance* — not silently push on (that is how a long run drifts into **context rot**). Distinct
   from Z (the *boundary*) and from the dance (the *ritual*): the trigger is *when to start the ritual*.
+- **Consolidation point** — the **proactive** counterpart to the *compact trigger*: a moment where compaction
+  is cheap because the transcript's marginal detail is **already externalized to durable stores**, so
+  discarding it loses ~nothing. Unlike the reactive trigger (a *usage* threshold, `0.8·Z`), it is a
+  **durability predicate**, not a fill level: *work committed + pushed, memory/notes updated, at a task
+  boundary (not mid-edit), and enough usage to be worth shedding (~> 2× the floor)*. **Compact when either
+  fires** — reactive (pressure, near the ceiling) OR consolidation (a clean milestone). The name captures the
+  sleep analogy: **consolidate then discard** (like memory consolidation in sleep) vs the reactive trigger's
+  forced, lossy shutdown — *"good compaction is sleep, not collapse."* See
+  `research/proactive-compaction-point.md`.
 - **Memory hygiene (agent)** — keeping the agent's **durable memory store** (the persistent `MEMORY.md` + the
   memory files a session reloads) **consistent with current reality**: when a coined term is *renamed*, a file
   or flag *moved/deleted*, or a decision *reversed*, sweep the store for stale references and update or remove
