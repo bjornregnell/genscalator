@@ -376,7 +376,7 @@ exact shape of the real 2026-07-02 mis-scope bug that motivated the study.) The 
 **clear behavioural oracle** — the output differs for `upper=true` vs `false` — so a probe can check the edit is
 *correct*, not merely that it compiles.
 
-Small program (`a`,`b`), before:
+The **small** program (2 branches), before the edit:
 
 ```scala
 def scan(s: String, upper: Boolean): String =
@@ -391,7 +391,8 @@ def scan(s: String, upper: Boolean): String =
   sb.toString
 ```
 
-A correct braceless edit — note **every dispatch line moved one level deeper** under the new `if upper then`:
+After the edit, a correct braceless result — note **every dispatch line moved one level deeper** under the new
+`if upper then`:
 
 ```scala
 def scan(s: String, upper: Boolean): String =
@@ -419,7 +420,7 @@ would wave it through.
 The three tasks are **identical in every respect except the length of the dispatch chain**, and each larger one
 **extends** the smaller: small is `a`,`b` (2 branches), medium adds `c`,`d`,`e` (5 total), large adds `f`…`j`
 (10 total) — so the small block is a literal *prefix* of the large, and length is the only thing that varies.
-Large, before:
+The **large** program (10 branches), before the edit:
 
 ```scala
 def scan(s: String, upper: Boolean): String =
