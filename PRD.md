@@ -222,6 +222,19 @@ The next real release is **v0.9.0** — v0.1.0–v0.8.0 have shipped (see PAST/I
   * Gist: an MCP server exposing the toolbox for cross-tool use (Claude / Codex / opencode) — the portability goal.
 * Feature: mcpServer helps Goal: contributeOpenSource
 
+### Release v0.11.0 — context-rot meter (research-gated, furthest out)
+
+* Feature: contextRotMeter has
+  * Gist: an instrument for the QUALITY axis of context (rot / chaos), complementing the token-usage QUANTITY gauge — surfaces "am I degrading?" so the agent or human can prune/compact before drift, not after.
+  * Spec: LAYERED (design in `research/smart-zone-ceiling.md`, sub-RQ b). L0 (solo, passive): count degradation signatures in the transcript — self-contradiction, repetition, tool-retry, redone work, instruction-forgetting. L1 (solo, externally anchored): a durable ground-truth file of decisions + planted canaries; a periodic re-read diffs live beliefs against it (the file does not rot → the external reference frame). L2 (collaborative): a human↔agent protocol — the human, an undegraded observer, flags lapses and relays `/context`. L3 (harness ask, not buildable by us): expose substrate signals (attention entropy, what compaction discarded, true usage).
+  * Spec: BUILDABLE SLICE for genscalator = L0 + L1 as a pure, read-only typed tool (candidate `tt rotcheck`) — counters + canary-diff over supplied files, no self-authorization surface. L2 is a skill/AGENTS protocol; L3 is upstream/platform.
+  * Why: rot is a QUALITY failure that can occur at LOW usage (chaos) or be absent at HIGH usage — usage% is a weak proxy, so a separate meter is warranted; and self-measurement from inside a degrading system is unreliable (a rotted agent measures with a rotted instrument), so the meter must anchor on an external reference — a file (weak) then a human (strong).
+  * Comment: MEASUREMENT-FROM-WITHIN — reliable detection is human-gated until L3 exists; the mirror of agent-as-stabilizer (agent steadies the tiring human; human detects the rotting agent — each the other's external frame).
+* Feature: contextRotMeter relatesTo Feature: ttLog
+* Feature: contextRotMeter helps Goal: tokenEfficiency
+* Feature: contextRotMeter helps Goal: jointHumanAgentProductivity
+* Feature: contextRotMeter helps Goal: safeGeneration
+
 ## PAST
 
 Requirements implemented (or cancelled). Move requirements from FUTURE to PAST as they ship. The IMPLEMENTED

@@ -92,6 +92,24 @@ inside itself.
 - **v3:** optional **calibration-probe** hook (#1) for a sharper, active estimate.
 - Graduate the useful form into a `tt usage`/`tt smart-zone` genscalator tool (read-only, deterministic).
 
+## Build plan — the context-rot meter (roadmapped: PRD `contextRotMeter`, v0.11.0)
+The *rot* meter (quality axis) is distinct from the *usage/Z* gauge (quantity axis) above but shares the staged
+shape. Buildable slice for genscalator = **L0 + L1** as a pure, read-only typed tool (candidate **`tt
+rotcheck`**); L2 is a human↔agent **protocol**; L3 is an **upstream/platform ask**.
+1. **L0 — proxy counters (solo, passive), ships first.** A `tt` pass over a supplied transcript/decisions file
+   counting degradation signatures: self-contradiction, repetition, tool-retry, redone work,
+   instruction-forgetting. Pure + deterministic; no self-authorization surface.
+2. **L1 — canary + external-anchor diff (solo, active).** A durable ground-truth file (decisions + planted
+   canaries) the tool writes and later re-reads, diffing live beliefs against the **non-rotting** file — the
+   external reference that makes solo self-audit meaningful (the measurement-from-within paradox above).
+3. **L2 — collaboration protocol (human as external observer).** Documented (skill / AGENTS): the human flags
+   observed lapses + relays `/context`; the agent surfaces its L0/L1 readings for the human to sanity-check.
+4. **L3 — harness ask (not buildable by us).** Petition the platform to expose substrate signals (attention
+   entropy, compaction-discard manifest, true usage) → turns L0/L1 proxies into measurements.
+**Safety:** the buildable slice is read-only/pure; the durable-file location must NOT be an agent-settable
+config (same self-authorization guard as the verify allowlist). **Validation:** dogfood — run the meter on the
+sessions that produce this research (its own rot is data).
+
 ## Relation to other notes
 - `docs/foundations.md` — defines **Smart-zone ceiling (Z)**, *smart/dumb zone*, *context rot*.
 - `token-budget-awareness.md` — the token-spend analogue; Z is the *context*-window analogue of the budget
