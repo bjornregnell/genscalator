@@ -31,10 +31,13 @@ own bugs while it got exhausted in an agent sickness known as *context rot* (the
 this at the time of writing, but you can search for it or ask an AI near you).
 
 This is what I saw as an (to me) obvious mission for genscalator:
-  * TODO
+  * Can we make agents smarter by nudging them to use typed tools?
 
-But I also realized, in my collaboration with Claude, that what we really were trying to do is to break the
-teaching-learning boundary between training and inference.
+But I also realized, in my collaboration with Claude, that what we really were trying to do is to break the teaching-learning boundary between training and inference.
+
+And what struck me as really mind-boggling: my agent is turning into a competent substitute of the next PhD student, that I lack funding for. Genscalator has, on my privately paid token budged, now grown into a full-scale, open research endeavor with sub-projects, experiments, tooling, and a real intelectual challenge.
+
+And I haven't had this fun since I discovered programming as a teenager in the mid '80-ies...
 
 ## The one-line answer
 Coding agents default to **dynamic shell** — re-emitting brittle `bash` every turn — and that quiet default
