@@ -162,3 +162,31 @@ Dogfooding `tt forge` to move paper sources into BR's new private **`papers`** r
   releases/tags/whoami only). **Candidate `tt forge` improvement:** a `repo <owner/name>` verb
   (GET /repos/owner/name) + messaging that a 404 on a *private* repo likely means **token-scope, not absence** —
   else the agent/human misreads "no access" as "does not exist" (the exact ambiguity that bit here for a minute).
+
+### `sed` reflex for a cosmetic label — and a *safe stream-editor* tool idea (2026-07-03, BR-spotted)
+While verifying the papers-repo file set the agent ran `git … ls-files research/papers | sed 's|^|genscalator: |'`
+— reaching for **`sed`**, a dual-use stream editor, purely to **prefix a display label**. BR caught it and
+asked whether we could wrap sed safely. The analysis:
+
+- **`sed`'s danger is not the transform — it's the file-touching modes.** Pure `sed 's/…/…/'` reading **stdin→
+  stdout** is *effect-free* (no filesystem write). The hazards live entirely in: **`-i`** (in-place edit),
+  the **`w file`** flag on `s///w` and the **`w`/`W`/`r`/`R`** commands (write/read files), and **`e`**
+  (execute shell — RCE). A `Bash(sed *)` allowlist entry blanket-approves all of those. Same shape as the
+  `curl` event above: *the call was safe, the rule is not.*
+- **Two designs (mirrors the curl→web-get split):**
+  1. **Wrap the DSL, stream-only** — `tt text sed <script>`: accept a sed program, **statically reject**
+     `-i` / `w` / `r` / `e` / `s///w` at parse time, run **stdin→stdout only, never opening a file**. Because
+     it's stream-in/stream-out, **tt sees both sides** and can emit an audit line — *N lines changed, unified
+     diff on `--show`* — BR's "monitor what actually gets mutated" for free (instrumentation-by-default). But it
+     must correctly parse sed's whole command grammar to prove the blacklist is complete — non-trivial.
+  2. **Typed verbs, no DSL** — narrow ops that cover the 90% without exposing sed's language at all:
+     `tt text prefix <str>`, `tt text sub <re> <repl>`, `tt text filter <re>`. Safe **by construction** (they
+     literally cannot open a file or exec), so `Bash(tt text *)` stays blanket-allowable. This *is* the
+     genscalator spirit — safe-by-design beats safe-by-parsing-a-dangerous-DSL. Today's need (a label prefix)
+     is a one-liner `tt text prefix "genscalator: "`; no sed required.
+- **Recommendation:** favour **(2)** for the common cases (already have `tt text`; add `prefix`/`sub`/`filter`),
+  keep **(1)** as an escape hatch only if a real need for arbitrary sed scripts appears — and even then the
+  file-mode blacklist + stream-only + diff-audit is the safe core. The mutation-monitor idea generalises: **any
+  `tt text` transform is stream-in/stream-out, so tt can always report what it changed** — a diff the raw binary
+  never gives you. **Also a rule (agent-side):** don't reach for `sed` to *format output* — that's a scala/`tt
+  text` job, and the reflex is the same dynamic-shell habit `prefer-scala-scratch-over-bash` already names.
