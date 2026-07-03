@@ -113,3 +113,23 @@ stdout + exit code to the dispatcher, instead of scattering `println`/`sys.exit`
 tools; route a small `MIGRATED="newtool typo …"` set through `scala-cli run tools/tt.scala -- <tool> <args>`.
 Move a tool's name into `MIGRATED` as you convert it. `tt git` and the rest keep working the whole time; when
 `MIGRATED` covers everything, the per-file branch dies and bash is replaced by the native binary.
+
+## MUST CONSOLIDATE WITH: `../research/tt-typed-args.md` (the arg-parsing half)
+
+BR flagged (2026-07-03) that we'd **both forgotten** the earlier research note
+[`../research/tt-typed-args.md`](../research/tt-typed-args.md) (2026-07-01) — and it's not a separate topic, it's
+the **other half of the same architecture**. This doc decides the tool's *structure* (one `@main`, tools return
+`Either[ToolError, ToolResult]`, IO in the dispatcher); that note decides how a tool's *arguments* are taken —
+today every tool hand-parses stringly `args: String*` with `indexOf`/`toIntOption`, and it argues for a **tt-owned
+typed-arg layer**: declare typed params → auto-parse + fail-fast **one-line friendly** errors + first-class
+flags/subcommands + reusable validators (`intRange`, `existingFile`, `oneOf(enum)`, `FROM..TO`) + the
+`--safe-mode`/`--sandboxed`/`--audit` declarations as typed options. (Scala 3 `@main` typed params fit only simple
+leaf tools — positional basic types, no flags/subcommands — so tt's needs already exceed them.)
+
+**They converge — the consolidated shape.** In the single-dispatcher world the **dispatcher owns parsing**, which
+is exactly where the typed-arg layer belongs: `tt.scala` parses+validates argv into a tool's **typed** input (not
+`String*`) and routes, so a tool becomes `def goodName(typedArgs): Either[ToolError, ToolResult]` — typed *in* AND
+typed *out*, IO and parsing both centralized, tool body pure. So the "best way forward" is **one design**, not two:
+single-dispatcher (structure) + typed-arg layer (input) + `Either[ToolError, ToolResult]` (output) + native binary
+(packaging) + `Iterator` streaming (where it pays). **Morning task:** re-read `tt-typed-args.md` alongside this doc
+and settle the consolidated architecture before writing `tt.scala` (both share the dispatcher as the seam).
