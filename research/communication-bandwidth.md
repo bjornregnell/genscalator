@@ -56,6 +56,28 @@ he can drop capitalization and type prose **all-lowercase**, using `.` `,` `?` a
   effort **and** cognitive load **and** device/context), not just token count. The token-optimal channel is
   agent-side; the human-side channel should minimize *human* effort, whatever form that takes.
 
+## Async overlap — the productive "race" (2026-07-03, BR: "we are racing")
+A benign but real coordination cost surfaced live: the agent was already **succeeding** on the better path
+(fetching a Google Doc's body via `.../mobilebasic` after `/edit` gave only the app shell and the `.txt` export
+400'd) when the human, not yet seeing that, sent a **fallback offer** — *"or I can just paste it here? (but then
+no formatting)"*. The channel is **async**, so both parties worked the same subtask in parallel; the human spent
+keystrokes proposing an alternative the agent had already obviated. BR named it: *"we are racing."*
+- **It is the constructive cousin of the double-post race** (`wr-data/harness-ux.md`): there the duplication is
+  a harness bug; here it is **inherent to async turn-taking** — nobody did anything wrong, the human just can't
+  see the agent's in-flight work until it lands.
+- **Cost:** wasted human effort (a typed fallback) + a momentary two-track state the agent must reconcile
+  ("do I switch to their paste, or report my success?"). Small here, larger when the human's fallback would
+  *undo* or *diverge from* the agent's in-flight approach.
+- **Agent-side mitigation (agent-as-stabilizer):** when a subtask will take more than a beat, emit a
+  **lightweight "on it + which approach" progress signal** *before* grinding — "trying `mobilebasic` to get the
+  body" — so the human can **stand down** instead of opening a second front. It is the inverse of the human's
+  voluntary self-disclosure (`human-state-and-joint-zone.md`): the *agent* discloses its plan cheaply so the
+  *human* need not guess or duplicate. Cheap signal, saves the redundant-effort race.
+- **Side note (human-state):** BR's `!!!` here is a **positive-arousal / delight** marker, not fatigue —
+  a live reminder that the keystroke gauge must be **baseline-relative and valence-aware** (excitement and
+  exhaustion both raise punctuation/typo intensity; only one means "offer a break"). Cf. the baseline-relative
+  refinement in `human-state-and-joint-zone.md`.
+
 ## Open directions
 - A **switch heuristic** for the agent: default to the cheap output language; flip to human-L1 output when
   (a) the human asks, (b) the topic *is* the human's L1 source text/terminology, or (c) a review-precision
