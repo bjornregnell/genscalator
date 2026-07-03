@@ -143,6 +143,7 @@ hosts — lock down with `--host`. Example: `tt web get https://codeberg.org/api
 
 ### forge — Forgejo/Gitea forge client, default Codeberg (EFFECTFUL: network; create needs env token)
 ```
+forge whoami   [--url BASE]                               # verify auth: print the token's login (never the token)
 forge releases <owner>/<repo> [--url BASE] [--limit N]    # list releases  (READ, no auth → allowlistable)
 forge tags     <owner>/<repo> [--url BASE] [--limit N]    # list tags      (READ, no auth → allowlistable)
 forge release-create <owner>/<repo> <tag> [--name S] [--body S | --body-file F]

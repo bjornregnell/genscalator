@@ -11,6 +11,7 @@
 //   (or FORGE_TOKEN) — NEVER a flag — so the agent cannot self-authorize (same trust-boundary rule as
 //   verify's TT_VERIFY_ALLOW / the configInArgsNotEnv PRD feature). It prints an [audit] line before acting,
 //   and is deliberately NOT blanket-allowlistable (creating a release should stay a visible, confirmed op).
+//   tt forge whoami   [--url BASE]                          # verify auth: print the token's login (never the token)
 //   tt forge releases <owner>/<repo> [--url BASE] [--limit N]
 //   tt forge tags     <owner>/<repo> [--url BASE] [--limit N]
 //   tt forge release-create <owner>/<repo> <tag> [--name S] [--body S | --body-file F]
@@ -24,6 +25,7 @@ private def die(msg: String): Nothing = { System.err.println(s"forge: $msg"); sy
 
 private def forgeUsage(): Nothing = die(
   "usage:\n" +
+    "  forge whoami   [--url BASE]                              (verify auth: prints the token's login)\n" +
     "  forge releases <owner>/<repo> [--url BASE] [--limit N]\n" +
     "  forge tags     <owner>/<repo> [--url BASE] [--limit N]\n" +
     "  forge release-create <owner>/<repo> <tag> [--name S] [--body S | --body-file F] [--prerelease] [--draft] [--target C] [--url BASE]\n" +
@@ -55,10 +57,37 @@ private def apiBase(url: String): String = url.stripSuffix("/") + "/api/v1"
 
 @main def forge(args: String*): Unit =
   args.toList match
+    case "whoami" :: rest         => whoami(rest)
     case "releases" :: rest       => listReleases(rest)
     case "tags" :: rest           => listTags(rest)
     case "release-create" :: rest => releaseCreate(rest)
     case _                        => forgeUsage()
+
+// whoami — authenticated READ (GET /user) to verify the token inherits + is valid. Prints only the login and
+// which env var supplied the token (NEVER the token). Trusted-host-guarded like release-create.
+private def whoami(args: List[String]): Unit =
+  @annotation.tailrec
+  def go(rest: List[String], base: String): String =
+    rest match
+      case Nil                                => base
+      case "--url" :: u :: t                  => go(t, u)
+      case flag :: _ if flag.startsWith("--") => die(s"unknown/incomplete flag '$flag'")
+      case other :: _                         => die(s"unexpected argument '$other'")
+  val base = go(args, DefaultBase)
+  val tok  = token.getOrElse(die(s"whoami needs a token — the HUMAN sets one of env ${TokenEnvNames.mkString(", ")} (never a flag)."))
+  val url  = s"${apiBase(base)}/user"
+  val host = hostOf(url)
+  if !trustedHosts.contains(host) then die(
+    s"refusing to send the token to untrusted host '$host'. Trusted: ${trustedHosts.toVector.sorted.mkString(", ")} (extend via env TT_FORGE_HOSTS).")
+  val r = Try(requests.get(url, headers = Map("Authorization" -> s"token $tok"),
+    check = false, readTimeout = 30000, connectTimeout = 10000)).getOrElse(die("request failed"))
+  r.statusCode match
+    case 200 =>
+      val login = Try(ujson.read(r.text()).obj.get("login").map(_.str).getOrElse("?")).getOrElse("?")
+      val src   = TokenEnvNames.find(n => sys.env.get(n).exists(_.trim.nonEmpty)).getOrElse("?")
+      println(s"authenticated as $login on $host (token from env $src)")
+    case 401 => die(s"token present but rejected (401) by $host — check the token / its scope")
+    case c   => die(s"GET $url -> $c ${r.statusMessage}")
 
 private final case class ReadOpts(repo: Option[String], base: String, limit: Int)
 
