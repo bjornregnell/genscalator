@@ -49,6 +49,10 @@ an agent's working context during ordinary tool use.
   the reactive `0.8·Z` brake fires), and when? Argues **lazy** compaction (under-compacting is reversible,
   over-compacting is not) with one exception — the **consolidation point** (a durability predicate: committed +
   pushed + notes-updated). Also where the `L → Z` rename was decided.
+- [`course-driven-development.md`](course-driven-development.md) — *(IDEA)* run BR's MSc RE course as three
+  student teams (reqT / genscalator / app) so students become a **contributor pipeline** into the reqT +
+  genscalator OSS community; RE taught at three abstraction levels, with the app team as a real requirements
+  source. Cross-repo strategy note, not a PRD requirement.
 - [`communication-bandwidth.md`](communication-bandwidth.md) — for a non-native-English human + an
   English-centric agent, what's the bandwidth- and TE-optimal language *per direction*? The linguistic
   dimension of the human↔agent channel (human L1 in, agent cheapest-clear out; ask when L1 is idiosyncratic).
