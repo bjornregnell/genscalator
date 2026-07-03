@@ -357,7 +357,25 @@ four lines on every `tt git` commit. **Fix:** add `//> using jvm 21` to those tw
 toolbox. No stderr suppression, no launch flag. (An earlier guess — `--java-opt=--sun-misc-unsafe-memory-access=allow`
 — was tested and **REJECTED** by this JDK, `Unrecognized option`; recorded here so it isn't retried. The right lever
 was the version pin, not a flag.) Lesson: a missing `//> using jvm` silently falls back to whatever JDK is on PATH,
-so pin it in every tool. The native-`tt`-binary path ([[DESIGN-single-dispatcher]]) removes the whole class later. (b) This is another argument for the **native `tt` binary** ([[DESIGN-single-dispatcher]]):
+so pin it in every tool. The native-`tt`-binary path ([[DESIGN-single-dispatcher]]) removes the whole class later.
+
+## The `export TT_TIME=0;` prefix reflex (2026-07-03, BR-flagged "why export TT_TIME=0?")
+
+**Symptom.** The agent prepended `export TT_TIME=0; ` to its `tt git` calls (to hide `tt`'s per-invocation timing
+line, `tt git: N.NNNs`). BR flagged it. **Double anti-pattern:** (1) `export VAR=0; <cmd>` is an env-assignment
+composed with `;` *inside the gated command* — **non-allowlistable and guard-shaped**, the identical family already
+logged for the `TT_TOOLS=` prefix reflex above (a bare `tt git …` matches `Bash(tt git *)`; the env-prefixed form
+does not). (2) It **suppresses telemetry the tool emits on purpose** — the timing line + `tt-perf.tsv` append are
+"feedback kind b", the very perf data the toolbox exists to gather; silencing it defeats the instrument.
+
+**Why it happened.** Carried over from smoke-testing (where the timing line was noise in a `grep`) into commits by
+reflex — output-tidying over-optimization, the same impulse as the `sed`/pipe-to-head reflexes. The timing line is
+**not clutter to hide**; on a real commit it's signal.
+
+**Fix (in-hand).** Run **bare `tt git …`** — let the timing line print and log. If the perf timing ever genuinely
+needs disabling, set `TT_TIME` in the **human environment** (export once, or settings `env`), never as a per-call
+prefix on the gated command — same env-*inheritance*-not-per-call-prefix rule as `TT_TOOLS`. General reflex to kill:
+**never prepend an env-assignment to a `tt` call**; if a tool needs config, it reads it from the inherited env. (b) This is another argument for the **native `tt` binary** ([[DESIGN-single-dispatcher]]):
 a compiled binary doesn't route through the scala-cli/JVM-warning path at all — it sidesteps the whole issue without
 needing to find the flag. (c) **Agent-side (in-hand now):** state plainly that these four lines are inert
 JVM-internal noise and do **not** treat them as findings — do not confabulate an action from them.
