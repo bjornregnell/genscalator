@@ -131,6 +131,15 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   subagents for big sweeps, and **checkpoint + compact before rot sets in**, not after. TE's smart-zone
   pressure exists precisely to *slow* context rot; instrumentation-by-default and the `tt` tools reduce the
   low-signal bloat that *accelerates* it.
+- **Context usage** *(preferred term; synonym: **context fill** / **fill**)* — the fraction of the model's
+  context window currently occupied (tokens used ÷ window): the **quantity** axis of context state, and the
+  number the harness reports as **Context Usage** in `/context`. Our notes historically wrote **fill** /
+  **fill %**; those are **exact synonyms**, with *context usage* now **preferred** (it matches the harness UX) —
+  so existing "fill" phrasing stands, **no rename needed**. Distinct from **context rot**, the *quality* axis
+  (chaos / low-signal bloat), which can move **independently** of usage (see `research/smart-zone-ceiling.md`
+  sub-RQ: rot at *low* usage, or none at *high* usage). The agent **cannot reliably read its own usage** — it
+  comes from `/context` (human-relayed) or a `token-usage`-style instrument. The **compact trigger** fires at
+  usage **≥ 0.8·Z** (Z = the smart-zone ceiling, next).
 - **Smart-zone ceiling (Z)** — the fraction of the context window an agent can fill *before* it crosses from
   the **smart zone** into the **dumb zone**: the **usable working-context ratio**. Names the "X%" boundary
   in *Smart zone / dumb zone* as a quantity — if Z ≈ 0.3, the agent stays sharp up to ~30% fill and
