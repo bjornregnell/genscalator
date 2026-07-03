@@ -127,6 +127,18 @@ done safely.
   excitement all raise the count without meaning "stop"), and it must stay **transparent and consensual** —
   surface the observation and *ask*, never silently downshift. Worth pairing with the cheap priors above so a
   single bad-typing message does not trip a false alarm; it is the *trend* that matters.
+  - **Refinement — the gauge must be BASELINE-RELATIVE, not absolute (BR 2026-07-03).** BR reports a *standing*
+    habit of **swapping letters** ("my bad keyboard typing"; this session alone: `gest`→`gets`, `habbit`,
+    `swappin`, plus the arrow-up double-post edits in `wr-data/harness-ux.md`). So a habitual swapper has a
+    **non-zero baseline** typo rate — an *absolute*-threshold gauge would false-positive on them permanently
+    while under-triggering for a normally-clean typist. The signal is therefore the **delta above the person's
+    OWN rolling baseline**, not a global cutoff. Implication for a `tt restcheck`-style gauge: it needs a
+    **per-human calibration** — a rolling estimate of that user's normal slip-rate (and ideally *which kinds*:
+    transposition vs dropped-letter vs `!!!!` floods), against which the current message is scored. This also
+    resolves the "non-native / mobile / dyslexia" noise caveat above cleanly: those raise the *baseline*, not
+    the *deviation*, so a baseline-relative gauge is robust to them by construction. Ties to `ttConfigFile`
+    (a durable per-user profile is where a learned baseline would live) — but note the SAFETY caution there:
+    a human-state profile is observational data, never an authorization surface.
 - **Voluntary self-disclosure: the highest-signal, cheapest human-state input — IF handled right (BR's
   question).** Humans spontaneously reveal state in asides: *"I soon need to eat"*, *"it's late"*, *"I'm
   tired"*, *"this is exciting"*. These are **better** than any inferred proxy (typo rate, time-of-day): they
