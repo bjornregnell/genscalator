@@ -1,7 +1,11 @@
 # Why genscalator?
 
 > **Status: initialized 2026-07-03 (outline).** Slot reserved for the project's foundational "why" — the intro
-> a newcomer reads first. Outline below; to be drafted. Sources: `docs/foundations.md`,
+> a newcomer reads first. Outline below; to be drafted.
+> **Audience:** newcomers to genscalator; developers building or using coding agents; anyone worn down by
+> brittle agent shell usage or confirmation fatigue; teams weighing typed, safe-by-design tooling for
+> AI-assisted development.
+> Sources: `docs/foundations.md`,
 > `research/METHODOLOGY.md`, `research/instrumentation-by-default.md`,
 > `research/confirmation-guard-static-analysis.md`, `research/wr-data/`.
 

@@ -30,6 +30,10 @@ in order, and the final one repeats:
 Each status is stamped with its date — e.g. *Status: drafted 2026-07-03*, or after release
 *Status: published 2026-08-01; updated 2026-09-15*. A post never silently changes state: the banner is the record.
 
+## Audience
+Each post's banner also names its **Audience** — *who may want to read this?* — right after the Status line, so
+a reader can tell at a glance whether the post is for them, and so drafting stays reader-focused.
+
 ## Later
 Do we need a **blog-skill** (standardize note→post: structure, status banner, auto-numbering, cross-links to
 `research/`)? Parked until a few posts exist and the repeated shape is worth automating.

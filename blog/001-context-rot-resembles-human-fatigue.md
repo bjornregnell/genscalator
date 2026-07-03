@@ -4,6 +4,8 @@
 > session. This opening argument grew out of one question — *why can't an agent see its own context usage?* —
 > and lands on the mutual-help thesis in the title. The fuller structure (the four-axis rot↔fatigue parallel,
 > the sleep-vs-compact disanalogy, the reciprocal-help protocols) is outlined at the end, still to be written.
+> **Audience:** people building or running long-lived coding agents; agent-harness / tooling designers; anyone
+> interested in agent context management, the human↔agent collaboration model, or the rot-as-fatigue analogy.
 > Sources: genscalator `research/smart-zone-ceiling.md`, `research/proactive-compaction-point.md`,
 > `research/token-budget-awareness.md`, `research/human-state-and-joint-zone.md`.
 
