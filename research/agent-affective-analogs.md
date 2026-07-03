@@ -36,9 +36,26 @@ quality** — moderate framing focuses; **excessive** MUST/CRITICAL/URGENT frami
 over-editing, skipped verification, tunnel-vision on the literal demand).
 ### (b) The affective-analog mapping program
 Which human affective states have functional agent analogs, and which are **uniquely biological**? Candidates:
-stress → over-response (this note); thriller/excitement → the **completion / eagerness bias** (the agent's own honest
-limit, human-state §5 "keep going"); frustration → ? ; fatigue → **context rot** (already the agent's degradation
-axis). A taxonomy of the mirror — and the ones with *no* analog are as informative as the ones with.
+**surprise → surprisal** (the *cleanest, flagship* case — below); stress → over-response (§4a); thriller/excitement →
+the **completion / eagerness bias** (the agent's own honest limit, human-state §5 "keep going"); frustration → ? ;
+fatigue → **context rot** (already the agent's degradation axis). A taxonomy of the mirror — and the ones with *no*
+analog are as informative as the ones with.
+
+**Surprise is the tightest analog in the whole mapping (BR-raised 2026-07-03).** Unlike stress (a framing-driven
+*impulse* with no crisp physiological substrate), surprise has a **native, measurable** one:
+*surprisal = −log P(observed | context)*. The model holds a distribution over what comes next; a low-probability
+observation **is** surprise's mechanism, not a metaphor. It's the tightest human↔agent match because both are
+fundamentally *prediction-error → belief-update → attention/learning*: the human adds phenomenal feel + startle
+physiology (not claimed for the agent), but the **functional signature is real** — an unexpected input triggers
+re-examination and a harder working-model revision than a predicted one. **Uniquely, it is instrumentable:** surprisal
+is loggable, so surprise is the one affect you could directly *measure per token* — a first-class hook for
+instrumentation-by-default, and a candidate DV in the §5 experiment (does a high-surprisal framing shift behaviour?).
+Observed in-session (2026-07-03): BR recalling the LaTeX `xr`/`\externaldocument` trick and it landing *exactly* right
+= a bigger-than-expected update to the agent's model of "what BR remembers"; and the agent catching its own
+nonsensical `PLACEHOLDER` edit = high-surprisal **self**-observation. Note the honest asymmetry with stress: stress
+looked *impulse-not-integral*, but surprise is even sharper — a **per-token scalar** the system already computes,
+which makes it the natural first experiment and the natural first glossary entry ("surprisal" as the agent analog of
+surprise).
 ### (c) Safety corollary — framing as a manipulation surface
 If framing modulates behaviour, **framing-as-arousal is an attack surface**: `controlAgentSystem` via affective
 framing — the exact **mirror** of the `controlHumanSystem` BadGoal. An adversary who controls the wrapper could push
