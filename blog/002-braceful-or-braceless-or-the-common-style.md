@@ -2,6 +2,8 @@
 
 > **Status: initialized 2026-07-03 (outline).** Slot for the Scala-syntax post: braces vs significant
 > indentation, judged not only by human taste but by **agent edit-cost**. Outline below; to be drafted.
+> **Audience:** Scala developers weighing a Scala-3 style policy; language designers / SIP folk; builders of
+> agentic coding tooling; anyone setting a codebase style convention for AI-assisted development.
 > Sources: `research/scala-style-evolution.md`, `research/scala-style-recommendations.md`, the genscalator
 > **indent-vs-braces edit-cost experiment** (`research/experiments/`), and the Scala SIP-committee context.
 
