@@ -36,12 +36,21 @@ models, or stop the moment it looks good.)
   in the analysis; a model that cannot be pulled or will not load is logged as such (itself an adherence datum), never
   quietly swapped for a friendlier one. 56 candidates brackets the ~55 the power calc wants — the run sits honestly at
   the *edge* of being able to reach significance, which is the informative place to be.
+- **Disjointness is verified by model *ID*, not tag string (an integrity detail found mid-run).** "Disjoint from the
+  pilot 7" has to be checked on the actual weights, because an ollama *tag* can alias a model already present — e.g.
+  `gemma3:4b` pulled in 0 s, the tell-tale of shared layers with the pilot's `gemma3:latest` (gemma3's default *is*
+  the 4B). So at analysis the confirmatory set is deduplicated by each model's **ollama content-ID**, and any tag
+  whose ID equals a pilot model's is folded out; the post reports the **effective disjoint n** (which may sit a
+  model or two below 56) and names any tags that collapsed. Logged as it happened in
+  [`../research/experiments/indent-vs-braces/RUN-LOG.md`](../research/experiments/indent-vs-braces/RUN-LOG.md) — the
+  frozen list stays exactly as committed; only the *reported* effective n reflects the dedup.
 
 ## Hardware & feasibility — why the "lame GPU" is actually on-target
 
 Checked 2026-07-03, `bjornyx.local`: Quadro RTX 3000 **6 GB VRAM**, **523 GB free disk**, 30 GB RAM, 16 cores.
-**No showstopper:** VRAM caps model *size* (≤ ~8B, quantised), not *count*; the disk holds 100+ small models; ~50
-models × 2 700 cells is a single overnight autonomous job (the pilot already ran 378 cells autonomously).
+**No showstopper:** VRAM caps model *size* (≤ ~8B, quantised), not *count*; the disk holds 100+ small models; the
+frozen 56 models × 3 024 cells (3 task sizes × 3 styles × R = 6) is a single overnight autonomous job (the pilot
+already ran 378 cells autonomously).
 
 The reframe that matters: 002's rule is *"design for the weakest agent that will edit the code."* So **small local
 models ARE the target population** for the weak-editor question — a 6 GB card testing many of them is the right

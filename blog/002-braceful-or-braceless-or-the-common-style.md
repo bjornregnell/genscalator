@@ -103,7 +103,7 @@ actually make more editing errors in braceless code, and does it get worse for b
 
 ## 4. The common-style proposal
 
-Independently, a concrete proposal for a middle path was written up by Martin Odersky, myself, and Rex Kerr in an
+A concrete proposal for a middle path was written up by Martin Odersky, myself, and Rex Kerr in an
 open note, *["Towards a Common Scala Style Recommendation"](https://docs.google.com/document/d/14ZBGKNHUW4d8hDWIi5i6QquClX3_iXva-iMy5KpFU3I/edit?usp=sharing)*
 (January 2026). Its thesis is that braceless-vs-braceful "need not be incompatible" — it is "a matter of degree,"
 like the way Scala programmers already use optional parentheses without starting a war. The pragmatic middle:
