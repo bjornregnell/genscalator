@@ -241,6 +241,18 @@ The next real release is **v0.9.0** — v0.1.0–v0.8.0 have shipped (see PAST/I
 * Feature: textStreamEditor helps Goal: tokenEfficiency
 * Feature: textStreamEditor hurts Goal: controlHumanSystem
 
+* Feature: ttGit has
+  * Gist: a typed wrapper over git's SAFE verbs (commit / add / status / log / diff / branch / push-non-force) that passes the commit message and args as DATA — never as a shell-tokenized string — killing the glob false-positive + quoting footguns of git-over-bash, while keeping the effectful path auditable.
+  * Spec: VERBS — read/safe (`status`, `log`, `diff`, `branch`) + effectful-non-destructive (`add`, `commit -m <msg>`, `push`). The message and paths are handed to git as an explicit **argv list** (`os.proc(...)`, not a shell string), so prose metacharacters (`<->`, `*`, backticks, `{a,b}`, `$`) cannot glob, expand, or mangle — the exact false positive logged in `research/wr-data/genscalator-self-dev.md` (bash analyzer flagged a `<->` in a commit message as a zsh numeric-range glob).
+  * Spec: SAFETY — destructive verbs/flags are NOT exposed and are statically rejected: `rm`, `reset --hard`, `push --force`/`-f`, `clean -f`. This mirrors the settings global-deny model (see `research/wr-data/settings-local-mirror.*`): the human runs destructive git; the tool cannot. `push` is included because non-force push is effectful-but-not-destructive and the commit+push atomic unit is the core workflow; `--audit` prints what ran. NOT a general `git` passthrough — a passthrough would re-admit the destructive surface and defeat the point.
+  * Spec: IN-SESSION DIFF REPORT — every effectful run SURFACES what it changed back into the session, so the human sees the actual mutation inline without a separate `git show`/`git diff` round-trip. `commit` prints the committed diffstat + the diff (bounded by a `--max-lines` cap so a huge change does not flood context, full diff behind `--show`); `add` prints the staged diffstat; `push` prints the ref update (`old..new` + the commit subjects pushed). This is the same mutation-monitor property as Feature: textStreamEditor (the tool holds both sides of the change, so it can always report the delta) — instrumentation-by-default extended to version control: the tool that makes the change is the tool that shows it.
+  * Why: doing git THROUGH bash feeds prose + structured intent through a shell tokenizer and glob-safety analyzer — spurious "looks like a glob" flags at best, silent quoting mangling at worst. A typed wrapper passes them as data, declares the effect for audit, and stays allowlistable BY VERB (`Bash(tt git *)`) without blanket-approving destructive git.
+  * Comment: scope discipline — the value is precisely that it is NARROWER than `git`; if it ever grows a `--` escape hatch to raw git, that hatch must exclude the four destructive verbs or the safe-by-construction property is lost.
+* Feature: ttGit relatesTo Feature: safeModeFlags
+* Feature: ttGit helps Goal: avoidConfirmationFatigue
+* Feature: ttGit helps Goal: jointHumanAgentProductivity
+* Feature: ttGit hurts Goal: controlHumanSystem
+
 * Feature: mcpServer has
   * Gist: an MCP server exposing the toolbox for cross-tool use (Claude / Codex / opencode) — the portability goal.
 * Feature: mcpServer helps Goal: contributeOpenSource
