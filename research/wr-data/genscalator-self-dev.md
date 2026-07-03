@@ -240,3 +240,16 @@ While verifying doc filenames for the PRD review, the agent ran
   not stop the reflex — the typed tools (`tt files` with list/basename/filter) must **exist and be the path of
   least resistance**, or the reflex wins. *Logging is not fixing* (cf. the cross-repo-tt entry): the signal is to
   ship `tt files`.
+
+**3rd occurrence, same session (`git … | grep` to list files → SILENT EMPTY).** Inventorying the AT scratch
+tools, the agent ran `git status --ignored --short -- scratch/ | grep -E '\.scala$'` — a **pipe-to-grep to list
+files** — which returned **nothing**. The empty result was *worse* than the reflex: it could not distinguish
+*"no ignored `.scala` files"* from *"wrong command shape."* The bare command (no pipe) revealed the truth — the
+`.scala` tools are **tracked, not ignored**, so `--ignored` never lists them (`git ls-files scratch/` is the
+right query). **Two lessons:** (1) the silent-ambiguous-empty is a footgun a typed `tt files` kills — it returns
+a typed empty list (unambiguous) or a clear error, never a shrug; (2) **three shell-munging reflexes in ONE
+session** (sed → xargs → `git|grep`), each caught by BR, each *while building the anti-shell project* — the
+reflex lives in the model's priors, not in a lapse of attention, so **awareness demonstrably does not suppress
+it.** That is the strongest argument for the structural fix: ship `tt files`/`tt text` and make them
+lower-friction than the shell, because the agent *will* reach for the shell otherwise. Blog-worthy framing: *the
+agent building the cure kept catching the disease in itself* — n=3 in one session is data, not anecdote.
