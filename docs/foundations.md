@@ -199,6 +199,17 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   sleep analogy: **consolidate then discard** (like memory consolidation in sleep) vs the reactive trigger's
   forced, lossy shutdown — *"good compaction is sleep, not collapse."* See
   `research/proactive-compaction-point.md`.
+- **AFK menu** — a **menu of pre-approved autonomous tasks the agent offers the human right before they step
+  away** ("**AFK**" = *away from keyboard*), turning an idle stretch into bounded, delegated progress. Each item
+  is **scoped and risk-labelled** — *autonomous-safe* (self-verifiable, no human input needed), *needs-human*
+  (a judgment or approval the agent must not fake), or *outward-facing* (publish/release — never autonomous) —
+  and every item carries the same **discipline**: commit + push per atomic unit, only commit verified-green,
+  crash-safe cadence, log any friction. The human authorizes a subset ("do 1, 3, then 2") or accepts a stated
+  **default order** and leaves; the agent then works inside an **explicit trust boundary** instead of either
+  stalling for input or over-reaching. Sibling to the human↔agent **dances**: the *compact / rest* dances hand
+  off **context**, the AFK menu hands off **autonomy** for a bounded window (cf. *communication bandwidth*,
+  *task-autonomy negotiation*). Running instances live in `notes/afk-menu-*.md`; the delegation UX itself is a
+  WR study subject.
 - **Memory hygiene (agent)** — keeping the agent's **durable memory store** (the persistent `MEMORY.md` + the
   memory files a session reloads) **consistent with current reality**: when a coined term is *renamed*, a file
   or flag *moved/deleted*, or a decision *reversed*, sweep the store for stale references and update or remove
