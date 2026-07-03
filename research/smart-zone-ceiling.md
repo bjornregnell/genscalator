@@ -35,6 +35,42 @@ same quantity≠quality decoupling. **Measurement gap:** `/context` gives the qu
 independent of the usage gauge. → This may split **Z** into two: `Z_usage` (a volume ceiling) and a separate
 **coherence / noise floor** that can bite first.
 
+## Sub-RQ b (2026-07-03, BR): can we build a *rot-meter* — and can the agent do it solo, or does it need human↔agent collaboration to cross the harness boundary?
+If rot is a *quality* failure (sub-RQ above), we need an instrument for it. The deep obstacle is a
+**measurement-from-within paradox:** the faculty doing the measuring (the model reasoning over its context) is
+the *same* faculty being degraded. A rotted agent measures rot with a rotted instrument → **the meter rots
+too, precisely when it matters most** (severe rot ⇒ the self-check also fails). Breaking the paradox requires
+an **external, non-rotting reference frame** — an Archimedean point *outside* the degrading context. That, not
+cleverness, is what decides "solo vs collaborative." A **layered** design, solo at the bottom, collaborative
+where it must be:
+- **L0 — solo, passive (proxy).** Count degradation signatures visible *in the transcript*: self-contradiction,
+  repetition, tool-retry, re-derivation, instruction-forgetting (the #2 estimators, read live). Cheap — but
+  **blind to what compaction dropped**: the agent can't detect "I forgot X" when X is gone. *You don't know
+  what you don't know* is the built-in ceiling on passive solo introspection.
+- **L1 — solo, active, externally anchored.** The agent writes decisions + planted **canaries** to a **durable
+  file**, then periodically re-reads it and **diffs live beliefs against it**. The file **does not rot** (it is
+  on disk) → a *weak* external anchor; same mechanism as the *compact dance*, repurposed as a meter. This
+  **partially** crosses the boundary **solo**. Weaknesses: the *comparison* still executes on the (possibly
+  rotted) model; and rot degrades the very **meta-habit** of remembering to run the check (a tired person does
+  not notice they are tired) — so L1 can go silent exactly when needed.
+- **L2 — collaborative (the reliable layer).** The **human is a separate cognitive system, not subject to the
+  agent's rot** — the "sober friend." They notice repetition / contradiction / forgetting *before* the agent
+  can, and relay the quantity axis (`/context`). The **joint (human, agent) system can measure what neither
+  half can alone**: the human supplies the undegraded external frame that L0/L1 only *approximate* with a file.
+- **L3 — harness-level (does not exist yet).** Expose the real **substrate** signals the agent is blind to:
+  attention entropy / "am I attending to the buried fact", **what compaction discarded**, true usage. This
+  turns L0/L1 proxies into *measurements*. It is the platform ask — the harness boundary is *why* full
+  self-introspection fails today.
+
+**Answer, compact:** a rot-meter is **partly solo** (external-anchored self-audit: L0+L1) but **reliable
+detection needs human↔agent collaboration** (L2) to cross the harness boundary that blocks full introspection —
+until the harness itself surfaces substrate signals (L3). **Symmetry worth keeping** (feeds the fatigue blog):
+this is the mirror of *agent-as-stabilizer* — the agent steadies the tiring human (AFK menu, absorbing
+stress-noise); the human is the **rot-detector** for the degrading agent. **Each is the other's external
+reference frame** — the core mechanism of the joint zone (`human-state-and-joint-zone.md`). A meter that needs
+an outside observer is not a failure of the design; it is the *general shape* of measuring any system from
+inside itself.
+
 ## Plan / candidate estimators (to explore)
 1. **Calibration probes (in-session, cheap).** Periodically inject a tiny **recall/consistency self-check**
    — recall an earlier decision/constraint, or a planted fact ("canary") from N turns ago — and record the
