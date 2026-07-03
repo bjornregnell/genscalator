@@ -58,6 +58,48 @@ def groupedBar(title: String, subtitle: String, groups: List[String],
   sb ++= "</svg>\n"
   sb.toString
 
+/** 100%-stacked bar: one bar per group, segments stacked bottom→top; values are proportions summing to ~1. */
+def stackedBar(title: String, subtitle: String, groups: List[String],
+               segs: List[(String, String)], value: (String, String) => Double, groupW: Int): String =
+  val padL = 54; val padR = 18; val padT = 56; val padB = 92
+  val plotH = 230
+  val plotW = groupW * groups.size
+  val textW = math.max(title.length * 9.6, subtitle.length * 6.5)
+  val legendW = padL + (segs.size - 1) * 150 + segs.last._1.length * 7 + padR
+  val w = math.max(math.max(padL + plotW + padR, (padL + textW + padR).toInt), legendW)
+  val h = padT + plotH + padB
+  val barW = groupW * 0.46
+  val sb = new StringBuilder
+  sb ++= s"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 $w $h" width="$w" height="$h" font-family="-apple-system,Segoe UI,Roboto,Helvetica,sans-serif">"""
+  sb ++= s"""<rect width="$w" height="$h" fill="white"/>"""
+  sb ++= s"""<text x="$padL" y="27" font-size="17" font-weight="700" fill="#1a1a1a">${esc(title)}</text>"""
+  sb ++= s"""<text x="$padL" y="45" font-size="12" fill="#666">${esc(subtitle)}</text>"""
+  for p <- List(0, 25, 50, 75, 100) do
+    val y = padT + plotH * (1 - p / 100.0)
+    sb ++= s"""<line x1="$padL" y1="${n(y)}" x2="${padL + plotW}" y2="${n(y)}" stroke="#ececec" stroke-width="1"/>"""
+    sb ++= s"""<text x="${padL - 7}" y="${n(y + 4)}" font-size="11" fill="#999" text-anchor="end">$p%</text>"""
+  for (g, gi) <- groups.zipWithIndex do
+    val cx = padL + gi * groupW + groupW / 2.0
+    val x = cx - barW / 2
+    var yBottom = (padT + plotH).toDouble
+    for (segLabel, color) <- segs do
+      val v = value(g, segLabel)
+      val segH = plotH * v
+      val y = yBottom - segH
+      sb ++= s"""<rect x="${n(x)}" y="${n(y)}" width="${n(barW)}" height="${n(segH)}" fill="$color"/>"""
+      if v >= 0.05 then
+        sb ++= s"""<text x="${n(cx)}" y="${n(y + segH / 2 + 4)}" font-size="11" font-weight="600" fill="#ffffff" text-anchor="middle">${(v * 100).round}%</text>"""
+      yBottom = y
+    sb ++= s"""<text x="${n(cx)}" y="${padT + plotH + 17}" font-size="12.5" fill="#333" text-anchor="middle">${esc(g)}</text>"""
+  val ly = padT + plotH + 62
+  for ((seg, si) <- segs.zipWithIndex) do
+    val (segLabel, color) = seg
+    val lx = padL + si * 150
+    sb ++= s"""<rect x="$lx" y="${ly - 11}" width="13" height="13" fill="$color" rx="2"/>"""
+    sb ++= s"""<text x="${lx + 18}" y="$ly" font-size="12.5" fill="#333">${esc(segLabel)}</text>"""
+  sb ++= "</svg>\n"
+  sb.toString
+
 @main def run(tsvPath: String, outDir: String): Unit =
   val rows = os.read.lines(os.Path(tsvPath, os.pwd)).drop(1).filter(_.nonEmpty).map { l =>
     val c = l.split("\t"); Row(c(0), c(1), c(2), c(4))
@@ -74,14 +116,25 @@ def groupedBar(title: String, subtitle: String, groups: List[String],
       models, modelRate, groupW = 84))
 
   // Fig 2 — error rate by block size x style
-  val sizeOf = Map("001" -> "small (a)", "002" -> "medium (a–e)", "003" -> "large (a–j)")
+  val sizeOf = Map("001" -> "small (2 branches)", "002" -> "medium (5 branches)", "003" -> "large (10 branches)")
   def sizeKey(task: String) = sizeOf.getOrElse(task.take(3), task.take(3))
-  val sizes = List("small (a)", "medium (a–e)", "large (a–j)")
+  val sizes = List("small (2 branches)", "medium (5 branches)", "large (10 branches)")
   val sizeRate = (sz: String, st: String) => errRate(rows.filter(r => sizeKey(r.task) == sz && r.style == st))
   os.write.over(out / "fig-size-style.svg",
     groupedBar("Edit-error rate grows with block size",
       "all models pooled — error rises with size under every style; braceless is worst at every size.",
       sizes, sizeRate, groupW = 150))
+
+  // Fig 3 — failure-type composition by style (100%-stacked): pass / silent mis-scope / loud compile error
+  val outcomeCol = List("passed" -> "#59a14f", "silent mis-scope" -> "#e8a33d", "compile error" -> "#e15759")
+  val gradedOf = Map("passed" -> "PASS", "silent mis-scope" -> "FAIL_MISSCOPE", "compile error" -> "FAIL_COMPILE")
+  val styleOutcome = (st: String, seg: String) =>
+    val rs = rows.filter(_.style == st)
+    if rs.isEmpty then 0.0 else rs.count(_.graded == gradedOf(seg)).toDouble / rs.size
+  os.write.over(out / "fig-failure-split.svg",
+    stackedBar("What kind of failure?",
+      "each style's 126 attempts, split by outcome — pass, silent mis-scope, or loud compile error.",
+      styles, outcomeCol, styleOutcome, groupW = 172))
 
   // Console sanity table (matches RESULTS.md)
   println("model x style error-rate (%):")
@@ -90,4 +143,8 @@ def groupedBar(title: String, subtitle: String, groups: List[String],
   println("size x style error-rate (%):")
   for sz <- sizes do
     println(f"  $sz%-14s " + styles.map(st => f"$st=${sizeRate(sz, st) * 100}%.0f%%").mkString("  "))
-  println(s"wrote 2 SVGs to $out")
+  println("failure split by style (of 126 each — pass / silent misscope / loud compile):")
+  for st <- styles do
+    val rs = rows.filter(_.style == st)
+    println(f"  $st%-10s pass=${rs.count(_.graded == "PASS")}  misscope=${rs.count(_.graded == "FAIL_MISSCOPE")}  compile=${rs.count(_.graded == "FAIL_COMPILE")}")
+  println(s"wrote 3 SVGs to $out")

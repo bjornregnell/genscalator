@@ -165,6 +165,14 @@ ones, and the silent-mis-scope counts came out roughly **equal** across styles (
 common 30). The tidy safety story was an artifact of a small sample. It is kept visible in the results as a
 lesson: *small model-sets mislead.*
 
+![Failure composition by style — braceless's extra failures are loud compile errors, not silent mis-scopes.](figures/fig-failure-split.svg)
+
+*Figure 3 — Of each style's 126 attempts, the fraction that **passed**, **silently mis-scoped** (compiled but
+behaved wrong — the dangerous kind), or hit a **loud compile error**. The telling comparison: braceless's
+compile-error slice is much bigger (25% vs braces' 9%), while the silent-mis-scope slice is about the same across
+all three (~24–29%). So braceless's extra cost surfaces as **noisy, catchable** compile failures — not as more of
+the silent bugs the 4-model run had wrongly blamed on it.*
+
 **What held (378 cells):** braceless was the **costliest style in aggregate** — 45% raw pass-rate vs 63%
 (braceful) and 61% (common) — and it was worst at **every** block size, with error rising as blocks grow. So the
 *direction* of the thesis survives: braceless edits cost agents more, on average.
@@ -174,11 +182,12 @@ lesson: *small model-sets mislead.*
 *Figure 1 — **Edit-error rate = failed attempts ÷ total attempts** (shown as a %). One attempt "fails" if it does
 not compile **or** compiles but changes the wrong scope (a mis-scope); it "passes" only if it compiles **and**
 behaves like the oracle on a probe input. Each bar pools all 7 local models × 6 repeats = **42 attempts** (so a
-bar reading 60% = 25 of 42 failed). Each label on the x-axis is a **separate test program** (shown in full in Appendix A): the same `scan` function
-at three block sizes, where `(a)`, `(a–e)`, `(a–j)` say how far its `if`/`else-if` character-dispatch chain runs —
-**2 branches** (`a`,`b` — small), **5** (`a`–`e` — medium), **10** (`a`–`j` — large). The edit is identical for
-all three (wrap that whole chain in a new `else`); a longer chain is just a longer block, so more lines a
-braceless edit must re-indent. Braceless is costliest at every size, and the rate climbs as the block grows.*
+bar reading 60% = 25 of 42 failed). Each label on the x-axis is a **separate test program** (shown in full in Appendix A): the *same* `scan` function
+grown longer. Its `if`/`else-if` character-dispatch chain has **2 branches** (small), **5** (medium), or **10**
+(large), and each bigger one **extends** the smaller — medium is small plus three more branches, large is medium
+plus five — so they are nested versions of one program, not three different snippets. The edit is identical for
+all three (wrap the whole chain in a new `else`); a longer chain is just a longer block, so more lines a braceless
+edit must re-indent. Braceless is costliest at every size, and the rate climbs as the block grows.*
 
 **What the separation revealed (the real finding).** Splitting emission from correctness dissolved the aggregate
 into something sharper. Emission was near-perfect for everyone **except** aya-expanse, which literally **cannot
@@ -407,8 +416,10 @@ would wave it through.
 
 ### A.2 The three sizes — and why three
 
-The three tasks are **identical in every respect except the length of the dispatch chain**: `a`,`b` (small,
-2 branches), `a`–`e` (medium, 5), `a`–`j` (large, 10). Large, before:
+The three tasks are **identical in every respect except the length of the dispatch chain**, and each larger one
+**extends** the smaller: small is `a`,`b` (2 branches), medium adds `c`,`d`,`e` (5 total), large adds `f`…`j`
+(10 total) — so the small block is a literal *prefix* of the large, and length is the only thing that varies.
+Large, before:
 
 ```scala
 def scan(s: String, upper: Boolean): String =
