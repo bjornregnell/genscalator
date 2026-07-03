@@ -169,10 +169,22 @@ lesson: *small model-sets mislead.*
 (braceful) and 61% (common) — and it was worst at **every** block size, with error rising as blocks grow. So the
 *direction* of the thesis survives: braceless edits cost agents more, on average.
 
+![Edit-error rate by block size and style — braceless is worst at every size and error rises with size.](figures/fig-size-style.svg)
+
+*Figure 1 — Edit-error rate (fails ÷ attempts), all 7 local models pooled, by block size. Braceless is costliest
+at every size, and the rate climbs as blocks grow — the "gap grows with size" prediction, made visible.*
+
 **What the separation revealed (the real finding).** Splitting emission from correctness dissolved the aggregate
 into something sharper. Emission was near-perfect for everyone **except** aya-expanse, which literally **cannot
 produce braceless code** (0/18) — it always emits braces. Once you look only at outputs that *did* use the
 requested style, the picture is **bidirectional and model-specific**:
+
+![Edit-error rate by model and style — the effect flips per model.](figures/fig-model-style.svg)
+
+*Figure 2 — Raw edit-error rate per model, all 7 local models. The two 100% bars point **opposite** ways —
+aya-expanse fails every braceless edit, gemma3 fails every braceful edit — while the qwen-coder variants sit near
+zero everywhere (strong coders are style-robust). A single averaged "braces vs braceless" number would hide all
+of this, which is why the table below decouples emission from correctness.*
 
 | model | braceless | braceful | common |
 |---|---|---|---|
@@ -209,6 +221,28 @@ These are load-bearing; the result is a **pilot**, not a verdict:
 - Local models' raw "error rate" is heavily confounded by **emission ability** — a model that cannot emit a
   style scores 100% "error" regardless of its editing skill. (That confound *is* the finding, but it means the
   raw aggregate must be read with care.)
+
+### 5.6 Reproduce it yourself
+
+Everything needed to re-run or re-analyse this lives in the repository under
+[`research/experiments/indent-vs-braces/`](../research/experiments/indent-vs-braces/):
+
+- **Raw data** — [`results-raw.tsv`](../research/experiments/indent-vs-braces/results-raw.tsv): one row per cell
+  (`task, style, model, run, graded, out_tokens, diff_lines`), where `graded` is `PASS` / `FAIL_COMPILE` /
+  `FAIL_MISSCOPE`.
+- **Task corpus** — `tasks/`: the *before* files per style + the style-neutral edit instruction + the oracle.
+- **Grader** — `grade.scala`: compiles the candidate and a probe, runs a behavioural probe, and emits the grade
+  (so "correct" means *behaves* like the oracle, not *looks* like it).
+- **Sweep runner** — `sweep.scala`: loops `task × style × model × R`, prompts each local model (via Ollama/modly),
+  grades, appends rows to the TSV.
+- **Analysis + figures** — `analyze.scala` (the tables) and `charts.scala` (Figures 1–2 above, generated straight
+  from `results-raw.tsv`).
+
+End-to-end: point `sweep.scala` at your models, then `scala-cli run sweep.scala -- 6 <models…>` →
+`scala-cli run analyze.scala` → `scala-cli run charts.scala -- results-raw.tsv figures/`. The Opus-4.8 anchor ran
+the *identical* tasks × styles through a subagent workflow, graded by the same `grade.scala`. If you change one
+thing, change **R and the model set** and watch the aggregate move — that is the cautionary tale (a 4-model run
+gave the opposite "silent-misscope" headline) reproduced as a knob you can turn.
 
 ## 6. What it means
 
