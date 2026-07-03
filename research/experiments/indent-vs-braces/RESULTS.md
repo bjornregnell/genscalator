@@ -125,6 +125,54 @@ the Opus-4.8 anchor runs the identical tasks×styles via a subagent workflow, gr
 
 ### Results
 
+**Local models (7 × 3 tasks × 3 styles × R6 = 378 cells).** Opus-4.8 anchor pending (subagent workflow running).
+
+**RQ1 — emission-conformance is near-ceiling** — 100% for every model×style **except `aya-expanse`, which cannot
+emit braceless (0/18)** (it always produces braces). Aggregate: braceless 86% (108/126), braces 100% (126/126) —
+the entire braceless gap is aya-expanse. So the pilot's raw braceless error was only *slightly* emission-driven.
+
+**RQ2 — conditional correctness (PASS | emitted the requested style) — the decoupled edit-cost:**
+| model | braceless | braces | common |
+|---|---|---|---|
+| aya-expanse:8b | — (no emit) | 100% | 89% |
+| gemma2:9b | 33% | 83% | 33% |
+| gemma3:latest | 39% | **0%** | 44% |
+| qwen-coder-local | 83% | 100% | 94% |
+| qwen2.5-coder:7b | 83% | 100% | 94% |
+| qwen2.5:3b | 11% | 17% | 17% |
+| qwen2.5:7b | **72%** | 39% | 56% |
+| **opus-4.8 (anchor)** | **100%** | **100%** | **100%** |
+
+Aggregate conditional correctness (local 7): **braceless 54% · braces 63% · common 61%.**
+**Opus-4.8 anchor: 27/27 PASS — 100% emission-conform AND 100% edit-correct in every style, task, and size.**
+
+**The payoff of the separation:** the pilot's two "100% fail" cells had *different* causes —
+- `aya-expanse` braceless = **emission failure** (can't produce the style at all);
+- `gemma3` braces = **edit-correctness failure** (emits braces 100% conform, but botches *every* edit).
+
+"Error-rate" conflated these two distinct mechanisms. Decoupled: **emission is near-ceiling (except aya/braceless);
+edit-correctness still favours braces in aggregate (63 vs braceless 54)** but is strongly model-specific and
+*reverses* for some (`qwen2.5:7b` edits **better** braceless, 72 vs 39). So **H2 holds only weakly/in-aggregate**,
+not as a law.
+
 ### Discussions
+The decoupling sharpens the paper's claim: the agent-ergonomics case for braces is really **two** claims — a model
+must be *able to produce* the style (emission) and *editing* in it must be reliable (correctness). Some models fail
+the first (aya-expanse), others the second (gemma3); strong coders clear both. The style effect on *editing*
+survives controlling for emission but is modest and model-dependent — so "prefer braces for agents" is a mild
+population-level default, not a rule. (RQ3: the Opus-4.8 anchor — pending — probes the high-capability corner.)
 
 ### Conclusions
+1. **Emission ≠ correctness — separable, and the split explains the pilot.** The pilot's two "100% fail" cells
+   were different mechanisms: an *emission* failure (`aya-expanse` can't produce braceless) and an
+   *edit-correctness* failure (`gemma3` emits braces fine but botches every edit). "Error-rate" conflated them.
+2. **The style effect on *editing* is a weak-to-mid-model phenomenon.** Controlling for emission, braceless is
+   modestly costlier in aggregate (54% vs braces 63%) but model-specific and sometimes reversed (`qwen2.5:7b`).
+3. **It vanishes at high capability — `Opus-4.8` scored 27/27 PASS** (100% emission-conform and 100% edit-correct
+   in every style, task, and size). A frontier model is style-indifferent here.
+4. **Implication for the common-style / SIP argument:** the agent-ergonomics case for braces is real but
+   *bounded* — it buys reliability for smaller/local models, not for frontier agents. Design syntax for the
+   *weakest* agent you expect to edit the code, not the strongest.
+
+Caveats unchanged: one edit family (wrap-in-`else`); 3 tasks; brace-signature emission proxy; R6 local / R3 Opus;
+single session. Next: more edit families + fix common-before==braceless; larger R; cross-vendor frontier models.
