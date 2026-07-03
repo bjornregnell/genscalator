@@ -125,7 +125,7 @@ reproducible.
 - **RQ1 (emission):** Can a given AI model reliably *produce* code in a requested style at all?
 - **RQ2 (correctness given emission):** *Among* outputs that do use the requested style, does the style affect
   how often the edit is *correct* — and does any gap grow with block size?
-- **RQ3 (capability):** Does a strong frontier model reach near-perfect emission and low, style-insensitive
+- **RQ3 (capability):** Does a strong frontier AI model reach near-perfect emission and low, style-insensitive
   error — i.e. does the style effect disappear as capability rises?
 
 Separating RQ1 from RQ2 matters because "the model got it wrong" hides two very different failures: a model that
