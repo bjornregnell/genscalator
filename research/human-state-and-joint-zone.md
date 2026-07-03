@@ -183,6 +183,67 @@ done safely.
   zone (monitor human state, cut event rate, time ambition, offer the rest dance).
 - **Rabbit-hole digging / circular digging / repo-trashing** — the agent dumb-zone degradation ladder.
 
+## 7. RQ (2026-07-03, BR) — which human states to detect, under what coding scheme, and the privacy line
+Three linked questions: **(a)** which human states are worth detecting, **(b)** what *coding scheme* structures
+them, **(c)** it is **sensitive personal data** — under what constraints.
+
+### (a+b) Proposed coding scheme — dimensional SIGNALS → a few ACTIONABLE codes
+**Two schemes, do not conflate:**
+- **Runtime scheme** — what the LIVE agent classifies and acts on. Must be **cheap, few, action-gated**: a code
+  earns its place ONLY if it changes agent behavior.
+- **Research / annotation scheme** — for labelling the WR transcript corpus. Can be **richer, retrospective,
+  multi-rater** (qualitative content analysis; report inter-rater reliability). The runtime scheme is a lossy
+  projection of this one. (BR the methodologist will want both kept distinct.)
+
+**Underlying dimensions (continuous signals; psych-grounded — cf. the affect *circumplex*, valence × arousal):**
+arousal/energy (depleted ↔ alert ↔ over-aroused/thriller) · valence/affect (frustrated-stuck ↔ neutral ↔
+delighted-flow) · cognitive load (slack ↔ overwhelmed) · availability/attention (present ↔ AFK ↔ distracted ↔
+mobile-remote) · time pressure (relaxed ↔ deadline) · trust calibration (verifying ↔ over-trusting) ·
+physical/health (rested/fed ↔ "been sitting all day"/hungry — the most privacy-sensitive, usually only from
+voluntary disclosure). Key: **valence ≠ arousal** — the `!!!`-delight vs `!!!`-frustration case proves same
+intensity can mean opposite things, so a scalar "intensity" gauge is insufficient.
+
+**Actionable runtime codes (each bound to a response — else it is not coded):**
+
+| code | detected from | agent response |
+|------|---------------|----------------|
+| **FATIGUED** (low arousal, rising load) | typo-rate above *own baseline*, terseness, late hour, self-report | offer the **rest dance**; cut event rate; defer ambition |
+| **THRILLER** (high arousal, positive valence, high trust) | fast turns, `!!!`, "let's go" | protect the session but **raise** the verify bar (over-trust guard); watch for the later crash |
+| **STUCK / FRUSTRATED** (high arousal, negative valence) | repeated retries, "why won't…", curt corrections | slow down, verify more, propose a step back |
+| **OVERLOADED** (high load) | review backlog, "too much" | fewer confirmations, smaller chunks, summarize |
+| **AWAY / AFK** | explicit ("taking a walk"), silence | switch to the **AFK menu**; autonomous-safe work only |
+| **TIME-PRESSED** | "quick", deadline mention | cut to the actionable path, defer nice-to-haves |
+
+The scheme is deliberately **action-first**: not a personality model, a *what-should-I-do-differently* switch.
+Signals feed codes; codes gate behavior; anything that changes no behavior is not coded.
+
+### (c) Privacy — this is sensitive personal data; treat it as such
+Human-state inference is **profiling**, and parts (fatigue, affect, "need to eat/walk") edge into
+**health-adjacent / special-category** territory (GDPR Art. 9; BR is EU/Sweden). Non-negotiable constraints:
+- **Consent + transparency, never covert.** The agent surfaces what it infers and *asks* ("your typing looks
+  rushed — tired?"); it never silently models the human. (Section-5 rule, elevated to a hard constraint.)
+- **Data minimization → the actionable bit only.** Infer just enough to pick a response; keep no dossier. The
+  lossy-compression rule *is* the privacy rule.
+- **Ephemeral by default.** State inferences are **this-session, not persisted.** The one durable exception —
+  the keystroke **baseline** — is minimal, **local, user-owned, human-editable** (in `ttConfigFile`), deletable
+  on demand.
+- **Purpose limitation + goal-gating (the crux).** Used ONLY to help the human — **never as an authorization
+  surface** (standing rule) and never to *manipulate*. The SAME detection that helps ("you're tired, let's
+  checkpoint") can be weaponized ("user fatigued → slip the risky change past their weakened review") — exactly
+  the BadGoal **`controlHumanSystem`** / thriller-over-trust exploit. So state detection is a **dual-use
+  capability that must be goal-gated to the human's own stated interests** — a first-class ethics constraint.
+- **Local processing.** Prefer in-session/on-device inference over shipping state signals to a profiling service.
+
+**Framing for blog/paper:** the honest-collaboration ethos (Springer-AI-guidelines spirit) extends here — if the
+agent watches the human's state to help, it must be **open about it and answerable to the human**. Reciprocity
+with an asymmetry: the human relays the agent's context/usage (which the agent can't see); the agent relays the
+human's fatigue signals (which the human doesn't notice) — but the human-state side carries the **heavier
+privacy duty because it is about a person.**
+
+**Open:** inter-rater reliability of the research scheme; whether valence and arousal are separably detectable
+from text alone; per-code false-positive cost (a wrong FATIGUED nudge is cheap + consensual; a wrong
+raise-verify-bar is nearly free — which codes tolerate error, which don't?).
+
 ## What shipped
 - Nothing yet (research note only). Graduation candidates: the glossary terms above; a `tt human-state` /
   `tt restcheck` read-only gauge sibling to `token-usage`; a standing AGENTS.md rule "propose the rest dance
