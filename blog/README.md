@@ -10,6 +10,9 @@ post's date lives in its status banner, not its name).
 - [`001-context-rot-resembles-human-fatigue.md`](001-context-rot-resembles-human-fatigue.md) — *(drafted)*
   the context-rot ↔ human-fatigue parallel + the mutual-help thesis; seeded from the "why is the agent blind to
   its own context usage?" thread.
+- [`002-braceful-or-braceless-or-the-common-style.md`](002-braceful-or-braceless-or-the-common-style.md) —
+  *(initialized)* Scala braces vs significant indentation vs a shared "common style", judged by agent edit-cost
+  (the genscalator experiment) + language design for agent authors.
 
 *Status: initialized 2026-07-03.*
 
