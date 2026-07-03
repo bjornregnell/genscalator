@@ -230,6 +230,17 @@ The next real release is **v0.9.0** — v0.1.0–v0.8.0 have shipped (see PAST/I
 * Feature: safeModeFlags helps Goal: avoidConfirmationFatigue
 * Feature: safeModeFlags hurts Goal: controlHumanSystem
 
+* Feature: textStreamEditor has
+  * Gist: safe streaming text-transform verbs on `tt text` (prefix / sub / filter) that replace the reflex reach for `sed` — the dual-use stream editor the agent grabbed just to prefix a display label. Stream-in / stream-out, so tt can also report WHAT it changed.
+  * Spec: VERBS — `tt text prefix <str>` / `suffix <str>` (literal, no regex needed — covers the common label case), `tt text sub <re> <repl>` (substitute), `tt text filter <re>` / `filter -v <re>` (keep / drop matching lines). Reads **stdin, writes stdout, NEVER opens a file and NEVER execs** → safe BY CONSTRUCTION, so `Bash(tt text *)` stays blanket-allowable (contrast `Bash(sed *)`, which blanket-approves sed's file-touching modes `-i` / `w` / `r` / `e`).
+  * Spec: IMPLEMENTATION — the transform is plain Scala/`java.util.regex` in the tool body, NOT a shell-out to `sed`. Rationale (BR's review-surface question): shelling to sed would (a) re-introduce the dual-use binary we are removing and force us to PARSE sed's grammar to prove the `-i`/`w`/`r`/`e` blacklist complete, (b) expose sed's terse hard-to-review script dialect as the per-call parameter, (c) vary by platform (GNU vs BSD sed). Native Scala inverts all three: the ALGORITHM is reviewable Scala committed ONCE, the per-call surface is a literal string or a well-documented `java.util.regex` pattern, and behaviour is identical everywhere. sed's only real edge (constant-memory streaming of huge files) is matched by `scala.io.Source.getLines` (lazy, line-at-a-time).
+  * Spec: MUTATION MONITOR — because the tool holds both input and output of the stream, it can emit an audit line (`N lines changed`) and a unified diff on `--show` — a change-report the raw binary never gives you. Generalises: every `tt text` transform is stream-in/stream-out, so instrumentation-by-default extends to text editing.
+  * Why: a `sed` reflex for OUTPUT FORMATTING is the dynamic-shell habit `prefer-scala-scratch-over-bash` names; typed verbs make the safe path also the easy path (a label prefix is `tt text prefix "x: "`, no regex at all), and safe-by-CONSTRUCTION beats safe-by-parsing-a-dangerous-DSL — the genscalator thesis in miniature.
+* Feature: textStreamEditor relatesTo Feature: safeModeFlags
+* Feature: textStreamEditor helps Goal: avoidConfirmationFatigue
+* Feature: textStreamEditor helps Goal: tokenEfficiency
+* Feature: textStreamEditor hurts Goal: controlHumanSystem
+
 * Feature: mcpServer has
   * Gist: an MCP server exposing the toolbox for cross-tool use (Claude / Codex / opencode) — the portability goal.
 * Feature: mcpServer helps Goal: contributeOpenSource
