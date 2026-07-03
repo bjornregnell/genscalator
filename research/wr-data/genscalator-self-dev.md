@@ -349,13 +349,15 @@ are **per-call and constant**, so "tolerate" degrades into "ignore all stderr," 
 exists to prevent. Blanket suppression is wrong (hides real warnings); doing nothing is wrong (cry-wolf). The gap is
 that neither pole fits a **known-benign, known-constant, known-un-actionable** source.
 
-**Upstream ask + agent-side fix.** (a) **Toolchain:** the JDK emits this once-per-JVM; the right lever is a targeted
-JVM-launch flag baked into the `tt` launcher's `scala-cli run … --java-opt` (suppress **by name**, not `2>/dev/null`,
-so genuine warnings stay visible). **CAVEAT — tested, not solved:** the obvious candidate
-`--java-opt=--sun-misc-unsafe-memory-access=allow` is **REJECTED** on the JDK here (`Unrecognized option: … Could
-not create the Java Virtual Machine`), so that exact flag is wrong for this build (JVM 25 / Scala 3.8.4) — the
-correct suppression option is **TBD** (do NOT ship the guessed flag; it breaks the launch). Left as a bounded
-follow-up, not applied. (b) This is another argument for the **native `tt` binary** ([[DESIGN-single-dispatcher]]):
+**Root cause + fix (FOUND + applied 2026-07-03).** The warning is **JVM-version-gated**, and the noise was
+**self-inflicted config drift**: JDK 25 terminally-deprecates `sun.misc.Unsafe`, JDK 21 (LTS) does not. Tools that
+declare `//> using jvm 21` (box/chrono/typo/… — most of them) run silent; the only offenders were **`git.scala` and
+`parsereqt.scala`, which were missing the `//> using jvm 21` line** and so ran on the *system* JVM 25 — hence the
+four lines on every `tt git` commit. **Fix:** add `//> using jvm 21` to those two, matching the rest of the
+toolbox. No stderr suppression, no launch flag. (An earlier guess — `--java-opt=--sun-misc-unsafe-memory-access=allow`
+— was tested and **REJECTED** by this JDK, `Unrecognized option`; recorded here so it isn't retried. The right lever
+was the version pin, not a flag.) Lesson: a missing `//> using jvm` silently falls back to whatever JDK is on PATH,
+so pin it in every tool. The native-`tt`-binary path ([[DESIGN-single-dispatcher]]) removes the whole class later. (b) This is another argument for the **native `tt` binary** ([[DESIGN-single-dispatcher]]):
 a compiled binary doesn't route through the scala-cli/JVM-warning path at all — it sidesteps the whole issue without
 needing to find the flag. (c) **Agent-side (in-hand now):** state plainly that these four lines are inert
 JVM-internal noise and do **not** treat them as findings — do not confabulate an action from them.

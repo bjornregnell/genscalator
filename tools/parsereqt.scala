@@ -1,4 +1,5 @@
 //> using scala 3.8.4
+//> using jvm 21
 //> using file reqt-vendored
 
 // tt parsereqt — parse / lint reqT-lang requirements (e.g. this repo's PRD.md).

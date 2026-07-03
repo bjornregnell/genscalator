@@ -1,4 +1,5 @@
 //> using scala 3.8.4
+//> using jvm 21
 //> using dep com.lihaoyi::os-lib:0.11.8
 
 // git — typed, SAFE git helper for agents. It exposes ONLY add/commit/push (never reset, rebase, --force,
