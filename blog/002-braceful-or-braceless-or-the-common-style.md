@@ -167,7 +167,7 @@ lesson: *small model-sets mislead.*
 
 ![Failure composition by style — braceless's extra failures are loud compile errors, not silent mis-scopes.](figures/fig-failure-split.svg)
 
-*Figure 3 — Of each style's 126 attempts, the fraction that **passed**, **silently mis-scoped** (compiled but
+*Figure 1 — Of each style's 126 attempts, the fraction that **passed**, **silently mis-scoped** (compiled but
 behaved wrong — the dangerous kind), or hit a **loud compile error**. The telling comparison: braceless's
 compile-error slice is much bigger (25% vs braces' 9%), while the silent-mis-scope slice is about the same across
 all three (~24–29%). So braceless's extra cost surfaces as **noisy, catchable** compile failures — not as more of
@@ -179,7 +179,7 @@ the silent bugs the 4-model run had wrongly blamed on it.*
 
 ![Edit-error rate by block size and style — braceless is worst at every size and error rises with size.](figures/fig-size-style.svg)
 
-*Figure 1 — **Edit-error rate = failed attempts ÷ total attempts** (shown as a %). One attempt "fails" if it does
+*Figure 2 — **Edit-error rate = failed attempts ÷ total attempts** (shown as a %). One attempt "fails" if it does
 not compile **or** compiles but changes the wrong scope (a mis-scope); it "passes" only if it compiles **and**
 behaves like the oracle on a probe input. Each bar pools all 7 local models × 6 repeats = **42 attempts** (so a
 bar reading 60% = 25 of 42 failed). Each label on the x-axis is a **separate test program** (shown in full in Appendix A): the *same* `scan` function
@@ -196,7 +196,7 @@ requested style, the picture is **bidirectional and model-specific**:
 
 ![Edit-error rate by model and style — the effect flips per model.](figures/fig-model-style.svg)
 
-*Figure 2 — Raw edit-error rate per model (same measure as Fig. 1: failed ÷ total attempts; here each bar =
+*Figure 3 — Raw edit-error rate per model (same measure as Fig. 2: failed ÷ total attempts; here each bar =
 **18 attempts** = 3 task sizes × 6 repeats). The two 100% bars point **opposite** ways —
 aya-expanse fails every braceless edit, gemma3 fails every braceful edit — while the qwen-coder variants sit near
 zero everywhere (strong coders are style-robust). A single averaged "braces vs braceless" number would hide all
@@ -446,7 +446,7 @@ def scan(s: String, upper: Boolean): String =
 **scales** with the block. The braceless-re-indent argument predicts the gap should **grow with block length**
 (more lines to re-indent = more chances to slip). Making chain-length the *only* thing that changes turns "size"
 into a clean covariate: any error-rate difference across small/medium/large is attributable to length, not to
-different logic. That is exactly the trend Figure 1 tests — and finds.
+different logic. That is exactly the trend Figure 2 tests — and finds.
 
 ### A.3 The three styles, and the oracle
 
