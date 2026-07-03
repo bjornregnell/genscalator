@@ -25,6 +25,27 @@
   terms in the canonical language** (English for programming); agent **asks for clarification on ambiguous
   input rather than guessing**.
 
+## Motor cost — a second axis of "cheapest-for-human" (2026-07-03, BR)
+The "cheapest-for-human" side of the asymmetry is **not only *language* choice — it includes *physical
+keystroke / motor* cost.** BR (2-3-finger typist; SHIFT is disproportionately slow for him) asked whether
+he can drop capitalization and type prose **all-lowercase**, using `.` `,` `?` as sentence separators.
+- **Answer: yes, no loss.** Agent comprehension does **not** depend on capitalization in prose — sentence
+  boundaries and intent reconstruct from context, not case. So lowercasing is another **cheap-for-human,
+  cheap-for-agent** move, exactly parallel to L1-input: the human writes in whatever minimizes *their* cost,
+  the agent absorbs the (near-zero) reconstruction cost.
+- **Carve-out — case-sensitive tokens:** capitalization *does* carry information in a few spots —
+  **code** (identifiers/types are case-sensitive: `Fyle` ≠ `fyle`), **proper nouns/acronyms** (`us` vs `US`),
+  and the pronoun `i`/`I`. Rule: **prose lowercase is free; code and proper nouns stay case-exact.** The
+  agent asks on the rare genuine tie rather than guessing.
+- **Reverse direction is *also* asymmetric — and the other way:** proper capitalization in the *agent's*
+  output costs it **~nothing** (casing barely moves tokenization; never trades against quality) while making
+  prose nicer for the human to read. So the optimum is **human writes lowercase (saves fingers), agent writes
+  properly-cased prose (saves nothing, reads better).** Each side optimizes its own cheap axis; neither pays
+  for the other's preference.
+- **Generalization:** "cheapest-for-human" = min over *all* human costs (language fluency **and** motor
+  effort **and** cognitive load), not just token count. The token-optimal channel is agent-side; the
+  human-side channel should minimize *human* effort, whatever form that takes.
+
 ## Open directions
 - A **switch heuristic** for the agent: default to the cheap output language; flip to human-L1 output when
   (a) the human asks, (b) the topic *is* the human's L1 source text/terminology, or (c) a review-precision

@@ -84,7 +84,11 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   a *token premium*. Often optimised **asymmetrically** — human writes L1 (cheap, high human bandwidth),
   agent writes the cheapest-yet-clear language (English for a strong-L2 human), switching to the human's L1
   when nuance/review-precision justifies it. Also a *smart-zone* lever (cheaper language → more smart-zone
-  budget). See research `communication-bandwidth.md`.
+  budget). **"Cheapest-for-human" includes *motor* cost, not only language** — e.g. a 2-3-finger typist may
+  write prose **all-lowercase** (SHIFT is slow) with no loss (case doesn't carry prose meaning; the agent
+  reconstructs), while code + proper nouns stay case-exact; symmetrically the agent writes *properly-cased*
+  prose (near-zero token cost, nicer to read). Each side optimizes its own cheap axis. See research
+  `communication-bandwidth.md`.
 - **Comms shorthand (human↔agent)** — a shared vocabulary of standard chat/dev **acronyms** both roles emit
   and parse *without expansion*, a direct **communication-bandwidth** + **TE** lever: fewer tokens (and less
   human typing) carry the same intent, in both directions. Distinct from the project's *coined* terms
