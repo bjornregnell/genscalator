@@ -116,3 +116,12 @@ repo (`docs/foundations.md`, `smart-zone-ceiling.md`, `human-state-and-joint-zon
   than the reactive one (which needs the human to relay fill; cf. the perception-gap notes).
 - **Naming — DONE (2026-07-03):** "**consolidation point**" adopted as the name for the proactive trigger
   (now a glossary term in `docs/foundations.md`).
+
+## Field confirmation — a *consolidation-point* compact in the wild (2026-07-03)
+Live instance of the two-trigger model. At **44% usage** (well below the ~80% reactive brake on a 1M window, no
+rot signs), BR relayed `/context` and the agent read it as a **consolidation point** — everything committed +
+pushed, memory current, a clean task boundary (blog metadata just finished) — with more work ahead. BR chose
+the **compact dance** *there*, not at a pressure brake. Confirms: (a) the **proactive** trigger is a real,
+usable moment distinct from the reactive one; (b) the **human-relay** is how the agent learns usage (perception
+gap — the agent can't self-read it); (c) *"cheap because durable"* held — nothing lived only in the transcript,
+so the compact loses ~nothing. The model predicting its own use.
