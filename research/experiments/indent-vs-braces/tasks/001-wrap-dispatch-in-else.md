@@ -2,9 +2,9 @@
 
 Family: **wrap-in-block**. Block size: ~7 lines. Stresses: adding an outer `else` around an existing
 multi-statement block — the exact shape of the 2026-07-02 seed bug. (When run, split this into
-`before.<regime>.scala` / `after.<regime>.scala` / `instruction.md` per the README layout.)
+`before.<style>.scala` / `after.<style>.scala` / `instruction.md` per the README layout.)
 
-## Regime-neutral instruction (given to the agent)
+## Style-neutral instruction (given to the agent)
 > In the `while` loop, add a guard: when `skip && atStart(i)`, copy the rest of the current line verbatim into
 > `sb` and set `i` to the line end. **Otherwise**, perform the existing character dispatch and `i += 1` as before.
 
@@ -36,7 +36,7 @@ def scan(s: String, skip: Boolean): String = {
 }
 ```
 
-## What the edit costs in each regime (the point of the task)
+## What the edit costs in each style (the point of the task)
 - **braceless:** the natural implementation wraps the 4-line dispatch + `i += 1` under a new `else`, which forces
   **re-indenting all 5 lines** one level deeper. The seed bug was exactly this: the wrapped block was left at
   the `else` column → mis-scope → compile fail. Diff touches ~7 lines for a ~2-line logical change.

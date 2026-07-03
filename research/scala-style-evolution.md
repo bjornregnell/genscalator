@@ -64,7 +64,7 @@ as the end marker"). So the human-style rule and the agent-safe move coincided.
 
 **Measurable experiment (the actual investigation).** Take a corpus of edit tasks (wrap-in-block, add-branch,
 extract-scope) and measure **agent edit-error-rate** (compile-fail or mis-scope on first attempt) and
-**edit-token-cost** (output + resulting diff size) under three regimes: braceless-everywhere, braces-everywhere,
+**edit-token-cost** (output + resulting diff size) under three styles: braceless-everywhere, braces-everywhere,
 and common-style (braces-on-long-scopes). Hypothesis: common-style ≈ braces-everywhere on safety, near
 braceless on surface tokens — a genuine sweet spot for the agent too. Ties to the `tt` monolith (its own style
 choice), to Safe-mode/capture-checking (compiler-enforced structure), and to the `token-budget-awareness` thread.

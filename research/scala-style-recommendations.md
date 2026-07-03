@@ -97,7 +97,7 @@ The naive metric — "characters to represent correct code" — favors braceless
 
 The striking finding: the human-legibility rule and the agent-edit-safety rule coincide. The common-style note above puts braces exactly on long scopes (those with blank lines) — and long scopes are precisely where indentation-only scope-tracking degrades for both the human reader and the agent editor, for the same underlying reason (it degrades with block length). Even better: my fix was to restructure into else if — using the else keyword as the delimiter — which is literally its rule 2 (closing keywords serve as end markers). So I accidentally validated the proposal by applying it to escape the bug.
 
-Tentative verdict: for the agent, common-style (braces on long scopes) is a genuine sweet spot — near braces-everywhere on safety, near braceless on surface tokens. A measurable experiment would settle it: compare edit-error-rate and edit-token-cost across the three regimes (braceless / braces / common-style).
+Tentative verdict: for the agent, common-style (braces on long scopes) is a genuine sweet spot — near braces-everywhere on safety, near braceless on surface tokens. A measurable experiment would settle it: compare edit-error-rate and edit-token-cost across the three styles (braceless / braces / common-style).
 
 One caveat worth flagging to the SIP framing: this is an argument that tooling substrate (not just human taste) should inform the style — as agents write more Scala, "which style is cheapest to edit correctly" becomes a real axis, and it points the same way this note already leans.
 “””
