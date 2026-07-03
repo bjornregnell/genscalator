@@ -190,3 +190,27 @@ asked whether we could wrap sed safely. The analysis:
   `tt text` transform is stream-in/stream-out, so tt can always report what it changed** — a diff the raw binary
   never gives you. **Also a rule (agent-side):** don't reach for `sed` to *format output* — that's a scala/`tt
   text` job, and the reflex is the same dynamic-shell habit `prefer-scala-scratch-over-bash` already names.
+
+### Commit-message prose triggers a shell-glob false positive — `<->` = zsh numeric-range glob (2026-07-03, BR-spotted)
+The agent committed blog/000 with a message ending "training`<->`inference boundary". The harness's Bash
+safety analyzer flagged **"Contains zsh `<N-M>` numeric-range glob"** — because `<->` IS zsh's open-ended
+numeric-range glob (`<N-M>` with both bounds omitted = *match any integer*). BR asked: a regression? **No.** The
+command ran fine (covered by `Bash(git -C * *)`); the warning was a **false positive** from *natural-language
+prose colliding with shell-glob syntax inside a `git commit -m "…"` argument*. Not a genscalator or settings
+regression — self-inflicted, by writing `<->` in prose that the shell analyzer scans as a command.
+
+- **The novel friction class:** doing **git over bash** means your *prose* (commit messages, and any `-m`/`-F`
+  text) is fed through a **shell tokenizer + glob-safety analyzer**. Prose is full of shell metacharacters —
+  `<->`, `*`, `~`, `{a,b}`, backticks, `$`, `!`, `()`, `[...]` — so the richer the message, the likelier a
+  spurious "looks dangerous/looks like a glob" flag or (worse, with real quoting) an actual mangling. The
+  transcript already shows the milder cousins: messages avoiding `#N` (→ "turn N"), and the reflex to keep
+  commit bodies plain.
+- **Why a typed tool erases it:** a `tt git commit -m <msg>` (or `tt forge commit`) takes the message as a
+  **data argument the tool never re-tokenizes through a shell** — no glob analysis of prose, no quoting
+  footguns, and the effect (`git commit`) is declared/auditable. Same shape as every entry here: the danger and
+  the false-positive both come from routing structured intent through the dynamic shell. (Caveat: `tt git`
+  wrapping git is broad; scope it to the safe verbs — `commit`, `add`, `status`, `log` — and keep the
+  destructive ones on the human, matching the global-deny model.)
+- **Immediate agent rule:** don't put `<->`, bare `*`, backticks, or `{…}` in commit-message prose — write
+  `↔` / "between X and Y" / spelled-out forms. The false positive is cosmetic here, but it's a **standing
+  tripwire** for as long as commits go through bash.
