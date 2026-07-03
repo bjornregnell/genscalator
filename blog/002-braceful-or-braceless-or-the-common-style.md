@@ -122,7 +122,7 @@ reproducible.
 
 ### 5.1 Research questions
 
-- **RQ1 (emission):** Can a given model reliably *produce* code in a requested style at all?
+- **RQ1 (emission):** Can a given AI model reliably *produce* code in a requested style at all?
 - **RQ2 (correctness given emission):** *Among* outputs that do use the requested style, does the style affect
   how often the edit is *correct* — and does any gap grow with block size?
 - **RQ3 (capability):** Does a strong frontier model reach near-perfect emission and low, style-insensitive
