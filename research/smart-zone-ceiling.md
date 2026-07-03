@@ -10,6 +10,31 @@
   the edge." Z + fill% together = a real "smart-zone gauge."
 - **Status:** open. (Tool v1 shipped — see below.)
 
+## Sub-RQ (2026-07-03, BR): does rot track *context usage* (quantity) or *composition* (quality)?
+Everything above assumes **rot is a function of usage** — that there is a fraction **Z** of the window past
+which quality drops. BR's sharper question challenges that premise: **`/context` measures *context usage* (a
+*quantity* — tokens used / window), but "rot" is a *quality* failure — a kind of *chaos*: irrelevant, stale,
+contradictory, or redundant material crowding out the signal. Those two need not move together.** Two decoupled
+predictions:
+- **Rot at LOW usage** — a *small but junk-heavy* context (dead threads, a reversed decision with both versions
+  still present, the same fact repeated, a key detail buried far from where it is needed → *lost-in-the-middle*)
+  could degrade the agent even at ~14% usage.
+- **No rot at HIGH usage** — a *large but clean, relevant, well-structured* context could stay sharp past Z.
+If so, **usage % is a weak proxy** and a single usage threshold Z is the wrong knob; we would want a
+**composition / signal-to-noise metric** *alongside* usage: contradiction density, redundancy, relevant-info
+distance, attention entropy. Note the estimators below already hint at this — the **proxy-degradation signals
+(#2: self-contradiction rate, instruction-forgetting, redone work)** actually measure *rot directly* (the
+quality axis), whereas usage is only a *presumed cause*; this RQ makes explicit that #2 can inflect
+**independently of usage**. **Reframes compaction too:** compaction may help rot less by cutting *volume* than
+by **pruning noise** (the summary drops dead threads) — so *"prune to clear chaos"* is a **distinct trigger**
+from *"compact to clear volume"* (the pressure-brake in `proactive-compaction-point.md`); at low usage but high
+chaos, a **targeted prune** could beat a full compact. **Fatigue parallel** (blog thread): human fatigue also
+is not just *hours awake* (quantity) but cognitive **clutter / unresolved-thread load** (composition) — the
+same quantity≠quality decoupling. **Measurement gap:** `/context` gives the quantity axis for free; the
+*quality* axis has **no instrument yet** — candidate first probe = the #2 proxy signals, read as a *rot-meter*
+independent of the usage gauge. → This may split **Z** into two: `Z_usage` (a volume ceiling) and a separate
+**coherence / noise floor** that can bite first.
+
 ## Plan / candidate estimators (to explore)
 1. **Calibration probes (in-session, cheap).** Periodically inject a tiny **recall/consistency self-check**
    — recall an earlier decision/constraint, or a planted fact ("canary") from N turns ago — and record the

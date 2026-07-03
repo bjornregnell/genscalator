@@ -136,7 +136,8 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   in *Smart zone / dumb zone* as a quantity — if Z ≈ 0.3, the agent stays sharp up to ~30% fill and
   **context rot** dominates beyond it (so a 1M window has a *usable* budget of ~300k, not 1M — *effective
   context ≪ advertised context*). Z is **model- and task-dependent** and currently a **blind spot**: an
-  agent can read its fill % (a `token-usage`-style instrument) but **not its own Z**, so it can't tell how
+  agent can read its fill % (a `token-usage`-style instrument — the harness surfaces the same number as
+**Context Usage** in `/context`; *fill* and *context usage* are the same quantity) but **not its own Z**, so it can't tell how
   close to the edge it is (see research `smart-zone-ceiling.md`). Practical use: compare live fill % against
   an estimated Z and **brake** (checkpoint + compact) as fill nears Z — not as it nears 100%. The region
   below Z is the *smart-zone budget*; alias *usable-context ratio*.

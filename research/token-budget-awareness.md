@@ -38,6 +38,24 @@ genscalator's two pillars already *reduce waste* so the budget buys real work:
 But both are *micro* (make each action cheap). Missing is a **macro / governance** layer: *knowing the
 budget and pacing to it.* That's this investigation.
 
+### Field datapoint — fill tracks *bytes of a few big blobs*, not action-count (2026-07-03)
+Live observation: a session did **~30 actions** (edits, commits, seds, targeted reads, a repo-wide rename) yet
+**context usage** (the harness's term — what `/context` reports; our notes' *fill*) rose only **5% → 14%**
+(post-compact). BR: *"very difficult to predict how context grows."* Mechanism, made explicit: **context usage
+≈ cumulative bytes of {tool results + agent outputs + human messages}**, and it is
+**dominated by a handful of large items**, not by the number of steps. Near-zero footprint: **edits**
+(one-line confirmation), **commits/pushes/sed** (silent), **targeted `Read` with `offset`/`limit`**, bounded
+`grepr`. Expensive: **whole-file `Read`s**, **big pastes** (two `/context` pastes + one injected skill doc were
+the bulk of the rise here), long generations. So *"I did a lot"* (many small actions) and *"a lot of context"*
+are **nearly independent axes** — which is why a human can't eyeball it. **Anti-attribution corollary:**
+**memory hygiene is orthogonal to fill** — it keeps the durable *store* consistent *across* sessions and does
+nothing to the current window; crediting low fill to it is a category error (BR floated it; corrected).
+**WR facet (perception gap):** the human can't predict fill by feel, so they must read the gauge (`/context`)
+or relay it to the agent (who *also* can't see it) — same *human-relays-the-signal* pattern as think-time; the
+concrete argument for design direction #1 (**Read the meter, don't predict by feel**). Also live support for
+**lazy compaction** (`proactive-compaction-point.md`): lots of work, still 14%, `0.8·Z`≈24% trigger untouched
+→ no reason to compact; surgical-edit sessions stay lean for free.
+
 ## Open design directions (to explore / propose)
 1. **A budget instrument (speedometer + tachometer)** — the token analogue of `progress.txt`: a readable
    signal of *remaining* budget at each level (turn / session / week + reset time) **plus the derivatives**
