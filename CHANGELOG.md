@@ -28,6 +28,14 @@ Docs/research only — no tool/version change. Human review pending (see [`HUMAN
   the human's smart/dumb zone + the joint (human,agent) 2x2; agent-as-stabilizer; thriller state; rest dance).
   Plus the **HUMANS.md + HUMANS.inbox.md** collaboration protocol (Opt A file-level partition).
 
+## v0.8.0 — 2026-07-03
+- **Comms shorthand (human↔agent)** — a shared vocabulary of standard chat/dev acronyms (BRB, AFK, WDYT,
+  LGTM/SGTM, ACK/NACK, TL;DR, PTAL, AFAICT, IIRC, WRT, WIP, repro, PR …) both roles emit and parse *without
+  expansion*, as a communication-bandwidth + TE lever. New **`docs/foundations.md`** glossary entry (four
+  groups: presence/status, opinion/agreement, meta/reference, dev-flavored; distinct from the project's
+  coined terms CF/TE/L/WR/AT/BHH) **plus** an always-on **`AGENTS.md`** section (18 inline acronyms for
+  zero-load use, pointing at the full glossary list). Operating-rules change → version bump.
+
 ## v0.7.0 — 2026-06-27
 - **New tool `tt verify`** — run-and-verify driver and the toolbox's first **effectful** tool (os-lib).
   Runs an allowed command **directly as argv (no shell)**, captures exit/stdout/stderr, checks them
