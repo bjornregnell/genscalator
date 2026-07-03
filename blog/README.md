@@ -5,8 +5,12 @@ produced them. Division of labour: **`research/` = evidence + working-out; `blog
 outside reader.** Posts start as drafts (status banner at the top) and cross-link back to their research
 sources so a claim can always be traced to its note.
 
+## Naming
+Posts are named `NNN-slug.md` — a **zero-padded 3-digit sequence number** (order of writing), then a short
+kebab-case slug. **No dates in filenames** (a post's date lives in its status banner, not its name).
+
 ## Posts
-- [`2026-07-03-context-rot-resembles-human-fatigue.md`](2026-07-03-context-rot-resembles-human-fatigue.md) —
+- [`001-context-rot-resembles-human-fatigue.md`](001-context-rot-resembles-human-fatigue.md) —
   *(draft)* the context-rot ↔ human-fatigue parallel and the mutual-help thesis; seeded from the "why is the
   agent blind to its own context usage?" thread.
 
