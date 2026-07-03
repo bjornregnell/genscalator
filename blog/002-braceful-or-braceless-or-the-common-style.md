@@ -176,13 +176,14 @@ lesson: *small model-sets mislead.*
 
 *Figure 1 — Of each style's 126 attempts, the fraction that **passed**, **silently mis-scoped** (compiled but
 behaved wrong — the dangerous kind), or hit a **loud compile error**. The telling comparison: braceless's
-compile-error slice is much bigger (25% vs braces' 9%), while the silent-mis-scope slice is about the same across
+compile-error slice is much bigger (25% vs braceful's 9%), while the silent-mis-scope slice is about the same across
 all three (~24–29%). So braceless's extra cost surfaces as **noisy, catchable** compile failures — not as more of
 the silent bugs the 4-model run had wrongly blamed on it.*
 
 **What held (378 cells):** braceless was the **costliest style in aggregate** — 45% raw pass-rate vs 63%
 (braceful) and 61% (common) — and it was worst at **every** block size, with error rising as blocks grow. So the
-*direction* of the thesis survives: braceless edits cost agents more, on average.
+*direction* of the thesis survives: braceless edits cost agents more, on average — though, as §5.5 shows next, this
+aggregate gap is **not statistically significant** with only seven models.
 
 ![Edit-error rate by block size and style — braceless is worst at every size and error rises with size.](figures/fig-size-style.svg)
 
@@ -206,7 +207,7 @@ requested style, the picture is **bidirectional and model-specific**:
 *Figure 3 — Raw edit-error rate per model (same measure as Fig. 2: failed ÷ total attempts; here each bar =
 **18 attempts** = 3 task sizes × 6 repeats). The two 100% bars point **opposite** ways —
 aya-expanse fails every braceless edit, gemma3 fails every braceful edit — while the qwen-coder variants sit near
-zero everywhere (strong coders are style-robust). A single averaged "braces vs braceless" number would hide all
+zero everywhere (strong coders are style-robust). A single averaged "braceful vs braceless" number would hide all
 of this, which is why the table below decouples style adherence from correctness.*
 
 | model | braceless | braceful | common |
@@ -309,7 +310,7 @@ researchers call external validity.)*
 validity.)*
 - **Error-rate isn't the whole cost.** We score pass/fail on the first attempt. Real edit cost also includes
   tokens spent and repair cycles after a miss — recorded in the raw data, but not the headline here.
-- **"Emitted the style" is a heuristic.** Whether an output "is" a given style is judged by a brace-signature
+- **Style adherence is judged by a heuristic.** Whether an output "is" a given style is decided by a brace-signature
   check, not a full parse — good enough as a proxy, not a definition.
 - **"Correct" rests on one probe input.** The behavioural check runs the edited function on a fixed input; a bug
   that only shows on *other* inputs would slip through. (It still beats a compile-only check, which misses
@@ -349,8 +350,9 @@ Three takeaways survive the caveats:
 
 1. **"Error rate" was hiding two mechanisms** — *can the model produce the style* and *can it edit correctly in
    it* — and they have different cures. Always separate them.
-2. **The style effect on editing is a weak-to-mid-model phenomenon.** It is real in aggregate for smaller/local
-   models but modest and sometimes reversed per model.
+2. **The style effect on editing is a weak-to-mid-model phenomenon.** It shows up in the aggregate for smaller/local
+   models — though not to statistical significance with these seven (§5.5) — and is modest and sometimes reversed
+   per model.
 3. **It vanishes at the frontier.** A strong agent is style-indifferent here.
 
 Which points to a design rule with a nice symmetry to the human side:
