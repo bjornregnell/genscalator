@@ -1,6 +1,8 @@
 # Results — braces vs indentation (agent edit-cost)
 
-## Run 1+2 — 2026-07-03 (local-model axis, autonomous overnight)
+## Pilot experiments 
+
+### Run 1+2 — 2026-07-03 (local-model axis, autonomous overnight)
 
 **Config:** 378 cells = **7 models × 3 tasks × 3 regimes × R=6**, temperature 0.4, varying seed.
 Models (local, via modly on bjornyx GPU): `qwen2.5:3b`, `qwen2.5:7b`, `qwen2.5-coder:7b`, `qwen-coder-local`,
@@ -14,7 +16,7 @@ FAIL_MISSCOPE — the last is the *silent* hazard). Raw rows: [`results-raw.tsv`
 > Adding 3 more models (Run 2) **overturned that specific claim** — see Findings. Kept visible as a lesson: a
 > small model-set misleads.
 
-### Error-rate by model × regime (fails/attempts)
+#### Error-rate by model × regime (fails/attempts)
 | model | braceless | braces | common |
 |---|---|---|---|
 | aya-expanse:8b | **100% (18/18)** | 0% (0/18) | 11% (2/18) |
@@ -25,19 +27,21 @@ FAIL_MISSCOPE — the last is the *silent* hazard). Raw rows: [`results-raw.tsv`
 | qwen2.5:3b | 94% (17/18) | 83% (15/18) | 83% (15/18) |
 | qwen2.5:7b | 28% (5/18) | 61% (11/18) | 44% (8/18) |
 
-### Error-rate by task (size) × regime
+#### Error-rate by task (size) × regime
 | task | braceless | braces | common |
 |---|---|---|---|
 | 001 small | 40% (17/42) | 24% (10/42) | 29% (12/42) |
 | 002 medium | 60% (25/42) | 40% (17/42) | 43% (18/42) |
 | 003 large | 64% (27/42) | 48% (20/42) | 45% (19/42) |
 
-### Failure-type split by regime (n=126 each)
+#### Failure-type split by regime (n=126 each)
 - **braceless**: 57 pass · **32 compile-fail** · 37 misscope · 0 infra
 - **braces**: 79 pass · 11 compile-fail · 36 misscope · 0 infra
 - **common**: 77 pass · 19 compile-fail · 30 misscope · 0 infra
 
-## Findings (honest — a PILOT, and Run 2 revised Run 1)
+#### Findings from pilot 
+
+* Run 2 revised Run 1: TODO summary statemt of why
 
 **Holds (7 models, 378 cells):**
 - **Braceless is the costliest regime in aggregate** — pass-rate 45% (57/126) vs braces 63% and common 61% —
@@ -70,9 +74,35 @@ the effect is bidirectional per-model, dominated by style-emission ability, and 
 headline did not survive more data. A genuinely informative pilot — and a clean cautionary tale that small
 model-sets mislead. Confirmation needs the next steps.
 
-## Next steps (to promote pilot → evidence)
+### Next steps (to promote pilot → evidence)
 1. **Separate the two effects:** style-emission ability (can the model produce the regime at all?) vs edit
    correctness *given* it emitted the style. Grade emission and correctness independently.
 2. **Fix the common regime:** tasks with blank-line scopes so `before.common` ≠ braceless.
 3. **Add edit families** (extract-scope, add-branch, reindent) and **the Opus-4.8 anchor** (subagent workflow).
 4. **Larger R (≥20)** for stable per-cell rates; **cross-session / more vendors** to kill self-subject bias.
+
+
+## Main Experiment
+
+(stubb)
+
+### Reserach questions
+
+### Design
+
+* Independent variables:
+ - ...
+
+* Dependent vairables:
+ - ...
+
+* Hypotheses:
+ - ...(null hyps etc)
+
+### Data Collection
+
+### Results
+
+### Discussions
+
+### Conclusions
