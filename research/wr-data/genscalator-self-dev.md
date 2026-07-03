@@ -23,6 +23,11 @@ an allowed command (no shell), checks exit/stdout/stderr, and prints PASS/FAIL. 
 the `echo`+`;`+`$?` bundle is now replaced by `tt verify --exit 0 --out … -- <cmd>`. The friction event →
 tool loop, end to end.
 
+### Permission-model observations — the guard calibrating *well* (2026-07-03, BR)
+Two positive data points (not friction — evidence the confirmation model is well-placed, the flip side of the CF hazard):
+- **Version/capability probes (`gh --version`, `tea --version`) should be safe** — read-only, no side effects, just capability detection. Candidate: **allowlist the *specific* binaries we probe** (`gh`, `tea`, `scala-cli`, `scalex`, `tt`) for `--version`/`--help`. CAVEAT: a blanket `Bash(* --version)` is **not** strictly safe — it still *executes an arbitrary binary*, and a malicious `foo` can ignore `--version` and do anything. So narrow per-binary probe entries, not a universal wildcard. (Safe-by-design principle: the *rule* must be provably safe, not just the intended call — same lesson as the curl entry below.)
+- **Reading OUTSIDE the allowed working dirs correctly prompted** (`/etc/os-release`), and BR judged the prompt **appropriate** — a meaningful boundary crossing, not rubber-stamp noise. Positive signal that the **directory-scope guard is well-calibrated**: it fires on genuine out-of-tree access (where the human *wants* a say) without drowning in-tree work in prompts. This is the *good* end of the CF spectrum — few, meaningful approvals — that safe-by-design aims for.
+
 ### curl / HTTP GET → `tt web` + `tt forge` (2026-07-03)
 A different WR flavour: not a *bundling* prompt but a **dual-use-binary allowlisting** hazard. Fetching a
 public API with `curl` is fine *as a call*, but the safe-by-design question is about the **allowlist rule**,
