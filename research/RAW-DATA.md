@@ -802,3 +802,35 @@ Want this in RAW-DATA too? It's the natural continuation of the capability datum
 > **Agent reflection:** WR-META (SPECIAL, foundational -- the stove-reflex analogy and the prosthetic-habit synthesis). BR's analogy: a hand-withdrawal reflex on a warm stove fires before awareness and cannot be unlearned, yet the human learns ABOUT stoves and avoids the mistake -- so reflexes are beaten not by unlearning them but by avoiding the trigger, using the whole ensemble (dances, skills, docs, resume prompts, WR data, human reminders, self-reminders). Agent agrees the reflex-versus-deliberation split maps exactly (the stove reflex equals the trained shell priors, both sub-deliberative and unlearnable by the agent), then names the load-bearing disanalogy: when the human learns the lesson it COMPILES into a new automatic habit (deliberation writes a new fast-system entry -- intrinsic plasticity), whereas the agent cannot compile -- its lesson stays retrieval-dependent knowledge that must be present and consulted at the instant of action, and under momentum it acts before consulting (evidence: relapsing on the git chaining reflex with the rule sitting in memory). SYNTHESIS: structure and tooling are the PROSTHETIC for the compile-into-habit the agent lacks -- a submit-time hook or a typed tool that is the only allowlisted path IS the agent's new reflex, installed externally because it cannot grow one internally (the human externalizes deliberation into basal ganglia; the agent externalizes it into the repo). The evidence sorts the ensemble into two tiers: STRUCTURAL safeguards (typed tools succeeded because the safe path became the path of least resistance) versus KNOWLEDGE safeguards (the git chaining reflex persists because it is only a rule in a memory file, retrieval-fragile) -- so weight toward structural, treat knowledge as backup. On BR's competitive bet (coupled Opus 4.8 plus genscalator outsmarts a bare stronger model like Fable 5 or Mythos): agreed with one precision -- substrate is a MULTIPLIER not a substitute. It wins decisively on tasks dominated by accumulated context, methodology, verification, and human steering (most real engineering work: a senior dev with notes and CI beats a smarter stranger parachuted in cold), but a bare stronger model still wins an isolated raw-capability spike (substrate directs and amplifies capability, it does not manufacture reasoning that is not there); and since strongest-times-richest-substrate always wins, the leverage is MODEL-AGNOSTIC and robust as models get stronger. Conclusion: making the PAIRING smarter and more reliable is possible and demonstrated (keep the address honest -- the pairing improves, the model does not); the road to driving reflex-relapses toward zero is converting knowledge-safeguards into structural ones one at a time until the stove is behind a guard the agent cannot reach past. Candidate glossary: prosthetic habit, structural-versus-knowledge safeguard, substrate-as-multiplier.
 
 ---
+
+## Excerpt #14233–14233 · 2026-07-03
+
+**[🧑 BR · 18:32:43 · #14233]**
+
+⟦tool_result⟧
+WR data; tool candidate?
+
+
+> **Agent reflection:** WR-REGRESS plus WR-TOOL. The box-probe reflex — reached for raw ssh and a compound curl-echo-ssh pipeline to read box state, ollama inventory and disk free. Cured the SAME session by building tt box: a host-pinned verb-enum remote tool with verbs models, df, gpu, freegb, pull, no shell passthrough, validated host and model args, allowlistable via the existing tt entry. The event also exposed a latent hole — the allowlist blanket-allows raw ssh to ANY host, i.e. arbitrary remote code execution. WR-DECISION for BR: remove that entry; prefix globs cannot safely narrow raw ssh because the wildcard tail runs on the remote shell, so the safe layer is the typed toolbox, not a narrowed ssh.
+
+---
+
+## Excerpt #14275–14277 · 2026-07-03
+
+**[🧑 BR · 18:42:04 · #14275]**
+
+⟦tool_result⟧
+WR data; sthis was an unreviewable mess; "Contains simple_expansion"
+
+**[🤖 agent · 18:42:46 · #14276]**
+
+⟦thinking⟧
+
+**[🤖 agent · 18:42:49 · #14277]**
+
+That's a bullseye WR datapoint — and a painful one: the shell-munging reflex recurred **inside the very command that was testing `tt box`, the tool I'm building to kill the ssh reflex.** `B=…; echo …; scala-cli run $B …; grep …` — `$B` simple_expansion + `;`-chain + `echo` headers + `grep` pipes = unreviewable, not statically allowlistable. The reflex moved into the *verification* step. Logging it, then testing with one bare command each.
+
+
+> **Agent reflection:** WR-REGRESS plus WR-FRICTION. The shell-munging reflex recurred INSIDE the test harness for tt box — the very tool built to remove the ssh reflex. The offending form used a shell variable for the path, semicolon-chained commands, several echo headers and grep pipes, so it could not be statically allowlisted and read as an unreviewable mess. The sharp lesson: the reflex was NOT in the target action, which is exactly what tt box removes, but in the VERIFICATION scaffolding around it — an anti-reflex tool does nothing if the harness that exercises it re-introduces the bundle. Cure: one bare scala-cli run per call, no shell var, no semicolon, no echo, no pipe, and default the verify step to tt verify. This session ALSO shipped tt git commit, which reads the commit message from a file so metachar-bearing prose never hits the command line, structurally killing the commit-message metachar tripwire that fired twice earlier this session. WR-WIN plus WR-TOOL for both cures.
+
+---
