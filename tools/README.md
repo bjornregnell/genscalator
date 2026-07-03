@@ -131,6 +131,34 @@ perceive its own think-time — this plus a human relay reconstruct a full round
 parsereqt <file>                     # parse reqT model text into a structured form
 ```
 
+### web — safe read-only HTTP (EFFECTFUL: network, but GET-only)
+```
+web get <url> [--host H]... [--max-bytes N] [--status]   # fetch and print; GET only, no credential headers
+```
+Replaces the dual-use `curl` reflex. It can **only fetch-and-print**: GET only (no POST/PUT/upload), **no
+credential/cookie headers ever**, response **size-capped** (default 5 MB), optional **`--host` allowlist**.
+So `Bash(tt web get *)` is safe to blanket-allow where a bare `curl *` allowlist would expose exfiltration
+(`curl -d @secret`), RCE (`curl … | sh`), and credential leaks. Residual risk is only SSRF-*read* of internal
+hosts — lock down with `--host`. Example: `tt web get https://codeberg.org/api/v1/repos/o/r/tags --status`.
+
+### forge — Forgejo/Gitea forge client, default Codeberg (EFFECTFUL: network; create needs env token)
+```
+forge releases <owner>/<repo> [--url BASE] [--limit N]    # list releases  (READ, no auth → allowlistable)
+forge tags     <owner>/<repo> [--url BASE] [--limit N]    # list tags      (READ, no auth → allowlistable)
+forge release-create <owner>/<repo> <tag> [--name S] [--body S | --body-file F]
+                     [--prerelease] [--draft] [--target COMMITISH] [--url BASE]   # CREATE (effectful)
+```
+Replaces hand-curling the REST API (a `curl` with a token on the command line). **READ verbs need no auth**
+(public repos) → safe to allowlist (`Bash(tt forge releases *)`, `Bash(tt forge tags *)`). The one **effectful**
+verb (`release-create`) reads its token **only** from the human-set env var **`CODEBERG_TOKEN`** (or
+`FORGE_TOKEN`) — never a flag — so the agent can't self-authorize (same trust-boundary rule as `verify`'s
+`TT_VERIFY_ALLOW`). It prints an `[audit]` line and is deliberately **not** blanket-allowlistable (creating a
+release stays a visible, confirmed op). Example:
+```
+tt forge releases bjornregnell/genscalator --limit 5
+tt forge release-create bjornregnell/genscalator v0.8.0 --name "v0.8.0: …" --body-file NOTES.md --prerelease
+```
+
 ## Companion: scalex
 The `tt` tools are **textual** — grep/awk/cut over any file. For **Scala code structure** the companion
 is **[scalex](https://github.com/nguyenyou/scalex)**: "grep, but it understands Scala's AST." It parses
@@ -170,6 +198,8 @@ diagnostics, refactors). Full guide: [`../docs/tool-selection.md`](../docs/tool-
 - `htmltext.scala` — HTML→text stripper.
 - `chrono.scala` — stopwatch (effectful: state + log).
 - `parsereqt.scala` — reqT model parser.
+- `web.scala` — safe read-only HTTP GET (effectful: network; requests).
+- `forge.scala` — Forgejo/Gitea forge client, releases/tags + env-token create (effectful; requests+ujson+os-lib).
 - `newtool.scala` — the generator.
 - `template.scala.txt` — starter template (latest Scala header, lib include, dispatch skeleton).
 
