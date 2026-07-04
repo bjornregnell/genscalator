@@ -92,11 +92,18 @@ or flag it as speculation — don't smuggle it in wearing a grounded voice (see 
 - Keep **external references** (live links, near the end) distinct from **internal cross-links** (to `research/`,
   foundations — durable, findable substrate, per the dangling-pointer rule).
 - **The bibliography is typed** — shared references live in [`../../blog/References.scala`](../../blog/References.scala):
-  `Reference(title, authors, refData, isVerified, comment)` with `enum RefVerification { Unverified, Verified, ToDo }`.
-  **Only cite `Verified` entries as fact.** A `ToDo` is a promise to check, *not* a citation — verify it (Google
-  Scholar / DOI / arXiv page), fill `refData`, flip to `Verified` before it appears in a shipped post. Add new refs
-  *there*, not inline, so verification status lives in one greppable, compiler-checked place. (A recalled-but-unchecked
-  citation is false echt; the enum makes that state visible instead of silent.)
+  `Reference(title, authors, refData, isVerified, comment, summary)` with `enum RefVerification { Unverified, Verified,
+  ToDo }`, Iron-refined fields (`Year`, `Doi`, `Url`, non-blank `Summary`), and a render extension
+  (`toMarkdown` / `toBibTex` / `toHtml`). **Only cite `Verified` entries as fact.** A `ToDo` is a promise to check,
+  *not* a citation — verify it (DOI / arXiv / publisher page), fill `refData`, flip to `Verified` before it appears in a
+  shipped post. Add new refs *there*, not inline, so verification status lives in one greppable, compiler-checked place.
+  (A recalled-but-unchecked citation is false echt; the enum makes that state visible instead of silent.)
+- **Summaries are content-claims — ground them like citations.** The optional `summary: Option[Summary]` field
+  (`enum Summary { PaperSummary(abstract, researchQuestions, method, results, validity) | BookSummary(topic,
+  chapterHeadings) | OtherSummary(summary) }`) is **not** a free pass: a fabricated abstract, method/results line, or
+  chapter list is false echt exactly like a hallucinated citation. **Ground a summary from the actual source** (fetch
+  the abstract / TOC) before writing it — never from recall — and use `OtherSummary` for works that don't fit the
+  empirical paper shape (system/position papers, manifestos, webpages) rather than forcing "n/a" into the fields.
 - **Self-references — own them inline.** When a cited work is BR's own, make that **obvious in the body text at its
   *first* mention** — "our own …", "in earlier work of ours", "BR's book …" — so the reader sees it *in the flow*, not
   buried in the end reference list. Transparency at the point of use (echt), **not** a heavy "conflict of interest"
