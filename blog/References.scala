@@ -65,7 +65,7 @@ import RefKind.*, RefVerification.*
 
 val references: Seq[Reference] = Seq(
 
-  // ── SE research-methods foundations (BR is a co-author of both — DISCLOSED CONFLICT OF INTEREST) ──
+  // ── SE research-methods foundations (BR is a co-author of both — be open about that when self-referencing) ──
   Reference(
     "Experimentation in Software Engineering",
     Seq(author("Wohlin","Claes"), author("Runeson","Per"), author("Höst","Martin"),
