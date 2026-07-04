@@ -142,3 +142,17 @@ contents exceed its message. **Fix:** when `--add` paths are given, scope the co
 `git commit -F <msg> -- <adds...>` — so tt git commits are **atomic to exactly the requested paths** and can never
 sweep in unrelated staged changes. (When no `--add` is given — the "stage separately" mode — keep committing the
 staged set, but that mode is the caller's explicit choice.) Small, worth doing as part of the git.scala rewrite.
+
+## Future work / second iteration — TODO (expand in the deep-pass rewrite)
+
+**STUB (BR 2026-07-04) — expand into a full section.** The streaming API (LazyList[ToolResult]) has one real
+footgun: **holding the head of a LazyList retains the whole realized prefix** (memory leak). **Capture Checking (CC)
+is the perfect compiler-level tool to catch exactly this** — a kept/escaping reference becomes a *type error*, so
+"never hold the head" stops being a discipline-you-must-remember and becomes compiler-enforced. This is genscalator's
+OWN, **direct-style** path to the Safe-mode / capture-checking vision (scala-style §3) — NOT kyo's effect system
+([[kyo-ai-inspiration]], ruled out): the safety comes from the *compiler*, not a monadic runtime. The CC docs even
+carry a **safe-LazyList example**:
+https://nightly.scala-lang.org/docs/reference/experimental/capture-checking/basics.html
+**Deep-pass task:** summarize the upside (which footguns CC eliminates, what the annotations look like on our
+ToolResult/LazyList API, how it dovetails with the planned `--safe-mode`), positioned as a *second iteration* once
+CC is less experimental. Part of the standing future-research thread on leveraging experimental CC for safety.
