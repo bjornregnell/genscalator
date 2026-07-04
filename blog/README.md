@@ -31,6 +31,10 @@ it together.
   **Theory** — the frozen-weights barrier + the substrate hierarchy; learning as moving insight down the stack.
 - [`008-the-whole-stack.md`](008-the-whole-stack.md) — *(initialized)* **Synthesis** — the TMPP chain top-down as one
   claim; the one-figure version; the honest frame; the missing JOINT-zone movement.
+- [`009-how-to-stay-echt-and-avoid-piling-up-the-slop.md`](009-how-to-stay-echt-and-avoid-piling-up-the-slop.md) —
+  *(stub)* **companion** (outside the 004→008 reading order): staying **echt** (genuine + grounded) as generation goes
+  100× and slop floods; the sv/en *äkta / äkthet / echt* map + the missing English word for the "looks-genuine-but-hollow"
+  betrayal; TODO root the advice in data.
 
 *Status: initialized 2026-07-03; arc 004→008 added 2026-07-04.*
 
