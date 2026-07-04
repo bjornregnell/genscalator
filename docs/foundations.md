@@ -74,6 +74,15 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
 > exist*, so few approvals are needed and the remaining ones are narrow + reviewable.
 
 ## Glossary
+- **BR** — **Professor Björn Regnell**, Lund University — **creator of genscalator** and the **human** collaborator in
+  this work. In `research/wr-data/` and the skills he is often just "**(the) human**" (the *role*, per *Stakeholders*
+  above); **"BR" is the person.** Named here because this work is done **in the open**, so an outside reader meets the
+  acronym everywhere and shouldn't have to guess.
+- **WR — Workflow Research** — the project's **empirical study of the human↔agent workflow itself**: friction events,
+  reflexes, habits, dances, and design principles, **logged live during real work** as "**WR data**" into
+  `research/wr-data/` (verbatim excerpt + labelled reflection) and curated append-only into `research/RAW-DATA.md`. It
+  is how genscalator's claims earn an evidence base rather than resting on assertion (see `METHODOLOGY.md`); "WR data"
+  in chat is BR flagging an episode for that log.
 - **Confirmation fatigue (CF)** — degradation of the human's review quality/willingness from too many
   approval prompts; ends in rubber-stamping. A direct BHH enabler.
 - **Review overload** — too much agent-generated code/output for the human to meaningfully review, so
