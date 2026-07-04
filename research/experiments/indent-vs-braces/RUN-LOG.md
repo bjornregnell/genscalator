@@ -34,3 +34,23 @@ Operational observations during execution. The design is frozen in `BIG-RUN-PRER
   design, and within base rate). **Mitigation going forward:** no more model-server-competing jobs while the sweep
   runs (the AT track that caused it is now complete). Lesson: a single shared model server means concurrent
   model-using jobs contend on the GPU — schedule them disjoint from a frozen experiment run.
+
+## 2026-07-04 — Phase 2 sweep: externally killed at cell 946, resumed (no data change)
+
+- **What happened:** the background sweep task was **externally stopped** after ~4 h at **cell 946 / 3024 (~31%)**
+  — NOT a crash: the output tail shows clean cells (939–946, `llama3.2:3b`) right up to the stop, no
+  error/OOM/signal, so this was the harness culling a long-lived background task, not a sweep failure. By then the
+  throughput had fully recovered past the slow `codegemma:2b` block (cells 808→946 = +138 in ~30 min).
+- **Data preserved:** all **946 cells** were already in `results-bigrun.tsv` (the runner appends per-cell, line
+  116). Backed up verbatim to `results-bigrun-partial-946.bak` before touching anything.
+- **Recovery = resume, not restart.** Added an **additive resume-skip** to `sweep-main.scala`: it reads the
+  `(task, style, model, run)` keys already in the output TSV into a `done` set and **skips them** in the loop, so a
+  relaunch **append-continues exactly the missing cells** — no duplicates, no re-running. Relaunched with the SAME
+  args (`6 @models-frozen.txt results-bigrun.tsv`); it printed `resume: 946 cells already done … skipping those`
+  and immediately resumed at `llama3.2:3b`'s remaining cells (verified: tsv 947→953, new cells only).
+- **Why this does NOT touch the frozen design:** the resume changes no model list, no seed, no task/style set, and
+  drops/duplicates no cell. The 946 completed cells are the same data an uninterrupted run would hold; the remaining
+  cells run the same frozen models fresh. Generations are non-deterministic (temp), but that variance is what R = 6
+  captures, and resuming does not choose *which* conditions run — so there is no selection/optional-stopping bias,
+  and the model-blocked analysis is unaffected. If the kill recurs, re-relaunching is idempotent (the skip-set just
+  grows) — the run completes in chunks. The `.bak` is kept as a safety net until the run finishes.

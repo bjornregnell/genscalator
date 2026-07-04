@@ -89,6 +89,18 @@ def buildPrompt(before: String, instruction: String, style: String): String =
   val tasks = os.list(Root / "tasks").filter(os.isDir).sorted
   val out = Root / outName
   if !os.exists(out) then os.write(out, "task\tstyle\tmodel\trun\temitted\tgraded\tout_tokens\tdiff_lines\n")
+  // RESUME (2026-07-04): the big run was externally stopped once (harness killed the ~4h background task) at
+  // cell 946/3024. This lets a relaunch append-CONTINUE the same file instead of re-running done cells: read the
+  // (task,style,model,run) keys already present in `out` and skip them in the loop below — no duplicates, resumes
+  // exactly the missing cells. Additive-only; it changes no design, no model list, no seed — just avoids redoing
+  // completed work after an interruption. (Also makes re-relaunch cheap if the kill recurs.)
+  val done: Set[(String, String, String, String)] =
+    if os.exists(out) then
+      os.read.lines(out).drop(1).flatMap { l =>
+        val c = l.split("\t"); if c.length >= 4 then Some((c(0), c(1), c(2), c(3))) else None
+      }.toSet
+    else Set.empty
+  if done.nonEmpty then println(s"resume: ${done.size} cells already done in $outName; skipping those")
   val tmp = os.temp.dir(prefix = "ivb-main")
   var n = 0
   for
@@ -98,6 +110,7 @@ def buildPrompt(before: String, instruction: String, style: String): String =
     beforeF = task / s"before.$style.scala"
     if os.exists(beforeF) && os.exists(task / "probe.scala") && os.exists(task / "expected.txt")
     run <- 1 to R
+    if !done((task.last, style, model, run.toString)) // RESUME: skip cells already recorded in `out`
   do
     n += 1
     val res = Try {
