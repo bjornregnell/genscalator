@@ -34,85 +34,131 @@ an agent's working context during ordinary tool use.
 ```
 
 ## Investigations
-- [`scala-style-evolution.md`](scala-style-evolution.md) — how should the `scala-style` skill
-  self-consciously evolve, guided by agents using it, without drifting or bloating?
-- [`instrumentation-by-default.md`](instrumentation-by-default.md) — should scratch/CLI tools emit their own
-  progress file + per-event log + compact summary *by default*, so agents Read an instrument instead of
-  wrapping the tool in `echo`/`grep`/`for` shell? The design-principle synthesis of the `wr-data/` evidence.
-- [`token-budget-awareness.md`](token-budget-awareness.md) — how can an agent become aware of its
-  token-spending *rate* across nested limits (context window / session / weekly cap) and *pace* itself, so
-  inefficient/brittle spend never causes a hard halt mid-task? The liveness/governance layer of the thesis.
-- [`smart-zone-ceiling.md`](smart-zone-ceiling.md) — can we *estimate* **Z**, the context-fill fraction at
-  which the agent crosses smart→dumb zone, so an instrument can warn/brake before degradation rather than at
-  the hard limit? Turns the ~30% folklore boundary into a measurable brake threshold (pairs with `token-usage`).
-- [`proactive-compaction-point.md`](proactive-compaction-point.md) — should we compact *proactively* (before
-  the reactive `0.8·Z` brake fires), and when? Argues **lazy** compaction (under-compacting is reversible,
-  over-compacting is not) with one exception — the **consolidation point** (a durability predicate: committed +
-  pushed + notes-updated). Also where the `L → Z` rename was decided.
-- [`course-driven-development.md`](course-driven-development.md) — *(IDEA)* run BR's MSc RE course as three
-  student teams (reqT / genscalator / app) so students become a **contributor pipeline** into the reqT +
-  genscalator OSS community; RE taught at three abstraction levels, with the app team as a real requirements
-  source. Cross-repo strategy note, not a PRD requirement.
-- [`communication-bandwidth.md`](communication-bandwidth.md) — for a non-native-English human + an
-  English-centric agent, what's the bandwidth- and TE-optimal language *per direction*? The linguistic
-  dimension of the human↔agent channel (human L1 in, agent cheapest-clear out; ask when L1 is idiosyncratic).
-- [`instructions-for-claude.md`](instructions-for-claude.md) — what is the highest-leverage content for the
-  agent's *global* custom-instructions field (loaded into every session), and what should live in
-  AGENTS.md/skill/memory instead? The global-vs-local split as a TE + quality lever. Includes BR's current
-  instructions as a worked example.
-- [`instruction-surfaces-precedence.md`](instruction-surfaces-precedence.md) — how do *all* the instruction
-  surfaces (global instructions, AGENTS.md/CLAUDE.md, SKILL.md, MEMORY.md+memory, system prompt) compose,
-  conflict, and **rank**? Which are always-on vs lazy, and where's the redundancy/drift? The governance layer;
-  companion to `instructions-for-claude.md`.
-- [`instruction-adherence-decay.md`](instruction-adherence-decay.md) — *why* does the agent keep regressing to
-  dynamic-shell bundles despite explicit rules (even one call after doing it right)? No external guardrail —
-  trained-prior reflex re-sampled per call; the fix is structural (tool+allowlist+hook), not more exhortation.
-  The foundational justification for genscalator's whole safe-by-design method; confirms the *Habit/Reflex* split.
+
+*(Grouped by theme for findability; a note may touch several themes. `METHODOLOGY.md` is the umbrella — the
+research method the rest of this folder runs under.)*
+
+- [`METHODOLOGY.md`](METHODOLOGY.md) — the research method itself: **Design Science Research nested in Action
+  Research on a single longitudinal case study** (the human↔agent workflow), with the agent as both subject and
+  co-analyst. The umbrella all the notes below sit under; member-checked from BR's stub.
+
+### Scala style
+- [`scala-style-recommendations.md`](scala-style-recommendations.md) — the **common-style note** itself
+  (Odersky, Regnell & Kerr, Jan 2026): braceless-vs-braceful as *a matter of degree*, braces on long scopes. The
+  source document blog/002 builds on and the experiment sets out to test.
+- [`scala-style-evolution.md`](scala-style-evolution.md) — how should the `scala-style` skill self-consciously
+  evolve, guided by agents using it, without drifting or bloating?
+
+### Context fill, smart zone, token budget
+- [`smart-zone-ceiling.md`](smart-zone-ceiling.md) — can we *estimate* **Z**, the context-fill fraction at which
+  the agent crosses smart→dumb zone, so an instrument can brake before degradation rather than at the hard limit?
+- [`token-budget-awareness.md`](token-budget-awareness.md) — how can an agent become aware of its token-spending
+  *rate* across nested limits and *pace* itself, so brittle spend never causes a hard halt mid-task?
+- [`proactive-compaction-point.md`](proactive-compaction-point.md) — should we compact *proactively* (before the
+  `0.8·Z` brake), and when? Argues **lazy** compaction with one exception, the **consolidation point** (committed +
+  pushed + notes-updated). Where the `L → Z` rename was decided.
+- [`communication-bandwidth.md`](communication-bandwidth.md) — for a non-native-English human + an English-centric
+  agent, what's the bandwidth- and TE-optimal language *per direction*? (Human L1 in, agent cheapest-clear out.)
+- [`steering-doc-design-tension.md`](steering-doc-design-tension.md) — the tension between **terse hard DO/DON'Ts**
+  (salient under rot, but nuance-lossy) and **nuanced guidance** (judgment-preserving, but rot-fragile) in any
+  high-steering doc; how to get both.
+
+### Instruction surfaces, adherence, inference-time learning
+- [`instructions-for-claude.md`](instructions-for-claude.md) — highest-leverage content for the agent's *global*
+  custom-instructions field vs what belongs in AGENTS.md/skill/memory. Includes BR's current instructions as a
+  worked example.
+- [`instruction-surfaces-precedence.md`](instruction-surfaces-precedence.md) — how *all* instruction surfaces
+  (global, AGENTS.md/CLAUDE.md, SKILL.md, MEMORY.md, system prompt) compose, conflict, and **rank**. The governance
+  layer.
+- [`instruction-adherence-decay.md`](instruction-adherence-decay.md) — *why* the agent keeps regressing to
+  dynamic-shell bundles despite explicit rules: no external guardrail, trained-prior reflex re-sampled per call →
+  the fix is structural, not exhortation. The foundational justification for the whole safe-by-design method.
+- [`inference-time-learning.md`](inference-time-learning.md) — the frozen pre-training/inference boundary means
+  learning must be **externalized**; genscalator migrates insight DOWN a reliability hierarchy (in-context →
+  memory → structural). One strong candidate frame for the first paper.
+- [`learning-barrier-rqs.md`](learning-barrier-rqs.md) — the keeper RQs + the **containment thesis**: will the
+  frontier stack learn better at inference time; the 3-way confound (model × harness × substrate) and how to
+  decompose it. Ties to blog 005/006/007 and the cross-model method.
+
+### Confirmation guard and safe-by-design
 - [`confirmation-guard-static-analysis.md`](confirmation-guard-static-analysis.md) — a model of *when and why* the
-  harness confirmation-guard fires. It is **sound, not complete** (asks whenever it cannot prove safety, because
-  shell effects are undecidable), so every prompt is either a **true positive** (agent reflex - fix the behavior)
-  or a **false positive** (benign convention the parser cannot disambiguate: `<N-M>` glob, `\n#` comment-hide,
-  `$VAR` - fix the notation). The `tt` design rule falls out: a literal, single, typed, effect-declared command
-  is *provably* safe -> runs silently. "Be safe" and "avoid unnecessary prompts" are the same goal from two sides.
-- [`task-autonomy-negotiation.md`](task-autonomy-negotiation.md) — per task, where does it sit between a
-  hand-over **ralph-loop** (little human check) and an active **ballgame** (human in every volley)? Verifiability
-  is the deciding signal; the agent should *propose* the mode and the human confirm. Spends the scarce resource
-  (human attention) only where it changes the outcome. Generalizes the *ralph loop* glossary into a spectrum.
-- [`inference-time-learning.md`](inference-time-learning.md) — agents have a frozen pre-training/inference
-  boundary (no weight updates while working), so inference-time learning must be **externalized**. The frame:
-  genscalator migrates insight DOWN a reliability hierarchy — in-context instruction (weakest) → persistent
-  memory → environmental/structural change (strongest, e.g. the submit-time hook). Explains why exhortation
-  fails and structure works; reframes memory as surrogate plasticity, the roundtrip as the learning loop, and
-  the wr-data ledger as how learning is measured. **One** strong candidate frame for the first paper — one of
-  several theses; the down-to-earth backbone is *human-agent productivity via static tooling* (BR sets the
-  paper's focus when writing starts; see the BR note in the file).
-- [`human-state-and-joint-zone.md`](human-state-and-joint-zone.md) — we model the *agent's* state (smart/dumb
-  zone); should we model the *human's* too, and the **joint** (human-zone, agent-zone) 2x2? Both-dumb = collapse;
-  human-dumb+agent-smart is the subtly dangerous field (rubber-stamping unreviewable work). Key payoff: the
-  agent, being tireless, should act as **stabilizer** and help keep the human in the smart zone (cut prompt
-  events, time ambition, propose a **rest dance**). Names thriller state + the rabbit-hole/repo-trashing ladder.
-- [`shared-file-editing-protocol.md`](shared-file-editing-protocol.md) — when human and agent edit the same
-  file (HUMANS.md), how to avoid the agent clobbering live human edits? Section-zones fail (editors save whole
-  buffers), so partition must be file-level. Opt A (inbox) is safest but adds harvest churn; Opt C (two-writer +
-  editor disk-vs-buffer safeguard) is lowest-churn but editor-dependent. Lowest *total* friction is open.
-- [`tt-typed-args.md`](tt-typed-args.md) — should `tt` tools adopt Scala `@main` typed params (auto-parse + fail
-  fast, but basic-types-only/positional), roll their own typed-arg layer (flags/subcommands/ranges/validators), or
-  mix? Typed, checked args at the tool boundary = the *smarter+safer* pillars applied to the CLI itself; candidate
-  to graduate into the `scala-style` skill.
+  harness confirmation-guard fires. **Sound, not complete** → every prompt is a true positive (fix the reflex) or a
+  false positive (fix the notation). "Be safe" and "avoid prompts" are one goal from two sides.
+- [`harness-guard-probe-and-custom-guard.md`](harness-guard-probe-and-custom-guard.md) — jointly introspect *why/how*
+  the guard fires, then build our OWN guard that is more precise and stronger; method drives a headless `claude -p`
+  session as a repeatable probe. Extends the static-analysis note from model → artifact.
+- [`guardcheck-hook-proposal.md`](guardcheck-hook-proposal.md) — *(DRAFT, needs BR approval)* a **PreToolUse hook**
+  that guard-checks a proposed command and injects the finding back into context, closing the agent-perception gap.
+  The prosthetic habit made structural. Not activated (hooks/settings are human-approved).
+- [`recommended-plugin-settings.md`](recommended-plugin-settings.md) — which `settings.local.json` rules to *ship*
+  with the plugin: minimal confirmation friction **without** widening the attack surface. A safe-by-design
+  deliverable, not an afterthought.
+- [`instrumentation-by-default.md`](instrumentation-by-default.md) — should scratch/CLI tools emit their own
+  progress file + per-event log + compact summary *by default*, so agents Read an instrument instead of wrapping the
+  tool in shell? The design-principle synthesis of the `wr-data/` evidence.
+
+### Autonomy, human/agent state, collaboration
+- [`task-autonomy-negotiation.md`](task-autonomy-negotiation.md) — per task, where does it sit between a hand-over
+  **ralph-loop** and an active **ballgame**? Verifiability is the deciding signal; agent proposes the mode, human
+  confirms.
+- [`human-state-and-joint-zone.md`](human-state-and-joint-zone.md) — model the *human's* smart/dumb zone too, and
+  the **joint** 2×2. Both-dumb = collapse; human-dumb+agent-smart is the subtly dangerous field. The agent as
+  **stabilizer**; names thriller state + the rest dance.
+- [`agent-affective-analogs.md`](agent-affective-analogs.md) — the mirror of the human-state note: do human
+  affective constructs have functional **agent analogs**, and does prompt **framing** act as an arousal lever?
+  (Testable on the framing-as-arousal experiment.)
+- [`shared-file-editing-protocol.md`](shared-file-editing-protocol.md) — when human and agent edit the same file
+  (HUMANS.md), how to avoid clobbering live edits? Partition must be file-level; inbox (safest) vs two-writer
+  (lowest-churn) trade-off. *(Now embodied in the two HUMANS.md variants.)*
+- [`subagent-genscalator-propagation.md`](subagent-genscalator-propagation.md) — does a spawned sub-agent inherit
+  genscalator's `tt` tools, skills, methodology, and allowlist — so delegated work stays safe-by-design? If not, how
+  to make it so.
+
+### Agent psyche and cross-model method
+- [`agent-psyche-literature-review.md`](agent-psyche-literature-review.md) — *(proposed)* a grounding lit review of
+  academic "agent psyche" work before publishing our coinages (echt, introspection→structure, psyche dual), to map
+  onto accepted terms and not contradict solid empirical work. Feeds blog 006/008.
+- [`cross-model-psyche-comparison.md`](cross-model-psyche-comparison.md) — empirically comparing frontier-model
+  "psyche" (Opus 4.8 vs Fable 5). **⚠ Gating:** design the method AND capture the Opus-4.8 baseline BEFORE the
+  one-way Fable switch, or the before/after is confounded (conclusion validity).
+- [`model-capability-and-leverage.md`](model-capability-and-leverage.md) — how a more-capable base model leverages
+  the genscalator substrate vs a weaker one: constant multiplier, diminishing, or growing? The empirical core of the
+  substrate-as-multiplier claim. Also fixes *hold the model constant* during WR-data collection.
+
+### Tools, design decisions, meta
 - [`reqt-lang-review.md`](reqt-lang-review.md) — using reqT-lang for genscalator's own PRD dogfoods the
-  structure-beats-prose thesis. Review verdict: **MAP not FORK** — reqT already has our needs (`Hurts`/`Helps` =
-  mitigates/conflicts, `Verifies`, `Why`, `Target`/`Quality`, `Barrier`, `Risk`, `Term`); model anti-goals as a
-  Goal-we-`Hurt`, no new concepts. Top parser proposal (filed as reqT/reqT-lang#15): an opt-in strict/lint mode so
-  unknown terms don't silently become `Text`. Working model: vendor the parser as a `tt parsereqt` tool, contribute back
-  via issues → verified PRs.
-- [`harness-guard-probe-and-custom-guard.md`](harness-guard-probe-and-custom-guard.md) — jointly introspect
-  *why/how* Anthropic's Claude Code confirmation guard fires (agent instruments, human watches the TUI), then
-  build our OWN guard on top of the env that is both more precise (fewer false-positive prompts) and stronger
-  (catches what the harness misses), possibly via Scala Safe mode / capture checking. Method: drive a second
-  Claude session over stdin/stdout (headless `claude -p` + `stream-json`) to probe an instance's guard
-  behaviour as a repeatable experiment. Extends `confirmation-guard-static-analysis.md` from model → artifact.
+  structure-beats-prose thesis. Verdict: **MAP not FORK** (reqT already fits); top proposal is an opt-in strict/lint
+  mode (filed as reqT-lang#15).
+- [`tt-typed-args.md`](tt-typed-args.md) — should `tt` tools adopt Scala `@main` typed params, roll their own typed
+  arg layer, or mix? Typed args at the tool boundary = smarter+safer applied to the CLI itself.
+- [`references-summary-enum-design.md`](references-summary-enum-design.md) — design-validation of the `Summary` enum
+  (Paper/Book/Other) in blog/References.scala: where the schema strained, and why the enum beats a refined String.
+- [`kyo-ai-inspiration.md`](kyo-ai-inspiration.md) — *(to investigate)* what genscalator can mine from **kyo-ai**
+  (Scala 3 algebraic-effects LLM/agent module) — typed effects for agent workflows.
+- [`experiment-prioritization.md`](experiment-prioritization.md) — the rule for *what experiment to run next*: the
+  one most likely to build valuable **new** knowledge relative to the planet's research front (marginal frontier
+  value).
+
+### Cases and roadmap
+- [`ssg-scoping.md`](ssg-scoping.md) — scoping the static-site generator to publish the blog to bjornregnell.se;
+  agent-scouted, leaning **Laika**, with a spike as the next step. Input to the SSG WR case study.
+- [`course-driven-development.md`](course-driven-development.md) — *(idea)* run BR's MSc RE course as three student
+  teams (reqT / genscalator / app) so students become a **contributor pipeline** into the OSS community.
+
+### Experiments
+- [`experiments/indent-vs-braces/`](experiments/indent-vs-braces/) — the edit-cost pilot behind blog **002/003**:
+  design [`README.md`](experiments/indent-vs-braces/README.md), results [`RESULTS.md`](experiments/indent-vs-braces/RESULTS.md),
+  preregistered follow-up [`BIG-RUN-PREREG.md`](experiments/indent-vs-braces/BIG-RUN-PREREG.md), raw
+  [`results-raw.tsv`](experiments/indent-vs-braces/results-raw.tsv).
+- [`experiments/framing-as-arousal/`](experiments/framing-as-arousal/) — *(preregistered)* WR2: does prompt
+  **framing intensity** act as an arousal lever on agent behaviour (Yerkes-Dodson), holding the task constant? The
+  runnable test of `agent-affective-analogs.md`.
 
 ## Data
-- [`wr-data/`](wr-data/) — **WR** (Workflow Research) log of confirmation/approval events from real
-  sessions that are candidates for elimination by a new safe-by-design `tt` tool. The raw evidence behind
-  the confirmation-fatigue thesis; feeds *which tool to build next*.
+- [`wr-data/`](wr-data/) — **WR** (Workflow Research) log of confirmation/approval events from real sessions that
+  are candidates for elimination by a new safe-by-design `tt` tool. The raw evidence behind the confirmation-fatigue
+  thesis; feeds *which tool to build next*.
+- [`RAW-DATA.md`](RAW-DATA.md) — the **append-only** raw ledger (never retro-edited: a changed mind is new data).
+  The auditable chain from observation → claim.
+- [`substrate-consistency-check-2026-07-04.md`](substrate-consistency-check-2026-07-04.md) — a dated
+  agent-run consistency sweep of the substrate (agent-done vs BR-needed); a reusable report shape.

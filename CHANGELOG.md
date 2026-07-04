@@ -6,7 +6,7 @@ All notable changes to genscalator. Versions follow the git tags (`vX.Y.Z`); the
 Updating genscalator is a **human-reviewed** step — see [`docs/updating.md`](docs/updating.md). Skim this
 file before adopting a new version: it changes the agent's operating rules, so review beats blind pull.
 
-## Unreleased — docs + research accretion (introprog session 2026-06-30)
+## Unreleased — docs + research accretion (sessions 2026-06-30 → 2026-07-05)
 Docs/research only — no tool/version change. Human review pending (see [`HUMANS.md`](HUMANS.md)).
 - **`docs/foundations.md` glossary — new agent-introspection concepts:** **Context rot**, **Token velocity**,
   **Token acceleration**, **Smart-zone ceiling (Z)** (usable working-context ratio before the dumb zone),
@@ -36,6 +36,28 @@ Docs/research only — no tool/version change. Human review pending (see [`HUMAN
   *consolidation point* as a second (proactive) compact trigger beside the reactive `fill ≥ 0.8·Z` brake; the
   "compaction should be sleep, not collapse" framing. Plus **RQ** (research question) added to the
   comms-shorthand glossary.
+- **Cue split `note:` / `pin:` + the dances family (2026-07-04/05).** The durable-save cue (briefly `etch`,
+  renamed to **`pin`** to avoid the *echt*/*etch* near-anagram) is now distinct from `note:` (notice / keep-fluent
+  + pin-candidate). New dances defined with a **dance-bar** criterion (≥2 interlocking steps, ≥1 human + ≥1 agent):
+  **go** (autonomy handoff), **hardening**, **rest**, **consistency-sweep**. Propagated across `docs/foundations.md`,
+  `blog/005-dancing-with-agents.md`, and memory.
+- **`docs/foundations.md` reorganized for findability** — a group map + A→Z index + themed subsections; new terms
+  (agent **CO4/CF5**, **AT**, authority anchor, ballgame, corroboration asymmetry, thriller state, go / hardening /
+  rest dances); "Roles and work strands" reframed to **Roles and cases**, grounded in *Case Study Research in SE*
+  §3.2.3.
+- **New `research-methods` skill + two public book summaries.** `skills/research-methods/SKILL.md` (strategy
+  chooser, case-study + experiment checklists, validity cheat-sheet) points at `summary-case-study-research.md` and
+  `summary-experimentation.md` — original, copyright-clean distillations of BR's two co-authored methods books; the
+  closed-repo PDFs are the depth fallback only.
+- **Open `HUMANS.md` slimmed to a community template.** Reframed as the lean, reusable **inbox-harvest** variant of
+  the `AGENTS.md`/`HUMANS.md`/`HUMANS.inbox.md` protocol (agent proposes → human harvests), with a contribute
+  pointer; personal working backlog moved off to a private pinboard.
+- **`research/README.md` index rebuilt** — every note now listed under thematic subsections, with an **Experiments**
+  subsection and `RAW-DATA.md` linked under Data (index-rot fix).
+- **More research notes** — agent-psyche literature review + cross-model method, learning-barrier RQs,
+  agent-affective-analogs, ssg-scoping, steering-doc-design-tension, guard-probe + guardcheck-hook +
+  recommended-plugin-settings, references-summary-enum-design, model-capability-and-leverage,
+  experiment-prioritization, and more. See the refreshed `research/README.md` for the full, current index.
 
 ## v0.8.0 — 2026-07-03
 - **Comms shorthand (human↔agent)** — a shared vocabulary of standard chat/dev acronyms (BRB, AFK, WDYT,
