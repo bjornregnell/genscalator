@@ -98,6 +98,33 @@ large as the one observed; that fraction *is* the p-value. **Blocked by model** 
 you do when there are too many shuffles to list them all — sample a large random subset instead — and the **seed** is
 the fixed starting number that makes that random sample reproducible.
 
+## An operational wrinkle: slow models, and what a non-answer (NORESP) means
+
+Worth stating plainly, because it shapes both the wall-clock and the data: **the edit tasks are tiny.** Each is a
+12–20 line program and a *single* small change — "wrap this character-dispatch in an `else` so it only runs when
+`upper` is true." Not big programs, not many edits. So when a model is slow, it is **not** the task's fault.
+
+What's slow is **model verbosity**. The **reasoning models** (the deepseek-r1 family) emit ~**675–773 output
+tokens** for one of these one-line edits — that's a `<think>…</think>` chain-of-thought, reasoning out loud at length
+before (maybe) producing the ~5-line answer. A fast non-reasoning model of similar size does the identical task in
+~**76–163 tokens** — 5–10× less generation. On a 6 GB card, a reasoning model routinely spends its whole per-cell
+time budget mid-thought and **runs out before answering** — recorded as **`NORESP`** (no response).
+
+So a chunk of the cells, concentrated in a handful of models, are `NORESP`. Two things about that, both in the
+honest-methods spirit of 002:
+
+- **A `NORESP` is a legitimate outcome, not missing data.** It says "this model did not deliver a usable edit within
+  the budget" — which, for the *weak-editor* question this experiment asks, is exactly the kind of signal we want:
+  some models are unsuitable as editors not because their code is wrong but because they are **too verbose or slow to
+  be practical** at all. It is graded as a fail and **kept** (the no-drop rule), never quietly dropped.
+- **It's why the run is slow, and that's fine.** The reasoning trio dominated the wall-clock (a few models eating
+  hours of timeouts) — an operational cost, not a threat to the result. The analysis is **blocked by model**, so a
+  slow all-fail model contributes its one model-level data point and no more; it cannot swamp the others.
+
+(Operational detail during the run, for full disclosure: the ~10 h job was **externally interrupted once** at 31% by
+the compute host and **resumed from a per-cell checkpoint** with zero lost or duplicated cells — see the experiment
+`RUN-LOG.md`. The frozen design was untouched.)
+
 ## Results — _TBD after the run_
 
 _(To be populated: primary p, the model × style picture at ~50 models, the adherence-vs-correctness split, and the
