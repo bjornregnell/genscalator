@@ -246,6 +246,14 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   turn); only reassure "it's not confusing" if the human *explicitly* worries. The edit-notes are an **intentional
   workflow feature**, not confusion. A **communication-bandwidth** move (cheap human correction, no re-type, no agent
   ceremony). Sibling of the other human↔agent dances (*compact*, *exit-resume*, *hardening*).
+- **Note dance** (formally: the *longitudinal externalisation* dance) — the **continuous** human↔agent ritual that
+  runs *across a whole session*, the streaming counterpart to the discrete **compact dance**: the **human cues**
+  ("note:", "WR data:", "remember …") and the **agent offloads** that content out of the volatile context (substrate
+  #1) into **durable committed items** (memory, `wr-data/`, notes, blog, this glossary) — moving each insight *down the
+  substrate hierarchy as it arises*. **Why it matters:** it keeps the *effective working-context* small even as *raw
+  fill* climbs — the mechanism behind "capable at 0.88 fill" (`research/wr-data/harness-ux.md`), i.e. *why* raw fill ≠
+  working-context. Both roles are load-bearing: the human's cue is the trigger, the agent's discipline is the
+  externalisation. (BR-observed 2026-07-04.)
 - **Memory hygiene (agent)** — keeping the agent's **durable memory store** (the persistent `MEMORY.md` + the
   memory files a session reloads) **consistent with current reality**: when a coined term is *renamed*, a file
   or flag *moved/deleted*, or a decision *reversed*, sweep the store for stale references and update or remove
