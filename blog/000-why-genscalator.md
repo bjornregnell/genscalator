@@ -75,3 +75,5 @@ calls instead. *(to draft)*
 
 ## Close
 genscalator = the toolbox (`tt`) + skills + docs distilled from doing real work this way. *(to draft)*
+
+Maybe genscalator can unlock even more ambitious projects. So maybe this is not my "last big project" before I retire, after all. (And retirement does not mean me stopping to try to do cool things with software, then with even more competenet AI software engineers helping us...)
