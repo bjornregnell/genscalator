@@ -20,9 +20,12 @@ import io.github.iltotore.iron.constraint.any.*       // Not (constraint combina
 type Title      = String
 type RefComment = String
 type Year       = Int :| Interval.Closed[1900, 2100]  // Iron refinement: a plausible publication-year range.
-type Summary    = String :| Not[Blank]  // Iron refinement: a summary must actually say something (non-empty, not whitespace-only).
+type NonBlank   = String :| Not[Blank]  // Iron refinement: non-empty and not whitespace-only (reused by the Summary enum fields).
 type Doi        = String :| Match["10\\.\\d{4,9}/.+"]  // Iron refinement: DOI shape — "10." + registrant + "/" + suffix.
 type Url        = String :| Match["https?://.+"]        // Iron refinement: an http(s) URL.
+type Markdown   = NonBlank   // rendering-output aliases: a render is always non-blank (Iron); refined at the boundary via .refineUnsafe.
+type BibTex     = NonBlank
+type Html       = NonBlank
 
 /** A name split so we can render "Regnell, B." or "Björn Regnell". */
 case class Author(lastName: String, otherNames: Seq[String], abbrevFirstLetterOfOtherNames: Seq[String])
@@ -59,6 +62,20 @@ case class RefData(
 enum RefVerification:
   case Unverified, Verified, ToDo
 
+/** A structured summary, shaped to the reference's kind. `abstract` is backticked (Scala reserved word). Fields are
+ *  NonBlank (Iron): if you fill a field it must say something — use OtherSummary for refs that don't fit the empirical
+ *  paper shape (system/position papers, manifestos, webpages) rather than stuffing "n/a" into PaperSummary. */
+enum Summary:
+  case PaperSummary(
+    `abstract`:        NonBlank,
+    researchQuestions: Seq[NonBlank],   // plural (proposal had String): RQs are usually a list; parallels chapterHeadings.
+    method:            NonBlank,
+    results:           NonBlank,
+    validity:          NonBlank,        // threats-to-validity / limitations the authors report — the SE-methods lens.
+  )
+  case BookSummary(topic: NonBlank, chapterHeadings: Seq[NonBlank])
+  case OtherSummary(summary: NonBlank)
+
 case class Reference(
   title:      Title,
   authors:    Seq[Author],
@@ -68,7 +85,7 @@ case class Reference(
   summary:    Option[Summary] = None,  // optional plain-language summary; Iron-guaranteed non-blank when present.
 )
 
-import RefKind.*, RefVerification.*
+import RefKind.*, RefVerification.*, Summary.*
 
 val references: Seq[Reference] = Seq(
 
@@ -121,6 +138,7 @@ val references: Seq[Reference] = Seq(
       note = Some("many co-authors (et al.); manifesto for an empirical behavioural science of machines"))),
     Verified,
     "Grounds our behavioural-adjudication stance (study machines by their behaviour).",
+    summary = Some(OtherSummary("A 2019 Nature perspective (many co-authors) arguing for 'machine behaviour' as an interdisciplinary field that studies intelligent machines empirically — by their observed behaviour, borrowing methods from ethology and the behavioural sciences — rather than only from their code or training objectives. It frames machines as a new class of actors whose behaviour has individual, collective, and hybrid human-machine dimensions with societal consequences. A programmatic manifesto, not a single empirical study, so the PaperSummary fields do not apply (OtherSummary) — it grounds this project's behavioural-adjudication stance.")),
   ),
   Reference(
     "Towards Understanding Sycophancy in Language Models",
@@ -139,6 +157,7 @@ val references: Seq[Reference] = Seq(
       note = Some("free copy at UMBC; origin of the 'ELIZA effect'"))),
     Verified,
     "Origin of the ELIZA effect (human over-attribution of understanding to a conversational program).",
+    summary = Some(OtherSummary("Weizenbaum's 1966 ACM paper describing ELIZA, whose DOCTOR script mimics a Rogerian therapist by pattern-matching the user's input and reflecting it back as questions — with no model of meaning and no memory of the conversation's content. The paper is deflationary: the impression of understanding is shallow keyword transformation, and Weizenbaum was troubled by how readily people attributed real comprehension to it (the origin of the 'ELIZA effect'). A system/position paper, not an empirical study, so the PaperSummary fields do not apply — which is exactly why OtherSummary exists.")),
   ),
 
   // ── was ToDo, now VERIFIED (2026-07-04, >=2 authoritative sources each; corrections applied per entry) ──
@@ -193,3 +212,40 @@ val references: Seq[Reference] = Seq(
     "Theory-of-mind-in-LLMs (contested) — useful for the unfalsifiable-from-inside point. Verified: arXiv id 2302.02083 (v1); carries the retitle/PNAS note to avoid a stale-id trap.",
   ),
 )
+
+// ── rendering (extension methods) ────────────────────────────────────────────────────────────────────
+extension (r: Reference)
+
+  /** A compact Markdown citation line, plus indented summary sub-bullets when a Summary is present. */
+  def toMarkdown: Markdown =
+    val authors =
+      if r.authors.isEmpty then ""
+      else r.authors.map { a =>
+        val inits = a.abbrevFirstLetterOfOtherNames.map(_ + ".").mkString(" ")
+        if inits.isEmpty then a.lastName else s"${a.lastName}, $inits"
+      }.mkString(", ")
+    val d     = r.refData
+    val year  = d.flatMap(_.year).fold("")(y => s" (${y})")
+    val where = d.flatMap(x => x.venue.orElse(x.publisher)).fold("")(v => s". $v")
+    val link  = d.flatMap(_.url).fold("")(u => s" <$u>")
+    val badge = r.isVerified match
+      case Verified   => " ✓"
+      case ToDo       => " ⚠ ToDo"
+      case Unverified => " (?)"
+    val head  = s"- $authors$year. *${r.title}*$where$link$badge"
+    val body  = r.summary match
+      case Some(PaperSummary(ab, rqs, m, res, validity)) =>
+        s"\n  - **Abstract:** $ab" +
+        s"\n  - **Research questions:** ${rqs.mkString("; ")}" +
+        s"\n  - **Method:** $m" +
+        s"\n  - **Results:** $res" +
+        s"\n  - **Validity:** $validity"
+      case Some(BookSummary(topic, chs)) =>
+        s"\n  - **Topic:** $topic" +
+        s"\n  - **Chapters:** ${chs.mkString("; ")}"
+      case Some(OtherSummary(s)) => s"\n  - $s"
+      case None                  => ""
+    (head + body).refineUnsafe   // always non-blank (head starts with "- <title>"); refine at the boundary.
+
+  def toBibTex: BibTex = ???
+  def toHtml:   Html   = ???
