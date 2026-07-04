@@ -21,6 +21,8 @@ type Title      = String
 type RefComment = String
 type Year       = Int :| Interval.Closed[1900, 2100]  // Iron refinement: a plausible publication-year range.
 type Summary    = String :| Not[Blank]  // Iron refinement: a summary must actually say something (non-empty, not whitespace-only).
+type Doi        = String :| Match["10\\.\\d{4,9}/.+"]  // Iron refinement: DOI shape — "10." + registrant + "/" + suffix.
+type Url        = String :| Match["https?://.+"]        // Iron refinement: an http(s) URL.
 
 /** A name split so we can render "Regnell, B." or "Björn Regnell". */
 case class Author(lastName: String, otherNames: Seq[String], abbrevFirstLetterOfOtherNames: Seq[String])
@@ -32,10 +34,11 @@ def author(last: String, names: String*): Author =
 enum RefKind:
   case Journal, Conference, Book, TechReport, Preprint, Web, Misc
 
-// Iron (type-level validation) — LIVE for `Year` above: `Int :| Interval.Closed[1900, 2100]`, so a bad year (e.g.
-//   1000) fails to COMPILE and the literal years below auto-refine at compile time (~zero runtime overhead).
-//   TODO — extend where it pays: refine `doi` / `url` with `String :| Match[...]` patterns; refine runtime input via
-//   `.refine` / `.refineEither` / `.refineOption` at the boundary. BIGGER WIN: the SAME Iron constraints can implement
+// Iron (type-level validation) — now LIVE for `Year` (`Int :| Interval.Closed[1900, 2100]`), `Summary`
+//   (`String :| Not[Blank]`), `Doi` (`String :| Match["10\\.\\d{4,9}/.+"]`), and `Url` (`String :| Match["https?://.+"]`).
+//   Every literal below auto-refines at compile time (~zero runtime overhead): a bad year (1000), a blank summary, a
+//   malformed DOI, or a non-http url would fail to COMPILE. For runtime input, refine at the boundary via
+//   `.refine` / `.refineEither` / `.refineOption`. BIGGER WIN (still TODO): the SAME Iron constraints can implement
 //   tt's typed-arg validator layer (intRange / oneOf / FROM..TO in tools/DESIGN-single-dispatcher.md) — one validation
 //   vocabulary shared across RefData and tt. Repo: https://github.com/Iltotore/iron · Docs: https://iltotore.github.io/iron/docs/
 /** BibTeX-lite: optional fields cover journal / conference / book / techreport / preprint / web. */
@@ -48,8 +51,8 @@ case class RefData(
   pages:     Option[String] = None,
   publisher: Option[String] = None,
   edition:   Option[String] = None,
-  doi:       Option[String] = None,
-  url:       Option[String] = None,
+  doi:       Option[Doi]    = None,
+  url:       Option[Url]    = None,
   note:      Option[String] = None,
 )
 
