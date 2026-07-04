@@ -482,3 +482,14 @@ so *effective working-context* stayed small despite high *raw fill* — the low 
 substrate discipline**, not a naturally-high Z. So **raw fill ≠ effective working-context**; the externalisation this
 project preaches may be exactly why 0.88 was survivable. A clean **before-Fable-5** Opus-4.8 datapoint. See
 `research/smart-zone-ceiling.md`.
+
+## Harness natively warns at 90%: manual `/compact` "to control what gets kept" (WR data, BR 2026-07-04)
+Tags: `#methodology` (compact-dance)
+At 90% fill the harness surfaced: *"⚠ Context is 90% full. Autocompact will trigger soon, which discards older
+messages. Use /compact now to control what gets kept."* Two points: (1) the platform **independently validates the
+compact-dance rationale** — manual beats auto because you control the hand-off — and the warning is also the exact
+**trigger cue** for proactively proposing the dance ([[propose-compact-dance-at-trigger]]). (2) But the **note dance
+changes the stakes:** because state is continuously externalised, *"what gets kept"* matters far less — this session's
+full state was recovered from the durable BR-TODO, so even a *blind* autocompact would have been survivable. So the
+harness affordance is the **safety net**; the note-dance discipline is the **belt**. Externalisation **demotes the
+compaction event from *risk* to *routine*.**
