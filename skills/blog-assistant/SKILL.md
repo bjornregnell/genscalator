@@ -21,10 +21,10 @@ allowed-tools: Bash(tt git *) Bash(tt files *)
 - Practically: draft freely, but **mark the register** — a stub is a stub, a scaffold is a scaffold (see 007's status
   banner "SCAFFOLD"), a verbatim human quote is untouched. BR then rewrites in his voice, keeps, or cuts.
 
-## 2. The real risk — false äkthet, not "generated"
+## 2. The real risk — false echt, not "generated"
 Readers know AI is used; **AI-assisted text is not the problem.** Two things are:
 - **Slop** — generic, voiceless, padded prose that says little. Cut it; prefer one grounded sentence to three smooth ones.
-- **False äkthet (the serious one)** — text that *looks* genuine and grounded but is **ungrounded or hallucinated**.
+- **False echt (the serious one)** — text that *looks* genuine and grounded but is **ungrounded or hallucinated**.
   That is a trust betrayal: the reader trusted a genuine surface and got a hollow or false interior. **The rule:
   never let a smooth surface outrun its grounding.**
   - Ground every factual/empirical claim in `research/`, `wr-data/`, or `RAW-DATA.md` — and link it so it's checkable.
