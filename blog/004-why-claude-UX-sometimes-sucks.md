@@ -67,6 +67,20 @@ Source material to mine (Workflow-Research "WR data", logged live during real ag
 - `research/smart-zone-ceiling.md` — fill-vs-rot, monitor-tick cadence as a rot knob.
 - Related memories: harness-double-post-edit-race, no-interrupting-modals-during-flow, propose-compact-dance-at-trigger.
 
+**The compaction pain (BR) + the ask.** `[for BR to voice in the first person]` Compaction is the highest-stakes
+routine action in a long run — it *rewrites the shared memory* — and yet the UX around *when* to do it is reactive, not
+proactive. This session the only signal I got was the harness firing **"Context is 90% full … Use `/compact` now"** —
+which lands *late*, well past the smart zone, right when a tired human least wants a scramble. What I'd have wanted from
+Anthropic is a **better compaction UX**: a **setting for a proactive reminder** that nudges me to compact while I'm
+still in the smart zone — parameterised by a **ceiling `Z`** (the fill fraction I consider my smart working limit) so
+the reminder fires at, say, **0.8·Z**, not at the harness's fixed 90%. The smart-zone threshold is *personal and
+task-dependent* (a delicate research run wants a lower `Z` than a throwaway task), so it should be *my* knob, not a
+hard-coded panic line. Pairs with the compact-dance practice (005), the smart-zone-ceiling note, and the
+`propose-compact-dance-at-trigger` memory: the *human* wants a harness reminder at `0.8·Z`; the *agent* already proposes
+the dance at that crossing — so today the
+agent is doing the harness's job by hand. **The ask: make the safe-zone compaction reminder a first-class, `Z`-tunable
+setting.**
+
 Angle (TODO firm up): these aren't random bugs — most are **one family**: *timing/observability races between a human
 action and the system consuming a prior input*, plus *missing typed affordances* that push work into bash. For each,
 pair the felt problem with a concrete harness-side ask (widen the edit window; read-only `/context`; a nonblocking
