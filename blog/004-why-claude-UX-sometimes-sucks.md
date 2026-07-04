@@ -27,6 +27,27 @@ accidental keystroke warped BR into FleetView, his messages spawned orphan sessi
 typed "UX CHANGED under my feet", "I get no answers from you", "anything lost?", "aaargh I want back the other session
 feed". Quote these; they *are* the emotional core of this post.
 
+**Narrative direction (BR): write 004 as a THRILLER.** The reader should *feel* the panic first, then the flip into
+thriller-mode when the UX hiccup turns into a big finding. Don't report the episode — *stage* it. The FleetView warp
+is the spine:
+- **Act I — normalcy under load.** A long, high-stakes AFK research run; the human all-in, hours deep, tired. Stakes
+  established (the emotional-stakes frame above is the *why* the coming panic is earned).
+- **Act II — the inciting hiccup.** One stray keystroke; the UI warps; the ground shifts — *"UX CHANGED under my feet."*
+- **Act III — rising panic (first person, present tense).** Messages vanish into the void; the agent goes silent; dread
+  compounds beat by beat — *"I get no answers from you" … "anything lost?" … "aaargh I want back the other session
+  feed."* A ticking clock and no reply. Let the reader sweat.
+- **Act IV — the desperate act + reunion.** Ctrl+D+D, the resume-fork confusion, then the relief of landing back in the
+  intact session.
+- **Act V — the twist: the disaster IS the discovery.** *"Can you access it?"* → the agent turns detective, introspects
+  its **own** substrate (the `jsonl` transcripts), and recovers the panic writes verbatim — even its own fork lineage.
+  The crisis becomes the evidence.
+- **Payoff.** The very files that let the agent recover the human's panic are the same externalized substrate the whole
+  theory (007) rests on — and the self-recovery is the self-model/agency finding (006). The UX pain didn't just hurt; it
+  **demonstrated the thesis.** Release the reader from fear into revelation.
+
+Craft notes: first-person + present tense for the panic acts; verbatim panic-writes as the beats; withhold the reveal
+until the reader has felt the loss; make them *feel it before they understand it*.
+
 Source material to mine (Workflow-Research "WR data", logged live during real agentic runs):
 - `research/wr-data/harness-ux.md` — the primary log. Recurring themes already captured there:
   - **Input races** — arrow-up "edit a just-sent message" → double-post; Enter landing on a confirmation prompt;

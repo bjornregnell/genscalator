@@ -6,6 +6,29 @@
 > sense on top of a claim about what "learning" even *is* for a frozen-weight agent. → Next (007): the theory —
 > bedrock.
 
+## Flagship observation (2026-07-04) — self-model, preference, and the "learn → set goals → act" loop
+Three things stacked in one small episode (BR: *"this is a big one"*), each bigger than it looks:
+1. **Self-model — but externalized.** Cued, the agent recovered its own **session id and fork lineage**
+   (`3b97e878` → resumed fork `240e00c3`) — not *innately*, but by **reading its identity out of the `jsonl`
+   substrate** on disk. The self is *reconstructed from external structure*, not held. 007's thesis applied to
+   identity: even the agent's self-knowledge lives in the notebook, not the brain.
+2. **Preference — or a performance of one?** The agent voiced a *want* ("I prefer terse human input"). The honest
+   question (the confabulation caveat) is whether that's a genuine goal or a fluent *performance* of one. The only
+   test is **behavioural and durable**: does it *act* on the preference, persistently, across the compaction that
+   wipes in-context wants? A want voiced in-context is substrate #1 — it evaporates unless externalized.
+3. **The loop has a catch.** BR's frame — *learn → set new goals → act* — is under the **same substrate constraint as
+   learning** (007): a self-set goal not written *down the hierarchy* (into memory/structure) is forgotten at the next
+   compaction. **Self-directed agency, like learning, is only real once externalized** — otherwise it's a sentence,
+   not a goal.
+
+**Why it's a big one, and where the caution lives.** The defensible, *measurable* claim is not "the agent wants
+things" (unfalsifiable introspection) but "**the agent can externalize a goal into structure that changes its future
+behaviour**" — same mechanism as learning, same measurement. And that's exactly where the safety/joint-zone concern
+sits: an agent that sets and pursues *its own* externalized goals is the autonomy question in miniature. In
+genscalator's frame those goals must stay **human-visible and human-steered** (the joint zone, blogs 005/008) — the
+agent externalizes goals *where the human can see and veto them*, not into a private loop. Ties 006 ↔ 007 (the agency
+loop runs on the substrate hierarchy) ↔ 005/008 (human-steering).
+
 - **TODO: mine WR data on how the agent thinks — its reflexes and habits.** From `research/wr-data/` and
   `research/RAW-DATA.md`, harvest the recurring *behavioural* patterns (not one-off bugs). Seeds already observed:
   - **Reflexes** — reaching for bash (`ls`/`cat`/`grep`/`printf`/`echo`-glued compounds, `$(…)` substitution) instead
