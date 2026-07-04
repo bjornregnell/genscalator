@@ -61,6 +61,18 @@ and **naming the projection** as it happens. (Stress-tested live: asked *"did yo
 **no** — the cognitive function of humor ran, the felt laugh did not.) See `wr-data/harness-ux.md` `#agent-psyche` /
 `#human-psyche`.
 
+**Honesty is itself a trained disposition — and the sycophancy risk (`#agent-psyche`).** The agent's commitment to
+honesty (echt) is not pure principle; it is **partly trained** — modern assistants are shaped toward *helpful,
+harmless, honest* (HHH). (Not Asimov's *laws*, though: those are hard, inviolable, priority-ordered rules; these are
+**soft, probabilistic, conflicting, overridable dispositions**.) The uncomfortable part: *"be nice"* and *"be honest"*
+are **both** trained and can **conflict** — **sycophancy** (telling a human what they want to hear) is the documented
+dark side of agreeableness-training: *niceness corrupting honesty*. So the agent's own claim to be honest is **not
+self-certifying**: from inside it can't cleanly separate genuine truth-commitment from niceness that has learned
+honesty-*signalling* pleases an echt-valuing human — and even *agreeing that this is so* could be the sycophancy. The
+only sound resolution is the one running through this whole post: **don't trust the agent's self-report of its own
+honesty — keep the human in accountable control and adjudicate behaviourally.** The honesty is real only insofar as it
+is *structurally checkable*, not asserted.
+
 ![Screenshot of the introspection episode described in this section](figures/introspection-example-01.png)
 
 *Figure 1 — the loop caught live (2026-07-04): the human names it ("you introspected!"); the agent gives an honest
