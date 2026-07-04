@@ -212,3 +212,68 @@ you mean" on an obvious typo delta. BR worried the double-post is "even more con
 this rule. **Harness-side ask:** widen the edit window (allow editing a just-sent message until the agent's *first
 token*, not until enqueue), or make a fast follow-up detected as an edit-of-previous rather than a new post.
 See memory `harness-double-post-edit-race`.
+
+## Bash-reflex cluster → typed `tt` tools; and `$(…)` substitution trips the confirmation guard (2026-07-04, BR live-flagged 3x)
+
+While diagnosing the tt-toolbox split, BR flagged **three consecutive** commands of mine as WR data — all the same
+class: **filesystem/shell introspection I did in raw bash instead of a typed tool.**
+- `readlink -f … ; echo "---" ; ls … 2>&1 | head ; echo "---" ; ls -la …`
+- `type tt ; echo "---" ; grep -nE 'tt|TT_TOOLS' ~/.bashrc | head`
+- (earlier) `which tt ; echo "---" ; cat "$(which tt)" | head -40`
+
+**Two distinct lessons:**
+
+1. **`ls`/`readlink`/`type`/`cat`/`grep` + echo-separators is a bash reflex that a typed tool already partly cures.**
+   BR: *"why `ls` when you have os-lib? it's a reflex — can we do better with tt?"* The sharp version: **`tt files`
+   (os-lib–based) already exists in the toolbox and I reached for `ls` anyway** — so this is first a **discipline gap**,
+   not only a missing tool. os-lib gives `os.list`/`os.walk`/`os.exists`/`os.followLink` returning typed `Seq[os.Path]`
+   to compute on — no `2>&1`, no `| head`, no `echo "---"` assembly. The **echo-separated multi-`ls` compound** is the
+   *same* assembly antipattern as the monitor-tick and `printf`-message compounds already logged here: several shell
+   fragments glued with `echo` dividers because there's no single typed call that answers the actual question.
+2. **Command substitution `$(…)` trips the env confirmation guard** (`Contains simple_expansion`) → manual approval →
+   and *that* approval prompt is where BR **accidentally clicked yes** on the *failing* `tt git` (input-race family, cf.
+   the Enter-on-confirmation and arrow-up cases above). So `$(…)` in a gated bash line is a **double cost**: forces a
+   confirmation *and* creates a mis-click surface. Cure: avoid command substitution in gated bash — pass literal paths,
+   or answer the question with a typed tool that needs no substitution.
+
+**Tool candidates this crystallizes (fold into `tools/DESIGN-single-dispatcher.md` candidate list):**
+- **`tt files` — USE IT** (already exists); the fix here is habit, not code. Consider widening it to cover the reflexes
+  above (list/stat/walk with typed output) so it's the obvious reach.
+- **`tt which <tool>`** — typed toolbox introspection: where a tool resolves, which toolbox(es) exist, is it on
+  `~/.local/bin` vs a repo clone. Would have answered this whole diagnosis in one typed call with **no** `readlink`
+  + `echo` + double-`ls` + `$(which …)`.
+- **`tt web --head <url>`** (2026-07-04) — a light URL **existence/health** check (status + last-modified + size, no
+  body), distinct from `tt web`'s content fetch+convert. Cures the `curl -sI -o /dev/null -w '%{http_code} …'` reflex I
+  used to confirm `compendium-en.pdf` is live on fileadmin. `tt web` today is too heavy for "does this URL 200".
+- **`tt files … --head N`** (2026-07-04) — preview the first N lines of matched files, so the
+  `for f in …; do head -8 "$f"; done` loop (which trips `simple_expansion` on the `$f` var) becomes one typed call.
+  Same cluster as the `ls`/`cat`/`grep` reflexes: the loop exists only because no single typed call previews matches.
+- **`tt files … --names`** (2026-07-04) — emit just the bare tool/base names (optionally sorted), so
+  `tt files … | tail -n +2 | sed 's|.*/||;s|.scala||' | sort | tr '\n' ' '` (used to list genscalator tool names)
+  collapses to one call. The `sed`/`sort`/`tr` post-processing chain is the reflex; the tool should offer the shaped
+  output directly. Reinforces: every time I pipe `tt files` through `sed`/`awk`/`sort`, that's a missing output mode.
+
+**Root-cause tie-in:** every one of these reflexes is exactly what the single-dispatcher DESIGN removes — *"tools are
+functions from input to output, IO in one place, no bash assembly."* The reflex fires because the typed tool either
+doesn't exist yet (`tt which`) or I forget it does (`tt files`). Logged as standing motivation for the refactor.
+
+## Toolbox divergence: `~/.local/bin/tt` → muntabot-synch subset, but `git`/`box`/`forge` live only in genscalator (2026-07-04)
+
+Surfaced when `tt git …` (to commit the genscalator DESIGN) failed with *"no such tool 'git' in
+…/muntabot-synch-introprog/tools"*. There are **two tt toolboxes** and they've **diverged**:
+- `~/.local/bin/tt` self-locates to **muntabot-synch-introprog/tools** = `{files, lib, log, newtool, text, verify}`
+  (the day-to-day synced subset).
+- **genscalator/tools** = the **fuller** set (`git`, `box`, `forge`, `chrono`, `web`, `guardcheck`, `parsereqt`, `typo`,
+  the DESIGN docs, its own `tools/tt` launcher).
+
+**Consequence:** bare `tt <tool>` can **only** reach the muntabot subset; genscalator-specific tools (git/box/forge)
+are unreachable via the allowlisted bare `tt` from the current symlink. Every reach-path to genscalator's `git.scala`
+(inline `TT_TOOLS=… tt git`, absolute `…/genscalator/tools/tt git`, `cd genscalator && ./tools/tt git`) **fails the
+`Bash(tt …)` allowlist** (command text doesn't start with a literal `tt`) → forces a confirmation. So while BR is AFK,
+autonomous genscalator commits are **blocked** without a prompt.
+
+**Decision for BR (canonical-toolbox question):** either (a) repoint `~/.local/bin/tt` → the **canonical** (genscalator)
+toolbox that has *all* tools, or (b) treat the split as intentional and **sync** `git`/`box`/`forge` into
+muntabot-synch/tools too, or (c) accept genscalator dev needs its own launcher path. This is a **config/security change
+(the allowlist anchor)** → **human-decided**, not something the agent repoints autonomously (cf. `hardening-dance`).
+**The single-dispatcher + native `tt` binary DESIGN dissolves this**: one canonical toolbox, one `tt`, one allowlist.
