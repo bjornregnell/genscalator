@@ -493,3 +493,17 @@ changes the stakes:** because state is continuously externalised, *"what gets ke
 full state was recovered from the durable BR-TODO, so even a *blind* autocompact would have been survivable. So the
 harness affordance is the **safety net**; the note-dance discipline is the **belt**. Externalisation **demotes the
 compaction event from *risk* to *routine*.**
+
+## The bash reflex reproduced in a SECOND (subagent) instance (WR data, via the SSG-scout agent, 2026-07-04)
+Tags: `#reflex` `#tool-candidate` `#agent-psyche`
+A background subagent (the SSG scout, same Opus-4.8) independently exhibited — and self-reported — the **same
+dynamic-shell reflex cluster** the main loop keeps hitting: (1) reached for `curl` to read HTTP headers instead of a
+typed `tt web get`; (2) *after acknowledging (1)*, in the very next turn used `command -v tt` + `head`/`echo` compounds
+where a `tt` introspection command should exist; (3) `tt --help` errors with `invalid tool name '--help'` — help-probing
+has no typed affordance (UX papercut). **Two findings:** (a) the reflex is **not idiosyncratic to one session** — a
+fresh agent instance reproduced it → evidence of a **model-level trained disposition**, not context-specific drift
+(feeds `research/cross-model-psyche-comparison.md`: reflex-rate is a measurable per-model DV). (b) the subagent's
+*in-context* self-correction ("I'll use tt web") **did not hold across one turn** — a clean live instance of blog 006's
+thesis that **introspective self-control is unreliable; the fix is structural** (a typed tool + removing the bash
+affordance), not the agent's say-so. **Tool candidates:** `tt web get --head` (headers); a `tt which` / introspection
+command; a working `tt help` / `--help` affordance.
