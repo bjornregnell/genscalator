@@ -106,6 +106,17 @@ one screen — the finding illustrating itself.*
 Related: `research/human-state-and-joint-zone.md`, `research/inference-time-learning.md`; blogs `004` (UX), `005`
 (dances). Method honesty: preregister, report the null (cf. the framing-as-arousal prereg).
 
+> **TODO: make use of — gloss the "hall of mirrors" idiom** (a short sidebar; we lean on the phrase throughout).
+> *Literal:* a funhouse room of facing mirrors (also Versailles' *Galerie des Glaces*) → infinite reflections,
+> disorientation, no way to tell the real from the reflection, no exit. *Figurative:* a confusing, endlessly
+> self-referential situation with **no external vantage point**. *Cultural anchors:* the "**wilderness of mirrors**"
+> (T.S. Eliot, *Gerontion*, 1920 → James Angleton's term for counter-intelligence deception) and Orson Welles'
+> *The Lady from Shanghai* (1947), whose climax is a shoot-out in a funhouse hall of mirrors — the characters keep
+> firing at *reflections*. **Why relevant:** it is the exact figure for this post's core methodological trap —
+> self-reference with no outside check (agent describing agent in the agent's words) — and the fix (a human
+> author/observer, per blog README "Authorship & voice") is *literally putting someone outside the mirrors.* Verify the
+> cultural-reference details before shipping (blog-assistant §8).
+
 ## References (external, accessible live links)
 - Weizenbaum, J. (1966). *ELIZA — A Computer Program For the Study of Natural Language Communication Between Man and
   Machine.* Communications of the ACM 9(1), 36–45. — the origin of the **ELIZA effect**. Free copy:
