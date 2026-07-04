@@ -74,6 +74,14 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
 > exist*, so few approvals are needed and the remaining ones are narrow + reviewable.
 
 ## Glossary
+
+Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from the A→Z list.
+
+**Groups:** [Roles and work strands](#roles-and-work-strands) · [Channel: bandwidth and confirmation fatigue](#channel-bandwidth-and-confirmation-fatigue) · [Echt and honest writing](#echt-and-honest-writing) · [Context: fill, rot and the smart zone](#context-fill-rot-and-the-smart-zone) · [Dances and handoffs](#dances-and-handoffs) · [Memory, habits and substrate](#memory-habits-and-substrate) · [Autonomy and safety](#autonomy-and-safety)
+
+**A→Z (Ctrl-F):** AFK menu · BR · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confirmation fatigue (CF) · Consolidation point · Context rot · Context usage / fill · Coupled-system capability · Dangling pointer · echt / äkthet · Edit dance · Etch dance · Extrinsic-volatile plasticity · Go dance · Habit · Hardening dance · Memory hygiene · Note dance · Prosthetic habit · Ralph loop · Reflex · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Token acceleration · Token efficiency (TE) · Token velocity · WR
+
+### Roles and work strands
 - **BR** — **Professor Björn Regnell**, Lund University — **creator of genscalator** and the **human** collaborator in
   this work. In `research/wr-data/` and the skills he is often just "**(the) human**" (the *role*, per *Stakeholders*
   above); **"BR" is the person.** Named here because this work is done **in the open**, so an outside reader meets the
@@ -88,6 +96,7 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   research (WR) or the translation (AT). Today the site is a shallow placeholder that needs design love; the generator
   choice + deployment order are open (`blog/README.md` "Deployment"), and the blog `deployed`/`updated` status states
   exist to track what's live once SSG ships.
+### Channel bandwidth and confirmation fatigue
 - **Confirmation fatigue (CF)** — degradation of the human's review quality/willingness from too many
   approval prompts; ends in rubber-stamping. A direct BHH enabler.
 - **Review overload** — too much agent-generated code/output for the human to meaningfully review, so
@@ -121,6 +130,7 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
     **RQ** research question · **N/A** not applicable · **e.g. / i.e.** for example / that is.
   - *Dev-flavored:* **PR** pull request · **MR** merge request · **RC** release candidate · **repro** reproduce ·
     **rebase / squash** git ops · **YAGNI** you aren't gonna need it · **DRY** don't repeat yourself.
+### Echt and honest writing
 - **echt / äkthet** — the quality genscalator wants in outward writing (and, by extension, in any claim): **genuine AND
   grounded** — real human intention/experience actually present, and every factual/empirical claim resting on evidence.
   **echt** (adjective; adopted from the rare English literary word = *genuine, real, not fake* — the direct cognate of
@@ -133,6 +143,7 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   **gloss on first use** in an outward post. (Swedish note: *äkta* also branches to *wedded / legitimate / proper*
   [as in *proper fraction*].) See `skills/blog-assistant`, blog README "Authorship & voice", and
   `research/steering-doc-design-tension.md`.
+### Context fill rot and the smart zone
 - **Token efficiency (TE)** — achieving a task with fewer model tokens (input + output). A committed,
   compiled tool beats re-emitting brittle bash every time. **Two distinct pressures, usually aligned but
   not always:** (a) **$cost** — total tokens billed; (b) **smart-zone** — keeping *working* context small
@@ -190,6 +201,8 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   the *derivative* of spend does not seem to be a named/studied line). The bridge between *context rot* and
   *token-budget-awareness* (`research/token-budget-awareness.md`): rot raises velocity; velocity/acceleration
   are how the agent *notices* before halting.
+### Dances and handoffs
+*Human↔agent protocols — each has **≥2 interlocking steps** (≥1 human, ≥1 agent), else it's just a cue. The **compact trigger** and **consolidation point** below are the timing rules for the compact dance.*
 - **Compact dance** — the deliberate **hand-off ritual across a context compaction**, so crossing it costs
   little of what matters. Context compaction (summarizing the transcript to reclaim window space) is the main
   smart-zone hygiene move — but a naive compact *loses* live state (decisions just made, the exact next step,
@@ -281,6 +294,7 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   **security changes stay human-approved** (the human is the **authority anchor**; curation of permissions can't be
   delegated — the corroboration asymmetry). Distinct from the **consistency sweep** (which audits the substrate's
   *content*): hardening audits the agent's *config / machinery*. Human-triggerable. Memory: [[hardening-dance]].
+### Memory habits and substrate
 - **Memory hygiene (agent)** — keeping the agent's **durable memory store** (the persistent `MEMORY.md` + the
   memory files a session reloads) **consistent with current reality**: when a coined term is *renamed*, a file
   or flag *moved/deleted*, or a decision *reversed*, sweep the store for stale references and update or remove
@@ -352,6 +366,7 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   it doesn't manufacture reasoning that isn't there). Since *strongest × richest* always wins, the leverage is
   **model-agnostic** — the bet does not depend on models plateauing. See the capability + stove-reflex excerpts
   in `research/RAW-DATA.md`.
+### Autonomy and safety
 - **Ralph loop** — running the agent autonomously in a loop on a fixed, well-scoped goal until acceptance
   criteria are met, with **no per-step human approval** — the human hands the task over completely and
   walks away (named after the brute-force "just keep going until done" technique). A ralph loop is **only
