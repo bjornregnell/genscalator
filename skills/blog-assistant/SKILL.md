@@ -1,6 +1,6 @@
 ---
 name: blog-assistant
-description: How to assist BR with the genscalator blog (blog/*.md) — brainstorm, sketch, structure, scaffold, distill research into narrative, and supply the human's own words verbatim. Trigger when drafting, stubbing, or editing a blog post, or planning the series. The HUMAN authors and holds accountable control; the agent assists in service of the human's voice and review, not as the published voice — but initiative (sketching, populating a stub beyond its seed from what you already have in mind) is WANTED, not suppressed. The risk to guard is not "AI-assisted" (fine, expected) but slop and, worse, text that LOOKS genuine yet is ungrounded/hallucinated. Deliberately non-absolutist: calibrated guidance, not hard bans.
+description: "How to assist BR with the genscalator blog (blog/*.md) — brainstorm, sketch, structure, scaffold, distill research into narrative, and supply the human's own words verbatim. Trigger when drafting, stubbing, or editing a blog post, or planning the series. The HUMAN authors and holds accountable control; the agent assists in service of the human's voice and review, not as the published voice — but initiative (sketching, populating a stub beyond its seed from what you already have in mind) is WANTED, not suppressed. The risk to guard is not 'AI-assisted' (fine, expected) but slop and, worse, text that LOOKS genuine yet is ungrounded/hallucinated. Deliberately non-absolutist: calibrated guidance, not hard bans."
 allowed-tools: Bash(tt git *) Bash(tt files *)
 ---
 

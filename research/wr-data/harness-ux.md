@@ -266,6 +266,14 @@ class: **filesystem/shell introspection I did in raw bash instead of a typed too
   user message, tool calls, text). Recovering BR's FleetView "panic writes" needed a raw `jq` + `for`-loop that
   tripped the *"Contains expansion"* guard — the same reflex cluster. A typed transcript reader cures the reflex AND
   unlocks WR-data mining of past sessions (a research primitive, not just a papercut fix). Pairs with `RAW-DATA.md`.
+- **`tt frontmatter [file | --all]`** (2026-07-04) — validate a markdown file's YAML frontmatter (real parse via
+  snakeyaml/JVM — no new Scala dep) + required-field check (`name`, `description`), typed `OK` / `error at line:col`;
+  `--all` lints every `skills/*/SKILL.md`, `memory/*.md`, `blog/*.md`. **Motivated beyond the reflex:** the
+  `blog-assistant` SKILL.md had an unquoted colon in `description` (`non-absolutist: calibrated`) → YAML "nested
+  mappings not allowed in compact mappings" → VS Code preview rejected it, and per the web the SAME class **silently
+  drops a skill from discovery** (no error). So this is a *reliability* tool, not just a cure for the `python3 -c
+  'import yaml…'` reflex I reached for to verify the fix. Encodes the genscalator gotcha: **quote any frontmatter value
+  containing a colon.** Refs: vercel-labs/skills#1094 (silent drop), github/vscode-github-actions#205 (the error).
 
 ## Cannot run `/context` while messages are queued / agent is thinking (2026-07-04)
 BR flagged: it's **irritating that he can't run `/context`** while his messages are queued for the agent (agent
