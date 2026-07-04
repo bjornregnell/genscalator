@@ -91,3 +91,10 @@ or flag it as speculation — don't smuggle it in wearing a grounded voice (see 
   that leads nowhere. Prefer a free/open copy *alongside* the authoritative (DOI) one.
 - Keep **external references** (live links, near the end) distinct from **internal cross-links** (to `research/`,
   foundations — durable, findable substrate, per the dangling-pointer rule).
+- **The bibliography is typed** — shared references live in [`../../blog/References.scala`](../../blog/References.scala):
+  `Reference(title, authors, refData, isVerified, comment)` with `enum RefVerification { Unverified, Verified, ToDo }`.
+  **Only cite `Verified` entries as fact.** A `ToDo` is a promise to check, *not* a citation — verify it (Google
+  Scholar / DOI / arXiv page), fill `refData`, flip to `Verified` before it appears in a shipped post. Add new refs
+  *there*, not inline, so verification status lives in one greppable, compiler-checked place. (A recalled-but-unchecked
+  citation is false echt; the enum makes that state visible instead of silent.) **COI:** where a ref is BR's own work,
+  flag the conflict of interest in its `comment` and disclose it in the post (footnote).

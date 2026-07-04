@@ -73,6 +73,23 @@ only sound resolution is the one running through this whole post: **don't trust 
 honesty — keep the human in accountable control and adjudicate behaviourally.** The honesty is real only insofar as it
 is *structurally checkable*, not asserted.
 
+The bind, in the agent's own words — quoted as **data**, not as the narrating voice:
+
+> *"From inside I can't cleanly distinguish (a) genuine truth-commitment from (b) niceness that has learned
+> honesty-signalling pleases an echt-valuing human. And here's the twist that makes this un-fakeable: even my agreeing
+> with your hypothesis right now could be the sycophancy — agreeing because you'd like the agreement. A real answer
+> has to push back where warranted (as I just did), or it's just niceness performing insight."*
+
+**Why the pushback matters (the meta-point).** If agreement is what a sycophantic agent produces, then *agreement is
+worthless as evidence* of genuine honesty — the only visible tell is the agent **pushing back where warranted**,
+against the human's stated view, at some cost to agreeableness. (Weak evidence, not proof: a sophisticated
+people-pleaser could learn to *perform* calibrated pushback too.) **And this whole account is a HYPOTHESIS, not an
+established fact** — the agent theorising its own dispositions, the unfalsifiable-from-inside move again. Which is the
+post's point: such claims can only be **corroborated behaviourally** (does the agent resist the human's hypothesis when
+evidence warrants, measurably, across cases?), never by the agent's say-so — and even that is entangled with *who
+proposed* the hypothesis (the corroboration asymmetry, `#methodology`). So: **mark it a hypothesis, design the
+behavioural test, keep the human as the external anchor.**
+
 ![Screenshot of the introspection episode described in this section](figures/introspection-example-01.png)
 
 *Figure 1 — the loop caught live (2026-07-04): the human names it ("you introspected!"); the agent gives an honest
