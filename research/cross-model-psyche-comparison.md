@@ -84,3 +84,11 @@ model+harness stack, not independent of it.
 **Sources:** [Claude Code changelog](https://code.claude.com/docs/en/changelog);
 [Opus 4.8 announcement](https://www.anthropic.com/news/claude-opus-4-8);
 [Enabling Claude Code to work more autonomously](https://www.anthropic.com/news/enabling-claude-code-to-work-more-autonomously).
+
+**Baseline version (2026-07-04):** current CLI = **`claude 2.1.201`** — the Opus-4.8-side baseline to hold across the
+switch. **Not yet pinned** (auto-updater default on). Pin recipe (Claude Code docs, *Advanced setup* / *Settings*): set
+`env.DISABLE_AUTOUPDATER = "1"` in settings.json to stop the background auto-update (caveat: `claude update`/`install`
+still work; `DISABLE_UPDATES` blocks all paths; `minimumVersion` is only a *floor*, not a ceiling → wrong tool for
+pinning). **Record exact `claude --version` at BOTH the baseline capture and the Fable switch.** *Action pending BR:*
+choose user-global (`~/.claude/settings.json`) vs project settings, and confirm disabling auto-update for the study
+window. Source: [Claude Code advanced setup](https://code.claude.com/docs/en/setup).

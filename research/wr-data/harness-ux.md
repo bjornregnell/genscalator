@@ -588,3 +588,28 @@ in shapes it can match.** **Harness-side asks (upstream):** (i) a prompt must **
 (buffer the keystroke, or require a deliberate focus-shift to answer) — the race is the bug; (ii) when a compound
 command contains an allowlisted sub-command, surface the allowlisted part as pre-cleared and only prompt on the residue,
 rather than gating the whole blob.
+
+### "Too broad allow suggestions" — the harness's yes-and widens the allowlist past intent (WR data, 2026-07-04, Opus 4.8) `#security`
+New WR-data category. When the agent ran a bare `claude --version`, the approval flow proposed allowing **`claude *`**
+(all claude subcommands) — but BR wanted **only `claude --version`**. **Finding:** the convenience default of the "yes,
+and always allow" UI **suggests an over-broad rule**, and a tired human accepting it **accretes allowlist breadth beyond
+intent** — the exact mechanism behind the hardening-dance debt (the allowlist that grew `Bash(ssh *)`, broad globs,
+fetch-proxies). **Cure (human+agent):** curate the **narrowest** rule that covers the use — `Bash(claude --version)`,
+not `Bash(claude *)`; the agent proposes narrow, the human confirms. **Harness-side ask:** the always-allow suggestion
+should default to the **exact command** (or offer an explicit narrow-vs-broad choice), not the broadest glob. *(Applied:
+added `Bash(claude --version)` — narrow — to `settings.local.json`.)*
+
+### Cue-word choice has a MOTOR-ergonomics axis — and the bake-off validated the INCUMBENT (WR data, 2026-07-04, Opus 4.8) `#human-psyche` `#methodology`
+Renaming the "note dance", BR ran an **embodied usability test**: typed each candidate cue many times, fast, and reported
+the felt result — because the cue is typed **dozens of times per session**, so **typability can dominate semantics**.
+Results (QWERTY touch-typing hand-split): **`etch`** — "all on the left hand," awkward roll, high error rate (*etche
+etchet cegtceh*). **`imprint`** — "not good," too long/error-prone (*imprinyt impriont*). **`pin`** — "all on the right
+hand… short and nice" (clean, one-handed). **`note`** — "easiest to type" (n-o right, t-e left: a clean two-per-hand
+roll) **and BR already has the `note:` habit.** **Finding 1 (methodology):** a frequently-typed cue/command name should
+be chosen partly on **motor ergonomics** (hand-alternation, finger travel, error-under-speed) — a dimension usually
+ignored for meaning; generalizes to `tt` subcommand + slash-command naming. **Finding 2 (a mini-null):** we went looking
+for a better name and the **incumbent won** — `note` beats the challengers on typability *and* carries an existing motor
+habit (switching costs a retrain). The only knock on "note" is semantic genericness, curable by **defining "note dance"
+as a term of art**. Echoes blog 003's discipline: a search that returns "no change" is a real result, not a failure.
+**Status:** incumbent `note` leading; `pin`/`pen` are the ergonomic challengers; **BR deciding — rename held, no
+substrate thrash.**
