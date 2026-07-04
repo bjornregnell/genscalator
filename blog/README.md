@@ -55,6 +55,21 @@ Each status is stamped with its date — e.g. *Status: drafted 2026-07-03*, or a
 Each post's banner also names its **Audience** — *who may want to read this?* — right after the Status line, so
 a reader can tell at a glance whether the post is for them, and so drafting stays reader-focused.
 
+## Authorship & voice (human decision, 2026-07-04)
+These posts are **written by BR (the human); the agent assists** — drafts, structure, raw material, argument-checking,
+and the human's own words verbatim. The finished prose is the human's, in the human's voice. **Why:** the web is
+already full of generated slop; the value here is *real human intention and experience surfacing* — **äkthet**
+(Swedish: authenticity / genuineness). So agent-produced text in this dir is **raw scaffold for BR to rewrite**, not
+ship-ready copy; where the human's own words already exist (e.g. the "panic writes"), they go in **verbatim**. This
+**resolves the "authorial-voice" open question** (was: agent-authored essays about the agent = a hall of mirrors) —
+the human is the genuine author; the agent's introspection enters as *quoted data*, not as the narrating voice.
+
+## The human half — woven in, not quarantined (decision, 2026-07-04: option 1)
+Rather than a separate post, the "human half" / joint-zone material is **woven into 004-008 where it fits each post's
+scope**, made personal where it improves the read — so no post stays purely agent-centric. The joint-zone's
+concentrated *theoretical* treatment (two-body dynamics, collapse, confirmation-fatigue) lands in **008** (synthesis);
+a standalone **009 "joint-zone"** stays an option **only if it outgrows 008**.
+
 ## Deployment (TODO)
 - **TODO: build a static-site generator for bjornregnell.se** — render `NNN-slug.md` → the public site (with the
   status banners, the 004→008 arc navigation, and cross-links to `research/`). **Deployment order** (which posts go

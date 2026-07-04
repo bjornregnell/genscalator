@@ -16,11 +16,15 @@
   backbone: **human-agent joint productivity through static, typed, agent-built tooling.** The grand story
   (inference-time learning) and the plain story (good typed tools make the pair more productive) are the same claim at
   two zoom levels; 008 should hold both and say which we can defend today.
-- **TODO: the missing movement — the JOINT zone.** 004-007 are agent-centric; the most novel angle is the two-body
-  system (human fatigue + agent rot → collapse; confirmation-fatigue; the joint zone). 008 (or a 009) should give the
-  human half its due — see `research/human-state-and-joint-zone.md`.
-- **TODO: the authorial-voice decision** — agent-drafted essays about the agent are a hall of mirrors; 008 should
-  either own that explicitly, or reframe with the human as author and the agent's introspection quoted as *data*.
+- **The JOINT zone — DECIDED (option 1, 2026-07-04).** The "human half" is **woven across 004-008** (each post gets
+  the human's presence where it fits its scope), *not* quarantined in a separate post — that's what actually cures the
+  agent-centric feel. **008 is the concentrated theoretical home** for the two-body material (human fatigue + agent rot
+  → collapse; confirmation-fatigue; the joint zone). A standalone **009 "joint-zone"** only if it outgrows 008. TODO:
+  write that concentrated treatment here — see `research/human-state-and-joint-zone.md`.
+- **Authorial voice — DECIDED (human decision, 2026-07-04).** The **human is the author; the agent assists**; the
+  agent's introspection enters as **quoted data**, not the narrating voice (see README "Authorship & voice"). This
+  **breaks the hall of mirrors** — a real external observer (the human) grounds the self-reference — and serves
+  *äkthet* (authenticity) over slop. TODO: 008 should *state* this stance as part of the honest frame.
 
 *Reads: blogs 004 (Pains), 005 (Practice), 006 (Method), 007 (Theory); `research/inference-time-learning.md`,
 `METHODOLOGY.md`, `human-state-and-joint-zone.md`.*

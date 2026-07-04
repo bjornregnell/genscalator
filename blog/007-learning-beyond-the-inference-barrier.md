@@ -1,6 +1,6 @@
 # 007 — Learning beyond the inference barrier
 
-**Status: DRAFT (agent-drafted 2026-07-04, for BR to refine).** Grounded in
+**Status: SCAFFOLD (agent-drafted 2026-07-04 — raw material for BR to rewrite in his own voice; not ship-ready; see README "Authorship & voice").** Grounded in
 `research/inference-time-learning.md`; read with the confabulation caveat in §*Honest limits* below.
 
 > **The 004→008 arc** (map in 004). **You are here: the Theory — bedrock.** If you arrived from the Pains (004),
