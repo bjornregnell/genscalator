@@ -64,7 +64,19 @@ qualitative tradition of *Case Study Research in Software Engineering*) is **mor
 machinery. **Open question worth testing:** does **agent-assisted SLR** shift that balance? — if an agent can cheaply
 do the mechanical search/screen/extract, the protocol's cost drops and the fuller method may become worth it again.
 (That is itself an engineering/action-research question — measure the agent-assisted-vs-manual cost/quality tradeoff,
-don't just assert it.) Refs (with COI flags) in [`../blog/References.scala`](../blog/References.scala).
+don't just assert it.)
+**BR's sharpening (2026-07-04) — the human-judgment cap remains.** The agent cheapens the *mechanical* cost (search,
+dedup, extract), but **not** the *human-judgment* cost: someone still has to read each screened paper's title /
+abstract / (sometimes) whole text and assess **quality and relevance** — a call the human must own (accountable
+control; the agent can't be trusted with the final verdict — corroboration asymmetry). That assessment is **tedious,
+slow, and it caps the number of papers actually reviewed.** So the balance shifts only *partially* — the bottleneck
+moves to (stays at) human quality/relevance judgment. The real open question, then: can the agent make **each human
+judgment cheaper** — triage candidates, extract the relevant passage, flag a reason — so the human *confirms/overrides*
+rather than reads cold? Two catches keep it honest: (a) the human must still **verify** the triage (a weak paper rated
+relevant has to be caught), so cost may just move to verification; (b) agent relevance/quality ratings risk
+**confabulation** (rating a judgment it can't truly make), so the human can't drop the guard. Whether triage nets a
+real saving or just adds a to-verify layer is **empirical and depends on the agent's assessment reliability** — measure
+it, don't assume it. Refs (with COI flags) in [`../blog/References.scala`](../blog/References.scala).
 
 ## Draft RQs (to refine)
 - RQ1: What established terms/fields study "the psychology/behaviour of LLM agents," and how do they relate?
