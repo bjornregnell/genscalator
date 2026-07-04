@@ -32,6 +32,13 @@ Together `#agent-psyche` + `#human-psyche` = the **joint zone made greppable**. 
 entries; retro-tagging old ones is optional (this log is living, but tags are **additive metadata** — don't rewrite the
 recorded claims).
 
+**Frontier-model attribution (required).** Agent behaviour/psyche is **model-dependent**, so every WR entry must be
+attributable to the **frontier model** that produced it — we MUST be able to tell WR data collected **before** vs
+**after** a model shift, else a behaviour change can't be attributed (model vs anything else). Mark it (a `#model:<name>`
+tag, or a dated demarcation line in the log). Demarcation to date: the run through **2026-07-04 is Opus 4.8**; the
+planned **switch to Fable 5** (`claude-fable-5`, before the SSG case-study) is the next boundary — everything after it
+is Fable-5-era WR data. (This is a confound control: the model is a variable, not a constant.)
+
 ## What to record — one entry per confirmation event
 A working session appends an entry **when an action it just took rendered a confirmation** that could
 plausibly be designed away by a tool. Suggested fields:
