@@ -57,6 +57,15 @@ black-and-white.
 - **Deps are allowed, chosen with care.** A small, well-understood Maven Central library (Scala or Java)
   beats hand-rolling something fiddly. Prefer Scala libs published **for Scala 3** and **for both JVM and
   Native** (keeps the native-compilation roadmap open). Pick libs you can read and explain.
+- **Iron for refinement types where it obviously pays off.** When a value has a *real* constraint — a range, non-empty,
+  positive, a format (regex) — reach for **[Iron](https://github.com/Iltotore/iron)** (`A :| Constraint`, e.g.
+  `Int :| Interval.Closed[1900, 2100]`) instead of a bare `Int`/`String` + a runtime guard: the constraint becomes part
+  of the **type**, literals are checked at **compile time** (a bad literal won't compile), and runtime input refines at
+  the boundary via `.refine` / `.refineEither` / `.refineOption` (the *validate-at-the-edge* rule, made typed). Iron is
+  Scala 3, opaque-type-based (~zero runtime overhead), and cross-platform (JVM + Native). **Worked example:**
+  `Year = Int :| Interval.Closed[1900, 2100]` in [`../../blog/References.scala`](../../blog/References.scala). Don't
+  over-refine — use it where the constraint is real and the payoff (a whole class of bad values made *unrepresentable*)
+  is clear; it is also the planned implementation for tt's typed-arg validators (tt-toolbox DESIGN).
 - **A dep in a *pure* tool needs a purity check.** Investigate what it actually does: if it can be used
   side-effect-free, the tool stays pure. If it forces effects you can't avoid, move that work into an
   effectful driver — or **mark the tool not-safe** so the planned `--safe-mode` flag (see foundations

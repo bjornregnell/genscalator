@@ -1,3 +1,5 @@
+//> using dep io.github.iltotore::iron:3.3.1
+
 // blog/References.scala — typed, verification-tracked bibliography for the genscalator blog.
 //
 // PROTOCOL (echt / grounding, structuralised): every Reference carries an explicit RefVerification.
@@ -10,8 +12,12 @@
 
 package blog
 
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.*
+
 type Title      = String
 type RefComment = String
+type Year       = Int :| Interval.Closed[1900, 2100]  // Iron refinement: a plausible publication-year range.
 
 /** A name split so we can render "Regnell, B." or "Björn Regnell". */
 case class Author(lastName: String, otherNames: Seq[String], abbrevFirstLetterOfOtherNames: Seq[String])
@@ -23,10 +29,16 @@ def author(last: String, names: String*): Author =
 enum RefKind:
   case Journal, Conference, Book, TechReport, Preprint, Web, Misc
 
+// Iron (type-level validation) — LIVE for `Year` above: `Int :| Interval.Closed[1900, 2100]`, so a bad year (e.g.
+//   1000) fails to COMPILE and the literal years below auto-refine at compile time (~zero runtime overhead).
+//   TODO — extend where it pays: refine `doi` / `url` with `String :| Match[...]` patterns; refine runtime input via
+//   `.refine` / `.refineEither` / `.refineOption` at the boundary. BIGGER WIN: the SAME Iron constraints can implement
+//   tt's typed-arg validator layer (intRange / oneOf / FROM..TO in tools/DESIGN-single-dispatcher.md) — one validation
+//   vocabulary shared across RefData and tt. Repo: https://github.com/Iltotore/iron · Docs: https://iltotore.github.io/iron/docs/
 /** BibTeX-lite: optional fields cover journal / conference / book / techreport / preprint / web. */
 case class RefData(
   kind:      RefKind,
-  year:      Option[Int]    = None,
+  year:      Option[Year]   = None,
   venue:     Option[String] = None,  // journal / conference / repository name
   volume:    Option[String] = None,
   number:    Option[String] = None,  // issue, or arXiv id, or report number

@@ -126,7 +126,10 @@ enum value), no domain error hints. tt's tools already exceed that (e.g. `RawDat
 - **Use `@main` typed params only for a genuinely simple leaf tool** (positional basic types) — zero boilerplate there.
 - **For everything with flags/subcommands/validation, use the tt typed-arg layer**: declare typed params → auto-parse
   → fail-fast **one-line friendly** error (never a stack trace) → auto-usage. Reusable validators: `intRange`,
-  `existingFile`, `oneOf(enum)`, `fromTo`. First-class flags, named/optional args, subcommands. The
+  `existingFile`, `oneOf(enum)`, `fromTo`. **TODO — implementation candidate: [Iron](https://github.com/Iltotore/iron)
+  refinement types** (`Int :| Interval.Closed[…]`, `String :| Match[…]`) so validators are compile/runtime-checked
+  constraints, one vocabulary shared with `blog/References.scala`'s `RefData` (docs
+  https://iltotore.github.io/iron/docs/getting-started.html). First-class flags, named/optional args, subcommands. The
   `--safe-mode`/`--sandboxed`/`--audit` declarations become typed options here too, so a static confirmation-guard can
   prove an invocation safe.
 - Where basic-type parsing helps, the layer may reuse Scala's `CommandLineParser.FromString` internally, but tt owns
