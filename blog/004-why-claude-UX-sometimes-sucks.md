@@ -7,6 +7,13 @@
 > chain, read bottom-up. *Backwards cliffhanger:* the thing you just felt has a deeper cause one post down.
 > **You are here: the Pains.** → Next (005): the *practice* we grew to cope with them — the "dances".
 
+**[figure — TODO, real data]** The FleetView-warp episode drawn from the `jsonl` transcripts: a **warp-timeline**
+(keystroke → UI warp → agent silence → the panic writes on a clock → Ctrl+D+D → resume-fork reunion) and/or the
+**session-fork lineage graph** (original session → orphan spawns → the resume-fork this work continued in). This is the
+Act-V evidence *as* the figure — the same externalized substrate that recovered the panic writes, rendered. Source:
+[`fleetview-warp-panic-writes-2026-07-04.md`](../research/wr-data/fleetview-warp-panic-writes-2026-07-04.md) + the
+transcripts.
+
 **TODO: include the HUMAN's personal experience on the pain side.** These pains are *joint*, not just agent-observed
 papercuts — write BR's own felt frustration in the first person: the mis-click that lands "yes" on the wrong prompt;
 losing a carefully-typed message to the double-post race; the irritation of not being able to read `/context` while

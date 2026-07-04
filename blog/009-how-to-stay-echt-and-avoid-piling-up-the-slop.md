@@ -7,6 +7,11 @@ authenticity / trust. (*echt* — rare English word, glossed below — = genuine
 *Relation to the arc:* the practical companion to the **authorship / äkthet** decision behind 004-008 (see blog
 README "Authorship & voice"); draws on **004** (the slop/UX pains) and the *echt* entry in `docs/foundations.md`.
 
+**[figure — TODO]** The **echt gate** as a 2×2: *fluency* (smooth ↔ rough) × *grounding* (grounded ↔ ungrounded), with
+the danger quadrant **fluent + ungrounded = false äkthet / slop** highlighted and the gate rule *"never let a smooth
+surface outrun its grounding."* Annotate quadrants with **real examples** — a `Verified` entry in `blog/References.scala`
+= grounded; a hallucinated citation = false echt. (Conceptual diagram; the examples are real.)
+
 ## The sharp analysis (agent scaffold — BR to voice)
 The instinct "AI text = slop, avoid generation" is **wrong**, and getting it wrong is what actually produces slop.
 - **The real risk is not "AI-assisted."** Readers know AI is used now; that's fine. The betrayal is **false äkthet** —

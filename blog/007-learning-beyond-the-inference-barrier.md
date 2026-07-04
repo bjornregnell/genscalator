@@ -7,6 +7,12 @@
 > you've now descended the whole stack: Pains → Practice → Method → Theory. → **008** ties Theory-Method-Practice-Pains
 > into one picture.
 
+**[figure — TODO]** The **substrate hierarchy** as the post's one diagram: three layers ranked weakest→strongest —
+in-context instruction (#1, dies at compaction) → memory (#2) → environmental/structural (#3) — on a *"how reliably it
+changes behaviour"* axis, each layer annotated with a **real episode** (the self-written rule that failed to stop a raw
+`cat` = #1 losing; the memory / tool-shape change that fixed the `printf` reflex = #2/#3). Reused by 008. (Diagram is
+conceptual; the annotations are real WR data.)
+
 ## The barrier
 
 A large language model has a hard seam running through the middle of its life. On one side is **training**,

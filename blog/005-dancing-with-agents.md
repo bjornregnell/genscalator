@@ -6,6 +6,12 @@
 > rituals didn't come from nowhere — a *method* surfaced them, and a *theory* explains why they work. → Next (006):
 > the method that catches these patterns as data.
 
+**[figure — TODO, real data preferred]** This session's **context-fill over time with dance-events marked** — the
+note-dance offload points and the compaction at ~90% — showing *raw fill* climbing while capability holds (the "capable
+at 0.88 fill" datapoint): the empirical hook for the *how-to-support-the-claim* TODO below. Companion/alternative: a
+**two-lane choreography diagram** (human steps ‖ agent steps) for each named dance. Source:
+`research/wr-data/harness-ux.md`, `research/smart-zone-ceiling.md`.
+
 - **TODO: explain our "dances"** — the ritualized human+agent protocols we've evolved for running long,
   high-stakes agentic sessions. Each is a small choreography where human and agent each have steps:
   - **context dance** — human runs `/context` to read fill; agent reports fill-vs-ceiling and advises.
