@@ -59,6 +59,12 @@ The canonical conventions live in [`../../blog/README.md`](../../blog/README.md)
 updated`) · the **Audience** line · the 004→008 **arc** conventions (backwards cliffhangers, the TMPP stack) ·
 cross-links into `research/`. These arc conventions are **young** — encode the stable core, leave room to evolve
 (like `scala-style` growing from use).
+- **Coined terms stay MUTABLE until first *deploy*.** A dance/concept name can be renamed freely while it lives only in
+  drafts + research (nothing *published*) — so run the cheap tests before lock-in (e.g. BR's **embodied cue-word typing
+  test**: type the candidate many times fast, judge by motor ergonomics, not just meaning). The name **locks when the
+  first *deployed* blog post uses it** — deploy, not draft; a stub can still change. Record the lock so later posts stay
+  consistent. (2026-07-04: this is what let `note dance` split into the `note` (notice) + `etch` (durable-save) dances
+  after a typing bake-off — see `../../research/wr-data/harness-ux.md`.)
 
 ## 5. Sourcing — a post is distilled research, not invented
 A blog post is the **narrative distillation of evidence** already in `research/` + `wr-data/` + `RAW-DATA.md`. Start
