@@ -507,3 +507,16 @@ fresh agent instance reproduced it → evidence of a **model-level trained dispo
 thesis that **introspective self-control is unreliable; the fix is structural** (a typed tool + removing the bash
 affordance), not the agent's say-so. **Tool candidates:** `tt web get --head` (headers); a `tt which` / introspection
 command; a working `tt help` / `--help` affordance.
+
+## AFK task selection: web-surfing to NEW domains is not autonomous — it blocks on a harness OK (WR data, BR 2026-07-04)
+Tags: `#methodology` `#afk` `#tool-candidate`
+BR's operational rule (learned live, while heading out for a walk): a good AFK (human-away) task must **not require
+surfing to a not-previously-visited site** — every new domain triggers a **harness approval prompt**, which an absent
+human can't grant, so the agent (or a subagent) **stalls** mid-run. Corollary this session: the paper/book grounding
+agent risked stalling on new domains (e.g. Google Books), while the render-code + docs tasks ran fully autonomously.
+**Rule for the AFK menu:** prefer **local-only** tasks (code, tests, docs, edits to already-cloned repos); if web
+research is needed, either (a) **pre-warm the domains with the human present** (approve them once up front), or (b)
+restrict to domains already approved earlier in the session. **Design implications:** an AFK-suitability check =
+"does this task touch an unvisited domain?"; a **per-session approved-domain allowlist** would make web-research
+AFK-safe. This is the web twin of the *commit-first-because-flaky-box* reflex — know which steps can block on something
+the absent human must supply, and keep them off the AFK menu.
