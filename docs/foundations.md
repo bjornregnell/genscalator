@@ -107,6 +107,18 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
     **RQ** research question · **N/A** not applicable · **e.g. / i.e.** for example / that is.
   - *Dev-flavored:* **PR** pull request · **MR** merge request · **RC** release candidate · **repro** reproduce ·
     **rebase / squash** git ops · **YAGNI** you aren't gonna need it · **DRY** don't repeat yourself.
+- **echt / äkthet** — the quality genscalator wants in outward writing (and, by extension, in any claim): **genuine AND
+  grounded** — real human intention/experience actually present, and every factual/empirical claim resting on evidence.
+  **echt** (adjective; adopted from the rare English literary word = *genuine, real, not fake* — the direct cognate of
+  German *echt* and Swedish *äkta*) is our crisp term; **äkthet** (Swedish noun) names the quality. We prefer *echt* to
+  *authentic/authenticity* because the English word is **worn** ("brand authenticity") while *echt* keeps the
+  un-diluted "not fake" force. **The failure it guards is NOT "AI-assisted"** — readers know AI is used, that's fine —
+  it is **false äkthet**: a genuine-*looking* surface over an **ungrounded or hallucinated** interior, a **trust
+  betrayal** (the reader trusted the surface and got a hollow one). Operational gate: *"is this echt?"* = grounded and
+  voiced, or slop / a smooth surface outrunning its grounding? **Internal vocabulary** (echt is rare in English) →
+  **gloss on first use** in an outward post. (Swedish note: *äkta* also branches to *wedded / legitimate / proper*
+  [as in *proper fraction*].) See `skills/blog-assistant`, blog README "Authorship & voice", and
+  `research/steering-doc-design-tension.md`.
 - **Token efficiency (TE)** — achieving a task with fewer model tokens (input + output). A committed,
   compiled tool beats re-emitting brittle bash every time. **Two distinct pressures, usually aligned but
   not always:** (a) **$cost** — total tokens billed; (b) **smart-zone** — keeping *working* context small
