@@ -469,3 +469,16 @@ commit --message "…"`** — an inline message arg so there is *no message file
 triggers the reflex entirely (best fix; keep `--message-file` for multi-line/long messages); (b) meanwhile, discipline:
 always the Write tool for the message file, never `printf >`. The commit-side twin of the whole bash-reflex cluster:
 every `printf >` / `echo >` is a signal that a typed affordance is missing.
+
+## Capable at 0.88 fill on a 1M Opus-4.8 window — per EXTERNAL judgment (WR data, BR 2026-07-04)
+Tags: `#agent-psyche` `#methodology` (smart-zone-ceiling)
+End of a very long session: `/context` showed **88% fill (877k/1M)**; BR's external read — *"does not seem very rotten;
+I find you capable."* Relevance to **Z** (smart-zone ceiling): the ~0.3 hypothesis looks **too low for this
+model/task**. **Honest caveats (load-bearing):** (1) the valid evidence is BR's **external** observation, NOT the
+agent's self-report — an agent can't judge its own rot from inside (introspection-unreliability + corroboration
+asymmetry); (2) *"not obviously rotten" ≠ no degradation* (subtle rot may be present + uncaught by a rough external
+read); (3) crucially, this session **aggressively externalised** state (commit-per-unit, the BR-TODO, per-topic notes),
+so *effective working-context* stayed small despite high *raw fill* — the low apparent rot may be a **product of the
+substrate discipline**, not a naturally-high Z. So **raw fill ≠ effective working-context**; the externalisation this
+project preaches may be exactly why 0.88 was survivable. A clean **before-Fable-5** Opus-4.8 datapoint. See
+`research/smart-zone-ceiling.md`.
