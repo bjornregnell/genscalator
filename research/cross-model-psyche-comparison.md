@@ -3,6 +3,13 @@
 **Status:** open, proposed (BR 2026-07-04). Ties to the frontier-model-attribution rule (`wr-data/README.md`), the
 agent-psyche thread (blog 006, `wr-data/harness-ux.md` `#agent-psyche`), and `agent-psyche-literature-review.md`.
 
+> **⚠ Sequencing (critical — BR 2026-07-04): design this method AND capture the Opus-4.8 baseline BEFORE the Fable-5
+> switch.** The switch is a **one-way intervention**. If we start real Fable-5 work without a preregistered method + a
+> matched Opus-4.8 baseline already in hand, those baseline data points are **lost** and the before/after comparison is
+> confounded — a **conclusion-validity** threat (cf. *Experimentation in SE*). So: **method + baseline first, *then*
+> switch.** (A cheap baseline may already exist in the WR data through 2026-07-04 — but it's ad-hoc, not a matched
+> battery; decide what must be re-run under a frozen protocol before switching.)
+
 ## Motivation
 Agent behaviour/psyche is **model-dependent**, and our WR corpus is about to straddle a model boundary (Opus 4.8 →
 Fable 5, before the SSG case-study). So: **how do we *empirically* measure the difference in "psyche" — behavioural
