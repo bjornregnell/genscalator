@@ -1,6 +1,6 @@
 ---
 name: research-methods
-description: "Guide for designing, planning, running, and reporting an EMPIRICAL study in the genscalator/WR work — choosing a research strategy (experiment vs case study vs survey vs SLR), case-study design, experiment design, validity analysis, case/subject selection, preregistration, and honest reporting. Trigger when scoping or reviewing any study, defining RQs, arguing validity/threats, planning data collection or analysis, or preparing a methods section. This skill is a fast INDEX + checklists that point into BR's two authoritative books (in the closed repo — read them directly for depth); it is NOT a substitute for them. Calibrated guidance, not rules."
+description: "Guide for designing, planning, running, and reporting an EMPIRICAL study in the genscalator/WR work — choosing a research strategy (experiment vs case study vs survey vs SLR), case-study design, experiment design, validity analysis, case/subject selection, preregistration, and honest reporting. Trigger when scoping or reviewing any study, defining RQs, arguing validity/threats, planning data collection or analysis, or preparing a methods section. This skill is a fast INDEX + checklists that point into two public summaries of BR's two authoritative books (the copyrighted originals stay in the closed repo — read them directly when depth is needed); it is NOT a substitute for them. Calibrated guidance, not rules."
 allowed-tools: Read Bash(tt files *) Bash(tt text *)
 ---
 
@@ -14,18 +14,28 @@ allowed-tools: Read Bash(tt files *) Bash(tt text *)
 > writing — "our own methodology book", not a buried reference). That is a strength (first-hand authority) *and* a
 > conflict-of-interest to name openly.
 
-## Copyright — hard rule
-The two books are **publisher-copyrighted** and live **only in the closed repo**
-`muntabot-synch-introprog/books/` (safe to read there; safe to commit *there*). **Never** reproduce their text,
-tables, or figures into the **public** genscalator repo. This skill and any genscalator note may contain **our own
-distillation + section pointers**, never lifted passages. When depth is needed, **Read the book directly** from the
-closed path and cite *section*, not text.
+## The two books — and where to point
 
-**The two books:**
+Use, in order of preference:
+1. **Our public summaries** (in this repo, safe to link/cite anywhere) — meaty original distillations, section pointers,
+   buy links. **This is the canonical pointer** for any genscalator note, blog post, or `References.scala` entry:
+   - **[CS]** → [`summary-case-study-research.md`](summary-case-study-research.md)
+   - **[EX]** → [`summary-experimentation.md`](summary-experimentation.md)
+2. **The real (copyrighted) books** — for depth beyond the summary. BR owns both; his personal copies live in the
+   **closed** repo `muntabot-synch-introprog/books/` (safe to *read* there when depth is needed). Cite the *section*,
+   not the passage.
+
+**The books:**
 - **[CS]** *Case Study Research in Software Engineering: Guidelines and Examples* — Runeson, Höst, Rainer & Regnell,
-  Wiley 2012. → `muntabot-synch-introprog/books/case-study-research-in-software-engineering.pdf`
+  Wiley 2012. DOI 10.1002/9781118181034.
 - **[EX]** *Experimentation in Software Engineering* — Wohlin, Runeson, Höst, Ohlsson, Regnell & Wesslén, Springer
-  (2024 revision). → `muntabot-synch-introprog/books/Experimentation_in_Software_Engineering_second-ed.pdf`
+  (2nd ed. 2024). DOI 10.1007/978-3-662-69306-3.
+
+## Copyright — hard rule
+The books are **publisher-copyrighted**. **Never** reproduce their text, tables, or figures into the **public**
+genscalator repo — not in the summaries, not anywhere. The summaries and any genscalator note contain **our own
+distillation + section pointers only**, never lifted passages. When a summary isn't deep enough, **Read the real book**
+from the closed path (`muntabot-synch-introprog/books/`, BR-only) and cite the *section*, not the text.
 
 ## 0. Which strategy? (choose before designing)
 Pick the research strategy from the RQ, not from habit ([EX] ch. 2 "Empirical Research", esp. §2.5 the decision-making
@@ -89,12 +99,16 @@ The two books use slightly different four-sets — use the right one for the str
   claim is auditable.
 
 ## 5. Using the books in practice
-- **Read directly** from the closed path when you need depth (as we did for §3.2.3). Use `Read` with a page range; find
-  a chapter's page from the TOC first.
-- **Cite section, not text** in any genscalator note/post; own BR's co-authorship inline.
-- Keep this skill's pointers in sync if a book edition's numbering is checked and differs.
+- **Start at the summary** ([`summary-case-study-research.md`](summary-case-study-research.md) /
+  [`summary-experimentation.md`](summary-experimentation.md)) — it carries the structure + section pointers and is safe
+  to link from anywhere public.
+- **When the summary isn't deep enough, Read the real book** from the closed path (as we did for §3.2.3). Use `Read`
+  with a page range; find a chapter's page from the TOC first. Then **cite section, not text**, and own BR's
+  co-authorship inline.
+- Keep the summaries' section pointers in sync if a book edition's numbering is checked and differs.
 
 ## Cross-links
+[`summary-case-study-research.md`](summary-case-study-research.md) · [`summary-experimentation.md`](summary-experimentation.md) ·
 `research/cross-model-psyche-comparison.md` (the live experiment-design case) · `research/learning-barrier-rqs.md` ·
 `research/METHODOLOGY.md` (WR's own method) · `research/experiments/` (worked example) · `docs/foundations.md`
 ("Roles and cases", validity terms) · `skills/blog-assistant` (reporting/echt).
