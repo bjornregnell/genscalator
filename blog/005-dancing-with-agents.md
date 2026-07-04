@@ -2,6 +2,10 @@
 
 **Status: STUB.**
 
+> **The 004→008 arc** (map in 004). **You are here: the Practice** — the dances. *Backwards cliffhanger:* these
+> rituals didn't come from nowhere — a *method* surfaced them, and a *theory* explains why they work. → Next (006):
+> the method that catches these patterns as data.
+
 - **TODO: explain our "dances"** — the ritualized human+agent protocols we've evolved for running long,
   high-stakes agentic sessions. Each is a small choreography where human and agent each have steps:
   - **context dance** — human runs `/context` to read fill; agent reports fill-vs-ceiling and advises.

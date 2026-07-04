@@ -3,6 +3,10 @@
 **Status: DRAFT (agent-drafted 2026-07-04, for BR to refine).** Grounded in
 `research/inference-time-learning.md`; read with the confabulation caveat in §*Honest limits* below.
 
+> **The 004→008 arc** (map in 004). **You are here: the Theory — bedrock.** If you arrived from the Pains (004),
+> you've now descended the whole stack: Pains → Practice → Method → Theory. → **008** ties Theory-Method-Practice-Pains
+> into one picture.
+
 ## The barrier
 
 A large language model has a hard seam running through the middle of its life. On one side is **training**,

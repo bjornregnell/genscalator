@@ -2,6 +2,17 @@
 
 **Status: STUB.** TODO: mine WR data for UX problems.
 
+> **The 004→008 arc.** Read in order **004 → 005 → 006 → 007**, then **008** (synthesis). Together they descend a
+> stack — **Pains** (004) → **Practice** (005) → **Method** (006) → **Theory** (007): the Theory-Method-Practice-Pains
+> chain, read bottom-up. *Backwards cliffhanger:* the thing you just felt has a deeper cause one post down.
+> **You are here: the Pains.** → Next (005): the *practice* we grew to cope with them — the "dances".
+
+**TODO: include the HUMAN's personal experience on the pain side.** These pains are *joint*, not just agent-observed
+papercuts — write BR's own felt frustration in the first person: the mis-click that lands "yes" on the wrong prompt;
+losing a carefully-typed message to the double-post race; the irritation of not being able to read `/context` while
+the agent is mid-turn; watching the agent reach for raw bash for the Nth time. The human's lived friction is half the
+data, and the more relatable half.
+
 Source material to mine (Workflow-Research "WR data", logged live during real agentic runs):
 - `research/wr-data/harness-ux.md` — the primary log. Recurring themes already captured there:
   - **Input races** — arrow-up "edit a just-sent message" → double-post; Enter landing on a confirmation prompt;

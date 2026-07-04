@@ -2,6 +2,10 @@
 
 **Status: STUB.**
 
+> **The 004→008 arc** (map in 004). **You are here: the Method.** *Backwards cliffhanger:* the method only makes
+> sense on top of a claim about what "learning" even *is* for a frozen-weight agent. → Next (007): the theory —
+> bedrock.
+
 - **TODO: mine WR data on how the agent thinks — its reflexes and habits.** From `research/wr-data/` and
   `research/RAW-DATA.md`, harvest the recurring *behavioural* patterns (not one-off bugs). Seeds already observed:
   - **Reflexes** — reaching for bash (`ls`/`cat`/`grep`/`printf`/`echo`-glued compounds, `$(…)` substitution) instead

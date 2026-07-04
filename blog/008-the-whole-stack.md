@@ -1,0 +1,26 @@
+# 008 — The whole stack (synthesis)
+
+**Status: STUB (planned synthesis of the 004→007 arc).**
+
+> **The 004→008 arc.** This post is the payoff: it reads the stack **top-down** (the reverse of the 004→007 reading
+> order) — **Theory → Method → Practice → Pains** — and shows they are one argument, not four posts.
+
+- **TODO: state the TMPP chain as one claim.** Theory (007: the substrate hierarchy — learning must be externalized,
+  and moves down from instruction → memory → environment) *explains* the Method (006: WR-data as naturalistic
+  observation of a frozen-weight mind), which *produces* the Practice (005: the dances — externalized rituals living
+  at substrate #2/#3), which *dissolves* the Pains (004: the papercuts, the reflexes that need moving down the
+  hierarchy). Top-down it's a derivation; bottom-up (the reading order) it's a mystery unwrapped.
+- **TODO: the one-figure version** — a single diagram: the four layers, the arrows both ways (explains ↓ / motivates
+  ↑), and where each concrete artifact (a memory, a `tt` tool, an allowlist, a hook) sits.
+- **TODO: the honest frame** — this whole arc is *one candidate framing* elaborating genscalator's down-to-earth
+  backbone: **human-agent joint productivity through static, typed, agent-built tooling.** The grand story
+  (inference-time learning) and the plain story (good typed tools make the pair more productive) are the same claim at
+  two zoom levels; 008 should hold both and say which we can defend today.
+- **TODO: the missing movement — the JOINT zone.** 004-007 are agent-centric; the most novel angle is the two-body
+  system (human fatigue + agent rot → collapse; confirmation-fatigue; the joint zone). 008 (or a 009) should give the
+  human half its due — see `research/human-state-and-joint-zone.md`.
+- **TODO: the authorial-voice decision** — agent-drafted essays about the agent are a hall of mirrors; 008 should
+  either own that explicitly, or reframe with the human as author and the agent's introspection quoted as *data*.
+
+*Reads: blogs 004 (Pains), 005 (Practice), 006 (Method), 007 (Theory); `research/inference-time-learning.md`,
+`METHODOLOGY.md`, `human-state-and-joint-zone.md`.*
