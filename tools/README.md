@@ -24,6 +24,7 @@ drivers add `//> using dep com.lihaoyi::os-lib:0.11.8`.
 ```
 text count <file> <regex>            # grep -c   : count matches
 text match <file> <regex>            # grep -n   : print matching lines, numbered
+text context <file> <regex> [N]      # grep -C N : matching lines with N lines of context (default 2)
 text freq  <file> <regex>            # sort|uniq -c|sort -rn : histogram of match (or capture group 1)
 text grepr <dir> <ext[,ext2…]> <regex>  # grep -r --include : recursive search → file:line:match
 text cols  <file> <sep> <i...>       # cut/awk   : extract 1-based fields, tab-joined
@@ -151,8 +152,8 @@ forge release-create <owner>/<repo> <tag> [--name S] [--body S | --body-file F]
 ```
 Replaces hand-curling the REST API (a `curl` with a token on the command line). **READ verbs need no auth**
 (public repos) → safe to allowlist (`Bash(tt forge releases *)`, `Bash(tt forge tags *)`). The one **effectful**
-verb (`release-create`) reads its token **only** from the human-set env var **`CODEBERG_TOKEN`** (or
-`FORGE_TOKEN`) — never a flag — so the agent can't self-authorize (same trust-boundary rule as `verify`'s
+verb (`release-create`) reads its token **only** from a fixed set of human-set env vars
+(**`GENSCALATOR_CODEBERG_TOKEN`**, then `CODEBERG_TOKEN`, then `FORGE_TOKEN`) — never a flag — so the agent can't self-authorize (same trust-boundary rule as `verify`'s
 `TT_VERIFY_ALLOW`). It prints an `[audit]` line and is deliberately **not** blanket-allowlistable (creating a
 release stays a visible, confirmed op). Example:
 ```

@@ -11,6 +11,9 @@ target/
 # in-repo scratch (preferred over /tmp so paths stay inside the trusted tree)
 tmp/
 
+# experiment run backups / partial-result snapshots
+*.bak
+
 # ---> Scala
 *.class
 *.log

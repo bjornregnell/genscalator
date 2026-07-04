@@ -33,7 +33,7 @@ model-dependent, so a swap contaminates every before/after comparison. Therefore
   - Net multiplier could therefore *dip then rise*, or stay flat, depending on which sub-capability dominates.
 - **Reflex profile is model-dependent.** A stronger model may relapse less on the banned shell reflexes, changing
   the WR-data distribution — which is exactly why the model must be fixed while we characterize the baseline.
-- **The two safeguard tiers may split by capability** (ties to [[scala-style-evolution.md]] glossary): *structural*
+- **The two safeguard tiers may split by capability** (ties to [[foundations]] "structural vs knowledge safeguard"): *structural*
   safeguards (hooks, allowlist) help all models equally; *knowledge* safeguards matter more for weaker models
   (stronger ones self-correct). If so, the structural-safeguard investment is the model-agnostic one to prioritize.
 

@@ -78,7 +78,7 @@ task-dependent* (a delicate research run wants a lower `Z` than a throwaway task
 hard-coded panic line. Pairs with the compact-dance practice (005), the smart-zone-ceiling note, and the
 `propose-compact-dance-at-trigger` memory: the *human* wants a harness reminder at `0.8·Z`; the *agent* already proposes
 the dance at that crossing — so today the
-agent is doing the harness's job by hand. **The ask: make the safe-zone compaction reminder a first-class, `Z`-tunable
+agent is doing the harness's job by hand. **The ask: make the smart-zone compaction reminder a first-class, `Z`-tunable
 setting.**
 
 Angle (TODO firm up): these aren't random bugs — most are **one family**: *timing/observability races between a human

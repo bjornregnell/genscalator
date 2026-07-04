@@ -3,8 +3,8 @@
 **Status:** harness SKETCH (design + seed task + results template). Not yet run at scale. Framed as *future
 work* for the first paper (per BR 2026-07-02) — a self-contained experiment that could be its own paper.
 
-**Parent context:** [`../scala-style-evolution.md`](../scala-style-evolution.md) (the investigation + thesis) and
-[`../scala-style-recommendations.md`](../scala-style-recommendations.md) (the Odersky/Regnell/Kerr common-style
+**Parent context:** [`../../scala-style-evolution.md`](../../scala-style-evolution.md) (the investigation + thesis) and
+[`../../scala-style-recommendations.md`](../../scala-style-recommendations.md) (the Odersky/Regnell/Kerr common-style
 note this tests against). Seed evidence (n=1): a real significant-indentation edit bug the agent committed on
 2026-07-02 (wrap-a-block-in-`else` → mis-indent → mis-scope → compile fail → repair cycle).
 
@@ -66,7 +66,7 @@ Vary **block size** (5 / 15 / 40 lines) as a covariate to test the "gap grows wi
 - **Oracle bias:** grading needs a whitespace/brace-normalizing comparator so a *correct* answer in any style
   passes; build it before running.
 - **Self-subject bias:** the agent designing the harness should not also be the sole subject; run across sessions.
-- Log any bound/cap ([[../METHODOLOGY.md]] no-silent-truncation rule).
+- Log any bound/cap ([[../../METHODOLOGY.md]] no-silent-truncation rule).
 
 ## How to run (once built)
 `tasks/` + a `runner` (TBD — a `tt` tool or a workflow) that loops (task × style × R), invokes an agent per

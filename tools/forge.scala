@@ -7,8 +7,8 @@
 // forge — typed client for a Forgejo/Gitea forge (default: Codeberg). Replaces hand-curling the REST API
 // (a dual-use `curl` carrying a token on the command line) with a narrow, effect-declared tool.
 //   READ verbs (releases, tags) need NO auth (public repos) → safe to allowlist (`Bash(tt forge releases *)`).
-//   The one EFFECTFUL verb (release-create) reads its token ONLY from the human-set env var CODEBERG_TOKEN
-//   (or FORGE_TOKEN) — NEVER a flag — so the agent cannot self-authorize (same trust-boundary rule as
+//   The one EFFECTFUL verb (release-create) reads its token ONLY from a fixed set of human-set env vars
+//   (GENSCALATOR_CODEBERG_TOKEN, then CODEBERG_TOKEN, then FORGE_TOKEN) — NEVER a flag — so the agent cannot self-authorize (same trust-boundary rule as
 //   verify's TT_VERIFY_ALLOW / the configInArgsNotEnv PRD feature). It prints an [audit] line before acting,
 //   and is deliberately NOT blanket-allowlistable (creating a release should stay a visible, confirmed op).
 //   tt forge whoami   [--url BASE]                          # verify auth: print the token's login (never the token)

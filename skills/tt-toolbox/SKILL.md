@@ -24,6 +24,7 @@ You have a typed, compiler-checked Scala toolbox on PATH as `tt`. Prefer it over
 ```
 tt text count <file> <regex>      # grep -c
 tt text match <file> <regex>      # grep -n
+tt text context <file> <regex> [N] # grep -C N: matching lines with N lines of context (default 2)
 tt text freq  <file> <regex>      # histogram of matches
 tt text grepr <dir> <ext[,ext2…]> <regex> # recursive search → file:line:match (multi-ext)
 tt text cols  <file> <sep> <i...> # cut/awk field extraction
