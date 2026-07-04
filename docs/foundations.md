@@ -262,6 +262,25 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   necessarily durable — i.e. the **working-memory / encoding** stage to the etch dance's **consolidation** stage.
   Pipeline: `note:` → (agent nominates) → `etch:`. (BR 2026-07-04: split out of the overloaded "note:" once it was clear
   it meant two things — *attend-now* vs *save-durably*. Maps onto the two-stage memory model.)
+- **Go dance** (greenlight / autonomy handoff) — the human↔agent protocol for **releasing the agent to act
+  autonomously** on the current plan. **Human step:** cues `go` — *"you're authorized to proceed on the current plan
+  using your own judgment; I'm stepping back."* ‖ **Agent steps:** (1) execute the **currently-scoped** plan
+  autonomously (*not* a blank check); (2) stay **within standing guardrails** (destructive git human-only,
+  settings/security human-approved, no new-domain surfing — `go` is autonomy *inside* the fence, it doesn't lift it);
+  (3) **minimise interrupts** (bare allowlist-matchable commands, batch the work, don't pin the human — the AARGH
+  lesson); (4) surface only genuine decisions or the finished result, and report on completion. The mode-switch from
+  **ballgame** (human in every volley) to **autonomous** for a bounded task; where `note:`/`etch:` govern *memory*,
+  `go` governs *control / authorization*. Variant: "go [AFK] menu" = `go` over a menu of scoped tasks. **Dance bar:**
+  `go` qualifies as a *dance* (not a mere cue) because it has **≥2 interlocking steps — at least one human and one
+  agent step**; a one-directional signal with no answering step is just a cue. (BR 2026-07-04; cue `go` chosen for
+  typability — g-o alternates hands.)
+- **Hardening dance** — the agent **audits its own persistent config** and proposes durable fixes, so a misfire can't
+  re-fire forever. **Agent steps:** (1) review the agent's own durable substrate — memory, instructions, tool-shapes,
+  allowlists — for misfire causes and risks; (2) propose the **structural** fix (a guard that removes the bad
+  affordance — *"introspection isn't self-control → change the structure"*). ‖ **Human step:** curates and approves —
+  **security changes stay human-approved** (the human is the **authority anchor**; curation of permissions can't be
+  delegated — the corroboration asymmetry). Distinct from the **consistency sweep** (which audits the substrate's
+  *content*): hardening audits the agent's *config / machinery*. Human-triggerable. Memory: [[hardening-dance]].
 - **Memory hygiene (agent)** — keeping the agent's **durable memory store** (the persistent `MEMORY.md` + the
   memory files a session reloads) **consistent with current reality**: when a coined term is *renamed*, a file
   or flag *moved/deleted*, or a decision *reversed*, sweep the store for stale references and update or remove

@@ -57,6 +57,13 @@ in. `[for BR to voice — tighten, cut, add the ones I missed]`
   thread. *Prevents:* a stale-token / degraded-process stall mid-run. *Memory:* [[exit-resume-dance]]. *Sibling of* the
   compact dance — same save+handoff spine, different trigger (process health vs context fill).
 
+- **go dance** — the greenlight / autonomy handoff. **Human:** cues `go` — "proceed on the current plan, your judgment,
+  I'm stepping back." ‖ **Agent:** executes the *scoped* plan autonomously, **inside** the standing guardrails
+  (destructive git human-only, settings human-approved, no new-domain surfing), **minimising interrupts** (bare
+  allowlist-matchable commands, batch, don't pin the human), surfacing only real decisions or the finished result.
+  *Mode-switch from* **ballgame** *(you in every volley) to* **autonomous**; where `note:`/`etch:` are about memory,
+  `go` is about authorization. *Clears the dance bar:* ≥2 interlocking steps (human greenlight ‖ agent execute+report).
+
 - **hardening dance** — the agent audits *itself*. **Agent:** reviews its own persistent config — memory, instructions,
   tool-shapes, allowlists — for misfire causes and proposes durable fixes. ‖ **Human:** curates and approves; **security
   changes stay human-approved** (the human is the authority anchor — see 009 / the corroboration asymmetry). *Prevents:*
