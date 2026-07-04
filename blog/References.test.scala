@@ -45,3 +45,19 @@ class ReferencesTests extends munit.FunSuite:
     references.foreach: r =>
       assert(r.toBibTex.nonEmpty, s"empty bibtex for: ${r.title}")
       assert(r.toHtml.nonEmpty,   s"empty html for: ${r.title}")
+
+  test("toMarkdown renders a PaperSummary's five labelled fields"):
+    val r  = references.find(_.title.startsWith("Using cognitive psychology")).get
+    val md = r.toMarkdown
+    assert(md.contains("**Abstract:**"),           md)
+    assert(md.contains("**Research questions:**"),  md)
+    assert(md.contains("**Method:**"),              md)
+    assert(md.contains("**Results:**"),             md)
+    assert(md.contains("**Validity:**"),            md)
+
+  test("toMarkdown renders a BookSummary's topic and chapter list"):
+    val r  = references.find(_.title.startsWith("Experimentation in Software")).get
+    val md = r.toMarkdown
+    assert(md.contains("**Topic:**"),    md)
+    assert(md.contains("**Chapters:**"), md)
+    assert(md.contains("Scoping"),       md)   // a known chapter title

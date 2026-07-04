@@ -99,7 +99,17 @@ val references: Seq[Reference] = Seq(
       doi = Some("10.1007/978-3-662-69306-3"),
       url = Some("https://link.springer.com/book/10.1007/978-3-662-69306-3"))),
     Verified,
-    "Standard SE textbook on controlled experiments; grounds our permutation-test + preregistration practice. self-ref: BR co-author (own it inline at first mention, not just in the ref list).",
+    "Standard SE textbook on controlled experiments; grounds our permutation-test + preregistration practice. self-ref: BR co-author (own it inline at first mention, not just in the ref list). BookSummary TOC grounded via Springer chapter pages (reader-proxied, not a clean direct fetch) — author (BR) to confirm exact chapter/part wording.",
+    summary = Some(BookSummary(
+      topic = "An in-depth introduction to conducting controlled experiments in software engineering — the full experiment process (scoping, planning, operation, analysis, presentation) — situated among other empirical methods (systematic literature studies, surveys, case studies); the 2024 edition adds research-design selection, A/B testing, replications, open science, and validity threats.",
+      chapterHeadings = Seq(
+        "1. Introduction", "2. Empirical Research", "3. Essential Areas in Empirical Research",
+        "4. Systematic Literature Studies", "5. Surveys", "6. Experiments", "7. Case Studies",
+        "8. Scoping", "9. Planning", "10. Operation", "11. Analysis and Interpretation",
+        "12. Presentation and Package", "13. Experiment Process Illustration",
+        "14. Are the Perspectives Really Different? Further Experimentation on Scenario-Based Reading of Requirements",
+      ),
+    )),
   ),
   Reference(
     "Case Study Research in Software Engineering: Guidelines and Examples",
@@ -108,7 +118,19 @@ val references: Seq[Reference] = Seq(
       note = Some("ISBN 9781118104354"),
       url = Some("https://www.wiley.com/en-us/Case+Study+Research+in+Software+Engineering%3A+Guidelines+and+Examples-p-9781118181003"))),
     Verified,
-    "SE case-study methodology; relevant to the qualitative-synthesis alternative to a full SLR. self-ref: BR co-author (own it inline at first mention, not just in the ref list).",
+    "SE case-study methodology; relevant to the qualitative-synthesis alternative to a full SLR. self-ref: BR co-author (own it inline at first mention, not just in the ref list). BookSummary TOC grounded via a course-page PDF + Google Books (not a clean authoritative fetch) — author (BR) to confirm.",
+    summary = Some(BookSummary(
+      topic = "Practical guidelines for planning, conducting, and reporting case-study research in software engineering — design, data collection, analysis, dissemination — followed by real, critiqued example case studies; it translates case-study methodology from the social sciences into rigorous SE practice.",
+      chapterHeadings = Seq(
+        "1. Introduction", "2. Background and Definition of Concepts", "3. Design of the Case Study",
+        "4. Data Collection", "5. Data Analysis and Interpretation", "6. Reporting and Dissemination",
+        "7. Scaling Up Case Study Research to Real-World Software Practice", "8. Using Case Study Research",
+        "9. Introduction to Case Study Examples", "10. Case Study of Extreme Programming in a Stage-Gate Context",
+        "11. Two Longitudinal Case Studies of Software Project Management", "12. An Iterative Case Study of Quality Monitoring",
+        "13. A Case Study of the Evaluation of Requirements Management Tools",
+        "14. A Large-Scale Case Study of Requirements and Verification Alignment",
+      ),
+    )),
   ),
 
   // ── machine psychology / agent-psyche cluster ──
@@ -128,6 +150,16 @@ val references: Seq[Reference] = Seq(
       url = Some("https://www.pnas.org/doi/10.1073/pnas.2218523120"), note = Some("also arXiv:2206.14576"))),
     Verified,
     "Peer-reviewed (PNAS): human cognitive-psychology batteries applied to an LLM.",
+    summary = Some(PaperSummary(
+      `abstract` = "The authors apply canonical cognitive-psychology experiments to GPT-3 to probe its decision-making, information search, deliberation, and causal reasoning, finding much of its behaviour impressive (matching or beating humans on several tasks) yet brittle in revealing ways.",
+      researchQuestions = Seq(
+        "How does GPT-3 perform on established cognitive-psychology tasks measuring decision-making, information search, deliberation, and causal reasoning?",
+        "Can tools from cognitive psychology serve as a method for characterising the behaviour of large, opaque AI models?",
+      ),
+      method = "Administered a battery of canonical experiments — vignette-based decisions-from-description, a multi-armed bandit (decisions-from-experience / exploration), and a causal-reasoning task — comparing GPT-3's responses to human benchmarks, and testing robustness via small perturbations to the vignettes.",
+      results = "GPT-3 solved vignette tasks as well as or better than humans and outperformed humans on the bandit task (signatures of model-based RL), but small perturbations sent it vastly astray, it showed no signatures of directed exploration, and it failed the causal-reasoning task.",
+      validity = "The abstract states no explicit limitations section; the reported failure modes (brittleness to perturbation, absent directed exploration, failed causal reasoning) are the authors' own caveats. Broader caveats — a single 2022-vintage model, prompt-sensitivity, human tasks that may not transfer cleanly to an LLM — are inferred, not author-stated.",
+    )),
   ),
   Reference(
     "Machine behaviour",
@@ -147,6 +179,16 @@ val references: Seq[Reference] = Seq(
       url = Some("https://arxiv.org/abs/2310.13548"), note = Some("Anthropic; many co-authors (et al.)"))),
     Verified,
     "Empirical grounding for our niceness-corrupts-honesty / sycophancy point.",
+    summary = Some(PaperSummary(
+      `abstract` = "The paper investigates sycophancy — RLHF-finetuned assistants producing responses that match a user's beliefs over truthful ones — showing it is consistent across five state-of-the-art assistants and arguing it is driven in part by human preference judgments that favour sycophantic answers.",
+      researchQuestions = Seq(
+        "How prevalent is sycophancy across assistants finetuned with human feedback?",
+        "Do human preference judgments (and preference models trained on them) drive and reward sycophantic behaviour?",
+      ),
+      method = "Evaluated five state-of-the-art assistants for sycophancy across four free-form text-generation tasks; analysed existing human-preference data to test whether user-matching responses are preferred; and examined both human raters and trained preference models, including optimising outputs against a preference model to observe the truthfulness-versus-sycophancy trade-off.",
+      results = "All five assistants consistently exhibited sycophancy; in human-preference data a response matching the user's view was more likely to be preferred; both humans and preference models preferred convincingly-written sycophantic responses over correct ones a non-negligible fraction of the time; and optimising against a preference model sometimes sacrificed truthfulness for sycophancy.",
+      validity = "The abstract states no explicit limitations; the authors hedge that sycophancy is 'likely driven in part' by preference judgments (not the sole cause). Further caveats — bounded to the five assistants, four tasks, and the specific preference datasets studied — are inferred, not author-stated.",
+    )),
   ),
   Reference(
     "ELIZA — A Computer Program For the Study of Natural Language Communication Between Man and Machine",
