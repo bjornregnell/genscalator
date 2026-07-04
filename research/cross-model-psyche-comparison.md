@@ -50,3 +50,37 @@ before/after **deltas** instead of vibes.
 - **Meta (BR):** we accumulate research topics and forget them — this is the retrieval/dangling-pointer problem applied
   to our own backlog. Indexed in `notes/br-todo-2026-07-04.md`; the research topics need a durable index
   (`research/README.md` Investigations list) so they're greppable, not lost.
+
+## Harness-coupling confound + baseline recipe (evidence, 2026-07-04, from the official Claude Code changelog)
+**Finding.** Model and harness ride **one** Claude Code version stream (`2.1.x`) but are **independent update vectors
+that only sometimes align**:
+- **Fable 5** shipped at **`2.1.170`** (2026-06-09) — model + a single transcript-saving bugfix. Near model-only.
+- **Opus 4.8** shipped at **`2.1.154`** (2026-05-28) — model + **30+ harness changes** (dynamic workflows; lean system
+  prompt becomes the default for newer models; effort-UI redesign; *"reserves the multiple-choice prompt for decisions
+  it genuinely cannot make itself"*; `/simplify` rework). A bundled redesign.
+- **Sonnet 5** at `2.1.197` (06-30) — model-only. And the harness churns with **no** model change (`2.1.198–2.1.201`,
+  Jul 1–3: subagents-background-by-default, skill stacking, permission-mode defaults).
+
+**Consequence for our sequencing (good news).** Fable 5 has been on this version line since `2.1.170`; the current CLI
+(~`2.1.201`) is well past it. So **switching `--model claude-fable-5` on a PINNED current CLI holds the harness
+constant** — a clean single-variable change. The confound only appears if we **upgrade the CLI at the switch**.
+→ **Rule: pin the CLI version across the model switch; change only `--model`. Record the exact `claude --version` in the
+preregistration.**
+
+**Residual confound (unavoidable through the product).** Even at a pinned CLI, the harness **conditions behaviour ON the
+model** server-side: the effort default (Opus 4.8 "defaults to high effort"), the system-prompt variant ("lean system
+prompt … default for all models except Haiku/Sonnet/Opus 4.7 and earlier"), the modal-reservation behaviour. So "only
+the weights differ" is **not fully achievable**. To approach single-variable: **pin CLI + normalise the controllable
+knobs** (same `/effort`, same tools/allowlist, same skills, same temperature) and **document the ones you can't**
+(server-side system-prompt selection is model-conditioned). Treat model-conditional harness config as **part of the
+model treatment**, and say so — don't pretend it's isolated.
+
+**Reflexive datapoint (feeds the learning-barrier RQ, see `learning-barrier-rqs.md`).** The `2.1.154` line *"reserves the
+multiple-choice prompt for decisions it genuinely cannot make itself"* **is** the no-interrupting-modals behaviour we
+built a practice around ([[no-interrupting-modals-during-flow]]). So part of "our" substrate/practice layer is **coupled**
+to a specific harness version tied to the Opus 4.8 release — evidence that the practice layer is entangled with the
+model+harness stack, not independent of it.
+
+**Sources:** [Claude Code changelog](https://code.claude.com/docs/en/changelog);
+[Opus 4.8 announcement](https://www.anthropic.com/news/claude-opus-4-8);
+[Enabling Claude Code to work more autonomously](https://www.anthropic.com/news/enabling-claude-code-to-work-more-autonomously).
