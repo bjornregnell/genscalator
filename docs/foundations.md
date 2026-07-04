@@ -77,11 +77,13 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
 
 Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from the A→Z list.
 
-**Groups:** [Roles and work strands](#roles-and-work-strands) · [Channel: bandwidth and confirmation fatigue](#channel-bandwidth-and-confirmation-fatigue) · [Echt and honest writing](#echt-and-honest-writing) · [Context: fill, rot and the smart zone](#context-fill-rot-and-the-smart-zone) · [Dances and handoffs](#dances-and-handoffs) · [Memory, habits and substrate](#memory-habits-and-substrate) · [Autonomy and safety](#autonomy-and-safety)
+**Groups:** [Roles and cases](#roles-and-cases) · [Channel: bandwidth and confirmation fatigue](#channel-bandwidth-and-confirmation-fatigue) · [Echt and honest writing](#echt-and-honest-writing) · [Context: fill, rot and the smart zone](#context-fill-rot-and-the-smart-zone) · [Dances and handoffs](#dances-and-handoffs) · [Memory, habits and substrate](#memory-habits-and-substrate) · [Autonomy and safety](#autonomy-and-safety)
 
-**A→Z (Ctrl-F):** AFK menu · BR · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confirmation fatigue (CF) · Consolidation point · Context rot · Context usage / fill · Coupled-system capability · Dangling pointer · echt / äkthet · Edit dance · Etch dance · Extrinsic-volatile plasticity · Go dance · Habit · Hardening dance · Memory hygiene · Note dance · Prosthetic habit · Ralph loop · Reflex · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Token acceleration · Token efficiency (TE) · Token velocity · WR
+**A→Z (Ctrl-F):** AFK menu · AT · Authority anchor · Ballgame · BR · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confirmation fatigue (CF) · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · echt / äkthet · Edit dance · Etch dance · Extrinsic-volatile plasticity · Go dance · Habit · Hardening dance · Memory hygiene · Note dance · Prosthetic habit · Ralph loop · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token velocity · WR
 
-### Roles and work strands
+### Roles and cases
+*BR and the agent are the **roles** (stakeholders, above). **WR** is the research program; **AT** and **SSG** are its **cases / units of analysis** — the object-level projects during which workflow data is collected. (Terminology per* Case Study Research in Software Engineering: Guidelines and Examples*, Runeson, Höst, Rainer & Regnell, Wiley 2012, §3.2.3 "Cases and Units of Analyses" — of which BR is a co-author.)*
+- **AT — AutoTranslate** — the introprog **Swedish→English** LaTeX auto-translation project (`introprog/autotranslate`); the **seed / first WR case** (unit of analysis), now a **closed case study** ("AT done", 2026-07-04). Its object-level friction generated much of the early WR data. Distinct from **WR** (the research *about* the workflow) and **SSG** (the next case).
 - **BR** — **Professor Björn Regnell**, Lund University — **creator of genscalator** and the **human** collaborator in
   this work. In `research/wr-data/` and the skills he is often just "**(the) human**" (the *role*, per *Stakeholders*
   above); **"BR" is the person.** Named here because this work is done **in the open**, so an outside reader meets the
@@ -130,6 +132,11 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
     **RQ** research question · **N/A** not applicable · **e.g. / i.e.** for example / that is.
   - *Dev-flavored:* **PR** pull request · **MR** merge request · **RC** release candidate · **repro** reproduce ·
     **rebase / squash** git ops · **YAGNI** you aren't gonna need it · **DRY** don't repeat yourself.
+- **Thriller state (human)** — a human affective state of **high arousal / excitement** — the breakthrough-work
+  "this is thrilling" high (cf. blog 004's emotional stakes). Productive, but carries an **over-trust risk**: an excited
+  human rubber-stamps advanced agent work they haven't fully reviewed (a cousin of *confirmation fatigue* / *review
+  overload*). The agent should **detect** it (and fatigue) and, when it tips toward over-trust or exhaustion, propose the
+  **rest dance**. See `research/human-state-and-joint-zone.md`, `research/agent-affective-analogs.md`.
 ### Echt and honest writing
 - **echt / äkthet** — the quality genscalator wants in outward writing (and, by extension, in any claim): **genuine AND
   grounded** — real human intention/experience actually present, and every factual/empirical claim resting on evidence.
@@ -294,6 +301,12 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   **security changes stay human-approved** (the human is the **authority anchor**; curation of permissions can't be
   delegated — the corroboration asymmetry). Distinct from the **consistency sweep** (which audits the substrate's
   *content*): hardening audits the agent's *config / machinery*. Human-triggerable. Memory: [[hardening-dance]].
+- **Rest dance** — a human↔agent dance for **conserving the human**. **Agent:** on signs of human fatigue (typo-rate
+  above the human's *own* baseline, terseness, late hour) or an **explicit signal**, propose a break and **externalize
+  state** (etch / compact) so the human can step away with **zero loss** and return sharp. ‖ **Human:** takes the break,
+  or declines. *Prevents:* degraded **human**-side decisions (the human dumb-zone, over-trust under *thriller state*);
+  conserves attention for the high-stakes **ballgame** volleys that need it. See `research/human-state-and-joint-zone.md`.
+
 ### Memory habits and substrate
 - **Memory hygiene (agent)** — keeping the agent's **durable memory store** (the persistent `MEMORY.md` + the
   memory files a session reloads) **consistent with current reality**: when a coined term is *renamed*, a file
@@ -367,6 +380,20 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   **model-agnostic** — the bet does not depend on models plateauing. See the capability + stove-reflex excerpts
   in `research/RAW-DATA.md`.
 ### Autonomy and safety
+- **Authority anchor (human)** — the human as the **non-delegable authority** for decisions the agent cannot
+  self-corroborate: permission / security curation, "always-allow" grants, and final verdicts on the agent's own
+  claims. The **security twin of the corroboration asymmetry** — the agent proposes / generates, the human authorizes.
+  Weakened by the approval-race (see `research/wr-data/harness-ux.md`, the AARGH episode).
+- **Ballgame** — the **collaborative** pole of task-autonomy: the human is **in every volley** (each agent step gets a
+  human response), opposite the autonomous **ralph loop**. A spectrum, not a binary; the mode is chosen per task (safe +
+  self-verifiable → ralph; needs judgment / taste or touches shared source broadly → ballgame). Mis-triage is a
+  *confirmation-fatigue* risk (toward ballgame) or a *safety* risk (toward ralph). See
+  `research/task-autonomy-negotiation.md`.
+- **Corroboration asymmetry** — the agent can **generate** candidate claims but cannot **corroborate claims about
+  itself** (self-report is confabulation- and sycophancy-prone), so an **independent authority** — the human, or
+  behavioural data — must verify. Grounds the **authority anchor** and the rule *don't ask a model to describe its own
+  psyche* (measure behaviour instead). See `research/agent-psyche-literature-review.md`,
+  `research/cross-model-psyche-comparison.md`.
 - **Ralph loop** — running the agent autonomously in a loop on a fixed, well-scoped goal until acceptance
   criteria are met, with **no per-step human approval** — the human hands the task over completely and
   walks away (named after the brute-force "just keep going until done" technique). A ralph loop is **only
