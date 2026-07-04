@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="system-ui, sans-serif">
+  <rect width="640" height="420" fill="none"/>
+  <text x="40" y="34" font-size="19" font-weight="700" fill="#222">Brace style has no significant effect on edit-success</text>
+  <text x="40" y="56" font-size="13" fill="#666">56 small local models · wrap-in-<tspan font-family="monospace">else</tspan> task · pass-fraction (higher = easier to edit)</text>
+
+  <!-- gridlines + y labels (0..1) -->
+  <g stroke="#ddd" stroke-width="1">
+    <line x1="80" y1="340" x2="600" y2="340"/>
+    <line x1="80" y1="270" x2="600" y2="270"/>
+    <line x1="80" y1="200" x2="600" y2="200"/>
+    <line x1="80" y1="130" x2="600" y2="130"/>
+    <line x1="80" y1="60"  x2="600" y2="60"/>
+  </g>
+  <g font-size="11" fill="#999" text-anchor="end">
+    <text x="72" y="344">0.00</text>
+    <text x="72" y="274">0.25</text>
+    <text x="72" y="204">0.50</text>
+    <text x="72" y="134">0.75</text>
+    <text x="72" y="64">1.00</text>
+  </g>
+
+  <!-- same fill for all three: they are NOT meaningfully different (that is the finding) -->
+  <g fill="#6b7db3">
+    <rect x="140" y="274.5" width="90" height="65.5"/>
+    <rect x="290" y="267.8" width="90" height="72.2"/>
+    <rect x="440" y="270.6" width="90" height="69.4"/>
+  </g>
+  <g font-size="13" fill="#222" text-anchor="middle" font-weight="600">
+    <text x="185" y="266">0.234</text>
+    <text x="335" y="259">0.258</text>
+    <text x="485" y="262">0.248</text>
+  </g>
+  <g font-size="13" fill="#444" text-anchor="middle">
+    <text x="185" y="360">braceless</text>
+    <text x="335" y="360">braceful</text>
+    <text x="485" y="360">common</text>
+  </g>
+
+  <!-- verdict annotation -->
+  <text x="600" y="88" font-size="13" fill="#b23" text-anchor="end" font-weight="700">omnibus permutation p = 0.59 (n.s.)</text>
+
+  <text x="40" y="398" font-size="12" fill="#666">Model pass-rates span 0.00–0.89 — the <tspan font-weight="700">model</tspan> dominates, not the style. Seeded permutation test, blocked by model (seed 20260703).</text>
+</svg>

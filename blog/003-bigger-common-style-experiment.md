@@ -1,9 +1,9 @@
 # A bigger common-style experiment (003) — STUB / preregistered, not yet run
 
-> **Status: STUB, 2026-07-03. Author: Björn Regnell.** A **preregistered** design awaiting a run — the confirmatory
-> sequel to [002](002-braceful-or-braceless-or-the-common-style.md). Nothing here is a result yet; the results and
-> conclusions sections are deliberately empty until the run happens and reports *whatever it finds* (including a
-> null). This stub holds the plan.
+> **Status: run complete 2026-07-04 — a preregistered NULL. Author: Björn Regnell.** The confirmatory sequel to
+> [002](002-braceful-or-braceless-or-the-common-style.md). The **Results** + **What it means** sections below are
+> **agent-drafted from the data for BR to rewrite in his voice**; every number is reproducible from the committed
+> script, frozen seed, and raw data. The run reported *whatever it found* — and it found a clean null.
 
 ## Why a sequel
 
@@ -125,14 +125,45 @@ honest-methods spirit of 002:
 the compute host and **resumed from a per-cell checkpoint** with zero lost or duplicated cells — see the experiment
 `RUN-LOG.md`. The frozen design was untouched.)
 
-## Results — _TBD after the run_
+## Results (run 2026-07-04, n = 56)
 
-_(To be populated: primary p, the model × style picture at ~50 models, the adherence-vs-correctness split, and the
-cost vector — tokens, repair cycles, wall-clock. Whatever it says.)_
+**A clean, preregistered NULL: brace style does not significantly affect edit-success.**
 
-## What it means — _TBD after the run_
+![Brace style has no significant effect on edit-success: three near-equal style pass-fractions across 56 models, omnibus permutation p = 0.59](figures/003-style-null.svg)
 
-_(Confirm / null / bounded — written honestly from the data, in the same spirit as 002.)_
+*Figure 1 — the whole result in one picture. The three styles' pass-fractions across 56 models are near-identical
+(braceless 0.234, braceful 0.258, common 0.248); the omnibus within-model permutation test finds p = 0.59.*
+
+- **Primary test — omnibus within-model permutation** (seed `20260703`, R = 100 000, blocked by model): **p = 0.59.**
+  Not significant.
+- **Pairwise** (paired sign-flip, two-sided): braceless−braceful −0.024 (p = 0.40); braceless−common −0.014
+  (p = 0.43); braceful−common +0.010 (p = 0.73). **Friedman** χ² = 4.18, p = 0.12. The pseudoreplication foil — the
+  naive pooled test that faked p ≈ 0.008 in 002 §5.5 — is *also* null here (p ≈ 0.46).
+- **The tiny aggregate signals even disagree in direction:** column-means faintly favour *braceful*, within-model
+  ranks faintly favour *braceless* — the signature of a **bidirectional, per-model** effect that cancels.
+- **The model dominates, not the style:** pass-rates span 0.00 → 0.89, with ~10 models flat-zero across all styles.
+- **Effective n:** 56 distinct tags; by content-ID only `gemma3:4b` aliases a pilot model (`gemma3:latest`), so 55/56
+  are out-of-sample vs the pilot — no drop, reported. Full numbers + per-model table:
+  [`../research/experiments/indent-vs-braces/RESULTS.md`](../research/experiments/indent-vs-braces/RESULTS.md).
+
+## What it means
+
+> **[Agent-drafted from the data — for BR to rewrite in his voice.]**
+
+The pilot's aggregate "braceless costliest" **does not replicate at n = 56.** The direction survives in the
+column-means as a whisper (braceful highest by 2.4 pp) but the effect size **collapsed ~7×** from the pilot's −17.5 pp
+and is nowhere near significant — consistent with the pilot estimate being outlier-inflated. Because the design sat
+honestly at the *edge of power* (56 ≈ the ~55 needed for 80% at the pilot's d), a null here is informative, not merely
+inconclusive: a population-level style effect *of the pilot's size* had ~80% chance to appear and did not.
+
+The honest read: **for the weak-editor question, brace style is not a meaningful lever — model capability is.** What
+predicts whether a small model can wrap a block in an `else` is *which model it is* (0.00 → 0.89), not which syntax it
+is shown. This refines rather than contradicts 002: 002 already found the effect *bidirectional and emission-dominated*;
+003 confirms at scale that once you block by model and stop pseudoreplicating, the residual style signal is noise. The
+common-style / SIP argument, then, gets no support *here* from a universal small-model edit-cost — its case must rest on
+the frontier-and-human ergonomics 002 pointed to, not on a measurable weak-model penalty.
+
+*(A preregistered confirmatory run that reports its null cleanly is worth more than a p-hacked positive.)*
 
 ## How this post was made
 
