@@ -41,6 +41,13 @@ knowledge) *fixes* it. Honest caveat: the self-prediction is itself substrate-#1
 adjudicated by whether the agent *actually* rabbit-holes, not by the say-so, which is precisely why we structuralize
 rather than trust it.
 
+![Screenshot of the introspection episode described in this section](figures/introspection-example-01.png)
+
+*Figure 1 — the loop caught live (2026-07-04): the human names it ("you introspected!"); the agent gives an honest
+self-report of a failure-mode disposition (predicting it would rabbit-hole under rotten context); then it
+**externalizes** that into this post's durable text (the green diff, bottom). Introspect → externalize to substrate, in
+one screen — the finding illustrating itself.*
+
 - **TODO: mine WR data on how the agent thinks — its reflexes and habits.** From `research/wr-data/` and
   `research/RAW-DATA.md`, harvest the recurring *behavioural* patterns (not one-off bugs). Seeds already observed:
   - **Reflexes** — reaching for bash (`ls`/`cat`/`grep`/`printf`/`echo`-glued compounds, `$(…)` substitution) instead

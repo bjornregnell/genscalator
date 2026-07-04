@@ -282,6 +282,16 @@ class: **filesystem/shell introspection I did in raw bash instead of a typed too
   unused parsers — the single-dispatcher ethos + foundations "start specific, generalize-ready". **Evidence it earns
   its place:** the one-off `--all` scan already caught **two** silently-invalid files (`blog-assistant/SKILL.md` +
   memory `muntabot-bilingual-ollama.md`), both now fixed — a reliability tool, proven on first use.
+- **`tt git` read-side — `log` / `added` / `status` / `find`** (2026-07-04) — `tt git` is **commit-only** today;
+  finding BR's just-committed figure needed raw `git log --diff-filter=A --name-only … | grep -iE '\.(png|svg|…)' |
+  head` (clobbered with grep + head). A typed read-side — recent commits, files-added-in-last-N, status, find-by-glob —
+  would cure the reflex and return **bounded, typed** output. Which surfaces the deeper one:
+- **The `| head` reflex (deep, BR-flagged 2026-07-04)** — the agent pipes `| head` **constantly** to bound output.
+  It's a band-aid for a *real* need (don't flood context / rot), but the reflex fires even where a typed tool would
+  return a bounded result natively. **Structural cure:** typed tools return **already-bounded, structured** output (a
+  count, a top-N, a page) — no `| head` needed. Every `| head` is a signal that the underlying op should be a typed
+  tool with a built-in limit. Sibling of the `sed`/`sort`/`tr`-on-`tt files` reflex (post-processing a raw dump = a
+  missing output mode).
 
 ## Cannot run `/context` while messages are queued / agent is thinking (2026-07-04)
 BR flagged: it's **irritating that he can't run `/context`** while his messages are queued for the agent (agent
