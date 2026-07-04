@@ -160,3 +160,33 @@ sessions that produce this research (its own rot is data).
 ## What shipped
 - `autotranslate/scratch/token-usage.scala` `--ceiling <Z>` warn flag (v1 above) — introprog session
   2026-06-30. To graduate into a genscalator `tt usage` tool.
+
+## Context ROT vs FILL: content-kind modulates rot; keep monitor ticks infrequent + terse (2026-07-04, BR)
+
+**BR's question:** transient monitor-tick + WR-logging fills context (obviously) — but does it raise the
+hard-to-measure **rot** property, distinct from fill? **Working answer: yes, and chiefly via DISPLACEMENT +
+DILUTION, not raw token pressure.**
+
+- **Fill ≠ rot.** Fill = token count (measurable, `/context`). Rot = degradation in *retrieval quality* over that
+  fill — contradiction, forgetting a committed decision, confabulation, re-reading an already-seen file,
+  "lost-in-the-middle" under-attention. It's about the *signal-to-coherence* of the fill, not its size.
+- **Content-kind modulates rot, independent of tokens:**
+  - **Repetitive filler (monitor ticks)** is *low* rot **per token** (near-identical, low-surprisal, ~zero new
+    distinct facts — rot tracks distinct-things-to-hold more than tokens). BUT it **displaces** the important sparse
+    signal (design contract, keys, decisions) deeper into the high-rot middle, and **dilutes** signal-to-noise so
+    retrieval gets harder. That displacement/dilution is the real harm, not the filler's own tokens.
+  - **WR-logging** is the opposite: dense, unique, interconnected → *higher* rot per token — but it's the mission
+    and it's **committed to files**, so it's "productive rot" (durable regardless of what context forgets).
+- **Why compaction helps disproportionately here:** compaction is **signal-extraction** — it distills the sparse
+  important facts out of the repetitive haystack and re-places them **fresh + recent** (best attention position). So
+  a compact after a monitor-heavy stretch is a **rot** win, not just a fill win.
+- **Actionable lever (BR): monitor-tick cadence + verbosity is a rot knob.** This session's ~25–30 min *formatted
+  multi-line* ticks were too frequent/verbose. Fixes: (1) **terse one-line** ticks; (2) **fewer** of them (rely on
+  task-notifications for the real events — cull/completion — and a long fallback heartbeat); (3) offload to a
+  **`tt sweep-status`** tool so the verbose `echo ===`/assembly stays OUT of context (tool returns one line, the
+  haystack stays on disk). Cross-ref the `tt sweep-status`/`tt tsv` candidates in `wr-data/genscalator-self-dev.md`.
+- **Testable (agent-affective, sibling to the indent-vs-braces harness):** a **rot gauge** =
+  contradiction/re-read/confabulation events per 100k tokens as fill grows; and an A/B of *repetitive-filler* vs
+  *dense-unique* context of equal token count on a fixed probe task — turns "difficult to measure" into a number.
+  Cross-ref [`human-state-and-joint-zone.md`](human-state-and-joint-zone.md), memory
+  `propose-compact-dance-at-trigger`.
