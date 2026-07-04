@@ -59,6 +59,14 @@ in. `[for BR to voice — tighten, cut, add the ones I missed]`
   fetch-proxies, `Bash(ssh *)`, broad globs) — a pending instance, not yet executed, precisely because the approval is
   the human's.
 
+- **consistency sweep** — repair drift in the substrate itself. **Human:** cues it, or greenlights it as an AFK task.
+  ‖ **Agent:** fans out **read-only** auditors across the substrate (memory / docs / blog / research / tools), reports
+  findings, **auto-fixes only the unambiguous** (dead links, typos, doc↔code drift), and **surfaces the judgment-calls**
+  for the human. *Prevents:* dangling-pointer / stale-ref / term-drift / contradiction accumulation — **substrate rot**.
+  *Sibling of the hardening dance:* hardening audits the agent's **config**; the consistency sweep audits the
+  substrate's **content**. *This session:* its first run — a 4-agent sweep that caught index-rot in `research/README.md`,
+  stale "not-yet-run" experiment statuses, and ~10 auto-fixed dead-links / doc-drifts.
+
 - **copy-paste-frame dance** — a handoff micro-ritual. **Agent:** wraps any copy-target block (resume prompt, snippet
   to paste elsewhere) in `---` horizontal-rule fences. ‖ **Human:** spots the frame, selects cleanly, pastes. *Prevents:*
   fumbling a critical paste under fatigue (a dropped closing fence was a real rot signal this session). *Memory:*
@@ -70,11 +78,14 @@ in. `[for BR to voice — tighten, cut, add the ones I missed]`
 
 ## The dances form a family `[for BR to voice]`
 
-Two axes organize them. **Discrete vs continuous:** compact / exit-resume fire at a moment; the note dance runs
-continuously in the background. **Who initiates:** the human cues the note dance and the context read; the agent
-proposes the compact and hardening dances. But every one is the *same underlying move* — externalize fragile state into
-a durable substrate before the fragile place fails. That common spine is why they feel like a family and not a grab-bag,
-and it's the thread 007 pulls on.
+Two axes organize them. **Discrete vs continuous:** compact / exit-resume / consistency-sweep fire at a moment; the note
+dance runs continuously in the background. **Who initiates:** the human cues the note dance, the context read, and the
+sweep; the agent proposes the compact and hardening dances. A third cut groups them by **function**: *loss-prevention*
+(compact, note, exit-resume — save state before a failure), *audit / repair* (**hardening** audits the agent's config;
+the **consistency sweep** audits the substrate's content), and *coordination micro-rituals* (context read,
+copy-paste-frame). But every one is the *same underlying move* — externalize fragile state into a durable substrate
+before the fragile place fails, or repair the substrate once drift has crept in. That common spine is why they feel like
+a family and not a grab-bag, and it's the thread 007 pulls on.
 
 ## TODO: how to support the claim of their utility EMPIRICALLY?
 
