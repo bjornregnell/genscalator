@@ -274,6 +274,14 @@ class: **filesystem/shell introspection I did in raw bash instead of a typed too
   drops a skill from discovery** (no error). So this is a *reliability* tool, not just a cure for the `python3 -c
   'import yaml…'` reflex I reached for to verify the fix. Encodes the genscalator gotcha: **quote any frontmatter value
   containing a colon.** Refs: vercel-labs/skills#1094 (silent drop), github/vscode-github-actions#205 (the error).
+  **Design (BR 2026-07-04) — honor the general name, generalize-ready not generalized:** three layers — (1) *extract*
+  the fenced head (format-agnostic: `---`/`---` YAML · `+++`/`+++` TOML · `{`/`---json` JSON · or a `--until <regex>`
+  escape hatch); (2) *detect* the format from the fence **or** pin with `--yaml`/`--toml`/`--json`; (3) *dispatch* to
+  that format's validator (snakeyaml now; TOML/JSON added later only when a real file needs them — a one-line dispatch
+  add, not a rewrite). The general name is honored by the **architecture** (the dispatch seam), not by pre-building
+  unused parsers — the single-dispatcher ethos + foundations "start specific, generalize-ready". **Evidence it earns
+  its place:** the one-off `--all` scan already caught **two** silently-invalid files (`blog-assistant/SKILL.md` +
+  memory `muntabot-bilingual-ollama.md`), both now fixed — a reliability tool, proven on first use.
 
 ## Cannot run `/context` while messages are queued / agent is thinking (2026-07-04)
 BR flagged: it's **irritating that he can't run `/context`** while his messages are queued for the agent (agent
