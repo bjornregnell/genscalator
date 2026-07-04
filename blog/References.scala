@@ -99,12 +99,12 @@ val references: Seq[Reference] = Seq(
       doi = Some("10.1007/978-3-662-69306-3"),
       url = Some("https://link.springer.com/book/10.1007/978-3-662-69306-3"))),
     Verified,
-    "Standard SE textbook on controlled experiments; grounds our permutation-test + preregistration practice. self-ref: BR co-author (own it inline at first mention, not just in the ref list). BookSummary TOC grounded via Springer chapter pages (reader-proxied, not a clean direct fetch) — author (BR) to confirm exact chapter/part wording.",
+    "Standard SE textbook on controlled experiments; grounds our permutation-test + preregistration practice — working task->chapter index in skills/research-methods (agent reads the full text from the closed-repo PDF for depth). self-ref: BR co-author (own it inline at first mention, not just in the ref list). TOC grounded DIRECTLY from the authoritative full text (closed-repo PDF, 2026-07-04) — provenance upgraded from the earlier reader-proxy.",
     summary = Some(BookSummary(
       topic = "An in-depth introduction to conducting controlled experiments in software engineering — the full experiment process (scoping, planning, operation, analysis, presentation) — situated among other empirical methods (systematic literature studies, surveys, case studies); the 2024 edition adds research-design selection, A/B testing, replications, open science, and validity threats.",
       chapterHeadings = Seq(
         "1. Introduction", "2. Empirical Research", "3. Essential Areas in Empirical Research",
-        "4. Systematic Literature Studies", "5. Surveys", "6. Experiments", "7. Case Studies",
+        "4. Systematic Literature Reviews", "5. Surveys", "6. Experiments", "7. Case Studies",
         "8. Scoping", "9. Planning", "10. Operation", "11. Analysis and Interpretation",
         "12. Presentation and Package", "13. Experiment Process Illustration",
         "14. Are the Perspectives Really Different? Further Experimentation on Scenario-Based Reading of Requirements",
@@ -116,9 +116,10 @@ val references: Seq[Reference] = Seq(
     Seq(author("Runeson","Per"), author("Höst","Martin"), author("Rainer","Austen"), author("Regnell","Björn")),
     Some(RefData(Book, year = Some(2012), publisher = Some("Wiley (Wiley-Blackwell)"), pages = Some("256"),
       note = Some("ISBN 9781118104354"),
+      doi = Some("10.1002/9781118181034"),
       url = Some("https://www.wiley.com/en-us/Case+Study+Research+in+Software+Engineering%3A+Guidelines+and+Examples-p-9781118181003"))),
     Verified,
-    "SE case-study methodology; relevant to the qualitative-synthesis alternative to a full SLR. self-ref: BR co-author (own it inline at first mention, not just in the ref list). BookSummary TOC grounded via a course-page PDF + Google Books (not a clean authoritative fetch) — author (BR) to confirm.",
+    "SE case-study methodology; grounds our WR framing (WR = longitudinal multiple-case study; AT/SSG = cases/units of analysis, §3.2.3) — working task->chapter index in skills/research-methods (agent reads the full text from the closed-repo PDF for depth). self-ref: BR co-author (own it inline at first mention, not just in the ref list). TOC grounded DIRECTLY from the authoritative full text (closed-repo PDF, 2026-07-04); Wiley Online Library book DOI 10.1002/9781118181034.",
     summary = Some(BookSummary(
       topic = "Practical guidelines for planning, conducting, and reporting case-study research in software engineering — design, data collection, analysis, dissemination — followed by real, critiqued example case studies; it translates case-study methodology from the social sciences into rigorous SE practice.",
       chapterHeadings = Seq(
