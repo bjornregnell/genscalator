@@ -252,6 +252,28 @@ class: **filesystem/shell introspection I did in raw bash instead of a typed too
   `tt files … | tail -n +2 | sed 's|.*/||;s|.scala||' | sort | tr '\n' ' '` (used to list genscalator tool names)
   collapses to one call. The `sed`/`sort`/`tr` post-processing chain is the reflex; the tool should offer the shaped
   output directly. Reinforces: every time I pipe `tt files` through `sed`/`awk`/`sort`, that's a missing output mode.
+- **Composing tt tools in-process — the strongest DESIGN signal (BR 2026-07-04).** I ran
+  `echo "=== pdf ==="; tt files DIR pdf; echo "=== toc ==="; tt files DIR toc; echo "=== tex ==="; tt files DIR tex`
+  — three `tt files` invocations glued with `echo` dividers. BR: *"tool candidate, or internal streaming inside tt of
+  composed existing tools?"* — and the **deeper** reading is the point: this is exactly the
+  [single-dispatcher](../../tools/DESIGN-single-dispatcher.md) motivation. Two cures, escalating: (a) a multi-arg mode
+  (`tt files DIR pdf,toc,tex`); (b) the real one — **in-process tool composition** the dispatcher enables, where tools
+  return `LazyList[ToolResult]` and compose without a shell (`tt files DIR pdf | tt files - toc …`), so the `echo`-glue
+  disappears entirely. The bash `echo "==="; toolA; echo "==="; toolB` pattern IS the manual, lossy version of what
+  streaming composition does typed and in-process. Filed as motivating evidence in the DESIGN's streaming section
+  (now written up there under "Composition is the whole point of the typed stream").
+
+## Cannot run `/context` while messages are queued / agent is thinking (2026-07-04)
+BR flagged: it's **irritating that he can't run `/context`** while his messages are queued for the agent (agent
+mid-turn). His hypothesis: either bad harness UX, or **context usage genuinely can't be computed while the model is
+mid-generation** (the token count is in flux until the turn's tool calls + output settle). Likely the latter is the
+real cause — context size is only well-defined between turns — but the **felt** problem is real: during a long
+autonomous stretch (like this AFK run) BR wants a read on fill/rot **without interrupting**, and the one tool for it
+is blocked exactly when he'd use it. Same family as the other input-races here (modal focus-steal, Enter-on-confirm,
+arrow-up edit). **Harness-side ask:** allow a *read-only* `/context` (last settled snapshot, marked "as of last turn")
+even while the agent is busy — a stale-but-nonblocking gauge beats no gauge. Ties to the fill-vs-rot monitoring thread
+([[propose-compact-dance-at-trigger]], smart-zone-ceiling): the human's cheapest health-check on a long run shouldn't
+require a turn boundary.
 
 **Root-cause tie-in:** every one of these reflexes is exactly what the single-dispatcher DESIGN removes — *"tools are
 functions from input to output, IO in one place, no bash assembly."* The reflex fires because the typed tool either

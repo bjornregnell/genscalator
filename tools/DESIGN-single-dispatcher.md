@@ -179,6 +179,20 @@ a val that outlives the traversal." Views avoid the leak (they retain nothing) b
 Net: **`LazyList[String]` render + `Iterator` cores + `View` as the pipe candidate**, all under the discipline "never
 hold the head" — which the next section makes the *compiler's* job.
 
+### Composition is the whole point of the typed stream (WR 2026-07-04)
+Why the streaming *type* matters at all: **composing tools without a shell.** Today gluing tools means bash —
+`echo "=== pdf ==="; tt files DIR pdf; echo "=== toc ==="; tt files DIR toc` — several invocations stitched with
+`echo` dividers, the manual and lossy version of a pipe (WR data: this exact reflex recurs). The dispatcher replaces
+it at two levels:
+- **(a) cheap win — multi-arg / multi-query modes on a single tool:** `tt files DIR pdf,toc,tex` returns one typed
+  result set instead of three shelled-out calls glued by `echo`.
+- **(b) the real win — in-process composition:** a tool returns `LazyList[ToolResult]` and the next tool *consumes*
+  it (`tt files DIR pdf | tt files - toc`, or fully in-process via the dispatcher), so tool→tool needs **no shell, no
+  `echo`-glue**, stays memory-bounded, and is typed end-to-end. The `echo "==="; toolA; echo "==="; toolB` bash
+  pattern IS the untyped, eager, lossy shadow of exactly this.
+This is the concrete reason `Iterable[String]` is too weak (BR's "low ambition"): it can't express the lazy,
+composable, typed pipe that makes composition pay. `LazyList[ToolResult]` (or `View[ToolResult]`) can.
+
 ## The dep-union / native-packaging crux (the one real tradeoff to decide)
 Today `tt typo` (pure, zero deps) compiles only `typo.scala` — tiny, instant. A single unified project **couples all
 deps into one classpath**: every invocation drags `requests` + `ujson` + `os-lib` + the whole `reqt-vendored` tree,
