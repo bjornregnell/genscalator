@@ -160,3 +160,34 @@ rules, both in my control:** (1) during an autonomous / AFK run, do **not** fire
 leisure (no focus-steal); reserve modals for genuine blockers. (2) A clarifying question is itself a *disruption
 cost* — weigh it against just proceeding. **Harness-side ask:** an agent-initiated modal should not seize keyboard
 focus from an in-progress human compose buffer — queue it, or show it non-modally, until the human's input is idle.
+
+---
+
+## Keystone: the harness "never-ending task" cull → design long jobs to be monitored + resumable (2026-07-04, BR)
+
+**Event.** The flagship sweep (a ~4 h background task) was **externally stopped by the harness** at 31% — no crash,
+clean cells to the end. The harness appears to cull background tasks it deems effectively **never-ending** (an upper
+bound on background-task lifetime). BR: *"we need to be smart about not reaching the upper bound on allowing tasks to
+be seen as 'never ending' by the harness."*
+
+**Why it matters.** A long autonomous job on a single harness-managed background task is **fragile by default**: one
+cull (or crash, OOM, session event) throws away all in-flight progress unless the job was built to survive it. Not a
+harness bug to route around so much as a **design constraint to build for**.
+
+**The design principle (BR, ratified by what saved this run) — two pillars for ANY long autonomous job:**
+1. **Progress monitors + health indicators.** Emit liveness the human/agent can read *without* trusting the process
+   itself — here, each completed cell **appends a row** to the results TSV (sweep-main.scala line 116), so `wc -l` on
+   the TSV is a truthful progress+liveness signal (the stdout progress bar, by contrast, buffered and *lagged* — a
+   false indicator that made the run look stuck at cell 808 when it was really at 946). Pair it with an out-of-band
+   watcher (the scheduled monitor tick) that reads that signal, checks thermals, and detects a stall.
+2. **Cache/checkpoint results so an interruption RESUMES, not restarts.** Persist each unit of work as it completes
+   (append-only), and make relaunch **idempotent**: read what's already done and skip it. Here the added resume-skip
+   let a relaunch continue from cell 946 with zero duplication — a ~4 h loss became ~0 min. Corollary: back up the
+   partial before touching anything; keep any frozen protocol intact (skip ≠ drop/dup).
+3. **(Implied) don't *look* never-ending.** Chunk work and/or emit steady progress so the job reads as
+   making-progress — and expect the cull anyway, so (1)+(2) are the real insurance.
+
+**Scope.** Keystone principle for **every genscalator long-runner** — the sweeps, autotranslate `--all`, the model
+pulls: build them append-checkpointed + externally-monitorable from the start, not after the first cull. Cross-ref
+the resume implementation in [`../experiments/indent-vs-braces/RUN-LOG.md`](../experiments/indent-vs-braces/RUN-LOG.md)
+(2026-07-04 entry).

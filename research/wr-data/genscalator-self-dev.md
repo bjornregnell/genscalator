@@ -379,3 +379,21 @@ prefix on the gated command — same env-*inheritance*-not-per-call-prefix rule 
 a compiled binary doesn't route through the scala-cli/JVM-warning path at all — it sidesteps the whole issue without
 needing to find the flag. (c) **Agent-side (in-hand now):** state plainly that these four lines are inert
 JVM-internal noise and do **not** treat them as findings — do not confabulate an action from them.
+
+## `grep | awk -F'\t' | sort | tail` on the results TSV → `tt tsv` tool candidate (2026-07-04, BR-flagged)
+
+**Symptom.** Exploring `results-bigrun.tsv` mid-sweep, the agent reached for chained shell —
+`grep MODEL file | awk -F'\t' '$6!="FAIL_NORESP"{print $7}' | sort -n | tail` — to pull one column, filter by
+another, and show extremes. BR: *"lots of chained grep and awk — should we have tools for this?"* Yes: this is the
+bash-hack reflex (non-allowlistable pipe chain, fragile field-splitting, the exact class `prefer-scala-scratch` /
+`grepr` retire), and TSV column analysis is a recurring need (every result-file exploration, the WR1 analysis).
+
+**Tool candidate — `tt tsv`** (typed TSV/columnar ops, one allowlistable call instead of a pipe chain):
+- `select <cols>` (by name from the header, not `$7`), `filter <col><op><val>` (eq/ne/gt/lt), `head/tail N`,
+- `count` / `group <col> count` (frequency of grades per model/style — the core sweep question),
+- `stats <col>` (n/min/max/mean/median/quantiles — e.g. out_tokens by model).
+Header-aware (reference columns by name), tab-safe, prints a clean table + a verdict line. Would have answered
+"reasoning-model out_tokens vs fast-model" in one call, and directly serves WR1 result exploration. Fits the
+[[DESIGN-single-dispatcher]] typed-args direction (a natural leaf tool: pure read → compute → print). **Not built
+now** (tools held in safe state pending the dispatcher refactor) — logged as a high-value candidate; propose adding
+it when the toolbox reopens.
