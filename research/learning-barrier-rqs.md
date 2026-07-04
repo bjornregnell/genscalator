@@ -45,15 +45,17 @@ available shape is safe. **Reflex-rate need not reach zero.**
 
 ## "Have we already achieved inference-time learning?" — YES, to a meaningful extent (BR asked; agreed)
 Not weight-learning (frozen). But the **joint system** (agent + human + externalised substrate) demonstrably improves
-across time: memories, dances, guards, and the note-dance offloads change future behaviour. **Each note-dance offload is
+across time: memories, dances, guards, and the **etch-dance** offloads change future behaviour. **Each etch is
 a micro-act of inference-time learning** — the atomic write-op of substrate-mediated learning. So the "inference
 barrier" is not *broken*; it is **bypassed**, by moving the *locus* of learning out of the model and into the
 environment. This is precisely why "breaking the barrier" mis-describes it — and it reframes the title question of 007.
 
-## Naming spur (open)
-If the note dance is the **atomic write-op of inference-time learning**, its name should carry a memory-formation
-flavour (imprint / etch / consolidate / encode) rather than the generic "note". Renaming under discussion (chat
-2026-07-04); candidates: keep · pin · stash · etch · imprint.
+## Naming — RESOLVED (2026-07-04): the split into `note` + `etch`
+The durable write-op is the **etch dance** (cue `etch:`) — named after an embodied cue-word typing test (see
+`wr-data/harness-ux.md`); *etch* = make permanent, the memory-formation flavour this write-op deserves. The overloaded
+"note:" was split off into the **note dance** (cue `note:` = notice / keep-fluent-this-conversation + etch-candidate) —
+the attention stage that *feeds* the etch. So inference-time learning has a two-cue front end mapping onto the
+two-stage memory model: `note:` (encode) → `etch:` (consolidate). See [[cue-note-vs-etch]] and `docs/foundations.md`.
 
 Links: [[cross-model-psyche-comparison]], blog 005/006/007, [[hardening-dance]], [[joint-rot-vigilance-recovery-kit]],
 [[no-interrupting-modals-during-flow]].

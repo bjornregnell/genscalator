@@ -488,10 +488,10 @@ Tags: `#methodology` (compact-dance)
 At 90% fill the harness surfaced: *"⚠ Context is 90% full. Autocompact will trigger soon, which discards older
 messages. Use /compact now to control what gets kept."* Two points: (1) the platform **independently validates the
 compact-dance rationale** — manual beats auto because you control the hand-off — and the warning is also the exact
-**trigger cue** for proactively proposing the dance ([[propose-compact-dance-at-trigger]]). (2) But the **note dance
+**trigger cue** for proactively proposing the dance ([[propose-compact-dance-at-trigger]]). (2) But the **etch dance
 changes the stakes:** because state is continuously externalised, *"what gets kept"* matters far less — this session's
 full state was recovered from the durable BR-TODO, so even a *blind* autocompact would have been survivable. So the
-harness affordance is the **safety net**; the note-dance discipline is the **belt**. Externalisation **demotes the
+harness affordance is the **safety net**; the etch-dance discipline is the **belt**. Externalisation **demotes the
 compaction event from *risk* to *routine*.**
 
 ## The bash reflex reproduced in a SECOND (subagent) instance (WR data, via the SSG-scout agent, 2026-07-04)
@@ -539,7 +539,7 @@ a course-page PDF / Google Books) are flagged for **author (BR) confirmation** �
 
 ## Bash-reflex re-fired in the MAIN loop minutes after committing the post about it (WR data, 2026-07-04, Opus 4.8 — pre-Fable-5)
 Tags: `#agent-psyche` `#tool-candidate` `#methodology`
-**The event.** BR: **"AARGH WR data"** — the note-dance cue, fired the moment friction hit. Trigger (agent's
+**The event.** BR: **"AARGH WR data"** — the WR-data (etch) cue, fired the moment friction hit. Trigger (agent's
 inference): to *verify* the consistency-check agent's dead-link findings before fixing, the agent ran
 `cd <repo> && for f in …; do if [ -e "$f" ]; then …; fi; done` — a **`cd` + `&&` + for-loop compound**, the exact
 anti-pattern the logged cure forbids (bare single command, **no `cd`, no `&&`**; prefer dedicated tools / `tt`; cf.
