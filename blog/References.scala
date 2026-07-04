@@ -247,5 +247,53 @@ extension (r: Reference)
       case None                  => ""
     (head + body).refineUnsafe   // always non-blank (head starts with "- <title>"); refine at the boundary.
 
-  def toBibTex: BibTex = ???
-  def toHtml:   Html   = ???
+  /** A BibTeX entry: RefKind maps to the entry type; key = first-author-lastname + year. */
+  def toBibTex: BibTex =
+    val d         = r.refData
+    val kind      = d.map(_.kind).getOrElse(Misc)
+    val entryType = kind match
+      case Book        => "book"
+      case Journal     => "article"
+      case Conference  => "inproceedings"
+      case TechReport  => "techreport"
+      case Preprint | Web | Misc => "misc"
+    val y   = d.flatMap(_.year)
+    val key = r.authors.headOption.map(_.lastName.filter(_.isLetter).toLowerCase).getOrElse("anon") + y.fold("")(_.toString)
+    val authorsBib = r.authors.map { a =>
+      if a.otherNames.isEmpty then a.lastName else s"${a.lastName}, ${a.otherNames.mkString(" ")}"
+    }.mkString(" and ")
+    val venueField = kind match
+      case Journal    => "journal"
+      case Conference => "booktitle"
+      case _          => "howpublished"
+    val fields: Seq[(String, String)] = Seq[Option[(String, String)]](
+      Some("author" -> authorsBib),
+      Some("title"  -> r.title),
+      y.map(v => "year" -> v.toString),
+      d.flatMap(_.venue).map(v => venueField -> v),
+      d.flatMap(_.volume).map(v => "volume" -> v),
+      d.flatMap(_.number).map(v => "number" -> v),
+      d.flatMap(_.pages).map(v => "pages" -> v),
+      d.flatMap(_.publisher).map(v => "publisher" -> v),
+      d.flatMap(_.edition).map(v => "edition" -> v),
+      d.flatMap(_.doi).map(v => "doi" -> v),
+      d.flatMap(_.url).map(v => "url" -> v),
+      d.flatMap(_.note).map(v => "note" -> v),
+    ).flatten
+    val body = fields.map((k, v) => s"  $k = {$v}").mkString(",\n")
+    s"@$entryType{$key,\n$body\n}".refineUnsafe
+
+  /** A single HTML `<li>` citation (text fields HTML-escaped; url left as a valid href). */
+  def toHtml: Html =
+    val authors = r.authors.map { a =>
+      val inits = a.abbrevFirstLetterOfOtherNames.map(_ + ".").mkString(" ")
+      if inits.isEmpty then a.lastName else s"${a.lastName}, $inits"
+    }.mkString(", ")
+    val d     = r.refData
+    val year  = d.flatMap(_.year).fold("")(y => s" (${y})")
+    val where = d.flatMap(x => x.venue.orElse(x.publisher)).fold("")(v => s". ${escHtml(v)}")
+    val link  = d.flatMap(_.url).fold("")(u => s""" <a href="$u">link</a>""")
+    s"<li>${escHtml(authors)}$year. <em>${escHtml(r.title)}</em>$where.$link</li>".refineUnsafe
+
+private def escHtml(s: String): String =
+  s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
