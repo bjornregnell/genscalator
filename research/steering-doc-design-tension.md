@@ -43,6 +43,21 @@ Re-engineer the substrate and both hold:
    conflict, follow the judgment and surface the tension."* Restores judgment atop blunt rules — but it is a *knowledge*
    safeguard (retrieval-fragile), so it's a backstop, not the primary fix.
 
+## References must point to easily-reachable substrate (BR 2026-07-04)
+A distinct hazard, surfaced reviewing the `blog-assistant` skill: an aside like `(e.g. the "panic writes")` is a
+**dangling pointer to session-specific / ephemeral matter.** A high-steering doc loads **fresh every session**
+(substrate #3), so that reference means nothing to a clean context and — worse, under an eager or rotten-context
+disposition — triggers a **rabbit hole** (the agent greps to "resolve a citation it feels it should know") or a silent
+"huh?". **Reframe (BR): the test is not "is it in scope" but "is it *easily-reachable substrate matter*?"** — can the
+reader resolve it from **durable, findable** substrate without a hunt, and is resolving it even *required* to get the point?
+- **Illustrations must self-explain (be time-invariant):** "quote the human's own words whole rather than paraphrase"
+  needs no lookup; "(e.g. the panic writes)" does.
+- **References may point only to durable, findable substrate** (foundations, a README, a committed note) — and must
+  **never be *required*** to understand the point; they serve the reader who *chooses* to go deeper.
+- **No dangling episodic pointers** to one session's events in a doc that outlives that session.
+This is substrate-hierarchy hygiene applied to a doc's own citations: a fresh-loaded (substrate #3) doc must be
+**self-contained against substrate #1** (the volatile context it cannot assume). Fixed the instance in `blog-assistant`.
+
 ## Already applied
 The `skills/blog-assistant/SKILL.md` opens with a "how to read this skill" meta-rule (calibrated-not-absolutist +
 surface-the-tension) — an instance of (5) plus the layering ethos of (1). This note is the general form of BR's earlier

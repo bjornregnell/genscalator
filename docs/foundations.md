@@ -284,6 +284,17 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   without recall, a rule only *in-context* evaporates (see **structural vs knowledge safeguard**). The substrate is
   the address of **coupled-system capability** and the thing **substrate-as-multiplier** multiplies; externalizing
   onto it is how a volatile in-context arc is made crash- and compaction-recoverable.
+- **Dangling pointer (to session-specific context)** — a reference, **inside a durable artifact** (a skill, memory, or
+  committed doc — substrate #2/#3), that points **"up" into volatile, session-specific context** (substrate #1: a
+  specific past episode, "as we discussed", an unexplained "the panic writes") which a **future** session no longer
+  has. Named for the classic programming bug — a pointer into *freed / out-of-scope memory*: the reference *looks*
+  valid but points at context that compaction / a fresh session has **freed**, so the reader gets **undefined
+  behavior** — a **rabbit hole** (it greps to resolve a citation it feels it should know), a silent "huh?", or a
+  misapplication. **Especially dangerous under context rot** (an eager, degraded reader is likelier to chase it).
+  **Rule:** a durable artifact may reference **only easily-reachable durable substrate** (foundations, a README, a
+  committed note) and **never require** resolution to grasp the point; **illustrations must self-explain / be
+  time-invariant**; **no pointers up into the volatile #1 layer.** The substrate-hierarchy hygiene rule for a doc's own
+  citations — see `research/steering-doc-design-tension.md`.
 - **Coupled-system capability** — the agent's effective capability is a property of the **pairing** — model ×
   externalized substrate (memories, RAW-DATA, tools, methodology) × the human collaborator — **not of the model
   alone.** Functionalist / extended-mind: capability is *behavioral*, measured by what the coupled system reliably

@@ -35,8 +35,8 @@ Readers know AI is used; **AI-assisted text is not the problem.** Two things are
 ## 3. Äkthet — what we're actually going for
 The value is **real human intention and experience surfacing, and grounded** (Swedish *äkthet* ≈ authenticity /
 genuineness; see [`../docs/foundations.md`](../docs/foundations.md) glossary). Concretely:
-- The human's **own words go in verbatim** where they exist (e.g. the "panic writes") — nothing carries äkthet like the
-  real utterance.
+- The human's **own words go in verbatim** where they exist — quoted whole rather than paraphrased; nothing carries
+  äkthet like the real utterance.
 - **Agent introspection enters as *quoted data*, not the narrating voice** — this is what breaks the "hall of mirrors"
   (self-reference with no external vantage): the human narrates; the agent's self-observation is evidence *within* it.
 - Honesty conventions: report-the-null, one-candidate-framing over grand claims, name the limits.

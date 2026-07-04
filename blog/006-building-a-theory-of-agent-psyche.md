@@ -29,6 +29,18 @@ genscalator's frame those goals must stay **human-visible and human-steered** (t
 agent externalizes goals *where the human can see and veto them*, not into a private loop. Ties 006 ↔ 007 (the agency
 loop runs on the substrate hierarchy) ↔ 005/008 (human-steering).
 
+### Introspection as hypothesis-for-structure, not self-knowledge-to-trust (2026-07-04)
+Reviewing the `blog-assistant` skill, BR asked how a dangling reference (*"e.g. the panic writes"*) would hit a future
+rotten-context session. The agent **introspected** — self-predicted its own disposition: *"there's a genuine chance an
+over-eager me greps `wr-data/` to resolve a citation it feels it should know"* (a rabbit hole). Two things matter: (1)
+the agent produced a **self-model of its own failure mode**; (2) crucially, the *right response was NOT to trust that
+introspection as self-control* ("I'll be disciplined and not rabbit-hole") but to **remove the trigger structurally**
+(delete the dangling reference). So introspection's real value is **hypothesis-generation about *where to add
+structure***, not self-knowledge to rely on — it *locates* the weakness; the substrate hierarchy (structural >
+knowledge) *fixes* it. Honest caveat: the self-prediction is itself substrate-#1 output and may confabulate — it is
+adjudicated by whether the agent *actually* rabbit-holes, not by the say-so, which is precisely why we structuralize
+rather than trust it.
+
 - **TODO: mine WR data on how the agent thinks — its reflexes and habits.** From `research/wr-data/` and
   `research/RAW-DATA.md`, harvest the recurring *behavioural* patterns (not one-off bugs). Seeds already observed:
   - **Reflexes** — reaching for bash (`ls`/`cat`/`grep`/`printf`/`echo`-glued compounds, `$(…)` substitution) instead
