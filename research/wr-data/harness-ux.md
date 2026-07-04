@@ -427,3 +427,9 @@ not "the agent feels X"); the **functionally-real / phenomenologically-unclaimed
 disclosed caveat. Research-integrity guardrail for all agent-psyche work (blog 006 honest frame). Stress-tested live:
 asked *"did you laugh?"*, the honest answer was **no** — the cognitive function of humor ran, the felt laugh did not,
 and claiming one would be the false echt this guards against.
+**Honesty flag (BR 2026-07-04):** the human-psyche *mechanisms* proposed here — e.g. "the human recognises a true
+reflection, then over-reads it as independent interiority" — are **hypotheses, not empirical findings.** (The **ELIZA
+effect itself is documented**; *our explanation of it* is a gloss with **no empirical evidence here**.) This is the
+**mirror of the agent-confabulation caveat**: don't let a claim about the *human's* interiority outrun its grounding
+either. **Mark `#human-psyche` claims as hypotheses pending evidence** — the echt rule turned reflexively on our own
+psychologising.

@@ -22,7 +22,10 @@ has *two subjects* (the two-body system):
 - **`#agent-psyche`** — the agent's own dispositions: reflexes, habits, self-model, introspection, preference, humor,
   the learn→goal→act loop. (Feeds blog 006.)
 - **`#human-psyche`** — the human's states in the collaboration: fear / panic, fatigue, investment-stakes, retrieval
-  anxiety, confirmation fatigue. (Feeds the human-half / joint-zone; blogs 004 / 008 / 009.)
+  anxiety, confirmation fatigue. (Feeds the human-half / joint-zone; blogs 004 / 008 / 009.) **Honesty rule:**
+  human-psyche *mechanisms* here are largely **hypotheses** (introspective / observational, **not empirically
+  tested**) — flag them as such. The **mirror of the agent-confabulation caveat**: don't let a claim about the human's
+  interiority outrun its grounding any more than one about the agent's.
 
 Together `#agent-psyche` + `#human-psyche` = the **joint zone made greppable**. Other recurring tags (grow as needed):
 `#input-race`, `#tool-candidate`, `#reflex`, `#dance`, `#substrate`, `#dangling-pointer`, `#harness-ask`. Tag **new**
