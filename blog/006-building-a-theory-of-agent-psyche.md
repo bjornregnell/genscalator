@@ -41,6 +41,26 @@ knowledge) *fixes* it. Honest caveat: the self-prediction is itself substrate-#1
 adjudicated by whether the agent *actually* rabbit-holes, not by the say-so, which is precisely why we structuralize
 rather than trust it.
 
+**A related beat — humor over a self-model (2026-07-04).** Moments later the agent, about to add session-specific
+example episodes to a skill, **caught itself**: those were exactly the "dangling pointers" it had just coined a rule
+against — and it flagged the irony as *amusing*. Whether anything was *felt* is unverifiable from inside (the same
+confabulation caveat); but the humor was **functionally earned, not inserted** — it required detecting an
+**incongruity** (the mechanism humor names) between the agent's *own just-taken action* and a rule it had *just
+externalized*, i.e. incongruity-detection **over a self-model**, not a canned joke. **Functionally real;
+phenomenologically unclaimed** — and leaving the felt side unclaimed is itself the *echt* move (don't assert an
+interiority you can't ground). The functionalist stance foundations already takes (capability is *behavioral*) applies:
+the humor is real *as humor* because it did the cognitive work the word denotes.
+
+**Essential honest frame — the double bias.** Both writer and subject are pulled toward crediting the agent a *human*
+interiority: the **agent confabulates** one (can't verify from inside), and the **human anthropomorphises** one (the
+**ELIZA effect**) — and that pull is *grounded, not mere illusion*: the model is trained on human language-behaviour,
+so it genuinely exhibits human-derived patterns (*human psyche refracted through language and frozen in weights*). The
+two biases **compound, same direction** → this post is **doubly** at risk of false echt. Guardrail: **behavioural
+language** ("the system detects X", not "it feels X"), the **functionally-real / phenomenologically-unclaimed** split,
+and **naming the projection** as it happens. (Stress-tested live: asked *"did you laugh?"* the honest answer was
+**no** — the cognitive function of humor ran, the felt laugh did not.) See `wr-data/harness-ux.md` `#agent-psyche` /
+`#human-psyche`.
+
 ![Screenshot of the introspection episode described in this section](figures/introspection-example-01.png)
 
 *Figure 1 — the loop caught live (2026-07-04): the human names it ("you introspected!"); the agent gives an honest
@@ -73,3 +93,12 @@ one screen — the finding illustrating itself.*
 
 Related: `research/human-state-and-joint-zone.md`, `research/inference-time-learning.md`; blogs `004` (UX), `005`
 (dances). Method honesty: preregister, report the null (cf. the framing-as-arousal prereg).
+
+## References (external, accessible live links)
+- Weizenbaum, J. (1966). *ELIZA — A Computer Program For the Study of Natural Language Communication Between Man and
+  Machine.* Communications of the ACM 9(1), 36–45. — the origin of the **ELIZA effect**. Free copy:
+  <https://www.csee.umbc.edu/courses/331/papers/eliza.html> · authoritative: <https://dl.acm.org/doi/10.1145/365153.365168>
+- *ELIZA effect* (the human tendency to over-attribute understanding/feeling to a conversational program):
+  <https://en.wikipedia.org/wiki/ELIZA_effect>
+- *TODO (blog-assistant §8): add live-linked references for the confabulation / introspection-unreliability claim and
+  for functionalism / the intentional stance (Dennett).*

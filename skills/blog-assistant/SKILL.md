@@ -70,3 +70,12 @@ or flag it as speculation — don't smuggle it in wearing a grounded voice (see 
   *real* thing happens (a vivid episode worth a screenshot, a result worth charting), proactively say "📸 good figure
   for blog X" so the human captures it before it's gone. When a post lacks a figure, leave a **`[figure: …]` caption
   placeholder** asking for the real image — better a request than an empty post or a decorative filler.
+
+## 8. References — real, live, accessible
+- **Try to give each post relevant references with accessible, *live* links** — a near-end "References" section.
+  Grounding (§2) extends to citations: a named source with no link, or a paywall-only one, is weak; a **checked,
+  freely-accessible** link is echt.
+- **Verify links resolve before shipping.** A hallucinated or dead URL is **false echt** — a genuine-looking citation
+  that leads nowhere. Prefer a free/open copy *alongside* the authoritative (DOI) one.
+- Keep **external references** (live links, near the end) distinct from **internal cross-links** (to `research/`,
+  foundations — durable, findable substrate, per the dangling-pointer rule).

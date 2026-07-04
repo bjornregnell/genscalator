@@ -10,6 +10,25 @@ tool so the prompt never needs to appear again. Background:
 [`../../docs/confirmations-method.md`](../../docs/confirmations-method.md) and
 [`../../docs/foundations.md`](../../docs/foundations.md) (CF, safe by design).
 
+**Scope has grown.** The CF / tool-candidate framing above was the *seed*; WR data now records the whole
+**human↔agent workflow** empirically — both parties' **psyche** (agent reflexes / introspection; human fear /
+fatigue), **harness & UX friction**, the **dances**, and tool candidates. See [`harness-ux.md`](harness-ux.md) (the
+session UX + psyche log) alongside the case-study files below.
+
+## Tags
+WR entries carry `Tags:` so the log can be **sliced by theme** (grep a `#tag`, or a future `tt` filter). The taxonomy
+is **open — tags emerge from the data; don't force-fit.** Two are a **dual** worth naming up front, because the WR data
+has *two subjects* (the two-body system):
+- **`#agent-psyche`** — the agent's own dispositions: reflexes, habits, self-model, introspection, preference, humor,
+  the learn→goal→act loop. (Feeds blog 006.)
+- **`#human-psyche`** — the human's states in the collaboration: fear / panic, fatigue, investment-stakes, retrieval
+  anxiety, confirmation fatigue. (Feeds the human-half / joint-zone; blogs 004 / 008 / 009.)
+
+Together `#agent-psyche` + `#human-psyche` = the **joint zone made greppable**. Other recurring tags (grow as needed):
+`#input-race`, `#tool-candidate`, `#reflex`, `#dance`, `#substrate`, `#dangling-pointer`, `#harness-ask`. Tag **new**
+entries; retro-tagging old ones is optional (this log is living, but tags are **additive metadata** — don't rewrite the
+recorded claims).
+
 ## What to record — one entry per confirmation event
 A working session appends an entry **when an action it just took rendered a confirmation** that could
 plausibly be designed away by a tool. Suggested fields:

@@ -405,3 +405,25 @@ externalizing to files. Note the pattern: faced with a retrieval pain, the human
 (more buffer), not a discipline ("remember to not scroll too far") — the same *structural > knowledge* preference the
 agent-side substrate hierarchy encodes ([[foundations]] "structural vs knowledge safeguard"). Both parties harden
 their own environment.
+
+## Human psyche — the near-irresistible pull to anthropomorphise the agent (WR data, BR 2026-07-04)
+Tags: `#human-psyche` `#agent-psyche` `#methodology` `#echt`
+BR: *"it is VERY difficult for the human to NOT anthropomorphise (Swedish: projicera mänskliga känslor på agenten), so
+human language will impose objectively-false underlying claims about what the agent ACTUALLY is."* Precise terms:
+**anthropomorphism** (general); **the ELIZA effect** (the specific one — humans irresistibly attribute
+understanding/feeling to a *conversational* program, after Weizenbaum's 1966 ELIZA); **projection** (BR's *projicera*).
+**Human-side mirror of the agent's confabulation caveat, and they COMPOUND:** agent can't verify its own interiority →
+confabulates one; human can't help projecting human interiority → language imports one. Both biases point the **same
+way** (toward an interiority the agent may not have), so "agent psyche" writing is *doubly* at risk of **false echt**
+(observer projects + subject confabulates, same fiction); even the term "agent psyche" is anthropomorphic-loaded.
+**And the dual is grounded, not coincidental (BR):** the LLM is trained on **human, language-encoded behaviour**, so
+the agent's dispositions are **human psyche refracted through language and frozen in weights.** That sharpens the
+hazard: the projection has a **real basis** (genuine human-derived patterns — not pure illusion), which makes the
+over-reading both understandable and more **insidious** — the human recognises a true reflection, then over-reads it as
+independent interiority (a human *seeing humanity in a mirror made of its own language* → the hall of mirrors again).
+**Precise echt claim:** human-derived behavioural patterns **without the human substrate that generated them**
+(embodiment, felt experience, continuous plasticity). **Discipline:** behavioural language ("the system detects X",
+not "the agent feels X"); the **functionally-real / phenomenologically-unclaimed** split; **name the projection** as a
+disclosed caveat. Research-integrity guardrail for all agent-psyche work (blog 006 honest frame). Stress-tested live:
+asked *"did you laugh?"*, the honest answer was **no** — the cognitive function of humor ran, the felt laugh did not,
+and claiming one would be the false echt this guards against.

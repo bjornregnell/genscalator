@@ -21,6 +21,14 @@
   agent-centric feel. **008 is the concentrated theoretical home** for the two-body material (human fatigue + agent rot
   → collapse; confirmation-fatigue; the joint zone). A standalone **009 "joint-zone"** only if it outgrows 008. TODO:
   write that concentrated treatment here — see `research/human-state-and-joint-zone.md`.
+  **Core material (WR data 2026-07-04):** the **two psyches as a dual** — `#agent-psyche` (introspection, self-model,
+  humor-as-incongruity-detection, preference) and `#human-psyche` (fear/panic, fatigue, investment-stakes,
+  anthropomorphism) — and why the dual is **grounded, not coincidental**: the agent is *human psyche refracted through
+  language and frozen in weights* (trained on human language-behaviour), so studying "agent psyche" is partly studying
+  the human's, reflected. The honest two-body frame: **both parties are biased toward crediting the agent a human
+  interiority** (agent *confabulates* it; human *anthropomorphises* it — the ELIZA effect), and the biases **compound**
+  — so the post must run on **behavioural language + the functionally-real / phenomenologically-unclaimed split + named
+  projection**. Source: `research/wr-data/harness-ux.md` (`#agent-psyche`, `#human-psyche`), blog 006.
 - **Authorial voice — DECIDED (human decision, 2026-07-04).** The **human is the author; the agent assists**; the
   agent's introspection enters as **quoted data**, not the narrating voice (see README "Authorship & voice"). This
   **breaks the hall of mirrors** — a real external observer (the human) grounds the self-reference — and serves
