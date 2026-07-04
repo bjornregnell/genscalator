@@ -397,3 +397,17 @@ Header-aware (reference columns by name), tab-safe, prints a clean table + a ver
 [[DESIGN-single-dispatcher]] typed-args direction (a natural leaf tool: pure read → compute → print). **Not built
 now** (tools held in safe state pending the dispatcher refactor) — logged as a high-value candidate; propose adding
 it when the toolbox reopens.
+
+## `printf > file` and `echo "===" ; …` reflexes → Write tool + a `tt sweep-status` (2026-07-04, BR-flagged)
+
+BR (watching the gray command previews): *"you did a lot of printf; is this a candidate for a tool?"* Two distinct
+reflexes:
+- **`printf '%s' … > msgfile`** to create a commit-message file — a *slip*, not a tool gap: the **Write tool** is
+  the clean path (no shell, any metachars, allowlistable) and is what's used for nearly every other commit; the
+  inline `printf >` crept in once for speed. Fix = discipline: always Write the message file, never `printf`/`echo >`.
+- **`echo "=== … ===" ; wc -l … ; tail … ; grep …`** — the labeled-multipart-status compound run every monitor
+  tick. THIS is a real candidate: hand-assembling status via `echo` separators + a `;`-chain is non-allowlistable
+  and repetitive. → **`tt sweep-status`** leaf tool (TSV row count + current-model tail + `tt box gpu`, one formatted
+  call) and the already-proposed **`tt tsv`**. Both are clean [[DESIGN-single-dispatcher]] leaf tools (pure-ish,
+  self-labeling output) — build when the toolbox reopens. General rule: if a bash compound exists only to *label and
+  glue* several outputs, that's a tool boundary, not a shell pipeline.
