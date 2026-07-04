@@ -14,10 +14,13 @@ package blog
 
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.*
+import io.github.iltotore.iron.constraint.string.*   // Blank / Match (string refinements)
+import io.github.iltotore.iron.constraint.any.*       // Not (constraint combinator)
 
 type Title      = String
 type RefComment = String
 type Year       = Int :| Interval.Closed[1900, 2100]  // Iron refinement: a plausible publication-year range.
+type Summary    = String :| Not[Blank]  // Iron refinement: a summary must actually say something (non-empty, not whitespace-only).
 
 /** A name split so we can render "Regnell, B." or "Björn Regnell". */
 case class Author(lastName: String, otherNames: Seq[String], abbrevFirstLetterOfOtherNames: Seq[String])
@@ -59,6 +62,7 @@ case class Reference(
   refData:    Option[RefData],
   isVerified: RefVerification,
   comment:    RefComment,
+  summary:    Option[Summary] = None,  // optional plain-language summary; Iron-guaranteed non-blank when present.
 )
 
 import RefKind.*, RefVerification.*
@@ -128,51 +132,61 @@ val references: Seq[Reference] = Seq(
     Seq(author("Weizenbaum","Joseph")),
     Some(RefData(Journal, year = Some(1966), venue = Some("Communications of the ACM"), volume = Some("9"),
       number = Some("1"), pages = Some("36-45"), doi = Some("10.1145/365153.365168"),
-      url = Some("https://www.csee.umbc.edu/courses/331/papers/eliza.html"),
+      url = Some("https://courses.cs.umbc.edu/331/papers/eliza.html"),
       note = Some("free copy at UMBC; origin of the 'ELIZA effect'"))),
     Verified,
     "Origin of the ELIZA effect (human over-attribution of understanding to a conversational program).",
   ),
 
-  // ── ToDo: recalled but NOT verified this session — verify on Google Scholar before citing as fact ──
+  // ── was ToDo, now VERIFIED (2026-07-04, >=2 authoritative sources each; corrections applied per entry) ──
   Reference(
     "Personality Traits in Large Language Models",
-    Seq(author("Serapio-García","Greg")), // author list UNVERIFIED
-    Some(RefData(Preprint, year = Some(2023), venue = Some("arXiv"),
-      note = Some("recollection: ~arXiv:2307.00184, Google DeepMind — VERIFY id + authors"))),
-    ToDo,
-    "LLM Big-Five/OCEAN personality measurement. Id + author list UNVERIFIED.",
+    Seq(author("Serapio-García","Greg"), author("Safdari","Mustafa"), author("Crepy","Clément"),
+        author("Sun","Luning"), author("Fitz","Stephen"), author("Romero","Peter"),
+        author("Abdulhai","Marwa"), author("Faust","Aleksandra"), author("Matarić","Maja")),
+    Some(RefData(Preprint, year = Some(2023), venue = Some("arXiv"), number = Some("2307.00184"),
+      doi = Some("10.48550/arXiv.2307.00184"),
+      url = Some("https://arxiv.org/abs/2307.00184"),
+      note = Some("v1 2023-07-01 (latest v4 2025-03-11); 9 authors. 'Google DeepMind' affiliation not confirmed on the arXiv page."))),
+    Verified,
+    "LLM Big-Five/OCEAN personality measurement. Verified: arXiv id 2307.00184 + full 9-author list (arXiv abstract page + HF Papers).",
   ),
   Reference(
     "The Media Equation: How People Treat Computers, Television, and New Media Like Real People and Places",
     Seq(author("Reeves","Byron"), author("Nass","Clifford")),
-    Some(RefData(Book, year = Some(1996), publisher = Some("CSLI / Cambridge University Press"),
-      note = Some("VERIFY year / publisher / author order"))),
-    ToDo,
-    "Foundational anthropomorphism-of-media work. Details UNVERIFIED.",
+    Some(RefData(Book, year = Some(1996),
+      publisher = Some("Cambridge University Press (hardcover); CSLI Publications, CSLI Lecture Notes (paperback)"),
+      note = Some("paperback ISBN 9781575860534"))),
+    Verified,
+    "Foundational anthropomorphism-of-media work. Verified: 1996, author order Reeves-Nass, both publishers (Wikipedia + Stanford CSLI + ACM guide).",
   ),
   Reference(
     "Guidelines for performing Systematic Literature Reviews in Software Engineering",
     Seq(author("Kitchenham","Barbara"), author("Charters","Stuart")),
-    Some(RefData(TechReport, year = Some(2007), publisher = Some("Keele University / EBSE"),
-      number = Some("EBSE-2007-01?"), note = Some("VERIFY report id / year"))),
-    ToDo,
-    "The SE SLR standard. BR's view: may be over-arching given scarce hard empirical evidence in SE (see lit-review note).",
+    Some(RefData(TechReport, year = Some(2007),
+      publisher = Some("Keele University and University of Durham Joint Report (EBSE)"),
+      number = Some("EBSE 2007-001"), note = Some("Version 2.3"))),
+    Verified,
+    "The SE SLR standard. BR's view: may be over-arching given scarce hard empirical evidence in SE (see lit-review note). Verified: report EBSE 2007-001 v2.3, Keele+Durham.",
   ),
   Reference(
     "Guidelines for snowballing in systematic literature studies and a replication in software engineering",
     Seq(author("Wohlin","Claes")),
-    Some(RefData(Conference, year = Some(2014), venue = Some("EASE"),
-      note = Some("VERIFY venue / year / doi"))),
-    ToDo,
-    "Snowball sampling as a lighter-weight search strategy — BR's preferred alternative to a full protocol. UNVERIFIED.",
+    Some(RefData(Conference, year = Some(2014),
+      venue = Some("EASE '14 (18th Intl. Conf. on Evaluation and Assessment in Software Engineering)"),
+      pages = Some("38:1-38:10"), publisher = Some("ACM"),
+      doi = Some("10.1145/2601248.2601268"),
+      url = Some("https://doi.org/10.1145/2601248.2601268"))),
+    Verified,
+    "Snowball sampling as a lighter-weight search strategy — BR's preferred alternative to a full protocol. Verified: DOI 10.1145/2601248.2601268, pages 38:1-38:10 (DBLP + ACM DL + OpenAIRE).",
   ),
   Reference(
     "Theory of Mind May Have Spontaneously Emerged in Large Language Models",
     Seq(author("Kosinski","Michal")),
-    Some(RefData(Preprint, year = Some(2023), venue = Some("arXiv"),
-      note = Some("contested; VERIFY id + note the rebuttals"))),
-    ToDo,
-    "Theory-of-mind-in-LLMs (contested) — useful for the unfalsifiable-from-inside point. UNVERIFIED.",
+    Some(RefData(Preprint, year = Some(2023), venue = Some("arXiv"), number = Some("2302.02083"),
+      url = Some("https://arxiv.org/abs/2302.02083"),
+      note = Some("v1 title (2023-02-04). The SAME arXiv id was later retitled 'Evaluating Large Language Models in Theory of Mind Tasks' and published in PNAS 121(45), 2024, doi 10.1073/pnas.2405460121, with a softer claim. Cite the v1 title for the contested 'emerged' framing; rebuttal to check before citing: Ullman 2023, arXiv:2302.08399."))),
+    Verified,
+    "Theory-of-mind-in-LLMs (contested) — useful for the unfalsifiable-from-inside point. Verified: arXiv id 2302.02083 (v1); carries the retitle/PNAS note to avoid a stale-id trap.",
   ),
 )

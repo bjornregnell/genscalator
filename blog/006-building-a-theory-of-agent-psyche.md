@@ -137,7 +137,7 @@ Related: `research/human-state-and-joint-zone.md`, `research/inference-time-lear
 ## References (external, accessible live links)
 - Weizenbaum, J. (1966). *ELIZA — A Computer Program For the Study of Natural Language Communication Between Man and
   Machine.* Communications of the ACM 9(1), 36–45. — the origin of the **ELIZA effect**. Free copy:
-  <https://www.csee.umbc.edu/courses/331/papers/eliza.html> · authoritative: <https://dl.acm.org/doi/10.1145/365153.365168>
+  <https://courses.cs.umbc.edu/331/papers/eliza.html> · authoritative: <https://dl.acm.org/doi/10.1145/365153.365168>
 - *ELIZA effect* (the human tendency to over-attribute understanding/feeling to a conversational program):
   <https://en.wikipedia.org/wiki/ELIZA_effect>
 - *TODO (blog-assistant §8): add live-linked references for the confabulation / introspection-unreliability claim and
