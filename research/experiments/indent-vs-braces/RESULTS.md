@@ -176,3 +176,60 @@ population-level default, not a rule. (RQ3: the Opus-4.8 anchor — pending — 
 
 Caveats unchanged: one edit family (wrap-in-`else`); 3 tasks; brace-signature emission proxy; R6 local / R3 Opus;
 single session. Next: more edit families + fix common-before==braceless; larger R; cross-vendor frontier models.
+
+
+## Confirmatory big-run (003) — 56 small models, preregistered (2026-07-04)
+
+**Headline: a clean, preregistered NULL.** Code style (braceless / braceful / common) has **no statistically
+significant effect** on small local models' ability to perform the wrap-in-`else` edit. Reported per the prereg's
+standing commitment: full frozen n, one primary test, no dropping, **whatever p** it finds.
+
+### The numbers (seed `20260703`, R = 100 000, blocked by model)
+Source: `results-bigrun.tsv` (3024 cells + header). Analysis: `significance.scala` (reproducible to the digit).
+
+| style | column-mean pass-frac (higher = easier to edit) | Friedman rank-sum (lower = better) |
+|---|---|---|
+| braceless | 0.234 | **103.0** (best by rank) |
+| braceful  | **0.258** (best by mean) | 124.0 |
+| common    | 0.248 | 109.0 |
+
+Grand mean pass-fraction = **0.247**.
+
+- **OMNIBUS within-model permutation test** (H0: style has no effect): **p = 0.5937**. Not significant.
+- **PAIRWISE** (paired sign-flip, two-sided): braceless−braceful **−0.024** (p = 0.396); braceless−common −0.014
+  (p = 0.426); braceful−common +0.010 (p = 0.733). None significant.
+- **Friedman** (rank styles within model): χ² = 4.179 (df 2), p ≈ 0.124. Not significant.
+- **FOIL — naive pooled χ²** (pseudoreplication, *do not trust*): χ² = 1.55, p ≈ 0.46 — even the inflated foil is null
+  here. (Kept on screen as the reminder of the mistake that faked p ≈ 0.008 in the pilot's §5.5.)
+
+### Effective n / disjointness (dedup by ollama content-ID)
+**n = 56 distinct model tags.** Checking every model's content-ID, the **only** duplicate on the box is
+`a2af6cc3eb7f` = `gemma3:4b` (confirmatory) ↔ `gemma3:latest` (pilot). Since `gemma3:latest` is **not** in the frozen
+56, there is **no within-sweep double-count**; the alias means only that **1 of 56 shares weights with a pilot model**,
+so **55/56 are truly out-of-sample vs the pilot**. Frozen list unchanged (no drop) — reported per RUN-LOG.
+
+### Interpretation (honest)
+1. **Null, and the tiny aggregate signals disagree in direction:** column-means faintly favour *braceful*;
+   within-model ranks faintly favour *braceless*. That mean-vs-rank divergence is the signature of a **bidirectional,
+   per-model** effect that cancels — some models edit braceless better, some braceful, no consistent population direction.
+2. **The MODEL dominates, not the style.** Pass rates span **0.00 → 0.89**; ~10 models are flat-zero across all styles
+   (command-r7b, deepseek-coder:1.3b, deepseek-r1:1.5b, gemma3:1b, nemotron-mini, phi3, phi, qwen2:0.5b, stablelm2,
+   tinyllama); a few are strong (gemma:2b 0.89, granite-code:8b 0.83). Style variation lives *inside* the enormous
+   model-to-model variation.
+3. **The pilot's aggregate "braceless costliest" does NOT replicate at scale.** Pilot: braceless −17.5 pp vs braceful
+   (d ≈ 0.37, itself null p ≈ 0.46). Confirmatory: braceless −2.4 pp vs braceful (p = 0.40). The sign of the
+   column-mean gap persists but the **effect size collapsed ~7×** and stays non-significant — consistent with the pilot
+   estimate being **outlier-inflated**, bounding the true style effect well below d ≈ 0.37.
+4. The design sat honestly at the **edge of power** (56 ≈ the ~55 the pilot's inflated d needed for 80%), so a null is
+   informative: a population-level style effect *at the pilot's size* had ~80% chance to show and did not. Practical
+   read: **for the weak-editor question, brace style is not a meaningful lever — model capability is.**
+
+### Caveats
+Low base pass-rate (~25%) + ~10 all-zero models → floor effects compress any style signal. `NORESP` (verbose reasoning
+models timing out) is graded fail + kept (no-drop), concentrated in the deepseek-r1 family; it inflates wall-clock, not
+the result (blocked-by-model caps each model at one data point). Small-model population only (≤ ~8B on a 6 GB card) —
+the target for the *weak-editor* question, silent on mid/large models (Tier B, not run).
+
+### Reproducibility
+`scala-cli run significance.scala -- results-bigrun.tsv` — deterministic given frozen `SEED = 20260703`, `R = 100000`.
+Raw data `results-bigrun.tsv` committed as-is. Prereg: `BIG-RUN-PREREG.md`. Run log: `RUN-LOG.md`.
