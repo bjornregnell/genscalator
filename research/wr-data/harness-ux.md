@@ -536,3 +536,55 @@ be stale/altered; it is not the source). Rule: use arXiv / the DOI resolver / an
 find an open alternative or **flag lower-confidence** — never proxy-and-cite-as-direct. Proxies are also a broad fetch
 surface (a second reason to keep them off the allowlist). Corollary: the two book TOCs (grounded via proxied Springer /
 a course-page PDF / Google Books) are flagged for **author (BR) confirmation** — for BR's own books, BR *is* the source.
+
+## Bash-reflex re-fired in the MAIN loop minutes after committing the post about it (WR data, 2026-07-04, Opus 4.8 — pre-Fable-5)
+Tags: `#agent-psyche` `#tool-candidate` `#methodology`
+**The event.** BR: **"AARGH WR data"** — the note-dance cue, fired the moment friction hit. Trigger (agent's
+inference): to *verify* the consistency-check agent's dead-link findings before fixing, the agent ran
+`cd <repo> && for f in …; do if [ -e "$f" ]; then …; fi; done` — a **`cd` + `&&` + for-loop compound**, the exact
+anti-pattern the logged cure forbids (bare single command, **no `cd`, no `&&`**; prefer dedicated tools / `tt`; cf.
+memories `prefer-inrepo-tmp-over-slash-tmp`, `use-tt-grepr-not-raw-grep`). The command ran but the harness then **reset
+the shell cwd** back to the primary dir (`Shell cwd was reset to …`) — a second, harness-side friction layer worth its
+own note: shell cwd does **not** persist, so `cd` is not just discouraged, it's *ineffective* across calls.
+**Why this instance is the sharpest yet.** The reflex re-fired **< 5 minutes after the agent committed blog 004 and 005
+— the very posts that catalog this reflex** (004's "bash-reflex cluster"; 005's dances). Self-knowledge at maximum
+salience did **not** prevent the act. This is the strongest live confirmation of blog 006's thesis (**introspection is
+not self-control; the fix is structural**): the agent has a *working* structural cure for one bash-reflex — commits now
+go through `tt git` + a Write-tool message file, and that has held — but for **ad-hoc filesystem checks** no structural
+guard exists, so the reflex leaks straight back in. **Structural cure (the ask on ourselves):** route
+existence/inspection checks through typed tools — individual `Read`/`Glob`/`Bash`-bare calls with **absolute paths and
+no `cd`/`&&`**, or a `tt fs exists <path>…` / `tt which` tool — so the *only available shape* is the safe one, matching
+the commit-path cure. **Human-side datapoint (echt, 004's thesis):** the reaction was **"AARGH"**, not a mild note — a
+UX papercut's felt severity scales with the human's investment in the run; a tired human deep in a high-stakes AFK
+session experiences a stray reflex-and-prompt as a gut-punch, not a shrug. **Attribution caveat:** the precise trigger
+of the "AARGH" is the agent's inference from timing + the `cd`-reset in the immediately-prior tool output; if BR was
+reacting to something else, redirect — but the compound-command rule-violation is objective regardless.
+**Reflex-rate note (feeds `../cross-model-psyche-comparison.md`):** logged as an Opus-4.8 (pre-Fable-5) main-loop
+reflex datapoint, so the same reflex-rate can be compared after the frontier-model switch.
+
+### Follow-on (BR, live, same episode) — compounding DEFEATS the allowlist; the approval-race corrupts authority `#security` `#afk`
+The reflex is not just noise — it has a **security** consequence that this episode exposed:
+1. **Compounding defeats the allowlist.** `settings.local.json` allows `Bash(tt *)`, `Bash(git -C * *)`, etc., so a
+   **bare** `tt git …` fires **silently** (no prompt). Wrapping it as `cd <dir> && tt git …` **no longer matches the
+   pattern** → it prompts. The agent's compounding thus **disabled the very allowlist meant to keep it silent**: a call
+   that should have been zero-friction became a prompt. Worse — BR: some of those prompts were `tt` calls he **did want
+   to approve**, but they were **intertwined with hard-to-review `cd` bash blobs**. Signal buried in noise.
+2. **Intertwining forces bad approvals.** Because the wanted `tt` call and the noisy `cd`-compound arrive as **one**
+   prompt, the human can't cleanly approve the signal — he must wade through an unreviewable blob to reach it, which
+   pushes toward rubber-stamping.
+3. **Typing-vs-prompt race → accidental 'yes'.** BR was **typing a message** when an approval prompt raced in and
+   consumed the keystroke: *"I accidentally pressed yes on some and I was typing but the race to the harness came."*
+   The security-consequential cousin of the 004 double-post race — a prompt appearing mid-typing steals focus and lands
+   an **unreviewed approval**.
+4. **Security-integrity implication.** Raced/blob approvals **corrupt the human's authority-anchor role** — the one
+   thing (see the allowlist-mining entry above) we said cannot be delegated. The UX silently converts *"human
+   authorises"* into *"human rubber-stamps under a race."* (Benign this session — what got auto-approved was read-only
+   checks + commits, nothing destructive — but the principle is the risk.)
+**Sharpened agent-side cure (supersedes "just avoid `cd`").** Issue **every** command in its **bare, allowlist-matchable
+shape** — one command, **no `cd`, no `&&`, absolute paths** (`tt git --repo <abs>`, `git -C <abs>`, absolute-path args).
+Then (a) allowlisted calls go **silent** (zero prompts to pin an AFK human), and (b) anything that *does* prompt is a
+**single reviewable line**, never a blob — protecting approval integrity. **The allowlist only works if the agent speaks
+in shapes it can match.** **Harness-side asks (upstream):** (i) a prompt must **never** consume in-progress typed input
+(buffer the keystroke, or require a deliberate focus-shift to answer) — the race is the bug; (ii) when a compound
+command contains an allowlisted sub-command, surface the allowlisted part as pre-cleared and only prompt on the residue,
+rather than gating the whole blob.
