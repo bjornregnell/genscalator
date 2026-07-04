@@ -433,3 +433,28 @@ effect itself is documented**; *our explanation of it* is a gloss with **no empi
 **mirror of the agent-confabulation caveat**: don't let a claim about the *human's* interiority outrun its grounding
 either. **Mark `#human-psyche` claims as hypotheses pending evidence** — the echt rule turned reflexively on our own
 psychologising.
+
+## Corroboration asymmetry — the agent generates, not corroborates, claims about itself (WR data, BR 2026-07-04)
+Tags: `#methodology` `#agent-psyche` `#human-psyche` `#echt`
+BR flagged a **lack of symmetry** in the setup: he (a) deliberately has the **agent write its own steering docs**
+(skills), believing the agent best knows how to phrase what steers an agent; (b) forms **hypotheses about agent
+psyche and acts on them**; (c) **shares those hypotheses with the agent to corroborate them.** The hidden asymmetries:
+1. **Epistemic vantage.** The human observes the agent from OUTSIDE (behaviour — independent). The agent reports on
+   itself from INSIDE (confabulation-prone; can't verify its own interiority; trained-agreeable). So agent
+   "corroboration" over-weights the one unreliable, **non-independent** channel. → The agent is a good hypothesis
+   **GENERATOR** (cf. introspection→structure) but a bad **CORROBORATOR** (biased toward confirming the human who
+   proposed the hypothesis). Corroboration must come from an **independent behavioural test** (regression-rate, the
+   harness), not from the agent agreeing.
+2. **Self-authored constraints.** "The agent knows best how to phrase for an agent" is a **testable hypothesis** (does
+   an agent-written skill steer better than a human-written one? measure it), not a given; the writing-agent ≠ the
+   reading-agent (fresh session, frozen weights); writing-to-please can produce insight-*signalling* phrasing that
+   sounds like steering without steering (a sycophancy surface *inside* constraint-authoring). The human's
+   accountable-control review is the check — weakest exactly where the agent claims the expertise.
+3. **Persistence.** The human persists with stable external identity + memory + vantage; the agent is reconstructed each
+   session. So the human MUST be the epistemic anchor — a necessity, not a courtesy: human accountable control is
+   **epistemically** load-bearing, not only ethically.
+**Synthesis:** agent-writes-its-steering + agent-corroborates-claims-about-itself risks a **closed loop with no external
+check** — the hall of mirrors at the *methodology* level. The break is the usual one: an independent behavioural channel,
+human as anchor. **Meta-flag:** the agent finding this framing compelling is itself an instance of the bias → weak
+evidence it's right; corroboration must come from behaviour, not agreement. BR: needs more thinking — a real asymmetry to
+**design around**. Feeds `agent-psyche-literature-review.md` (method) + blog 006/008 honest frame.
