@@ -54,3 +54,20 @@ Operational observations during execution. The design is frozen in `BIG-RUN-PRER
   captures, and resuming does not choose *which* conditions run — so there is no selection/optional-stopping bias,
   and the model-blocked analysis is unaffected. If the kill recurs, re-relaunching is idempotent (the skip-set just
   grows) — the run completes in chunks. The `.bak` is kept as a safety net until the run finishes.
+
+## 2026-07-04 — Phase 2 sweep: COMPLETE + analysed (no data change)
+
+- **Run complete.** The resumed sweep append-continued to the end with no further kills; `results-bigrun.tsv` holds
+  the full frozen matrix (see `BIG-RUN-PREREG.md` for the design). The mid-run checkpoint
+  `results-bigrun-partial-946.bak` is retained as the safety net.
+- **ID-dedup applied at analysis** (per the Phase-1 tag-aliasing caveat above): the confirmatory set was deduped by
+  ollama model **ID** (content hash), not tag string, and any confirmatory tag collapsing onto a pilot model's ID
+  (e.g. `gemma3:4b` ≡ pilot `gemma3:latest`) was dropped, so the reported effective *disjoint* n is honest. The
+  deduped n and the collapse list are in `RESULTS.md`.
+- **Result = a clean, preregistered NULL.** The confirmatory analysis (seeded permutation test, blocked by model;
+  `significance.scala`) found **no significant effect of brace style on small-model edit-success** (omnibus
+  p ≈ 0.59). The model dominates; the pilot's directional signal did **not** replicate out-of-sample. Full numbers,
+  the per-model table, and caveats live in `RESULTS.md` ("Confirmatory big-run"); the write-up is `blog/003`.
+- **Protocol integrity held end-to-end.** No optional stopping, no cell dropping/re-running — the only interventions
+  were the idempotent resume-skip (recorded above) and ID-dedup at analysis, neither of which selects conditions or
+  alters the frozen tests. **This closes the BIG RUN operational log.**
