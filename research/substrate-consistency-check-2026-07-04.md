@@ -11,7 +11,7 @@ a fix pass. This doc tracks **what the agent has done** vs **what still needs BR
   anchor**, **thriller state**; reframed the roles/cases group per your *Case Study Research in SE* §3.2.3. *(`51cc088`)*
 - **Dance definitions completed** — the **hardening dance** had no foundations entry (only a passing mention); added it
   with steps, plus the new **go dance** + the **≥2-step dance-bar** criterion. *(`7898dbf`)*
-- **note/etch cue split** etched across foundations + memory + the 005 catalog + research notes. *(`92faef7`, `34e5c7f`)*
+- **note/pin cue split** (was briefly "etch") propagated across foundations + memory + the 005 catalog + research notes. *(`92faef7`, `34e5c7f`)*
 - **foundations made findable** — group map + A→Z index + 7 themed subsections (was one flat bullet wall). *(`1d7b840`)*
 - **WR-data logged** — the AARGH allowlist-defeat episode, the "too-broad-allow-suggestions" category, the cue-word
   motor-ergonomics finding. *(`2ae1e5d`, `f2f2573`)*
@@ -30,7 +30,7 @@ a fix pass. This doc tracks **what the agent has done** vs **what still needs BR
 ## 🔴 Actions needed by BR (judgment / authorial / your call)
 - **Name the agent role** (you asked). `CF` for Claude-Fable **collides** with `CF` = Confirmation Fatigue → won't
   work. Proposal: keep **"the agent"** as the role; model handle **`CO`** (Claude-Opus) now, and for Fable avoid CF —
-  **`F5`** or **`Fab`**. Pick one and I'll etch it into the Roles group.
+  **`F5`** or **`Fab`**. Pick one and I'll pin it into the Roles group.
 - **Books-in-context architecture** (your question) — how to make your two methodology books usable as selective
   reference without bloat + without copyright leak. My recommendation below (in chat).
 - **`scala-style-evolution.md`** — backport the finished-experiment findings (the safety headline was overturned); a

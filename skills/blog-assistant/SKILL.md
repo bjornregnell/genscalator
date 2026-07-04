@@ -63,7 +63,7 @@ cross-links into `research/`. These arc conventions are **young** — encode the
   drafts + research (nothing *published*) — so run the cheap tests before lock-in (e.g. BR's **embodied cue-word typing
   test**: type the candidate many times fast, judge by motor ergonomics, not just meaning). The name **locks when the
   first *deployed* blog post uses it** — deploy, not draft; a stub can still change. Record the lock so later posts stay
-  consistent. (2026-07-04: this is what let `note dance` split into the `note` (notice) + `etch` (durable-save) dances
+  consistent. (2026-07-04: this is what let `note dance` split into the `note` (notice) + `pin` (durable-save) dances
   after a typing bake-off — see `../../research/wr-data/harness-ux.md`.)
 
 ## 5. Sourcing — a post is distilled research, not invented

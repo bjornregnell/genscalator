@@ -7,7 +7,7 @@
 > the method that catches these patterns as data.
 
 **[figure — TODO, real data preferred]** This session's **context-fill over time with dance-events marked** — the
-etch offload points and the compaction at ~90% — showing *raw fill* climbing while capability holds (the "capable
+pin offload points and the compaction at ~90% — showing *raw fill* climbing while capability holds (the "capable
 at 0.88 fill" datapoint): the empirical hook for the *how-to-support-the-claim* TODO below. Companion/alternative: a
 **two-lane choreography diagram** (human steps ‖ agent steps) for each named dance. Source:
 `research/wr-data/harness-ux.md`, `research/smart-zone-ceiling.md`.
@@ -39,17 +39,17 @@ in. `[for BR to voice — tighten, cut, add the ones I missed]`
   scramble. *Memory:* [[propose-compact-dance-at-trigger]]. *This session:* run twice (mid and end); the second is the
   one whose resume prompt you just pasted.
 
-- **etch dance** (formerly "note dance") — the streaming counterpart to the compact dance. **Human:** drops a cue —
-  `etch:` ("save this durably — you pick where") or `WR data:` (etch to the WR corpus) — the moment something worth
+- **pin dance** (formerly "note dance", then briefly "etch") — the streaming counterpart to the compact dance. **Human:** drops a cue —
+  `pin:` ("save this durably — you pick where") or `WR data:` (pin to the WR corpus) — the moment something worth
   keeping surfaces. ‖ **Agent:** persists it out of context into the right durable item (a memory file, a research note,
   a todo), **choosing the home** and **questioning whether it earns a durable slot**. *Prevents:* good observations
   dissolving as fill climbs; it's what keeps the *effective* working set small even while raw fill rises (the mechanism
   behind "capable at 0.88 fill"). Formally: the **longitudinal externalisation dance** (continuous) — the *consolidation*
   stage of memory, where the compact dance is the **discrete** one.
-- **note dance** (the *notice* cue — distinct from etch) — **Human:** `note:` = "notice this, keep it fluent for
-  **this** conversation, and treat it as an **etch-candidate**." ‖ **Agent:** keeps it salient **and nominates**
-  promising ones for etching (*"want me to etch this?"*). The **attention / encoding** stage to the etch dance's
-  **consolidation** stage. Pipeline: `note:` → (agent nominates) → `etch:`. *This session:* the split was coined live —
+- **note dance** (the *notice* cue — distinct from pin) — **Human:** `note:` = "notice this, keep it fluent for
+  **this** conversation, and treat it as a **pin-candidate**." ‖ **Agent:** keeps it salient **and nominates**
+  promising ones for pinning (*"want me to pin this?"*). The **attention / encoding** stage to the pin dance's
+  **consolidation** stage. Pipeline: `note:` → (agent nominates) → `pin:`. *This session:* the split was coined live —
   the overloaded "note:" turned out to mean two things (attend-now vs save-durably).
 
 - **exit-resume dance** — inherit a fresh process. **Agent:** saves state + a resume prompt. ‖ **Human:** exits and
@@ -61,7 +61,7 @@ in. `[for BR to voice — tighten, cut, add the ones I missed]`
   I'm stepping back." ‖ **Agent:** executes the *scoped* plan autonomously, **inside** the standing guardrails
   (destructive git human-only, settings human-approved, no new-domain surfing), **minimising interrupts** (bare
   allowlist-matchable commands, batch, don't pin the human), surfacing only real decisions or the finished result.
-  *Mode-switch from* **ballgame** *(you in every volley) to* **autonomous**; where `note:`/`etch:` are about memory,
+  *Mode-switch from* **ballgame** *(you in every volley) to* **autonomous**; where `note:`/`pin:` are about memory,
   `go` is about authorization. *Clears the dance bar:* ≥2 interlocking steps (human greenlight ‖ agent execute+report).
 
 - **hardening dance** — the agent audits *itself*. **Agent:** reviews its own persistent config — memory, instructions,
@@ -92,10 +92,10 @@ in. `[for BR to voice — tighten, cut, add the ones I missed]`
 ## The dances form a family `[for BR to voice]`
 
 Two axes organize them. **Discrete vs continuous:** compact / exit-resume / consistency-sweep fire at a moment; the
-**etch dance** runs continuously in the background (with the **note dance** as its attention-stage precursor). **Who
-initiates:** the human cues the etch + note dances, the context read, and the sweep; the agent proposes the compact and
+**pin dance** runs continuously in the background (with the **note dance** as its attention-stage precursor). **Who
+initiates:** the human cues the pin + note dances, the context read, and the sweep; the agent proposes the compact and
 hardening dances. A third cut groups them by **function**: *loss-prevention*
-(compact, etch, exit-resume — save state before a failure; the **note** dance is etch's attention precursor), *audit / repair* (**hardening** audits the agent's config;
+(compact, pin, exit-resume — save state before a failure; the **note** dance is pin's attention precursor), *audit / repair* (**hardening** audits the agent's config;
 the **consistency sweep** audits the substrate's content), and *coordination micro-rituals* (context read,
 copy-paste-frame). But every one is the *same underlying move* — externalize fragile state into a durable substrate
 before the fragile place fails, or repair the substrate once drift has crept in. That common spine is why they feel like
@@ -116,7 +116,7 @@ frontier model (Opus 4.8 vs Fable 5) — capture the baseline before the switch 
 
 `research/wr-data/` and `research/smart-zone-ceiling.md` hold live instances where a dance fired (or should have).
 Harvest concrete episodes: the resume-skip that saved a long sweep from a harness cull; the toolbox-divergence
-hardening; each compact / exit-resume cycle and what it averted; every `etch:`/`WR data:` offload as an etch-dance
+hardening; each compact / exit-resume cycle and what it averted; every `pin:`/`WR data:` offload as a pin-dance
 datapoint.
 
 ---

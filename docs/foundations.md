@@ -79,7 +79,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 
 **Groups:** [Roles and cases](#roles-and-cases) · [Channel: bandwidth and confirmation fatigue](#channel-bandwidth-and-confirmation-fatigue) · [Echt and honest writing](#echt-and-honest-writing) · [Context: fill, rot and the smart zone](#context-fill-rot-and-the-smart-zone) · [Dances and handoffs](#dances-and-handoffs) · [Memory, habits and substrate](#memory-habits-and-substrate) · [Autonomy and safety](#autonomy-and-safety)
 
-**A→Z (Ctrl-F):** AFK menu · agent (CO4 / CF5) · AT · Authority anchor · Ballgame · BR · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confirmation fatigue (CF) · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · echt / äkthet · Edit dance · Etch dance · Extrinsic-volatile plasticity · Go dance · Habit · Hardening dance · Memory hygiene · Note dance · Prosthetic habit · Ralph loop · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token velocity · WR
+**A→Z (Ctrl-F):** AFK menu · agent (CO4 / CF5) · AT · Authority anchor · Ballgame · BR · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confirmation fatigue (CF) · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · echt / äkthet · Edit dance · Extrinsic-volatile plasticity · Go dance · Habit · Hardening dance · Memory hygiene · Note dance · Pin dance · Prosthetic habit · Ralph loop · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token velocity · WR
 
 ### Roles and cases
 *BR and the agent are the **roles** (stakeholders, above). **WR** is the research program; **AT** and **SSG** are its **cases / units of analysis** — the object-level projects during which workflow data is collected. (Terminology per* Case Study Research in Software Engineering: Guidelines and Examples*, Runeson, Höst, Rainer & Regnell, Wiley 2012, §3.2.3 "Cases and Units of Analyses" — of which BR is a co-author.)*
@@ -271,21 +271,21 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   turn); only reassure "it's not confusing" if the human *explicitly* worries. The edit-notes are an **intentional
   workflow feature**, not confusion. A **communication-bandwidth** move (cheap human correction, no re-type, no agent
   ceremony). Sibling of the other human↔agent dances (*compact*, *exit-resume*, *hardening*).
-- **Etch dance** (formerly "note dance"; formally the *longitudinal externalisation* dance) — the **continuous**
+- **Pin dance** (formerly "note dance", then briefly "etch"; formally the *longitudinal externalisation* dance) — the **continuous**
   human↔agent ritual that runs *across a whole session*, the streaming counterpart to the discrete **compact dance**:
-  the **human cues** `etch:` ("save this durably — you pick where unless I say") or `WR data:` (etch to the WR corpus),
+  the **human cues** `pin:` ("save this durably — you pick where unless I say") or `WR data:` (pin to the WR corpus),
   and the **agent persists** that content out of the volatile context (substrate #1) into **durable committed items**
   (memory, `wr-data/`, notes, blog, this glossary) — **choosing the home** and **questioning whether it earns a durable
   slot**, moving each insight *down the substrate hierarchy as it arises*. **Why it matters:** it keeps the *effective
   working-context* small even as *raw fill* climbs — the mechanism behind "capable at 0.88 fill"
   (`research/wr-data/harness-ux.md`), i.e. *why* raw fill ≠ working-context. Both roles are load-bearing: the human's
-  cue is the trigger, the agent's discipline is the persistence. (BR 2026-07-04; named *etch* after an embodied
+  cue is the trigger, the agent's discipline is the persistence. (BR 2026-07-04; cue `pin` chosen to avoid the *echt*/*etch* near-anagram collision — pin also won the embodied
   cue-word typing test — see `wr-data/harness-ux.md`.)
-- **Note dance** (the *notice* cue — distinct from **etch**) — the **human cues** `note:` meaning *"notice this; hold it
-  salient in working memory for **this** conversation; and treat it as an **etch-candidate**"*; the **agent** keeps it
-  fluent **and nominates** promising ones for etching (*"want me to etch this?"*). The **attention** act — not
-  necessarily durable — i.e. the **working-memory / encoding** stage to the etch dance's **consolidation** stage.
-  Pipeline: `note:` → (agent nominates) → `etch:`. (BR 2026-07-04: split out of the overloaded "note:" once it was clear
+- **Note dance** (the *notice* cue — distinct from **pin**) — the **human cues** `note:` meaning *"notice this; hold it
+  salient in working memory for **this** conversation; and treat it as a **pin-candidate**"*; the **agent** keeps it
+  fluent **and nominates** promising ones for pinning (*"want me to pin this?"*). The **attention** act — not
+  necessarily durable — i.e. the **working-memory / encoding** stage to the pin dance's **consolidation** stage.
+  Pipeline: `note:` → (agent nominates) → `pin:`. (BR 2026-07-04: split out of the overloaded "note:" once it was clear
   it meant two things — *attend-now* vs *save-durably*. Maps onto the two-stage memory model.)
 - **Go dance** (greenlight / autonomy handoff) — the human↔agent protocol for **releasing the agent to act
   autonomously** on the current plan. **Human step:** cues `go` — *"you're authorized to proceed on the current plan
@@ -294,7 +294,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   settings/security human-approved, no new-domain surfing — `go` is autonomy *inside* the fence, it doesn't lift it);
   (3) **minimise interrupts** (bare allowlist-matchable commands, batch the work, don't pin the human — the AARGH
   lesson); (4) surface only genuine decisions or the finished result, and report on completion. The mode-switch from
-  **ballgame** (human in every volley) to **autonomous** for a bounded task; where `note:`/`etch:` govern *memory*,
+  **ballgame** (human in every volley) to **autonomous** for a bounded task; where `note:`/`pin:` govern *memory*,
   `go` governs *control / authorization*. Variant: "go [AFK] menu" = `go` over a menu of scoped tasks. **Dance bar:**
   `go` qualifies as a *dance* (not a mere cue) because it has **≥2 interlocking steps — at least one human and one
   agent step**; a one-directional signal with no answering step is just a cue. (BR 2026-07-04; cue `go` chosen for
@@ -308,7 +308,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   *content*): hardening audits the agent's *config / machinery*. Human-triggerable. Memory: [[hardening-dance]].
 - **Rest dance** — a human↔agent dance for **conserving the human**. **Agent:** on signs of human fatigue (typo-rate
   above the human's *own* baseline, terseness, late hour) or an **explicit signal**, propose a break and **externalize
-  state** (etch / compact) so the human can step away with **zero loss** and return sharp. ‖ **Human:** takes the break,
+  state** (pin / compact) so the human can step away with **zero loss** and return sharp. ‖ **Human:** takes the break,
   or declines. *Prevents:* degraded **human**-side decisions (the human dumb-zone, over-trust under *thriller state*);
   conserves attention for the high-stakes **ballgame** volleys that need it. See `research/human-state-and-joint-zone.md`.
 
