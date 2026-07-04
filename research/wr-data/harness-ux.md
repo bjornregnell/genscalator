@@ -191,3 +191,24 @@ harness bug to route around so much as a **design constraint to build for**.
 pulls: build them append-checkpointed + externally-monitorable from the start, not after the first cull. Cross-ref
 the resume implementation in [`../experiments/indent-vs-braces/RUN-LOG.md`](../experiments/indent-vs-braces/RUN-LOG.md)
 (2026-07-04 entry).
+
+## Arrow-up "edit a just-sent message" race → double-post (2026-07-04, BR explained the mechanism)
+
+**Mechanism (BR).** When BR wants to fix a typo in a message he *just* pressed Enter on, he presses ↑ (arrow-up) to
+recall+edit it. But there's a **race against the agent**: if he's **too late** — i.e. the agent has already begun
+processing ("eaten") that message — the env **can't edit the in-flight instance**, so instead of an edit it creates
+a **double-post** (the correction lands as a *new* message). This is the same input-race family as the agent-modal
+focus-steal and the Enter-lands-on-confirmation cases above — a timing race between a human input action and the
+system consuming a prior input.
+
+**BR's deliberate coping habit (so future sessions read it as intentional, not accidental).** Rather than fight the
+race, BR **does not try to edit an Entered message**; he **adds a new message**, and for a simple typo sends a terse
+`edit: wrong -> right` note (this session alone: `say→saw`, `of→if`, `soel→sole`, `NewToll→NewTool`, `humansä→human's`,
+`typy→typo`, …). These are a **feature of his workflow**, not confusion.
+
+**Agent-side (confirmed working).** Treat a rapid near-identical pair as **one** message, later copy authoritative;
+apply any `edit: X -> Y` note as a correction to the referenced word and act **once**; never stall asking "which did
+you mean" on an obvious typo delta. BR worried the double-post is "even more confusing for you" — it is not, with
+this rule. **Harness-side ask:** widen the edit window (allow editing a just-sent message until the agent's *first
+token*, not until enqueue), or make a fast follow-up detected as an edit-of-previous rather than a new post.
+See memory `harness-double-post-edit-race`.
