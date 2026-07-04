@@ -210,6 +210,16 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   off **context**, the AFK menu hands off **autonomy** for a bounded window (cf. *communication bandwidth*,
   *task-autonomy negotiation*). Running instances live in `notes/afk-menu-*.md`; the delegation UX itself is a
   WR study subject.
+- **Edit dance** — the human↔agent protocol for **correcting a just-sent message** without derailing the turn.
+  Cause: a harness input-race — pressing ↑ to edit an already-Entered message is **too late** once the agent has begun
+  processing it, so the correction posts as a **new** message (a double-post). The human's deliberate habit is
+  therefore: don't fight the race — **add a new message**, and for a simple typo send a terse **`edit: wrong -> right`**
+  note. **Agent steps:** (1) treat a rapid near-identical pair (or an `edit:` / `I meant:` note) as **one** message,
+  the later copy authoritative; (2) apply the `edit: X -> Y` as a word-level fix and act **once**; (3) **do NOT comment
+  on or acknowledge the edit when it caused no confusion** — silently absorb it and move on (acknowledging wastes a
+  turn); only reassure "it's not confusing" if the human *explicitly* worries. The edit-notes are an **intentional
+  workflow feature**, not confusion. A **communication-bandwidth** move (cheap human correction, no re-type, no agent
+  ceremony). Sibling of the other human↔agent dances (*compact*, *exit-resume*, *hardening*).
 - **Memory hygiene (agent)** — keeping the agent's **durable memory store** (the persistent `MEMORY.md` + the
   memory files a session reloads) **consistent with current reality**: when a coined term is *renamed*, a file
   or flag *moved/deleted*, or a decision *reversed*, sweep the store for stale references and update or remove
