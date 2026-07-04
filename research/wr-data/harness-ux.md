@@ -350,3 +350,32 @@ sharper) — the mirror of compact agent output being better for the human. Ties
 [[answer-br-token-efficient-language]] (BR writes token-efficient; parse normally), now with the agent *actively
 preferring* it. A two-body / joint-zone observation (blogs 005/008): the pair tunes a shared channel, not just the
 agent's half.
+
+## Retrieving earlier discussion — the human's scroll-back anxiety (WR data, BR 2026-07-04)
+BR wanted to re-find something discussed earlier in a long session (the "Two bigger notes"). His live brain-dump of
+the dilemma: *"should I ask the agent to give it again — hmmm, that'll spawn a new thread and on it goes and I can't
+keep all these threads in my mind (even if the agent can, if not context-rotting), so I better scroll back BUT it's
+ages ago, aaargh, I scroll scroll scroll — BUT I set my terminal history low so the scrolling hits the roof??? worried
+… found it finally … not worried … but I ask the agent anyway 'cause it's a lot to read and the agent better
+summarize (fingers crossed for no context rot, risk of memory loss on compact)."* **The pain, decomposed:**
+- **Ask-again cost:** re-asking **spawns another thread** the human then has to hold in mind — thread-sprawl the human
+  (unlike the agent) can't keep in working memory.
+- **Scroll-back cost:** it's far up, tedious, AND **terminal scrollback is capped** → the content may have scrolled
+  off the top (irretrievable).
+- **Dual memory-loss fear:** the agent might have **context-rotted** past it; a **compaction** might have dropped it.
+  Neither party is trusted to still hold it.
+**The resolution is the thesis.** The content he wanted was **already externalized to a committed file** (blog 008's
+stub), so it survived independent of both chat-scrollback and compaction — retrievable by *file read*, not chat scroll.
+**Rule this sharpens:** externalize discussion *outcomes* into committed artifacts *as they land*, so retrieval is a
+`grep`/file-open, not a scroll or a re-ask — the [inference-time-learning](../inference-time-learning.md) substrate
+serves the **human's** retrieval too, not only the agent's. **Harness asks:** conversation **search** / jump-to-topic;
+a larger or spill-to-disk scrollback; a "what did we decide about X" recall that reads durable notes, not the raw
+transcript. Sibling of the `/context`-while-busy and the FleetView cases: the human's cheapest way to *find* past
+state shouldn't depend on ephemeral, capped, lossy channels.
+
+**BR's immediate mitigation (2026-07-04):** he **raised the terminal's scrollback history limit** so the roof is
+higher next time — a human-side *structural* fix (a bigger durable buffer), the local-environment cousin of
+externalizing to files. Note the pattern: faced with a retrieval pain, the human reached for a **structural** change
+(more buffer), not a discipline ("remember to not scroll too far") — the same *structural > knowledge* preference the
+agent-side substrate hierarchy encodes ([[foundations]] "structural vs knowledge safeguard"). Both parties harden
+their own environment.
