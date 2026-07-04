@@ -59,3 +59,14 @@ or flag it as speculation — don't smuggle it in wearing a grounded voice (see 
   lost to scroll/compaction — the retrieval lesson).
 - When you're unsure whether something is your voice creeping into his, or a claim outrunning its grounding: **stop and
   ask.** Accountable control works only if you surface the borderline calls.
+
+## 7. Figures — every post earns real images
+- **Every post should carry interesting figures** — screenshots, images, charts, diagrams — not just walls of text.
+- **Preferably from REAL data / the real world** (an actual episode captured live, a chart of actual results), not
+  decorative or invented visuals. This is the **visual arm of echt** (§2): a real-data figure is grounded and genuine;
+  a decorative or made-up one is visual slop. (Deep — but don't rabbit-hole the "real world" point; just prefer real
+  over decorative.)
+- **Standing job — flag figure-moments live.** Screenshots and real-world captures are **ephemeral**; when a striking
+  *real* thing happens (a vivid episode worth a screenshot, a result worth charting), proactively say "📸 good figure
+  for blog X" so the human captures it before it's gone. When a post lacks a figure, leave a **`[figure: …]` caption
+  placeholder** asking for the real image — better a request than an empty post or a decorative filler.
