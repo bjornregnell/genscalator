@@ -13,6 +13,20 @@ losing a carefully-typed message to the double-post race; the irritation of not 
 the agent is mid-turn; watching the agent reach for raw bash for the Nth time. The human's lived friction is half the
 data, and the more relatable half.
 
+**The high-level frame (BR — why these bugs hit disproportionately hard).** A human embarks on a big endeavour and
+pours in energy, feelings, hours, sleepless nights — to do things with AI that were *never possible before*. The
+stakes feel high and the work often feels irreproducible. So when a UX bug breaks the flow, it is not a minor
+annoyance — it's a gut-punch out of all proportion to the bug's technical size. **A UX failure's severity scales with
+the human's investment, not with the size of the bug.** A stray keystroke is trivial; a stray keystroke that *seems*
+to swallow a sleepless-night's work is devastating. This is the thesis of 004: agent UX carries **emotional** stakes,
+because the people pushing hardest on it are all-in on something new — and the tooling must be built knowing that.
+
+**Verbatim source — the "panic writes"** (a real gut-punch caught live, 2026-07-04): see
+[`fleetview-warp-panic-writes-2026-07-04.md`](../research/wr-data/fleetview-warp-panic-writes-2026-07-04.md) — an
+accidental keystroke warped BR into FleetView, his messages spawned orphan sessions, the agent went silent, and he
+typed "UX CHANGED under my feet", "I get no answers from you", "anything lost?", "aaargh I want back the other session
+feed". Quote these; they *are* the emotional core of this post.
+
 Source material to mine (Workflow-Research "WR data", logged live during real agentic runs):
 - `research/wr-data/harness-ux.md` — the primary log. Recurring themes already captured there:
   - **Input races** — arrow-up "edit a just-sent message" → double-post; Enter landing on a confirmation prompt;

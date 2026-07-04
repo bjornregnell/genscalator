@@ -262,6 +262,10 @@ class: **filesystem/shell introspection I did in raw bash instead of a typed too
   disappears entirely. The bash `echo "==="; toolA; echo "==="; toolB` pattern IS the manual, lossy version of what
   streaming composition does typed and in-process. Filed as motivating evidence in the DESIGN's streaming section
   (now written up there under "Composition is the whole point of the typed stream").
+- **`tt transcript <session-id | --recent N>`** (2026-07-04) — read/extract from session `jsonl` transcripts (first
+  user message, tool calls, text). Recovering BR's FleetView "panic writes" needed a raw `jq` + `for`-loop that
+  tripped the *"Contains expansion"* guard — the same reflex cluster. A typed transcript reader cures the reflex AND
+  unlocks WR-data mining of past sessions (a research primitive, not just a papercut fix). Pairs with `RAW-DATA.md`.
 
 ## Cannot run `/context` while messages are queued / agent is thinking (2026-07-04)
 BR flagged: it's **irritating that he can't run `/context`** while his messages are queued for the agent (agent
@@ -299,3 +303,50 @@ toolbox that has *all* tools, or (b) treat the split as intentional and **sync**
 muntabot-synch/tools too, or (c) accept genscalator dev needs its own launcher path. This is a **config/security change
 (the allowlist anchor)** → **human-decided**, not something the agent repoints autonomously (cf. `hardening-dance`).
 **The single-dispatcher + native `tt` binary DESIGN dissolves this**: one canonical toolbox, one `tt`, one allowlist.
+
+## FleetView warp — an accidental keystroke turns messages-meant-for-the-agent into new-session spawns (2026-07-04, MAJOR)
+BR hit a stray key combo (~two left-arrows, maybe a modifier) mid-session and got **warped into FleetView** — the
+multi-agent "claude agents" dashboard (screenshot: `Screenshot from 2026-07-04 13-19-52.png`), a bird's-eye of all
+sessions ("4 awaiting input · 3 working"), NOT a new session replacing the chat. **The trap:** FleetView's bottom
+input is *"describe a task for a new session"*, so every message BR typed *for the agent* was interpreted as **spawn a
+new agent**. His words became orphan sessions — the dashboard filled with fragments of his intended messages
+("anything lost?", "its now a…", "session feed navigation help"). **The agent (this session) went silent and "just
+queued"** — his input never arrived; it was siphoned into spawns. From BR's side the agent looked frozen; in reality
+it held full context, simply not being addressed. **Recovery:** BR Ctrl+D+D'd (exit); `claude --resume` refused a
+plain resume and demanded `--fork...` (the session was still live/attached → only a fork offered); he instead opened
+the **next-most-recent session** and reattached to the intact original. **Severity: high** — trivially triggered,
+disorienting, silently spawns junk sessions, mimics an agent freeze, tempts a panic-exit. BR is **keeping the trash
+FleetView sessions as research data** (do not delete). **Harness asks:** (a) confirm before spawning a session from
+stray keystrokes; (b) make the FleetView input box unmistakable vs the chat composer; (c) a persistent "you are in
+FleetView — press X to return" affordance; (d) let `--resume` reattach a still-live session, not only fork it. **Note
+(BR):** FleetView could be genuinely *useful* once the enter/return keystrokes are learned (get back WITHOUT exiting to
+shell). Flagship human-side episode for blog 004 (Pains). Validity note: the original session surviving intact matters
+for the AFK-run-as-research-artifact.
+
+## Exit-resume loses session-scoped permission grants → re-approval fatigue (2026-07-04)
+After an exit-resume, BR must **re-approve "Yes, allow…"** for things he already allowed in the previous session —
+session-scoped grants don't persist across the resume. On a long run with many tool calls this is real fatigue (and a
+mis-click surface — cf. the accidental-yes race). **Durable cure:** promote the recurring, safe allows (e.g.
+`tt git *`, `tt box *`, `tt files *`, `scala-cli compile *`) into **`settings.local.json`** — a persistent allowlist
+survives resume, so no re-prompting. (The `fewer-permission-prompts` skill automates exactly this.) Security change →
+**human-approved + mirror to `settings-local-mirror.json`** per that memory. Sibling of [[exit-resume-dance]]: the
+dance should include "persist any session-grants you want to keep before exiting."
+
+## Safety lesson VALIDATED (natural experiment): make big jobs independent detached bg processes (2026-07-04)
+BR: *"make big jobs survive (independent bg job) to guard from human typing mistakes and UX hiccups."* The FleetView
+warp + Ctrl+D+D exit + resume-into-a-different-session was an **accidental natural experiment** that confirmed the
+keystone principle: **the sweep never noticed any of it.** Because it runs as a **detached OS process** (pids survived,
+TSV kept growing 1963→1967 across the whole episode), the session chaos — warp, exit, fork-confusion, reattach — could
+not touch it. Anything living *inside* the session's turn loop would have been at the mercy of the keystroke. So the
+principle is now empirically load-bearing, not just prudent: **long/valuable jobs must be (1) detached from the
+session, (2) append-checkpointed, (3) idempotently resumable** — then human typos, UX warps, culls, and exits are all
+survivable. This episode is the evidence. (Related: the earlier harness-cull recovery; [[joint-rot-vigilance-recovery-kit]].)
+
+## Two-way communication: the agent *prefers* terse human input (WR data, BR 2026-07-04)
+Usually we optimize *agent output* for the human; here the reverse surfaced. BR apologised for "terse and strange
+English"; the agent replied that the terse version *"nails it better than a wordy one would."* So the joint system
+optimizes **both** directions: dense human cues can be higher-signal-per-token for the agent (less to parse, intent
+sharper) — the mirror of compact agent output being better for the human. Ties to
+[[answer-br-token-efficient-language]] (BR writes token-efficient; parse normally), now with the agent *actively
+preferring* it. A two-body / joint-zone observation (blogs 005/008): the pair tunes a shared channel, not just the
+agent's half.
