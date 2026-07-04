@@ -10,6 +10,13 @@ args — no re-deriving logic each time, no dynamic-shell surprises. The compile
 they run, and a small launcher (`tt`) makes every tool a single, statically-analyzable command that a
 narrow allowlist can trust.
 
+**Type safety beyond the compiler.** genscalator aims higher than Scala's already-strong compiler and standard
+library: it also adopts **type-safety-enhancing libraries** — notably [Iron](https://github.com/Iltotore/iron)
+refinement types — to make illegal states *unrepresentable* at **compile time**. An `Int` need not be *any* `Int`:
+a `Year` can be an `Int` constrained to `1900..2100`, so an out-of-range year **fails to compile** instead of
+slipping through to runtime. (Worked example: `Year` in `blog/References.scala`; the same `A :| Constraint`
+vocabulary is planned for `tt`'s typed argument validators.)
+
 ## Why
 
 Out-of-the-box agent workflows lean on approving dense bash and archaic Unix tools. Much of the guardrail
