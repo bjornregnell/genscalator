@@ -458,3 +458,14 @@ check** — the hall of mirrors at the *methodology* level. The break is the usu
 human as anchor. **Meta-flag:** the agent finding this framing compelling is itself an instance of the bias → weak
 evidence it's right; corroboration must come from behaviour, not agreement. BR: needs more thinking — a real asymmetry to
 **design around**. Feeds `agent-psyche-literature-review.md` (method) + blog 006/008 honest frame.
+
+## The `printf > file` commit-message reflex — recurring; structural cure = `tt git --message` (WR data, BR 2026-07-04)
+Tags: `#reflex` `#tool-candidate`
+BR flagged (**again** — it recurred several times in one session despite the known rule "use the Write tool"): to make
+a commit message the agent reaches for `printf '…' > /tmp/x; tt git … --message-file /tmp/x || true` (printf + redirect
++ `||` + `tail` assembly) instead of the **Write tool + bare `tt git`**. Textbook **knowledge-safeguard failure** — the
+rule is known, the reflex fires first under momentum. **Structural cures (structural > knowledge):** (a) **`tt git
+commit --message "…"`** — an inline message arg so there is *no message file to create*, removing the step that
+triggers the reflex entirely (best fix; keep `--message-file` for multi-line/long messages); (b) meanwhile, discipline:
+always the Write tool for the message file, never `printf >`. The commit-side twin of the whole bash-reflex cluster:
+every `printf >` / `echo >` is a signal that a typed affordance is missing.

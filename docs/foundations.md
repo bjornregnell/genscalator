@@ -83,6 +83,11 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
   `research/wr-data/` (verbatim excerpt + labelled reflection) and curated append-only into `research/RAW-DATA.md`. It
   is how genscalator's claims earn an evidence base rather than resting on assertion (see `METHODOLOGY.md`); "WR data"
   in chat is BR flagging an episode for that log.
+- **SSG — static site generator** — a **separate work strand** (like WR and AT): the planned pipeline that renders the
+  genscalator `blog/*.md` posts into the public site at **bjornregnell.se**. Its job is *publishing* the blog, not the
+  research (WR) or the translation (AT). Today the site is a shallow placeholder that needs design love; the generator
+  choice + deployment order are open (`blog/README.md` "Deployment"), and the blog `deployed`/`updated` status states
+  exist to track what's live once SSG ships.
 - **Confirmation fatigue (CF)** — degradation of the human's review quality/willingness from too many
   approval prompts; ends in rubber-stamping. A direct BHH enabler.
 - **Review overload** — too much agent-generated code/output for the human to meaningfully review, so
