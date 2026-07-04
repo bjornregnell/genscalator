@@ -520,3 +520,19 @@ restrict to domains already approved earlier in the session. **Design implicatio
 "does this task touch an unvisited domain?"; a **per-session approved-domain allowlist** would make web-research
 AFK-safe. This is the web twin of the *commit-first-because-flaky-box* reflex — know which steps can block on something
 the absent human must supply, and keep them off the AFK menu.
+
+## Allowlist mining: the human is the authority anchor; prefer direct sources over fetch-proxies (WR data, BR 2026-07-04)
+Tags: `#methodology` `#afk` `#security` `#agent-psyche`
+Following the AFK-web rule, BR proposed durably persisting the session's OK'd domains into settings so the harness stops
+re-prompting. Findings: **(1) it already works** — a scala miner over the session's subagent transcripts found 27
+`WebFetch` domains, and **all 27 were already in `settings.local.json`** (the harness auto-persists an "always allow"
+grant); the perceived re-prompt only bites for "just this session" grants. **(2) The human is the authority anchor for
+permission decisions** — the agent mines *candidates*, but curating what gets allowlisted is a security judgment that
+can't be delegated: *"that curation is exactly why this needs your eyes"* (BR). This is the **security twin of the
+corroboration asymmetry** — the agent generates, the human authorises. **(3) Prefer direct authoritative sources over
+fetch-proxies (echt).** The grounding agents reached bot-blocked publisher pages via `r.jina.ai` (reader proxy) and
+`webcache.googleusercontent.com` (Google cache), then cited the *direct* URL — **laundering the grounding** (a proxy can
+be stale/altered; it is not the source). Rule: use arXiv / the DOI resolver / an author copy directly; if bot-blocked,
+find an open alternative or **flag lower-confidence** — never proxy-and-cite-as-direct. Proxies are also a broad fetch
+surface (a second reason to keep them off the allowlist). Corollary: the two book TOCs (grounded via proxied Springer /
+a course-page PDF / Google Books) are flagged for **author (BR) confirmation** — for BR's own books, BR *is* the source.
