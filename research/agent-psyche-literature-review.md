@@ -57,7 +57,7 @@ BR asked me to confirm I know a **Systematic Literature Review** in the software
   study, tighten to an SLR on the sub-question that matters most (probably sycophancy/honesty or introspection-reliability).*
 
 **BR's steer (2026-07-04) — right-size the protocol.** BR (a co-author of the two SE research-methods books below, and
-one of Wohlin's first PhD students — a disclosed COI) cautions that the **full Kitchenham SLR protocol may be
+one of Wohlin's first PhD students — a self-reference to own inline where cited) cautions that the **full Kitchenham SLR protocol may be
 over-arching here:** real *hard* empirical evidence is scarce in SE, so a heavy protocol can cost more than it returns.
 He'd rather weigh whether **simpler snowball sampling + qualitative synthesis** (cf. Wohlin 2014; and the case-study /
 qualitative tradition of *Case Study Research in Software Engineering*) is **more cost-effective** than the deep

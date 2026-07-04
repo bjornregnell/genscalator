@@ -96,5 +96,8 @@ or flag it as speculation — don't smuggle it in wearing a grounded voice (see 
   **Only cite `Verified` entries as fact.** A `ToDo` is a promise to check, *not* a citation — verify it (Google
   Scholar / DOI / arXiv page), fill `refData`, flip to `Verified` before it appears in a shipped post. Add new refs
   *there*, not inline, so verification status lives in one greppable, compiler-checked place. (A recalled-but-unchecked
-  citation is false echt; the enum makes that state visible instead of silent.) **COI:** where a ref is BR's own work,
-  flag the conflict of interest in its `comment` and disclose it in the post (footnote).
+  citation is false echt; the enum makes that state visible instead of silent.)
+- **Self-references — own them inline.** When a cited work is BR's own, make that **obvious in the body text at its
+  *first* mention** — "our own …", "in earlier work of ours", "BR's book …" — so the reader sees it *in the flow*, not
+  buried in the end reference list. Transparency at the point of use (echt), **not** a heavy "conflict of interest"
+  ritual. (Note it in the ref's `comment` too, but the inline body flag is the one that matters.)

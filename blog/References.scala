@@ -63,7 +63,7 @@ val references: Seq[Reference] = Seq(
       doi = Some("10.1007/978-3-662-69306-3"),
       url = Some("https://link.springer.com/book/10.1007/978-3-662-69306-3"))),
     Verified,
-    "Standard SE textbook on controlled experiments; grounds our permutation-test + preregistration practice. COI: BR co-author.",
+    "Standard SE textbook on controlled experiments; grounds our permutation-test + preregistration practice. self-ref: BR co-author (own it inline at first mention, not just in the ref list).",
   ),
   Reference(
     "Case Study Research in Software Engineering: Guidelines and Examples",
@@ -72,7 +72,7 @@ val references: Seq[Reference] = Seq(
       note = Some("ISBN 9781118104354"),
       url = Some("https://www.wiley.com/en-us/Case+Study+Research+in+Software+Engineering%3A+Guidelines+and+Examples-p-9781118181003"))),
     Verified,
-    "SE case-study methodology; relevant to the qualitative-synthesis alternative to a full SLR. COI: BR co-author.",
+    "SE case-study methodology; relevant to the qualitative-synthesis alternative to a full SLR. self-ref: BR co-author (own it inline at first mention, not just in the ref list).",
   ),
 
   // ── machine psychology / agent-psyche cluster ──
