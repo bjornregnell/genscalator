@@ -132,6 +132,21 @@ perceive its own think-time — this plus a human relay reconstruct a full round
 parsereqt <file>                     # parse reqT model text into a structured form
 ```
 
+### svg — textual diagram spec → self-contained SVG (PURE; writes a file with `out`)
+```
+svg sequence <in.txt> [out.svg]           # render a sequence-diagram spec to SVG (no out → stdout)
+svg --sequence-diagram <in.txt> [out.svg] # alias for `sequence`
+```
+Input is a tiny PlantUML/mermaid-flavoured spec (`title:`, `actor <Id> [as label]`, `A -> B: call`,
+`A --> B: reply`, `note over A,B: text`; `#`/`//` comments; self-message `A -> A` draws a loop). Output is a
+**self-contained** SVG (inline `<style>`, no external refs) that is **theme-aware** (light + `prefers-color-scheme`
+dark) — inline it straight into an SSG page, an artifact, or a report. Deliberately **not** reqT-lang: reqT models
+an unordered *set*, a sequence is *ordered in time* — see [`../research/svg-sequence-diagram-tool.md`](../research/svg-sequence-diagram-tool.md).
+Example:
+```
+tt svg sequence blog/figures/seq-compact-dance.txt blog/figures/seq-compact-dance.svg
+```
+
 ### web — safe read-only HTTP (EFFECTFUL: network, but GET-only)
 ```
 web get <url> [--host H]... [--max-bytes N] [--status]   # fetch and print; GET only, no credential headers
@@ -200,6 +215,7 @@ diagnostics, refactors). Full guide: [`../docs/tool-selection.md`](../docs/tool-
 - `htmltext.scala` — HTML→text stripper.
 - `chrono.scala` — stopwatch (effectful: state + log).
 - `parsereqt.scala` — reqT model parser.
+- `svg.scala` — textual sequence-diagram spec → self-contained, theme-aware SVG (pure; writes a file with `out`).
 - `web.scala` — safe read-only HTTP GET (effectful: network; requests).
 - `forge.scala` — Forgejo/Gitea forge client, releases/tags + env-token create (effectful; requests+ujson+os-lib).
 - `newtool.scala` — the generator.

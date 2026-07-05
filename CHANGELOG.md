@@ -6,8 +6,14 @@ All notable changes to genscalator. Versions follow the git tags (`vX.Y.Z`); the
 Updating genscalator is a **human-reviewed** step — see [`docs/updating.md`](docs/updating.md). Skim this
 file before adopting a new version: it changes the agent's operating rules, so review beats blind pull.
 
-## Unreleased — docs + research accretion (sessions 2026-06-30 → 2026-07-05)
-Docs/research only — no tool/version change. Human review pending (see [`HUMANS.md`](HUMANS.md)).
+## Unreleased — docs + research accretion + `tt svg` (sessions 2026-06-30 → 2026-07-05)
+Mostly docs/research; **one new tool** (`tt svg`). Version bump pending. Human review pending (see [`HUMANS.md`](HUMANS.md)).
+- **New tool `tt svg --sequence-diagram` (aka `tt svg sequence <in.txt> [out.svg]`)** — renders a tiny textual
+  sequence-diagram spec (PlantUML/mermaid-flavoured: `actor`, `A -> B: msg`, `A --> B: reply`, `note over`) to a
+  **self-contained, theme-aware SVG** for blogs and human-facing reports. Pure (JDK-only, no dep); 7 CLI-contract
+  tests incl. a well-formed-XML parse check. Design rationale (why a bespoke spec, not reqT-lang: reqT models an
+  *unordered set*, a sequence is *ordered in time*) in [`research/svg-sequence-diagram-tool.md`](research/svg-sequence-diagram-tool.md).
+  First real figure: [`blog/figures/seq-compact-dance.svg`](blog/figures/seq-compact-dance.svg) (candidate for blog 005).
 - **`docs/foundations.md` glossary — new agent-introspection concepts:** **Context rot**, **Token velocity**,
   **Token acceleration**, **Smart-zone ceiling (Z)** (usable working-context ratio before the dumb zone),
   **Communication bandwidth (human↔agent)** (per-direction language/TE channel), **Compact dance** (the

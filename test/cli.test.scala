@@ -362,3 +362,72 @@ class CliSuite extends munit.FunSuite:
     assertEquals(code, 0)
     assert(clue(out).toLowerCase.contains("report"))
   }
+
+  // --- svg (textual sequence-diagram spec → self-contained, theme-aware SVG for blogs & reports) ---
+  test("svg sequence: renders an <svg> with lifeline labels and a message label to stdout") {
+    val f = os.temp(contents = "actor Alice\nactor Bob\nAlice -> Bob: hello\n", suffix = ".txt")
+    try
+      val (code, out, _) = run("svg", "sequence", f.toString)
+      assertEquals(code, 0)
+      assert(clue(out).startsWith("<svg"))
+      assert(clue(out).contains("Alice"))
+      assert(clue(out).contains("Bob"))
+      assert(clue(out).contains("hello"))
+      assert(clue(out).contains("</svg>"))
+    finally os.remove(f)
+  }
+  test("svg --sequence-diagram alias works and includes the title") {
+    val f = os.temp(contents = "title: My Flow\nA -> B: x\n", suffix = ".txt")
+    try
+      val (code, out, _) = run("svg", "--sequence-diagram", f.toString)
+      assertEquals(code, 0)
+      assert(clue(out).contains("My Flow"))
+      assert(clue(out).contains("class=\"title\""))
+    finally os.remove(f)
+  }
+  test("svg: a return arrow (-->) is dashed and XML metacharacters are escaped") {
+    val f = os.temp(contents = "A --> B: a < b & c\n", suffix = ".txt")
+    try
+      val (_, out, _) = run("svg", "sequence", f.toString)
+      assert(clue(out).contains("class=\"ret\"")) // dashed return line
+      assert(clue(out).contains("a &lt; b &amp; c")) // escaped, not raw
+      assert(!clue(out).contains("a < b & c"))
+    finally os.remove(f)
+  }
+  test("svg: a self-message (A -> A) draws a loop path and does not crash") {
+    val f = os.temp(contents = "A -> A: think\n", suffix = ".txt")
+    try
+      val (code, out, _) = run("svg", "sequence", f.toString)
+      assertEquals(code, 0)
+      assert(clue(out).contains("think"))
+      assert(clue(out).contains("<path")) // the loop
+    finally os.remove(f)
+  }
+  test("svg output is well-formed XML (title/message/note metachars all escaped)") {
+    val f = os.temp(contents = "title: T & U\nactor A\nA -> A: x < y\nnote over A: n > m\n", suffix = ".txt")
+    try
+      val (_, out, _) = run("svg", "sequence", f.toString)
+      val doc = javax.xml.parsers.DocumentBuilderFactory.newInstance()
+        .newDocumentBuilder()
+        .parse(java.io.ByteArrayInputStream(out.getBytes("UTF-8")))
+      assertEquals(doc.getDocumentElement.getTagName, "svg") // parses without throwing
+    finally os.remove(f)
+  }
+  test("svg sequence writes to a file when an out path is given") {
+    val d = os.temp.dir()
+    try
+      val in = d / "s.txt"; os.write(in, "A -> B: hi\n")
+      val outp = d / "s.svg"
+      val (code, out, _) = run("svg", "sequence", in.toString, outp.toString)
+      assertEquals(code, 0)
+      assert(clue(out).contains("wrote sequence diagram"))
+      assert(os.exists(outp))
+      assert(clue(os.read(outp)).contains("<svg"))
+    finally os.remove.all(d)
+  }
+  test("svg with no args prints usage and exits 2") {
+    val (code, out, _) = run("svg")
+    assertEquals(code, 2)
+    assert(clue(out).toLowerCase.contains("usage"))
+    assert(clue(out).toLowerCase.contains("sequence"))
+  }

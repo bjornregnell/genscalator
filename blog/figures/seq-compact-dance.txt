@@ -1,0 +1,18 @@
+# Source spec for seq-compact-dance.svg — regenerate with:
+#   tt svg sequence blog/figures/seq-compact-dance.txt blog/figures/seq-compact-dance.svg
+title: The compact dance (a note to sleep, not collapse)
+
+actor BR
+participant CO4 as "Claude Opus 4.8"
+participant Harness
+participant Codeberg
+
+BR -> CO4: note: at a consolidation point
+CO4 -> CO4: assess context fill vs Z
+CO4 -> Harness: tt git commit + push
+Harness -> Codeberg: push branch main
+Codeberg --> Harness: ok
+Harness --> CO4: pushed
+CO4 --> BR: resume prompt (framed)
+note over BR,CO4: BR triggers /compact
+BR -> CO4: resume (fresh context)
