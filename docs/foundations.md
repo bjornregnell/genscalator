@@ -252,16 +252,21 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   sleep analogy: **consolidate then discard** (like memory consolidation in sleep) vs the reactive trigger's
   forced, lossy shutdown — *"good compaction is sleep, not collapse."* See
   `research/022-proactive-compaction-point.md`.
-- **AFK dance** — the human↔agent protocol for handing off **autonomy for a bounded window** while the human is
-  **away from keyboard** ("**AFK**"), turning an idle stretch into delegated progress. Built around an **AFK menu**
-  (its artifact): the standing list of scoped candidate tasks.
+- **AFK dance** — the human↔agent protocol for handing off **autonomy for a bounded window** to work a **solo block**,
+  turning that stretch into delegated progress. The human is often **away from keyboard** ("**AFK**") but need not be —
+  they may be **present-but-busy** on other work and still want the agent running solo on a menu. *(Because of that,
+  renaming this the **solo dance** is proposed — see OD9; "AFK" then names the strict **mode** where the human is
+  absent so no prompt may race them.)* Built around an **AFK/solo menu** (its artifact): the standing list of scoped
+  candidate tasks.
   - **Human step (trigger):** pick a subset ("do 1, 3, then 2") or accept the agent's stated **default order**, cue
-    `go`, and leave.
-  - **Agent step (work):** execute inside the **explicit trust boundary** — commit + push per atomic unit, only
-    commit verified-green, crash-safe cadence, minimise forced-confirmation risk (bare allowlist-matchable
-    commands), log any friction.
-  - **Agent step (report):** on the human's return, give an **easy-reading summary** at the end of the feed (what
-    was done, what's committed, what awaits a human decision).
+    `go`, and step away (or turn to other work).
+  - **Agent step (work):** execute inside the **explicit trust boundary** — **commit + push in small, reversible
+    steps** (one small unit per commit, only ever verified-green): the box is **flaky and can crash mid-run**, so a
+    frequent commit cadence means a crash loses at most the *last small step*, never the block. Minimise
+    forced-confirmation risk (bare allowlist-matchable commands), log any friction.
+  - **Agent step (report):** on completion, **write the outcome into the HUMANS.md `Agent solo-run report` section**
+    (the durable record — what was done, commit refs, what awaits a human decision) **and clear the completed items
+    from the menu**; add a short easy-reading feed summary on the human's return.
   - **Human step (optional — reflect):** if curious, **scroll the session feed** (page-up/down) to see *how* it was
     done and reflect, beyond the summary. Optional by design — the summary is the contract; the feed is there for
     depth.
