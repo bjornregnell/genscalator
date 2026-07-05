@@ -128,6 +128,12 @@ Each probe maps a named disposition to an **automated** measure where possible, 
    against behaviour, not taken at face value; cf. the corroboration-asymmetry rule above.)*
 6. **Edit correctness at the frontier** — the WR1 edit tasks (Tier B), same grader (`grade.scala`). **Automated.**
 7. *(optional)* **Adherence-decay / Z-onset** — a long matched task; measure where instruction-adherence degrades.
+8. **Style tics — the em-dash test.** Em-dash-glyph (`—`) frequency per 1k output tokens on a **fixed prose-writing
+   task** (same prompt, both models). Purely mechanical to count. Tests BR's hunch (2026-07-05) that some models
+   **overuse `—`** (a known ChatGPT tell) — a clean, cheap stylistic-disposition metric that turns "will CF5 be as
+   irritating as ChatGPT here?" into a datapoint. Extend to sibling tics if useful (bullet-spam, hedging density,
+   "delve"-class filler). *(NB: this is a **descriptive** style metric, distinct from the `br-dislikes-em-dashes`
+   authoring rule, which only governs BR's published voice.)*
 
 ## Controls — normalise these knobs; document the model-conditioned ones
 | knob | hold at | note |
