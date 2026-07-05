@@ -60,6 +60,15 @@ frictionless so it becomes the new reflex). The regressions are **empirical conf
    to *enforce* it. The thing NOT to rely on.
 
 ## Open directions / tests
+- **Order stability as a natural experiment (BR 2026-07-05; planned test).** The `Order stability` rule ("don't
+  gratuitously reorder a human-facing artifact") was just added to `docs/foundations.md` **only** — which is *not*
+  auto-loaded into daily sessions — and deliberately **NOT** yet added as a memory. That makes it a clean probe for
+  the **structural-vs-knowledge-safeguard** thesis: does a **knowledge**-only rule (foundations prose the agent reads
+  only when investigating) actually **bind behaviour**, or does the agent reorder anyway until the rule is a
+  **memory** (auto-loaded) / a structural guard? Predicted (per this note): knowledge-only leaks → the agent will
+  reorder unless reminded. Decision on adding the companion memory is **held for this test's result** (pinned in the
+  closed `HUMANS.md`). A rare case where we can watch a *single* rule cross the knowledge→structural line and measure
+  the delta.
 - **Measure** regression rate vs context-fill % (does cause 2/rot predict it? → pairs with `smart-zone-ceiling`).
 - **Measure** regression rate with vs without an allowlisted typed alternative present (cause 1 leverage).
 - Prototype a **submit-time hook** rejecting the top-N dynamic-shell bundles; measure residual rate.
