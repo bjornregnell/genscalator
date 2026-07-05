@@ -47,6 +47,7 @@
       "Bash(pdftotext *)",
       "Bash(pdflatex *)",
       "Bash(pdfinfo *)",
+      "Bash(dot *)",
       "Bash(sbt --client *)",
       "Bash(git -C * *)",
       "Edit(//home/bjornr/git/hub/lunduniversity/introprog/autotranslate/**)",
@@ -92,10 +93,39 @@
       "Bash(/home/bjornr/git/berg/bjornregnell/genscalator/tools/tt forge *)",
       "Bash(/home/bjornr/git/berg/bjornregnell/genscalator/tools/tt web *)",
       "Bash(/home/bjornr/git/berg/bjornregnell/genscalator/tools/tt parsereqt *)",
-      "Bash(tt *)"
-    ],
-    "ask": [
-      "Bash(tt forge release-create *)"
+      "Bash(tt *)",
+      "WebFetch(domain:docs.google.com)",
+      "WebFetch(domain:doc-0k-98-docstext.googleusercontent.com)",
+      "Bash(/home/bjornr/git/berg/bjornregnell/genscalator/tools/tt git *)",
+      "Bash(/home/bjornr/git/berg/bjornregnell/genscalator/tools/tt box *)",
+      "WebFetch(domain:nightly.scala-lang.org)",
+      "WebFetch(domain:docs.scala-lang.org)",
+      "WebSearch",
+      "WebFetch(domain:iltotore.github.io)",
+      "WebFetch(domain:bjornregnell.se)",
+      "WebFetch(domain:www.wiley.com)",
+      "WebFetch(domain:www.pnas.org)",
+      "WebFetch(domain:dblp.org)",
+      "WebFetch(domain:www.nature.com)",
+      "WebFetch(domain:www.csee.umbc.edu)",
+      "WebFetch(domain:en.wikipedia.org)",
+      "WebFetch(domain:dl.acm.org)",
+      "WebFetch(domain:redirect.cs.umbc.edu)",
+      "WebFetch(domain:doi.org)",
+      "WebFetch(domain:export.arxiv.org)",
+      "WebFetch(domain:courses.cs.umbc.edu)",
+      "WebFetch(domain:pnas.org)",
+      "WebFetch(domain:onlinelibrary.wiley.com)",
+      "WebFetch(domain:books.google.com)",
+      "WebFetch(domain:books.google.se)",
+      "WebFetch(domain:portal.research.lu.se)",
+      "WebFetch(domain:eclass.hmu.gr)",
+      "WebFetch(domain:webcache.googleusercontent.com)",
+      "WebFetch(domain:lup.lub.lu.se)",
+      "WebFetch(domain:buku.io)",
+      "WebFetch(domain:r.jina.ai)",
+      "Bash(/home/bjornr/git/berg/bjornregnell/genscalator/tools/tt text *)",
+      "Bash(claude --version)"
     ],
     "deny": [
       "Bash(git rm *)",
@@ -108,6 +138,9 @@
       "Bash(git -C * push -f*)",
       "Bash(git clean -f*)",
       "Bash(git -C * clean -f*)"
+    ],
+    "ask": [
+      "Bash(tt forge release-create *)"
     ]
   }
 }

@@ -501,3 +501,32 @@ BR ended the live session and released the full-transcript logging obligation. T
 pre-registration P1-P6, before-data O1-O8 + A1/A2, after-inspect O9-O11 + verdict, post-compact O12-O13 + this framing
 correction. **From here on this file is a static artifact** — further work (fixing O9/O10/O11, standing up the
 `scala-code-review` skill, drafting blog 011) is ordinary post-study engineering, not logged here turn-by-turn.
+
+## Action-research ACT phase — findings fed back into the work (2026-07-05, BR-directed)
+**Amends the "static artifact" note above.** BR's framing: **this is ACTION RESEARCH, so improve-as-we-go is
+prioritized over non-interference / observability.** A controlled experiment minimises disturbing the observed system;
+action research does the opposite — it **intervenes**, and WR-data points found *during* the study are meant to improve
+the work immediately. So the record continues as the **ACT** phase of observe → reflect → act, not a frozen artifact.
+What we did right after the flooding stopped:
+- **Audit (a hardening-dance pass):** wrote `substrate-regression-candidates-2026-07-05.md` — the misfire-cause
+  inventory (`cd`-git, `dot` prompts, context-while-queued, the logging leak), each tagged **TOOL** vs **SUBSTRATE**.
+- **Discovery that sharpens O12 to its strongest form:** `Bash(git -C * *)` and `Bash(tt git *)` were **already
+  allowlisted** — so the whole-session `cd <repo> && git …` regression had **two sanctioned, zero-prompt escapes
+  available and still defaulted to the bad path.** The disciplined path was literally *free* and not taken:
+  absorption-regression is not a cost/benefit choice, it's a muscle-memory default that ignores the cheaper safe path.
+- **Substrate tightening (human-approved, BR at keyboard):** added `Bash(dot *)` to the live allowlist (retires the
+  direct-`dot` / AFK-idle friction, O3); confirmed `cd * && *` stays **off** `allow` (the untrusted-hooks guard should
+  keep prompting); destructive git already denied incl. the `git -C *` forms. Synced the committed
+  `settings-local-mirror.json` byte-for-byte — **mirror update is pure data (no approval needed); only the live
+  settings change needs approval** (`settings-local-mirror` rule).
+- **Memory amendments (prevent recurrence):** `commit-via-tt-git-not-raw-cd-git` (feedback) and
+  `genscalator-scala-code-review-skill-todo` (project).
+- **Open substrate candidate:** the mirror-sync `cp` itself prompts (not allowlisted) though it is a harmless
+  data-copy → candidate for an **exact-match `cp <live> <mirror>` allow** (like the scoped `rm -f …/tmp/*` rules),
+  BR to approve.
+
+**Methodological note (why this belongs in the record):** in action research the intervention *is* the instrument;
+logging the improvements together with their triggering observations **closes the loop** and makes the trust-boundary
+evolution diffable (`settings-local-mirror`). The tradeoff is explicit and owned: **we accept reduced
+non-interference to gain faster improvement** — the opposite of the controlled-experiment ideal, and the correct
+choice for this study type.
