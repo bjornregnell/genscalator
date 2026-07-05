@@ -557,3 +557,23 @@ class CliSuite extends munit.FunSuite:
     assertEquals(code, 2)
     assert(clue(out).toLowerCase.contains("usage"))
   }
+  /** Is graphviz `dot` on PATH? Probed HERE via os.proc (not imported from the tool) — the suite runs tools as
+    * subprocesses and deliberately does not import them, so it can't call `Gvdot.dotAvailable` directly. */
+  private lazy val dotAvailable: Boolean =
+    try os.proc("dot", "-V").call(check = false, stdout = os.Pipe, stderr = os.Pipe).exitCode == 0
+    catch case _: Throwable => false
+  test("gvdot RENDER path: with an out path, shells to `dot` and writes a non-empty image (guarded by dot present)") {
+    // The effectful driver (spawn `dot`, write a file) — the tool's whole point — had zero coverage; the pure
+    // DOT-gen path above needs no `dot`. Guarded by `assume` so the suite still passes where graphviz is absent.
+    assume(dotAvailable, "graphviz `dot` not on PATH — skipping the effectful render-path test")
+    val d = os.temp.dir()
+    try
+      val in = d / "s.txt"; os.write(in, "actor Alice\nactor Bob\nAlice -> Bob: hello\n")
+      val outp = d / "s.svg" // svg format is textual + self-contained; easy to assert non-empty
+      val (code, out, err) = run("gvdot", "sequence", in.toString, outp.toString)
+      assertEquals(code, 0, clue(err))
+      assert(clue(out).contains("wrote svg via graphviz dot"))
+      assert(os.exists(outp))
+      assert(clue(os.size(outp)) > 0L)
+    finally os.remove.all(d)
+  }
