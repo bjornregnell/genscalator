@@ -113,6 +113,9 @@ research method the rest of this folder runs under.)*
 - [`subagent-genscalator-propagation.md`](subagent-genscalator-propagation.md) — does a spawned sub-agent inherit
   genscalator's `tt` tools, skills, methodology, and allowlist — so delegated work stays safe-by-design? If not, how
   to make it so.
+- [`defining-an-agent-task-state-model.md`](defining-an-agent-task-state-model.md) — *(stub)* the states an ongoing
+  agent task moves through (Candidate → Scoped → Ready → InProgress ↔ Blocked → Verified → Done, + Parked/Dropped),
+  with a state diagram — a shared vocabulary under the AFK dance + task-autonomy triage.
 
 ### Agent psyche and cross-model method
 - [`agent-psyche-literature-review.md`](agent-psyche-literature-review.md) — *(proposed)* a grounding lit review of
@@ -138,6 +141,9 @@ research method the rest of this folder runs under.)*
 - [`experiment-prioritization.md`](experiment-prioritization.md) — the rule for *what experiment to run next*: the
   one most likely to build valuable **new** knowledge relative to the planet's research front (marginal frontier
   value).
+- [`go-verb-vocabulary.md`](go-verb-vocabulary.md) — *(proposal)* a small, **hardened** set of `go X` verbs
+  (`go stub` / `go draft` / `go fix` / `go sweep` / `go menu` / `go harden`) that name frequent scoped actions,
+  bounded by the **learnability-budget** tradeoff (prune before adding).
 
 ### Cases and roadmap
 - [`ssg-scoping.md`](ssg-scoping.md) — scoping the static-site generator to publish the blog to bjornregnell.se;

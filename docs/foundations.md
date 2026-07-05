@@ -77,9 +77,9 @@ risk of the agent getting stuck debugging its own brittle dynamic helpers.
 
 Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from the A→Z list.
 
-**Groups:** [Roles and cases](#roles-and-cases) · [Channel: bandwidth and confirmation fatigue](#channel-bandwidth-and-confirmation-fatigue) · [Echt and honest writing](#echt-and-honest-writing) · [Context: fill, rot and the smart zone](#context-fill-rot-and-the-smart-zone) · [Dances and handoffs](#dances-and-handoffs) · [Memory, habits and substrate](#memory-habits-and-substrate) · [Autonomy and safety](#autonomy-and-safety)
+**Groups:** [Roles and cases](#roles-and-cases) · [Channel: bandwidth and confirmation fatigue](#channel-bandwidth-and-confirmation-fatigue) · [Echt and honest writing](#echt-and-honest-writing) · [Context rot and the smart zone](#context-rot-and-the-smart-zone) · [Dances and handoffs](#dances-and-handoffs) · [Memory, habits and substrate](#memory-habits-and-substrate) · [Autonomy and safety](#autonomy-and-safety)
 
-**A→Z (Ctrl-F):** AFK menu · agent (CO4 / CF5) · AT · Authority anchor · Ballgame · BR · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confirmation fatigue (CF) · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · echt / äkthet · Edit dance · Extrinsic-volatile plasticity · Go dance · Habit · Hardening dance · Memory hygiene · Note dance · Pin dance · Prosthetic habit · Ralph loop · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token velocity · WR
+**A→Z (Ctrl-F):** AFK dance · agent (CO4 / CF5) · AT · Authority anchor · Ballgame · BR · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · echt / äkthet · Edit dance · Extrinsic-volatile plasticity · Go dance · Habit · Hardening dance · Index rot · Memory hygiene · Note dance · Pin dance · Pinboard · Prosthetic habit · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token velocity · WR
 
 ### Roles and cases
 *BR and the agent are the **roles** (stakeholders, above). **WR** is the research program; **AT** and **SSG** are its **cases / units of analysis** — the object-level projects during which workflow data is collected. (Terminology per* Case Study Research in Software Engineering: Guidelines and Examples*, Runeson, Höst, Rainer & Regnell, Wiley 2012, §3.2.3 "Cases and Units of Analyses" — of which BR is a co-author.)*
@@ -155,7 +155,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   **gloss on first use** in an outward post. (Swedish note: *äkta* also branches to *wedded / legitimate / proper*
   [as in *proper fraction*].) See `skills/blog-assistant`, blog README "Authorship & voice", and
   `research/steering-doc-design-tension.md`.
-### Context fill rot and the smart zone
+### Context rot and the smart zone
 - **Token efficiency (TE)** — achieving a task with fewer model tokens (input + output). A committed,
   compiled tool beats re-emitting brittle bash every time. **Two distinct pressures, usually aligned but
   not always:** (a) **$cost** — total tokens billed; (b) **smart-zone** — keeping *working* context small
@@ -219,19 +219,21 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   little of what matters. Context compaction (summarizing the transcript to reclaim window space) is the main
   smart-zone hygiene move — but a naive compact *loses* live state (decisions just made, the exact next step,
   paths, in-flight reasoning) because the summary is lossy. The dance makes the loss bounded and recoverable.
-  **Four steps:** **(1) save** — the agent **durably writes** the state a summary would blur: a resume/plan
-  note (decisions, next-step order, file paths, open threads) **plus** any persistent **memory** entries,
-  *committed* where the repo allows; **(2) prompt** — the agent hands the human a **paste-after-compact
-  prompt** that points at those durable artifacts and names the next action; **(3) compact** — the *human*
-  triggers the compaction; **(4) paste** — the human pastes the prompt, re-seeding the fresh context from the
-  durable state, not from the lossy summary. Initiated when fill nears the **smart-zone ceiling (Z)** (read it
-  off a `token-usage`-style instrument), *before* **context rot** sets in. **Safe-recovery invariant:** the
-  truth lives in **committed files + memory**, never only in the chat — so even a total context loss (crash,
-  cap halt, a summary that drops a thread) recovers by reading the resume note. The pasted prompt is a
-  *convenience*; the durable artifacts are the *guarantee*. Steps 1–2 are the agent's, 3–4 the human's: it is
-  a **human↔agent** protocol (cf. *communication bandwidth*), and the cousin of a **ralph loop**'s
-  checkpoint+compact — but human-triggered at a chat boundary rather than autonomous. Initiate at the
-  **compact trigger** (next).
+  - **(1) save** *(agent)* — durably write the state a summary would blur: a resume/plan note (decisions,
+    next-step order, file paths, open threads) **plus** any persistent **memory** entries, *committed* where
+    the repo allows.
+  - **(2) prompt** *(agent)* — hand the human a **paste-after-compact prompt** pointing at those durable
+    artifacts and naming the next action.
+  - **(3) compact** *(human)* — trigger the compaction.
+  - **(4) paste** *(human)* — paste the prompt, re-seeding the fresh context from the durable state, not the
+    lossy summary.
+
+  Initiated when fill nears the **smart-zone ceiling (Z)** (read it off a `token-usage`-style instrument),
+  *before* **context rot** sets in. **Safe-recovery invariant:** the truth lives in **committed files +
+  memory**, never only in the chat — so even a total context loss (crash, cap halt, a dropped thread) recovers
+  by reading the resume note; the pasted prompt is a *convenience*, the durable artifacts the *guarantee*. A
+  **human↔agent** protocol (steps 1–2 agent, 3–4 human), the cousin of a **ralph loop**'s checkpoint+compact
+  but human-triggered at a chat boundary. Initiate at the **compact trigger** (next).
 - **Compact trigger** — the context-fill level at which the agent should **proactively propose the compact
   dance**, rather than waiting until it is already degrading. Set at a **safety margin below the smart-zone
   ceiling**: **fill ≥ 0.8·Z** (with Z≈0.3, ≈24% of a 1M window). The 0.8 margin exists because the *dance
@@ -250,67 +252,117 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   sleep analogy: **consolidate then discard** (like memory consolidation in sleep) vs the reactive trigger's
   forced, lossy shutdown — *"good compaction is sleep, not collapse."* See
   `research/proactive-compaction-point.md`.
-- **AFK menu** — a **menu of pre-approved autonomous tasks the agent offers the human right before they step
-  away** ("**AFK**" = *away from keyboard*), turning an idle stretch into bounded, delegated progress. Each item
-  is **scoped and risk-labelled** — *autonomous-safe* (self-verifiable, no human input needed), *needs-human*
-  (a judgment or approval the agent must not fake), or *outward-facing* (publish/release — never autonomous) —
-  and every item carries the same **discipline**: commit + push per atomic unit, only commit verified-green,
-  crash-safe cadence, log any friction. The human authorizes a subset ("do 1, 3, then 2") or accepts a stated
-  **default order** and leaves; the agent then works inside an **explicit trust boundary** instead of either
-  stalling for input or over-reaching. Sibling to the human↔agent **dances**: the *compact / rest* dances hand
-  off **context**, the AFK menu hands off **autonomy** for a bounded window (cf. *communication bandwidth*,
-  *task-autonomy negotiation*). Running instances live in `notes/afk-menu-*.md`; the delegation UX itself is a
-  WR study subject.
+- **AFK dance** — the human↔agent protocol for handing off **autonomy for a bounded window** while the human is
+  **away from keyboard** ("**AFK**"), turning an idle stretch into delegated progress. Built around an **AFK menu**
+  (its artifact): the standing list of scoped candidate tasks.
+  - **Human step (trigger):** pick a subset ("do 1, 3, then 2") or accept the agent's stated **default order**, cue
+    `go`, and leave.
+  - **Agent step (work):** execute inside the **explicit trust boundary** — commit + push per atomic unit, only
+    commit verified-green, crash-safe cadence, minimise forced-confirmation risk (bare allowlist-matchable
+    commands), log any friction.
+  - **Agent step (report):** on the human's return, give an **easy-reading summary** at the end of the feed (what
+    was done, what's committed, what awaits a human decision).
+  - **Human step (optional — reflect):** if curious, **scroll the session feed** (page-up/down) to see *how* it was
+    done and reflect, beyond the summary. Optional by design — the summary is the contract; the feed is there for
+    depth.
+
+  **What makes a good AFK job** (the menu's admission test): **autonomous** (no mid-run human decision) · **low
+  forced-confirmation risk** (no build-pipeline glue / new-domain web / `~/.claude` writes — see
+  [[guard-against-forced-confirmations]]) · **reversible & non-outward-facing** (no publish/release) ·
+  **verifiable after the fact** · **bounded**. Items failing these are labelled *needs-human* or *outward-facing*
+  and stay off the autonomous set.
+
+  **Always-stocked-menu invariant:** the agent **continuously nominates** AFK-suitable-but-not-now tasks into the
+  menu *during active sessions* (a `pin` into the AFK-menu artifact), so a ready menu is at the human's fingertips
+  the moment they trigger the dance — the human should never have to ask "what could you do?" from a blank slate.
+  Sibling of the *compact / rest* dances (which hand off **context**); the AFK dance hands off **autonomy** (cf.
+  *task-autonomy negotiation*, *ballgame* ↔ *ralph loop*). The menu lives in the human's **pinboard**; the
+  delegation UX itself is a WR study subject.
 - **Edit dance** — the human↔agent protocol for **correcting a just-sent message** without derailing the turn.
-  Cause: a harness input-race — pressing ↑ to edit an already-Entered message is **too late** once the agent has begun
-  processing it, so the correction posts as a **new** message (a double-post). The human's deliberate habit is
-  therefore: don't fight the race — **add a new message**, and for a simple typo send a terse **`edit: wrong -> right`**
-  note. **Agent steps:** (1) treat a rapid near-identical pair (or an `edit:` / `I meant:` note) as **one** message,
-  the later copy authoritative; (2) apply the `edit: X -> Y` as a word-level fix and act **once**; (3) **do NOT comment
-  on or acknowledge the edit when it caused no confusion** — silently absorb it and move on (acknowledging wastes a
-  turn); only reassure "it's not confusing" if the human *explicitly* worries. The edit-notes are an **intentional
-  workflow feature**, not confusion. A **communication-bandwidth** move (cheap human correction, no re-type, no agent
-  ceremony). Sibling of the other human↔agent dances (*compact*, *exit-resume*, *hardening*).
-- **Pin dance** (formerly "note dance", then briefly "etch"; formally the *longitudinal externalisation* dance) — the **continuous**
-  human↔agent ritual that runs *across a whole session*, the streaming counterpart to the discrete **compact dance**:
-  the **human cues** `pin:` ("save this durably — you pick where unless I say") or `WR data:` (pin to the WR corpus),
-  and the **agent persists** that content out of the volatile context (substrate #1) into **durable committed items**
-  (memory, `wr-data/`, notes, blog, this glossary) — **choosing the home** and **questioning whether it earns a durable
-  slot**, moving each insight *down the substrate hierarchy as it arises*. **Why it matters:** it keeps the *effective
-  working-context* small even as *raw fill* climbs — the mechanism behind "capable at 0.88 fill"
-  (`research/wr-data/harness-ux.md`), i.e. *why* raw fill ≠ working-context. Both roles are load-bearing: the human's
-  cue is the trigger, the agent's discipline is the persistence. (BR 2026-07-04; cue `pin` chosen to avoid the *echt*/*etch* near-anagram collision — pin also won the embodied
-  cue-word typing test — see `wr-data/harness-ux.md`.)
-- **Note dance** (the *notice* cue — distinct from **pin**) — the **human cues** `note:` meaning *"notice this; hold it
-  salient in working memory for **this** conversation; and treat it as a **pin-candidate**"*; the **agent** keeps it
-  fluent **and nominates** promising ones for pinning (*"want me to pin this?"*). The **attention** act — not
-  necessarily durable — i.e. the **working-memory / encoding** stage to the pin dance's **consolidation** stage.
-  Pipeline: `note:` → (agent nominates) → `pin:`. (BR 2026-07-04: split out of the overloaded "note:" once it was clear
-  it meant two things — *attend-now* vs *save-durably*. Maps onto the two-stage memory model.)
+  Cause: a harness input-race — pressing ↑ to edit an already-Entered message is **too late** once the agent has
+  begun processing it, so the correction posts as a **new** message (a double-post).
+  - **Human step:** don't fight the race — **add a new message**, and for a simple typo send a terse
+    **`edit: wrong -> right`** note.
+  - **Agent step (1):** treat a rapid near-identical pair (or an `edit:` / `I meant:` note) as **one** message, the
+    later copy authoritative;
+  - **Agent step (2):** apply the `edit: X -> Y` as a word-level fix and act **once**;
+  - **Agent step (3):** **do NOT comment on or acknowledge the edit when it caused no confusion** — silently absorb
+    it and move on; only reassure "it's not confusing" if the human *explicitly* worries.
+
+  The edit-notes are an **intentional workflow feature**, not confusion — a **communication-bandwidth** move (cheap
+  human correction, no re-type, no agent ceremony). Sibling of the other human↔agent dances (*compact*,
+  *exit-resume*, *hardening*).
+- **Pin dance** (formerly "note dance", then briefly "etch"; formally the *longitudinal externalisation* dance) — the
+  **continuous** human↔agent ritual that runs *across a whole session*, the streaming counterpart to the discrete
+  **compact dance**:
+  - **Human step:** cue `pin:` ("save this durably — you pick where unless I say") or `WR data:` (pin to the WR corpus).
+  - **Agent step:** persist that content out of the volatile context (substrate #1) into **durable committed items**
+    (memory, `wr-data/`, notes, blog, this glossary) — **choosing the home** and **questioning whether it earns a
+    durable slot**, moving each insight *down the substrate hierarchy as it arises*.
+
+  **Why it matters:** it keeps the *effective working-context* small even as *raw fill* climbs — the mechanism behind
+  "capable at 0.88 fill" (`research/wr-data/harness-ux.md`), i.e. *why* raw fill ≠ working-context. Both roles are
+  load-bearing: the human's cue is the trigger, the agent's discipline is the persistence. The human-facing durable
+  home of the `pin:` cue is a **pinboard** (see term). (BR 2026-07-04; cue `pin` chosen to avoid the *echt*/*etch*
+  near-anagram collision — pin also won the embodied cue-word typing test — see `wr-data/harness-ux.md`.)
+- **Note dance** (the *notice* cue — distinct from **pin**):
+  - **Human step:** cue `note:` = *"notice this; hold it salient in working memory for **this** conversation; and
+    treat it as a **pin-candidate**"*.
+  - **Agent step:** keep it fluent **and nominate** promising ones for pinning (*"want me to pin this?"*).
+
+  The **attention** act — not necessarily durable — i.e. the **working-memory / encoding** stage to the pin dance's
+  **consolidation** stage. Pipeline: `note:` → (agent nominates) → `pin:`. (BR 2026-07-04: split out of the overloaded
+  "note:" once it was clear it meant two things — *attend-now* vs *save-durably*. Maps onto the two-stage memory model.)
 - **Go dance** (greenlight / autonomy handoff) — the human↔agent protocol for **releasing the agent to act
-  autonomously** on the current plan. **Human step:** cues `go` — *"you're authorized to proceed on the current plan
-  using your own judgment; I'm stepping back."* ‖ **Agent steps:** (1) execute the **currently-scoped** plan
-  autonomously (*not* a blank check); (2) stay **within standing guardrails** (destructive git human-only,
-  settings/security human-approved, no new-domain surfing — `go` is autonomy *inside* the fence, it doesn't lift it);
-  (3) **minimise interrupts** (bare allowlist-matchable commands, batch the work, don't pin the human — the AARGH
-  lesson); (4) surface only genuine decisions or the finished result, and report on completion. The mode-switch from
-  **ballgame** (human in every volley) to **autonomous** for a bounded task; where `note:`/`pin:` govern *memory*,
-  `go` governs *control / authorization*. Variant: "go [AFK] menu" = `go` over a menu of scoped tasks. **Dance bar:**
-  `go` qualifies as a *dance* (not a mere cue) because it has **≥2 interlocking steps — at least one human and one
-  agent step**; a one-directional signal with no answering step is just a cue. (BR 2026-07-04; cue `go` chosen for
-  typability — g-o alternates hands.)
-- **Hardening dance** — the agent **audits its own persistent config** and proposes durable fixes, so a misfire can't
-  re-fire forever. **Agent steps:** (1) review the agent's own durable substrate — memory, instructions, tool-shapes,
-  allowlists — for misfire causes and risks; (2) propose the **structural** fix (a guard that removes the bad
-  affordance — *"introspection isn't self-control → change the structure"*). ‖ **Human step:** curates and approves —
-  **security changes stay human-approved** (the human is the **authority anchor**; curation of permissions can't be
-  delegated — the corroboration asymmetry). Distinct from the **consistency sweep** (which audits the substrate's
-  *content*): hardening audits the agent's *config / machinery*. Human-triggerable. Memory: [[hardening-dance]].
-- **Rest dance** — a human↔agent dance for **conserving the human**. **Agent:** on signs of human fatigue (typo-rate
-  above the human's *own* baseline, terseness, late hour) or an **explicit signal**, propose a break and **externalize
-  state** (pin / compact) so the human can step away with **zero loss** and return sharp. ‖ **Human:** takes the break,
-  or declines. *Prevents:* degraded **human**-side decisions (the human dumb-zone, over-trust under *thriller state*);
-  conserves attention for the high-stakes **ballgame** volleys that need it. See `research/human-state-and-joint-zone.md`.
+  autonomously** on the current plan.
+  - **Human step:** cue `go` — *"you're authorized to proceed on the current plan using your own judgment; I'm
+    stepping back."*
+  - **Agent step (1):** execute the **currently-scoped** plan autonomously (*not* a blank check);
+  - **Agent step (2):** stay **within standing guardrails** (destructive git human-only, settings/security
+    human-approved, no new-domain surfing — `go` is autonomy *inside* the fence, it doesn't lift it);
+  - **Agent step (3):** **minimise interrupts** (bare allowlist-matchable commands, batch the work, don't pin the
+    human — the AARGH lesson);
+  - **Agent step (4):** surface only genuine decisions or the finished result, and report on completion.
+
+  The mode-switch from **ballgame** (human in every volley) to **autonomous** for a bounded task; where
+  `note:`/`pin:` govern *memory*, `go` governs *control / authorization*. Variants: "go [AFK] menu" = `go` over a
+  menu of scoped tasks; **`go X`** = a scoped go-verb (small curated set — see `research/go-verb-vocabulary.md`).
+  **Dance bar:** `go` qualifies as a *dance* because it has **≥2 interlocking steps — ≥1 human and ≥1 agent**; a
+  one-directional signal with no answering step is just a cue. (BR 2026-07-04; cue `go` chosen for typability — g-o
+  alternates hands.)
+- **Consistency dance** — the agent **sweeps the persistent substrate for internal inconsistency introduced by
+  accretion**, and repairs it, so the substrate stays self-coherent as it grows.
+  - **Trigger step:** either party — the human cues a sweep, or the agent proposes one after a big change (a rename,
+    a batch of new notes, a restructure).
+  - **Agent step (sweep):** check for **index rot** (stale/incomplete indexes), unsynced changelogs, **dead
+    cross-links / dangling pointers**, and **term drift** after a rename; **auto-fix the unambiguous**, list the
+    ambiguous.
+  - **Agent step (report):** surface what was fixed and what needs a human call.
+  - **Human step:** ratify the fixes / decide the ambiguous ones (content changes stay reviewable).
+
+  *Examples (2026-07-05 overnight run):* rebuilding the `research/README.md` index (index rot), syncing the
+  `CHANGELOG`, verifying an `etch → pin` rename left no stray references. **Memory hygiene** is the special case
+  scoped to the *memory store*; the **hardening dance** is the sibling that audits *config / machinery* rather than
+  *content*. Human- or agent-triggerable.
+- **Hardening dance** — the agent **audits its own persistent config** and proposes durable fixes, so a misfire
+  can't re-fire forever.
+  - **Agent step (1):** review the agent's own durable substrate — memory, instructions, tool-shapes, allowlists —
+    for misfire causes and risks;
+  - **Agent step (2):** propose the **structural** fix (a guard that removes the bad affordance —
+    *"introspection isn't self-control → change the structure"*).
+  - **Human step:** curate and approve — **security changes stay human-approved** (the human is the **authority
+    anchor**; curation of permissions can't be delegated — the corroboration asymmetry).
+
+  Distinct from the **consistency dance** (which audits the substrate's *content*): hardening audits the agent's
+  *config / machinery*. Human-triggerable. Memory: [[hardening-dance]].
+- **Rest dance** — a human↔agent dance for **conserving the human**.
+  - **Agent step:** on signs of human fatigue (typo-rate above the human's *own* baseline, terseness, late hour) or
+    an **explicit signal**, propose a break and **externalize state** (pin / compact) so the human can step away with
+    **zero loss** and return sharp.
+  - **Human step:** take the break, or decline.
+
+  *Prevents:* degraded **human**-side decisions (the human dumb-zone, over-trust under *thriller state*); conserves
+  attention for the high-stakes **ballgame** volleys that need it. See `research/human-state-and-joint-zone.md`.
 
 ### Memory habits and substrate
 - **Memory hygiene (agent)** — keeping the agent's **durable memory store** (the persistent `MEMORY.md` + the
@@ -328,6 +380,21 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   truth); the **raw research log** (`research/RAW-DATA.md`) is **immutable** (never retro-edit — a change of
   mind is logged as *new* data). Same goal (an honest record), opposite mechanism: one tracks the *present*,
   the other preserves the *past*.
+- **Index rot** — the **persistent-substrate cousin of context rot**: an index / pointer structure (a README's
+  investigations list, `MEMORY.md`, a table of contents, a changelog) drifting **out of sync with what it indexes**
+  as items accrete without maintenance — entries go missing, links dangle, the map stops matching the territory.
+  **Same family as context rot, different layer:** *context* rot degrades the **non-persistent working context**
+  *within* a session (from fill / low-signal bloat); *index* rot degrades a **persistent** structure *across*
+  sessions (from accretion without upkeep). Both are "a navigational structure decaying as stuff piles up"; the cure
+  differs — context rot → checkpoint + compact; index rot → a **consistency dance** sweep (rebuild the index, sync
+  the changelog, fix dead links). A **dangling pointer** is one symptom of index rot.
+- **Pinboard** — the **human-facing durable home of the `pin:` cue** (the pin dance's destination): a single,
+  **curated-and-current** document the **agent maintains live** and the **human reads** — the always-true counterpart
+  to the fluent session feed, so the human never has to scroll the feed or hold threads in their head. Holds the NOW
+  state, open decisions, and the **AFK menu**. Two variants seen in this work: a **private single-human** pinboard
+  (agent maintains it directly; the feed *is* the inbox) and a **public multi-human inbox-harvest** `HUMANS.md` (agent
+  proposes to an inbox, the human harvests — a review gate). Distinct from a **pin** (one saved item): the pinboard is
+  where human-facing pins are *organized for retrieval*.
 - **Habit (agent)** — a *learned default strategy* the agent reaches for. Examples: "munge text with
   grep/awk/sed", "count by piping to `wc -l`", "wrap work in `cd … && … > log`".
 - **Reflex (agent)** — a *fast, sub-deliberative trigger* inside a habit, fired before thinking.
@@ -353,9 +420,28 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   compaction / `/clear` / a crash; (2) **memory** — memory files, auto-loaded, persist across sessions; (3)
   **structure** — the `tt` tools, hooks, allowlist, settings, and committed docs (RAW-DATA, notes, this glossary):
   most durable AND behavior-*gating*. Higher layers make a lesson **stick** harder — a rule in *structure* fires
-  without recall, a rule only *in-context* evaporates (see **structural vs knowledge safeguard**). The substrate is
-  the address of **coupled-system capability** and the thing **substrate-as-multiplier** multiplies; externalizing
-  onto it is how a volatile in-context arc is made crash- and compaction-recoverable.
+  without recall, a rule only *in-context* evaporates (see **structural vs knowledge safeguard**). **The split that
+  decides reliability is persistent vs non-persistent:** layer 1 is **non-persistent** (RAM / working context — gone
+  at compaction / `/clear` / crash); layers 2–3 are **persistent** (survive across sessions on the file system) —
+  only the persistent layers are substrate you can *rely on next session*, and the in-context layer is where the
+  agent *works*, not where it *keeps*. The substrate is the address of **coupled-system capability** and the thing
+  **substrate-as-multiplier** multiplies; externalizing onto it is how a volatile in-context arc is made crash- and
+  compaction-recoverable.
+- **Reach (access horizon)** *(proposal — BR 2026-07-05; somewhat philosophical, for review)* — the agent's
+  **concentric shells of access**, ordered by increasing distance and **decreasing control / certainty**:
+  1. **working context** (RAM, non-persistent) — what's loaded *now*;
+  2. **substrate** (curated persistent, on the file system, mostly on the allowlist) — the intended operating layer;
+  3. **wider file system** — *accessible but not substrate* (accessibility ≠ substrate-hood: most of disk is
+     reachable yet uncurated and un-intended);
+  4. **web** — a **slice of the world** reachable via allowlisted fetch/search: external, lower-trust, and only the
+     indexed/reachable fraction (**web ≠ world**);
+  5. **the human (BR)** — the **bridge to the real world** the agent can't reach directly (physical reality, private
+     knowledge, judgment) and the **authority anchor** for what the agent may not self-corroborate.
+
+  Moving outward trades **control + certainty** for **reach**: the agent *edits* substrate freely, *reads* the wider
+  file system, *fetches* a guarded slice of the web, and *asks the human* for the rest of reality. It clarifies what
+  the agent can trust and change (inner shells) vs must verify or delegate (outer shells). The **allowlist is the
+  membrane** between shells 2–4. Related: **Substrate**, **Authority anchor**, **Safe by design**.
 - **Dangling pointer (to session-specific context)** — a reference, **inside a durable artifact** (a skill, memory, or
   committed doc — substrate #2/#3), that points **"up" into volatile, session-specific context** (substrate #1: a
   specific past episode, "as we discussed", an unexplained "the panic writes") which a **future** session no longer
