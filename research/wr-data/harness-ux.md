@@ -673,5 +673,5 @@ meaning** (spatial memory of location, scanning habit, diff-stability). reqT ord
 artifact** (re-sort a list, alphabetise defs, rearrange a config) *merely* because it is "semantically equivalent" —
 equivalence in the *model* is not equivalence to the *human*, who loses their spatial map. (Cousins:
 [[no-clobber-human-owned-files]]; the **append-only** discipline for `RAW-DATA.md` — stability of position is part of
-the record; and the `L → Z` rename that deliberately *left `RAW-DATA.md` untouched*.) Candidate: fold into a
-foundations note or a `#human-psyche` principle ("preserve human spatial memory: stable order > tidy order").
+the record; and the `L → Z` rename that deliberately *left `RAW-DATA.md` untouched*.) **Promoted to `docs/foundations.md`**
+(2026-07-05) as the glossary term **Order stability** (maxim: *stable order > tidy order*).

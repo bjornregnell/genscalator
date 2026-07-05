@@ -79,7 +79,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 
 **Groups:** [Roles and cases](#roles-and-cases) · [Channel: bandwidth and confirmation fatigue](#channel-bandwidth-and-confirmation-fatigue) · [Echt and honest writing](#echt-and-honest-writing) · [Context rot and the smart zone](#context-rot-and-the-smart-zone) · [Dances and handoffs](#dances-and-handoffs) · [Memory, habits and substrate](#memory-habits-and-substrate) · [Autonomy and safety](#autonomy-and-safety)
 
-**A→Z (Ctrl-F):** AFK dance · agent (CO4 / CF5) · AT · Authority anchor · Ballgame · BR · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · echt / äkthet · Edit dance · Extrinsic-volatile plasticity · Go dance · Habit · Hardening dance · Index rot · Memory hygiene · Note dance · Pin dance · Pinboard · Prosthetic habit · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token velocity · WR
+**A→Z (Ctrl-F):** AFK dance · agent (CO4 / CF5) · AT · Authority anchor · Ballgame · BR · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · echt / äkthet · Edit dance · Extrinsic-volatile plasticity · Go dance · Habit · Hardening dance · Index rot · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Prosthetic habit · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token velocity · WR
 
 ### Roles and cases
 *BR and the agent are the **roles** (stakeholders, above). **WR** is the research program; **AT** and **SSG** are its **cases / units of analysis** — the object-level projects during which workflow data is collected. (Terminology per* Case Study Research in Software Engineering: Guidelines and Examples*, Runeson, Höst, Rainer & Regnell, Wiley 2012, §3.2.3 "Cases and Units of Analyses" — of which BR is a co-author.)*
@@ -403,6 +403,18 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   (agent maintains it directly; the feed *is* the inbox) and a **public multi-human inbox-harvest** `HUMANS.md` (agent
   proposes to an inbox, the human harvests — a review gate). Distinct from a **pin** (one saved item): the pinboard is
   where human-facing pins are *organized for retrieval*.
+- **Order stability** *(maxim: **stable order > tidy order**)* — the element order of a **human-facing artifact**
+  carries **human-navigational meaning** (the reader's **spatial memory of *where* things are**) even when it carries
+  no **formal / model semantics** (the artifact computes the same reordered). The rule guards a conflation: **model
+  equivalence** ("does it compute the same?") **≠ human equivalence** ("can the reader still find things?"). So the
+  agent must **not gratuitously reorder** a human-facing artifact — re-sort a list, alphabetize defs, rearrange a
+  config, "tidy" a file — *merely* because it is semantically equivalent; that silently destroys the human's spatial
+  map, which is **maddening** exactly the way a tool that reshuffled a program's definitions would be. Grounded: **BR
+  made reqT-lang preserve source order (never rearrange) on user feedback** — the same instinct as programmers relying
+  on stable definition order; the **append-only** `RAW-DATA.md` discipline and the `L → Z` rename that *left
+  RAW-DATA.md untouched* are the same principle applied to a durable record. Cousin of **[[no-clobber-human-owned-files]]**
+  (don't clobber a human's file) and **Dangling pointer** / **Index rot** (durable-artifact hygiene). *When a tidy-up
+  is genuinely wanted, the human asks for it — the agent doesn't impose it.* (BR 2026-07-05.)
 - **Habit (agent)** — a *learned default strategy* the agent reaches for. Examples: "munge text with
   grep/awk/sed", "count by piping to `wc -l`", "wrap work in `cd … && … > log`".
 - **Reflex (agent)** — a *fast, sub-deliberative trigger* inside a habit, fired before thinking.
