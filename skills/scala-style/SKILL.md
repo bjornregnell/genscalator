@@ -125,7 +125,7 @@ black-and-white.
 **DRY (Don't Repeat Yourself) is the default and usually right.** Duplicated logic drifts out of sync — two
 "identical" parsers that quietly diverge is a *false-echt* correctness risk — so **when you notice real repetition,
 treat it as a trigger to investigate a refactor:** extract the shared thing into one typed, tested definition (e.g.
-`tools/seqspec.scala`, the sequence-diagram parser shared by `svg` + `ascii`; see the shared-helper-file pattern,
+`tools/seqspec.scala`, the sequence-diagram parser shared by `svg`, `ascii` + `gvdot`; see the shared-helper-file pattern,
 [`../../research/038-tt-shared-helper-file-pattern.md`](../../research/038-tt-shared-helper-file-pattern.md)). One
 greppable, compiler-checked source beats copies that silently disagree.
 

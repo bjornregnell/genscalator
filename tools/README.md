@@ -255,7 +255,7 @@ diagnostics, refactors). Full guide: [`../docs/tool-selection.md`](../docs/tool-
 - `htmltext.scala` — HTML→text stripper.
 - `chrono.scala` — stopwatch (effectful: state + log).
 - `parsereqt.scala` — reqT model parser.
-- `seqspec.scala` — shared sequence-diagram spec model + parser (no `@main`, like `lib.scala`); reused by `svg` + `ascii`.
+- `seqspec.scala` — shared sequence-diagram spec model + parser (no `@main`, like `lib.scala`); reused by `svg`, `ascii` + `gvdot`.
 - `svg.scala` — sequence-diagram spec → self-contained, theme-aware SVG (pure; writes a file with `out`).
 - `ascii.scala` — sequence-diagram spec → good-looking monospace/box-drawing art (pure; `--pure` for 7-bit ASCII).
 - `gvdot.scala` — sequence-diagram spec → image via graphviz `dot` (effectful; needs graphviz; argv-no-shell, DOT on stdin).

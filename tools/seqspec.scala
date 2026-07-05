@@ -1,7 +1,7 @@
 //> using scala 3.8.4
 //> using jvm 21
 
-// seqspec — the shared spec model + parser for the sequence-diagram tools (svg, ascii). A shared helper with NO
+// seqspec — the shared spec model + parser for the sequence-diagram tools (svg, ascii, gvdot). A shared helper with NO
 // @main (like lib.scala), so both tools `//> using file seqspec.scala` and reuse ONE grammar / parser — the spec is
 // defined in exactly one place.
 //
