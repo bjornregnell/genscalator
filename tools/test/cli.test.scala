@@ -420,7 +420,7 @@ class CliSuite extends munit.FunSuite:
       val outp = d / "s.svg"
       val (code, out, _) = run("svg", "sequence", in.toString, outp.toString)
       assertEquals(code, 0)
-      assert(clue(out).contains("wrote auto sequence diagram"))
+      assert(clue(out).contains("wrote auto/opaque sequence diagram"))
       assert(os.exists(outp))
       assert(clue(os.read(outp)).contains("<svg"))
     finally os.remove.all(d)
@@ -454,5 +454,22 @@ class CliSuite extends munit.FunSuite:
       val (_, out, _) = run("svg", "sequence", f.toString)
       assert(clue(out).contains("prefers-color-scheme")) // media query present
       assert(clue(out).contains("--fg:#1b1b2b")) // with the light base
+    finally os.remove(f)
+  }
+  test("svg default background is opaque (a theme-coloured canvas rect + --bg var)") {
+    val f = os.temp(contents = "A -> B: x\n", suffix = ".txt")
+    try
+      val (code, out, _) = run("svg", "sequence", f.toString)
+      assertEquals(code, 0)
+      assert(clue(out).contains("class=\"canvas\"")) // background rect present by default
+      assert(clue(out).contains("--bg:")) // theme background colour var
+    finally os.remove(f)
+  }
+  test("svg --transparent omits the background rect") {
+    val f = os.temp(contents = "A -> B: x\n", suffix = ".txt")
+    try
+      val (code, out, _) = run("svg", "sequence", f.toString, "--transparent")
+      assertEquals(code, 0)
+      assert(!clue(out).contains("class=\"canvas\"")) // no background rect
     finally os.remove(f)
   }

@@ -1,8 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1127.2" height="590" viewBox="0 0 1127.2 590" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
   <style>
-    :root { --fg:#1b1b2b; --box:#eef0fb; --boxline:#9aa0d0; --life:#c3c3d6; --line:#5a5f86; --notebg:#fff6d8; --noteline:#e0c86a; }
-    @media (prefers-color-scheme: dark) { :root { --fg:#e6e6f0; --box:#2a2d44; --boxline:#5a5f86; --life:#44465e; --line:#a6abd8; --notebg:#403a23; --noteline:#8a7a3a; } }
+    :root { --bg:#ffffff; --fg:#1b1b2b; --box:#eef0fb; --boxline:#9aa0d0; --life:#c3c3d6; --line:#5a5f86; --notebg:#fff6d8; --noteline:#e0c86a; }
+    @media (prefers-color-scheme: dark) { :root { --bg:#1b1b24; --fg:#e6e6f0; --box:#2a2d44; --boxline:#5a5f86; --life:#44465e; --line:#a6abd8; --notebg:#403a23; --noteline:#8a7a3a; } }
     text { fill: var(--fg); }
+    .canvas { fill: var(--bg); }
     .lbl { font-size: 13px; }
     .title { font-size: 16px; font-weight: 600; }
     .box { fill: var(--box); stroke: var(--boxline); stroke-width: 1; }
@@ -12,6 +13,7 @@
     .ret { stroke: var(--line); stroke-width: 1.2; stroke-dasharray: 6 4; }
     .head { fill: var(--line); }
   </style>
+  <rect class="canvas" x="0" y="0" width="1127.2" height="590"/>
   <text class="title" x="563.6" y="28" text-anchor="middle">The compact dance (a note to sleep, not collapse)</text>
   <line class="life" x1="155.9" y1="76" x2="155.9" y2="542"/>
   <rect class="box" x="110.9" y="42" width="90" height="34" rx="6"/>

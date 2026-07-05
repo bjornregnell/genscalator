@@ -88,8 +88,8 @@ object Svg:
     else // call: a filled triangle
       s"""  <path class="head" stroke="none" d="M ${fmt(x)} ${fmt(y)} L ${fmt(b)} ${fmt(y - 4)} L ${fmt(b)} ${fmt(y + 4)} Z"/>\n"""
 
-  private val LightVars = "--fg:#1b1b2b; --box:#eef0fb; --boxline:#9aa0d0; --life:#c3c3d6; --line:#5a5f86; --notebg:#fff6d8; --noteline:#e0c86a;"
-  private val DarkVars  = "--fg:#e6e6f0; --box:#2a2d44; --boxline:#5a5f86; --life:#44465e; --line:#a6abd8; --notebg:#403a23; --noteline:#8a7a3a;"
+  private val LightVars = "--bg:#ffffff; --fg:#1b1b2b; --box:#eef0fb; --boxline:#9aa0d0; --life:#c3c3d6; --line:#5a5f86; --notebg:#fff6d8; --noteline:#e0c86a;"
+  private val DarkVars  = "--bg:#1b1b24; --fg:#e6e6f0; --box:#2a2d44; --boxline:#5a5f86; --life:#44465e; --line:#a6abd8; --notebg:#403a23; --noteline:#8a7a3a;"
 
   /** CSS for the chosen theme. "light"/"dark" hardcode ONE palette — predictable in ANY embedding context (an SSG
     * page whose theme differs from the OS, a PDF export, an image viewer). "auto" adapts to the viewer via
@@ -105,6 +105,7 @@ object Svg:
   <style>
     ${palette(theme)}
     text { fill: var(--fg); }
+    .canvas { fill: var(--bg); }
     .lbl { font-size: ${fmt(Fs)}px; }
     .title { font-size: 16px; font-weight: 600; }
     .box { fill: var(--box); stroke: var(--boxline); stroke-width: 1; }
@@ -116,8 +117,10 @@ object Svg:
   </style>
 """
 
-  /** Render a parsed diagram to a complete, self-contained SVG document string. theme = "auto" | "light" | "dark". */
-  def render(d: Diagram, theme: String): String =
+  /** Render a parsed diagram to a complete, self-contained SVG document string. theme = "auto" | "light" | "dark".
+    * transparent = omit the background rect (default is an OPAQUE, theme-coloured background — transparent SVG
+    * backgrounds often render badly in Markdown/GitHub). */
+  def render(d: Diagram, theme: String, transparent: Boolean): String =
     val padX = 14.0; val marginX = 20.0; val headH = 34.0; val topPad = 14.0
     val gap = 46.0; val noteH = 34.0; val titleFs = 16.0
     def textW(s: String): Double = s.length * Cw
@@ -177,7 +180,9 @@ object Svg:
       s"""  <text class="title" x="${fmt(totalW / 2)}" y="${fmt(topPad + titleFs - 2)}" text-anchor="middle">${esc(t)}</text>\n"""
     ).getOrElse("")
 
-    svgHeader(totalW, totalH, theme) + titleSvg + lifelineSvg.toString + body.toString + "</svg>\n"
+    val canvasSvg = // opaque theme-coloured background by default; --transparent omits it
+      if transparent then "" else s"""  <rect class="canvas" x="0" y="0" width="${fmt(totalW)}" height="${fmt(totalH)}"/>\n"""
+    svgHeader(totalW, totalH, theme) + canvasSvg + titleSvg + lifelineSvg.toString + body.toString + "</svg>\n"
 
   // --- CLI -----------------------------------------------------------------
   private def isSeqMode(m: String): Boolean =
@@ -191,13 +196,19 @@ object Svg:
     else if f.exists(x => x == "--light" || x == "--light-mode") then "light"
     else "auto"
 
+  /** --transparent (aka --transparent-bg / --no-bg) → transparent background; default is an OPAQUE theme background. */
+  private def transparentOf(flags: List[String]): Boolean =
+    flags.map(_.toLowerCase).exists(x => x == "--transparent" || x == "--transparent-bg" || x == "--no-bg")
+
   private def usage(): Unit =
     println(
-      """usage: svg sequence <in.txt> [out.svg] [--light|--dark]   render a sequence-diagram spec to SVG (no out → stdout)
-        |       svg --sequence-diagram <in.txt> [out.svg]           (alias for `sequence`)
+      """usage: svg sequence <in.txt> [out.svg] [--light|--dark] [--transparent]   spec → SVG (no out → stdout)
+        |       svg --sequence-diagram <in.txt> [out.svg]                          (alias for `sequence`)
         |
         |theme:  (default) auto = adapts to the viewer via prefers-color-scheme; --light / --dark = a fixed, tailored
         |        palette (predictable when embedded in a page/PDF whose theme may differ from the OS setting)
+        |bg:     default is an OPAQUE, theme-coloured background (transparent SVG bg often renders badly in Markdown);
+        |        --transparent (aka --no-bg) drops it
         |spec lines:  title: <t> | actor <Id> [as <label>] | <A> -> <B>: <msg> | <A> --> <B>: <msg> | note over <A>[,<B>]: <t>""".stripMargin)
 
   def dispatch(args: List[String]): Unit =
@@ -205,15 +216,17 @@ object Svg:
       case mode :: tail if isSeqMode(mode) =>
         val (flags, pos) = tail.partition(_.startsWith("--"))
         val theme = themeOf(flags)
+        val transparent = transparentOf(flags)
         pos match
           case in :: rest =>
             val diagram = parse(Files.readString(Path.of(in)))
-            val svg = render(diagram, theme)
+            val svg = render(diagram, theme, transparent)
             val nMsg = diagram.events.count(_.isInstanceOf[Event.Msg])
+            val bg = if transparent then "transparent" else "opaque"
             rest.headOption match
               case Some(out) =>
                 Files.writeString(Path.of(out), svg)
-                println(s"svg: wrote $theme sequence diagram (${diagram.lifelines.size} lifelines, $nMsg messages) to $out")
+                println(s"svg: wrote $theme/$bg sequence diagram (${diagram.lifelines.size} lifelines, $nMsg messages) to $out")
               case None => print(svg)
           case Nil => usage(); sys.exit(2)
       case _ =>

@@ -57,6 +57,11 @@ and **theme-aware**: default `auto` (light plus a `prefers-color-scheme: dark` o
   theme, so an auto SVG can mismatch a light SSG page on a dark-OS machine (or a PDF export, or an image viewer).
   BR's hunch — "hard to be dark/light generic" — is right: for a page that *commits* to a theme, generate the
   matching variant; keep `auto` for standalone viewing. Cheap to offer both, so we do.
+- **Opaque background by default** (BR, 2026-07-05), `--transparent` to opt out. The background is a full-canvas
+  `<rect>` filled with a per-theme `--bg` var (white for light, near-black for dark; adaptive under auto). Default
+  opaque because a *transparent* SVG background often renders badly — a Markdown/GitHub viewer or a local SVG app
+  shows its own checkerboard/dark canvas *through* the diagram (BR hit exactly this). Transparent is still one flag
+  away for when the embedding page's own background is wanted.
 - **XML-escaped** every label (`& < > "`), locked by a well-formed-XML test that parses the output with
   `DocumentBuilderFactory` — a defence against an unescaped `&` in a message silently breaking the SVG.
 
