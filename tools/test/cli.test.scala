@@ -473,3 +473,53 @@ class CliSuite extends munit.FunSuite:
       assert(!clue(out).contains("class=\"canvas\"")) // no background rect
     finally os.remove(f)
   }
+
+  // --- ascii (SAME spec as svg, shared via seqspec.scala → monospace box-drawing art) ---
+  test("ascii sequence: renders lifelines, a message label, and box-drawing glyphs") {
+    val f = os.temp(contents = "actor Alice\nactor Bob\nAlice -> Bob: hello\n", suffix = ".txt")
+    try
+      val (code, out, _) = run("ascii", "sequence", f.toString)
+      assertEquals(code, 0)
+      assert(clue(out).contains("Alice"))
+      assert(clue(out).contains("Bob"))
+      assert(clue(out).contains("hello"))
+      assert(clue(out).contains("│")) // box-drawing lifeline
+      assert(clue(out).contains("▶")) // filled arrowhead
+    finally os.remove(f)
+  }
+  test("ascii --pure uses strict 7-bit ASCII (no box-drawing glyphs)") {
+    val f = os.temp(contents = "A -> B: x\n", suffix = ".txt")
+    try
+      val (code, out, _) = run("ascii", "sequence", f.toString, "--pure")
+      assertEquals(code, 0)
+      assert(clue(out).contains("|")) // ascii lifeline
+      assert(clue(out).contains(">")) // ascii arrowhead
+      assert(!clue(out).contains("│")) // no unicode lifeline
+      assert(!clue(out).contains("▶"))
+    finally os.remove(f)
+  }
+  test("ascii self-message and note render without crashing") {
+    val f = os.temp(contents = "actor A\nA -> A: think\nnote over A: hmm\n", suffix = ".txt")
+    try
+      val (code, out, _) = run("ascii", "sequence", f.toString)
+      assertEquals(code, 0)
+      assert(clue(out).contains("think"))
+      assert(clue(out).contains("hmm"))
+    finally os.remove(f)
+  }
+  test("ascii writes to a file when an out path is given") {
+    val d = os.temp.dir()
+    try
+      val in = d / "s.txt"; os.write(in, "A -> B: hi\n")
+      val outp = d / "s.art"
+      val (code, out, _) = run("ascii", "sequence", in.toString, outp.toString)
+      assertEquals(code, 0)
+      assert(clue(out).contains("wrote"))
+      assert(os.exists(outp))
+    finally os.remove.all(d)
+  }
+  test("ascii with no args prints usage and exits 2") {
+    val (code, out, _) = run("ascii")
+    assertEquals(code, 2)
+    assert(clue(out).toLowerCase.contains("usage"))
+  }

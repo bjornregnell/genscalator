@@ -1,5 +1,6 @@
 //> using scala 3.8.4
 //> using jvm 21
+//> using file seqspec.scala
 
 // svg — render a small textual diagram spec to a self-contained, theme-aware SVG for blogs & reports.
 // Focus mode: --sequence-diagram (aka `sequence`). PURE: reads spec text, computes SVG, prints (or writes a file).
@@ -23,50 +24,11 @@
 // The SVG is self-contained (inline <style>, no external refs) and theme-aware (light + prefers-color-scheme dark).
 
 import java.nio.file.{Files, Path}
+import SeqSpec.* // shared spec model (Diagram, Event, Lifeline) + parse — see seqspec.scala
 
 // Helpers live INSIDE this object so top-level names don't collide with the other tools when the whole tools/
 // tree compiles as one unit (scala-cli compile tools / the Scala MCP). Only the @main entry is top-level.
 object Svg:
-
-  // --- model ---------------------------------------------------------------
-  final case class Lifeline(id: String, label: String)
-  enum Event:
-    case Msg(from: String, to: String, text: String, dashed: Boolean)
-    case Note(over: List[String], text: String)
-  final case class Diagram(title: Option[String], lifelines: Vector[Lifeline], events: Vector[Event])
-
-  // --- parsing -------------------------------------------------------------
-  private val TitleRe = """(?i)^title\s*:\s*(.*)$""".r
-  private val DeclRe  = """(?i)^(?:actor|participant)\s+(\S+?)(?:\s+as\s+(.+))?\s*$""".r
-  private val NoteRe  = """(?i)^note\s+over\s+(.+?)\s*:\s*(.*)$""".r
-  private val MsgRe   = """^(\S+)\s*(-->|->)\s*(\S+)\s*:\s*(.*)$""".r
-
-  private def unquote(s: String): String =
-    val t = s.trim
-    if t.length >= 2 && ((t.head == '"' && t.last == '"') || (t.head == '\'' && t.last == '\''))
-    then t.substring(1, t.length - 1) else t
-
-  /** Parse a sequence-diagram spec. Lifelines are collected in first-seen order; unknown lines warn (stderr). */
-  def parse(spec: String): Diagram =
-    var title: Option[String] = None
-    val decls  = scala.collection.mutable.LinkedHashMap.empty[String, String] // id -> label, insertion-ordered
-    val events = Vector.newBuilder[Event]
-    def ensure(id: String): Unit = if !decls.contains(id) then decls(id) = id
-    for raw <- spec.linesIterator do
-      val line = raw.trim
-      if line.isEmpty || line.startsWith("#") || line.startsWith("//") then () // comment / blank
-      else line match
-        case TitleRe(t)          => title = Some(t.trim)
-        case DeclRe(id, label)   => decls(id) = Option(label).map(unquote).getOrElse(decls.getOrElse(id, id))
-        case NoteRe(ids, text)   =>
-          val over = ids.split(",").iterator.map(_.trim).filter(_.nonEmpty).toList
-          over.foreach(ensure)
-          events += Event.Note(over, text.trim)
-        case MsgRe(from, arr, to, text) =>
-          ensure(from); ensure(to)
-          events += Event.Msg(from, to, text.trim, arr == "-->")
-        case other => System.err.println(s"svg: ignoring unrecognized line: $other")
-    Diagram(title, decls.iterator.map((id, lab) => Lifeline(id, lab)).toVector, events.result())
 
   // --- rendering -----------------------------------------------------------
   private def esc(s: String): String =

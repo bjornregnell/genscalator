@@ -157,6 +157,20 @@ tt svg sequence blog/figures/seq-compact-dance.txt blog/figures/seq-compact-danc
 tt svg sequence flow.txt flow-dark.svg --dark
 ```
 
+### ascii — same spec → good-looking monospace/box-drawing diagram (PURE)
+```
+ascii sequence <in.txt> [out.txt] [--pure]   # render a sequence-diagram spec to monospace art (no out → stdout)
+ascii --sequence-diagram <in.txt> [out.txt]  # alias for `sequence`
+```
+The **plaintext sibling of `svg`** — reads the *same* spec (grammar shared via `seqspec.scala`) and renders a
+diagram for terminals, PR/commit comments, and plaintext reports. Default uses **Unicode box-drawing** glyphs
+(`│ ─ ┌ ┐ └ ┘ ┬ ┴ ┼ ▶ ◀`) for looks; **`--pure`** falls back to strict **7-bit ASCII** (`| - + > <`). A dashed
+reply (`A --> B`) renders as a gapped line; a self-message (`A -> A`) draws a small loop. Example:
+```
+tt ascii sequence flow.txt          # print to the terminal
+tt ascii sequence flow.txt flow.txt.art --pure
+```
+
 ### web — safe read-only HTTP (EFFECTFUL: network, but GET-only)
 ```
 web get <url> [--host H]... [--max-bytes N] [--status]   # fetch and print; GET only, no credential headers
@@ -225,7 +239,9 @@ diagnostics, refactors). Full guide: [`../docs/tool-selection.md`](../docs/tool-
 - `htmltext.scala` — HTML→text stripper.
 - `chrono.scala` — stopwatch (effectful: state + log).
 - `parsereqt.scala` — reqT model parser.
-- `svg.scala` — textual sequence-diagram spec → self-contained, theme-aware SVG (pure; writes a file with `out`).
+- `seqspec.scala` — shared sequence-diagram spec model + parser (no `@main`, like `lib.scala`); reused by `svg` + `ascii`.
+- `svg.scala` — sequence-diagram spec → self-contained, theme-aware SVG (pure; writes a file with `out`).
+- `ascii.scala` — sequence-diagram spec → good-looking monospace/box-drawing art (pure; `--pure` for 7-bit ASCII).
 - `web.scala` — safe read-only HTTP GET (effectful: network; requests).
 - `forge.scala` — Forgejo/Gitea forge client, releases/tags + env-token create (effectful; requests+ujson+os-lib).
 - `newtool.scala` — the generator.

@@ -6,8 +6,13 @@ All notable changes to genscalator. Versions follow the git tags (`vX.Y.Z`); the
 Updating genscalator is a **human-reviewed** step — see [`docs/updating.md`](docs/updating.md). Skim this
 file before adopting a new version: it changes the agent's operating rules, so review beats blind pull.
 
-## Unreleased — docs + research accretion + `tt svg` (sessions 2026-06-30 → 2026-07-05)
-Mostly docs/research; **one new tool** (`tt svg`). Version bump pending. Human review pending (see [`HUMANS.md`](HUMANS.md)).
+## Unreleased — docs + research accretion + `tt svg` / `tt ascii` (sessions 2026-06-30 → 2026-07-05)
+Mostly docs/research; **two new tools** (`tt svg`, `tt ascii`). Version bump pending. Human review pending (see [`HUMANS.md`](HUMANS.md)).
+- **New tool `tt ascii --sequence-diagram`** — the plaintext sibling of `tt svg`: renders the **same** spec (grammar
+  now shared in `tools/seqspec.scala`, a no-`@main` helper both tools `//> using file`) to a **good-looking
+  monospace/box-drawing diagram** for terminals, PR/commit comments, and plaintext reports. Default Unicode
+  box-drawing (`│ ─ ┌ ┐ ┬ ┴ ┼ ▶ ◀`); **`--pure`** for strict 7-bit ASCII. 5 CLI-contract tests. (`svg` refactored
+  onto the shared parser — no behaviour change; its tests still pass.)
 - **New tool `tt svg --sequence-diagram` (aka `tt svg sequence <in.txt> [out.svg]`)** — renders a tiny textual
   sequence-diagram spec (PlantUML/mermaid-flavoured: `actor`, `A -> B: msg`, `A --> B: reply`, `note over`) to a
   **self-contained SVG** for blogs and human-facing reports. **Theme:** default `auto` (adapts via

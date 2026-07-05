@@ -44,6 +44,13 @@ is a **self-contained** SVG (inline `<style>`, no external refs — safe to inli
 and **theme-aware**: default `auto` (light plus a `prefers-color-scheme: dark` override), or a fixed `--light` /
 `--dark` palette for predictable embedding (see Design choices).
 
+## Sibling: `tt ascii` (shared spec)
+
+`tt ascii --sequence-diagram` renders the **same spec** to a monospace/box-drawing diagram (terminals, PR/commit
+comments, plaintext reports). The grammar + parser were extracted into `tools/seqspec.scala` (a no-`@main` shared
+helper, like `lib.scala`) so `svg` and `ascii` share ONE definition of the spec — add a spec feature once, both
+tools get it. `ascii` defaults to Unicode box-drawing glyphs for looks, with `--pure` for strict 7-bit ASCII.
+
 ## Design choices
 
 - **No dependency.** Pure string generation over the JDK (`java.nio`), like `htmltext` — no graphics library, no
