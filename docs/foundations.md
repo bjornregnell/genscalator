@@ -79,7 +79,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 
 **Groups:** [Roles and cases](#roles-and-cases) · [Channel: bandwidth and confirmation fatigue](#channel-bandwidth-and-confirmation-fatigue) · [Echt and honest writing](#echt-and-honest-writing) · [Context rot and the smart zone](#context-rot-and-the-smart-zone) · [Dances and handoffs](#dances-and-handoffs) · [Memory, habits and substrate](#memory-habits-and-substrate) · [Autonomy and safety](#autonomy-and-safety)
 
-**A→Z (Ctrl-F):** AFK dance · agent (CO4 / CF5) · AT · Authority anchor · Ballgame · BR · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · echt / äkthet · Edit dance · Extrinsic-volatile plasticity · Go dance · Habit · Hardening dance · Index rot · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Prosthetic habit · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token velocity · WR
+**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · AT · Authority anchor · Ballgame · BR · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · echt / äkthet · Edit dance · Extrinsic-volatile plasticity · Go dance · Habit · Hardening dance · Index rot · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Prosthetic habit · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token velocity · WR
 
 ### Roles and cases
 *BR and the agent are the **roles** (stakeholders, above). **WR** is the research program; **AT** and **SSG** are its **cases / units of analysis** — the object-level projects during which workflow data is collected. (Terminology per* Case Study Research in Software Engineering: Guidelines and Examples*, Runeson, Höst, Rainer & Regnell, Wiley 2012, §3.2.3 "Cases and Units of Analyses" — of which BR is a co-author.)*
@@ -263,12 +263,12 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   sleep analogy: **consolidate then discard** (like memory consolidation in sleep) vs the reactive trigger's
   forced, lossy shutdown — *"good compaction is sleep, not collapse."* See
   `research/022-proactive-compaction-point.md`.
-- **AFK dance** — the human↔agent protocol for handing off **autonomy for a bounded window** to work a **solo block**,
-  turning that stretch into delegated progress. The human is often **away from keyboard** ("**AFK**") but need not be —
-  they may be **present-but-busy** on other work and still want the agent running solo on a menu. *(Because of that,
-  renaming this the **solo dance** is proposed — see OD9; "AFK" then names the strict **mode** where the human is
-  absent so no prompt may race them.)* Built around an **AFK/solo menu** (its artifact): the standing list of scoped
-  candidate tasks.
+- **Solo dance** *(formerly "AFK dance"; renamed per OD09, 2026-07-06)* — the human↔agent protocol for handing off
+  **autonomy for a bounded window** to work a **solo block**, turning that stretch into delegated progress. The human
+  may be **away from keyboard** (**AFK mode**, below) *or* **present-but-busy** on other work and still want the agent
+  running solo on a menu — the essence is the *delegated solo block*, not the human's physical absence, which is why
+  "AFK dance" under-described it. Built around a **solo menu** (its artifact): the standing list of scoped candidate
+  tasks.
   - **Human step (trigger):** pick a subset ("do 1, 3, then 2") or accept the agent's stated **default order**, cue
     `go`, and step away (or turn to other work).
   - **Agent step (work):** execute inside the **explicit trust boundary** — **commit + push in small, reversible
@@ -282,26 +282,33 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
     done and reflect, beyond the summary. Optional by design — the summary is the contract; the feed is there for
     depth.
 
-  **What makes a good AFK job** (the menu's admission test): **autonomous** (no mid-run human decision) · **low
+  **AFK mode (strict subset):** when the human is genuinely **absent** ("away from keyboard"), the block must
+  *additionally* be **forced-confirmation-free** — no prompt may race the absent human (the AARGH lesson,
+  [[guard-against-forced-confirmations]]). So **AFK-safe = solo-safe + prompt-race-free** (see *Solo-safe*), and the
+  **AFK menu** is the strict filter of the solo menu to exactly those items. A present-but-busy solo run relaxes only
+  the prompt-race constraint (the human is there to answer).
+
+  **What makes a good solo job** (the menu's admission test): **autonomous** (no mid-run human decision) · **low
   forced-confirmation risk** (no build-pipeline glue / new-domain web / `~/.claude` writes — see
   [[guard-against-forced-confirmations]]) · **reversible & non-outward-facing** (no publish/release) ·
   **verifiable after the fact** · **bounded**. Items failing these are labelled *needs-human* or *outward-facing*
-  and stay off the autonomous set.
+  and stay off the autonomous set. (AFK mode adds the prompt-race-free constraint on top.)
 
-  **Always-stocked-menu invariant:** the agent **continuously nominates** AFK-suitable-but-not-now tasks into the
-  menu *during active sessions* (a `pin` into the AFK-menu artifact), so a ready menu is at the human's fingertips
+  **Always-stocked-menu invariant:** the agent **continuously nominates** solo-suitable-but-not-now tasks into the
+  menu *during active sessions* (a `pin` into the solo-menu artifact), so a ready menu is at the human's fingertips
   the moment they trigger the dance — the human should never have to ask "what could you do?" from a blank slate.
-  Sibling of the *compact / rest* dances (which hand off **context**); the AFK dance hands off **autonomy** (cf.
+  Sibling of the *compact / rest* dances (which hand off **context**); the solo dance hands off **autonomy** (cf.
   *task-autonomy negotiation*, *ballgame* ↔ *ralph loop*). The menu lives in the human's **pinboard**; the
   delegation UX itself is a WR study subject.
-- **Solo-safe** — a property of an AFK task: the agent can complete it **entirely alone, with zero
-  forced-confirmation risk and no irreversibility**. Concretely: only `Read` + `Edit`/`Write` inside allowlisted
-  repos + **bare allowlist-matchable** `tt` / `git -C` / `scala-cli` calls (no pipes/redirects/`&&`, no
-  build-pipeline glue, no new-domain web fetch, no writes that would prompt), **reversible** (git-tracked,
-  non-outward-facing — no publish/release), and **verifiable after the fact**. The **strict subset** of the AFK
-  dance's *good-AFK-job* test that *additionally* guarantees **no prompt can race the human while they're away**
-  (the AARGH lesson — [[guard-against-forced-confirmations]]). "Give me a solo-safe menu" = filter the AFK menu to
-  exactly these; the residue (build glue, web to new domains, settings, publish) is *needs-human* / *outward-facing*.
+- **Solo-safe** — a property of a **solo task**: the agent can complete it **entirely alone**, reversibly, and
+  verifiably. Concretely: only `Read` + `Edit`/`Write` inside allowlisted repos + **bare allowlist-matchable**
+  `tt` / `git -C` / `scala-cli` calls (no pipes/redirects/`&&`, no build-pipeline glue, no new-domain web fetch),
+  **reversible** (git-tracked, non-outward-facing — no publish/release), and **verifiable after the fact**. This is
+  the general *good-solo-job* property (see *Solo dance*). **AFK-safe** is the **strict subset** that *additionally*
+  guarantees **no prompt can race the human while they're away** — i.e. **AFK-safe = solo-safe + prompt-race-free**
+  (the AARGH lesson, [[guard-against-forced-confirmations]]). "Give me a solo-safe menu" = filter to items the agent
+  can do alone; the **AFK menu** tightens that to the prompt-race-free residue for a genuinely absent human. What's
+  left over (build glue, web to new domains, settings, publish) is *needs-human* / *outward-facing*.
 - **Edit dance** — the human↔agent protocol for **correcting a just-sent message** without derailing the turn.
   Cause: a harness input-race — pressing ↑ to edit an already-Entered message is **too late** once the agent has
   begun processing it, so the correction posts as a **new** message (a double-post).
@@ -365,7 +372,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   - **Agent step (4):** surface only genuine decisions or the finished result, and report on completion.
 
   The mode-switch from **ballgame** (human in every volley) to **autonomous** for a bounded task; where
-  `note:`/`pin:` govern *memory*, `go` governs *control / authorization*. Variants: "go [AFK] menu" = `go` over a
+  `note:`/`pin:` govern *memory*, `go` governs *control / authorization*. Variants: "go [solo] menu" = `go` over a
   menu of scoped tasks; **`go X`** = a scoped go-verb (small curated set — see `research/035-go-verb-vocabulary.md`).
   **Dance bar:** `go` qualifies as a *dance* because it has **≥2 interlocking steps — ≥1 human and ≥1 agent**; a
   one-directional signal with no answering step is just a cue. (BR 2026-07-04; cue `go` chosen for typability — g-o
@@ -396,7 +403,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   Distinct from the **consistency dance** (which audits the substrate's *content*): hardening audits the agent's
   *config / machinery*. Human-triggerable. Memory: [[hardening-dance]].
 - **Rest dance** — a human↔agent dance for **conserving the human**. The explicit human trigger is the cue **`:Z`**
-  ("I am **getting** tired" — a *warning*, **not** asleep; a **precursor to the AFK dance**). Chosen for **minimal
+  ("I am **getting** tired" — a *warning*, **not** asleep; a **precursor to the solo dance**). Chosen for **minimal
   motor cost**: both chars are **SHIFT-held** (`:` = Shift-`;`, `Z` = Shift-`z`), so a tired hand never releases SHIFT.
   - **Human step (trigger):** cue **`:Z`** — or the agent infers fatigue (typo-rate above the human's *own* baseline,
     terseness, late hour).
@@ -439,7 +446,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 - **Pinboard** — the **human-facing durable home of the `pin:` cue** (the pin dance's destination): a single,
   **curated-and-current** document the **agent maintains live** and the **human reads** — the always-true counterpart
   to the fluent session feed, so the human never has to scroll the feed or hold threads in their head. Holds the NOW
-  state, open decisions, and the **AFK menu**. Two variants seen in this work: a **private single-human** pinboard
+  state, open decisions, and the **solo menu** (AFK-filtered when the human is absent). Two variants seen in this work: a **private single-human** pinboard
   (agent maintains it directly; the feed *is* the inbox) and a **public multi-human inbox-harvest** `HUMANS.md` (agent
   proposes to an inbox, the human harvests — a review gate). Distinct from a **pin** (one saved item): the pinboard is
   where human-facing pins are *organized for retrieval*.
