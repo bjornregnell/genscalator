@@ -147,6 +147,13 @@ research method the rest of this folder runs under.)*
   renderers: why a bespoke spec (not reqT-lang — reqT is conceptually a *bag*, order not semantic; a sequence's order
   *is* its meaning), the
   theme + opaque-background choices, and the eventual reqT upstream contribution.
+- [`045-seq-dsl-mermaid-vs-graphviz.md`](045-seq-dsl-mermaid-vs-graphviz.md) — *(open)* should the bespoke sequence DSL
+  become a **subset of Mermaid** (so specs render anywhere Mermaid does, zero-lib) instead? Finds "graphviz-subset" is
+  a non-option (DOT is a backend, not an authoring surface); leans Mermaid-subset with a backward-tolerant parser.
+- [`046-reqt-lang-md-diagram-sources.md`](046-reqt-lang-md-diagram-sources.md) — *(open)* store diagram sources as
+  **reqT-lang `.md`** (DSL inside a `Spec` string of an `Image` element) for one grammar + a `tt parsereqt` lint gate +
+  typed metadata. Resolves the 037 "don't reqT a sequence" tension (we wrap the file, not model the sequence); leans
+  reqT for *catalogs*, bare `.txt` still fine for one-offs.
 - [`015-reqt-lang-review.md`](015-reqt-lang-review.md) — using reqT-lang for genscalator's own PRD dogfoods the
   structure-beats-prose thesis. Verdict: **MAP not FORK** (reqT already fits); top proposal is an opt-in strict/lint
   mode (filed as reqT-lang#15).
