@@ -129,6 +129,12 @@ research method the rest of this folder runs under.)*
   substrate-as-multiplier claim. Also fixes *hold the model constant* during WR-data collection.
 
 ### Tools, design decisions, meta
+- [`038-tt-shared-helper-file-pattern.md`](038-tt-shared-helper-file-pattern.md) — the reuse pattern behind
+  `seqspec.scala` (shared by `svg` + `ascii`): a no-`@main` helper file that tools `//> using file`, with the two
+  rules that keep it valid (no `@main`; same-scope include only — scala-cli dedups same-scope, duplicates cross-scope).
+- [`037-svg-sequence-diagram-tool.md`](037-svg-sequence-diagram-tool.md) — the `tt svg` / `tt ascii` sequence-diagram
+  renderers: why a bespoke spec (not reqT-lang — reqT is an *unordered set*, a sequence is *ordered in time*), the
+  theme + opaque-background choices, and the eventual reqT upstream contribution.
 - [`015-reqt-lang-review.md`](015-reqt-lang-review.md) — using reqT-lang for genscalator's own PRD dogfoods the
   structure-beats-prose thesis. Verdict: **MAP not FORK** (reqT already fits); top proposal is an opt-in strict/lint
   mode (filed as reqT-lang#15).
