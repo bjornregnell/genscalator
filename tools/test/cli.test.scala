@@ -455,6 +455,18 @@ class CliSuite extends munit.FunSuite:
     assert(clue(out).toLowerCase.contains("usage"))
     assert(clue(out).toLowerCase.contains("sequence"))
   }
+  test("svg: a message whose text begins with ':' spawns no phantom lifeline (leading-colon regression)") {
+    // seqspec bug: `to` was `\S+` (colon is \S), so `A -> B: :Z cue` captured to="B:" — a 3rd, phantom lifeline.
+    val d = os.temp.dir()
+    try
+      val in = d / "s.txt"; os.write(in, "actor A\nactor B\nA -> B: :Z cue tired\n")
+      val outp = d / "s.svg"
+      val (code, out, _) = run("svg", "sequence", in.toString, outp.toString)
+      assertEquals(code, 0)
+      assert(clue(out).contains("2 lifelines")) // A and B only, not a phantom "B:"
+      assert(clue(os.read(outp)).contains(":Z cue tired")) // the colon-led text still renders
+    finally os.remove.all(d)
+  }
   test("svg --dark emits a fixed dark palette and no media query") {
     val f = os.temp(contents = "A -> B: x\n", suffix = ".txt")
     try

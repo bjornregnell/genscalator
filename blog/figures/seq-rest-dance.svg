@@ -32,7 +32,7 @@
   <text class="lbl" x="1082.4" y="421" text-anchor="middle" dominant-baseline="central">Codeberg</text>
   <line class="msg" x1="232.5" y1="106" x2="656.4" y2="106"/>
   <path class="head" stroke="none" d="M 657.4 106 L 648.4 102 L 648.4 110 Z"/>
-  <text class="lbl" x="444.9" y="99" text-anchor="middle">cue :Z (getting tired, a warning, not asleep)</text>
+  <text class="lbl" x="444.9" y="99" text-anchor="middle">:Z (getting tired, a warning, not asleep)</text>
   <line class="msg" x1="657.4" y1="152" x2="1081.4" y2="152"/>
   <path class="head" stroke="none" d="M 1082.4 152 L 1073.4 148 L 1073.4 156 Z"/>
   <text class="lbl" x="869.9" y="145" text-anchor="middle">commit + push everything (trees clean)</text>

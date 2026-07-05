@@ -23,7 +23,9 @@ object SeqSpec:
   private val TitleRe = """(?i)^title\s*:\s*(.*)$""".r
   private val DeclRe  = """(?i)^(?:actor|participant)\s+(\S+?)(?:\s+as\s+(.+))?\s*$""".r
   private val NoteRe  = """(?i)^note\s+over\s+(.+?)\s*:\s*(.*)$""".r
-  private val MsgRe   = """^(\S+)\s*(-->|->)\s*(\S+)\s*:\s*(.*)$""".r
+  // from/to ids use [^\s:]+ (not \S+) so they can't swallow the delimiter colon: without this, a message whose TEXT
+  // begins with a colon (e.g. `A -> B: :Z cue`) made `to` capture "B:" — a phantom lifeline. Ids never contain ':'.
+  private val MsgRe   = """^([^\s:]+)\s*(-->|->)\s*([^\s:]+)\s*:\s*(.*)$""".r
 
   private def unquote(s: String): String =
     val t = s.trim
