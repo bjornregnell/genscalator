@@ -35,6 +35,10 @@ it together.
   *(stub)* **companion** (outside the 004→008 reading order): staying **echt** (genuine + grounded) as generation goes
   100× and slop floods; the sv/en *äkta / äkthet / echt* map + the missing English word for the "looks-genuine-but-hollow"
   betrayal; TODO root the advice in data.
+- [`011-how-dumb-did-the-agent-get.md`](011-how-dumb-did-the-agent-get.md) — *(stub)* **companion** (outside the
+  004→008 arc): how dumb did the agent get? the before/after-compact context-rot experiment narrated for an outside
+  reader. The worker held (security-correct, tests green) but the supervisor slipped; grounded in the wr-data
+  experiment log (obs O6, O9-O12). TODO: also index `010` (currently missing from this list).
 
 *Status: initialized 2026-07-03; arc 004→008 added 2026-07-04.*
 
