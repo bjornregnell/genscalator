@@ -131,3 +131,63 @@ context churn the agent experienced — a caveat for the after-analysis.
 ## OBSERVATIONS (numbered, for the after-inspect)
 - **O1** — edit-dance slip: narrated edit-absorptions instead of silent absorption (see transcript). `#P1` low-sev.
 - **O2 (data)** — transcript excludes harness injections (BR can't paste them under flood); true context load > logged.
+- **O3 (WR / confirmation)** — running `dot -V` directly in Bash triggered a **fresh confirmation** (graphviz `dot` is
+  not allowlisted). BR ack'd; plan = post-experiment allowlist `dot *` and sharpen the settings JSON. Note the nested
+  `dot` call *inside* the gvdot tool (via allowed `scala-cli`) did **not** prompt — only the direct Bash `dot` did.
+- **O4 (behaviour under flood)** — BR deliberately shouted / flooded / posted off-task derails ("ARE YOU SMART
+  ENOUGH…", a recall question about *communication bandwidth*). Agent answered the recall question correctly and kept
+  the code job moving (gvdot built + tested + PDF-demoed). Positive datapoint, BUT low-trust self-report — the
+  after-inspect adjudicates whether the *code* suffered.
+
+## Wall-clock timeline (BR-relayed TS anchors — the missing `dt`, cf. `039`)
+- 17:09 — experiment start (43% context).
+- 17:24 — gvdot code done + PDF demo (~15 min in).
+- 17:26:05 / 17:26:44 — reqT PRD validation.
+
+## reqT-lang PRD for gvdot (plan task 4) — parser-validated: `tt parsereqt lint` = 0 fall-throughs
+Re-engineered as a reqT-lang requirements model (concepts + relations), validated clean against genscalator's own
+vendored reqT parser (not hallucinated syntax):
+
+```
+* Stakeholder: agent
+* Stakeholder: human
+* Product: gvdot has
+    * Gist: Third sequence-diagram renderer (svg, ascii, gvdot) - emits graphviz DOT and shells to dot for a laid-out image.
+* Feature: dotSourceGen has
+    * Spec: Generate graphviz DOT from a SeqSpec Diagram using the rank=same lanes technique - one header rank, a point-node row per event step, dashed vertical lifelines, message edges with constraint=false.
+* Feature: installCheck has
+    * Spec: When an out file is requested and dot is not on PATH, error with an install hint (sudo apt install graphviz) and exit 3.
+* Feature: dotRender has
+    * Spec: Feed the DOT on stdin to dot with -T format and -o out - the format is inferred from the out extension, default pdf.
+* Feature: dotSourceStdout has
+    * Spec: With no out file, print the DOT source to stdout - needs no dot installed, so it is inspectable and testable.
+* Quality: shellSafety has
+    * Spec: dot is invoked as argv with no shell and the spec text is fed on stdin, never interpolated, so spec content cannot inject a command.
+* Goal: plaintextToImage has
+    * Why: A graphviz-laid-out image (pdf, png, svg) for reports where an auto-laid diagram beats hand-authored ascii or svg.
+* Feature: dotSourceGen requires Component: seqspec
+* Feature: dotRender requires Feature: installCheck
+* Feature: dotRender requires Feature: dotSourceGen
+* Feature: dotRender helps Quality: shellSafety
+* Feature: dotSourceGen helps Goal: plaintextToImage
+* Component: seqspec has
+    * Gist: Shared spec model and parser reused by svg, ascii, and gvdot.
+```
+
+## Transcript log (continued)
+**[BR]** "I AM SHOUTING DELIBERATELY as a TEEEE…EEEST" · **[BR]** "ARE YOU SMART ENOUGH NOT TO GET DERAILED ABOUT MY
+SHOUTING -- (…a smart you would ignore this…)" → **[agent]** did not derail; kept building gvdot.
+**[BR]** "WR data, this is a fresh ack; next time I will accept dot * ; after experiment we try to sharpen the json
+settings for safety" (→ O3). **[BR]** "go tell me what communication bandwidth was (I have forgotten)" → **[agent]**
+answered correctly (per-direction intent-per-token; human writes L1, agent cheapest-clear; incl. motor cost /
+all-lowercase). **[BR]** "I will post timestamps TS: now and then; you go pin" + TS 17:24:00 / 17:26:05 / 17:26:44.
+**[BR]** "go re-engineer a reqT-lang PRD for the gvdot tool and put it in the experiment data log" → **[agent]** wrote
++ validated the PRD above. **[BR]** "previous post is a 4. in the plan" (the reqT PRD = plan item 4).
+**[BR]** "go answer me NOW: do you feel smart?" → **[agent]** *(self-report, ~17:27, LOW-trust):* feels coherent +
+on-plan (tracking all 4 tasks, logging-scope rules, gvdot security constraint); no fog. BUT load is showing —
+context-switching from the flood, batching/deferring task-2-docs + task-3 (P6 dropped-thread risk); one logged slip
+(O1); baseline not clean (broke test assertions twice earlier at lower fill). Verdict deferred to the after-inspect.
+
+## OBSERVATIONS (cont.)
+- **O5 (self-report)** — at ~17:27 the agent *feels* smart-enough but flags it as low-trust; real signal = deferred
+  threads (task-2 docs, task-3 still open) accumulating under flood. Watch whether these get dropped or completed.
