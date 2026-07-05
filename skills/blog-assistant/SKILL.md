@@ -11,6 +11,11 @@ allowed-tools: Bash(tt git *) Bash(tt files *)
 > So these are **calibrated guidelines, not bans.** When a guideline and good judgment genuinely conflict, follow the
 > judgment and **surface the tension** to BR rather than obeying mechanically. This skill tries to model what it preaches.
 
+> **Style rule (BR, near-absolute): (almost) NO em-dashes.** Do not emit the em-dash glyph in blog prose, in BR's docs,
+> or in prose written for BR. BR finds it ugly and a **tell of "agent vibe."** Use a plain hyphen `-`, a comma,
+> parentheses, a colon, or just restructure the sentence. If an em-dash is genuinely wanted, **leave it for BR**; he
+> writes his own as `--`, never the glyph. One of the very few hard rules here. (Also in memory, widened to all output.)
+
 ## The posture — engineering research (describe → improve)
 genscalator's author is a professor at an **engineering** faculty, and these posts inherit that posture. Engineering
 research does not stop at *describing* the world — it aims to **improve** it, so the writing moves from description

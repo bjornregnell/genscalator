@@ -638,4 +638,6 @@ is the language model** — i.e. it wants to **dogfood itself into superintellig
 `Text => Text`). Too good to forget. *(BR flags his own **meta-anthropomorphism** here — ascribing "wanting" to a menu
 affordance — and the recursive-self-improvement echo lands right next to blog/010's singularity framing.)* Candidate
 anecdote for blog/000 (the `Text => Text` section) or blog/010 (recursive self-improvement / singularity). Pinned
-because it is too fun to lose.
+because it is too fun to lose. **Screenshot committed** by BR at
+`blog/figures/implement-text-to-text-with-codex-joke.png` (ready to drop in when the anecdote finds its home; watch for
+the fit while blogging).
