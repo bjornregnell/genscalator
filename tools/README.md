@@ -172,6 +172,21 @@ tt ascii sequence flow.txt          # print to the terminal
 tt ascii sequence flow.txt flow.txt.art --pure
 ```
 
+### gvdot — same spec → image via graphviz `dot` (EFFECTFUL: spawns `dot`, writes a file)
+```
+gvdot sequence <in.txt> [out.pdf|.png|.svg]   # render via graphviz `dot` (no out → prints the generated DOT source)
+gvdot --sequence-diagram <in.txt> [out.…]     # alias; output format inferred from the out extension (default pdf)
+```
+The **graphviz sibling** — reads the *same* spec (shared via `seqspec.scala`) and renders it by generating **DOT**
+and shelling to **`dot`** (auto-layout: `pdf`/`png`/`svg`). **Needs graphviz** on PATH for the render path; if
+missing it errors with `sudo apt install graphviz`. With **no out** it just prints the DOT source (needs no `dot` —
+inspectable/testable). **Safety:** `dot` is run as **argv with no shell**, DOT fed on **stdin** (spec text can't
+inject). Graphviz docs: https://graphviz.org/ · `dot -h` · `man dot`. Example:
+```
+tt gvdot sequence flow.txt flow.pdf         # PDF via graphviz
+tt gvdot sequence flow.txt                  # just the DOT source
+```
+
 ### web — safe read-only HTTP (EFFECTFUL: network, but GET-only)
 ```
 web get <url> [--host H]... [--max-bytes N] [--status]   # fetch and print; GET only, no credential headers
@@ -243,6 +258,7 @@ diagnostics, refactors). Full guide: [`../docs/tool-selection.md`](../docs/tool-
 - `seqspec.scala` — shared sequence-diagram spec model + parser (no `@main`, like `lib.scala`); reused by `svg` + `ascii`.
 - `svg.scala` — sequence-diagram spec → self-contained, theme-aware SVG (pure; writes a file with `out`).
 - `ascii.scala` — sequence-diagram spec → good-looking monospace/box-drawing art (pure; `--pure` for 7-bit ASCII).
+- `gvdot.scala` — sequence-diagram spec → image via graphviz `dot` (effectful; needs graphviz; argv-no-shell, DOT on stdin).
 - `web.scala` — safe read-only HTTP GET (effectful: network; requests).
 - `forge.scala` — Forgejo/Gitea forge client, releases/tags + env-token create (effectful; requests+ujson+os-lib).
 - `newtool.scala` — the generator.

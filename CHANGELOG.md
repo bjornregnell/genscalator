@@ -6,8 +6,13 @@ All notable changes to genscalator. Versions follow the git tags (`vX.Y.Z`); the
 Updating genscalator is a **human-reviewed** step — see [`docs/updating.md`](docs/updating.md). Skim this
 file before adopting a new version: it changes the agent's operating rules, so review beats blind pull.
 
-## Unreleased — docs + research accretion + `tt svg` / `tt ascii` (sessions 2026-06-30 → 2026-07-05)
-Mostly docs/research; **two new tools** (`tt svg`, `tt ascii`). Version bump pending. Human review pending (see [`HUMANS.md`](HUMANS.md)).
+## Unreleased — docs + research accretion + `tt svg` / `tt ascii` / `tt gvdot` (sessions 2026-06-30 → 2026-07-05)
+Mostly docs/research; **three new sequence-diagram tools** (`tt svg`, `tt ascii`, `tt gvdot`), all sharing one spec
+parser (`tools/seqspec.scala`). Version bump pending. Human review pending (see [`HUMANS.md`](HUMANS.md)).
+- **New tool `tt gvdot --sequence-diagram`** — the graphviz sibling: renders the **same** spec by generating **DOT**
+  and shelling to **`dot`** (auto-layout → pdf/png/svg). Effectful driver; **needs graphviz** (`sudo apt install
+  graphviz`) for the render path, else prints DOT source. Safe: `dot` run as **argv, no shell**, DOT fed on stdin
+  (spec can't inject). 4 CLI tests (DOT-gen path). Docs: https://graphviz.org/ , `dot -h` , `man dot`.
 - **New tool `tt ascii --sequence-diagram`** — the plaintext sibling of `tt svg`: renders the **same** spec (grammar
   now shared in `tools/seqspec.scala`, a no-`@main` helper both tools `//> using file`) to a **good-looking
   monospace/box-drawing diagram** for terminals, PR/commit comments, and plaintext reports. Default Unicode

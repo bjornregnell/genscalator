@@ -523,3 +523,37 @@ class CliSuite extends munit.FunSuite:
     assertEquals(code, 2)
     assert(clue(out).toLowerCase.contains("usage"))
   }
+
+  // --- gvdot (SAME spec → graphviz DOT rendered via `dot`; the DOT-gen path needs no `dot` installed) ---
+  test("gvdot sequence: emits valid-looking DOT with headers, lifelines, and a message edge") {
+    val f = os.temp(contents = "actor Alice\nactor Bob\nAlice -> Bob: hello\n", suffix = ".txt")
+    try
+      val (code, out, _) = run("gvdot", "sequence", f.toString)
+      assertEquals(code, 0)
+      assert(clue(out).contains("digraph seq"))
+      assert(clue(out).contains("Alice"))
+      assert(clue(out).contains("Bob"))
+      assert(clue(out).contains("hello"))
+      assert(clue(out).contains("->")) // edges present
+    finally os.remove(f)
+  }
+  test("gvdot: a note renders as a note-shaped node") {
+    val f = os.temp(contents = "actor A\nnote over A: hmm\n", suffix = ".txt")
+    try
+      val (_, out, _) = run("gvdot", "sequence", f.toString)
+      assert(clue(out).contains("shape=note"))
+      assert(clue(out).contains("hmm"))
+    finally os.remove(f)
+  }
+  test("gvdot escapes double-quotes in labels (valid DOT, no injection)") {
+    val f = os.temp(contents = "A -> B: say \"hi\"\n", suffix = ".txt")
+    try
+      val (_, out, _) = run("gvdot", "sequence", f.toString)
+      assert(clue(out).contains("\\\"hi\\\"")) // quotes escaped for DOT
+    finally os.remove(f)
+  }
+  test("gvdot with no args prints usage and exits 2") {
+    val (code, out, _) = run("gvdot")
+    assertEquals(code, 2)
+    assert(clue(out).toLowerCase.contains("usage"))
+  }
