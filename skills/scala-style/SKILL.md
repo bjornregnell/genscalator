@@ -121,6 +121,33 @@ black-and-white.
   the order self-checking. Reserve unnamed tuples for local, throwaway pairing. A named tuple is also a
   zero-cost stepping stone to a `case class` if the shape grows.
 
+## 5. DRY, but not dogmatically — repetition is sometimes the right call
+**DRY (Don't Repeat Yourself) is the default and usually right.** Duplicated logic drifts out of sync — two
+"identical" parsers that quietly diverge is a *false-echt* correctness risk — so **when you notice real repetition,
+treat it as a trigger to investigate a refactor:** extract the shared thing into one typed, tested definition (e.g.
+`tools/seqspec.scala`, the sequence-diagram parser shared by `svg` + `ascii`; see the shared-helper-file pattern,
+[`../../research/038-tt-shared-helper-file-pattern.md`](../../research/038-tt-shared-helper-file-pattern.md)). One
+greppable, compiler-checked source beats copies that silently disagree.
+
+**But DRY is a heuristic, not a law — some repetition is deliberately better.** Extracting a shared unit **creates a
+dependency**, and coupling has its own cost. Prefer a little repetition when:
+- **Dependency surface matters more than duplication.** A shared helper couples *every* consumer to it — a change
+  to satisfy one can break another, and that coupling can outweigh the saved lines. Share code when the two uses are
+  the **same decision that must change together**, not merely because they *look* similar (coincidental duplication
+  ≠ knowledge duplication). Two short, independently-evolving copies can be cheaper than one abstraction everyone
+  must agree on.
+- **Tests want independence from production.** A test that re-states a small expected value or tiny bit of logic
+  **inline**, instead of importing the production code that computes it, is *more* trustworthy — it checks the
+  production path against an **independent** statement rather than against itself (importing the code-under-test to
+  build the expectation makes the test tautological). Deliberate test/production duplication is a feature.
+- **A scratch / one-off** would gain nothing lasting from sharing, only an import and a rebuild dependency.
+- **The right abstraction isn't clear yet.** Premature extraction locks in the wrong seam; two copies now, extract
+  once the real boundary is obvious (rule of three). The **wrong** abstraction is costlier to undo than duplication.
+
+**So:** notice repetition → *consider* extracting (usually do) → but weigh **duplication cost vs
+dependency/coupling cost**, and leave a one-line *why* when you keep the repetition. Neither blind DRY nor blind
+copy-paste. (This mirrors the skill's whole posture: pragmatic, conscious, local tradeoffs — §Intro.)
+
 ## Shape
 ```scala
 //> using scala 3.8.4

@@ -133,6 +133,9 @@ research method the rest of this folder runs under.)*
   substrate-as-multiplier claim. Also fixes *hold the model constant* during WR-data collection.
 
 ### Tools, design decisions, meta
+- [`040-dry-vs-dependency-surface.md`](040-dry-vs-dependency-surface.md) — when is DRY right vs when is repetition
+  better? Default DRY (drift = false-echt risk), but weigh **dependency/coupling surface**, coincidental-vs-knowledge
+  duplication, test independence, and premature-abstraction cost. Companion to `scala-style` §5.
 - [`038-tt-shared-helper-file-pattern.md`](038-tt-shared-helper-file-pattern.md) — the reuse pattern behind
   `seqspec.scala` (shared by `svg` + `ascii`): a no-`@main` helper file that tools `//> using file`, with the two
   rules that keep it valid (no `@main`; same-scope include only — scala-cli dedups same-scope, duplicates cross-scope).
