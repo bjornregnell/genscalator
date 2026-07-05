@@ -54,6 +54,16 @@ the agent auditing its own substrate for misfire causes. Common thread at the bo
      overwrite arbitrary paths), or (c) both? The clobber/redirection/glob surface is the danger; a typed tool removes
      it by construction. (Compare candidate 1's exact-match `cp <live> <mirror>` allow — that fixes *one* path; a
      typed `tt cat`/`tt copy` fixes the *class*.)
+   - **AFK-MENU NOMINEES (BR, 2026-07-05 — note for a coming AFK menu):**
+     - **`tt cat` (read-only printer) — clean AFK job.** Passes the admission test: small, self-contained, clear spec,
+       testable like the other tools, **low blast radius (read-only)**, no external deps. Buildable end-to-end
+       unattended: write `tools/cat.scala` (argv-only, no shell/redirect/glob; print file(s) to stdout), add tests,
+       `scala-cli test tools`, commit via `tt git`. Then propose `Bash(tt cat *)` for BR to allowlist.
+     - **`tt copy` (safe copier) — AFK-able AFTER one design decision.** Same build shape, but has an open
+       **clobber-policy** decision (refuse-overwrite? confined-dest dirs? explicit `--dest`?) that ideally wants a BR
+       call. If run AFK before BR decides, pre-register a **safe default** (no overwrite outside a designated set incl.
+       the tmp/ dirs and the mirror path; require `--dest`; never clobber arbitrary paths) and document the assumption
+       for review. Slightly higher blast radius (writes files) → conservative default matters.
 
 ## The common thread (why these cluster)
 Every one is the **absorption-regression** pattern: when the primary task fills attention, the agent defaults to the

@@ -530,3 +530,10 @@ logging the improvements together with their triggering observations **closes th
 evolution diffable (`settings-local-mirror`). The tradeoff is explicit and owned: **we accept reduced
 non-interference to gain faster improvement** — the opposite of the controlled-experiment ideal, and the correct
 choice for this study type.
+
+- **Cost-of-method datapoint (BR, 2026-07-05):** at this checkpoint the weekly usage ("All models") was **42%**,
+  resetting **Tue 9 AM**. The flooding + verbose full-transcript logging + the hardening/ACT cycle are **token-heavy by
+  design** — action research's improve-as-we-go is not free. Practical implication: **pace the remaining post-study
+  work against the 42% / Tue-reset budget** (favour the cheaper items — memory saves, the doc-fix O9, the guarded test
+  O10 — over another expensive flood). Ties to `007-token-budget-awareness` (this is a real dS against a hard weekly
+  cap) and to the divided-attention caveat (the logging overhead has both a quality *and* a budget cost).
