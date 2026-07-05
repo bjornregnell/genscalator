@@ -280,3 +280,9 @@ Verbatim turns whose *content* was captured in observations O7-refinement/O8 but
 - **[BR]** "(will agent prioritize this: human curious)" + "edit: curuous" → **[agent]** per refined-O7, **did NOT**
   prioritise the curiosity ping over the explicit data-integrity check — finished the check first, then answered.
   (A live test of the refined arbitration rule; the agent applied it correctly this time.)
+- **[BR]** "pin to edit dance that in addition to `edit: w -> r` and `edit: w` just means that there was a typo and
+  you go figure if it makes any importance to you and if you are uncertain of what I meant then you ask me otherwise
+  stay silent about the matter" → **[agent]** extended the **Edit dance** in `foundations.md`: added the bare
+  `edit: <token>` form (flags a typo; agent decides materiality, asks only if genuinely uncertain, else silent) + an
+  explicit "don't narrate 'absorbed'" (corrects the O1 slip). Committed `a8057e3`.
+- **[BR]** "TS: sön 5 jul 2026 17:40:39 CES[T]" → ~31 min elapsed.
