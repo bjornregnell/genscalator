@@ -1,16 +1,16 @@
-# [EX] Experimentation in Software Engineering — working summary
+# [ESE] Experimentation in Software Engineering — working summary
 
 > **Our own distillation, not the book.** An original, from-scratch summary of the *ideas and structure* of the book,
 > written as a fast public reference for the genscalator/WR work. It reproduces **no** text, tables, or figures from the
 > book. For depth, read the copyrighted original (BR's personal copy lives in the closed repo; buy links below).
 
 **Book:** *Experimentation in Software Engineering* — Claes Wohlin, Per Runeson, Martin Höst, Magnus C. Ohlsson,
-**Björn Regnell** & Anders Wesslén, Springer (2nd ed., 2024 revision; 1st ed. 2012). DOI
+**Björn Regnell** & Anders Wesslén, Springer (2nd ed., Springer 2024). DOI
 **10.1007/978-3-662-69306-3** (<https://link.springer.com/book/10.1007/978-3-662-69306-3>).
 
 > **Self-reference (echt).** This book is **co-authored by BR** — own that inline when citing it ("our own
 > experimentation textbook"), as both first-hand authority and a conflict of interest to name openly. It is the sibling
-> methods text to [CS]; the same lineage (Wohlin et al.) runs through both.
+> methods text to [CSR]; the same lineage (Wohlin et al.) runs through both.
 
 ---
 
@@ -26,7 +26,7 @@ and **validity threats** so that experiments are comparable and replicable.
 **When an experiment is the right strategy:** you can define a **treatment** (the manipulated factor, e.g. brace-style),
 apply it to **experimental units** while controlling confounds (ideally via **randomization** and **blocking**), and
 **measure a response variable** that operationalizes your concept. If you cannot control/manipulate the factor in
-context, you are in **case-study** territory ([CS]); if you want population estimates, a **survey**; if you aggregate
+context, you are in **case-study** territory ([CSR]); if you want population estimates, a **survey**; if you aggregate
 existing studies, a **systematic review/SLR**.
 
 ## Empirical strategies & how to choose (ch. 2)
@@ -91,7 +91,7 @@ want it to travel:
 - **External validity** — do results generalize beyond these subjects/objects/setting? (Student subjects, toy programs,
   artificial time pressure.)
 
-Note the deliberate contrast with [CS]: a **case study swaps in *reliability*** where the experiment has *conclusion*
+Note the deliberate contrast with [CSR]: a **case study swaps in *reliability*** where the experiment has *conclusion*
 validity — because a case study isn't doing statistical inference.
 
 ---
