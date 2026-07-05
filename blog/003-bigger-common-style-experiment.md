@@ -156,7 +156,7 @@ and is nowhere near significant — consistent with the pilot estimate being out
 honestly at the *edge of power* (56 ≈ the ~55 needed for 80% at the pilot's d), a null here is informative, not merely
 inconclusive: a population-level style effect *of the pilot's size* had ~80% chance to appear and did not.
 
-The honest read: **for the weak-editor question, brace style is not a meaningful lever — model capability is.** What
+The honest read: **for the weak-editor question, brace style is not a meaningful lever, but model capability is.** What
 predicts whether a small model can wrap a block in an `else` is *which model it is* (0.00 → 0.89), not which syntax it
 is shown. This refines rather than contradicts 002: 002 already found the effect *bidirectional and emission-dominated*;
 003 confirms at scale that once you block by model and stop pseudoreplicating, the residual style signal is noise. The
