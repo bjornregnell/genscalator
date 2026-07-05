@@ -11,10 +11,10 @@ allowed-tools: Bash(tt git *) Bash(tt files *)
 > So these are **calibrated guidelines, not bans.** When a guideline and good judgment genuinely conflict, follow the
 > judgment and **surface the tension** to BR rather than obeying mechanically. This skill tries to model what it preaches.
 
-> **Style rule (BR, near-absolute): (almost) NO em-dashes.** Do not emit the em-dash glyph in blog prose, in BR's docs,
-> or in prose written for BR. BR finds it ugly and a **tell of "agent vibe."** Use a plain hyphen `-`, a comma,
-> parentheses, a colon, or just restructure the sentence. If an em-dash is genuinely wanted, **leave it for BR**; he
-> writes his own as `--`, never the glyph. One of the very few hard rules here. (Also in memory, widened to all output.)
+> **Style rule (BR): (almost) NO em-dashes in the published post.** In blog prose (and its SSG/HTML rendering, and
+> anything published as BR's voice), do not emit the em-dash glyph `—`: **agents overuse it and it reads as an AI
+> tell.** Use a hyphen `-`, comma, parentheses, colon, or restructure. If one is genuinely wanted, **leave it for BR**;
+> he adds his own as `--` (a LaTeX habit). This is about BR's *published voice* only — not chat, not internal notes.
 
 ## The posture — engineering research (describe → improve)
 genscalator's author is a professor at an **engineering** faculty, and these posts inherit that posture. Engineering
