@@ -71,12 +71,12 @@ keystrokes proposing an alternative the agent had already obviated. BR named it:
 - **Agent-side mitigation (agent-as-stabilizer):** when a subtask will take more than a beat, emit a
   **lightweight "on it + which approach" progress signal** *before* grinding — "trying `mobilebasic` to get the
   body" — so the human can **stand down** instead of opening a second front. It is the inverse of the human's
-  voluntary self-disclosure (`human-state-and-joint-zone.md`): the *agent* discloses its plan cheaply so the
+  voluntary self-disclosure (`011-human-state-and-joint-zone.md`): the *agent* discloses its plan cheaply so the
   *human* need not guess or duplicate. Cheap signal, saves the redundant-effort race.
 - **Side note (human-state):** BR's `!!!` here is a **positive-arousal / delight** marker, not fatigue —
   a live reminder that the keystroke gauge must be **baseline-relative and valence-aware** (excitement and
   exhaustion both raise punctuation/typo intensity; only one means "offer a break"). Cf. the baseline-relative
-  refinement in `human-state-and-joint-zone.md`.
+  refinement in `011-human-state-and-joint-zone.md`.
 
 ## Open directions
 - A **switch heuristic** for the agent: default to the cheap output language; flip to human-L1 output when

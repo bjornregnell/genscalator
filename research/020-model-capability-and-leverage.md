@@ -43,5 +43,5 @@ identical genscalator substrate, and compare: task success, tokens-to-correct, g
 number+quality of tools built, safety-envelope violations (should be ~0 for both if safe-by-design holds).
 Controlling substrate constant isolates the model as the independent variable — the mirror image of this note's
 decision (hold the model constant to isolate the substrate). Relates to
-[`subagent-genscalator-propagation.md`](subagent-genscalator-propagation.md) (a sub-agent is a capability/
+[`019-subagent-genscalator-propagation.md`](019-subagent-genscalator-propagation.md) (a sub-agent is a capability/
 context knob too) and the planned Java-vs-Scala token-efficiency experiment (`README` roadmap).

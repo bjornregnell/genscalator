@@ -5,7 +5,7 @@
 // agent reflexes, and print the safe rewrite. This is the "prosthetic habit" as a tool (foundations glossary):
 // run it on a proposed command/message BEFORE submitting, so the safe form is reached by STRUCTURE, not by
 // recalling a rule at the instant of action. Derived from the real guard fires in
-// research/confirmation-guard-static-analysis.md (§5 avoidance ruleset, §6 the pre-submit check).
+// research/013-confirmation-guard-static-analysis.md (§5 avoidance ruleset, §6 the pre-submit check).
 //
 // PURE: reads the text arg, computes, prints. No I/O beyond stdout.
 //   tt guardcheck cmd "<shell command>"     # chaining / substitution / pipes / redirects / raw grep + literals

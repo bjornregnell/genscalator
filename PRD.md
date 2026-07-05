@@ -19,9 +19,9 @@ here when the PRD leans on them):
   Read it first if a term here is unfamiliar (smart zone / **Z** ceiling, confirmation fatigue, the compact /
   rest / AFK dances, **BHH**/BadGoal, safe-by-design …).
 - [`CHANGELOG.md`](CHANGELOG.md) — the shipped history; the PRD's **PAST** section mirrors it in requirements form.
-- `research/` — the investigations behind the requirements: e.g. `scala-style-evolution.md` /
-  `scala-style-recommendations.md`, `smart-zone-ceiling.md`, `human-state-and-joint-zone.md`,
-  `proactive-compaction-point.md`, `reqt-lang-review.md`, `METHODOLOGY.md`.
+- `research/` — the investigations behind the requirements: e.g. `001-scala-style-evolution.md` /
+  `017-scala-style-recommendations.md`, `006-smart-zone-ceiling.md`, `011-human-state-and-joint-zone.md`,
+  `022-proactive-compaction-point.md`, `015-reqt-lang-review.md`, `METHODOLOGY.md`.
 - `research/wr-data/` — the raw **evidence** (Workflow-Research friction logs) the requirements are grounded in.
 - `blog/` — the narrative, outside-reader versions of these ideas.
 - [`README.md`](README.md) — what the product is and how to run `tt`.
@@ -76,7 +76,7 @@ The complexity risk ("too much machinery") is real **only** if we import the who
   - ENT: Goal, Feature, Function, Stakeholder, ...
   - REL: has, requires, ...
   - ATTR: Spec, ...
-* **Mapping to reqT's existing vocabulary (agent review 2026-07-01 → `research/reqt-lang-review.md`; MAP not FORK).** Almost everything we need already exists in reqT's meta-model with the standard KAOS/i*/GRL semantics — so we use those rather than invent:
+* **Mapping to reqT's existing vocabulary (agent review 2026-07-01 → `research/015-reqt-lang-review.md`; MAP not FORK).** Almost everything we need already exists in reqT's meta-model with the standard KAOS/i*/GRL semantics — so we use those rather than invent:
   - anti-goal ("BadGoal") → a **`Goal` owned by an adversarial stakeholder that our Features `hurt`** (BR decision 2026-07-01: model as *Goal-we-Hurt*, NOT a new `BadGoal` concept, NOT `Barrier`).
   - `mitigates` / `conflictsWith` → **`Hurts`** ("negative influence; a goal hinders another"); positive contribution → **`Helps`**.
   - `verifies` → **`Verifies`** ✅ ("a test verifies a feature"); `Rationale` → **`Why`** ✅; `Metric` → **`Target`** / **`Quality`** (+ `Min`/`Max`/`Value`).
@@ -85,7 +85,7 @@ The complexity risk ("too much machinery") is real **only** if we import the who
   - `Status` → the FUTURE/PAST headings already encode lifecycle (or `Deprecated`); no new attr.
 
 *TAP:* To Agent Plan: investigate what more entities, relations, attributes agent thinks we need from the reqT-lang meta model
-  *(agent review done → `research/reqt-lang-review.md`: MAP not FORK — reqT already has what we need. Only open item: whether an explicit `Antigoal` EntType is worth adding upstream; BR chose to model anti-goals as Goal-we-Hurt for now, so NO new concept. reqT-lang parser feedback filed as issue reqT/reqT-lang#15.)*
+  *(agent review done → `research/015-reqt-lang-review.md`: MAP not FORK — reqT already has what we need. Only open item: whether an explicit `Antigoal` EntType is worth adding upstream; BR chose to model anti-goals as Goal-we-Hurt for now, so NO new concept. reqT-lang parser feedback filed as issue reqT/reqT-lang#15.)*
 
 **reqT-lang language specification:**
 
@@ -122,7 +122,7 @@ Learned by running snippets through the REAL parser (`tt parsereqt parse FILE`),
   * Goal: exfiltrateSecrets
 * Stakeholder: agentHarnessProvider has
   * Gist: the company or community that offer the agent harness, e.g. Anthropic (Claude Code) — and other CLI/IDE/agent runtimes.
-  * Comment: the stakeholder who alone can build the L3 "substrate signals" (attention, compaction-discard manifest, true usage) behind a real context-rot meter (see `research/smart-zone-ceiling.md`); we cannot force it, so genscalator builds the L0/L1/L2 slice (Feature: contextRotMeter) itself and files L3 as an upstream ask.
+  * Comment: the stakeholder who alone can build the L3 "substrate signals" (attention, compaction-discard manifest, true usage) behind a real context-rot meter (see `research/006-smart-zone-ceiling.md`); we cannot force it, so genscalator builds the L0/L1/L2 slice (Feature: contextRotMeter) itself and files L3 as an upstream ask.
   * Goal: retainUserTrust
   * Goal: maximizeUsefulAutonomy
   * Goal: manageInferenceCost
@@ -188,10 +188,10 @@ The next real release is **v0.9.0** — v0.1.0–v0.8.0 have shipped (see PAST/I
 
 * Feature: reqTParser has
   * Gist: write a typed tool for parsing reqT-lang reqts
-  * Spec: A `tt parsereqt` tool that parses the reqT-lang markdown subset (this PRD's ENT/REL/ATTR bullet grammar) into a typed model, validates it (well-formed ids in camelCase, known ENT/REL/ATTR or a clear "unknown term" error), and answers queries the agent needs: list goals/features, trace `requires`/`refines`, find orphans, and check every `BadGoal` is `mitigates`-linked by some `Feature`. Be inspired by / reuse the reqT-lang Scala parser (`05-MarkdownParser.scala`) rather than re-inventing the grammar; typed args per `research/tt-typed-args.md`; one-line friendly errors, never a stack trace.
+  * Spec: A `tt parsereqt` tool that parses the reqT-lang markdown subset (this PRD's ENT/REL/ATTR bullet grammar) into a typed model, validates it (well-formed ids in camelCase, known ENT/REL/ATTR or a clear "unknown term" error), and answers queries the agent needs: list goals/features, trace `requires`/`refines`, find orphans, and check every `BadGoal` is `mitigates`-linked by some `Feature`. Be inspired by / reuse the reqT-lang Scala parser (`05-MarkdownParser.scala`) rather than re-inventing the grammar; typed args per `research/014-tt-typed-args.md`; one-line friendly errors, never a stack trace.
   * Spec: **Baseline / ground truth** — feed THIS `PRD.md` to the reqT-lang parser and treat the model it yields as the acceptance fixture; resolve each divergence as EITHER a PRD fix OR a proposed upstream reqT-lang improvement. **CORE IMPLEMENTED** as `tt parsereqt` (vendored parser) — it authored + validates THIS PRD. REMAINING for a numbered release: native in-parser strict mode + source positions (reqT/reqT-lang#15).
 * Feature: reqTParser requires Function: reqtLangGrammar
-* Comment: reqT-lang parser review DONE → filed as reqT/reqT-lang#15 (strict/lint mode + source positions + id-handling); see research/reqt-lang-review.md. Working model: the vendored parser is the `tt parsereqt` tool.
+* Comment: reqT-lang parser review DONE → filed as reqT/reqT-lang#15 (strict/lint mode + source positions + id-handling); see research/015-reqt-lang-review.md. Working model: the vendored parser is the `tt parsereqt` tool.
 
 * Goal: verifiedTypedTools has
   * Gist: every typed tool is covered by tests — static types catch TYPE errors, mUnit tests catch LOGIC errors; a tool without tests is unverified.
@@ -203,7 +203,7 @@ The next real release is **v0.9.0** — v0.1.0–v0.8.0 have shipped (see PAST/I
 * Feature: typedToolsTestSuite verifies Goal: verifiedTypedTools
 * Goal: verifiedTypedTools helps Goal: safeGeneration
 * Goal: verifiedTypedTools helps Goal: jointHumanAgentProductivity
-* Comment: (agent) suggest linking these — `Feature: typedToolsTestSuite verifies Goal: verifiedTypedTools`, and `verifiedTypedTools helps safeGeneration + jointHumanAgentProductivity`. Rationale: typed tools are only HALF the safety story — static types catch TYPE errors, mUnit tests catch LOGIC errors; a tool without tests is unverified. Bonus: the suites double as the AGENT's own self-verification / regression signal before it ships a tool change (inference-time-learning.md §7). mUnit is the right pick (Scala Toolkit, zero-config with scala-cli via `//> using test.dep org.scala-lang::munit`). Prune the links if undesired.
+* Comment: (agent) suggest linking these — `Feature: typedToolsTestSuite verifies Goal: verifiedTypedTools`, and `verifiedTypedTools helps safeGeneration + jointHumanAgentProductivity`. Rationale: typed tools are only HALF the safety story — static types catch TYPE errors, mUnit tests catch LOGIC errors; a tool without tests is unverified. Bonus: the suites double as the AGENT's own self-verification / regression signal before it ships a tool change (012-inference-time-learning.md §7). mUnit is the right pick (Scala Toolkit, zero-config with scala-cli via `//> using test.dep org.scala-lang::munit`). Prune the links if undesired.
 
 * Feature: outputShapingFlags has
   * Gist: typed tools absorb the common output-shaping shell pipes (head/tail/wc/sort, grep -C) as native flags, so the agent never needs a downstream pipe to shape a tool's output.
@@ -288,7 +288,7 @@ The next real release is **v0.9.0** — v0.1.0–v0.8.0 have shipped (see PAST/I
 
 * Feature: contextRotMeter has
   * Gist: an instrument for the QUALITY axis of context (rot / chaos), complementing the token-usage QUANTITY gauge — surfaces "am I degrading?" so the agent or human can prune/compact before drift, not after.
-  * Spec: LAYERED (design in `research/smart-zone-ceiling.md`, sub-RQ b). L0 (solo, passive): count degradation signatures in the transcript — self-contradiction, repetition, tool-retry, redone work, instruction-forgetting. L1 (solo, externally anchored): a durable ground-truth file of decisions + planted canaries; a periodic re-read diffs live beliefs against it (the file does not rot → the external reference frame). L2 (collaborative): a human↔agent protocol — the human, an undegraded observer, flags lapses and relays `/context`. L3 (harness ask, not buildable by us): expose substrate signals (attention entropy, what compaction discarded, true usage).
+  * Spec: LAYERED (design in `research/006-smart-zone-ceiling.md`, sub-RQ b). L0 (solo, passive): count degradation signatures in the transcript — self-contradiction, repetition, tool-retry, redone work, instruction-forgetting. L1 (solo, externally anchored): a durable ground-truth file of decisions + planted canaries; a periodic re-read diffs live beliefs against it (the file does not rot → the external reference frame). L2 (collaborative): a human↔agent protocol — the human, an undegraded observer, flags lapses and relays `/context`. L3 (harness ask, not buildable by us): expose substrate signals (attention entropy, what compaction discarded, true usage).
   * Spec: BUILDABLE SLICE for genscalator = L0 + L1 as a pure, read-only typed tool (candidate `tt rotcheck`) — counters + canary-diff over supplied files, no self-authorization surface. L2 is a skill/AGENTS protocol; L3 is upstream/platform.
   * Why: rot is a QUALITY failure that can occur at LOW usage (chaos) or be absent at HIGH usage — usage% is a weak proxy, so a separate meter is warranted; and self-measurement from inside a degrading system is unreliable (a rotted agent measures with a rotted instrument), so the meter must anchor on an external reference — a file (weak) then a human (strong).
   * Comment: MEASUREMENT-FROM-WITHIN — reliable detection is human-gated until L3 exists; the mirror of agent-as-stabilizer (agent steadies the tiring human; human detects the rotting agent — each the other's external frame).

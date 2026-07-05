@@ -22,7 +22,7 @@
 3. **Keep destructive + catastrophic gated.** `push --force`, `reset --hard`, `rm -rf`, and anything outside the
    trusted repo tree should stay in `ask`/`deny` even for a user who wants low friction. (Candidate: ship a
    recommended `deny` list too.)
-4. **Config in args, not env** — nothing here should rely on ambient env vars ([[tt-typed-args.md]],
+4. **Config in args, not env** — nothing here should rely on ambient env vars ([[014-tt-typed-args.md]],
    PRD `configInArgsNotEnv`); the allowlist is auditable precisely because commands are literal.
 5. **Grow the allowlist deliberately, and record why.** Each "don't ask again" the user grants is a trust-boundary
    decision worth capturing (this is the settings-mirror idea — [[settings-local-mirror]] — that a user could
@@ -41,8 +41,8 @@
   rm-rf) so low-friction users still can't foot-gun? Likely yes.
 
 ## Relation to other threads
-Directly serves [`confirmation-guard-static-analysis.md`](confirmation-guard-static-analysis.md) (§4: a `tt`
+Directly serves [`013-confirmation-guard-static-analysis.md`](013-confirmation-guard-static-analysis.md) (§4: a `tt`
 command should be provable-safe → silent) and the BHH threat model (never trade safety for a quieter prompt).
-The sub-agent propagation question ([`subagent-genscalator-propagation.md`](subagent-genscalator-propagation.md))
+The sub-agent propagation question ([`019-subagent-genscalator-propagation.md`](019-subagent-genscalator-propagation.md))
 is the delegation-side sibling: settings are how the *human* grants trust; sub-agent config is how *that trust
 plus the methodology* reaches delegated work.

@@ -26,7 +26,7 @@
 
 ## Investigation (open, BR-requested 2026-07-02): braces vs significant indentation — what is best FOR THE AGENT?
 The Scala community debate on braces vs indentation (see the insourced Odersky/Regnell/Kerr note
-[`scala-style-recommendations.md`](scala-style-recommendations.md)) is framed around **human** legibility. This
+[`017-scala-style-recommendations.md`](017-scala-style-recommendations.md)) is framed around **human** legibility. This
 investigation asks the orthogonal question: **which is best for an AGENT**, on the token-efficiency + correctness
 axes genscalator cares about? Prompted by a concrete bug the agent committed this session (2026-07-02).
 

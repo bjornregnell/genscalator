@@ -1,7 +1,7 @@
 # Design: one sole `@main` dispatcher + typed args in / typed result out + streaming + a native `tt` binary
 
 Status: **PLAN (consolidated 2026-07-04), not started.** This is now the *single* design note for the tt-toolbox
-refactor — it absorbs the former arg-parsing note `../research/tt-typed-args.md` (left as a pointer stub). Needs a
+refactor — it absorbs the former arg-parsing note `../research/014-tt-typed-args.md` (left as a pointer stub). Needs a
 joint BR+agent go-ahead on sequencing before any code moves. Raised by BR 2026-07-03 during the object-scoping
 refactor (the stepping stone below); typed contract + streaming type settled 2026-07-04.
 
@@ -82,7 +82,7 @@ There is no single concrete `ToolArgs` type that fits every tool (box has subcom
 - **`RawArgs`** — the shared currency the dispatcher hands each tool: the tool name + `Vector[String]` argv +
   helpers. This is what the registry is keyed on (`Map[String, RawArgs => ToolResult]`).
 - **Per-tool typed record** — each tool declares its own `case class FooArgs(...)` (typed, validated fields).
-- **The tt typed-arg combinator layer** (the bridge, absorbed from `tt-typed-args.md`) — reusable readers/validators
+- **The tt typed-arg combinator layer** (the bridge, absorbed from `014-tt-typed-args.md`) — reusable readers/validators
   that parse a `RawArgs` slice into `Either[ToolError, FooArgs]` with **one-line friendly** errors.
 
 So a tool is two functions the dispatcher fuses:
@@ -116,7 +116,7 @@ file-writers, web fetch) still perform their effect internally — but they too 
 final stdout + exit to the dispatcher. Inline stderr *audit* lines (forge `[audit]`, box progress) stay in the
 driver; only the *result* stdout centralizes.
 
-## The typed-arg layer (consolidated from `tt-typed-args.md`)
+## The typed-arg layer (consolidated from `014-tt-typed-args.md`)
 Every tool today hand-parses stringly `args: String*` with `indexOf`/`toIntOption`. Scala 3's `@main` typed params
 auto-parse basic types from argv and fail fast — **but only** for a fixed list of *positional, basic-typed* params:
 no flags (`--write`), no subcommands (`tt text grepr`), no ranges (`FROM..TO`), no semantic validation (path exists,
@@ -298,4 +298,4 @@ https://nightly.scala-lang.org/docs/reference/experimental/capture-checking/basi
   gap, not a missing tool; consider widening `files` to be the obvious reach for shell-introspection questions.
 
 ---
-*Consolidates and supersedes `../research/tt-typed-args.md` (now a pointer stub). This is the single tt-refactor plan.*
+*Consolidates and supersedes `../research/014-tt-typed-args.md` (now a pointer stub). This is the single tt-refactor plan.*

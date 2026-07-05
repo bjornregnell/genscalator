@@ -5,7 +5,7 @@
   or its instruments can **warn/brake before degradation** instead of at the hard token limit?
 - **Why it matters:** the entire smart-zone / TE argument rests on Z, but Z is currently a **guessed prior**
   (~0.3 folklore). A measured/estimated Z turns "keep the working context small" from folklore into a
-  **quantitative brake threshold**, and closes the blind spot named in `token-budget-awareness.md`: the
+  **quantitative brake threshold**, and closes the blind spot named in `007-token-budget-awareness.md`: the
   `token-usage` tool can read live **fill %** but has *no Z to compare against*, so it can't say "you're near
   the edge." Z + fill% together = a real "smart-zone gauge."
 - **Status:** open. (Tool v1 shipped — see below.)
@@ -27,7 +27,7 @@ distance, attention entropy. Note the estimators below already hint at this — 
 quality axis), whereas usage is only a *presumed cause*; this RQ makes explicit that #2 can inflect
 **independently of usage**. **Reframes compaction too:** compaction may help rot less by cutting *volume* than
 by **pruning noise** (the summary drops dead threads) — so *"prune to clear chaos"* is a **distinct trigger**
-from *"compact to clear volume"* (the pressure-brake in `proactive-compaction-point.md`); at low usage but high
+from *"compact to clear volume"* (the pressure-brake in `022-proactive-compaction-point.md`); at low usage but high
 chaos, a **targeted prune** could beat a full compact. **Fatigue parallel** (blog thread): human fatigue also
 is not just *hours awake* (quantity) but cognitive **clutter / unresolved-thread load** (composition) — the
 same quantity≠quality decoupling. **Measurement gap:** `/context` gives the quantity axis for free; the
@@ -67,7 +67,7 @@ detection needs human↔agent collaboration** (L2) to cross the harness boundary
 until the harness itself surfaces substrate signals (L3). **Symmetry worth keeping** (feeds the fatigue blog):
 this is the mirror of *agent-as-stabilizer* — the agent steadies the tiring human (AFK menu, absorbing
 stress-noise); the human is the **rot-detector** for the degrading agent. **Each is the other's external
-reference frame** — the core mechanism of the joint zone (`human-state-and-joint-zone.md`). A meter that needs
+reference frame** — the core mechanism of the joint zone (`011-human-state-and-joint-zone.md`). A meter that needs
 an outside observer is not a failure of the design; it is the *general shape* of measuring any system from
 inside itself.
 
@@ -149,11 +149,11 @@ sessions that produce this research (its own rot is data).
 
 ## Relation to other notes
 - `docs/foundations.md` — defines **Smart-zone ceiling (Z)**, *smart/dumb zone*, *context rot*.
-- `token-budget-awareness.md` — the token-spend analogue; Z is the *context*-window analogue of the budget
+- `007-token-budget-awareness.md` — the token-spend analogue; Z is the *context*-window analogue of the budget
   cap, and the agent is blind to both without an instrument.
-- `instrumentation-by-default.md` — a smart-zone gauge is exactly this: an instrument the agent Reads
+- `005-instrumentation-by-default.md` — a smart-zone gauge is exactly this: an instrument the agent Reads
   instead of guessing how degraded it is.
-- `proactive-compaction-point.md` — uses Z as the *reactive* brake (`0.8·Z`) and adds a **proactive**,
+- `022-proactive-compaction-point.md` — uses Z as the *reactive* brake (`0.8·Z`) and adds a **proactive**,
   durability-gated compact trigger ("consolidation point"). Its RQ4 is where the ceiling symbol was
   renamed **L → Z** (2026-07-03) — "smart-**Z**one ceiling", Z sitting between the smart and dumb zones.
 
@@ -188,5 +188,5 @@ DILUTION, not raw token pressure.**
 - **Testable (agent-affective, sibling to the indent-vs-braces harness):** a **rot gauge** =
   contradiction/re-read/confabulation events per 100k tokens as fill grows; and an A/B of *repetitive-filler* vs
   *dense-unique* context of equal token count on a fixed probe task — turns "difficult to measure" into a number.
-  Cross-ref [`human-state-and-joint-zone.md`](human-state-and-joint-zone.md), memory
+  Cross-ref [`011-human-state-and-joint-zone.md`](011-human-state-and-joint-zone.md), memory
   `propose-compact-dance-at-trigger`.

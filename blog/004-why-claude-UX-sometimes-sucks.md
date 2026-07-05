@@ -64,7 +64,7 @@ Source material to mine (Workflow-Research "WR data", logged live during real ag
     exactly when a human on a long AFK run wants a fill/rot read without interrupting.
   - **Bash-reflex cluster** — the agent reaches for `ls`/`cat`/`grep`/`echo`-glued compounds instead of typed tools;
     each is a small UX-and-safety papercut (noise, confirmation prompts, lossy composition).
-- `research/smart-zone-ceiling.md` — fill-vs-rot, monitor-tick cadence as a rot knob.
+- `research/006-smart-zone-ceiling.md` — fill-vs-rot, monitor-tick cadence as a rot knob.
 - Related memories: harness-double-post-edit-race, no-interrupting-modals-during-flow, propose-compact-dance-at-trigger.
 
 **The compaction pain (BR) + the ask.** `[for BR to voice in the first person]` Compaction is the highest-stakes

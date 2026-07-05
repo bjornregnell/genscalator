@@ -21,7 +21,7 @@
 - **Conditional tool references beat unconditional ones.** "Use genscalator *for coding tasks*; for research,
   don't even mention it" keeps a tool pointer from polluting unrelated work.
 - **Communication defaults belong here** (token-efficiency, language channel, no-emoji, ask-for-focus-axis) —
-  they are genuinely cross-project and can't be inferred. Cf. `communication-bandwidth.md`.
+  they are genuinely cross-project and can't be inferred. Cf. `002-communication-bandwidth.md`.
 - **Keep it short.** Every line is paid on every task. Prefer a few sharp directives over an exhaustive
   policy; push detail down into skills/memory that load only when relevant.
 - **Meta-directives that improve the loop** are cheap and compounding — e.g. "tell me when a shorter
@@ -72,7 +72,7 @@ General:
   *narrow* use of X. If emoji restraint is wanted, phrase it as taste ("don't overuse / no decorative
   clutter"), not prohibition. A reminder that the global field's bluntness can do collateral damage.
 - **Where does the language-channel rule live?** The "answer in the token-efficient language" rule (see
-  `communication-bandwidth.md`) is currently in *memory*, not this field. Memory loads per-project; the global
+  `002-communication-bandwidth.md`) is currently in *memory*, not this field. Memory loads per-project; the global
   field loads everywhere. Which is the right home for a truly universal communication default?
 - **Measuring bloat:** can we estimate the per-task token cost of the global field, to keep it honest?
 
@@ -81,8 +81,8 @@ General:
   defaults + tool-gate), that adopters can fork.
 - A **global-vs-local decision rule**: a short checklist for "does this belong in the global field, in
   AGENTS.md, in a skill, or in memory?"
-- Cross-link with `token-budget-awareness.md` (global field = always-on context cost) and
-  `communication-bandwidth.md` (language/no-emoji are channel settings).
+- Cross-link with `007-token-budget-awareness.md` (global field = always-on context cost) and
+  `002-communication-bandwidth.md` (language/no-emoji are channel settings).
 
 ## What shipped
 - Nothing yet — note opened 2026-06-30 with BR's current instructions as the seed example.

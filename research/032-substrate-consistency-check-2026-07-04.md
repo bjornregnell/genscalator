@@ -5,7 +5,7 @@ a fix pass. This doc tracks **what the agent has done** vs **what still needs BR
 
 ## ✅ Actions taken by the agent (done + pushed)
 - **10 unambiguous auto-fixes** — 4 dead internal links (off-by-one `../`), 1 wrong `[[pointer]]`
-  (`model-capability-and-leverage.md` → `foundations`), the lingering `safe-zone`→`smart-zone` drift, forge-token +
+  (`020-model-capability-and-leverage.md` → `foundations`), the lingering `safe-zone`→`smart-zone` drift, forge-token +
   `text context` doc↔code drift, and `*.bak` in `.gitignore`. *(commit `a3fa6d1`)*
 - **Glossary gaps filled** — added **AT**, **ballgame**, **rest dance**, **corroboration asymmetry**, **authority
   anchor**, **thriller state**; reframed the roles/cases group per your *Case Study Research in SE* §3.2.3. *(`51cc088`)*
@@ -33,7 +33,7 @@ a fix pass. This doc tracks **what the agent has done** vs **what still needs BR
   **`F5`** or **`Fab`**. Pick one and I'll pin it into the Roles group.
 - **Books-in-context architecture** (your question) — how to make your two methodology books usable as selective
   reference without bloat + without copyright leak. My recommendation below (in chat).
-- **`scala-style-evolution.md`** — backport the finished-experiment findings (the safety headline was overturned); a
+- **`001-scala-style-evolution.md`** — backport the finished-experiment findings (the safety headline was overturned); a
   judgment edit, not a status flip.
 - **`blog/002`** — the Odersky/Regnell/Kerr note is cited 3× but isn't in `References.scala` (deliberate, as a living
   self-authored doc? your call).

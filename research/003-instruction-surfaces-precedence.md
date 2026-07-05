@@ -8,7 +8,7 @@
   copy is updated and others aren't?
 - **Why it matters:** this is the **governance layer** of the whole workflow. Get the precedence wrong and
   the agent silently follows a stale or lower-priority rule; get the *always-on set* bloated and every task
-  pays a context-rot tax (cf. *smart zone*, `token-budget-awareness.md`). A clear, documented model is what
+  pays a context-rot tax (cf. *smart zone*, `007-token-budget-awareness.md`). A clear, documented model is what
   lets a human put each rule in **exactly one** right place and trust it fires.
 - **Status:** open (priors below; needs empirical confirmation per surface + per agent vendor).
 
@@ -23,7 +23,7 @@ Rough **authority order** (highest wins on direct conflict), and **load timing**
    more local; refines rather than fights the root).
 4. **User global "Instructions for Claude"** (Settings → General) — cross-project defaults. Always-on,
    **every** session. Lower than a project file that contradicts it, but broader in reach. (See
-   `instructions-for-claude.md`.)
+   `004-instructions-for-claude.md`.)
 5. **Recalled memory** (`MEMORY.md` index → memory files) — **background context, NOT user instructions.**
    The index is always-on (one line each); individual memories surface on relevance. Advisory/lower
    authority — and **may be stale** (reflects when written; verify file/flag names still exist before acting).
@@ -55,12 +55,12 @@ research/. Keeping behavior in the **lazy** tier is the TE win.
 - **Confirm the order empirically** per surface (esp. global-instructions vs root-CLAUDE.md on a deliberate
   contradiction) and per vendor (Claude vs Codex vs open frameworks — the portability goal).
 - A **placement decision rule**: "global vs AGENTS.md vs subdir vs skill vs memory?" one-screen checklist
-  (pairs with `instructions-for-claude.md`'s global-vs-local split).
+  (pairs with `004-instructions-for-claude.md`'s global-vs-local split).
 - **Provenance/introspection:** can the agent report *which* surface a given behavior traces to (debugging
-  precedence + drift)? Cousin of the context-fill blind spot (`smart-zone-ceiling.md`).
+  precedence + drift)? Cousin of the context-fill blind spot (`006-smart-zone-ceiling.md`).
 - A **redundancy linter** — detect the same directive living in >1 surface.
 - Decide the genscalator **`AGENTS.md`/`CLAUDE.md` canonicalization** (one source of truth).
 
 ## What shipped
-- Nothing yet — note opened 2026-06-30. Companion to `instructions-for-claude.md` (that one is the *global
+- Nothing yet — note opened 2026-06-30. Companion to `004-instructions-for-claude.md` (that one is the *global
   field* in isolation; this one is *all surfaces together* + their ranking).

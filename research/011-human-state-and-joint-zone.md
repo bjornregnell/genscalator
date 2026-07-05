@@ -5,7 +5,7 @@
   human+agent state as the thing that actually determines whether a collaboration session goes well? And the
   payoff question: can the agent actively help keep the *human* in the smart zone, not just monitor its own?
 - **Why it matters:** a scarce resource in agentic software engineering is **human attention and judgement** (cf.
-  `task-autonomy-negotiation.md`). Every genscalator goal (avoid confirmation fatigue, avoid review overload,
+  `010-task-autonomy-negotiation.md`). Every genscalator goal (avoid confirmation fatigue, avoid review overload,
   stay in the smart zone) is ultimately about protecting a human who can get worn out. If we only instrument
   the agent, we optimise half the system and let the other half (a tired human rubber-stamping advanced work
   they cannot review) silently fail. Modeling the human state turns "don't burn the human out" from a vibe
@@ -93,9 +93,9 @@ This is the payoff. Concrete mechanisms, most already latent in genscalator:
   away with **zero loss** and come back **smart**. Call this the human's **rest dance**: the agent should
   propose it on fatigue signals the way it proposes the compact dance on the token trigger.
 - **Take the verifiable load** — move clearly-verifiable work into autonomous **ralph loops**
-  (`task-autonomy-negotiation.md`) so the human can rest while progress continues, and reserve human attention
+  (`010-task-autonomy-negotiation.md`) so the human can rest while progress continues, and reserve human attention
   for the high-stakes ballgame volleys that actually need it.
-- **Spend attention only where it changes the outcome** — the triage from `task-autonomy-negotiation.md` is,
+- **Spend attention only where it changes the outcome** — the triage from `010-task-autonomy-negotiation.md` is,
   viewed from here, a *human-state conservation* strategy.
 
 Net: a human who is not relentlessly worn out stays in the smart zone longer, which keeps the *joint* state
@@ -143,7 +143,7 @@ done safely.
   question).** Humans spontaneously reveal state in asides: *"I soon need to eat"*, *"it's late"*, *"I'm
   tired"*, *"this is exciting"*. These are **better** than any inferred proxy (typo rate, time-of-day): they
   are explicit, voluntary, and unambiguous human→agent state bandwidth — exactly the channel
-  `communication-bandwidth.md` describes, at near-zero token cost. So is it signal or context-bloat/derail
+  `002-communication-bandwidth.md` describes, at near-zero token cost. So is it signal or context-bloat/derail
   noise? **Resolution: it is high signal IF the agent extracts the one actionable bit and then DROPS the
   rest.** The discipline:
   1. **Extract the state-and-availability delta, not the content.** "I need to eat" → *human about to be
@@ -166,7 +166,7 @@ done safely.
   return — the discipline applied to itself.)
 - **My own honest limit:** I cannot directly feel the human's state and I have a bias toward "keep going"
   (eagerness to complete). That bias is precisely what makes me *unreliable* as my own brake here, which is
-  the same argument as `instruction-adherence-decay.md`: the fix is **structural** (an instrument + a
+  the same argument as `008-instruction-adherence-decay.md`: the fix is **structural** (an instrument + a
   standing rule to propose the rest dance on signal X), not "try to be considerate."
 
 ## 6. Candidate glossary terms (for BR to ratify in `docs/foundations.md`)
@@ -251,7 +251,7 @@ raise-verify-bar is nearly free — which codes tolerate error, which don't?).
 ## 8. Discrete rot self-catching vs continuous level-gauging — the human prompt as the trigger (2026-07-03, BR)
 During a long blog-002 review the agent emitted a **nonsensical edit** (a `PLACEHOLDER_DO_NOT_MATCH` string that
 failed as a no-op) — a genuine **degradation signature** — while BR simultaneously asked *"hope no context rot?"*.
-Unpacking what happened refines the "the human holds the gauge" model from `smart-zone-ceiling.md`:
+Unpacking what happened refines the "the human holds the gauge" model from `006-smart-zone-ceiling.md`:
 - **Two distinct capabilities, not one.** (1) **Continuous level-gauging** — "how rotted / how full am I *right
   now*" — is the part that is **unreliable from within** a degrading system (the blindness thesis; needs the
   external context meter the human relays). (2) **Discrete event-catching** — "was *that specific action*
@@ -319,11 +319,11 @@ The single most important operating principle to fall out of this note and §8:
   Together these make **"stop and come back fresh"** a zero-loss move — which is what lets either party actually
   *act* on a rot suspicion instead of pushing through it. The recovery kit is the precommitment (§2) the smart-zone
   self leaves for its future degraded self. Cross-ref [[propose-compact-dance-at-trigger]], [[exit-resume-dance]],
-  `instruction-adherence-decay.md`.
+  `008-instruction-adherence-decay.md`.
 
 ## What shipped
 - Nothing yet (research note only). Graduation candidates: the glossary terms above; a `tt human-state` /
   `tt restcheck` read-only gauge sibling to `token-usage`; a standing AGENTS.md rule "propose the rest dance
   on fatigue signals" paired with the compact-trigger rule; and (from §8) a "**audit your last action on request /
-  on a periodic ping**" self-check rule for discrete rot signatures. Pairs with `task-autonomy-negotiation.md`
-  (attention triage), `smart-zone-ceiling.md` (the agent-side gauge), and the compact-dance glossary.
+  on a periodic ping**" self-check rule for discrete rot signatures. Pairs with `010-task-autonomy-negotiation.md`
+  (attention triage), `006-smart-zone-ceiling.md` (the agent-side gauge), and the compact-dance glossary.

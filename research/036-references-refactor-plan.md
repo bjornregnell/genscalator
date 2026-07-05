@@ -16,7 +16,7 @@
    logic split).
 3. **Decide the home:** this rendering logic is very likely **an SSG resource** — the static-site generator for
    `bjornregnell.se` will need exactly "render a `Reference` (and a post) to HTML". So the refactor may **fold into the
-   SSG case study** (`research/ssg-scoping.md`) rather than living in `blog/`. Decide data/logic boundaries *with* the
+   SSG case study** (`research/030-ssg-scoping.md`) rather than living in `blog/`. Decide data/logic boundaries *with* the
    SSG design, not before it.
 
 ## Open questions

@@ -10,7 +10,7 @@
 pin offload points and the compaction at ~90% — showing *raw fill* climbing while capability holds (the "capable
 at 0.88 fill" datapoint): the empirical hook for the *how-to-support-the-claim* TODO below. Companion/alternative: a
 **two-lane choreography diagram** (human steps ‖ agent steps) for each named dance. Source:
-`research/wr-data/harness-ux.md`, `research/smart-zone-ceiling.md`.
+`research/wr-data/harness-ux.md`, `research/006-smart-zone-ceiling.md`.
 
 ## What a "dance" is `[for BR to voice]`
 
@@ -114,7 +114,7 @@ frontier model (Opus 4.8 vs Fable 5) — capture the baseline before the switch 
 
 ## TODO: mine WR data for evidence of their usefulness
 
-`research/wr-data/` and `research/smart-zone-ceiling.md` hold live instances where a dance fired (or should have).
+`research/wr-data/` and `research/006-smart-zone-ceiling.md` hold live instances where a dance fired (or should have).
 Harvest concrete episodes: the resume-skip that saved a long sweep from a harness cull; the toolbox-divergence
 hardening; each compact / exit-resume cycle and what it averted; every `pin:`/`WR data:` offload as a pin-dance
 datapoint.

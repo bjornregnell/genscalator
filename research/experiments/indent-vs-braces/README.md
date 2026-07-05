@@ -3,8 +3,8 @@
 **Status:** harness SKETCH (design + seed task + results template). Not yet run at scale. Framed as *future
 work* for the first paper (per BR 2026-07-02) — a self-contained experiment that could be its own paper.
 
-**Parent context:** [`../../scala-style-evolution.md`](../../scala-style-evolution.md) (the investigation + thesis) and
-[`../../scala-style-recommendations.md`](../../scala-style-recommendations.md) (the Odersky/Regnell/Kerr common-style
+**Parent context:** [`../../001-scala-style-evolution.md`](../../001-scala-style-evolution.md) (the investigation + thesis) and
+[`../../017-scala-style-recommendations.md`](../../017-scala-style-recommendations.md) (the Odersky/Regnell/Kerr common-style
 note this tests against). Seed evidence (n=1): a real significant-indentation edit bug the agent committed on
 2026-07-02 (wrap-a-block-in-`else` → mis-indent → mis-scope → compile fail → repair cycle).
 

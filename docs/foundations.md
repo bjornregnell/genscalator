@@ -118,7 +118,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   write prose **all-lowercase** (SHIFT is slow) with no loss (case doesn't carry prose meaning; the agent
   reconstructs), while code + proper nouns stay case-exact; symmetrically the agent writes *properly-cased*
   prose (near-zero token cost, nicer to read). Each side optimizes its own cheap axis. See research
-  `communication-bandwidth.md`.
+  `002-communication-bandwidth.md`.
 - **Comms shorthand (human↔agent)** — a shared vocabulary of standard chat/dev **acronyms** both roles emit
   and parse *without expansion*, a direct **communication-bandwidth** + **TE** lever: fewer tokens (and less
   human typing) carry the same intent, in both directions. Distinct from the project's *coined* terms
@@ -141,7 +141,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   "this is thrilling" high (cf. blog 004's emotional stakes). Productive, but carries an **over-trust risk**: an excited
   human rubber-stamps advanced agent work they haven't fully reviewed (a cousin of *confirmation fatigue* / *review
   overload*). The agent should **detect** it (and fatigue) and, when it tips toward over-trust or exhaustion, propose the
-  **rest dance**. See `research/human-state-and-joint-zone.md`, `research/agent-affective-analogs.md`.
+  **rest dance**. See `research/011-human-state-and-joint-zone.md`, `research/024-agent-affective-analogs.md`.
 ### Echt and honest writing
 - **echt / äkthet** — the quality genscalator wants in outward writing (and, by extension, in any claim): **genuine AND
   grounded** — real human intention/experience actually present, and every factual/empirical claim resting on evidence.
@@ -154,7 +154,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   voiced, or slop / a smooth surface outrunning its grounding? **Internal vocabulary** (echt is rare in English) →
   **gloss on first use** in an outward post. (Swedish note: *äkta* also branches to *wedded / legitimate / proper*
   [as in *proper fraction*].) See `skills/blog-assistant`, blog README "Authorship & voice", and
-  `research/steering-doc-design-tension.md`.
+  `research/027-steering-doc-design-tension.md`.
 ### Context rot and the smart zone
 - **Token efficiency (TE)** — achieving a task with fewer model tokens (input + output). A committed,
   compiled tool beats re-emitting brittle bash every time. **Two distinct pressures, usually aligned but
@@ -185,7 +185,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   number the harness reports as **Context Usage** in `/context`. Our notes historically wrote **fill** /
   **fill %**; those are **exact synonyms**, with *context usage* now **preferred** (it matches the harness UX) —
   so existing "fill" phrasing stands, **no rename needed**. Distinct from **context rot**, the *quality* axis
-  (chaos / low-signal bloat), which can move **independently** of usage (see `research/smart-zone-ceiling.md`
+  (chaos / low-signal bloat), which can move **independently** of usage (see `research/006-smart-zone-ceiling.md`
   sub-RQ: rot at *low* usage, or none at *high* usage). The agent **cannot reliably read its own usage** — it
   comes from `/context` (human-relayed) or a `token-usage`-style instrument. The **compact trigger** fires at
   usage **≥ 0.8·Z** (Z = the smart-zone ceiling, next).
@@ -196,7 +196,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   context ≪ advertised context*). Z is **model- and task-dependent** and currently a **blind spot**: an
   agent can read its fill % (a `token-usage`-style instrument — the harness surfaces the same number as
 **Context Usage** in `/context`; *fill* and *context usage* are the same quantity) but **not its own Z**, so it can't tell how
-  close to the edge it is (see research `smart-zone-ceiling.md`). Practical use: compare live fill % against
+  close to the edge it is (see research `006-smart-zone-ceiling.md`). Practical use: compare live fill % against
   an estimated Z and **brake** (checkpoint + compact) as fill nears Z — not as it nears 100%. The region
   below Z is the *smart-zone budget*; alias *usable-context ratio*.
 - **Token velocity (burn rate)** — the *first derivative* of cumulative token spend, dS/dt: how fast the
@@ -211,7 +211,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   **introspection** to dS/dt and d²S/dt² as a real-time self-governance signal appears to be a fresh framing
   (burn-rate is borrowed from finance; budget-aware decoding and LLM metacognition exist, but self-monitoring
   the *derivative* of spend does not seem to be a named/studied line). The bridge between *context rot* and
-  *token-budget-awareness* (`research/token-budget-awareness.md`): rot raises velocity; velocity/acceleration
+  *token-budget-awareness* (`research/007-token-budget-awareness.md`): rot raises velocity; velocity/acceleration
   are how the agent *notices* before halting.
 ### Dances and handoffs
 *Human↔agent protocols — each has **≥2 interlocking steps** (≥1 human, ≥1 agent), else it's just a cue. The **compact trigger** and **consolidation point** below are the timing rules for the compact dance.*
@@ -251,7 +251,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   fires** — reactive (pressure, near the ceiling) OR consolidation (a clean milestone). The name captures the
   sleep analogy: **consolidate then discard** (like memory consolidation in sleep) vs the reactive trigger's
   forced, lossy shutdown — *"good compaction is sleep, not collapse."* See
-  `research/proactive-compaction-point.md`.
+  `research/022-proactive-compaction-point.md`.
 - **AFK dance** — the human↔agent protocol for handing off **autonomy for a bounded window** while the human is
   **away from keyboard** ("**AFK**"), turning an idle stretch into delegated progress. Built around an **AFK menu**
   (its artifact): the standing list of scoped candidate tasks.
@@ -334,7 +334,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 
   The mode-switch from **ballgame** (human in every volley) to **autonomous** for a bounded task; where
   `note:`/`pin:` govern *memory*, `go` governs *control / authorization*. Variants: "go [AFK] menu" = `go` over a
-  menu of scoped tasks; **`go X`** = a scoped go-verb (small curated set — see `research/go-verb-vocabulary.md`).
+  menu of scoped tasks; **`go X`** = a scoped go-verb (small curated set — see `research/035-go-verb-vocabulary.md`).
   **Dance bar:** `go` qualifies as a *dance* because it has **≥2 interlocking steps — ≥1 human and ≥1 agent**; a
   one-directional signal with no answering step is just a cue. (BR 2026-07-04; cue `go` chosen for typability — g-o
   alternates hands.)
@@ -370,7 +370,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   - **Human step:** take the break, or decline.
 
   *Prevents:* degraded **human**-side decisions (the human dumb-zone, over-trust under *thriller state*); conserves
-  attention for the high-stakes **ballgame** volleys that need it. See `research/human-state-and-joint-zone.md`.
+  attention for the high-stakes **ballgame** volleys that need it. See `research/011-human-state-and-joint-zone.md`.
 
 ### Memory habits and substrate
 - **Memory hygiene (agent)** — keeping the agent's **durable memory store** (the persistent `MEMORY.md` + the
@@ -381,7 +381,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   memory-store analogue of not letting docs rot. **Honest status (2026-07-03):** currently a **discretionary
   practice**, *not* a built-in skill or automated check — it follows from *advisory* memory-management
   guidance, so whether it runs depends on the agent *choosing* to grep the store after a change (an
-  **adherence-decay** risk; `research/instruction-adherence-decay.md`). Externalization candidate: a written
+  **adherence-decay** risk; `research/008-instruction-adherence-decay.md`). Externalization candidate: a written
   sweep-rule **plus** a `tt rename`/stale-ref **tool** — and note the store lives *outside* the repo (in
   `~/.claude/…`), so repo guards/tools don't reach it by default: a **structural blind spot**, not just a
   discipline lapse. **Contrast — append-only raw data:** *living* memory is kept **current** (edit it to match
@@ -460,7 +460,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   **Rule:** a durable artifact may reference **only easily-reachable durable substrate** (foundations, a README, a
   committed note) and **never require** resolution to grasp the point; **illustrations must self-explain / be
   time-invariant**; **no pointers up into the volatile #1 layer.** The substrate-hierarchy hygiene rule for a doc's own
-  citations — see `research/steering-doc-design-tension.md`.
+  citations — see `research/027-steering-doc-design-tension.md`.
 - **Coupled-system capability** — the agent's effective capability is a property of the **pairing** — model ×
   externalized substrate (memories, RAW-DATA, tools, methodology) × the human collaborator — **not of the model
   alone.** Functionalist / extended-mind: capability is *behavioral*, measured by what the coupled system reliably
@@ -487,12 +487,12 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   human response), opposite the autonomous **ralph loop**. A spectrum, not a binary; the mode is chosen per task (safe +
   self-verifiable → ralph; needs judgment / taste or touches shared source broadly → ballgame). Mis-triage is a
   *confirmation-fatigue* risk (toward ballgame) or a *safety* risk (toward ralph). See
-  `research/task-autonomy-negotiation.md`.
+  `research/010-task-autonomy-negotiation.md`.
 - **Corroboration asymmetry** — the agent can **generate** candidate claims but cannot **corroborate claims about
   itself** (self-report is confabulation- and sycophancy-prone), so an **independent authority** — the human, or
   behavioural data — must verify. Grounds the **authority anchor** and the rule *don't ask a model to describe its own
-  psyche* (measure behaviour instead). See `research/agent-psyche-literature-review.md`,
-  `research/cross-model-psyche-comparison.md`.
+  psyche* (measure behaviour instead). See `research/028-agent-psyche-literature-review.md`,
+  `research/029-cross-model-psyche-comparison.md`.
 - **Ralph loop** — running the agent autonomously in a loop on a fixed, well-scoped goal until acceptance
   criteria are met, with **no per-step human approval** — the human hands the task over completely and
   walks away (named after the brute-force "just keep going until done" technique). A ralph loop is **only

@@ -20,7 +20,7 @@
   the human's presence where it fits its scope), *not* quarantined in a separate post — that's what actually cures the
   agent-centric feel. **008 is the concentrated theoretical home** for the two-body material (human fatigue + agent rot
   → collapse; confirmation-fatigue; the joint zone). A standalone **009 "joint-zone"** only if it outgrows 008. TODO:
-  write that concentrated treatment here — see `research/human-state-and-joint-zone.md`.
+  write that concentrated treatment here — see `research/011-human-state-and-joint-zone.md`.
   **Core material (WR data 2026-07-04):** the **two psyches as a dual** — `#agent-psyche` (introspection, self-model,
   humor-as-incongruity-detection, preference) and `#human-psyche` (fear/panic, fatigue, investment-stakes,
   anthropomorphism) — and why the dual is **grounded, not coincidental**: the agent is *human psyche refracted through
@@ -34,5 +34,5 @@
   **breaks the hall of mirrors** — a real external observer (the human) grounds the self-reference — and serves
   *äkthet* (authenticity) over slop. TODO: 008 should *state* this stance as part of the honest frame.
 
-*Reads: blogs 004 (Pains), 005 (Practice), 006 (Method), 007 (Theory); `research/inference-time-learning.md`,
-`METHODOLOGY.md`, `human-state-and-joint-zone.md`.*
+*Reads: blogs 004 (Pains), 005 (Practice), 006 (Method), 007 (Theory); `research/012-inference-time-learning.md`,
+`METHODOLOGY.md`, `011-human-state-and-joint-zone.md`.*

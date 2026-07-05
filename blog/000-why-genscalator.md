@@ -7,8 +7,8 @@
 > brittle agent shell usage or confirmation fatigue; teams weighing typed, safe-by-design tooling for
 > AI-assisted development.
 > Sources: `docs/foundations.md`,
-> `research/METHODOLOGY.md`, `research/instrumentation-by-default.md`,
-> `research/confirmation-guard-static-analysis.md`, `research/wr-data/`.
+> `research/METHODOLOGY.md`, `research/005-instrumentation-by-default.md`,
+> `research/013-confirmation-guard-static-analysis.md`, `research/wr-data/`.
 
 ## The one-line answer
 

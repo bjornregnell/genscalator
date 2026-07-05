@@ -157,7 +157,7 @@ prompts); **scope `git`/`rm` by absolute path**, never broad `Bash(git *)`/`Bash
 catastrophic ops gated** even when you want low friction. Replace the placeholder paths with your repo's absolute
 path(s). This is a starting point, not the full story — the why, safe-growth strategy, and open questions (tiers,
 a `tt init-settings` scaffolder, deny-list defaults) are in
-[`research/recommended-plugin-settings.md`](research/recommended-plugin-settings.md); the fuller allowlist +
+[`research/018-recommended-plugin-settings.md`](research/018-recommended-plugin-settings.md); the fuller allowlist +
 caveats are in [`docs/claude-plugin.md`](docs/claude-plugin.md). *(Initial cut — expect refinement as we prune
 the essentials and possibly ship a merge-able settings fragment.)*
 

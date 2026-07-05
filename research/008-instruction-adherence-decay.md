@@ -72,4 +72,4 @@ frictionless so it becomes the new reflex). The regressions are **empirical conf
   guardrail outside your control, or are reflexes just hard to control?"* Answer: **no external guardrail; it
   is trained-prior reflex re-sampled per call, and the fix is structural (tool+allowlist+hook), not more
   instruction** — which is exactly genscalator's safe-by-design thesis applied to the agent's own behavior.
-  Companion to `instrumentation-by-default.md` and the *Habit/Reflex* glossary entries.
+  Companion to `005-instrumentation-by-default.md` and the *Habit/Reflex* glossary entries.

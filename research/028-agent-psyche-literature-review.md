@@ -100,4 +100,4 @@ self-explanation`.
   on it.
 
 Related: blogs 006 (agent psyche) / 008 (joint zone); `wr-data/harness-ux.md` `#agent-psyche` `#human-psyche`;
-`agent-affective-analogs.md`; foundations *echt*.
+`024-agent-affective-analogs.md`; foundations *echt*.

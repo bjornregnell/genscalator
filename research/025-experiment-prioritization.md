@@ -60,7 +60,7 @@ Use it to *rank and argue*, not to compute a false-precision number.
    ~55-model power edge; null is informative). Differential: mid. Cost: low (overnight, box-light). **Optionality:
    high — it builds/【proves the harness that the framing experiment reuses.** → **Run first: highest readiness ×
    unlocking**, even though its pure novelty is below #2.
-2. **Framing-as-arousal / Yerkes-Dodson** (`agent-affective-analogs.md` §5). Importance: high (prompt/harness design
+2. **Framing-as-arousal / Yerkes-Dodson** (`024-agent-affective-analogs.md` §5). Importance: high (prompt/harness design
    + safety). **Neglectedness: high** (agent affective analogs is a young, thin area). **Differential advantage:
    high** (needs exactly our human+agent reflexive setup). Cost: low (**reuses the Tier-A harness**). → **Likely the
    highest *marginal-frontier* value in the backlog**; run right after Tier A, whose machinery it inherits.
@@ -74,4 +74,4 @@ Before committing any run: (1) a quick **frontier scan** (is it open?); (2) scor
 current #1; (3) if it wins, **preregister** (the honesty gate) and slot it; (4) prefer the one that also **unlocks**
 the most. Re-rank whenever a new experiment is unlocked — the backlog is living.
 
-Pairs with `agent-affective-analogs.md`, `human-state-and-joint-zone.md`, and each experiment's prereg.
+Pairs with `024-agent-affective-analogs.md`, `011-human-state-and-joint-zone.md`, and each experiment's prereg.

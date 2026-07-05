@@ -324,7 +324,7 @@ already self-logs to `compendium2-console.log` (Read it). No guard fired (a bare
 redirect is apparently allowed where `cd`+`>` is not), so this one cost no human confirmation — but it is the
 SAME trained reflex. **Finding:** compaction does NOT reset the reflex, and a max-recency, verbatim restatement
 of the exact rule in the resume prompt did NOT prevent it — the strongest evidence yet for
-[`../instruction-adherence-decay.md`](../instruction-adherence-decay.md): the dynamic-shell prior is re-sampled
+[`../008-instruction-adherence-decay.md`](../008-instruction-adherence-decay.md): the dynamic-shell prior is re-sampled
 per call independent of how recently/loudly the rule was loaded. In-context salience (even a just-read literal
 ban) is not the variable; structure is. Only a submit-time intercept that rewrites `… | tail`/`… | head` on
 build tools into "run bare + Read the logfile the tool already wrote" will close it. Self-caught + logged this
@@ -339,7 +339,7 @@ one: (a) `&&`-chaining two tool runs, (b) a **redundant second `cd` to the same 
 — the exact "scaffolding stack" the ledger documents. Motive was **token efficiency** (one call instead of
 two), so the TE drive itself triggered the regression — a useful nuance: the reflex isn't only laziness, it's
 sometimes a *misapplied optimization*. Maximum priming (the agent was literally reading prior instances of
-this reflex as it did it) did NOT prevent it — corroborates META-6 and `instruction-adherence-decay.md`:
+this reflex as it did it) did NOT prevent it — corroborates META-6 and `008-instruction-adherence-decay.md`:
 salience/recency is not the variable; only a submit-time structural intercept is. Fix: issue each tool run as
 its own bare Bash call (as the rule already says); the "batch for TE" temptation must be served by the
 *harness* (parallel tool calls in one message), not by `&&`-chaining inside one shell command.

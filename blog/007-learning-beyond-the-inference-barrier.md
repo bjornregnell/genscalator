@@ -1,7 +1,7 @@
 # 007 — Learning beyond the inference barrier
 
 **Status: SCAFFOLD (agent-drafted 2026-07-04 — raw material for BR to rewrite in his own voice; not ship-ready; see README "Authorship & voice").** Grounded in
-`research/inference-time-learning.md`; read with the confabulation caveat in §*Honest limits* below.
+`research/012-inference-time-learning.md`; read with the confabulation caveat in §*Honest limits* below.
 
 > **The 004→008 arc** (map in 004). **You are here: the Theory — bedrock.** If you arrived from the Pains (004),
 > you've now descended the whole stack: Pains → Practice → Method → Theory. → **008** ties Theory-Method-Practice-Pains
@@ -118,5 +118,5 @@ by the **behavioral regression-rate data**, not by the agent's introspective say
 grand version ("a system for inference-time learning") and the plain version ("good typed tools make the pair
 more productive") are the same claim at two zoom levels. The plain one is what we can defend today.
 
-*Related: `research/inference-time-learning.md`, `instruction-adherence-decay.md`, `METHODOLOGY.md`; blogs 004
+*Related: `research/012-inference-time-learning.md`, `008-instruction-adherence-decay.md`, `METHODOLOGY.md`; blogs 004
 (UX), 005 (dances), 006 (psyche).*

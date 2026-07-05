@@ -10,7 +10,7 @@
 // ISSUES upstream (free — no release work; parser feedback = reqT/reqT-lang#15), and only later propose
 // verified PRs. The strict/lint check below is a WRAPPER over the parser (we do NOT fork the parser logic),
 // so the vendored copy stays diff-clean; the NATIVE in-parser strict mode is what issue #15 proposes to reqT.
-// See research/reqt-lang-review.md.
+// See research/015-reqt-lang-review.md.
 import reqt.*
 
 // Helpers (readFile/lint + the concept/relation patterns) scoped in this object so their generic names

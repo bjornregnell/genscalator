@@ -16,7 +16,7 @@ some of it. Past the budget the vocabulary becomes **private jargon the human ca
 rule to **prune before adding**. This principle is general — it governs all our coined vocabulary, not just `go X`.
 
 ## Design rules for admitting a `go X`
-1. **Maps to a frequent, distinct transition** in the task-state model (`defining-an-agent-task-state-model.md`) — a
+1. **Maps to a frequent, distinct transition** in the task-state model (`034-defining-an-agent-task-state-model.md`) — a
    verb that fires rarely doesn't earn a slot.
 2. **No overlap with an existing cue.** `pin:` / `note:` / `WR data:` already exist → **no `go pin`** (redundant).
 3. **Typable + unambiguous** (short, low motor cost, no collision with another term).

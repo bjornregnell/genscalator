@@ -16,24 +16,24 @@ human-owned HUMANS.md and can't clobber a live editor buffer).
 
 ## Inbox (harvest into HUMANS.md TODO, then delete)
 
-- [ ] `research/task-autonomy-negotiation.md` - NEW note (your ralph-loop vs collaborative-ballgame idea).
+- [ ] `research/010-task-autonomy-negotiation.md` - NEW note (your ralph-loop vs collaborative-ballgame idea).
       Verifiability is the deciding triage signal; agent proposes the mode, human confirms. Candidate to
       graduate into an AGENTS.md "triage each task's mode" guideline + a HUMANS.md handoff convention. Skim + steer.
 
-- [ ] `research/shared-file-editing-protocol.md` - NEW note (the non-destructive editing problem we just hit).
+- [ ] `research/009-shared-file-editing-protocol.md` - NEW note (the non-destructive editing problem we just hit).
       Captures Opt A/B/C trade-offs, the whole-file-buffer insight, and your point that modern editors'
       disk-vs-memory diff may make Opt C lowest-churn. Open question flagged for future research. Skim + steer.
 
-- [ ] FYI (no action): `research/instructions-for-claude.md` example updated with the `No em-dashes` standing
+- [ ] FYI (no action): `research/004-instructions-for-claude.md` example updated with the `No em-dashes` standing
       style line (committed 711217e) for you to copy back to the web-GUI instructions.
 
-- [ ] `research/human-state-and-joint-zone.md` - NEW note (your "model human state too" idea). Models human
+- [ ] `research/011-human-state-and-joint-zone.md` - NEW note (your "model human state too" idea). Models human
       smart/dumb zone, the joint (human,agent) 2x2 (both-dumb = collapse; human-dumb+agent-smart = the subtly
       dangerous field), names **thriller state**, refines CF as an event-driven state, and the key payoff:
       agent-as-stabilizer keeping you in the smart zone (+ a **rest dance**, human analog of the compact dance).
       Has a candidate-glossary section for you to ratify. Skim + steer; veto/keep the new terms.
 
-- [ ] `research/references-refactor-plan.md` - NEW pinned TODO: refactor `blog/References.scala` to split
+- [ ] `research/036-references-refactor-plan.md` - NEW pinned TODO: refactor `blog/References.scala` to split
       **data from rendering logic** (lift `toMarkdown`/`toHtml`/`toBibTex` into `mkMarkdown(r): Markdown` etc.,
       likely a separate `Markdown.scala` / render module — probably an **SSG** resource for bjornregnell.se).
       Parked-but-pinned; act when it feels cramped or when SSG work starts. Skim + confirm the boundary lean.

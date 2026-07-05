@@ -8,7 +8,7 @@
   methodology** (how to work: no raw grep, args-not-env, the guard-avoidance ruleset, scala-style). If delegation
   silently drops half of that, then multi-agent workflows (which we increasingly use — e.g. the WR-harvest
   sub-agents) run *outside* the methodology, and the "agents co-maintain the habits they run under" thesis
-  ([`scala-style-evolution.md`](scala-style-evolution.md)) breaks at the delegation boundary.
+  ([`001-scala-style-evolution.md`](001-scala-style-evolution.md)) breaks at the delegation boundary.
 - **Status:** open (2026-07-02, prompted by BR after observing sub-agent harvests).
 
 ## Findings so far (documented + observed 2026-07-02)
@@ -40,7 +40,7 @@ multi-agent workflows scale, the fraction of work done "outside the methodology"
    substrate-#1-doesn't-persist problem).
 3. **A `tt`-only discipline:** make the tools so safe-by-design that a sub-agent using them *can't* violate the
    methodology even without the skills (safe-mode/capture-checking angle — cross-ref
-   [`harness-guard-probe-and-custom-guard.md`](harness-guard-probe-and-custom-guard.md)). Structural, strongest,
+   [`016-harness-guard-probe-and-custom-guard.md`](016-harness-guard-probe-and-custom-guard.md)). Structural, strongest,
    most work.
 4. **A `tt agent-brief` command** that emits the current methodology as a prompt-injectable brief, so any
    delegation can prepend it deterministically.
@@ -49,5 +49,5 @@ multi-agent workflows scale, the fraction of work done "outside the methodology"
 - Pin down the permission-allowlist discrepancy (docs vs observed) — it changes how much config option 1 needs.
 - Prototype option 1 (a genscalator worker sub-agent definition) and measure: does a sub-agent given only a task
   (no inlined commands) then correctly reach for `tt text grepr` / avoid raw grep / apply scala-style?
-- Relates to [`instruction-surfaces-precedence.md`](instruction-surfaces-precedence.md) (which surface carries the
+- Relates to [`003-instruction-surfaces-precedence.md`](003-instruction-surfaces-precedence.md) (which surface carries the
   methodology to a sub-agent?) and the CF thesis (delegated work must not widen the attack surface either).

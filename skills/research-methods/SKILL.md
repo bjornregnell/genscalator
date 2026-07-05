@@ -88,7 +88,7 @@ The two books use slightly different four-sets — use the right one for the str
   conclusion*.)*
 - **For our cross-model work:** the Fable switch is a one-way intervention → **conclusion + internal validity** hang on
   capturing the CO4 baseline *before* switching and holding harness/substrate constant (see
-  `research/cross-model-psyche-comparison.md`).
+  `research/029-cross-model-psyche-comparison.md`).
 
 ## 4. Discipline we already follow (keep it)
 - **Preregister** the DV, hypotheses, and analysis *before* running (guards researcher-df / p-hacking).
@@ -109,6 +109,6 @@ The two books use slightly different four-sets — use the right one for the str
 
 ## Cross-links
 [`summary-case-study-research.md`](summary-case-study-research.md) · [`summary-experimentation.md`](summary-experimentation.md) ·
-`research/cross-model-psyche-comparison.md` (the live experiment-design case) · `research/learning-barrier-rqs.md` ·
+`research/029-cross-model-psyche-comparison.md` (the live experiment-design case) · `research/033-learning-barrier-rqs.md` ·
 `research/METHODOLOGY.md` (WR's own method) · `research/experiments/` (worked example) · `docs/foundations.md`
 ("Roles and cases", validity terms) · `skills/blog-assistant` (reporting/echt).

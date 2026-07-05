@@ -32,7 +32,7 @@ their transcripts live in `~/.claude/projects/-home-bjornr-git-berg-bjornregnell
 ## Meta-observation (WR data, BR 2026-07-04): the agent introspected its own substrate
 On BR's cue (*"we keep my trash fleet view … if you can access it?"*) the agent recovered these writes by
 **introspecting its own externalization substrate** — the session `jsonl` transcripts on disk — and reading them back.
-A small but pointed instance of the [inference-time-learning](../inference-time-learning.md) thesis (blogs 006/007):
+A small but pointed instance of the [inference-time-learning](../012-inference-time-learning.md) thesis (blogs 006/007):
 the agent's memory/history lives in *external structure*, and the agent can not only **write** to that substrate but
 **read it back when cued** — bidirectional substrate use. (In doing so it also surfaced its own fork lineage: original
 session `3b97e878` → resumed fork `240e00c3` = the current session.) **Cue-driven, not spontaneous** — the human

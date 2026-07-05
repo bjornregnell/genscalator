@@ -7,8 +7,8 @@
   safe with tt and at the same time avoid actually unnecessary confirmations."
 - **Why it matters:** directly serves the human's **no-CF** goal and the **BHH** threat model (never widen the
   attack surface to cut a prompt). The whole `tt` thesis is *safe-by-design AND statically provable -> no prompt*
-  (the #6266 `$TT`-vs-literal-`tt` insight, generalized). See [`instruction-adherence-decay.md`](instruction-adherence-decay.md),
-  [`inference-time-learning.md`](inference-time-learning.md), and the `wr-data/` ledger.
+  (the #6266 `$TT`-vs-literal-`tt` insight, generalized). See [`008-instruction-adherence-decay.md`](008-instruction-adherence-decay.md),
+  [`012-inference-time-learning.md`](012-inference-time-learning.md), and the `wr-data/` ledger.
 - **Status:** open, foundational (new 2026-06-30, from the accumulating guard-fire evidence).
 
 ## 1. What the guard is
@@ -27,7 +27,7 @@ Every prompt is one of two categories, and they need **opposite** fixes:
   `cd`, **command substitution / backticks / capture-then-reuse (`d=$(find …); … "$d"`)**, and **destructive
   ops (`rm …`)**. Fix = **change AGENT BEHAVIOR** (`git -C`, one bare command, tools self-report to a file, list
   dirs with Glob/Read not `$(…)`, don't `rm` disposable scratch). Coded **WR-REGRESS**; the durable cure is
-  structural (submit-time hook), per `instruction-adherence-decay.md`. NB: command-substitution is genuinely
+  structural (submit-time hook), per `008-instruction-adherence-decay.md`. NB: command-substitution is genuinely
   unanalyzable **by construction** (the executed text is computed at runtime), so there the guard is *correct* to
   distrust - it is a true positive, not a mis-fire; the fix is to not write dynamic shell, not to re-notate it.
 - **FALSE POSITIVE (harness mis-fired).** The command is benign but contains a token pattern the conservative
@@ -96,7 +96,7 @@ Conventions that keep benign commands provable, derived from observed guard fire
 - batch work via the **harness's parallel tool calls**, not `&&`-chaining in one shell string (the META-7 trap:
   the token-efficiency drive itself can produce a chain that trips a guard).
 
-(TRUE-POSITIVE fixes - the agent-behavior side - live in `instruction-adherence-decay.md` + the memories.)
+(TRUE-POSITIVE fixes - the agent-behavior side - live in `008-instruction-adherence-decay.md` + the memories.)
 
 ## 6. Open: a `tt`-lint / pre-submit transparency check
 Could genscalator ship a tiny checker that, before a shell command is submitted, flags any §5 pattern and
@@ -104,7 +104,7 @@ rewrites it to the provable form? That moves avoidance from **agent memory** (su
 the reflex re-fires regardless) to **structure** (substrate #3: the submit-time hook), now with a **precise
 target list derived from real guard fires**. It would intercept *both* categories: rewrite FALSE-POSITIVE
 notation (e.g. `<N-M>` -> `N..M`) and the TRUE-POSITIVE reflexes (`cd X && git` -> `git -C X`). Measurement:
-guard prompts per session, before vs after - the regression-rate metric from `inference-time-learning.md` §7.
+guard prompts per session, before vs after - the regression-rate metric from `012-inference-time-learning.md` §7.
 
 ## 7. The honest limit (BHH lens)
 Routing around a guard must **never** be routing around real safety. The test (from the #7180 threat model):

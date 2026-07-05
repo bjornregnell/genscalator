@@ -104,7 +104,7 @@ validity — because a case study isn't doing statistical inference.
 - **The cross-model / Fable-switch work is where conclusion + internal validity bite.** The `CO4 → CF5` switch is a
   **one-way intervention**: to make any before/after claim causal we must **capture the CO4 baseline *before* switching**
   and **hold the harness/substrate constant** (pin the CLI version, change only `--model`). See
-  `research/cross-model-psyche-comparison.md`. Getting this wrong = an uncontrolled confound (model *and* harness moved
+  `research/029-cross-model-psyche-comparison.md`. Getting this wrong = an uncontrolled confound (model *and* harness moved
   together).
 - **Scale type discipline (§3.4)** governs what we may compute from our logs — much WR data is ordinal or count data, so
   non-parametric / permutation tests, not blind t-tests.

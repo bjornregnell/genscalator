@@ -97,7 +97,7 @@ skill and nothing automated forced it.** It came from the generic **memory-manag
 system prompt (*update/delete stale memories; verify a named flag/file still exists before recommending it*) —
 but that guidance is **advisory**: whether it runs depends on the agent *choosing* to grep the memory store
 after a rename. This time it did (`grep \bL\b memory/`); next time it might not. So it's the
-**adherence-decay / trained-reflex** failure mode ([`../instruction-adherence-decay.md`](../instruction-adherence-decay.md)):
+**adherence-decay / trained-reflex** failure mode ([`../008-instruction-adherence-decay.md`](../008-instruction-adherence-decay.md)):
 a good practice that lives only as words is unreliable. **Externalize it**, cheapest-first: (a) a **written
 rule** — "on any rename/rescope/delete of a coined term, flag, or file, sweep BOTH the repo AND
 `~/.claude/.../memory` for stale refs before finishing" (cheap, but same decay weakness); (b) the
@@ -126,7 +126,7 @@ manual confirmation**, exactly what the launcher exists to avoid. **Candidate fi
 UP from cwd for a repo-local `tools/` FIRST**, then fall back to the script-dir/symlink target — so `cd
 genscalator && tt parsereqt` "just works" and stays allowlistable, matching the mental model *run the tool of
 the repo I'm standing in*. (Alternatives: a genscalator-local `tt` on `PATH`, or a per-repo symlink — but
-cwd-walk-first is the general fix.) Cross-ref [`../subagent-genscalator-propagation.md`](../subagent-genscalator-propagation.md)
+cwd-walk-first is the general fix.) Cross-ref [`../019-subagent-genscalator-propagation.md`](../019-subagent-genscalator-propagation.md)
 — the same *"which toolbox am I talking to?"* ambiguity that cross-repo tool propagation creates.
 
 **Addendum (2026-07-03, 2nd occurrence + stderr-noise wrinkle).** Re-hit on the next `parsereqt lint`, and the

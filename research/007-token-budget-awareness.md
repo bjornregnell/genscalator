@@ -33,7 +33,7 @@ Awareness can only come from (a) the **human reporting** it ("1% weekly used, re
 genscalator's two pillars already *reduce waste* so the budget buys real work:
 - **safe-by-design `tt` tools** (the `wr-data` thesis) remove the dynamic-shell spend + the confirmation
   stalls;
-- **instrument-by-default** (`instrumentation-by-default.md`) removes the re-poll / re-derive spend.
+- **instrument-by-default** (`005-instrumentation-by-default.md`) removes the re-poll / re-derive spend.
 
 But both are *micro* (make each action cheap). Missing is a **macro / governance** layer: *knowing the
 budget and pacing to it.* That's this investigation.
@@ -53,7 +53,7 @@ nothing to the current window; crediting low fill to it is a category error (BR 
 **WR facet (perception gap):** the human can't predict fill by feel, so they must read the gauge (`/context`)
 or relay it to the agent (who *also* can't see it) — same *human-relays-the-signal* pattern as think-time; the
 concrete argument for design direction #1 (**Read the meter, don't predict by feel**). Also live support for
-**lazy compaction** (`proactive-compaction-point.md`): lots of work, still 14%, `0.8·Z`≈24% trigger untouched
+**lazy compaction** (`022-proactive-compaction-point.md`): lots of work, still 14%, `0.8·Z`≈24% trigger untouched
 → no reason to compact; surgical-edit sessions stay lean for free.
 
 ## Open design directions (to explore / propose)
@@ -77,7 +77,7 @@ concrete argument for design direction #1 (**Read the meter, don't predict by fe
 
 ## Relation to other notes
 - `wr-data/` — the friction events that *waste* the budget (the thing to eliminate).
-- `instrumentation-by-default.md` — make each tool cheap to use (spend less per action).
+- `005-instrumentation-by-default.md` — make each tool cheap to use (spend less per action).
 - **This note** — the missing layer: *know* the budget across nested limits and *pace* to it, so efficiency
   becomes halt-avoidance, not just speed.
 

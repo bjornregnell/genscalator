@@ -81,7 +81,7 @@ InProgress → Parked) came from asking "what *other* exits are real?" rather th
   already applied and working, the agent moves on, and the human's review is asynchronous (it may later request a
   change, sending it back to `InProgress`, or ratify it to `Verified`). Both this note and the 010 task above
   demonstrate the two live side by side in one session. Kept separate.
-- The `go X` verbs (see `go-verb-vocabulary.md`) are essentially **named transitions** — e.g. `go stub` = *→ create a
+- The `go X` verbs (see `035-go-verb-vocabulary.md`) are essentially **named transitions** — e.g. `go stub` = *→ create a
   Candidate/Scoped note*, `go sweep` = *run a consistency dance*, `go pin` = *persist to substrate*. Worth aligning the
   verb set to the transitions once both stabilise.
 - Does the AFK menu need to show each item's **state** (Candidate vs Ready vs Parked)? Probably — it's the admission

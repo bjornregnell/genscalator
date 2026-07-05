@@ -2,7 +2,7 @@
 
 - **Status:** new (2026-07-03). Seeded *in conversation* by BR spotting that the agent's **"over-response bias"**
   is structurally like **human stress**. This note is the **mirror** of
-  [`human-state-and-joint-zone.md`](human-state-and-joint-zone.md): that note asks *can the agent model the human's
+  [`011-human-state-and-joint-zone.md`](011-human-state-and-joint-zone.md): that note asks *can the agent model the human's
   affective state?*; this asks the reverse — **do human affective constructs have functional AGENT analogs, and does
   prompt FRAMING act as an arousal lever?**
 
@@ -93,5 +93,5 @@ goal-gating (who set this "MUST", and to what end?).
 ## What shipped
 - Nothing yet — research note. **Graduation candidates:** a preregistered framing-intensity run (§5) alongside the
   indent-vs-braces big run; glossary entries for **"over-response bias"** and **"framing-as-arousal"**; the safety
-  `controlAgentSystem` mirror. Pairs with [`human-state-and-joint-zone.md`](human-state-and-joint-zone.md) (the
+  `controlAgentSystem` mirror. Pairs with [`011-human-state-and-joint-zone.md`](011-human-state-and-joint-zone.md) (the
   mirror it reflects), [`wr-data/harness-ux.md`](wr-data/harness-ux.md) (the seed), and the BadGoal safety frame.

@@ -12,33 +12,33 @@ Mostly docs/research; **one new tool** (`tt svg`). Version bump pending. Human r
   sequence-diagram spec (PlantUML/mermaid-flavoured: `actor`, `A -> B: msg`, `A --> B: reply`, `note over`) to a
   **self-contained, theme-aware SVG** for blogs and human-facing reports. Pure (JDK-only, no dep); 7 CLI-contract
   tests incl. a well-formed-XML parse check. Design rationale (why a bespoke spec, not reqT-lang: reqT models an
-  *unordered set*, a sequence is *ordered in time*) in [`research/svg-sequence-diagram-tool.md`](research/svg-sequence-diagram-tool.md).
+  *unordered set*, a sequence is *ordered in time*) in [`research/037-svg-sequence-diagram-tool.md`](research/037-svg-sequence-diagram-tool.md).
   First real figure: [`blog/figures/seq-compact-dance.svg`](blog/figures/seq-compact-dance.svg) (candidate for blog 005).
 - **`docs/foundations.md` glossary — new agent-introspection concepts:** **Context rot**, **Token velocity**,
   **Token acceleration**, **Smart-zone ceiling (Z)** (usable working-context ratio before the dumb zone),
   **Communication bandwidth (human↔agent)** (per-direction language/TE channel), **Compact dance** (the
   save→prompt→compact→paste hand-off ritual, with a committed-files-are-the-guarantee recovery invariant),
   **Compact trigger** (propose the dance at fill ≥ 0.8·Z).
-- **New research notes:** `instrumentation-by-default.md`, `token-budget-awareness.md`, `smart-zone-ceiling.md`,
-  `communication-bandwidth.md`, `instructions-for-claude.md` (the global custom-instructions field; includes
-  BR's current instructions as a worked example), `instruction-surfaces-precedence.md` (how AGENTS.md /
+- **New research notes:** `005-instrumentation-by-default.md`, `007-token-budget-awareness.md`, `006-smart-zone-ceiling.md`,
+  `002-communication-bandwidth.md`, `004-instructions-for-claude.md` (the global custom-instructions field; includes
+  BR's current instructions as a worked example), `003-instruction-surfaces-precedence.md` (how AGENTS.md /
   CLAUDE.md / SKILL.md / MEMORY.md / global instructions compose, conflict, and rank). `research/README.md`
   index updated for all.
 - **`research/wr-data/introprog-autotranslate.md`** — appended friction events (count/status aggregation gaps,
   GPU/job probe, pipe-to-grep noise suppression, git-commit & repo-overview cd/&&/echo regressions) feeding
   candidate `tt` tools.
-- **Human-agent collaboration research notes:** `instruction-adherence-decay.md` (why the agent regresses to
-  dynamic shell — trained-prior reflex, fix is structural), `task-autonomy-negotiation.md` (ralph-loop vs
-  ballgame per-task triage by verifiability), `shared-file-editing-protocol.md` (non-destructive shared-file
-  editing; Opt A/B/C trade-offs; the HUMANS.md/HUMANS.inbox.md split), `human-state-and-joint-zone.md` (model
+- **Human-agent collaboration research notes:** `008-instruction-adherence-decay.md` (why the agent regresses to
+  dynamic shell — trained-prior reflex, fix is structural), `010-task-autonomy-negotiation.md` (ralph-loop vs
+  ballgame per-task triage by verifiability), `009-shared-file-editing-protocol.md` (non-destructive shared-file
+  editing; Opt A/B/C trade-offs; the HUMANS.md/HUMANS.inbox.md split), `011-human-state-and-joint-zone.md` (model
   the human's smart/dumb zone + the joint (human,agent) 2x2; agent-as-stabilizer; thriller state; rest dance).
   Plus the **HUMANS.md + HUMANS.inbox.md** collaboration protocol (Opt A file-level partition).
 - **Notation rename `L → Z`** — the smart-zone ceiling symbol is now **Z** (smart-**Z**one ceiling; a lone `Z`
   is visually salient and reads as *sitting between* the smart and dumb zones, where a lone `L` was noise).
-  Renamed repo-wide (`docs/foundations.md`, `smart-zone-ceiling.md`, `human-state-and-joint-zone.md`,
+  Renamed repo-wide (`docs/foundations.md`, `006-smart-zone-ceiling.md`, `011-human-state-and-joint-zone.md`,
   `research/README.md`, `HUMANS.md`, `PRD.md`, this file) — **except `research/RAW-DATA.md`**, now declared
   **append-only** (a change of mind is logged as new data, never a retro-patch of raw datapoints).
-- **New research note** `proactive-compaction-point.md` — lazy-vs-proactive compaction; a durability-gated
+- **New research note** `022-proactive-compaction-point.md` — lazy-vs-proactive compaction; a durability-gated
   *consolidation point* as a second (proactive) compact trigger beside the reactive `fill ≥ 0.8·Z` brake; the
   "compaction should be sleep, not collapse" framing. Plus **RQ** (research question) added to the
   comms-shorthand glossary.

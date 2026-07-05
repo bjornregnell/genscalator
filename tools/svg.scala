@@ -10,7 +10,7 @@
 // graph. A sequence diagram is fundamentally ORDERED in time (message 1, then 2, then 3) along per-actor
 // lifelines; reqT has no native temporal-order concept, so encoding a sequence in it would lose the very thing
 // that makes it a sequence. Hence a tiny purpose-built spec, deliberately PlantUML/mermaid-flavoured so it is a
-// de-facto standard readers already know. (See research/svg-sequence-diagram-tool.md for the design rationale.)
+// de-facto standard readers already know. (See research/037-svg-sequence-diagram-tool.md for the design rationale.)
 //
 // Spec grammar (one statement per line; blank lines and `#` / `//` comments are ignored):
 //   title: <text>                     optional diagram title, centred at the top

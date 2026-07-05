@@ -56,5 +56,5 @@ projects, and some stay in the community after the course ends.
 - `PRD.md` — `Goal: contributeOpenSource`; the app is effectively a new *stakeholder* (like
   `agentHarnessProvider`) whose needs drive reqT + genscalator.
 - `METHODOLOGY.md` — AR/DSR; this scales the researcher-pair to a cohort of co-developers.
-- `human-state-and-joint-zone.md` / the blog — students living the human↔agent collaboration the toolbox is
+- `011-human-state-and-joint-zone.md` / the blog — students living the human↔agent collaboration the toolbox is
   about.

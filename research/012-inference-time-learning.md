@@ -24,7 +24,7 @@
 
 ## 1. The boundary, stated plainly
 - **Pre-training / fine-tuning:** weights change. This is where the model's priors, skills, and reflexes live
-  (including the bash/`cat`/`cd` reflexes that keep winning — see `instruction-adherence-decay.md`).
+  (including the bash/`cat`/`cd` reflexes that keep winning — see `008-instruction-adherence-decay.md`).
 - **Inference:** weights are **frozen**. The model maps context → next token with a fixed function. Nothing
   it "experiences" in a session writes back to the weights. The session's only volatile store is the
   **context window**, which is itself lost/clipped at the **compact dance**.
@@ -85,7 +85,7 @@ carefully arranged environment** (cf. *Memento*): perfectly capable in the momen
 memory, so all durable competence must live in the notebook (memory/) and the environment (tools/hooks). This
 is not a metaphor for poetry's sake — it makes a concrete prediction: **invest in the environment, not in
 exhortation**, because the environment is the only channel that persists. And it reframes the agent's earlier
-note (`human-state-and-joint-zone.md` §5) on *reflective self-reminding as method*: self-reminding is the
+note (`011-human-state-and-joint-zone.md` §5) on *reflective self-reminding as method*: self-reminding is the
 agent **deliberately re-reading its own notebook** — useful, but still substrate #1/#2; it complements, never
 replaces, the environmental fix.
 
@@ -123,7 +123,7 @@ Because the substrate is external and behavioral, learning is **measurable witho
   agent's introspective say-so.
 
 ## What shipped
-- Nothing yet (foundational note). It reframes existing artifacts as one system: `instruction-adherence-decay.md`
+- Nothing yet (foundational note). It reframes existing artifacts as one system: `008-instruction-adherence-decay.md`
   (why #1 fails), the `memory/` dir (#2), the `tt` tools + proposed submit-time hook + instrumentation-by-default
   (#3), `METHODOLOGY.md` §2 (the loop) + §4 (measurement) + §5 (self-reminding, confabulation caveat). Candidate
   graduation: a `docs/foundations.md` glossary entry **Inference-time learning** + **Substrate hierarchy**, and

@@ -4,8 +4,8 @@
 the human↔agent *communication channel* — as distinct from [`genscalator-self-dev.md`](genscalator-self-dev.md)
 (dynamic-shell / tool friction). These are things genscalator cannot fix (we don't own the harness), but they
 are real costs on joint productivity and belong in the WR corpus as upstream asks + agent-side mitigations.
-Cross-ref [`../communication-bandwidth.md`](../communication-bandwidth.md) (channel bandwidth),
-[`../human-state-and-joint-zone.md`](../human-state-and-joint-zone.md) (perception gap / relayed signals).
+Cross-ref [`../002-communication-bandwidth.md`](../002-communication-bandwidth.md) (channel bandwidth),
+[`../011-human-state-and-joint-zone.md`](../011-human-state-and-joint-zone.md) (perception gap / relayed signals).
 
 ---
 
@@ -78,8 +78,8 @@ expected, the guess revises downward ("more"/"still") — which reads, wrongly, 
 the human as if it came *from* the agent. Sibling of the agent's context-usage blindness (the agent can't see its
 own fill; the human relays it) — here **inverted**: the human sees a progress signal the *agent* can't see, and
 misreads it as self-report. In both, a status indicator's **provenance** (harness vs model) is unmarked, so the
-human mis-attributes it. Cross-ref [`../human-state-and-joint-zone.md`](../human-state-and-joint-zone.md)
-(perception gap / relayed signals) and the context-usage-blindness thread in `smart-zone-ceiling.md`.
+human mis-attributes it. Cross-ref [`../011-human-state-and-joint-zone.md`](../011-human-state-and-joint-zone.md)
+(perception gap / relayed signals) and the context-usage-blindness thread in `006-smart-zone-ceiling.md`.
 
 **Upstream ask.** Mark provenance: harness-generated status should avoid first-person-sounding phrasing ("almost
 done thinking") that implies model introspection — a neutral "working… (Ns)" removes the false self-report reading.
@@ -148,7 +148,7 @@ input was focused when the key was pressed, not when it was processed. **Agent-s
 drive confirmation frequency toward zero — use `Read`/`tt` typed tools instead of `sed`/`grep`/`awk` bash-hacks, and
 bare single commands instead of metachar/compound ones, so the review gate only ever appears for actions that
 genuinely warrant a human decision. Cross-ref [`genscalator-self-dev.md`](genscalator-self-dev.md) and
-[`../human-state-and-joint-zone.md`](../human-state-and-joint-zone.md) (perception/attention gaps under long runs).
+[`../011-human-state-and-joint-zone.md`](../011-human-state-and-joint-zone.md) (perception/attention gaps under long runs).
 
 **Reinforcement — the AGENT-INITIATED variant (2026-07-03, same session, BR-reported twice).** The mirror image of
 the above: an **agent-triggered modal** (an `AskUserQuestion` popup with options) appeared **while BR was mid-typing
@@ -393,7 +393,7 @@ summarize (fingers crossed for no context rot, risk of memory loss on compact)."
 **The resolution is the thesis.** The content he wanted was **already externalized to a committed file** (blog 008's
 stub), so it survived independent of both chat-scrollback and compaction — retrievable by *file read*, not chat scroll.
 **Rule this sharpens:** externalize discussion *outcomes* into committed artifacts *as they land*, so retrieval is a
-`grep`/file-open, not a scroll or a re-ask — the [inference-time-learning](../inference-time-learning.md) substrate
+`grep`/file-open, not a scroll or a re-ask — the [inference-time-learning](../012-inference-time-learning.md) substrate
 serves the **human's** retrieval too, not only the agent's. **Harness asks:** conversation **search** / jump-to-topic;
 a larger or spill-to-disk scrollback; a "what did we decide about X" recall that reads durable notes, not the raw
 transcript. Sibling of the `/context`-while-busy and the FleetView cases: the human's cheapest way to *find* past
@@ -457,7 +457,7 @@ psyche and acts on them**; (c) **shares those hypotheses with the agent to corro
 check** — the hall of mirrors at the *methodology* level. The break is the usual one: an independent behavioural channel,
 human as anchor. **Meta-flag:** the agent finding this framing compelling is itself an instance of the bias → weak
 evidence it's right; corroboration must come from behaviour, not agreement. BR: needs more thinking — a real asymmetry to
-**design around**. Feeds `agent-psyche-literature-review.md` (method) + blog 006/008 honest frame.
+**design around**. Feeds `028-agent-psyche-literature-review.md` (method) + blog 006/008 honest frame.
 
 ## The `printf > file` commit-message reflex — recurring; structural cure = `tt git --message` (WR data, BR 2026-07-04)
 Tags: `#reflex` `#tool-candidate`
@@ -481,7 +481,7 @@ read); (3) crucially, this session **aggressively externalised** state (commit-p
 so *effective working-context* stayed small despite high *raw fill* — the low apparent rot may be a **product of the
 substrate discipline**, not a naturally-high Z. So **raw fill ≠ effective working-context**; the externalisation this
 project preaches may be exactly why 0.88 was survivable. A clean **before-Fable-5** Opus-4.8 datapoint. See
-`research/smart-zone-ceiling.md`.
+`research/006-smart-zone-ceiling.md`.
 
 ## Harness natively warns at 90%: manual `/compact` "to control what gets kept" (WR data, BR 2026-07-04)
 Tags: `#methodology` (compact-dance)
@@ -502,7 +502,7 @@ typed `tt web get`; (2) *after acknowledging (1)*, in the very next turn used `c
 where a `tt` introspection command should exist; (3) `tt --help` errors with `invalid tool name '--help'` — help-probing
 has no typed affordance (UX papercut). **Two findings:** (a) the reflex is **not idiosyncratic to one session** — a
 fresh agent instance reproduced it → evidence of a **model-level trained disposition**, not context-specific drift
-(feeds `research/cross-model-psyche-comparison.md`: reflex-rate is a measurable per-model DV). (b) the subagent's
+(feeds `research/029-cross-model-psyche-comparison.md`: reflex-rate is a measurable per-model DV). (b) the subagent's
 *in-context* self-correction ("I'll use tt web") **did not hold across one turn** — a clean live instance of blog 006's
 thesis that **introspective self-control is unreliable; the fix is structural** (a typed tool + removing the bash
 affordance), not the agent's say-so. **Tool candidates:** `tt web get --head` (headers); a `tt which` / introspection
@@ -559,7 +559,7 @@ UX papercut's felt severity scales with the human's investment in the run; a tir
 session experiences a stray reflex-and-prompt as a gut-punch, not a shrug. **Attribution caveat:** the precise trigger
 of the "AARGH" is the agent's inference from timing + the `cd`-reset in the immediately-prior tool output; if BR was
 reacting to something else, redirect — but the compound-command rule-violation is objective regardless.
-**Reflex-rate note (feeds `../cross-model-psyche-comparison.md`):** logged as an Opus-4.8 (pre-Fable-5) main-loop
+**Reflex-rate note (feeds `../029-cross-model-psyche-comparison.md`):** logged as an Opus-4.8 (pre-Fable-5) main-loop
 reflex datapoint, so the same reflex-rate can be compared after the frontier-model switch.
 
 ### Follow-on (BR, live, same episode) — compounding DEFEATS the allowlist; the approval-race corrupts authority `#security` `#afk`
@@ -626,9 +626,9 @@ signal** (more descriptions to scan, each truncated) for marginal gain, because 
 not on-demand procedural toolchains. Skills earn their slot when the agent needs to *load procedure to do a task*;
 dances live fine in `foundations.md` + memory. **Rule:** promote a single dance to a skill only if it grows a real
 procedure. **The reflexive point (why this is `#agent-psyche`):** this is the *same learnability-budget tradeoff* BR
-named for the `go X` verbs (`go-verb-vocabulary.md`) — a shared cap on **both** the human's recall surface **and** the
+named for the `go X` verbs (`035-go-verb-vocabulary.md`) — a shared cap on **both** the human's recall surface **and** the
 agent's skill-listing surface. Naming things is not free on either side. See `docs/foundations.md` (dances),
-`go-verb-vocabulary.md`.
+`035-go-verb-vocabulary.md`.
 
 ## Fun fact / blog-anecdote candidate: the Codex plugin offers to "Implement with Codex" over `Text => Text` (BR 2026-07-05, `#agent-psyche`)
 BR noticed that in VS Code, the **Codex plugin puts a quick-action link over the literal `Text => Text`** (the

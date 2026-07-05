@@ -67,7 +67,7 @@ enum RefVerification:
  *  `RefVerification` gates). Both agent and human write fallible summaries; treat a summary as a claim to check, not
  *  ground truth. Fields are plain `String` (not Iron-refined): they are long free prose, and Iron's compile-time
  *  refinement macro does not scale to long literal constants (it can StackOverflow — see
- *  `research/references-summary-enum-design.md`). Use `OtherSummary` for refs that don't fit the empirical-paper shape
+ *  `research/031-references-summary-enum-design.md`). Use `OtherSummary` for refs that don't fit the empirical-paper shape
  *  (system/position papers, manifestos, webpages). */
 enum Summary:
   case GeneratedSummary(

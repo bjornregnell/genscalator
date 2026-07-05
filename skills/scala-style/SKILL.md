@@ -69,7 +69,7 @@ black-and-white.
   - **Only where friction is near-zero and gain is high — and NOT on long literals.** The refinement runs a
     **compile-time macro**; on a **long literal constant** (a paragraph of prose refined `NonBlank`) it can
     **StackOverflow the compiler** during inlining — a real crash we hit on `blog/References.scala`'s summary fields
-    (see `research/references-summary-enum-design.md`). So refine **short, genuinely-constrained** values (`Year`, a
+    (see `research/031-references-summary-enum-design.md`). So refine **short, genuinely-constrained** values (`Year`, a
     `Doi`/`Url` shape, a non-empty short name); keep **long free prose as plain `String`** — it also keeps string
     concat / interpolation ergonomic. When unsure whether a field earns a refinement, **start with a `type` alias over
     `String`** (§4): it documents intent now and leaves a cheap path to a validated `case class` *or* an Iron

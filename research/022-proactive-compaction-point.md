@@ -8,8 +8,8 @@ we call it? And a notation aside: is **Z** the right symbol for "smart-zone ceil
 Parked from a 2026-07-03 session where BR ran `/compact` at **34% fill** (not forced) "to see how much lower
 we got" → **336.6k → 46.1k** (34% → 5%). That single data point is what seeded these questions.
 
-Related: [`smart-zone-ceiling.md`](smart-zone-ceiling.md) (defines Z + the reactive brake),
-[`token-budget-awareness.md`](token-budget-awareness.md), [`communication-bandwidth.md`](communication-bandwidth.md),
+Related: [`006-smart-zone-ceiling.md`](006-smart-zone-ceiling.md) (defines Z + the reactive brake),
+[`007-token-budget-awareness.md`](007-token-budget-awareness.md), [`002-communication-bandwidth.md`](002-communication-bandwidth.md),
 and the *compact dance* / *exit-resume dance* memories.
 
 ---
@@ -100,7 +100,7 @@ zone. BR's clinching rationale: there are **two zones** (smart, dumb) and **Z si
 - **`C` — Ceiling/Capacity.** Mnemonic but **collides**: **CF** is coined, and "C"≈context is overloaded.
 - **`S` — Smart-zone.** OK, mild collision with "size/spend."
 **`Z` — smart-**Z**one ceiling** won: collision-free, mnemonic, visually salient. Rename applied across the
-repo (`docs/foundations.md`, `smart-zone-ceiling.md`, `human-state-and-joint-zone.md`, `research/README.md`,
+repo (`docs/foundations.md`, `006-smart-zone-ceiling.md`, `011-human-state-and-joint-zone.md`, `research/README.md`,
 `HUMANS.md`, `PRD.md`, `CHANGELOG.md`, this file) — **except `research/RAW-DATA.md`**, which is *append-only*
 (never retro-edit raw datapoints; the mind-change is itself logged as a new WR datapoint, not a patch).
 

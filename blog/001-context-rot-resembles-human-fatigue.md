@@ -6,8 +6,8 @@
 > the sleep-vs-compact disanalogy, the reciprocal-help protocols) is outlined at the end, still to be written.
 > **Audience:** people building or running long-lived coding agents; agent-harness / tooling designers; anyone
 > interested in agent context management, the human↔agent collaboration model, or the rot-as-fatigue analogy.
-> Sources: genscalator `research/smart-zone-ceiling.md`, `research/proactive-compaction-point.md`,
-> `research/token-budget-awareness.md`, `research/human-state-and-joint-zone.md`.
+> Sources: genscalator `research/006-smart-zone-ceiling.md`, `research/022-proactive-compaction-point.md`,
+> `research/007-token-budget-awareness.md`, `research/011-human-state-and-joint-zone.md`.
 
 ## Seed: why is an agent blind to its own context usage?
 

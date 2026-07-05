@@ -1,7 +1,7 @@
 # Steering-doc design tension — salience-under-rot vs nuance/judgment (and how to have both)
 
-**Status:** open, foundational (BR meta-reflection 2026-07-04). Adjacent to `instruction-adherence-decay.md`,
-`smart-zone-ceiling.md`, and the `foundations.md` substrate/structural-vs-knowledge material.
+**Status:** open, foundational (BR meta-reflection 2026-07-04). Adjacent to `008-instruction-adherence-decay.md`,
+`006-smart-zone-ceiling.md`, and the `foundations.md` substrate/structural-vs-knowledge material.
 
 ## The tension (BR, verbatim gist)
 *"Agent context grows and grows; every round feeds everything to the agent; the agent's mind gets clobbered by
@@ -33,7 +33,7 @@ Re-engineer the substrate and both hold:
 3. **JIT retrieval defeats the premise.** Blunt "wins" only because it survives rot. If the nuanced rule is
    **re-surfaced fresh at the decision point** (just-in-time injection — a hook that shows the relevant guidance exactly
    when the triggering action is attempted), *freshness* supplies salience **without** stripping nuance. The
-   "must-be-blunt-to-survive" assumption dies. Cf. `inference-time-learning.md` §4 (the retrieval gap; push memory
+   "must-be-blunt-to-survive" assumption dies. Cf. `012-inference-time-learning.md` §4 (the retrieval gap; push memory
    toward substrate #3).
 4. **Calibrate rigidity to stakes × reversibility.** Hard DO/DON'T where the action is **irreversible / dangerous** and
    nuance is a *liability* ("never force-push", "destructive git is human-only"); **nuance** where judgment adds value
@@ -72,7 +72,7 @@ steer *"don't write high-steering docs too bluntly/concisely if you want to pres
 - Can JIT injection be made cheap/general (one hook, not one-per-rule) so nuance survives rot by freshness?
 
 ## What shipped
-Nothing yet (foundational note). Reframes existing artifacts: `instruction-adherence-decay.md` (why blunt is tempting),
+Nothing yet (foundational note). Reframes existing artifacts: `008-instruction-adherence-decay.md` (why blunt is tempting),
 `foundations.md` (structural>knowledge, the substrate hierarchy), the `blog-assistant` skill (first calibrated-doc
 instance). Candidate graduation: a `scala-style`/skill-authoring guideline — *layer, structuralize, JIT, calibrate to
 stakes* — for writing every future high-steering doc.

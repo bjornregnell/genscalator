@@ -112,7 +112,7 @@ The corpus is captured two complementary ways, each honest about what it is:
    **1b. Queued in-situ (agent-owned inbox → deferred harvest).** When the human is *concurrently editing the WR
    research files themselves* (`RAW-DATA.md` / this file), the agent must NOT write a flagged moment straight to
    the corpus: a live append would risk clobbering the human's open editor buffer (the shared-file-editing
-   hazard — see `shared-file-editing-protocol.md`), and the live turn lags the `.jsonl` flush anyway (so a
+   hazard — see `009-shared-file-editing-protocol.md`), and the live turn lags the `.jsonl` flush anyway (so a
    `RawData` mine would miss the just-flagged turn). So the agent **queues** each flag — verbatim gist +
    reflection — into an **inbox it alone writes** (`muntabot-synch-introprog/notes/wr-inbox.md`, a *different*
    repo), while acknowledging + reflecting in chat immediately. Once the human's concurrent WR edits are
@@ -146,22 +146,22 @@ corpus measures — shell-reflex relapse rate, guard-trip frequency, typed-path 
 *itself* model-dependent, so swapping the model mid-study confounds every before/after comparison. **Decision (BR
 2026-07-02): stay on Opus 4.8 for the first paper's collection window; a model change is a deliberate, logged A/B
 EVENT (date + turn), never a silent drift.** The mirror-image experiment — hold the *substrate* constant and vary
-the *model* — is its own research topic ([`model-capability-and-leverage.md`](model-capability-and-leverage.md)):
+the *model* — is its own research topic ([`020-model-capability-and-leverage.md`](020-model-capability-and-leverage.md)):
 how a more vs less capable model leverages the same genscalator tools.
 
 3. **Queue-then-harvest (the concurrent-editing safeguard).** When a `WR data` flag arrives *while the human is
    editing the WR files* (RAW-DATA.md, wr-data/), the agent must NOT `--append` to those files — it would risk
-   clobbering the human's open editor buffer (the exact `shared-file-editing-protocol.md` hazard), and the live
+   clobbering the human's open editor buffer (the exact `009-shared-file-editing-protocol.md` hazard), and the live
    turn lags the jsonl flush anyway. So the agent (a) acknowledges + reflects in chat, (b) appends the flag to an
    **inbox it owns** (a file in the work repo, not a WR file), and (c) once the human says the WR edits are
    *committed*, mines the flagged turns verbatim via `RawData.scala` and moves them into RAW-DATA.md, then clears
    the inbox. This preserves the mined-verbatim honesty *and* the two-writer discipline; it is the inbox pattern
-   from `shared-file-editing-protocol.md`, dogfooded. Explicit handovers ("I will not touch X until you say so")
+   from `009-shared-file-editing-protocol.md`, dogfooded. Explicit handovers ("I will not touch X until you say so")
    make the lock unambiguous.
 
 **Language-for-transparency [BR].** The human is more fluent in Swedish but **deliberately writes English** in
 these sessions so the primary corpus is directly quotable and reviewer-readable without a translation step. This
-is a worked instance of the `communication-bandwidth.md` trade-off where **data transparency/reviewability
+is a worked instance of the `002-communication-bandwidth.md` trade-off where **data transparency/reviewability
 outranks** the human's per-message ease. State it as a known sampling property: the human's phrasing is
 second-language English, occasionally with typos (which is *why* the typo-rate fatigue gauge, `human-state-and-
 joint-zone.md`, is observable here) — a feature for reviewability, not noise to be cleaned away.
@@ -256,7 +256,7 @@ handover cues?"* Yes — make the **git log double as the human-agent state ledg
 compact dance and both parties read it). Proposed convention:
 - **Subject:** imperative, scoped, ≤ ~72 chars: `area: what changed`.
 - **Optional tags** in the subject or a trailer: `[AT]`/`[WR]`/`[GS]`, and a **mode** cue
-  `[ralph]` (autonomous, verifiable) vs `[ballgame]` (needs human volley) — see `task-autonomy-negotiation.md`.
+  `[ralph]` (autonomous, verifiable) vs `[ballgame]` (needs human volley) — see `010-task-autonomy-negotiation.md`.
 - **HANDOFF trailer** (the key addition): a `NEXT:` line stating *what state this leaves things in and what the
   next actor should do* — e.g. `NEXT: BR ratify vego glossary, then apply fused B0+D to that cluster`. A
   `HD-NEEDED:` trailer marks a pending human decision.

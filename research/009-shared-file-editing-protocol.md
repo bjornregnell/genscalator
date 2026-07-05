@@ -57,7 +57,7 @@ curation or heterogeneous tooling favours A. This wants **measuring**, not guess
 - **Test the editor safeguard** empirically across the editors humans actually use here; how reliable, and is
   the reload/merge prompt low- or high-friction in practice?
 - A **hybrid**: agent appends directly (C) for low-stakes items, but routes high-stakes or large edits through
-  the inbox (A). Mode chosen by the same triage as `task-autonomy-negotiation.md`.
+  the inbox (A). Mode chosen by the same triage as `010-task-autonomy-negotiation.md`.
 - **Tooling that removes A's churn:** a `tt harvest` command that moves inbox items into HUMANS.md TODO in one
   call, making A nearly as low-effort as C while keeping its safety. This may dominate both.
 - Generalize beyond HUMANS.md to any human-owned shared file (AGENTS.md, CLAUDE.md, config).
@@ -77,7 +77,7 @@ have it" / "back to you") are enough to resync. So the working protocol for gens
 files (distinct from HUMANS.md) is a **low-ceremony optimistic C**: edit freely, signal handovers as soft cues,
 lean on the editor safeguard, re-handshake on doubt. This is empirical support for C over strict locking when the
 human uses a safeguard-equipped editor. Caveat learned: an EXPLICIT handover must be **re-affirmed, not assumed
-to persist** across multi-step agent work — and per `human-state-and-joint-zone.md`, the **agent** should be the
+to persist** across multi-step agent work — and per `011-human-state-and-joint-zone.md`, the **agent** should be the
 one to re-handshake when resuming edits (it is the tireless partner; the human is the one who forgets).
 
 ## What shipped
@@ -85,5 +85,5 @@ one to re-handshake when resuming edits (it is the tireless partner; the human i
   append-only); HUMANS.md intro + How-it-works updated so the agent never writes HUMANS.md. Chosen as the
   safe default to start; the churn evaluation above (and the possible swing to C or a hybrid) is left open.
 - Companion hygiene now in the agent's memory: never `git add -A`, stage only agent-authored paths;
-  pre-write `git status` guard on shared files. See `instruction-adherence-decay.md` (structure beats
-  exhortation) and `task-autonomy-negotiation.md` (mode triage).
+  pre-write `git status` guard on shared files. See `008-instruction-adherence-decay.md` (structure beats
+  exhortation) and `010-task-autonomy-negotiation.md` (mode triage).

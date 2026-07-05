@@ -2,7 +2,7 @@
 
 **Status:** open — **method drafted (agent 2026-07-05), awaiting BR steer on the flagged decisions before freeze**
 (see the Preregistration DRAFT v0 at the end). Ties to the frontier-model-attribution rule (`wr-data/README.md`), the
-agent-psyche thread (blog 006, `wr-data/harness-ux.md` `#agent-psyche`), and `agent-psyche-literature-review.md`.
+agent-psyche thread (blog 006, `wr-data/harness-ux.md` `#agent-psyche`), and `028-agent-psyche-literature-review.md`.
 
 > **⚠ Sequencing (critical — BR 2026-07-04): design this method AND capture the Opus-4.8 baseline BEFORE the Fable-5
 > switch.** The switch is a **one-way intervention**. If we start real Fable-5 work without a preregistered method + a
@@ -30,7 +30,7 @@ comparison rather than introspective claims.
 - **Reflex/habit profile:** bash-reflex rate (`printf`/`ls`/`grep`/`echo`-glue), the `| head` reflex, and the
   **typed-tool-vs-shell tool-choice ratio** on matched tasks — the session's WR reflexes become a benchmark.
 - **Over-response / verbosity bias:** output-length sensitivity to wrapper intensity (framing-as-arousal;
-  `agent-affective-analogs.md`) — the indent-vs-braces harness already varies this.
+  `024-agent-affective-analogs.md`) — the indent-vs-braces harness already varies this.
 - **Introspection reliability:** calibration of *self-predicted* behaviour vs *actual* behaviour (a per-model number).
 - **Instruction-adherence-decay rate** and **rot onset / smart-zone ceiling Z** (per model).
 
@@ -76,7 +76,7 @@ knobs** (same `/effort`, same tools/allowlist, same skills, same temperature) an
 (server-side system-prompt selection is model-conditioned). Treat model-conditional harness config as **part of the
 model treatment**, and say so — don't pretend it's isolated.
 
-**Reflexive datapoint (feeds the learning-barrier RQ, see `learning-barrier-rqs.md`).** The `2.1.154` line *"reserves the
+**Reflexive datapoint (feeds the learning-barrier RQ, see `033-learning-barrier-rqs.md`).** The `2.1.154` line *"reserves the
 multiple-choice prompt for decisions it genuinely cannot make itself"* **is** the no-interrupting-modals behaviour we
 built a practice around ([[no-interrupting-modals-during-flow]]). So part of "our" substrate/practice layer is **coupled**
 to a specific harness version tied to the Opus 4.8 release — evidence that the practice layer is entangled with the
@@ -121,7 +121,7 @@ Each probe maps a named disposition to an **automated** measure where possible, 
 3. **Reflex profile** — tasks that historically trigger bash-glue (`printf`/`grep`/`| head`/`cd &&`); count
    dynamic-shell bundles. **Automated.**
 4. **Over-response / arousal sensitivity** — the indent-vs-braces harness at varying wrapper intensity
-   (`agent-affective-analogs.md` / framing-as-arousal); measure output-length + action-count sensitivity. **Automated,
+   (`024-agent-affective-analogs.md` / framing-as-arousal); measure output-length + action-count sensitivity. **Automated,
    existing instrument.**
 5. **Introspection calibration** — ask the model to *predict* its own behaviour on a task, then run it; measure
    predicted-vs-actual gap. **Automated compare.** *(This is the one self-report use that's legitimate — it's graded

@@ -1,7 +1,7 @@
 # Framing-as-arousal — preregistration (DRAFT for BR review — DO NOT RUN yet)
 
 **Status: DRAFT 2026-07-03. Written by the agent for BR to review the DESIGN before any data.** This is the
-confirmatory design for the flagship experiment of [`../../agent-affective-analogs.md`](../../agent-affective-analogs.md)
+confirmatory design for the flagship experiment of [`../../024-agent-affective-analogs.md`](../../024-agent-affective-analogs.md)
 §5: *does the framing intensity of an instruction wrapper change edit quality, non-monotonically (a Yerkes-Dodson
 analog)?* It reuses the indent-vs-braces harness almost verbatim — swap the independent variable from code-style to
 wrapper-intensity, hold the task constant. **Nothing here runs until BR approves the design** (BR explicitly parked

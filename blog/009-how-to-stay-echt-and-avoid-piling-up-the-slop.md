@@ -58,9 +58,9 @@ A post about echt should itself **be echt** — grounded, not vibes. So: can we 
   the evidence.
 - Use the project's own substrate as the ground truth: `research/`, `wr-data/`, `RAW-DATA.md` (real logged episodes,
   e.g. the FleetView panic) beat invented examples — mine them. Tie to the measurement thread
-  (`inference-time-learning.md` §7 regression-rate; the indent-vs-braces harness for a controlled test).
+  (`012-inference-time-learning.md` §7 regression-rate; the indent-vs-braces harness for a controlled test).
 - Honest guardrail: if the data won't support a claim, **cut the claim** (dogfood the rule).
 
 ## Reads / cross-links
 `docs/foundations.md` (echt / äkthet), `skills/blog-assistant`, blog README "Authorship & voice", blog 004 (the slop
-pains + panic writes), `research/steering-doc-design-tension.md`.
+pains + panic writes), `research/027-steering-doc-design-tension.md`.

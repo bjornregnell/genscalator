@@ -19,6 +19,6 @@ This is not optional caution — it caught a real, silent bug: **a relation list
 2. **The META vocabulary** from `PRD.md`: the minimal ENT/REL/ATTR subset (Goal/Feature/Function/Stakeholder; has/requires/helps/hurts/verifies; Spec/Gist/Why/Prio/Comment/Idea) and the **MAP-not-FORK** mapping to reqT's KAOS/i*/GRL vocabulary (anti-goal → Goal-we-Hurt; mitigates → Hurts; verifies → Verifies; Rationale → Why; Metric → Target/Quality).
 3. **The reqT-lang metamodel** from `tools/reqt-vendored/02-meta-model.scala` — the authoritative ENT/REL/ATTR definitions and their informal-semantics strings (e.g. `Idea` = "A concept or thought, potentially interesting").
 4. **Worked examples** (short vs multi-line relation forms; `has` nesting; inline `Ent has Attr`) each paired with its verified `Model(...)` output.
-5. **The strict/lint gap** (lowercase relation-under-`has` slips past `lint`) → reqT/reqT-lang#15; see `research/reqt-lang-review.md`.
+5. **The strict/lint gap** (lowercase relation-under-`has` slips past `lint`) → reqT/reqT-lang#15; see `research/015-reqt-lang-review.md`.
 
 Related: [`../scala-style/SKILL.md`](../scala-style/SKILL.md) (how to WRITE a tool), [`../../PRD.md`](../../PRD.md) (the live model + META), the `tt parsereqt` tool.

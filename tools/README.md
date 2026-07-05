@@ -141,7 +141,7 @@ Input is a tiny PlantUML/mermaid-flavoured spec (`title:`, `actor <Id> [as label
 `A --> B: reply`, `note over A,B: text`; `#`/`//` comments; self-message `A -> A` draws a loop). Output is a
 **self-contained** SVG (inline `<style>`, no external refs) that is **theme-aware** (light + `prefers-color-scheme`
 dark) — inline it straight into an SSG page, an artifact, or a report. Deliberately **not** reqT-lang: reqT models
-an unordered *set*, a sequence is *ordered in time* — see [`../research/svg-sequence-diagram-tool.md`](../research/svg-sequence-diagram-tool.md).
+an unordered *set*, a sequence is *ordered in time* — see [`../research/037-svg-sequence-diagram-tool.md`](../research/037-svg-sequence-diagram-tool.md).
 Example:
 ```
 tt svg sequence blog/figures/seq-compact-dance.txt blog/figures/seq-compact-dance.svg

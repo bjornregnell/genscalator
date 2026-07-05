@@ -53,7 +53,7 @@ Strengths: dependency-free recursive-descent over indentation levels; nesting vi
    Propose an opt-in strict mode that WARNS on a capitalized-colon token that isn't a known concept: *"unknown
    concept 'BadGoal' at line N — did you mean Goal? (else it becomes Text)"*. This (a) surfaces typos, (b) is
    exactly the **divergence signal** when we feed `PRD.md` to the parser as ground truth, and (c) powers the
-   `reqTParser` feature's validation. Same fail-fast-at-the-boundary principle as `tt-typed-args.md`.
+   `reqTParser` feature's validation. Same fail-fast-at-the-boundary principle as `014-tt-typed-args.md`.
 2. **Source positions.** Elems carry no line numbers, so lint/editor errors can't point at a location. Optionally
    thread line indices through `parseLines` into a position on each Elem.
 3. **Id handling (lines 124–150) is the intricate/fragile part.** It allows **spaces in ids** (`id = "$idStart

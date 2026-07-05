@@ -10,8 +10,8 @@
 > (Odersky, Regnell & Kerr, 2026); the genscalator indent-vs-braces edit-cost experiment
 > ([`../research/experiments/indent-vs-braces/RESULTS.md`](../research/experiments/indent-vs-braces/RESULTS.md),
 > [`README.md`](../research/experiments/indent-vs-braces/README.md)); and the framing notes
-> [`../research/scala-style-evolution.md`](../research/scala-style-evolution.md) and
-> [`../research/scala-style-recommendations.md`](../research/scala-style-recommendations.md).
+> [`../research/001-scala-style-evolution.md`](../research/001-scala-style-evolution.md) and
+> [`../research/017-scala-style-recommendations.md`](../research/017-scala-style-recommendations.md).
 
 ## The short version
 
@@ -450,8 +450,8 @@ tool grade its own homework — you are reading the right blog. That is much of 
   [`README.md`](../research/experiments/indent-vs-braces/README.md), results
   [`RESULTS.md`](../research/experiments/indent-vs-braces/RESULTS.md), raw data
   [`results-raw.tsv`](../research/experiments/indent-vs-braces/results-raw.tsv).
-- Background: [`../research/scala-style-evolution.md`](../research/scala-style-evolution.md),
-  [`../research/scala-style-recommendations.md`](../research/scala-style-recommendations.md).
+- Background: [`../research/001-scala-style-evolution.md`](../research/001-scala-style-evolution.md),
+  [`../research/017-scala-style-recommendations.md`](../research/017-scala-style-recommendations.md).
 
 ## Appendix A — the test programs (and why each is shaped that way)
 

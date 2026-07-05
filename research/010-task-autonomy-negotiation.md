@@ -39,7 +39,7 @@ build-green check, a leak% metric — *expands the autonomous lane*: it manufact
 ## The negotiation is itself a human↔agent protocol
 Who decides the mode? The efficient pattern: **the agent triages and proposes** ("X is low-stakes +
 self-verifiable → I'll ralph-loop it and checkpoint; Y needs your taste → let's ballgame"), the **human
-confirms or overrides.** This is a communication act (cf. `communication-bandwidth.md`) and a CF-reducer: the
+confirms or overrides.** This is a communication act (cf. `002-communication-bandwidth.md`) and a CF-reducer: the
 human spends one cheap decision ("yes, autonomous") instead of N per-step approvals.
 - **Worked example (this very session, 2026-06-30):** BR said *"pick the one that needs least of my attention
   for now — I'm reviewing genscalator."* That is an explicit triage delegation: reserve human attention for
