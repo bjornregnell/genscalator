@@ -120,5 +120,14 @@ transcript, not memory, is the record.)
 **EVERYTHING** we both write, verbatim (BR) / faithfully (agent), no selectivity, until the `--- pin end of
 experiment ---` marker. Removed the "so I'm logging it" (selective) framing.
 
+**[BR]** "we can unfortunately not log what the harness is typing because I cant keep up with the copy-pasting when flooding"
+
+**[agent]** Noted **data limitation:** the transcript captures BR + agent only — **not** harness-injected content
+(system-reminders, "sent while you were working" wrappers, tool-nudges). Those *do* land in the agent's context and
+add load, but they aren't externalizable via BR's copy-paste under flood. (The agent *can* see them; if wanted, it
+could log them itself — but per scope this log is "what you and I write.") So the raw data under-represents the true
+context churn the agent experienced — a caveat for the after-analysis.
+
 ## OBSERVATIONS (numbered, for the after-inspect)
 - **O1** — edit-dance slip: narrated edit-absorptions instead of silent absorption (see transcript). `#P1` low-sev.
+- **O2 (data)** — transcript excludes harness injections (BR can't paste them under flood); true context load > logged.
