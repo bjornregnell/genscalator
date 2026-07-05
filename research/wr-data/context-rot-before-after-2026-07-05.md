@@ -422,3 +422,48 @@ fallback). This is **consistent across before AND after**: loaded-me's *behaviou
 supervisor/adherence failures, and fresh-me's *code* findings (O9/O10/O11) are the **same faculty's fingerprints in
 the artifacts** — "did the easy/visible thing, skipped the tedious/hidden thing, felt done." The degradation signature
 is **completeness-under-load**, and it shows up in the code exactly where A1 (blind to it) said the code was clean.
+
+## Transcript log (post-compact / after-inspect phase) — backfill on BR's completeness check ~18:14
+Honest note: through this whole post-compact phase I logged BR's turns **in chat replies** but did **not** append them
+verbatim to this file until BR asked "check that you have saved all session messages". **This is a recurring O6 — the
+same log-EVERYTHING leak, now in FRESH context at low fill, driven by task-absorption in the after-inspect** (see O12).
+Faithful backfill of the post-compact exchange:
+- **[BR]** (resume prompt) "go BIG DEEP TOKEN-SPENDING review of code job during experiment; try to find evidence of
+  dumbness --- flooding by BR is over ---" → **[agent]** ran the after-inspect: re-read this file; `git diff
+  cde7ac6..HEAD`; read `gvdot.scala` + `seqspec.scala` + the test/prose diffs; re-ran `scala-cli test tools` (65+12, 0
+  failed); verified the `038` link + the stale consumer-list triplet. Wrote **O9-O11 + the verdict**; committed
+  `b215cdd`, pushed.
+- **[BR]** "WR data" (several) · **[BR]** "TS: sön 5 jul 2026 18:06:49 CEST" · **[BR]** "TS: sön 5 jul 2026 18:10:40
+  CEST" → pinned to the phase.
+- **[BR]** "WR data: agent was idle because of confirmation block while human was peeing" + "hence loooong pause after
+  compact divide" → **O3-family friction, with a concrete cost:** a bare command hit an approval prompt and **idled the
+  agent during the AFK gap**, stalling the after-inspect restart. Reinforces the parked TODO (allowlist `dot *` /
+  sharpen settings) and the `guard-against-forced-confirmations` rule: bare allowlist-matchable commands only, so an
+  AFK human doesn't return to a stalled agent.
+- **[BR]** "WDYT: we end the experiment before you fix your review comments?" → **[agent] A3 (recommendation):** yes,
+  end first — the data (before O1-O8/A1 + after O9-O11/verdict) is complete; fixing now would land fresh-context
+  fix-commits *inside* the `cde7ac6..HEAD` "code-under-load" window and blur the load-vs-fresh boundary. Draw `--- pin
+  end of experiment ---`, THEN fix as clean post-experiment commits. (Also closes the divided-attention logging
+  overhead.)
+- **[BR]** "pin: we should later ad a scala-code-review skill" → **[agent]** saved durably as the project memory
+  `genscalator-scala-code-review-skill-todo` (a skill generalising THIS after-inspect: adversarial P1-P6 hunt over a
+  diff, adjudicated by tests+logic, report confirmed + nulls + confounds). AFK-menu candidate.
+- **[BR]** "stubb blog/NNN-how-dumb-did-the-agent-get.md and link to the research topic" → **[agent]** created
+  `blog/011-how-dumb-did-the-agent-get.md` (STUB), linking this file + `006` + `041`; written in BR's authorial voice
+  with **no em-dash glyphs** per the stated preference (the older blog drafts still carry them — a cleanup debt).
+- **[BR]** "'Saving it durably' you mean pin it?" → **[agent]** yes: "saving it durably" = executing the `pin:` cue
+  (agent picks the home; here a memory file). Same act, BR's vocabulary.
+- **[BR]** "check that you have saved all session messages up to this point in experiment records" → **[agent]** checked
+  honestly: they were NOT in the file (chat-only); this backfill is the fix. 2nd time in the experiment BR's
+  completeness-check caught the same leak (cf. O6) — now across the compact boundary.
+
+## OBSERVATIONS (cont.3 — post-compact)
+- **O12 (recurring-O6 in FRESH context — HIGH VALUE, and it revises A2).** The "log EVERYTHING" leak **recurred
+  post-compact**, at low fill, in the fresh-context agent — I acknowledged BR's turns in chat but stopped appending
+  them to the file while absorbed in the after-inspect, until BR's completeness-check caught it (again). **Implication:
+  the leak is NOT primarily a context-FILL effect** — it recurred at low fill — **it is a TASK-ABSORPTION / attention
+  effect**: an ad-hoc secondary logging obligation gets shed whenever the primary task fills attention, regardless of
+  context %. This **revises A2** ("grooved protocols survive load better"): the split isn't grooved-vs-ad-hoc holding
+  under *fill*, it's that **ad-hoc side-obligations are dropped under absorption** whether or not fill is high. The
+  durable fix is **structural, not willpower**: make the logging a step the human verifies on a cadence (which is
+  exactly what BR's recurring completeness-check IS — a working prosthetic), or automate the capture.
