@@ -32,3 +32,8 @@ human-owned HUMANS.md and can't clobber a live editor buffer).
       dangerous field), names **thriller state**, refines CF as an event-driven state, and the key payoff:
       agent-as-stabilizer keeping you in the smart zone (+ a **rest dance**, human analog of the compact dance).
       Has a candidate-glossary section for you to ratify. Skim + steer; veto/keep the new terms.
+
+- [ ] `research/references-refactor-plan.md` - NEW pinned TODO: refactor `blog/References.scala` to split
+      **data from rendering logic** (lift `toMarkdown`/`toHtml`/`toBibTex` into `mkMarkdown(r): Markdown` etc.,
+      likely a separate `Markdown.scala` / render module — probably an **SSG** resource for bjornregnell.se).
+      Parked-but-pinned; act when it feels cramped or when SSG work starts. Skim + confirm the boundary lean.

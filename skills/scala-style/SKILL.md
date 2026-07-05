@@ -66,6 +66,14 @@ black-and-white.
   `Year = Int :| Interval.Closed[1900, 2100]` in [`../../blog/References.scala`](../../blog/References.scala). Don't
   over-refine — use it where the constraint is real and the payoff (a whole class of bad values made *unrepresentable*)
   is clear; it is also the planned implementation for tt's typed-arg validators (tt-toolbox DESIGN).
+  - **Only where friction is near-zero and gain is high — and NOT on long literals.** The refinement runs a
+    **compile-time macro**; on a **long literal constant** (a paragraph of prose refined `NonBlank`) it can
+    **StackOverflow the compiler** during inlining — a real crash we hit on `blog/References.scala`'s summary fields
+    (see `research/references-summary-enum-design.md`). So refine **short, genuinely-constrained** values (`Year`, a
+    `Doi`/`Url` shape, a non-empty short name); keep **long free prose as plain `String`** — it also keeps string
+    concat / interpolation ergonomic. When unsure whether a field earns a refinement, **start with a `type` alias over
+    `String`** (§4): it documents intent now and leaves a cheap path to a validated `case class` *or* an Iron
+    constraint later **if it proves worth it** — don't over-commit the constraint up front.
 - **A dep in a *pure* tool needs a purity check.** Investigate what it actually does: if it can be used
   side-effect-free, the tool stays pure. If it forces effects you can't avoid, move that work into an
   effectful driver — or **mark the tool not-safe** so the planned `--safe-mode` flag (see foundations

@@ -135,7 +135,10 @@ research method the rest of this folder runs under.)*
 - [`tt-typed-args.md`](tt-typed-args.md) — should `tt` tools adopt Scala `@main` typed params, roll their own typed
   arg layer, or mix? Typed args at the tool boundary = smarter+safer applied to the CLI itself.
 - [`references-summary-enum-design.md`](references-summary-enum-design.md) — design-validation of the `Summary` enum
-  (Paper/Book/Other) in blog/References.scala: where the schema strained, and why the enum beats a refined String.
+  (Generated/Book/Other) in blog/References.scala: where the schema strained, why the enum beats a refined String, and
+  the iron-macro-StackOverflow-on-long-literals finding (→ long prose stays `String`).
+- [`references-refactor-plan.md`](references-refactor-plan.md) — *(pinned TODO)* split `References.scala`'s rendering
+  logic from its data (`mkMarkdown(r)` etc., likely a separate render module / an SSG resource); parked-but-pinned.
 - [`kyo-ai-inspiration.md`](kyo-ai-inspiration.md) — *(to investigate)* what genscalator can mine from **kyo-ai**
   (Scala 3 algebraic-effects LLM/agent module) — typed effects for agent workflows.
 - [`experiment-prioritization.md`](experiment-prioritization.md) — the rule for *what experiment to run next*: the
