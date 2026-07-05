@@ -59,6 +59,14 @@ local, never commit/leak the cookie, treat as sensitive.
 dumb-agent/vision path only for sources with no deterministic access. Ollama (local, already available per
 `muntabot-bilingual-ollama`) is the fallback engine iff vision is ever truly required.
 
+**★ BR RATIFIED (2026-07-05, after consideration):** BR agrees with **all of points 1–5 + Net**. So this is the
+**decided design direction**, not just a proposal: **deterministic-first** (terminal `tee` → parse; usage **JSON
+endpoint** → **DOM scrape** → vision only as a guarded last resort), an **independent sidecar producer OUTSIDE CO4**,
+`tt ascii --dashboard` as the pure **renderer**, and the session cookie treated as **credential-handling** (local, never
+committed). The dumb ollama agent is retained only as a fallback engine we expect not to need. **Next concrete step
+(cheap, human-present):** BR opens the Usage modal with **DevTools → Network** and reports the endpoint/JSON it fetches
+— that single check decides whether any non-deterministic path is needed at all.
+
 ## Related
 - substrate-candidate 6 (token-usage introspection), `006-smart-zone-ceiling`, `007-token-budget-awareness`,
   `039-can-we-give-agent-introspection-wall-clock`, `041-token-speed-degradation-with-context-fill`,
