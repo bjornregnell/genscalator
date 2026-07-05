@@ -327,6 +327,16 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   The **attention** act — not necessarily durable — i.e. the **working-memory / encoding** stage to the pin dance's
   **consolidation** stage. Pipeline: `note:` → (agent nominates) → `pin:`. (BR 2026-07-04: split out of the overloaded
   "note:" once it was clear it meant two things — *attend-now* vs *save-durably*. Maps onto the two-stage memory model.)
+- **Fyi dance** (delegated disposition — the *you-decide* cue) — the human hands over a fact/observation **without
+  weighting it**, delegating the drop-vs-note-vs-pin call to the agent. The **inverse** of `note:`/`pin:` (where the
+  human fixes the weight); here the agent does.
+  - **Human step:** cue `fyi:` = *"here's something; I'm not deciding whether it's note-worthy, pin-worthy, or just
+    passing chatter — you triage it."*
+  - **Agent step (1):** **triage the disposition** — drop it (just conversation), hold it fluent (note-like), or
+    persist it durably (pin-like, choosing the home per the pin dance) — and say which.
+  - **Agent step (2, optional):** if it implies an action, the agent **may act** on it — a possible *second* step,
+    which is what earns `fyi:` **dance** status (potentially >1 agent step, meeting the dance bar below, not a one-shot
+    cue). (BR 2026-07-05.)
 - **Go dance** (greenlight / autonomy handoff) — the human↔agent protocol for **releasing the agent to act
   autonomously** on the current plan.
   - **Human step:** cue `go` — *"you're authorized to proceed on the current plan using your own judgment; I'm
