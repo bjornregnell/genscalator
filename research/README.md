@@ -54,6 +54,10 @@ research method the rest of this folder runs under.)*
   the agent crosses smart→dumb zone, so an instrument can brake before degradation rather than at the hard limit?
 - [`007-token-budget-awareness.md`](007-token-budget-awareness.md) — how can an agent become aware of its token-spending
   *rate* across nested limits and *pace* itself, so brittle spend never causes a hard halt mid-task?
+- [`039-can-we-give-agent-introspection-wall-clock.md`](039-can-we-give-agent-introspection-wall-clock.md) — *(stub)*
+  the agent has **no sense of elapsed wall-clock** (the missing `dt` under token velocity; a checkpoint/rest signal).
+  Minimal TODO: candidate mechanisms (a `chrono`/`tt usage` tool, a hook that injects elapsed, tool-result stamps),
+  measured-not-self-reported, and the coupled-system caveat (span time ≈ reasoning + toolchain + relay).
 - [`022-proactive-compaction-point.md`](022-proactive-compaction-point.md) — should we compact *proactively* (before the
   `0.8·Z` brake), and when? Argues **lazy** compaction with one exception, the **consolidation point** (committed +
   pushed + notes-updated). Where the `L → Z` rename was decided.
