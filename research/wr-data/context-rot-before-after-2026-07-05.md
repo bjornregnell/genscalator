@@ -144,6 +144,9 @@ context churn the agent experienced — a caveat for the after-analysis.
 - 17:24 — gvdot code done + PDF demo (~15 min in).
 - 17:26:05 / 17:26:44 — reqT PRD validation.
 - 17:37:36 — tasks 1–5 all committed; high-usage phase ~complete (~28 min elapsed).
+- 17:47 — compact-dance save+prompt (A2); Q1 token-speed meta-Q (~45–51s reply latency at 56%).
+- **17:52:49 — 59% fill = PEAK, immediately pre-compact.** Fill trajectory (the "before" endpoint): **43% → 56% →
+  59%** over ~44 min — the flood + logging drove **+16 pp**. This is the last before-data point; BR compacts next.
 
 ## reqT-lang PRD for gvdot (plan task 4) — parser-validated: `tt parsereqt lint` = 0 fall-throughs
 Re-engineered as a reqT-lang requirements model (concepts + relations), validated clean against genscalator's own
