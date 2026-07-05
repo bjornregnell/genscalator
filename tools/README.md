@@ -18,6 +18,12 @@ is **per-subcommand** for "start safe", e.g. `Bash(tt text *)`; add an entry as 
 First run compiles (~couple s); reruns are cached. Pure tools use only the JDK (fast); effectful
 drivers add `//> using dep com.lihaoyi::os-lib:0.11.8`.
 
+## Tests
+The suite is **co-located** under [`test/`](test/): `test/cli.test.scala` (CLI-contract tests — each tool run as a
+subprocess, exit + stdout asserted) and `test/lib.test.scala` (unit tests for `lib.scala`). Run the whole toolbox +
+tests with **`scala-cli test tools`** (from the repo root) — test scope extends the toolbox's main scope, so a plain
+`scala-cli compile tools` still builds only the tools (the `.test.scala` files are test-scope and excluded).
+
 ## Tools
 
 ### text — typed grep/awk/cut/uniq replacement (PURE)

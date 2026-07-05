@@ -9,8 +9,8 @@
 //
 // Tool dir resolution (cwd-independent, config-in-ARGS not env — PRD: configInArgsNotEnv): a `-Dtt.tools=<dir>`
 // property (passed as an explicit `scala-cli --java-prop tt.tools=<dir>` flag), else walk up from the cwd for a
-// `tools/tt`. NO ambient env var. Run from the genscalator root:  scala-cli test test
-//   or from anywhere:  scala-cli test <root>/test --java-prop tt.tools=<root>/tools
+// `tools/tt`. NO ambient env var. Run from the genscalator root:  scala-cli test tools
+//   or from anywhere:  scala-cli test <root>/tools --java-prop tt.tools=<root>/tools
 
 class CliSuite extends munit.FunSuite:
 

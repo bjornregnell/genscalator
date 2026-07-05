@@ -1,11 +1,12 @@
 //> using scala 3.8.4
 //> using dep org.scalameta::munit::1.3.3
 //> using dep com.lihaoyi::os-lib:0.11.8
-//> using file ../tools/lib.scala
 
-// Unit tests for the shared pure helpers in tools/lib.scala (agenttools.Lib). These import Lib directly
-// (it has no @main, so no clash with the per-tool @mains) and run in-process — fast + hermetic.
-//   run from the genscalator root:  scala-cli test test
+// Unit tests for the shared pure helpers in lib.scala (agenttools.Lib). Co-located under tools/ (test scope):
+// `lib.scala` is on the toolbox's MAIN scope, which test scope extends — so no `//> using file` is needed (adding
+// one would double-compile lib.scala and clash). These import Lib directly (it has no @main, so no clash with the
+// per-tool @mains) and run in-process — fast + hermetic.
+//   run from the genscalator root:  scala-cli test tools
 import agenttools.Lib
 
 class LibSuite extends munit.FunSuite:

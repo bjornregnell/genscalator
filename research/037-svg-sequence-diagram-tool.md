@@ -1,7 +1,7 @@
 # `tt svg --sequence-diagram` — a textual-spec to SVG renderer
 
 Status: **shipped v1** (2026-07-05). Tool: [`../tools/svg.scala`](../tools/svg.scala); tests in
-[`../test/cli.test.scala`](../test/cli.test.scala) (7 CLI-contract cases). BR's idea (2026-07-05): a `tt svg *`
+[`../tools/test/cli.test.scala`](../tools/test/cli.test.scala) (7 CLI-contract cases). BR's idea (2026-07-05): a `tt svg *`
 tool focused on `--sequence-diagram`, input a textual representation, output "nice SVG to be used in blogs and
 also in other reports to human", useful "in advanced debugging or when we talk about design decisions when we
 code together".
