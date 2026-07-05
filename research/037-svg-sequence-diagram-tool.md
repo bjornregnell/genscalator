@@ -13,15 +13,19 @@ standard format I decide*. They are lacking, in a specific and instructive way:
 
 - **reqT is conceptually a *bag* of requirements.** A reqT model is a collection of entities, relations, and
   attributes whose **order is not semantic** — `Feature: a requires Feature: b` is a *fact that holds*, with no
-  "before / after". *(Correction, BR 2026-07-05: reqT-lang's **parser does preserve source order and never
-  rearranges** elements — BR added this on user feedback — so the **textual** order survives a round-trip. But that
-  order is **incidental / presentational**, not part of the model's meaning.)*
+  "before / after" *in the formal model*. *(Correction, BR 2026-07-05: reqT-lang's **parser preserves source order
+  and never rearranges** elements — BR added this on **user feedback**. And a further nuance (BR): that order **is
+  meaningful — to the human, not to the model**. It carries no *formal / model* semantics (the requirements bag
+  computes the same either way), yet it is genuine **spatial-navigation memory** for the reader — exactly like the
+  order of **definitions in a program**: coders remember *where* a thing is, and a tool that reshuffled defs would
+  be maddening. So "order is not semantic" means "**not part of the formal model**", NOT "meaningless".)*
 - **A sequence diagram is a LIST in time.** Its whole meaning is the **order**: message 1, then 2, then 3, along
   per-actor lifelines, possibly with activations and loops. Order is the payload, not decoration — and there is a
   first-class notion of a **message / interaction** between two lifelines that reqT simply doesn't have.
 - So the mismatch is **not** that reqT would *lose* the order (it wouldn't — it preserves source order). It is that
-  you'd be leaning on an ordering the model treats as **meaningless**, with **no message concept**, so nothing
-  downstream could rely on "message 3 follows message 2" *as semantics*. Smuggling it in via an index attribute
+  you'd be leaning on an ordering the **model** gives no *formal* meaning to (even though the human reads meaning
+  into it), with **no message concept**, so nothing downstream could rely on "message 3 follows message 2" *as
+  model semantics*. Smuggling it in via an index attribute
   (`order: 1`, `order: 2`) is a temporal model bolted onto a non-temporal language — reqT syntax without reqT
   semantics.
 

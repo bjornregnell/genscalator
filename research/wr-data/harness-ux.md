@@ -659,3 +659,19 @@ instrument* — a `tt usage`/`chrono`-style readout of elapsed + compile-cycle c
 long crunch and consider checkpointing; (b) it is a clean datapoint for **coupled-system** accounting — the
 "11 minutes" is the pairing's wall-clock (model + toolchain + human relay), not the model's alone. See
 [[at-code-plan-and-introspection]] (token velocity/acceleration) and `research/007-token-budget-awareness.md`.
+
+## Human psyche: source order is spatial-navigation memory — stable order matters even when it is not *formally* semantic (BR 2026-07-05, `#human-psyche`)
+Tags: `#human-psyche` `#methodology`
+**BR reflection (human, on his own tooling + psyche):** correcting the agent's "reqT order is incidental" framing —
+reqT-lang **preserves source order and never rearranges** elements (BR added this on **user feedback**), *because*
+**order is meaningful to the user even though it is not part of the formal requirements model**. BR's analogy: it is
+**the same as the ordering of definitions in a program** — human coders **navigate by memory of *where* a thing is**,
+and *"it would be irritating if they were moved around all the time."* So there are **two kinds of "meaning"** a tool
+must not conflate: **formal/model semantics** (does the artifact *compute* differently?) and **human-navigational
+meaning** (spatial memory of location, scanning habit, diff-stability). reqT order has the second, not the first.
+**Generalises into a design rule with teeth for agents:** an agent must **not gratuitously reorder a human-facing
+artifact** (re-sort a list, alphabetise defs, rearrange a config) *merely* because it is "semantically equivalent" —
+equivalence in the *model* is not equivalence to the *human*, who loses their spatial map. (Cousins:
+[[no-clobber-human-owned-files]]; the **append-only** discipline for `RAW-DATA.md` — stability of position is part of
+the record; and the `L → Z` rename that deliberately *left `RAW-DATA.md` untouched*.) Candidate: fold into a
+foundations note or a `#human-psyche` principle ("preserve human spatial memory: stable order > tidy order").
