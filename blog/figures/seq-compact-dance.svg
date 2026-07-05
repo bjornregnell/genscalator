@@ -1,9 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1127.2" height="572" viewBox="0 0 1127.2 572" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="1127.2" height="590" viewBox="0 0 1127.2 590" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
   <style>
     :root { --fg:#1b1b2b; --box:#eef0fb; --boxline:#9aa0d0; --life:#c3c3d6; --line:#5a5f86; --notebg:#fff6d8; --noteline:#e0c86a; }
-    @media (prefers-color-scheme: dark) {
-      :root { --fg:#e6e6f0; --box:#2a2d44; --boxline:#5a5f86; --life:#44465e; --line:#a6abd8; --notebg:#403a23; --noteline:#8a7a3a; }
-    }
+    @media (prefers-color-scheme: dark) { :root { --fg:#e6e6f0; --box:#2a2d44; --boxline:#5a5f86; --life:#44465e; --line:#a6abd8; --notebg:#403a23; --noteline:#8a7a3a; } }
     text { fill: var(--fg); }
     .lbl { font-size: 13px; }
     .title { font-size: 16px; font-weight: 600; }
@@ -15,26 +13,26 @@
     .head { fill: var(--line); }
   </style>
   <text class="title" x="563.6" y="28" text-anchor="middle">The compact dance (a note to sleep, not collapse)</text>
-  <line class="life" x1="155.9" y1="76" x2="155.9" y2="524"/>
+  <line class="life" x1="155.9" y1="76" x2="155.9" y2="542"/>
   <rect class="box" x="110.9" y="42" width="90" height="34" rx="6"/>
   <text class="lbl" x="155.9" y="59" text-anchor="middle" dominant-baseline="central">BR</text>
-  <rect class="box" x="110.9" y="524" width="90" height="34" rx="6"/>
-  <text class="lbl" x="155.9" y="541" text-anchor="middle" dominant-baseline="central">BR</text>
-  <line class="life" x1="427.7" y1="76" x2="427.7" y2="524"/>
+  <rect class="box" x="110.9" y="542" width="90" height="34" rx="6"/>
+  <text class="lbl" x="155.9" y="559" text-anchor="middle" dominant-baseline="central">BR</text>
+  <line class="life" x1="427.7" y1="76" x2="427.7" y2="542"/>
   <rect class="box" x="353.3" y="42" width="148.9" height="34" rx="6"/>
   <text class="lbl" x="427.7" y="59" text-anchor="middle" dominant-baseline="central">Claude Opus 4.8</text>
-  <rect class="box" x="353.3" y="524" width="148.9" height="34" rx="6"/>
-  <text class="lbl" x="427.7" y="541" text-anchor="middle" dominant-baseline="central">Claude Opus 4.8</text>
-  <line class="life" x1="699.5" y1="76" x2="699.5" y2="524"/>
+  <rect class="box" x="353.3" y="542" width="148.9" height="34" rx="6"/>
+  <text class="lbl" x="427.7" y="559" text-anchor="middle" dominant-baseline="central">Claude Opus 4.8</text>
+  <line class="life" x1="699.5" y1="76" x2="699.5" y2="542"/>
   <rect class="box" x="654.5" y="42" width="90" height="34" rx="6"/>
   <text class="lbl" x="699.5" y="59" text-anchor="middle" dominant-baseline="central">Harness</text>
-  <rect class="box" x="654.5" y="524" width="90" height="34" rx="6"/>
-  <text class="lbl" x="699.5" y="541" text-anchor="middle" dominant-baseline="central">Harness</text>
-  <line class="life" x1="971.3" y1="76" x2="971.3" y2="524"/>
+  <rect class="box" x="654.5" y="542" width="90" height="34" rx="6"/>
+  <text class="lbl" x="699.5" y="559" text-anchor="middle" dominant-baseline="central">Harness</text>
+  <line class="life" x1="971.3" y1="76" x2="971.3" y2="542"/>
   <rect class="box" x="925.1" y="42" width="92.5" height="34" rx="6"/>
   <text class="lbl" x="971.3" y="59" text-anchor="middle" dominant-baseline="central">Codeberg</text>
-  <rect class="box" x="925.1" y="524" width="92.5" height="34" rx="6"/>
-  <text class="lbl" x="971.3" y="541" text-anchor="middle" dominant-baseline="central">Codeberg</text>
+  <rect class="box" x="925.1" y="542" width="92.5" height="34" rx="6"/>
+  <text class="lbl" x="971.3" y="559" text-anchor="middle" dominant-baseline="central">Codeberg</text>
   <line class="msg" x1="155.9" y1="106" x2="426.7" y2="106"/>
   <path class="head" stroke="none" d="M 427.7 106 L 418.7 102 L 418.7 110 Z"/>
   <text class="lbl" x="291.8" y="99" text-anchor="middle">note: at a consolidation point</text>
@@ -58,7 +56,7 @@
   <text class="lbl" x="291.8" y="375" text-anchor="middle">resume prompt (framed)</text>
   <rect class="note" x="110.9" y="428" width="361.8" height="34" rx="3"/>
   <text class="lbl" x="291.8" y="445" text-anchor="middle" dominant-baseline="central">BR triggers /compact</text>
-  <line class="msg" x1="155.9" y1="472" x2="426.7" y2="472"/>
-  <path class="head" stroke="none" d="M 427.7 472 L 418.7 468 L 418.7 476 Z"/>
-  <text class="lbl" x="291.8" y="465" text-anchor="middle">resume (fresh context)</text>
+  <line class="msg" x1="155.9" y1="490" x2="426.7" y2="490"/>
+  <path class="head" stroke="none" d="M 427.7 490 L 418.7 486 L 418.7 494 Z"/>
+  <text class="lbl" x="291.8" y="483" text-anchor="middle">resume (fresh context)</text>
 </svg>

@@ -420,7 +420,7 @@ class CliSuite extends munit.FunSuite:
       val outp = d / "s.svg"
       val (code, out, _) = run("svg", "sequence", in.toString, outp.toString)
       assertEquals(code, 0)
-      assert(clue(out).contains("wrote sequence diagram"))
+      assert(clue(out).contains("wrote auto sequence diagram"))
       assert(os.exists(outp))
       assert(clue(os.read(outp)).contains("<svg"))
     finally os.remove.all(d)
@@ -430,4 +430,29 @@ class CliSuite extends munit.FunSuite:
     assertEquals(code, 2)
     assert(clue(out).toLowerCase.contains("usage"))
     assert(clue(out).toLowerCase.contains("sequence"))
+  }
+  test("svg --dark emits a fixed dark palette and no media query") {
+    val f = os.temp(contents = "A -> B: x\n", suffix = ".txt")
+    try
+      val (code, out, _) = run("svg", "sequence", f.toString, "--dark")
+      assertEquals(code, 0)
+      assert(clue(out).contains("--fg:#e6e6f0")) // dark foreground
+      assert(!clue(out).contains("prefers-color-scheme")) // tailored theme has no media query
+    finally os.remove(f)
+  }
+  test("svg --light emits a fixed light palette and no media query") {
+    val f = os.temp(contents = "A -> B: x\n", suffix = ".txt")
+    try
+      val (_, out, _) = run("svg", "sequence", f.toString, "--light")
+      assert(clue(out).contains("--fg:#1b1b2b")) // light foreground
+      assert(!clue(out).contains("prefers-color-scheme"))
+    finally os.remove(f)
+  }
+  test("svg default theme is auto (adapts via prefers-color-scheme)") {
+    val f = os.temp(contents = "A -> B: x\n", suffix = ".txt")
+    try
+      val (_, out, _) = run("svg", "sequence", f.toString)
+      assert(clue(out).contains("prefers-color-scheme")) // media query present
+      assert(clue(out).contains("--fg:#1b1b2b")) // with the light base
+    finally os.remove(f)
   }

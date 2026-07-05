@@ -140,17 +140,20 @@ parsereqt <file>                     # parse reqT model text into a structured f
 
 ### svg — textual diagram spec → self-contained SVG (PURE; writes a file with `out`)
 ```
-svg sequence <in.txt> [out.svg]           # render a sequence-diagram spec to SVG (no out → stdout)
-svg --sequence-diagram <in.txt> [out.svg] # alias for `sequence`
+svg sequence <in.txt> [out.svg] [--light|--dark]   # render a sequence-diagram spec to SVG (no out → stdout)
+svg --sequence-diagram <in.txt> [out.svg]          # alias for `sequence`
 ```
 Input is a tiny PlantUML/mermaid-flavoured spec (`title:`, `actor <Id> [as label]`, `A -> B: call`,
 `A --> B: reply`, `note over A,B: text`; `#`/`//` comments; self-message `A -> A` draws a loop). Output is a
-**self-contained** SVG (inline `<style>`, no external refs) that is **theme-aware** (light + `prefers-color-scheme`
-dark) — inline it straight into an SSG page, an artifact, or a report. Deliberately **not** reqT-lang: reqT models
-an unordered *set*, a sequence is *ordered in time* — see [`../research/037-svg-sequence-diagram-tool.md`](../research/037-svg-sequence-diagram-tool.md).
+**self-contained** SVG (inline `<style>`, no external refs) — inline it straight into an SSG page, an artifact, or a
+report. **Theme:** default **auto** adapts to the viewer via `prefers-color-scheme`; **`--light`** / **`--dark`**
+emit a *fixed, tailored* palette (predictable when the host page/PDF theme may differ from the OS setting — generate
+the variant you need). Deliberately **not** reqT-lang: reqT models an unordered *set*, a sequence is *ordered in
+time* — see [`../research/037-svg-sequence-diagram-tool.md`](../research/037-svg-sequence-diagram-tool.md).
 Example:
 ```
 tt svg sequence blog/figures/seq-compact-dance.txt blog/figures/seq-compact-dance.svg
+tt svg sequence flow.txt flow-dark.svg --dark
 ```
 
 ### web — safe read-only HTTP (EFFECTFUL: network, but GET-only)

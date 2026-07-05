@@ -41,7 +41,8 @@ note over <A>[, <B>]: <text>      a note box over one or two lifelines
 
 Lifelines not pre-declared are auto-created in first-seen order. A self-message (`A -> A`) draws a loop. Output
 is a **self-contained** SVG (inline `<style>`, no external refs — safe to inline in an SSG page or an artifact)
-and **theme-aware** (light default plus a `prefers-color-scheme: dark` override).
+and **theme-aware**: default `auto` (light plus a `prefers-color-scheme: dark` override), or a fixed `--light` /
+`--dark` palette for predictable embedding (see Design choices).
 
 ## Design choices
 
@@ -50,7 +51,12 @@ and **theme-aware** (light default plus a `prefers-color-scheme: dark` override)
   keeps the tool a cold-start-cheap pure tool.
 - **Explicit-polygon arrowheads**, not SVG `<marker>` — markers with `currentColor` are finicky across renderers;
   a computed triangle (filled, for a call) or open "V" (for a return) is robust.
-- **CSS-variable palette** with a dark-mode media query, so one file looks right on a light blog and a dark one.
+- **Three theme modes** (BR's call, 2026-07-05): default **`auto`** = a CSS-variable palette with a
+  `prefers-color-scheme: dark` media query (one file adapts to the viewer); **`--light`** / **`--dark`** = a *fixed*
+  palette, no media query. The tailored modes exist because `auto` tracks the **OS** setting, not the **host page's**
+  theme, so an auto SVG can mismatch a light SSG page on a dark-OS machine (or a PDF export, or an image viewer).
+  BR's hunch — "hard to be dark/light generic" — is right: for a page that *commits* to a theme, generate the
+  matching variant; keep `auto` for standalone viewing. Cheap to offer both, so we do.
 - **XML-escaped** every label (`& < > "`), locked by a well-formed-XML test that parses the output with
   `DocumentBuilderFactory` — a defence against an unescaped `&` in a message silently breaking the SVG.
 
@@ -72,3 +78,13 @@ and **theme-aware** (light default plus a `prefers-color-scheme: dark` override)
 - Other `tt svg` modes behind the same dispatcher (`--flow`, `--state`) if a real need shows up — the tool is
   named `svg` with a mode arg precisely to leave that room, but v1 ships only `--sequence-diagram`.
 - Wrap-long-labels (currently a very long message widens the whole column). Fine for now; revisit if it bites.
+
+## Upstream: contribute the generators back to reqT (BR, 2026-07-05)
+
+**Eventually contribute this SVG generation (and the HTML/text generation, e.g. `htmltext`) back to reqT** once it
+is well-tested. reqT already ships `GraphvizGen`, `HtmlGen`, and `LatexGen` (see `tools/reqt-vendored/05-*.scala`),
+so an SVG diagram generator is a natural sibling upstream. **Gate: only contribute a *well-tested* artifact** — the
+CLI-contract + well-formed-XML tests are the start of earning that. Note the design boundary this tool already
+established (reqT models an unordered *set*; a sequence is *ordered in time*) — an upstream contribution should
+either add an ordered/interaction concept to reqT or keep the sequence spec as a companion notation, not force the
+ordering into reqT's set model. Track with the reqT-lang relationship in [`015-reqt-lang-review.md`](015-reqt-lang-review.md).
