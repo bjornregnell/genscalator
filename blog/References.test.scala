@@ -46,7 +46,7 @@ class ReferencesTests extends munit.FunSuite:
       assert(r.toBibTex.nonEmpty, s"empty bibtex for: ${r.title}")
       assert(r.toHtml.nonEmpty,   s"empty html for: ${r.title}")
 
-  test("toMarkdown renders a PaperSummary's five labelled fields"):
+  test("toMarkdown renders a GeneratedSummary's five labelled fields"):
     val r  = references.find(_.title.startsWith("Using cognitive psychology")).get
     val md = r.toMarkdown
     assert(md.contains("**Abstract:**"),           md)

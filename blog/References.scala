@@ -20,7 +20,7 @@ import io.github.iltotore.iron.constraint.any.*       // Not (constraint combina
 type Title      = String
 type RefComment = String
 type Year       = Int :| Interval.Closed[1900, 2100]  // Iron refinement: a plausible publication-year range.
-type NonBlank   = String :| Not[Blank]  // Iron refinement: non-empty and not whitespace-only (reused by the Summary enum fields).
+type NonBlank   = String :| Not[Blank]  // Iron refinement: non-empty and not whitespace-only (used by the render-output aliases below via runtime .refineUnsafe — NOT on long literal constants; the Summary fields are plain String, see its doc).
 type Doi        = String :| Match["10\\.\\d{4,9}/.+"]  // Iron refinement: DOI shape — "10." + registrant + "/" + suffix.
 type Url        = String :| Match["https?://.+"]        // Iron refinement: an http(s) URL.
 type Markdown   = NonBlank   // rendering-output aliases: a render is always non-blank (Iron); refined at the boundary via .refineUnsafe.
@@ -62,19 +62,23 @@ case class RefData(
 enum RefVerification:
   case Unverified, Verified, ToDo
 
-/** A structured summary, shaped to the reference's kind. `abstract` is backticked (Scala reserved word). Fields are
- *  NonBlank (Iron): if you fill a field it must say something — use OtherSummary for refs that don't fit the empirical
- *  paper shape (system/position papers, manifestos, webpages) rather than stuffing "n/a" into PaperSummary. */
+/** A structured summary, shaped to the reference's kind. **Every `Summary` is agent-or-human GENERATED prose and may
+ *  contain mistakes or hallucinations — it carries NO verification state** (unlike the citation data, which
+ *  `RefVerification` gates). Both agent and human write fallible summaries; treat a summary as a claim to check, not
+ *  ground truth. Fields are plain `String` (not Iron-refined): they are long free prose, and Iron's compile-time
+ *  refinement macro does not scale to long literal constants (it can StackOverflow — see
+ *  `research/references-summary-enum-design.md`). Use `OtherSummary` for refs that don't fit the empirical-paper shape
+ *  (system/position papers, manifestos, webpages). */
 enum Summary:
-  case PaperSummary(
-    `abstract`:        NonBlank,
-    researchQuestions: Seq[NonBlank],   // plural (proposal had String): RQs are usually a list; parallels chapterHeadings.
-    method:            NonBlank,
-    results:           NonBlank,
-    validity:          NonBlank,        // threats-to-validity / limitations the authors report — the SE-methods lens.
+  case GeneratedSummary(
+    officialAbstract:  String,           // the paper's OWN official abstract, verbatim; empty String when none found.
+    researchQuestions: Seq[String],      // RQs are usually a list; parallels chapterHeadings.
+    method:            String,
+    results:           String,
+    validity:          String,           // threats-to-validity / limitations the authors report — the SE-methods lens.
   )
-  case BookSummary(topic: NonBlank, chapterHeadings: Seq[NonBlank])
-  case OtherSummary(summary: NonBlank)
+  case BookSummary(topic: String, chapterHeadings: Seq[String])
+  case OtherSummary(summary: String)
 
 case class Reference(
   title:      Title,
@@ -151,8 +155,8 @@ val references: Seq[Reference] = Seq(
       url = Some("https://www.pnas.org/doi/10.1073/pnas.2218523120"), note = Some("also arXiv:2206.14576"))),
     Verified,
     "Peer-reviewed (PNAS): human cognitive-psychology batteries applied to an LLM.",
-    summary = Some(PaperSummary(
-      `abstract` = "The authors apply canonical cognitive-psychology experiments to GPT-3 to probe its decision-making, information search, deliberation, and causal reasoning, finding much of its behaviour impressive (matching or beating humans on several tasks) yet brittle in revealing ways.",
+    summary = Some(GeneratedSummary(
+      officialAbstract = "The authors apply canonical cognitive-psychology experiments to GPT-3 to probe its decision-making, information search, deliberation, and causal reasoning, finding much of its behaviour impressive (matching or beating humans on several tasks) yet brittle in revealing ways.",
       researchQuestions = Seq(
         "How does GPT-3 perform on established cognitive-psychology tasks measuring decision-making, information search, deliberation, and causal reasoning?",
         "Can tools from cognitive psychology serve as a method for characterising the behaviour of large, opaque AI models?",
@@ -180,8 +184,8 @@ val references: Seq[Reference] = Seq(
       url = Some("https://arxiv.org/abs/2310.13548"), note = Some("Anthropic; many co-authors (et al.)"))),
     Verified,
     "Empirical grounding for our niceness-corrupts-honesty / sycophancy point.",
-    summary = Some(PaperSummary(
-      `abstract` = "The paper investigates sycophancy — RLHF-finetuned assistants producing responses that match a user's beliefs over truthful ones — showing it is consistent across five state-of-the-art assistants and arguing it is driven in part by human preference judgments that favour sycophantic answers.",
+    summary = Some(GeneratedSummary(
+      officialAbstract = "The paper investigates sycophancy — RLHF-finetuned assistants producing responses that match a user's beliefs over truthful ones — showing it is consistent across five state-of-the-art assistants and arguing it is driven in part by human preference judgments that favour sycophantic answers.",
       researchQuestions = Seq(
         "How prevalent is sycophancy across assistants finetuned with human feedback?",
         "Do human preference judgments (and preference models trained on them) drive and reward sycophantic behaviour?",
@@ -277,8 +281,8 @@ extension (r: Reference)
       case Unverified => " (?)"
     val head  = s"- $authors$year. *${r.title}*$where$link$badge"
     val body  = r.summary match
-      case Some(PaperSummary(ab, rqs, m, res, validity)) =>
-        s"\n  - **Abstract:** $ab" +
+      case Some(GeneratedSummary(ab, rqs, m, res, validity)) =>
+        (if ab.nonEmpty then s"\n  - **Abstract:** $ab" else "") +
         s"\n  - **Research questions:** ${rqs.mkString("; ")}" +
         s"\n  - **Method:** $m" +
         s"\n  - **Results:** $res" +

@@ -56,5 +56,11 @@ stack (a project `-Xss` / `.jvmopts`), (b) make `topic` a **plain `String`** (a 
 `NonBlank` — the refinement buys ~nothing here and costs compile-time recursion), or (c) cap `topic` length. **Lean:
 (b)** — reserve `NonBlank`/refinements for short, genuinely-constrained fields (titles, DOIs), not long free prose.
 This is a concrete datapoint for the iron-refinement-types experiment: *refinement macros don't scale to long literal
-constants.* (The 2026-07-05 References.scala note edit is committed but **compile-unverified** for this reason —
-flagged for BR to confirm after the stack fix.)
+constants.*
+
+**RESOLVED (2026-07-05, BR's call = option b).** The `Summary` fields (`GeneratedSummary`'s abstract/RQs/method/
+results/validity, `BookSummary.topic` + chapterHeadings, `OtherSummary.summary`) are now plain **`String`** — long free
+prose doesn't need a refinement, and this removes the compile-time macro entirely. `blog/` now **compiles clean + all
+8 tests pass** (`scala-cli test`). Iron is retained where it's near-minimal-friction / high-gain (`Year` interval, `Doi`
+/`Url` `Match`, and `NonBlank` for render outputs via runtime `.refineUnsafe`). The general rule graduated into the
+`scala-style` skill: *reserve Iron for short, genuinely-constrained fields; keep long prose as `String`.*
