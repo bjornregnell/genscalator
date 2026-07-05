@@ -110,6 +110,19 @@ The `*.test.scala` files compile in scala-cli's **test scope**, which *extends* 
 tests see the tool sources without any `//> using file` wiring, and a plain `scala-cli compile tools` still builds
 **only the tools** (the test files are excluded from the main compile). More: [`tools/README.md`](tools/README.md#tests).
 
+## Tool dependencies
+
+Most `tt` tools need only **scala-cli + a JDK** (the pure tools use just the JDK). A few tools shell out to an
+**external program** for one job; install it only if you use that tool:
+
+| Tool | External dependency | Install | Docs |
+|------|--------------------|---------|------|
+| `tt gvdot` | **graphviz** (`dot`) — lays out sequence diagrams to pdf/png/svg | `sudo apt install graphviz` (Debian/Ubuntu); `brew install graphviz` (macOS) | [graphviz.org](https://graphviz.org/) · `dot -h` · `man dot` |
+
+Tools degrade gracefully when their dependency is missing: `tt gvdot` still prints DOT source without `dot`, and
+errors with the install hint only on the render path. (The sibling renderers `tt svg` and `tt ascii` need **no**
+external dependency — pure JDK.)
+
 ## Roadmap
 
 What's shipped so far, per release: [`CHANGELOG.md`](CHANGELOG.md).
