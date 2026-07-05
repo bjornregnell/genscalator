@@ -23,6 +23,42 @@
 - [ ] Render via `tt ascii` (sparklines / bars / a compact status block); decide on-demand vs statusline cadence.
 - [ ] Tie into the **compact dance** + **budget pacing** decisions (a live readout replaces BR hand-relaying).
 
+## Architecture — how to FEED the dashboard (BR hypothesis 2026-07-05 + agent WDYT)
+**BR's sketch:** a local **"dumb" ollama agent** actively monitors (a) a **tee-ed terminal** ("double-watched
+terminal") and (b) the **Anthropic web-GUI Settings→Usage modal** (screenshots etc.); smart CO4 feeds data/screenshots
+to the dumb agent, which extracts metrics for `tt ascii --dashboard`. **BR hypothesis:** hard to write by hand / with
+Claude (may need **image recognition**), so a dumb agent may be the pragmatic bridge — BUT a **deterministic** monitor,
+if achievable, is strictly better than a dumb agent.
+
+**Agent WDYT — agree on the principle, challenge the premise that vision is needed. Decompose by SOURCE:**
+- **Tee-ed terminal = pure TEXT → deterministic NOW, no agent, no vision.** `script`/`tee` the terminal to a file; a
+  sidecar tails + parses it. This half is trivially deterministic; a dumb agent here only adds flakiness.
+- **Anthropic Usage modal = the hard part, but vision is the LAST resort, not the first.** Cheapest→hardest:
+  1. **JSON endpoint** — the modal renders from data; inspect DevTools → Network for the XHR/JSON it fetches; if it
+     exists, hit THAT with the session cookie (fully deterministic, trivial, no vision). *Most likely the real answer.*
+  2. **DOM scrape** via headless browser (Playwright) with the session cookie — deterministic text from the rendered
+     DOM, still no vision.
+  3. **Screenshot + OCR / vision (the dumb-agent path)** — only if 1 and 2 are blocked.
+- **So "may need image recognition" is probably FALSE:** terminal is text; the modal is almost certainly JSON-backed.
+  Vision is a fallback for genuinely vision-only sources, not the default.
+
+**Why determinism matters MORE here (sharpening BR's principle):** the payload is **numbers**. A dumb agent that
+misreads "42%" as "24%" corrupts the dashboard **silently** — hallucinated metrics are worse than no metrics. If a
+vision fallback is ever used, **guard it** (range checks, monotonic-% sanity, cross-source agreement).
+
+**One structural flip:** don't put **CO4 in the monitoring hot loop** ("CO4 feeds screenshots to the dumb agent") — that
+**spends the very budget we're measuring**, and CO4 can't self-measure anyway. Run the monitor as an **independent
+sidecar** (deterministic tool, or a local ollama agent as fallback) OUTSIDE CO4: it watches the terminal tee + polls the
+usage source and writes a **metrics file**; `tt ascii --dashboard` renders that file; CO4 just **reads the cheap
+rendered dashboard**. Clean split: **producer (sidecar monitor) vs renderer (`tt ascii --dashboard`)**.
+
+**Security:** a monitor holding the Anthropic session cookie / scraping the console = **credential handling** — keep it
+local, never commit/leak the cookie, treat as sensitive.
+
+**Escalation ladder (the plan):** deterministic sources first (terminal tee → parse; usage JSON → parse); reserve the
+dumb-agent/vision path only for sources with no deterministic access. Ollama (local, already available per
+`muntabot-bilingual-ollama`) is the fallback engine iff vision is ever truly required.
+
 ## Related
 - substrate-candidate 6 (token-usage introspection), `006-smart-zone-ceiling`, `007-token-budget-awareness`,
   `039-can-we-give-agent-introspection-wall-clock`, `041-token-speed-degradation-with-context-fill`,
