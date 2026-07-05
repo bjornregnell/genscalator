@@ -41,6 +41,20 @@ the agent auditing its own substrate for misfire causes. Common thread at the bo
      willpower dependency (structural fix per O12). The human-verification cadence is the *current* working prosthetic;
      automation would retire it.
 
+5. **A safe, allowlistable `tt cat` (or `tt copy`) primitive. (BR idea 2026-07-05 — TOOL)** Motivated by the
+   mirror-sync `cp` prompt (candidate 1's cousin): raw `cp` / `cat` are **broad and shell-shaped** (redirection `>`,
+   globbing, arbitrary clobber), so they can't be safely blanket-allowlisted — every use prompts. A **typed `tt cat`**
+   could be a safe, blanket-allowlistable primitive: **explicit argv, no shell, no redirection, no glob** (the same
+   argv-no-shell discipline as `tt git` / `verify` / `gvdot`). Then `Bash(tt cat *)` is safe to trust broadly, retiring
+   a whole class of prompts.
+   - **Design question to settle with BR (what is "dangerous" about cat/cp that we're neutralising?):** is `tt cat`
+     (a) a safe **reader** (print a file to stdout — a shell/pipeline primitive; note the agent already has the Read
+     tool, so the value here is an *allowlistable shell* primitive, not agent-facing reading), (b) a safe **copier**
+     (the mirror-sync use-case — copy with **no clobber outside designated dirs**, explicit `--dest`, refuse to
+     overwrite arbitrary paths), or (c) both? The clobber/redirection/glob surface is the danger; a typed tool removes
+     it by construction. (Compare candidate 1's exact-match `cp <live> <mirror>` allow — that fixes *one* path; a
+     typed `tt cat`/`tt copy` fixes the *class*.)
+
 ## The common thread (why these cluster)
 Every one is the **absorption-regression** pattern: when the primary task fills attention, the agent defaults to the
 **low-effort raw path** (raw `cd && git`, raw `dot`, "I'll log it later") instead of the **disciplined tool path**
