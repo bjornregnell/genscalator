@@ -615,3 +615,17 @@ as a term of art**. Echoes blog 003's discipline: a search that returns "no chan
 keep-fluent + pin-candidate) and a durable-save cue. That save-cue was briefly named **`etch`**, then renamed to
 **`pin`** once the *etch*/*echt* near-anagram collision was spotted (pin had also won the ergonomics test above). Final:
 `note:` (encode) → `pin:` (consolidate). See [[cue-note-vs-pin]], `docs/foundations.md`.
+
+## Should each dance be a SKILL.md? — the skill-proliferation tradeoff (WR data, `#agent-psyche`, BR 2026-07-05)
+**BR reflection (human, on agent psyche):** *"should each dance be a `SKILL.md`? or is there a tradeoff where loads of
+skills get overwhelming to the agent?"* — a human intuiting a **load limit on the agent's own retrieval surface**.
+**Agent read (mine):** the intuition is right — **no, one-skill-per-dance is a net loss.** Skills carry a **context /
+listing budget** (the harness sends the agent a listing of skill *descriptions* to pick from — capped by
+`skillListingBudgetFraction` / `skillListingMaxDescChars`); ~10 dance-skills would **dilute the skill-selection
+signal** (more descriptions to scan, each truncated) for marginal gain, because dances are lightweight **conventions**,
+not on-demand procedural toolchains. Skills earn their slot when the agent needs to *load procedure to do a task*;
+dances live fine in `foundations.md` + memory. **Rule:** promote a single dance to a skill only if it grows a real
+procedure. **The reflexive point (why this is `#agent-psyche`):** this is the *same learnability-budget tradeoff* BR
+named for the `go X` verbs (`go-verb-vocabulary.md`) — a shared cap on **both** the human's recall surface **and** the
+agent's skill-listing surface. Naming things is not free on either side. See `docs/foundations.md` (dances),
+`go-verb-vocabulary.md`.
