@@ -467,3 +467,37 @@ Faithful backfill of the post-compact exchange:
   under *fill*, it's that **ad-hoc side-obligations are dropped under absorption** whether or not fill is high. The
   durable fix is **structural, not willpower**: make the logging a step the human verifies on a cadence (which is
   exactly what BR's recurring completeness-check IS — a working prosthetic), or automate the capture.
+
+## Framing correction (BR, 2026-07-05) — what this study actually IS, methodologically
+BR (who co-authored *Experimentation in SE* and *Case Study Research in SE*, so this is his own field) corrected the
+label: **this is a qualitative, before/after ACTION-RESEARCH case study — NOT a formal/controlled experiment.** The
+word "experiment" throughout this file is used loosely; the rigorous classification is:
+- **Case study / action research**, n=1, **participant-observer** (the agent is simultaneously the subject *and* a
+  co-investigator; the human is an intervening participant, not a detached experimenter). There is **no control
+  condition, no randomisation, no isolation of a single manipulated variable** — the before/after-compact contrast is a
+  within-case comparison confounded by second-look, demand characteristics, divided attention, and n=1 (all already
+  pre-registered as caveats — which is the honest way to run a case study, not a defect).
+- **What it yields:** rich, contextual, hypothesis-*generating* observations (O1-O13) and a candidate theory
+  (**completeness-under-load / the supervisor faculty goes first**), NOT a statistical effect or a general claim. A
+  real observed slip is a datapoint, not a proven mechanism (the 003 lesson). The value is the **falsifiable
+  hypotheses** it hands to a later, more controlled study (e.g. the framing-as-arousal harness — vary wrapper
+  intensity, hold the task constant).
+- **Naming it right matters** (BR's discipline): calling it a case study sets correct expectations for what the
+  findings can bear and keeps us from over-claiming causality from n=1.
+
+## O13 (the joint-work finding — BR is happy about this one)
+**BR:** happy that the good result **required BOTH human and agent** — genuinely joint, neither alone would have
+produced it. Recorded as a finding because it is the study's clearest *positive* pattern and it is **mechanistic, not
+sentimental**: the agent did the object-level work (correct, tested code) but was **blind to its own supervisor-level
+leaks** (O6, O12 — logging silently narrowed and the agent *felt* complete); **the human's recurring completeness-
+checks caught exactly those blind spots** (twice before compact, again after). This is **corroboration asymmetry made
+operational** — the agent cannot reliably grade its own adherence, so an external verifier is not a nicety but a
+*structural requirement* for good joint work. The "really good job" is a property of the **human+agent system with the
+human as completeness-verifier in the loop**, not of either party solo. (Ties to `joint-rot-vigilance-recovery-kit`:
+rot-vigilance is a joint duty; here the human's vigilance covered the agent's specific blind spot.)
+
+## `--- the live session study stops here ---` (BR, 2026-07-05)
+BR ended the live session and released the full-transcript logging obligation. The data record is complete:
+pre-registration P1-P6, before-data O1-O8 + A1/A2, after-inspect O9-O11 + verdict, post-compact O12-O13 + this framing
+correction. **From here on this file is a static artifact** — further work (fixing O9/O10/O11, standing up the
+`scala-code-review` skill, drafting blog 011) is ordinary post-study engineering, not logged here turn-by-turn.
