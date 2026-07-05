@@ -100,10 +100,11 @@ This is the payoff. Concrete mechanisms, most already latent in genscalator:
 - **The rest-nudge threshold is SETUP-RELATIVE, not absolute (BR 2026-07-05, pin).** *When* to offer the rest dance
   should be modulated by the human's **physical setup**: on **mobile** the ergonomic cost is high so a tolerable streak
   is short → nudge **earlier**; on a **laptop**, medium; on a **desktop with good office equipment** the physical brake
-  is largely gone, so the human *can* run for hours — which means the agent must **not** read "still going strong" as
-  "still fine." Good ergonomics **removes the natural limiter** that would otherwise force a stop, so it paradoxically
-  **raises** burnout exposure; on a comfy desktop the nudge should fire on **elapsed time / affect / typo-delta**, not
-  on whether the human has physically tired. A `tt restcheck`-style gauge should take **setup as a prior** (like
+  is **weaker and delayed** (not *gone* — back pain, eye strain, RSI still accumulate, just slower and more quietly), so
+  the human *can* run much longer — which means the agent must **not** read "still going strong" as "still fine." Good
+  ergonomics **pushes the natural limiter later and makes it quieter** rather than removing it, so it paradoxically
+  **raises** burnout exposure (the stop-signal arrives late and soft); on a comfy desktop the nudge should fire on
+  **elapsed time / affect / typo-delta**, not on whether the human has physically tired. A `tt restcheck`-style gauge should take **setup as a prior** (like
   time-of-day), pairing with the baseline-relative typo gauge below. (Origin: BR is on an i7-4790K **desktop**, comfy
   enough to enable exactly the long thriller-streaks this note is about.)
 - **Protect ambition timing** — do NOT embark on an unrealistically complex, hard-to-review task when the
