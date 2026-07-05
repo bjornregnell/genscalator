@@ -58,6 +58,10 @@ research method the rest of this folder runs under.)*
   the agent has **no sense of elapsed wall-clock** (the missing `dt` under token velocity; a checkpoint/rest signal).
   Minimal TODO: candidate mechanisms (a `chrono`/`tt usage` tool, a hook that injects elapsed, tool-result stamps),
   measured-not-self-reported, and the coupled-system caveat (span time ≈ reasoning + toolchain + relay).
+- [`041-token-speed-degradation-with-context-fill.md`](041-token-speed-degradation-with-context-fill.md) — *(stub)*
+  does **decode speed slow as context fills** (KV-cache grows), and can that **latency** be an *early*,
+  externally-measurable proxy for high fill — before the quality/rot signature? A **speed cost** of context, not just
+  a quality cost. Grounded in Q1 (a ~45–51s reply at 56% fill); confound = isolate decode from think-time.
 - [`022-proactive-compaction-point.md`](022-proactive-compaction-point.md) — should we compact *proactively* (before the
   `0.8·Z` brake), and when? Argues **lazy** compaction with one exception, the **consolidation point** (committed +
   pushed + notes-updated). Where the `L → Z` rename was decided.
