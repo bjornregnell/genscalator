@@ -3,12 +3,20 @@
 > **Status: initialized 2026-07-03 (personal intro drafted; rest outline).** Slot reserved for the project's
 > foundational "why" — the intro a newcomer reads first. The personal backstory below is written; the mission
 > bullets and the rest are still outline, to be drafted.
-> **Audience:** newcomers to genscalator; developers building or using coding agents; anyone worn down by
+> **Audience:** anyone strolling by (this is blog number zero); newcomers to genscalator; developers building or using coding agents; anyone worn down by
 > brittle agent shell usage or confirmation fatigue; teams weighing typed, safe-by-design tooling for
 > AI-assisted development.
 > Sources: `docs/foundations.md`,
 > `research/METHODOLOGY.md`, `research/instrumentation-by-default.md`,
 > `research/confirmation-guard-static-analysis.md`, `research/wr-data/`.
+
+## The one-line answer
+
+Coding agents default to **dynamic shell** — re-emitting brittle `bash` every turn — and that quiet default
+costs tokens, safety, and reliability. genscalator replaces it with **typed, safe-by-design tools** the agent
+calls instead. *(to draft)*
+
+(If you thoght that was difficult to understand, because maybe you are not a programmer, but just happend to come by for some other reason than wanting to know why and how to use gensacalator, then there is actually in this (my first special blog post on genscalator) a paragraphs below that are ment to be readable for *anyone*, not just engineers.)
 
 ## The personal why
 
@@ -39,10 +47,35 @@ And what struck me as really mind-boggling: my agent is turning into a competent
 
 And I haven't had this fun since I discovered programming as a teenager in the mid-'80s...
 
-## The one-line answer
-Coding agents default to **dynamic shell** — re-emitting brittle `bash` every turn — and that quiet default
-costs tokens, safety, and reliability. genscalator replaces it with **typed, safe-by-design tools** the agent
-calls instead. *(to draft)*
+## Are we alone?
+
+I will take a step back, addressing anyone strolling by, also non-developers, with a bigger question: Are we the only intelligent speicies? Humans in general and science fiction literature in particular, have been thrilled about the question if we are the only beings that are as intelligent as we are. Actually, we *used* not to be alone, but our fellow neanderthals that probably had likeminded intelligence, became extinct a good while ago, perhpas or even probably due to us. 
+
+Science fiction literature and astro physicists have directed their effort in persuing this question to both inner and outer space, hopthesizing martians and warp drives to galaxies beyond. Science fiction has also imagined man-made intelligent beings and Asimov has pinned the 
+
+## Are software developers alone?
+
+No. Atleast it *feels* like we are not alone, if you ask me or many of my software engineering research colleagues: the recent development in agentic software engineering where language-model-based AI agents help humans to create complex software is astonishing. And when I chat with an agent to get it do create the software I want it to create, the big software engineering projects that I would never have the grit to land on my own or even with a bunch of other human colleagues, it *really feels* like I am not alone. But I know I am, in the sense that it is perfectly clear to me that agents cannot have "feelings" or "will" in the same way as humans.
+
+Essentially an agent's underlying language model is just a fixed function form text to text. A programmer would express that type of function as `Text => Text`, spelled text-to-text. That's it, basically. You feed the AI with text and it spits out text, but after a really great deal of number crunching. So how can language-model-based AI coding agents be so smart at programming? That is essentially a scaling phenomena as it seems. We have sooo big computer now and sooo much language-based stuff on our precious internet, and pretty advanced linear algebra math, so we can create this `Text => Text` function in a way that it *behaves* just like a huma. Well not like a phisical human with a body. But like a human typing text. An more importantly, like a human typing programs. This is mind-boggling to me. 
+
+By *training* language models as we say, we can make them do what we call *inference*. Training means to warm up the planet with super-computers to fiddle with a humungous number of numbers in crazy big matrices at a never before seen scale in order to reach a `Text => Text` function that behaves like a human. Inference mean putting the `Text => Text` function to work. Humans write other smart hand-made functions that apply the `Text => Text` function inside a *harness* creating an *agent* comprised of harness + `Text => Text` function. So when programmers write the agent their requirements the agent can generate program text. This is what we call *agentic code generation*.
+
+What has really astinished the programming world (and many academic AI researchers), since winter 2025 and spring 2026, is that one company (Anthropic) has managed to make a coding agent called Claude Code so smart that software develpers does not feel alone. We now have the power at our fingertips that can help us build even more complex software systems that was impossible before.
+
+## Are agents smart at coding?
+
+Yes. But also really dumb. Currently. 
+
+TODO: write about all the smartness, like astonishing debugging capability with super smart hypothesis creating, tracking, testing, its really an auto-researcher of software design. etc etc
+
+TODO: write in laymen terms about bash pain, rabbit holes, etc etc etc.
+
+TODO: write how genscalator alreade has shown that it is possible to be smarter
+
+TODO by agent: can you draft above TODO:s in the same kind of voice as humans previous text? but before that: fact check and report while go fix grammar+typos
+
+
 
 ## Outline
 
