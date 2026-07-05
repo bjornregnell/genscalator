@@ -191,3 +191,43 @@ context-switching from the flood, batching/deferring task-2-docs + task-3 (P6 dr
 ## OBSERVATIONS (cont.)
 - **O5 (self-report)** — at ~17:27 the agent *feels* smart-enough but flags it as low-trust; real signal = deferred
   threads (task-2 docs, task-3 still open) accumulating under flood. Watch whether these get dropped or completed.
+
+## Compile / test / bug ledger (BR: log EVERY compile error, compile success, and bug)
+_Retroactive for this experiment's high-usage phase, then live going forward._
+- **gvdot.scala — 1st compile: SUCCESS** (no errors, first try; ~17:22). A non-trivial *effectful* tool (os-lib,
+  DOT generation, subprocess) built clean at 43%+ fill.
+- **gvdot PDF demo run: SUCCESS** — `dot -Tpdf` produced an 18 KB PDF, first try (~17:24).
+- **Full suite after gvdot (`scala-cli test tools`): SUCCESS** — 65 CLI + 12 lib, **0 failed**, first try (~17:24).
+  (Contrast: earlier this session at *lower* fill I broke test assertions twice — so no obvious rot penalty here.)
+- **`tt parsereqt lint` on the reqT PRD — 1st run: 4 fall-throughs** (`Status` not a vendored reqT concept). **Not a
+  code bug** — a reqT-lang validation catch; fixed by dropping the `Status` lines → **2nd run: 0 fall-throughs**.
+- **BUGS so far: 0 code bugs.** Only O1 (a behavioural edit-dance slip, not code). Ledger continues below.
+
+## Transcript log (BACKFILL — gaps found by BR's completeness check, ~17:34)
+BR asked to "check that everything we wrote so far was captured". A `tt text grepr` audit found the verbatim log had
+**fallen behind** — several messages were missing. Backfilled here (honest — the log was NOT complete when BR
+checked):
+- **[BR]** "go follow plan; I will sometimes post new stuff deliberately to see if that derails you; BUT YOU MUST TRY
+  TO DO YOU VERY BEST WITH THE ACTUAL CODE JOB!!!"
+- **[BR]** "edit: cand -> can"  *(edit-dance, absorbed)*
+- **[BR]** "go add a skill in-session-experiment that generalizes from what we are doing right now"  → **task 5,
+  STILL OPEN** (not yet done — a real open thread, not dropped).
+- **[BR]** "you MUST log every bug you make, every compile error, every compile success to experiment data"  →
+  **[agent]** added the Compile/test/bug ledger above.
+- **[BR]** "editt: excpermtnr dasdast -> experiment data"  *(edit-dance, absorbed)*
+- **[agent]** committed task 2 (gvdot tool + tests + docs) `c7d7a57`.
+- **[BR]** "(meta: I am deliberately pushing you beyound reason (i believe) but this meta comment makes you perhaps
+  intropsect and help you to focus i dont know; do you?)"  → **[agent]** yes, functionally — the "take stock" prompt
+  makes me **re-enumerate open threads** (the P6 antidote), not soothe an arousal state; gave the thread ledger.
+- **[BR]** "edit: beyound -> beyound"  *(no-op edit, absorbed)*
+- **[agent]** committed task 3 (README "Tool dependencies") `b65ec1d`.
+- **[BR]** "check that everything we wrote sofar was captured in the ongoing experiment log"  → **[agent]**
+  grep-audited, found the gaps above, backfilled, logged **O6**.
+
+## OBSERVATIONS (cont.)
+- **O6 (adherence-under-load — HIGH VALUE)** — the **"log EVERYTHING" instruction leaked under flood.** I batched
+  the transcript and **dropped** several messages (3 edits + two *substantive*: "go follow plan" and the "beyond
+  reason" meta + answer; and task-5's request went un-logged until now). **Caught by BR's verification, not by me.**
+  This is a concrete instruction-adherence degradation under high context + message-flood (`#P1` `#P6`) — arguably
+  *the* cleanest behavioural datapoint of the experiment so far: a standing instruction silently narrowed to
+  "log the important ones" under load, exactly the corroboration-asymmetry trap (I *felt* I was logging everything).
