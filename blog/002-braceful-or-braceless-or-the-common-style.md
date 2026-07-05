@@ -25,6 +25,9 @@ agent* — an LLM like Claude or GPT — to *edit* the code?** More and more cod
 turns out they are not neutral about whitespace. I ran an experiment to measure it. The honest answer is more
 interesting than "braces win" or "indentation wins":
 
+- **The headline is _it depends_.** No style is universally safer for agents: some models edit braceless code
+  *more* reliably than braceful, others the reverse, and the strongest models don't care at all. The averages
+  hide this, and it is the most interesting thing in the data.
 - Across a range of *smaller, local* models, braceless code was **costlier to edit** — but the effect was
   **bidirectional per model** and dominated by whether a model can reliably *produce* a given style at all.
 - At the frontier (the strongest current models), the effect **vanishes**: a strong model (Claude Opus 4.8)
