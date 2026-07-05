@@ -65,6 +65,18 @@ the agent auditing its own substrate for misfire causes. Common thread at the bo
        the tmp/ dirs and the mirror path; require `--dest`; never clobber arbitrary paths) and document the assumption
        for review. Slightly higher blast radius (writes files) → conservative default matters.
 
+6. **Continuous token-usage introspection readout — per session / per week / per model. (BR 2026-07-05 — TOOL / research)**
+   The agent is blind to its own token spend in real time (corroboration-asymmetry / wall-clock blind-spot family). BR
+   wants a **continuous** input on usage across three axes: **per-session** (this conversation's spend), **per-week**
+   (the hard weekly cap + reset time, e.g. the "42% / resets Tue 9 AM" datapoint), and **per-model**. This partly
+   exists across the research already (consolidate, don't duplicate): `041-token-speed-degradation` has a "find the
+   instrument: where do per-message output-token counts live?" TODO; `039` is the wall-clock blind-spot; `007` is
+   token-budget-awareness; `propose-compact-dance-at-trigger` needs a fill signal. The **new ask** is the *weekly* and
+   *per-model* axes and a **continuous** readout (statusline-style), not a one-shot query — so pacing decisions (like
+   the budget-aware plan above) can be made live instead of relying on BR relaying numbers. Candidate surfaces: a `tt`
+   usage tool if the counts are queryable, and/or a harness statusline (same family as candidate 3's context-fill
+   statusline).
+
 ## The common thread (why these cluster)
 Every one is the **absorption-regression** pattern: when the primary task fills attention, the agent defaults to the
 **low-effort raw path** (raw `cd && git`, raw `dot`, "I'll log it later") instead of the **disciplined tool path**
