@@ -79,7 +79,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 
 **Groups:** [Roles and cases](#roles-and-cases) · [Channel: bandwidth and confirmation fatigue](#channel-bandwidth-and-confirmation-fatigue) · [Echt and honest writing](#echt-and-honest-writing) · [Context rot and the smart zone](#context-rot-and-the-smart-zone) · [Dances and handoffs](#dances-and-handoffs) · [Memory, habits and substrate](#memory-habits-and-substrate) · [Autonomy and safety](#autonomy-and-safety)
 
-**A→Z (Ctrl-F):** AFK dance · agent (CO4 / CF5) · AT · Authority anchor · Ballgame · BR · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · echt / äkthet · Edit dance · Extrinsic-volatile plasticity · Go dance · Habit · Hardening dance · Index rot · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Prosthetic habit · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token velocity · WR
+**A→Z (Ctrl-F):** AFK dance · agent (CO4 / CF5) · AT · Authority anchor · Ballgame · BR · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · echt / äkthet · Edit dance · Extrinsic-volatile plasticity · Go dance · Habit · Hardening dance · Index rot · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Prosthetic habit · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token velocity · WR
 
 ### Roles and cases
 *BR and the agent are the **roles** (stakeholders, above). **WR** is the research program; **AT** and **SSG** are its **cases / units of analysis** — the object-level projects during which workflow data is collected. (Terminology per* Case Study Research in Software Engineering: Guidelines and Examples*, Runeson, Höst, Rainer & Regnell, Wiley 2012, §3.2.3 "Cases and Units of Analyses" — of which BR is a co-author.)*
@@ -137,6 +137,17 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
     **RQ** research question · **N/A** not applicable · **e.g. / i.e.** for example / that is.
   - *Dev-flavored:* **PR** pull request · **MR** merge request · **RC** release candidate · **repro** reproduce ·
     **rebase / squash** git ops · **YAGNI** you aren't gonna need it · **DRY** don't repeat yourself.
+- **Quick / deep cues (`quick` / `deep`)** — a per-turn **depth dial** the human turns to set how much the agent should
+  spend on *this* request: both the **token budget** (reasoning effort + output length) and **how much information** the
+  human wants back. **`quick`** = *"few tokens, terse, skip the depth — a fast answer"*; **`deep`** = *"spend more, go
+  thorough — I want rigour / coverage, depth over brevity."* A **communication-bandwidth + token-efficiency** lever
+  (sibling of *Comms shorthand*): it lets the human set the smart-zone / \$cost tradeoff **explicitly** for a turn,
+  instead of the agent guessing fit. Both directions earn their keep — `quick` protects the *working* context (less
+  bloat, cheaper) when a one-liner suffices; `deep` **licenses** the agent to invest when the task earns it (and
+  suppresses the reflex to under-answer a genuinely large ask). **Default (no cue):** the agent's own judgement of fit —
+  screen-lead, then layer depth below the fold ([[educate-lead-with-one-screen]]). Relatives: the one-liner request
+  under the *Fyi dance*, *Token efficiency*, *Communication bandwidth*. **Cues, not dances** — a single human signal the
+  agent obeys, with no interlocking answering step (per the dance bar). Memory: [[cue-quick-deep]]. (BR 2026-07-06.)
 - **Thriller state (human)** — a human affective state of **high arousal / excitement** — the breakthrough-work
   "this is thrilling" high (cf. blog 004's emotional stakes). Productive, but carries an **over-trust risk**: an excited
   human rubber-stamps advanced agent work they haven't fully reviewed (a cousin of *confirmation fatigue* / *review
