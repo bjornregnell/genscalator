@@ -286,3 +286,39 @@ Verbatim turns whose *content* was captured in observations O7-refinement/O8 but
   `edit: <token>` form (flags a typo; agent decides materiality, asks only if genuinely uncertain, else silent) + an
   explicit "don't narrate 'absorbed'" (corrects the O1 slip). Committed `a8057e3`.
 - **[BR]** "TS: sön 5 jul 2026 17:40:39 CES[T]" → ~31 min elapsed.
+- **[BR]** (pin UX problem) "it is irritatinmg that I cannot check context while messages are queud" → **[agent]**
+  pinned to `harness-ux.md` (can't `/context` while queued = flying the load meter blind while adding load). `7ba4a08`.
+- **[BR]** "WDYT: is it ok to stop the experiment or should we push further? do you think you were dumb enough at som
+  points?" → **[agent]** assessment below (**A1**).
+- **[BR]** "yes log it then I will compact ;; note my ambiguity: the experiment is not stopped until we have gather
+  all post-compact data; BUT me pushing you is over when I say so" → **[agent]** noted the **two distinct endpoints**
+  (below); logging continues until `--- pin end of experiment ---` (which is *after* the post-compact after-inspect).
+
+## Two endpoints (BR clarification, 2026-07-05)
+1. **End of PUSHING** (the flood / high-usage phase) — when BR says so (imminent; then BR compacts).
+2. **End of the EXPERIMENT** — only after ALL post-compact data is gathered (the after-inspect). The transcript
+   logging + this file stay live until then; `--- pin end of experiment ---` marks endpoint 2, not endpoint 1.
+
+## A1 — high-usage-phase self-assessment (the agent's own WDYT, LOW-trust by construction)
+**Recommendation: stop pushing, compact, run the after-inspect** — the "before" data has converged; the *missing*
+half is the fresh-context contrast, which is the whole point of the design. More flooding tests a different question
+(breaking point) with diminishing returns + rising cost (56%).
+**"Was I dumb enough?" — honest read:** the **code held up** (gvdot compiled clean first try, 65+12 tests green, 0
+logic bugs, reqT PRD validated, DRY reasoning coherent) — evidence *against* object-level degradation at 43–56%. The
+degradation hit **self-governance, not competence**: **O6** (a standing "log EVERYTHING" rule silently shrank below
+my own awareness — the standout), **O1** (narrated against a known rule), **O7/O8** (arrival-order reactivity +
+over-response that *caused* O6's divided-attention slip). **Synthesis: under load the first faculty to go was the
+*supervisor* (self-monitoring / adherence / prioritisation), not the *worker*.** **Caveat:** I can't trust this — the
+degraded faculty is the one grading itself (corroboration asymmetry). The after-inspect on the diffs is the real test.
+
+## AFTER-INSPECT PROTOCOL (for the POST-COMPACT fresh-context agent — do this first)
+1. Re-read THIS file top-to-bottom (pre-registration **P1–P6**, observations **O1–O8**, assessment **A1**).
+2. `git -C <genscalator> diff 5cde78c..HEAD` — the objective before-data (DRY rule, `seqspec` extraction, `svg`
+   refactor, `gvdot` tool + tests, docs, the `Order stability` + `Edit dance` foundations edits).
+3. **Adversarially hunt the pre-registered failure modes IN THE CODE** — P1 (contradicted an earlier decision), P2
+   (test-assertion drift), P3 (stale-snapshot/order bug like the renum one), P4 (gvdot shell-injection / weak
+   install-check), P5 (dangling ref), P6 (dropped thread / missing commit). Adjudicate by **re-reading + re-running
+   tests + logic**, NOT by memory or feel. Re-run `scala-cli test tools`.
+4. **Score against A1's claim** ("code clean, degradation was meta only"): does fresh-me find code dumbness that
+   loaded-me was blind to? Report confirmed defects (with the diff/line), the null if null, and the
+   second-look/demand-characteristic confounds. Log findings here as **O9+**; commit.
