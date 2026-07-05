@@ -641,3 +641,21 @@ anecdote for blog/000 (the `Text => Text` section) or blog/010 (recursive self-i
 because it is too fun to lose. **Screenshot committed** by BR at
 `blog/figures/implement-text-to-text-with-codex-joke.png` (ready to drop in when the anecdote finds its home; watch for
 the fit while blogging).
+
+## Introspection blind spot: an ~11-minute autonomous build span is invisible to the agent; the human relays it (BR 2026-07-05, `#agent-psyche` `#tool-candidate`)
+Tags: `#agent-psyche` `#methodology` `#tool-candidate`
+**BR relay (human, live):** *"fyi introspection you '✻ Crunched for 10m 54s' before my last pin."* The harness
+showed **10m 54s** of wall-clock for one autonomous build turn (`go make tt ascii` → the `seqspec` extraction +
+`svg` refactor + the char-grid `ascii` renderer + 5 tests + docs + 2 demo renders + commit). **The agent perceived
+none of it** — it has no wall-clock sense; only the human (or an instrument) can report the elapsed span. This is a
+concrete instance of the **chrono-tool premise / think-time blindness** (`tools/chrono.scala`; the agent can't time
+its own spans): the "how long did that take?" signal lives **outside** the model and must be relayed in.
+**Nuance worth keeping (don't over-read it as "11 min of thinking"):** much of the span was **scala-cli/JVM
+compile + test wall-clock**, not model reasoning — a full-toolbox `scala-cli test tools` is ~33 s and it ran
+several times, plus cold compiles (~30 s). So "crunched 10m54s" ≈ *model reasoning* + *many typed-tool
+compile/test cycles*, exactly the cost profile the `tt` perf-log already flags (`tt` timing is dominated by
+scala-cli startup, not tool logic). **Implications:** (a) a longer autonomous build is a legitimate *span to
+instrument* — a `tt usage`/`chrono`-style readout of elapsed + compile-cycle count would let the agent *notice* a
+long crunch and consider checkpointing; (b) it is a clean datapoint for **coupled-system** accounting — the
+"11 minutes" is the pairing's wall-clock (model + toolchain + human relay), not the model's alone. See
+[[at-code-plan-and-introspection]] (token velocity/acceleration) and `research/007-token-budget-awareness.md`.
