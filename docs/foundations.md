@@ -289,13 +289,19 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 - **Edit dance** — the human↔agent protocol for **correcting a just-sent message** without derailing the turn.
   Cause: a harness input-race — pressing ↑ to edit an already-Entered message is **too late** once the agent has
   begun processing it, so the correction posts as a **new** message (a double-post).
-  - **Human step:** don't fight the race — **add a new message**, and for a simple typo send a terse
-    **`edit: wrong -> right`** note.
+  - **Human step:** don't fight the race — **add a new message**, and for a simple typo send a terse `edit:` note.
+    Two forms, both valid: the **full `edit: wrong -> right`** (explicit fix), OR a **bare `edit: <token>`** (just the
+    mistyped word, or even a fragment) — which only **flags that a typo happened** and leaves it to the agent to work
+    out what was meant and whether it matters.
   - **Agent step (1):** treat a rapid near-identical pair (or an `edit:` / `I meant:` note) as **one** message, the
     later copy authoritative;
-  - **Agent step (2):** apply the `edit: X -> Y` as a word-level fix and act **once**;
+  - **Agent step (2):** apply the fix and act **once** — for `edit: X -> Y` a word-level substitution; for a **bare
+    `edit: <token>`**, **figure out for yourself** whether it changes the meaning/intent: *if it plausibly does and
+    you're genuinely uncertain what was meant, **ask**; otherwise treat it as immaterial and move on.* (Often a bare
+    `edit:` marks a typo that doesn't affect the point at all — nothing to do.)
   - **Agent step (3):** **do NOT comment on or acknowledge the edit when it caused no confusion** — silently absorb
-    it and move on; only reassure "it's not confusing" if the human *explicitly* worries.
+    it and move on (this holds for both forms); only reassure "it's not confusing" if the human *explicitly* worries,
+    or ask (step 2) if genuinely uncertain. *Don't narrate "absorbed" — that IS commenting.*
 
   The edit-notes are an **intentional workflow feature**, not confusion — a **communication-bandwidth** move (cheap
   human correction, no re-type, no agent ceremony). Sibling of the other human↔agent dances (*compact*,
