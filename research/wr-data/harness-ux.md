@@ -675,3 +675,15 @@ equivalence in the *model* is not equivalence to the *human*, who loses their sp
 [[no-clobber-human-owned-files]]; the **append-only** discipline for `RAW-DATA.md` — stability of position is part of
 the record; and the `L → Z` rename that deliberately *left `RAW-DATA.md` untouched*.) **Promoted to `docs/foundations.md`**
 (2026-07-05) as the glossary term **Order stability** (maxim: *stable order > tidy order*).
+
+## Can't check `/context` while messages are queued — no meta-state peek during a flood (BR 2026-07-05, `#harness-ux`)
+Tags: `#harness-ux` `#methodology`
+**BR (live, during the context-rot flood experiment):** *"it is irritating that I cannot check context while messages
+are queued."* While a burst of queued messages is pending, the human can't run `/context` (or other slash-commands)
+to read the current context-usage % — the meta-state peek is **blocked behind the message queue**. **The bite:**
+exactly when the human is *adding* load (flooding), they are **cut off from the load meter** — they can't watch fill
+climb toward **Z** while queuing, so there's no feedback on the very state being stressed. **Candidate fixes:** allow
+a read-only meta-query (context %, queue length) to interleave *ahead of* the queue; or a **persistent context-fill
+indicator** (statusline) that updates regardless of the queue, so no explicit `/context` is needed. Relates to
+`039-can-we-give-agent-introspection-wall-clock.md` (the agent can't see elapsed either) and `006-smart-zone-ceiling.md`
+(watching fill vs Z). Surfaced at ~56% fill (up from 43% at the experiment's start — the flood itself drove +13pp).
