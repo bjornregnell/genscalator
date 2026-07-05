@@ -1,0 +1,13 @@
+# Source spec for seq-pin-dance.svg — regenerate with:
+#   tt svg sequence blog/figures/seq-pin-dance.txt blog/figures/seq-pin-dance.svg
+title: The pin dance (longitudinal externalisation)
+
+actor BR
+participant CO4 as "Claude Opus 4.8"
+participant Store as "Durable store (memory / wr-data / notes)"
+
+BR -> CO4: pin: (save this durably)
+CO4 -> CO4: choose the home; does it earn a slot?
+CO4 -> Store: persist (memory / wr-data / note / glossary)
+Store --> CO4: committed
+CO4 --> BR: pinned (or: push back if low-value)

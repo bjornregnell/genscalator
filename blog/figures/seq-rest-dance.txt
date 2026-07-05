@@ -1,0 +1,14 @@
+# Source spec for seq-rest-dance.svg — regenerate with:
+#   tt svg sequence blog/figures/seq-rest-dance.txt blog/figures/seq-rest-dance.svg
+title: The rest dance (conserve the human)
+
+actor BR
+participant CO4 as "Claude Opus 4.8"
+participant Codeberg
+
+BR -> CO4: cue :Z (getting tired, a warning, not asleep)
+CO4 -> Codeberg: commit + push everything (trees clean)
+Codeberg --> CO4: ok
+CO4 -> CO4: externalize state + leave a resume pointer
+CO4 --> BR: short + warm; state is durable (no "I feel fine")
+note over BR: take the break, or decline

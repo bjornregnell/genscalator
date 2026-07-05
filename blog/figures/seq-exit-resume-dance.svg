@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1097.2" height="498" viewBox="0 0 1097.2 498" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+  <style>
+    :root { --bg:#ffffff; --fg:#1b1b2b; --box:#eef0fb; --boxline:#9aa0d0; --life:#c3c3d6; --line:#5a5f86; --notebg:#fff6d8; --noteline:#e0c86a; }
+    @media (prefers-color-scheme: dark) { :root { --bg:#1b1b24; --fg:#e6e6f0; --box:#2a2d44; --boxline:#5a5f86; --life:#44465e; --line:#a6abd8; --notebg:#403a23; --noteline:#8a7a3a; } }
+    text { fill: var(--fg); }
+    .canvas { fill: var(--bg); }
+    .lbl { font-size: 13px; }
+    .title { font-size: 16px; font-weight: 600; }
+    .box { fill: var(--box); stroke: var(--boxline); stroke-width: 1; }
+    .note { fill: var(--notebg); stroke: var(--noteline); stroke-width: 1; }
+    .life { stroke: var(--life); stroke-width: 1; stroke-dasharray: 4 4; }
+    .msg { stroke: var(--line); stroke-width: 1.4; }
+    .ret { stroke: var(--line); stroke-width: 1.2; stroke-dasharray: 6 4; }
+    .head { fill: var(--line); }
+  </style>
+  <rect class="canvas" x="0" y="0" width="1097.2" height="498"/>
+  <text class="title" x="548.6" y="28" text-anchor="middle">The exit-resume dance (inherit a fresh process env)</text>
+  <line class="life" x1="196.2" y1="76" x2="196.2" y2="450"/>
+  <rect class="box" x="151.2" y="42" width="90" height="34" rx="6"/>
+  <text class="lbl" x="196.2" y="59" text-anchor="middle" dominant-baseline="central">BR</text>
+  <rect class="box" x="151.2" y="450" width="90" height="34" rx="6"/>
+  <text class="lbl" x="196.2" y="467" text-anchor="middle" dominant-baseline="central">BR</text>
+  <line class="life" x1="548.6" y1="76" x2="548.6" y2="450"/>
+  <rect class="box" x="474.2" y="42" width="148.9" height="34" rx="6"/>
+  <text class="lbl" x="548.6" y="59" text-anchor="middle" dominant-baseline="central">Claude Opus 4.8</text>
+  <rect class="box" x="474.2" y="450" width="148.9" height="34" rx="6"/>
+  <text class="lbl" x="548.6" y="467" text-anchor="middle" dominant-baseline="central">Claude Opus 4.8</text>
+  <line class="life" x1="901" y1="76" x2="901" y2="450"/>
+  <rect class="box" x="806.4" y="42" width="189.2" height="34" rx="6"/>
+  <text class="lbl" x="901" y="59" text-anchor="middle" dominant-baseline="central">claude process / env</text>
+  <rect class="box" x="806.4" y="450" width="189.2" height="34" rx="6"/>
+  <text class="lbl" x="901" y="467" text-anchor="middle" dominant-baseline="central">claude process / env</text>
+  <line class="msg" x1="196.2" y1="106" x2="547.6" y2="106"/>
+  <path class="head" stroke="none" d="M 548.6 106 L 539.6 102 L 539.6 110 Z"/>
+  <text class="lbl" x="372.4" y="99" text-anchor="middle">save + give a resume prompt</text>
+  <path class="msg" fill="none" d="M 548.6 152 L 614.6 152 L 614.6 168 L 554.6 168"/>
+  <path class="head" stroke="none" d="M 554.6 168 L 563.6 164 L 563.6 172 Z"/>
+  <text class="lbl" x="622.6" y="154" text-anchor="start">commit + push; externalize state</text>
+  <line class="ret" x1="548.6" y1="198" x2="197.2" y2="198"/>
+  <path class="msg" fill="none" d="M 205.2 194 L 196.2 198 L 205.2 202"/>
+  <text class="lbl" x="372.4" y="191" text-anchor="middle">resume prompt (framed)</text>
+  <rect class="note" x="117.7" y="244" width="157" height="34" rx="3"/>
+  <text class="lbl" x="196.2" y="261" text-anchor="middle" dominant-baseline="central">exit the session</text>
+  <line class="msg" x1="196.2" y1="306" x2="900" y2="306"/>
+  <path class="head" stroke="none" d="M 901 306 L 892 302 L 892 310 Z"/>
+  <text class="lbl" x="548.6" y="299" text-anchor="middle">claude --resume</text>
+  <line class="ret" x1="901" y1="352" x2="197.2" y2="352"/>
+  <path class="msg" fill="none" d="M 205.2 348 L 196.2 352 L 205.2 356"/>
+  <text class="lbl" x="548.6" y="345" text-anchor="middle">fresh process, new env (token) inherited</text>
+  <line class="msg" x1="196.2" y1="398" x2="547.6" y2="398"/>
+  <path class="head" stroke="none" d="M 548.6 398 L 539.6 394 L 539.6 402 Z"/>
+  <text class="lbl" x="372.4" y="391" text-anchor="middle">resume (state recovered)</text>
+</svg>

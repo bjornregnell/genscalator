@@ -1,0 +1,12 @@
+# Source spec for seq-go-dance.svg — regenerate with:
+#   tt svg sequence blog/figures/seq-go-dance.txt blog/figures/seq-go-dance.svg
+title: The go dance (greenlight / autonomy handoff)
+
+actor BR
+participant CO4 as "Claude Opus 4.8"
+
+BR -> CO4: go (proceed on the current plan)
+note over BR: steps back (ballgame -> autonomous)
+CO4 -> CO4: execute the scoped plan, within guardrails
+CO4 -> CO4: minimise interrupts (bare allowlisted, batch)
+CO4 --> BR: surface only decisions or the finished result

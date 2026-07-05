@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="825.4" height="406" viewBox="0 0 825.4 406" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+  <style>
+    :root { --bg:#ffffff; --fg:#1b1b2b; --box:#eef0fb; --boxline:#9aa0d0; --life:#c3c3d6; --line:#5a5f86; --notebg:#fff6d8; --noteline:#e0c86a; }
+    @media (prefers-color-scheme: dark) { :root { --bg:#1b1b24; --fg:#e6e6f0; --box:#2a2d44; --boxline:#5a5f86; --life:#44465e; --line:#a6abd8; --notebg:#403a23; --noteline:#8a7a3a; } }
+    text { fill: var(--fg); }
+    .canvas { fill: var(--bg); }
+    .lbl { font-size: 13px; }
+    .title { font-size: 16px; font-weight: 600; }
+    .box { fill: var(--box); stroke: var(--boxline); stroke-width: 1; }
+    .note { fill: var(--notebg); stroke: var(--noteline); stroke-width: 1; }
+    .life { stroke: var(--life); stroke-width: 1; stroke-dasharray: 4 4; }
+    .msg { stroke: var(--line); stroke-width: 1.4; }
+    .ret { stroke: var(--line); stroke-width: 1.2; stroke-dasharray: 6 4; }
+    .head { fill: var(--line); }
+  </style>
+  <rect class="canvas" x="0" y="0" width="825.4" height="406"/>
+  <text class="title" x="412.7" y="28" text-anchor="middle">The go dance (greenlight / autonomy handoff)</text>
+  <line class="life" x1="216.4" y1="76" x2="216.4" y2="358"/>
+  <rect class="box" x="171.4" y="42" width="90" height="34" rx="6"/>
+  <text class="lbl" x="216.4" y="59" text-anchor="middle" dominant-baseline="central">BR</text>
+  <rect class="box" x="171.4" y="358" width="90" height="34" rx="6"/>
+  <text class="lbl" x="216.4" y="375" text-anchor="middle" dominant-baseline="central">BR</text>
+  <line class="life" x1="609.1" y1="76" x2="609.1" y2="358"/>
+  <rect class="box" x="534.6" y="42" width="148.9" height="34" rx="6"/>
+  <text class="lbl" x="609.1" y="59" text-anchor="middle" dominant-baseline="central">Claude Opus 4.8</text>
+  <rect class="box" x="534.6" y="358" width="148.9" height="34" rx="6"/>
+  <text class="lbl" x="609.1" y="375" text-anchor="middle" dominant-baseline="central">Claude Opus 4.8</text>
+  <line class="msg" x1="216.4" y1="106" x2="608.1" y2="106"/>
+  <path class="head" stroke="none" d="M 609.1 106 L 600.1 102 L 600.1 110 Z"/>
+  <text class="lbl" x="412.7" y="99" text-anchor="middle">go (proceed on the current plan)</text>
+  <rect class="note" x="61.3" y="152" width="310.1" height="34" rx="3"/>
+  <text class="lbl" x="216.4" y="169" text-anchor="middle" dominant-baseline="central">steps back (ballgame -&gt; autonomous)</text>
+  <path class="msg" fill="none" d="M 609.1 214 L 675.1 214 L 675.1 230 L 615.1 230"/>
+  <path class="head" stroke="none" d="M 615.1 230 L 624.1 226 L 624.1 234 Z"/>
+  <text class="lbl" x="683.1" y="216" text-anchor="start">execute the scoped plan, within guardrails</text>
+  <path class="msg" fill="none" d="M 609.1 260 L 675.1 260 L 675.1 276 L 615.1 276"/>
+  <path class="head" stroke="none" d="M 615.1 276 L 624.1 272 L 624.1 280 Z"/>
+  <text class="lbl" x="683.1" y="262" text-anchor="start">minimise interrupts (bare allowlisted, batch)</text>
+  <line class="ret" x1="609.1" y1="306" x2="217.4" y2="306"/>
+  <path class="msg" fill="none" d="M 225.4 302 L 216.4 306 L 225.4 310"/>
+  <text class="lbl" x="412.7" y="299" text-anchor="middle">surface only decisions or the finished result</text>
+</svg>

@@ -1,0 +1,12 @@
+# Source spec for seq-afk-dance.svg — regenerate with:
+#   tt svg sequence blog/figures/seq-afk-dance.txt blog/figures/seq-afk-dance.svg
+title: The AFK dance (delegate a menu, work solo, report)
+
+actor BR
+participant CO4 as "Claude Opus 4.8"
+
+BR -> CO4: pick menu items + go (I'm away)
+note over BR: away (eating / news / sleep)
+CO4 -> CO4: work solo-safe tasks, safest-first
+CO4 -> CO4: bare allowlisted; no prompt can race the human
+CO4 --> BR: report on completion (done + what remains)

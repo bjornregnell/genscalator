@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="857.6" height="468" viewBox="0 0 857.6 468" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+  <style>
+    :root { --bg:#ffffff; --fg:#1b1b2b; --box:#eef0fb; --boxline:#9aa0d0; --life:#c3c3d6; --line:#5a5f86; --notebg:#fff6d8; --noteline:#e0c86a; }
+    @media (prefers-color-scheme: dark) { :root { --bg:#1b1b24; --fg:#e6e6f0; --box:#2a2d44; --boxline:#5a5f86; --life:#44465e; --line:#a6abd8; --notebg:#403a23; --noteline:#8a7a3a; } }
+    text { fill: var(--fg); }
+    .canvas { fill: var(--bg); }
+    .lbl { font-size: 13px; }
+    .title { font-size: 16px; font-weight: 600; }
+    .box { fill: var(--box); stroke: var(--boxline); stroke-width: 1; }
+    .note { fill: var(--notebg); stroke: var(--noteline); stroke-width: 1; }
+    .life { stroke: var(--life); stroke-width: 1; stroke-dasharray: 4 4; }
+    .msg { stroke: var(--line); stroke-width: 1.4; }
+    .ret { stroke: var(--line); stroke-width: 1.2; stroke-dasharray: 6 4; }
+    .head { fill: var(--line); }
+  </style>
+  <rect class="canvas" x="0" y="0" width="857.6" height="468"/>
+  <text class="title" x="428.8" y="28" text-anchor="middle">The edit dance (correct a just-sent message, no derail)</text>
+  <line class="life" x1="224.4" y1="76" x2="224.4" y2="420"/>
+  <rect class="box" x="179.4" y="42" width="90" height="34" rx="6"/>
+  <text class="lbl" x="224.4" y="59" text-anchor="middle" dominant-baseline="central">BR</text>
+  <rect class="box" x="179.4" y="420" width="90" height="34" rx="6"/>
+  <text class="lbl" x="224.4" y="437" text-anchor="middle" dominant-baseline="central">BR</text>
+  <line class="life" x1="633.2" y1="76" x2="633.2" y2="420"/>
+  <rect class="box" x="558.8" y="42" width="148.9" height="34" rx="6"/>
+  <text class="lbl" x="633.2" y="59" text-anchor="middle" dominant-baseline="central">Claude Opus 4.8</text>
+  <rect class="box" x="558.8" y="420" width="148.9" height="34" rx="6"/>
+  <text class="lbl" x="633.2" y="437" text-anchor="middle" dominant-baseline="central">Claude Opus 4.8</text>
+  <line class="msg" x1="224.4" y1="106" x2="632.2" y2="106"/>
+  <path class="head" stroke="none" d="M 633.2 106 L 624.2 102 L 624.2 110 Z"/>
+  <text class="lbl" x="428.8" y="99" text-anchor="middle">a message (already Entered)</text>
+  <rect class="note" x="73.4" y="152" width="302" height="34" rx="3"/>
+  <text class="lbl" x="224.4" y="169" text-anchor="middle" dominant-baseline="central">spots a typo; UP-arrow is too late</text>
+  <line class="msg" x1="224.4" y1="214" x2="632.2" y2="214"/>
+  <path class="head" stroke="none" d="M 633.2 214 L 624.2 210 L 624.2 218 Z"/>
+  <text class="lbl" x="428.8" y="207" text-anchor="middle">edit: wrong -&gt; right   (a NEW message)</text>
+  <path class="msg" fill="none" d="M 633.2 260 L 699.2 260 L 699.2 276 L 639.2 276"/>
+  <path class="head" stroke="none" d="M 639.2 276 L 648.2 272 L 648.2 280 Z"/>
+  <text class="lbl" x="707.2" y="262" text-anchor="start">treat the pair as ONE; later copy authoritative</text>
+  <path class="msg" fill="none" d="M 633.2 306 L 699.2 306 L 699.2 322 L 639.2 322"/>
+  <path class="head" stroke="none" d="M 639.2 322 L 648.2 318 L 648.2 326 Z"/>
+  <text class="lbl" x="707.2" y="308" text-anchor="start">material change? if unsure, ask</text>
+  <rect class="note" x="450" y="352" width="366.5" height="34" rx="3"/>
+  <text class="lbl" x="633.2" y="369" text-anchor="middle" dominant-baseline="central">immaterial -&gt; absorb silently, no ceremony</text>
+</svg>

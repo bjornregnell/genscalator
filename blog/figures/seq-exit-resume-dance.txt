@@ -1,0 +1,15 @@
+# Source spec for seq-exit-resume-dance.svg — regenerate with:
+#   tt svg sequence blog/figures/seq-exit-resume-dance.txt blog/figures/seq-exit-resume-dance.svg
+title: The exit-resume dance (inherit a fresh process env)
+
+actor BR
+participant CO4 as "Claude Opus 4.8"
+participant Proc as "claude process / env"
+
+BR -> CO4: save + give a resume prompt
+CO4 -> CO4: commit + push; externalize state
+CO4 --> BR: resume prompt (framed)
+note over BR: exit the session
+BR -> Proc: claude --resume
+Proc --> BR: fresh process, new env (token) inherited
+BR -> CO4: resume (state recovered)

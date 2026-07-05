@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1290.6" height="436" viewBox="0 0 1290.6 436" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+  <style>
+    :root { --bg:#ffffff; --fg:#1b1b2b; --box:#eef0fb; --boxline:#9aa0d0; --life:#c3c3d6; --line:#5a5f86; --notebg:#fff6d8; --noteline:#e0c86a; }
+    @media (prefers-color-scheme: dark) { :root { --bg:#1b1b24; --fg:#e6e6f0; --box:#2a2d44; --boxline:#5a5f86; --life:#44465e; --line:#a6abd8; --notebg:#403a23; --noteline:#8a7a3a; } }
+    text { fill: var(--fg); }
+    .canvas { fill: var(--bg); }
+    .lbl { font-size: 13px; }
+    .title { font-size: 16px; font-weight: 600; }
+    .box { fill: var(--box); stroke: var(--boxline); stroke-width: 1; }
+    .note { fill: var(--notebg); stroke: var(--noteline); stroke-width: 1; }
+    .life { stroke: var(--life); stroke-width: 1; stroke-dasharray: 4 4; }
+    .msg { stroke: var(--line); stroke-width: 1.4; }
+    .ret { stroke: var(--line); stroke-width: 1.2; stroke-dasharray: 6 4; }
+    .head { fill: var(--line); }
+  </style>
+  <rect class="canvas" x="0" y="0" width="1290.6" height="436"/>
+  <text class="title" x="645.3" y="28" text-anchor="middle">The consistency dance (sweep the substrate for drift)</text>
+  <line class="life" x1="228.4" y1="76" x2="228.4" y2="388"/>
+  <rect class="box" x="183.4" y="42" width="90" height="34" rx="6"/>
+  <text class="lbl" x="228.4" y="59" text-anchor="middle" dominant-baseline="central">BR</text>
+  <rect class="box" x="183.4" y="388" width="90" height="34" rx="6"/>
+  <text class="lbl" x="228.4" y="405" text-anchor="middle" dominant-baseline="central">BR</text>
+  <line class="life" x1="645.3" y1="76" x2="645.3" y2="388"/>
+  <rect class="box" x="570.9" y="42" width="148.9" height="34" rx="6"/>
+  <text class="lbl" x="645.3" y="59" text-anchor="middle" dominant-baseline="central">Claude Opus 4.8</text>
+  <rect class="box" x="570.9" y="388" width="148.9" height="34" rx="6"/>
+  <text class="lbl" x="645.3" y="405" text-anchor="middle" dominant-baseline="central">Claude Opus 4.8</text>
+  <line class="life" x1="1062.2" y1="76" x2="1062.2" y2="388"/>
+  <rect class="box" x="967.6" y="42" width="189.2" height="34" rx="6"/>
+  <text class="lbl" x="1062.2" y="59" text-anchor="middle" dominant-baseline="central">Persistent substrate</text>
+  <rect class="box" x="967.6" y="388" width="189.2" height="34" rx="6"/>
+  <text class="lbl" x="1062.2" y="405" text-anchor="middle" dominant-baseline="central">Persistent substrate</text>
+  <line class="msg" x1="228.4" y1="106" x2="644.3" y2="106"/>
+  <path class="head" stroke="none" d="M 645.3 106 L 636.3 102 L 636.3 110 Z"/>
+  <text class="lbl" x="436.9" y="99" text-anchor="middle">cue a sweep (or CO4 proposes after a big change)</text>
+  <line class="msg" x1="645.3" y1="152" x2="1061.2" y2="152"/>
+  <path class="head" stroke="none" d="M 1062.2 152 L 1053.2 148 L 1053.2 156 Z"/>
+  <text class="lbl" x="853.8" y="145" text-anchor="middle">check index rot, dead links, term drift</text>
+  <line class="ret" x1="1062.2" y1="198" x2="646.3" y2="198"/>
+  <path class="msg" fill="none" d="M 654.3 194 L 645.3 198 L 654.3 202"/>
+  <text class="lbl" x="853.8" y="191" text-anchor="middle">findings</text>
+  <path class="msg" fill="none" d="M 645.3 244 L 711.3 244 L 711.3 260 L 651.3 260"/>
+  <path class="head" stroke="none" d="M 651.3 260 L 660.3 256 L 660.3 264 Z"/>
+  <text class="lbl" x="719.3" y="246" text-anchor="start">auto-fix the unambiguous</text>
+  <line class="ret" x1="645.3" y1="290" x2="229.4" y2="290"/>
+  <path class="msg" fill="none" d="M 237.4 286 L 228.4 290 L 237.4 294"/>
+  <text class="lbl" x="436.9" y="283" text-anchor="middle">report fixed + what needs a human call</text>
+  <line class="ret" x1="228.4" y1="336" x2="644.3" y2="336"/>
+  <path class="msg" fill="none" d="M 636.3 332 L 645.3 336 L 636.3 340"/>
+  <text class="lbl" x="436.9" y="329" text-anchor="middle">ratify / decide the ambiguous</text>
+</svg>

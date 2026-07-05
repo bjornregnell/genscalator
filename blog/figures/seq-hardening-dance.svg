@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1339" height="390" viewBox="0 0 1339 390" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+  <style>
+    :root { --bg:#ffffff; --fg:#1b1b2b; --box:#eef0fb; --boxline:#9aa0d0; --life:#c3c3d6; --line:#5a5f86; --notebg:#fff6d8; --noteline:#e0c86a; }
+    @media (prefers-color-scheme: dark) { :root { --bg:#1b1b24; --fg:#e6e6f0; --box:#2a2d44; --boxline:#5a5f86; --life:#44465e; --line:#a6abd8; --notebg:#403a23; --noteline:#8a7a3a; } }
+    text { fill: var(--fg); }
+    .canvas { fill: var(--bg); }
+    .lbl { font-size: 13px; }
+    .title { font-size: 16px; font-weight: 600; }
+    .box { fill: var(--box); stroke: var(--boxline); stroke-width: 1; }
+    .note { fill: var(--notebg); stroke: var(--noteline); stroke-width: 1; }
+    .life { stroke: var(--life); stroke-width: 1; stroke-dasharray: 4 4; }
+    .msg { stroke: var(--line); stroke-width: 1.4; }
+    .ret { stroke: var(--line); stroke-width: 1.2; stroke-dasharray: 6 4; }
+    .head { fill: var(--line); }
+  </style>
+  <rect class="canvas" x="0" y="0" width="1339" height="390"/>
+  <text class="title" x="669.5" y="28" text-anchor="middle">The hardening dance (audit own config, fix misfire causes)</text>
+  <line class="life" x1="236.5" y1="76" x2="236.5" y2="342"/>
+  <rect class="box" x="191.5" y="42" width="90" height="34" rx="6"/>
+  <text class="lbl" x="236.5" y="59" text-anchor="middle" dominant-baseline="central">BR</text>
+  <rect class="box" x="191.5" y="342" width="90" height="34" rx="6"/>
+  <text class="lbl" x="236.5" y="359" text-anchor="middle" dominant-baseline="central">BR</text>
+  <line class="life" x1="669.5" y1="76" x2="669.5" y2="342"/>
+  <rect class="box" x="595.1" y="42" width="148.9" height="34" rx="6"/>
+  <text class="lbl" x="669.5" y="59" text-anchor="middle" dominant-baseline="central">Claude Opus 4.8</text>
+  <rect class="box" x="595.1" y="342" width="148.9" height="34" rx="6"/>
+  <text class="lbl" x="669.5" y="359" text-anchor="middle" dominant-baseline="central">Claude Opus 4.8</text>
+  <line class="life" x1="1102.5" y1="76" x2="1102.5" y2="342"/>
+  <rect class="box" x="951.5" y="42" width="302" height="34" rx="6"/>
+  <text class="lbl" x="1102.5" y="59" text-anchor="middle" dominant-baseline="central">Memory / instructions / allowlists</text>
+  <rect class="box" x="951.5" y="342" width="302" height="34" rx="6"/>
+  <text class="lbl" x="1102.5" y="359" text-anchor="middle" dominant-baseline="central">Memory / instructions / allowlists</text>
+  <line class="msg" x1="669.5" y1="106" x2="1101.5" y2="106"/>
+  <path class="head" stroke="none" d="M 1102.5 106 L 1093.5 102 L 1093.5 110 Z"/>
+  <text class="lbl" x="886" y="99" text-anchor="middle">audit for misfire causes + risks</text>
+  <line class="ret" x1="1102.5" y1="152" x2="670.5" y2="152"/>
+  <path class="msg" fill="none" d="M 678.5 148 L 669.5 152 L 678.5 156"/>
+  <text class="lbl" x="886" y="145" text-anchor="middle">bad affordances found</text>
+  <path class="msg" fill="none" d="M 669.5 198 L 735.5 198 L 735.5 214 L 675.5 214"/>
+  <path class="head" stroke="none" d="M 675.5 214 L 684.5 210 L 684.5 218 Z"/>
+  <text class="lbl" x="743.5" y="200" text-anchor="start">propose the STRUCTURAL fix (remove the affordance)</text>
+  <line class="ret" x1="669.5" y1="244" x2="237.5" y2="244"/>
+  <path class="msg" fill="none" d="M 245.5 240 L 236.5 244 L 245.5 248"/>
+  <text class="lbl" x="453" y="237" text-anchor="middle">proposed change (esp. security)</text>
+  <line class="ret" x1="236.5" y1="290" x2="668.5" y2="290"/>
+  <path class="msg" fill="none" d="M 660.5 286 L 669.5 290 L 660.5 294"/>
+  <text class="lbl" x="453" y="283" text-anchor="middle">curate + approve (security stays human-approved)</text>
+</svg>

@@ -1,0 +1,13 @@
+# Source spec for seq-hardening-dance.svg — regenerate with:
+#   tt svg sequence blog/figures/seq-hardening-dance.txt blog/figures/seq-hardening-dance.svg
+title: The hardening dance (audit own config, fix misfire causes)
+
+actor BR
+participant CO4 as "Claude Opus 4.8"
+participant Config as "Memory / instructions / allowlists"
+
+CO4 -> Config: audit for misfire causes + risks
+Config --> CO4: bad affordances found
+CO4 -> CO4: propose the STRUCTURAL fix (remove the affordance)
+CO4 --> BR: proposed change (esp. security)
+BR --> CO4: curate + approve (security stays human-approved)

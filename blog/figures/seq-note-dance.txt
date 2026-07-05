@@ -1,0 +1,11 @@
+# Source spec for seq-note-dance.svg — regenerate with:
+#   tt svg sequence blog/figures/seq-note-dance.txt blog/figures/seq-note-dance.svg
+title: The note dance (attend now, pin-candidate)
+
+actor BR
+participant CO4 as "Claude Opus 4.8"
+
+BR -> CO4: note: (hold salient THIS conversation)
+CO4 -> CO4: keep it fluent in working memory
+CO4 --> BR: want me to pin this?
+note over BR,CO4: note: -> (agent nominates) -> pin:

@@ -1,0 +1,11 @@
+# Source spec for seq-fyi-dance.svg — regenerate with:
+#   tt svg sequence blog/figures/seq-fyi-dance.txt blog/figures/seq-fyi-dance.svg
+title: The fyi dance (delegated disposition)
+
+actor BR
+participant CO4 as "Claude Opus 4.8"
+
+BR -> CO4: fyi: (here's something, you weight it)
+CO4 -> CO4: triage: drop / note-like / pin-like
+CO4 --> BR: disposition chosen (say which)
+note over CO4: optional 2nd step: act if it implies an action

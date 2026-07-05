@@ -1,0 +1,13 @@
+# Source spec for seq-edit-dance.svg — regenerate with:
+#   tt svg sequence blog/figures/seq-edit-dance.txt blog/figures/seq-edit-dance.svg
+title: The edit dance (correct a just-sent message, no derail)
+
+actor BR
+participant CO4 as "Claude Opus 4.8"
+
+BR -> CO4: a message (already Entered)
+note over BR: spots a typo; UP-arrow is too late
+BR -> CO4: edit: wrong -> right   (a NEW message)
+CO4 -> CO4: treat the pair as ONE; later copy authoritative
+CO4 -> CO4: material change? if unsure, ask
+note over CO4: immaterial -> absorb silently, no ceremony

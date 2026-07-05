@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1314.8" height="452" viewBox="0 0 1314.8 452" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+  <style>
+    :root { --bg:#ffffff; --fg:#1b1b2b; --box:#eef0fb; --boxline:#9aa0d0; --life:#c3c3d6; --line:#5a5f86; --notebg:#fff6d8; --noteline:#e0c86a; }
+    @media (prefers-color-scheme: dark) { :root { --bg:#1b1b24; --fg:#e6e6f0; --box:#2a2d44; --boxline:#5a5f86; --life:#44465e; --line:#a6abd8; --notebg:#403a23; --noteline:#8a7a3a; } }
+    text { fill: var(--fg); }
+    .canvas { fill: var(--bg); }
+    .lbl { font-size: 13px; }
+    .title { font-size: 16px; font-weight: 600; }
+    .box { fill: var(--box); stroke: var(--boxline); stroke-width: 1; }
+    .note { fill: var(--notebg); stroke: var(--noteline); stroke-width: 1; }
+    .life { stroke: var(--life); stroke-width: 1; stroke-dasharray: 4 4; }
+    .msg { stroke: var(--line); stroke-width: 1.4; }
+    .ret { stroke: var(--line); stroke-width: 1.2; stroke-dasharray: 6 4; }
+    .head { fill: var(--line); }
+  </style>
+  <rect class="canvas" x="0" y="0" width="1314.8" height="452"/>
+  <text class="title" x="657.4" y="28" text-anchor="middle">The rest dance (conserve the human)</text>
+  <line class="life" x1="232.5" y1="76" x2="232.5" y2="404"/>
+  <rect class="box" x="187.5" y="42" width="90" height="34" rx="6"/>
+  <text class="lbl" x="232.5" y="59" text-anchor="middle" dominant-baseline="central">BR</text>
+  <rect class="box" x="187.5" y="404" width="90" height="34" rx="6"/>
+  <text class="lbl" x="232.5" y="421" text-anchor="middle" dominant-baseline="central">BR</text>
+  <line class="life" x1="657.4" y1="76" x2="657.4" y2="404"/>
+  <rect class="box" x="583" y="42" width="148.9" height="34" rx="6"/>
+  <text class="lbl" x="657.4" y="59" text-anchor="middle" dominant-baseline="central">Claude Opus 4.8</text>
+  <rect class="box" x="583" y="404" width="148.9" height="34" rx="6"/>
+  <text class="lbl" x="657.4" y="421" text-anchor="middle" dominant-baseline="central">Claude Opus 4.8</text>
+  <line class="life" x1="1082.4" y1="76" x2="1082.4" y2="404"/>
+  <rect class="box" x="1036.1" y="42" width="92.5" height="34" rx="6"/>
+  <text class="lbl" x="1082.4" y="59" text-anchor="middle" dominant-baseline="central">Codeberg</text>
+  <rect class="box" x="1036.1" y="404" width="92.5" height="34" rx="6"/>
+  <text class="lbl" x="1082.4" y="421" text-anchor="middle" dominant-baseline="central">Codeberg</text>
+  <line class="msg" x1="232.5" y1="106" x2="656.4" y2="106"/>
+  <path class="head" stroke="none" d="M 657.4 106 L 648.4 102 L 648.4 110 Z"/>
+  <text class="lbl" x="444.9" y="99" text-anchor="middle">cue :Z (getting tired, a warning, not asleep)</text>
+  <line class="msg" x1="657.4" y1="152" x2="1081.4" y2="152"/>
+  <path class="head" stroke="none" d="M 1082.4 152 L 1073.4 148 L 1073.4 156 Z"/>
+  <text class="lbl" x="869.9" y="145" text-anchor="middle">commit + push everything (trees clean)</text>
+  <line class="ret" x1="1082.4" y1="198" x2="658.4" y2="198"/>
+  <path class="msg" fill="none" d="M 666.4 194 L 657.4 198 L 666.4 202"/>
+  <text class="lbl" x="869.9" y="191" text-anchor="middle">ok</text>
+  <path class="msg" fill="none" d="M 657.4 244 L 723.4 244 L 723.4 260 L 663.4 260"/>
+  <path class="head" stroke="none" d="M 663.4 260 L 672.4 256 L 672.4 264 Z"/>
+  <text class="lbl" x="731.4" y="246" text-anchor="start">externalize state + leave a resume pointer</text>
+  <line class="ret" x1="657.4" y1="290" x2="233.5" y2="290"/>
+  <path class="msg" fill="none" d="M 241.5 286 L 232.5 290 L 241.5 294"/>
+  <text class="lbl" x="444.9" y="283" text-anchor="middle">short + warm; state is durable (no &quot;I feel fine&quot;)</text>
+  <rect class="note" x="113.7" y="336" width="237.6" height="34" rx="3"/>
+  <text class="lbl" x="232.5" y="353" text-anchor="middle" dominant-baseline="central">take the break, or decline</text>
+</svg>

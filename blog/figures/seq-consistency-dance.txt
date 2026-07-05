@@ -1,0 +1,14 @@
+# Source spec for seq-consistency-dance.svg — regenerate with:
+#   tt svg sequence blog/figures/seq-consistency-dance.txt blog/figures/seq-consistency-dance.svg
+title: The consistency dance (sweep the substrate for drift)
+
+actor BR
+participant CO4 as "Claude Opus 4.8"
+participant Substrate as "Persistent substrate"
+
+BR -> CO4: cue a sweep (or CO4 proposes after a big change)
+CO4 -> Substrate: check index rot, dead links, term drift
+Substrate --> CO4: findings
+CO4 -> CO4: auto-fix the unambiguous
+CO4 --> BR: report fixed + what needs a human call
+BR --> CO4: ratify / decide the ambiguous
