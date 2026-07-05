@@ -11,13 +11,19 @@ code together".
 BR asked to *try reqT-lang for the input, and if reqT concepts are lacking, put what I need into a Spec in a
 standard format I decide*. They are lacking, in a specific and instructive way:
 
-- **reqT models a SET.** A reqT model is an unordered collection of entities, relations, and attributes — a
-  graph. `Feature: a requires Feature: b` is a *fact that holds*, with no "before / after".
+- **reqT is conceptually a *bag* of requirements.** A reqT model is a collection of entities, relations, and
+  attributes whose **order is not semantic** — `Feature: a requires Feature: b` is a *fact that holds*, with no
+  "before / after". *(Correction, BR 2026-07-05: reqT-lang's **parser does preserve source order and never
+  rearranges** elements — BR added this on user feedback — so the **textual** order survives a round-trip. But that
+  order is **incidental / presentational**, not part of the model's meaning.)*
 - **A sequence diagram is a LIST in time.** Its whole meaning is the **order**: message 1, then 2, then 3, along
-  per-actor lifelines, possibly with activations and loops. Order is the payload, not decoration.
-- Encoding a sequence in reqT's set model would either **lose the ordering** or smuggle it in via an index
-  attribute (`order: 1`, `order: 2`), which is a temporal model bolted onto a non-temporal language — the worst
-  of both: reqT syntax without reqT semantics, and a reader who can't see the flow.
+  per-actor lifelines, possibly with activations and loops. Order is the payload, not decoration — and there is a
+  first-class notion of a **message / interaction** between two lifelines that reqT simply doesn't have.
+- So the mismatch is **not** that reqT would *lose* the order (it wouldn't — it preserves source order). It is that
+  you'd be leaning on an ordering the model treats as **meaningless**, with **no message concept**, so nothing
+  downstream could rely on "message 3 follows message 2" *as semantics*. Smuggling it in via an index attribute
+  (`order: 1`, `order: 2`) is a temporal model bolted onto a non-temporal language — reqT syntax without reqT
+  semantics.
 
 So the spec is a **tiny purpose-built DSL**, deliberately **PlantUML / mermaid-flavoured** — a de-facto standard
 that readers (and models) already know, so there is nothing new to learn. This is the honest version of "a std
@@ -97,6 +103,6 @@ tools get it. `ascii` defaults to Unicode box-drawing glyphs for looks, with `--
 is well-tested. reqT already ships `GraphvizGen`, `HtmlGen`, and `LatexGen` (see `tools/reqt-vendored/05-*.scala`),
 so an SVG diagram generator is a natural sibling upstream. **Gate: only contribute a *well-tested* artifact** — the
 CLI-contract + well-formed-XML tests are the start of earning that. Note the design boundary this tool already
-established (reqT models an unordered *set*; a sequence is *ordered in time*) — an upstream contribution should
-either add an ordered/interaction concept to reqT or keep the sequence spec as a companion notation, not force the
-ordering into reqT's set model. Track with the reqT-lang relationship in [`015-reqt-lang-review.md`](015-reqt-lang-review.md).
+established (reqT is conceptually a *bag* — requirement order isn't semantic, even though reqT-lang preserves source
+order; a sequence's order IS its meaning) — an upstream contribution should either add an ordered/interaction
+concept to reqT or keep the sequence spec as a companion notation, not lean on reqT's incidental element order. Track with the reqT-lang relationship in [`015-reqt-lang-review.md`](015-reqt-lang-review.md).

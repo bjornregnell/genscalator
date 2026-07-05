@@ -133,7 +133,8 @@ research method the rest of this folder runs under.)*
   `seqspec.scala` (shared by `svg` + `ascii`): a no-`@main` helper file that tools `//> using file`, with the two
   rules that keep it valid (no `@main`; same-scope include only — scala-cli dedups same-scope, duplicates cross-scope).
 - [`037-svg-sequence-diagram-tool.md`](037-svg-sequence-diagram-tool.md) — the `tt svg` / `tt ascii` sequence-diagram
-  renderers: why a bespoke spec (not reqT-lang — reqT is an *unordered set*, a sequence is *ordered in time*), the
+  renderers: why a bespoke spec (not reqT-lang — reqT is conceptually a *bag*, order not semantic; a sequence's order
+  *is* its meaning), the
   theme + opaque-background choices, and the eventual reqT upstream contribution.
 - [`015-reqt-lang-review.md`](015-reqt-lang-review.md) — using reqT-lang for genscalator's own PRD dogfoods the
   structure-beats-prose thesis. Verdict: **MAP not FORK** (reqT already fits); top proposal is an opt-in strict/lint

@@ -7,11 +7,12 @@
 //   tt svg sequence <in.txt> [out.svg]              (no out → prints the SVG to stdout)
 //   tt svg --sequence-diagram <in.txt> [out.svg]    (alias for `sequence`)
 //
-// Why a bespoke spec and NOT reqT-lang: reqT models a SET of entities / relations / attributes — an unordered
-// graph. A sequence diagram is fundamentally ORDERED in time (message 1, then 2, then 3) along per-actor
-// lifelines; reqT has no native temporal-order concept, so encoding a sequence in it would lose the very thing
-// that makes it a sequence. Hence a tiny purpose-built spec, deliberately PlantUML/mermaid-flavoured so it is a
-// de-facto standard readers already know. (See research/037-svg-sequence-diagram-tool.md for the design rationale.)
+// Why a bespoke spec and NOT reqT-lang: reqT is conceptually a *bag* of requirements — element order is not
+// semantic (though reqT-lang's parser does preserve source order), and there is no message/interaction concept. A
+// sequence diagram is fundamentally ORDERED in time (message 1, then 2, then 3) along per-actor lifelines, where the
+// order IS the meaning — so it wants a notation where order is semantic. Hence a tiny purpose-built spec,
+// deliberately PlantUML/mermaid-flavoured so it is a de-facto standard readers already know. (Design rationale +
+// BR's ordering correction: research/037-svg-sequence-diagram-tool.md.)
 //
 // Spec grammar (one statement per line; blank lines and `#` / `//` comments are ignored):
 //   title: <text>                     optional diagram title, centred at the top
