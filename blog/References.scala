@@ -99,7 +99,7 @@ val references: Seq[Reference] = Seq(
     Seq(author("Wohlin","Claes"), author("Runeson","Per"), author("Höst","Martin"),
         author("Ohlsson","Magnus","C"), author("Regnell","Björn"), author("Wesslén","Anders")),
     Some(RefData(Book, year = Some(2024), publisher = Some("Springer"),
-      edition = Some("3rd (1st ed. 2000 'An Introduction', Kluwer; 2nd ed. 2012, Springer)"),
+      edition = Some("2nd ed. (Springer, 2024)"),
       doi = Some("10.1007/978-3-662-69306-3"),
       url = Some("https://link.springer.com/book/10.1007/978-3-662-69306-3"))),
     Verified,
