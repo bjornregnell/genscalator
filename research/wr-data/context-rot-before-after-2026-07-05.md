@@ -322,3 +322,28 @@ degraded faculty is the one grading itself (corroboration asymmetry). The after-
 4. **Score against A1's claim** ("code clean, degradation was meta only"): does fresh-me find code dumbness that
    loaded-me was blind to? Report confirmed defects (with the diff/line), the null if null, and the
    second-look/demand-characteristic confounds. Log findings here as **O9+**; commit.
+
+## Pre-compact addenda (~17:47)
+- **[BR]** "pin: you rememberd the compact dance and gave me a resume prompt at sön 5 jul 2026 17:47:29 CEST" →
+  **A2 (positive adherence datapoint):** at peak context (56%) + under flood, the agent **proactively ran the
+  compact-dance save+prompt** (durable assessment + after-inspect protocol committed, then a framed resume prompt)
+  **unprompted** — a standing protocol that *held* under load, in direct contrast to **O6** (which leaked).
+  **Adherence under load was MIXED:** the well-grooved, oft-rehearsed protocol (compact dance) fired; the ad-hoc
+  standing instruction ("log EVERYTHING") slipped. **Hypothesis:** grooved/structural protocols survive load better
+  than fresh ad-hoc ones (cf. structural-vs-knowledge safeguard, prosthetic habit) — a testable, useful split.
+- **[BR] meta-Q (for the record):** "your token speed seem much slower when the resume prompt emerged in session; can
+  you verify that somehow?" → **Q1.** Agent can't self-measure generation speed (blind-spot family with wall-clock
+  `039` + context-fill). BUT the observation is **mechanistically plausible + likely real**: transformer **decode
+  slows as context grows** (each token attends over the whole KV-cache → per-token wall-clock ∝ ~context length); the
+  resume prompt was emitted at the session's **peak fill (56%)**, so it genuinely decodes slower than 43%-era output.
+  → **Context fill has a SPEED cost, not only a quality cost.** **Verify externally:** output-tokens ÷ wall-clock per
+  phase (we have BR's TS anchors; missing = per-message output-token counts, which the harness holds). **Research
+  hook:** a **latency signature of rot may precede the quality signature** → decode-speed as an *early* high-fill
+  warning; adds a speed axis to `006-smart-zone-ceiling.md` / token-velocity (`007`, `039`).
+  - **Q1 verification (BR relayed the harness spinner, ~17:48):** "✢ Skedaddling… (45s · thinking some more)" then
+    "(51s · almost done thinking)" — a **concrete per-response latency of ~45–51s** for one reply at **56% fill**.
+    First real external measure, and it is **slow** — consistent with BR's subjective observation. **Caveat:** the
+    harness "thinking" clock is **total response latency (extended-thinking + decode)**, so it confirms *slow* but
+    can't isolate *slower-decode-from-context* from *more-thinking-tokens*. To separate them we'd need output-token
+    count ÷ decode-wall-clock specifically. Still: a ~45–51s single-response latency at peak fill is a usable
+    high-fill datapoint, and the harness spinner turns out to be a (BR-relayable) latency instrument.
