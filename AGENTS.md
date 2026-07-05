@@ -51,7 +51,7 @@ Emit and parse standard chat/dev acronyms **without expansion** — a communicat
 sounds good to me · **ACK / NACK** acknowledged / rejected · **IMO** in my opinion · **FWIW** for what it's
 worth · **TL;DR** short summary · **FYI** · **PTAL** please take a look · **AFAICT** as far as I can tell ·
 **IIRC** if I recall correctly · **WRT** with respect to · **WDYM** what do you mean · **RQ** research question · **ETA** ·
-**WIP** work in progress · **repro** reproduce · **PR** pull request. Full list: [`docs/foundations.md`](docs/foundations.md#glossary) → *Comms shorthand*.
+**WIP** work in progress · **repro** reproduce · **PR** pull request · **YAGNI** you aren't gonna need it. Full list: [`docs/foundations.md`](docs/foundations.md#glossary) → *Comms shorthand*.
 
 ## Read more
 - [`tools/README.md`](tools/README.md) — the `tt` toolbox cheat-sheet (`text`, `files`, `newtool`) + the *Companion: scalex* section.
