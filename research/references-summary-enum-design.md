@@ -44,3 +44,17 @@ Keep the enum. Resolve (2) first (it's the daily ergonomic cost) and (5) next (i
 are small polish calls. If summaries become common, a `summaryVerification` marker (or reusing `RefVerification` at the
 summary level) is worth adding so "grounded summary" is a first-class, greppable state — mirroring how `ToDo`/`Verified`
 already work for the citation itself.
+
+## Build-fragility finding — iron macro StackOverflows on long refined literals (2026-07-05)
+Compiling `blog/` (`scala-cli compile`, Scala 3.8.3, iron 3.3.1) **crashes with a `java.lang.StackOverflowError`
+during the `inlining` phase**, expanding the **`NonBlank` refinement macro on the long `BookSummary.topic` string
+literal** (References.scala:104). Both Bloop and `--server=false` hit it; it reproduces on current HEAD (**not**
+introduced by the 2026-07-05 note-field edit pointing the BookSummaries at the public summaries — that only touched
+plain-`String` fields). Root cause: iron validates a compile-time string constant by recursive inlining, and a
+~300-char `topic` overflows the default compiler-thread stack. **Options for BR:** (a) give the compiler a bigger
+stack (a project `-Xss` / `.jvmopts`), (b) make `topic` a **plain `String`** (a long prose blurb doesn't need
+`NonBlank` — the refinement buys ~nothing here and costs compile-time recursion), or (c) cap `topic` length. **Lean:
+(b)** — reserve `NonBlank`/refinements for short, genuinely-constrained fields (titles, DOIs), not long free prose.
+This is a concrete datapoint for the iron-refinement-types experiment: *refinement macros don't scale to long literal
+constants.* (The 2026-07-05 References.scala note edit is committed but **compile-unverified** for this reason —
+flagged for BR to confirm after the stack fix.)

@@ -99,7 +99,7 @@ val references: Seq[Reference] = Seq(
       doi = Some("10.1007/978-3-662-69306-3"),
       url = Some("https://link.springer.com/book/10.1007/978-3-662-69306-3"))),
     Verified,
-    "Standard SE textbook on controlled experiments; grounds our permutation-test + preregistration practice — working task->chapter index in skills/research-methods (agent reads the full text from the closed-repo PDF for depth). self-ref: BR co-author (own it inline at first mention, not just in the ref list). TOC grounded DIRECTLY from the authoritative full text (closed-repo PDF, 2026-07-04) — provenance upgraded from the earlier reader-proxy.",
+    "Standard SE textbook on controlled experiments; grounds our permutation-test + preregistration practice — public summary in skills/research-methods/summary-experimentation.md (canonical distillation + section pointers); agent reads the full text from the closed-repo PDF only for depth. self-ref: BR co-author (own it inline at first mention, not just in the ref list). TOC grounded DIRECTLY from the authoritative full text (closed-repo PDF, 2026-07-04) — provenance upgraded from the earlier reader-proxy.",
     summary = Some(BookSummary(
       topic = "An in-depth introduction to conducting controlled experiments in software engineering — the full experiment process (scoping, planning, operation, analysis, presentation) — situated among other empirical methods (systematic literature studies, surveys, case studies); the 2024 edition adds research-design selection, A/B testing, replications, open science, and validity threats.",
       chapterHeadings = Seq(
@@ -119,7 +119,7 @@ val references: Seq[Reference] = Seq(
       doi = Some("10.1002/9781118181034"),
       url = Some("https://www.wiley.com/en-us/Case+Study+Research+in+Software+Engineering%3A+Guidelines+and+Examples-p-9781118181003"))),
     Verified,
-    "SE case-study methodology; grounds our WR framing (WR = longitudinal multiple-case study; AT/SSG = cases/units of analysis, §3.2.3) — working task->chapter index in skills/research-methods (agent reads the full text from the closed-repo PDF for depth). self-ref: BR co-author (own it inline at first mention, not just in the ref list). TOC grounded DIRECTLY from the authoritative full text (closed-repo PDF, 2026-07-04); Wiley Online Library book DOI 10.1002/9781118181034.",
+    "SE case-study methodology; grounds our WR framing (WR = longitudinal multiple-case study; AT/SSG = cases/units of analysis, §3.2.3) — public summary in skills/research-methods/summary-case-study-research.md (canonical distillation + section pointers); agent reads the full text from the closed-repo PDF only for depth. self-ref: BR co-author (own it inline at first mention, not just in the ref list). TOC grounded DIRECTLY from the authoritative full text (closed-repo PDF, 2026-07-04); Wiley Online Library book DOI 10.1002/9781118181034.",
     summary = Some(BookSummary(
       topic = "Practical guidelines for planning, conducting, and reporting case-study research in software engineering — design, data collection, analysis, dissemination — followed by real, critiqued example case studies; it translates case-study methodology from the social sciences into rigorous SE practice.",
       chapterHeadings = Seq(
