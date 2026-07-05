@@ -211,6 +211,14 @@ The next real release is **v0.9.0** — v0.1.0–v0.8.0 have shipped (see PAST/I
   * Why: the recurring reason the agent reaches for `| head/tail/wc/sort` or raw `grep -C` is a MISSING tool flag — absorbing these into the tools removes a whole class of shell-scaffolding AT THE SOURCE (a structural fix, not exhortation), which is also why it belongs in the shared edge rather than per-tool. Evidence: repeated `| head`, `| wc`, `grep -C` reach-for-shell events in `research/wr-data/` (WR-TOOL).
 * Feature: outputShapingFlags helps Goal: tokenEfficiency
 * Feature: outputShapingFlags helps Goal: safeGeneration
+
+* Feature: greprRegexLint has
+  * Gist: the regex-taking text subcommands lint the pattern for grep-BRE metacharacters and warn, because the engine is Java regex (ERE) and a silent empty result otherwise hides the mismatch.
+  * Spec: `tt text grepr` (and the sibling regex takers context/match/freq) compile the pattern with Scala `String.r` = Java `Pattern` (full ERE), so alternation is `|` NOT grep's `\|` (Java reads `\|` as a LITERAL pipe, silently matching nothing). On a pattern containing grep-BRE-isms (`\|`, `\(`, `\)`, `\{`, `\}`, `\+`, `\?`) emit a one-line stderr warning ("looks like grep BRE syntax: grepr uses Java regex, use `|` not `\|`") without altering the exit code; optionally also warn on a zero-match result so "genuinely absent" is distinguishable from "bad pattern". Same prosthetic-perception shape as `guardcheck`.
+  * Why: WR-TOOL. The agent, on grep muscle-memory, passed `foo\|bar` to grepr twice, got a silent empty, and read it as "absent" (a wrong conclusion). A silent empty on a syntactically-suspicious pattern is a footgun; a lint at the SOURCE, not exhortation, is the structural fix. Evidence: research/wr-data grepr-alternation-silent-empty event (2026-07-05).
+* Feature: greprRegexLint helps Goal: safeGeneration
+* Feature: greprRegexLint helps Goal: tokenEfficiency
+* Feature: greprRegexLint relatesTo Feature: outputShapingFlags
   * Comment: fewer piped/compound shell commands = fewer confirmation-guard trips and less scaffolding to review; the shaping flags compose with the `--eager`/stream decision already planned for the edge.
 
 * Feature: configInArgsNotEnv has
