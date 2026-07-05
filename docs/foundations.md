@@ -369,14 +369,22 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 
   Distinct from the **consistency dance** (which audits the substrate's *content*): hardening audits the agent's
   *config / machinery*. Human-triggerable. Memory: [[hardening-dance]].
-- **Rest dance** — a human↔agent dance for **conserving the human**.
-  - **Agent step:** on signs of human fatigue (typo-rate above the human's *own* baseline, terseness, late hour) or
-    an **explicit signal**, propose a break and **externalize state** (pin / compact) so the human can step away with
-    **zero loss** and return sharp.
+- **Rest dance** — a human↔agent dance for **conserving the human**. The explicit human trigger is the cue **`:Z`**
+  ("I am **getting** tired" — a *warning*, **not** asleep; a **precursor to the AFK dance**). Chosen for **minimal
+  motor cost**: both chars are **SHIFT-held** (`:` = Shift-`;`, `Z` = Shift-`z`), so a tired hand never releases SHIFT.
+  - **Human step (trigger):** cue **`:Z`** — or the agent infers fatigue (typo-rate above the human's *own* baseline,
+    terseness, late hour).
+  - **Agent step:** become the **vigilant partner** and do a **STRUCTURAL checkpoint, not a felt-sense one** — commit +
+    push everything (trees clean), pin / compact so state is externalized, leave a resume pointer — so the human can
+    step away with **zero loss** and return sharp. Keep the reply short + warm; don't spin up new work.
   - **Human step:** take the break, or decline.
 
+  **Why structural:** the **fatigue asymmetry** — the human's tiredness is **felt + self-reportable** (so `:Z` is a
+  *reliable* signal), but the agent's own degradation (context rot) is **unfelt** (corroboration asymmetry). The human
+  cue **compensates for the missing agent one**, so answer `:Z` by making state durable, never with "I feel fine."
   *Prevents:* degraded **human**-side decisions (the human dumb-zone, over-trust under *thriller state*); conserves
-  attention for the high-stakes **ballgame** volleys that need it. See `research/011-human-state-and-joint-zone.md`.
+  attention for the high-stakes **ballgame** volleys that need it. Memory: [[tired-cue]],
+  [[joint-rot-vigilance-recovery-kit]]. See `research/011-human-state-and-joint-zone.md`.
 
 ### Memory habits and substrate
 - **Memory hygiene (agent)** — keeping the agent's **durable memory store** (the persistent `MEMORY.md` + the
