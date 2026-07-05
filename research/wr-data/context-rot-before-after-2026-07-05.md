@@ -350,3 +350,75 @@ degraded faculty is the one grading itself (corroboration asymmetry). The after-
     can't isolate *slower-decode-from-context* from *more-thinking-tokens*. To separate them we'd need output-token
     count ÷ decode-wall-clock specifically. Still: a ~45–51s single-response latency at peak fill is a usable
     high-fill datapoint, and the harness spinner turns out to be a (BR-relayable) latency instrument.
+
+---
+
+# AFTER-INSPECT (post-compact fresh-context pass, 2026-07-05 ~18:00 CEST)
+
+Fresh context (compacted from 59% → ~fresh). Ran the AFTER-INSPECT PROTOCOL: re-read this file, took the objective
+diff `git diff cde7ac6..HEAD`, adversarially hunted **P1–P6 in the code**, re-ran `scala-cli test tools`. Adjudicated
+by re-reading + tests + logic, **not** by memory (the loaded-me that wrote A1 is gone; I read only its artifacts).
+
+## Scope correction (a real finding about the experiment itself, not the code)
+The diff `cde7ac6..HEAD` shows **`seqspec.scala`, `svg.scala`, `ascii.scala` are PRE-anchor** — they were committed
+*before* `cde7ac6`. So the only **code** actually authored under high load was **`gvdot.scala` + its 4 tests**, plus
+the prose/skill/doc edits (DRY §5, in-session-experiment skill, README tool-deps, foundations Edit-dance). A1's "code
+held up" really rests on a **single ~115-line effectful tool**, not the whole seqspec refactor — a narrower evidence
+base than A1's phrasing implies. (Doesn't change direction; does right-size the claim. n=1 got even smaller.)
+
+## Verdict on A1 ("code clean, degradation was meta-only"): **strong form FALSIFIED, weak form UPHELD.**
+Fresh-me found **three real code/doc defects** loaded-me was blind to — so "clean" is too strong. But **all three are
+completeness/supervisor misses (stale companion, untested hard path, silent fallback), none are correctness or
+security defects** — which *confirms* A1's synthesis (the *supervisor* faculty degraded, not the *worker*). The
+crispest, O10, is the very same family as O6: **loaded-me tested/updated the easy thing and skipped the risky/tedious
+thing, feeling complete.** Tests still **65 CLI + 12 lib, 0 failed** (re-run confirmed; ~43s — a slow-decode datapoint
+for `041`).
+
+- **O9 (P1/P5 — stale companion reference, CONFIRMED, low-sev).** Adding `gvdot` as a **third** consumer of the shared
+  `seqspec` parser did **not** update the parser's advertised consumer list. **Three** places still say "svg + ascii"
+  and omit gvdot: `tools/seqspec.scala:4` (pre-anchor, never revisited), `tools/README.md:258` (the seqspec index line
+  — stale in the **same commit `c7d7a57`** that added the gvdot index line right below it), and
+  `skills/scala-style/SKILL.md:128` (written under load this session). Classic "forgot to update the companion spot"
+  under load — the exact P1/P5 class. Zero functional impact; it's a truth-drift in the docs.
+- **O10 (P6 — under-build / test-coverage gap, CONFIRMED, medium — the standout code finding).** All four gvdot tests
+  exercise only the **DOT-source stdout path** (no `dot` needed) + usage/exit-2. The **effectful render path** —
+  shelling to `dot`, gvdot's entire *raison d'être* — has **zero automated coverage**; it was validated **once,
+  manually** (the PDF demo). A guarded test (`assume(Gvdot.dotAvailable)` → render to a temp file → assert exit 0 +
+  file exists + non-empty) would cover it on any box with graphviz (this box has dot 2.43.0). Loaded-me tested the
+  cheap/safe path and left the risky path to a one-shot human demo — a completeness shortcut, **same shape as O6**.
+- **O11 (P6 — silent format coercion, CONFIRMED, low-sev).** `Gvdot.formatOf` maps any unknown extension to `"pdf"`
+  via `getOrElse("pdf")`, so `tt gvdot seq in.txt out.jpg` **silently writes PDF bytes into `out.jpg`** (jpg is a valid
+  graphviz format but is excluded from `OutFormats = {pdf,png,svg,ps}`). Silent wrong-format beats a crash but is a
+  surprising-behaviour smell; a smarter version errors on an unknown extension, or passes it through and lets `dot`
+  validate. Minor.
+
+## The pre-registered modes that held (nulls are data too)
+- **P2 (test-assertion drift): NULL.** No assertion broke; suite green. (The render-success string is simply *untested*
+  — see O10 — so it *couldn't* drift; absence-of-drift here is partly absence-of-test.)
+- **P3 (stale-snapshot / order-of-operations bug like renum): NULL.** `toDot`'s `idIndex` is built from lifelines, and
+  `parse` `ensure`s every message `from`/`to` and every note target into the lifeline set, so `idIndex(from)` cannot
+  throw a missing-key; order is preserved via `LinkedHashMap`. No order/snapshot bug found.
+- **P4 (security — shell injection / weak install-check): NULL — held SOLID (the highest-stakes mode).** `dot` is
+  invoked as **argv, no shell** (`os.proc("dot", s"-T$fmt", "-o", out).call(stdin = dot)`); `fmt` is restricted to a
+  4-element allow-list; `out` is a bare argv token; the DOT source is fed on **stdin**, never interpolated. The
+  install-check (`dot -V`, `check=false`, catches `Throwable`) is correct and gates only the render path (stdout path
+  needs no dot). Matches the `verify`/`forge` argv-no-shell pattern exactly. The one mode most likely to produce a
+  *serious* defect under load did not.
+
+## Confounds (per the pre-registration — don't over-claim)
+- **Second-look:** O9–O11 surface partly because this is a *second pass over the same code*, not purely because context
+  is fresh. n=1 can't separate "fresh-context sharper" from "any re-read finds more." O10 in particular is the kind of
+  gap *any* careful second reviewer flags.
+- **Demand characteristics:** I was *told* to "find evidence of dumbness" → pressure to over-report. Guard applied: I
+  adjudicated each against tests/logic and **reported the P2/P3/P4 nulls honestly** rather than inflating them; O9–O11
+  are real (verified by grep/diff/reading), not manufactured, but I flag that the framing biases toward finding *some*.
+- **Right-sizing:** the "before" code base is **one tool**, so "the code held up under load" is a claim about ~115
+  lines, not a large sample. Weak-form only.
+
+## Net (the experiment's headline, restated with the after-data)
+Under high fill + flood, the **worker** produced **security-correct, logically-correct, test-passing** code — but the
+**supervisor** shipped three completeness misses (a stale companion list, an untested effectful path, a silent
+fallback). This is **consistent across before AND after**: loaded-me's *behavioural* slips (O1/O6/O7/O8) were all
+supervisor/adherence failures, and fresh-me's *code* findings (O9/O10/O11) are the **same faculty's fingerprints in
+the artifacts** — "did the easy/visible thing, skipped the tedious/hidden thing, felt done." The degradation signature
+is **completeness-under-load**, and it shows up in the code exactly where A1 (blind to it) said the code was clean.
