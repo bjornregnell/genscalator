@@ -33,13 +33,13 @@ After some careful thinking — in parallel with starting to develop my agentic 
 projects — I realized that my next big project must be: **`genscalator`** — power-tools for human-agent
 collaboration productivity. Why? While over weeks developing an increasingly more productive code generation
 workflow together with [Anthropic's Claude Code](https://en.wikipedia.org/wiki/Claude_(AI)), I also got caught
-in real UX problems and pitfalls, and the agent repeatedly did some really stupid things with brittle, unsafe
+in real User Experience (UX) problems and pitfalls, and the agent repeatedly did some very stupid things with brittle, unsafe
 dynamic tools such as bash, awk, sed and python. The agent even got dragged down a rabbit hole trying to fix its
-own bugs while it got exhausted in an agent sickness known as *context rot* (there is no Wikipedia article on
+own runtime bugs while it got exhausted in an agent sickness known as *context rot* (there is no Wikipedia article on
 this at the time of writing, but you can search for it or ask an AI near you).
 
-This is what I saw as an (to me) obvious mission for genscalator:
-  * Can we make agents smarter by nudging them to use typed tools?
+This is what I saw as an obvious mission for genscalator:
+> Can we make agents smarter by nudging them to use typed tools?
 
 But I also realized, in my collaboration with Claude, that what we really were trying to do is to break the teaching-learning boundary between training and inference.
 
