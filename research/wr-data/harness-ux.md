@@ -629,3 +629,13 @@ procedure. **The reflexive point (why this is `#agent-psyche`):** this is the *s
 named for the `go X` verbs (`go-verb-vocabulary.md`) — a shared cap on **both** the human's recall surface **and** the
 agent's skill-listing surface. Naming things is not free on either side. See `docs/foundations.md` (dances),
 `go-verb-vocabulary.md`.
+
+## Fun fact / blog-anecdote candidate: the Codex plugin offers to "Implement with Codex" over `Text => Text` (BR 2026-07-05, `#agent-psyche`)
+BR noticed that in VS Code, the **Codex plugin puts a quick-action link over the literal `Text => Text`** (the
+type-signature of a language model, as written in blog/000) that reads **"Implement with Codex."** The joke writes
+itself: a coding agent, reading a blog *about* language models, cheerfully offers to **implement the very function that
+is the language model** — i.e. it wants to **dogfood itself into superintelligence** (implement `Text => Text` using a
+`Text => Text`). Too good to forget. *(BR flags his own **meta-anthropomorphism** here — ascribing "wanting" to a menu
+affordance — and the recursive-self-improvement echo lands right next to blog/010's singularity framing.)* Candidate
+anecdote for blog/000 (the `Text => Text` section) or blog/010 (recursive self-improvement / singularity). Pinned
+because it is too fun to lose.
