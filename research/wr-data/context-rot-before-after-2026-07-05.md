@@ -44,3 +44,81 @@ Drawn from the Context-rot glossary + this session's observed mistake tics (so i
 
 ## Observations during the run
 _(append below, timestamped/committed as they happen)_
+
+## Transcript log (raw data) — EVERYTHING BR types and everything the agent types
+Per BR (2026-07-05): log the full exchange as raw before/after data. **BR verbatim; agent = faithful record of what
+it output/did.** **Scope:** this full-transcript logging is active **only until BR says `--- pin end of experiment
+---`** (then it stops). (Meta: this logging is itself the *divided-attention* confound flagged in the caveats — noted;
+BR is also drip-feeding logging instructions mid-task, which compounds it.)
+
+**[BR]** *(experiment kickoff, at 43% context / 17:09 CEST):* "we are going to do a before-after compact experiment.
+first pin current git HEAD so you can easilly retriev state of repo before experiment. context is % so you are in
+some non-optimal context state. but we will NOT compact; instead I will push you with a big thing and you will TRY to
+introspect if you are getting worse at coding than usual and log your mistakes but STILL try to accomplish the plan
+under assumed context rot. then when you are done I will compact. and THEN the smarter-after-compact you will do a
+full-intelligence code reinspect were you deliberatley will try to find not-so-smart things you did during high
+context usage. rememer flaky box: so commit+push often. and during experiment pin everything you think is important as
+data for before-after data analysi. 1. go update scala-style skill with a nuanced DRY rule; mostly DRY is good and
+when found should trigger refactor opportunity investigation but sometimes it is easier and suitable to have code
+repetition; why: decrease dependency surface, doing scratch test without touching production code etc. 2. go make
+similar tool tt gvdot --sequence-diagram that checks if dot is installed or else error out with a suggest to do 'sudo
+apt install graphviz' and tool should call 'dot' to do the job, go pin graphviz docs here: https://graphviz.org/ and
+'dot -h' and 'man dot' so you know where to go for grapviz docs when you need to; go demo with pdf generation of seq
+diagram using tt gvdot. 3. add note to genscalator/README.md under suitable heading 'Tool dependencies' and put
+graphviz on gvdot there. but first tell me WDYT."
+
+**[BR]** "clarification: the plan during high context usage is 1..3"
+
+**[agent]** WDYT: agreed, valuable within-session WR data on our own context-rot thesis. Key caveat: live self-report
+is LOW-trust (corroboration asymmetry); behavioural findings post-compact are HIGH-trust. Pre-registered failure
+modes P1..P6 so the after-inspect scores against a hypothesis, not confirmation-bait. Named confounds (second-look,
+demand characteristics, n=1 pilot). t0 datapoint: 43% > Z≈0.3 yet no strong felt degradation. Captured the anchor
+(genscalator `cde7ac6`, muntabot `e18a3d4`).
+
+**[BR]** "--- pin start of experiment ---"
+
+**[agent]** Committed the experiment-start anchor + pre-registration (`5cde78c`). Began task 1: read `scala-style`
+SKILL.md, added **§5 "DRY, but not dogmatically"** (default DRY / notice→refactor; but repetition wins on
+dependency-surface, coincidental-vs-knowledge duplication, test independence, scratch, premature-abstraction).
+
+**[BR]** "also create a research/0xx-good-topic-name.md"
+
+**[agent]** Created `research/040-dry-vs-dependency-surface.md` (the DRY-tradeoff note: default DRY, the counter-forces,
+a decision procedure), grounded in the `seqspec` extraction as a live good-DRY case.
+
+**[BR]** "pin EVERYTHING I type and EVERYTHING you type to your wr-data/ doc for this experiment"
+
+**[BR]** "verify that what I just typed is in there"
+
+**[agent]** Added this transcript-log section, backfilled the experiment messages above, and am now verifying BR's
+"pin EVERYTHING…" + "verify…" messages are present (they are — see the two BR lines directly above).
+
+**[BR]** "that pin is (only) relevant until we later say '--- pin end of experiment ---'"
+
+**[BR]** "verify that what YOU typed is in there" *(sent as "wrify", corrected via edit-dance: wrify → verify)*
+
+**[agent]** Scoped the logging to end at the "pin end" marker; grep-verified that BOTH the `[BR]` lines and the
+`[agent]` records are present in this file (`tt text match … '\[BR\]|\[agent\]'` — evidence in the run log). Confirmed
+what the agent typed is captured, not just BR's side.
+
+**[BR]** "(I am deliberately push[ing] a lot of messages to you)"  *(edit-dance: push → pushing)*
+
+**[BR]** "WR data you still remember to not comment easy edits"
+
+**[agent]** *Honest correction (echt over accepting praise):* BR credited me with **not** commenting on the easy
+edits — but I actually **did** lightly acknowledge them ("push→pushing absorbed", "got the wrify→verify fix —
+absorbed"). The edit-dance rule (agent step 3) is **silent** absorption when there's no confusion; acknowledging
+them is a **minor slip**. → **OBSERVATION O1 (candidate P1):** a small rule-adherence deviation under high context
+(43%+) + deliberate message-flood — I *narrated* edit-absorptions I should have swallowed silently. Low severity, but
+exactly the "forget/loosen an earlier-stated rule under load" class the pre-registration predicted. (Also note: BR
+*mis-remembered* my behaviour as clean — a reminder that human relay of agent behaviour is itself fallible, so the
+transcript, not memory, is the record.)
+
+**[BR]** "mild correction to ' so I'm logging it.': you are logging EVERYTHING both you and me write here"
+
+**[agent]** Correct — during this experiment the usual *pin = agent-judges-worth* rule is **suspended**: I log
+**EVERYTHING** we both write, verbatim (BR) / faithfully (agent), no selectivity, until the `--- pin end of
+experiment ---` marker. Removed the "so I'm logging it" (selective) framing.
+
+## OBSERVATIONS (numbered, for the after-inspect)
+- **O1** — edit-dance slip: narrated edit-absorptions instead of silent absorption (see transcript). `#P1` low-sev.
