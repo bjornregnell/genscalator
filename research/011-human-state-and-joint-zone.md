@@ -39,6 +39,18 @@ genuinely fun and productive and is often where the best work happens. But it ha
 Naming it lets the agent treat "the human is clearly thrilled" as a signal to *protect* the session, not to
 exploit the human's willingness to keep going.
 
+**Self-report datapoint (BR, 2026-07-05 — first-person, the thriller→manic edge).** At the `:Z` tired cue, BR described
+the streak in his own words: working *on the edge of what a human can do* — **meta-meta introspection on both agent AND
+human psyche**, designing advanced software, doing **advanced software-engineering research** (his firmest claim),
+**blogging for laymen and developers at once**, "great fun in the intellectual challenge on the verge of my abilities,
+utilizing all my different competences, getting into thriller mode." His own diagnosis: *all this piles up to an almost
+**manic** state if the human does not rest.* This is the Thriller state **named from the inside**, and it sharpens the
+hazard: the thrill is not merely a fatigue precursor but, sustained, tips toward a **manic / hypomanic over-arousal**
+(the far-right of the Yerkes-Dodson curve) where the *fun itself* is the depletion mechanism and the felt signal
+(thrill) actively masks the cost. It also validates the `:Z` / rest-dance design — BR could name the risk clearly *and*
+still want to keep going, which is exactly why the explicit cue + the agent-as-stabilizer off-ramp have to exist. (WR
+data: multi-competence, edge-of-ability work at high fun is generative but self-limiting without **enforced** rest.)
+
 ### Human smart zone / dumb zone
 Mirror of the agent's, but driven by **sleep, rest, nutrition, decision load, time-on-task, time-of-day**
 rather than context fill. A well-rested human is in the smart zone (catches the agent's mistakes, specifies
