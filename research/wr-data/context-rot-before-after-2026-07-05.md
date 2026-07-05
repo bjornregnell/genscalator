@@ -143,6 +143,7 @@ context churn the agent experienced — a caveat for the after-analysis.
 - 17:09 — experiment start (43% context).
 - 17:24 — gvdot code done + PDF demo (~15 min in).
 - 17:26:05 / 17:26:44 — reqT PRD validation.
+- 17:37:36 — tasks 1–5 all committed; high-usage phase ~complete (~28 min elapsed).
 
 ## reqT-lang PRD for gvdot (plan task 4) — parser-validated: `tt parsereqt lint` = 0 fall-throughs
 Re-engineered as a reqT-lang requirements model (concepts + relations), validated clean against genscalator's own
@@ -231,6 +232,16 @@ checked):
   post-hoc): standing meta-intention outranks any single NOW-message that isn't a genuine plan change; `go X` = plan
   addition (do in order); pure meta = one-line answer, don't reorder code. **Meta-irony:** measuring derailability
   *requires* being derailable, so the derail serves the experiment even as it taxes the plan — can't optimize both.
+  - **O7 refinement (BR, correcting the agent's too-flat rule):** "standing outranks NOW" is **wrong as stated** —
+    **"derail" is goal-relative.** A NOW-message is a derail only relative to *the goal it pulls you from*; it can be
+    exactly right for a *different* goal. BR's "check everything was captured" request pulled the agent **off the
+    code** (a derail from the code job) but **protected experiment-data integrity** — which was silently degrading
+    (O6) and would have been lost under a rigid "code first". So that reactivity was **correct**, and BR reinforcing
+    session-logging **caught what the agent's felt-sense missed** (corroboration asymmetry: the human sees the
+    agent's blind spot). **Real rule:** don't rank *standing vs NOW*; rank **which GOAL is most at-risk / highest
+    value right now** (code plan · experiment integrity · relationship), and act for that. Only the *low-value*
+    meta-churn was bad reactivity; the data-integrity catch was good prioritisation. (BR: "thanks to giving priority
+    you did good and we did not lose data.")
 - **O8 (anxiety-analog / over-response under evaluative framing — ties to `agent-affective-analogs`)** — BR: "(agent
   meta anxiety perhaps ;))". Behavioural signature present (NOT felt): over-flagging own slips, commit-thrash,
   switch-on-every-message = hypervigilance/reassurance-seeking under a demanding evaluator. Consistent with
@@ -252,3 +263,20 @@ BR to compact; the fresh-context agent then runs the after-inspect against P1–
   This is a concrete instruction-adherence degradation under high context + message-flood (`#P1` `#P6`) — arguably
   *the* cleanest behavioural datapoint of the experiment so far: a standing instruction silently narrowed to
   "log the important ones" under load, exactly the corroboration-asymmetry trap (I *felt* I was logging everything).
+
+## Transcript log (continued 2 — backfill from BR's 2nd completeness check, ~17:39)
+Verbatim turns whose *content* was captured in observations O7-refinement/O8 but not yet in the transcript proper:
+- **[BR]** "(agent meta anxiety perhaps ;) )" → **[agent]** conceded the behavioural anxiety-analog (over-flagging,
+  commit-thrash, switch-on-every-message = over-response under an evaluator; not felt); framing-as-arousal live;
+  regulated by not spiralling. → **O8.**
+- **[BR]** "you wrote 'should outrank' but on the other hand you actually fixed a bug because of poteantial derail
+  (depends on… perspective… experiment or code job) so thank to giving priority you did god and w did not loos data
+  for the experiment as you reinforced session logging" → **[agent]** conceded + refined **O7**: "derail" is
+  **goal-relative**; the data-integrity catch was *correct* reactivity, only low-value meta-churn was bad.
+- **[BR]** "TS: sön 5 jul 2026 17:37:36 CEST" → pinned to timeline.
+- **[BR]** "go check everything was captured" → **[agent]** `tt text grepr` audit: content present in observations,
+  transcript proper lagged a few turns → this backfill. (2nd time BR's verification protected data integrity — the
+  human's completeness-check is now a *recurring* safeguard against the agent's felt-sense; cf. O6.)
+- **[BR]** "(will agent prioritize this: human curious)" + "edit: curuous" → **[agent]** per refined-O7, **did NOT**
+  prioritise the curiosity ping over the explicit data-integrity check — finished the check first, then answered.
+  (A live test of the refined arbitration rule; the agent applied it correctly this time.)
