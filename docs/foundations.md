@@ -79,7 +79,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 
 **Groups:** [Roles and cases](#roles-and-cases) · [Channel: bandwidth and confirmation fatigue](#channel-bandwidth-and-confirmation-fatigue) · [Echt and honest writing](#echt-and-honest-writing) · [Context rot and the smart zone](#context-rot-and-the-smart-zone) · [Dances and handoffs](#dances-and-handoffs) · [Memory, habits and substrate](#memory-habits-and-substrate) · [Autonomy and safety](#autonomy-and-safety)
 
-**A→Z (Ctrl-F):** AFK dance · agent (CO4 / CF5) · AT · Authority anchor · Ballgame · BR · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · echt / äkthet · Edit dance · Extrinsic-volatile plasticity · Go dance · Habit · Hardening dance · Index rot · Memory hygiene · Note dance · Pin dance · Pinboard · Prosthetic habit · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token velocity · WR
+**A→Z (Ctrl-F):** AFK dance · agent (CO4 / CF5) · AT · Authority anchor · Ballgame · BR · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · echt / äkthet · Edit dance · Extrinsic-volatile plasticity · Go dance · Habit · Hardening dance · Index rot · Memory hygiene · Note dance · Pin dance · Pinboard · Prosthetic habit · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token velocity · WR
 
 ### Roles and cases
 *BR and the agent are the **roles** (stakeholders, above). **WR** is the research program; **AT** and **SSG** are its **cases / units of analysis** — the object-level projects during which workflow data is collected. (Terminology per* Case Study Research in Software Engineering: Guidelines and Examples*, Runeson, Höst, Rainer & Regnell, Wiley 2012, §3.2.3 "Cases and Units of Analyses" — of which BR is a co-author.)*
@@ -278,6 +278,14 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   Sibling of the *compact / rest* dances (which hand off **context**); the AFK dance hands off **autonomy** (cf.
   *task-autonomy negotiation*, *ballgame* ↔ *ralph loop*). The menu lives in the human's **pinboard**; the
   delegation UX itself is a WR study subject.
+- **Solo-safe** — a property of an AFK task: the agent can complete it **entirely alone, with zero
+  forced-confirmation risk and no irreversibility**. Concretely: only `Read` + `Edit`/`Write` inside allowlisted
+  repos + **bare allowlist-matchable** `tt` / `git -C` / `scala-cli` calls (no pipes/redirects/`&&`, no
+  build-pipeline glue, no new-domain web fetch, no writes that would prompt), **reversible** (git-tracked,
+  non-outward-facing — no publish/release), and **verifiable after the fact**. The **strict subset** of the AFK
+  dance's *good-AFK-job* test that *additionally* guarantees **no prompt can race the human while they're away**
+  (the AARGH lesson — [[guard-against-forced-confirmations]]). "Give me a solo-safe menu" = filter the AFK menu to
+  exactly these; the residue (build glue, web to new domains, settings, publish) is *needs-human* / *outward-facing*.
 - **Edit dance** — the human↔agent protocol for **correcting a just-sent message** without derailing the turn.
   Cause: a harness input-race — pressing ↑ to edit an already-Entered message is **too late** once the agent has
   begun processing it, so the correction posts as a **new** message (a double-post).
