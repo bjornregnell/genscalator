@@ -85,6 +85,30 @@ class CliSuite extends munit.FunSuite:
     val (_, out, _) = run("text")
     assert(clue(out).toLowerCase.contains("count")) // usage lists subcommands
   }
+  test("text grepr warns (stderr) on a grep-BRE escaped pipe — the Java-regex silent-empty footgun") {
+    val d = os.temp.dir()
+    try
+      os.write(d / "f.scala", "alpha\nbeta\n")
+      val (_, _, err) = run("text", "grepr", d.toString, ".scala", "alpha\\|beta") // grep-BRE `\|`
+      assert(clue(err).contains("grep-BRE"))
+      assert(clue(err).contains("Java regex"))
+    finally os.remove.all(d)
+  }
+  test("text count reads UTF-8 (Swedish å/ä/ö not mangled) — regression for the latin1 bug") {
+    val f = os.temp(contents = "Björn\nRegnell\n", suffix = ".txt")
+    try
+      val (code, out, _) = run("text", "count", f.toString, "ö")
+      assertEquals(code, 0)
+      assertEquals(out, "1") // read as latin1 the UTF-8 ö byte-pair would NOT match the char 'ö' → 0
+    finally os.remove(f)
+  }
+  test("text match preserves UTF-8 Swedish characters in its output (no mojibake)") {
+    val f = os.temp(contents = "Björn\nabc\n", suffix = ".txt")
+    try
+      val (_, out, _) = run("text", "match", f.toString, "B")
+      assert(clue(out).contains("Björn")) // not "BjÃ¶rn"
+    finally os.remove(f)
+  }
 
   // --- files ---
   test("files --count: counts files by extension") {
