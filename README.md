@@ -96,6 +96,20 @@ calls, what extends, resolve imports) genscalator recommends [scalex](https://gi
 [Metals MCP](https://scalameta.org/metals/docs/features/mcp/). Which tool for which question — and the
 escalation ladder: [`docs/tool-selection.md`](docs/tool-selection.md).
 
+## Tests
+
+The test suite is **co-located with the tools** it covers, under [`tools/test/`](tools/test/): `cli.test.scala`
+(CLI-contract tests — each tool run as a subprocess, exit code + stdout asserted) and `lib.test.scala` (unit tests
+for the shared `tools/lib.scala` helpers). Run the whole toolbox plus its tests from the repo root:
+
+```
+scala-cli test tools
+```
+
+The `*.test.scala` files compile in scala-cli's **test scope**, which *extends* the toolbox's main scope — so the
+tests see the tool sources without any `//> using file` wiring, and a plain `scala-cli compile tools` still builds
+**only the tools** (the test files are excluded from the main compile). More: [`tools/README.md`](tools/README.md#tests).
+
 ## Roadmap
 
 What's shipped so far, per release: [`CHANGELOG.md`](CHANGELOG.md).
