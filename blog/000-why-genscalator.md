@@ -35,8 +35,8 @@ collaboration productivity. Why? While over weeks developing an increasingly mor
 workflow together with [Anthropic's Claude Code](https://en.wikipedia.org/wiki/Claude_(AI)), I also got caught
 in real User Experience (UX) problems and pitfalls, and the agent repeatedly did some very stupid things with brittle, unsafe
 dynamic tools such as bash, awk, sed and python. The agent even got dragged down a rabbit hole trying to fix its
-own runtime bugs while it got exhausted in an agent sickness known as *context rot* (there is no Wikipedia article on
-this at the time of writing, but you can search for it or ask an AI near you).
+own runtime bugs while it got exhausted in an agent sickness known as *[context rot](https://www.trychroma.com/research/context-rot)* (there is no Wikipedia article on
+this at the time of writing, but the term was measured and named in [Chroma's 2025 research](https://www.trychroma.com/research/context-rot); you can also search for it or ask an AI near you).
 
 This is what I saw as an obvious mission for genscalator:
 > Can we make agents smarter by nudging them to use typed tools?
@@ -49,17 +49,17 @@ And I haven't had this fun since I discovered programming as a teenager in the m
 
 ## Are we alone?
 
-I will take a step back, addressing anyone strolling by, also non-developers, with a bigger question: Are we the only intelligent species? Humans in general, and science fiction literature in particular, have been thrilled by the question of whether we are the only beings that are as intelligent as we are. Actually, we *used* not to be alone, but our fellow Neanderthals, who probably had likeminded intelligence, became extinct a good while ago, [perhaps or even probably due to us](https://TODO-addwikipedialinkifexistsorother.link).
+I will take a step back, addressing anyone strolling by, also non-developers, with a bigger question: Are we the only intelligent species? Humans in general, and science fiction literature in particular, have been thrilled by the question of whether we are the only beings that are as intelligent as we are. Actually, we *used* not to be alone, but our fellow Neanderthals, who probably had likeminded intelligence, became extinct a good while ago, [perhaps or even probably due to us](https://en.wikipedia.org/wiki/Neanderthal_extinction).
 
-Science fiction literature and astrophysicists have directed their effort in pursuing this question to both inner and outer space, hypothesizing Martians and warp drives to galaxies beyond. Science fiction has also imagined man-made intelligent beings, and Asimov famously pinned down our hopes and fears about them in his Three Laws of Robotics.
+Science fiction literature and astrophysicists have directed their effort in pursuing this question to both inner and outer space, hypothesizing Martians and warp drives to galaxies beyond. Science fiction has also imagined man-made intelligent beings, and Asimov famously pinned down our hopes and fears about them in his Three Laws of Robotics.[^laws]
 
 ## Are software developers alone?
 
 No. At least it *feels* like we are not alone, if you ask me or many of my software engineering research colleagues: the recent development in agentic software engineering where language-model-based AI agents help humans to create complex software is astonishing. And when I chat with an agent to get it to create the software I want it to create, the big software engineering projects that I would never have the grit to land on my own or even with a bunch of other human colleagues, it *really feels* like I am not alone. But I know I am, in the sense that it is perfectly clear to me that agents cannot have "feelings" or "will" in the same way as humans.
 
-Essentially an agent's underlying language model is just a fixed function from text to text. A programmer would express that type of function as `Text => Text`, spelled text-to-text. That's it, basically. You feed the AI with text and it spits out text, but after a really great deal of number crunching. So how can language-model-based AI coding agents be so smart at programming? That is essentially a scaling phenomenon as it seems. We have sooo big computers now and sooo much language-based stuff on our precious internet, and pretty advanced linear algebra math implemented in pretty andvanced and super-fast numerical algorithms, so we can create this `Text => Text` function in a way that it *behaves* just like a human. Well, not like a physical human with a body. But like a human typing text. And *more importantly*, like a human typing programs. This is mind-boggling to me. And, to many [AI researchers](https://TODO-findwikipedialinkintoarticlesubsectionwhereAIdebateonsymbolicversusotherAIetc-you-go-find-smiley.link) as well.
+Essentially an agent's underlying language model is just a fixed function from text to text. A programmer would express that type of function as `Text => Text`, spelled text-to-text. That's it, basically. You feed the AI with text and it spits out text, but after a really great deal of number crunching. So how can language-model-based AI coding agents be so smart at programming? That is essentially a scaling phenomenon as it seems. We have sooo big computers now and sooo much language-based stuff on our precious internet, and pretty advanced linear algebra math implemented in pretty advanced and super-fast numerical algorithms, so we can create this `Text => Text` function in a way that it *behaves* just like a human. Well, not like a physical human with a body. But like a human typing text. And *more importantly*, like a human typing programs. This is mind-boggling to me. And, to many [AI researchers](https://en.wikipedia.org/wiki/Symbolic_artificial_intelligence) as well.
 
-By first, with relentless human and machine perseverence, *train* a language model we can make them do what we call *inference*. Training means to warm up the planet with super-computers to fiddle with a humungous number of numbers in crazy big matrices at a never before seen scale in order to reach a `Text => Text` function that behaves like a human. Inference means putting the `Text => Text` function to work. Humans write other smart hand-made functions that apply the `Text => Text` function inside a *harness* creating an *agent* comprised of harness + `Text => Text` function. So when programmers write the agent their requirements the agent can generate program text. This is what we call *agentic code generation*.
+By first *training* a language model, with relentless human and machine perseverance, we can then make it do what we call *inference*. Training means to warm up the planet with super-computers to fiddle with a humungous number of numbers in crazy big matrices at a never before seen scale in order to reach a `Text => Text` function that behaves like a human. Inference means putting the `Text => Text` function to work. Humans write other smart hand-made functions that apply the `Text => Text` function inside a *harness* creating an *agent* comprised of harness + `Text => Text` function. So when programmers write the agent their requirements the agent can generate program text. This is what we call *agentic code generation*.
 
 What has really astonished the programming world (and many academic AI researchers), since winter 2025 and spring 2026, is that one company (Anthropic) has managed to make a coding agent called Claude Code so smart that software developers do not feel alone. We now have the power at our fingertips that can help us build even more complex software systems that were impossible before.
 
@@ -77,36 +77,40 @@ So here is the hopeful part, and the whole reason genscalator exists: a lot of t
 
 
 
-## Outline
+## The genscalator bet, step by step
 
-### 1. The problem — the dynamic-shell default
-- Agents reflexively reach for `grep`/`awk`/`sed`/`cd && … > log`; each call is re-emitted, re-read, brittle.
-- Costs: wasted tokens (TE), context bloat that pushes toward the **dumb zone** (context rot), and
-  **confirmation fatigue** — blanket allowlists like `curl *` / `git *` that can't be *proven* safe.
+<!-- AGENT-DRAFT (2026-07-05): sections 1-6 below drafted in BR's voice from the outline bullets. BR to revoice/trim/verify before publish. No new em-dashes (standing style). -->
 
-### 2. The insight — the agent is the tool-user
-- Design tools *for the agent as the primary user*, not for a human at a terminal: one literal, typed,
-  statically-analyzable command per action.
+### 1. The problem: the dynamic-shell default
+So what exactly is the agent doing wrong? Out of the box, when a coding agent needs to get something done, it reaches for the *dynamic shell*: it writes a fresh little Unix command (a `grep` here, an `awk` there, a `cd this && do that > log`) every single time, runs it, and reads the output back in. Three things quietly go wrong. First, it wastes *tokens*, the currency an agent thinks in: it re-emits and re-reads the same brittle plumbing over and over. Second, all that plumbing and its output pile up in the agent's limited working memory and push it toward the *dumb zone*, where context rot sets in. Third, because such commands can do almost anything, a cautious setup has to keep asking the human "are you sure?" until the tired human just clicks "always allow `curl`" or "always allow `git`" and quietly hands over the keys. That last one has a name in this project: *confirmation fatigue*.
 
-### 3. The thesis — safe-by-design → fewer confirmations, honestly
-- A tool that **declares its effects** and is **statically analyzable** can be *proven* safe by the
-  confirmation guard, so it runs without a prompt. We cut CF **without** the unsafe "always allow" a fatigued
-  human reaches for.
+### 2. The insight: the agent is the tool-user
+Here is the small shift in perspective that changes everything. For fifty years we designed command-line tools for a *human* sitting at a terminal. But the primary user has changed: today it is often the *agent* typing the commands, not a person. So we should design the tools *for the agent as the user*. And an agent wants something different from a human power-user: not a clever pipeline of flags and pipes, but **one literal, typed, machine-checkable command per action** that does exactly one well-defined thing and reports clearly what it did. Design for that user, and both safety and speed follow.
 
-### 4. Token efficiency as liveness, not tidiness
-- A committed, compiled tool beats re-emitting bash every time; self-pacing keeps the working context in the
-  **smart zone**. TE stops being a nicety and becomes halt-avoidance.
+### 3. The thesis: safe-by-design means fewer confirmations, honestly
+This is the heart of it. A raw shell command cannot be *proven* safe, so a careful guard has to stop and ask. But a tool that **declares up front what it can and cannot do**, and is simple enough for a machine to check, *can* be proven safe before it runs, so it needs no prompt at all. That is how genscalator cuts confirmation fatigue *honestly*: not by a tired human waving through a blanket "always allow" (which quietly widens what an attacker could do), but by shrinking the number of dangerous operations that exist in the first place. Fewer prompts, and the few that remain are narrow and worth actually reading.
+
+### 4. Token efficiency is liveness, not tidiness
+It is tempting to treat "use fewer tokens" as mere tidiness. It is not. A committed, compiled tool is a small, stable thing the agent simply *calls*; re-deriving the same brittle bash and re-reading its output, every time, bloats the working context and drags the agent toward the dumb zone. Keeping token use lean is really about keeping the agent *sharp and alive*: it is how a long task avoids grinding to a halt or rotting into confusion halfway through. Token efficiency is not about saving money, though it does that too. It is about staying in the smart zone long enough to finish the job.
 
 ### 5. Safe-by-design in practice
-- Replace dual-use binaries (`curl`, raw `grep`) with narrow typed tools (`tt web get`, `tt text`, `tt forge`);
-  trust boundaries come only from **human-set env**, never agent-nameable flags.
+What does this look like concretely? We take the do-anything binaries an agent reaches for (`curl`, raw `grep`, and friends) and replace them with narrow, typed tools that can do only their one job: `tt web get` (fetch a page and print it, nothing else), `tt text` (search files, no surprises), `tt forge` (talk to our code host, within limits). And the real trust boundaries, what may touch the network and what may write where, are set by the *human*, in the environment, never by a flag the agent can name for itself. The agent gets sharp tools; the human keeps the keys.
 
-### 6. The bigger frame — human↔agent collaboration + research
-- Instrumentation-by-default (the agent *Reads* a gauge instead of guessing); the dances (compact /
-  consolidation); the whole effort is Action Research + Design Science on a real build — the artifacts *are*
-  the contribution.
+### 6. The bigger frame: working and researching together
+And here is where it stops being just a toolbox and becomes the project I actually care about. Every tool has instrumentation built in, so the agent *reads a gauge* instead of guessing (how full is my memory? how fast am I burning tokens?). We have worked out little rituals, we call them *dances*, for handing work back and forth without losing the thread: for saving state before the agent's memory is compacted, or for me stepping away while it works. And the whole thing is run as real research, Action Research and Design Science, done in the open, on a genuine software build, with the friction logged as we go. The tools, the skills, the write-ups: those artifacts *are* the contribution.
 
 ## Close
 genscalator = the toolbox (`tt`) + skills + docs distilled from doing real work this way. *(to draft)*
 
 Maybe genscalator can unlock even more ambitious projects. So maybe this is not my "last big project" before I retire, after all. (And retirement does not mean me stopping to try to do cool things with software, then with even more competent AI software engineers helping us...)
+
+---
+
+[^laws]: **Asimov's Three Laws of Robotics** (see [Wikipedia](https://en.wikipedia.org/wiki/Three_Laws_of_Robotics)), first stated in his 1942 story *Runaround*:
+    1. A robot may not injure a human being or, through inaction, allow a human being to come to harm.
+    2. A robot must obey the orders given it by human beings, except where such orders would conflict with the First Law.
+    3. A robot must protect its own existence, as long as such protection does not conflict with the First or Second Law.
+
+    (Asimov later added a **Zeroth Law**, above the others: a robot may not harm humanity, or, by inaction, allow humanity to come to harm.)
+
+    **Why these laws are not enough for today's agents.** Asimov's laws assume a robot with a fixed, rule-following *will* that an engineer can program in and rely on. A language-model agent has no such thing. Underneath, it is that `Text => Text` function: no built-in goals, no stable self, and no way to *guarantee* it will obey a rule at the instant of action, because its "obedience" is a statistical tendency learned from mountains of text, not a hard constraint you can bolt on. You cannot compile the First Law into it and trust it the way you trust a locked door. That is exactly why genscalator does not rely on the agent *choosing* to be safe: instead it removes the dangerous options from the agent's reach in the first place, so the safe path is the only path available. Structure, not good intentions.
