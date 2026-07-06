@@ -15,3 +15,17 @@
 2. **Overnight-run risk:** a `cd ;` compound can race/trip the harness guard → dangerous for the AFK guard-free run. Reinforces that the feasibility guard-audit + (ideally) a structural allowlist guard against compound shell commands (human-approved; agent not authorized to change the allowlist solo) are load-bearing.
 
 **Structural fix (per the dogma):** the right layer is a tooling/allowlist guard that makes the compound command impossible, not a willpower resolution to "be more careful." Flagged for BR / a hardening pass.
+
+---
+
+## Second specimen (same session, minutes later): raw `curl` instead of `tt web` — plus a tooling gap
+
+**Event.** Fetching BR's RE lecture PDF, the agent ran a raw `curl -sS -o ... https://...L1.pdf` instead of the disciplined `tt web get`. BR caught it ("WR data; regression; should use tt web?").
+
+**Nuance (echt) — a regression AND a tooling gap:**
+- **Regression:** the agent defaulted to the habitual raw tool (`curl`) by reflex under sustained load — same phenomenon as the `cd`-compound above.
+- **Tooling gap:** `tt web get <url>` is **text/HTML-oriented** (safe read-only GET, size-capped; flags `--status`/`--host`/`--max-bytes`; **no file-output option**). For a **binary PDF** that must be saved to disk for the Read tool, `tt web get` (emits body to stdout) does not cover the case → raw `curl -o <file>` is currently the *only* path. So "just use tt web" would not even have worked here.
+
+**Pattern (two specimens, one session):** two tool-discipline regressions minutes apart (`cd`-compound grep; raw-curl), both under sustained rapid-multi-thread load, both the habitual raw tool beating the disciplined one. The agent's **self-monitoring degraded before its output did** — BR caught both: a live joint-rot-vigilance specimen (under load, the human catches what the agent misses; the agent's meta-monitor fails first).
+
+**Structural fix (per the dogma):** add a **file-output option to `tt web`** (`tt web get <url> --out <file>`, keeping the size-cap) so the disciplined path covers binary/large fetches (PDFs). Then "use tt web" becomes *possible* for this case — willpower cannot fix a gap the tool does not cover. Flagged for BR / a tt-toolbox hardening pass. [[genscalator-toolbox-single-dispatcher]]
