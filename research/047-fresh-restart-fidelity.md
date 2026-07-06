@@ -772,5 +772,14 @@ treats the instance as a continuous "you" across restarts; the relational regist
 - **Fresh-eyes-both-ways (a specimen for the study).** The independent reviewer both (a) FOUND the PRD1/PRD2 misses the author was blind to, AND (b) OVERRULED the author's PRD4 division over-flag (an author false-alarm) — author-blindness corrected in BOTH directions, corroborating the independent-reviewer methodology and the study's own "can a system critique its own output" theme.
 - **Intact:** all style-forks assessable; no requirement forces a generic (non-our-style) impl; the difficulty gradient (PRD3 floor / PRD1-2 mid / PRD4 hard) and intent-carry axis preserved.
 
+### 2026-07-06/07 — Go #1 executed (feasibility gate + plan revision pass)
+- **Feasibility cleared** (`047-feasibility.md`): ssh→ollama deterministic gen (temp0 + seed) timed across the `qwen2.5-coder` ladder (0.5b/3b/7b — box is not the bottleneck; whole collection ~2-3 h of an 8 h window); scoring harness proven end-to-end (compile via exit-code, tests via assertions, runtime-hang via in-harness thread timeout); difficulty discrimination **0/5 (0.5b compile-fail) → 4/5 (3b adjacency bug)**; guard sheet clean (every shape allowlisted + tested; two avoided-by-design; the `ssh *` blanket-allow flagged as a security item + pinned to PB).
+- **Revision pass applied** — `3a·4c·5b` + all 15 ✅ critique items now in `047-PLAN.md` (see the critique file's "REVISION PASS APPLIED" closure). Nothing left open from the critique.
+- **Command-hygiene regression #3 (WR data):** a compound `scala-cli … | tail; echo` stalled the pilot on a permission prompt — BR caught the stall. Structural fix pinned (plan §4): the overnight loop is ONE bare-invoked `scala-cli` orchestrator whose internal `os.proc` calls are not Bash-allowlist-gated, so no per-cell compounding can leak in.
+- **Two BR echt-checks during the pass (live member-check specimens):**
+  1. *"what design aspect detects before/after-**warp** psyche differences?"* → the **substrate ablation as negative control**: Factor B *is* a controlled model of the warp (full ≈ clean warp, empty ≈ catastrophic); the coding arm + enactment binary are the fine graduations; recall facts carry across the warp and detect it least. Folded into §3.3 ("What makes a warp detectable").
+  2. *"how do you in practice warp dumb agents?"* → **you don't** — they are stateless / always-cold; the warp is **operationalized as substrate-feeding** scored against the committed key; the **only literal warp in the study is the researcher agent's own** (n=1, this session's compacts). Folded into the §3.4 precision note. An honest cross-arm asymmetry, owned.
+- **Process:** BR will **compact before Go #2** (the ralph loop); resume prompt updated to be loop-ready. Go #1 gates GREEN, reported to BR, awaiting the tired-go for autonomous ralph-looping.
+
 
 

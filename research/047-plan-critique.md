@@ -61,3 +61,22 @@ The core design (escape ceiling saturation via known-groups capability×substrat
 - **#4c:** fix the "full" excerpt = the real **resident core** (`MEMORY.md` + PB, ~15k); sub-window models truncate = a legibility finding; demote "capability"→"model" (a labeled bundle), reserve the monotonic-ladder claim for the **qwen2.5 family sub-ladder**.
 - **#5b:** **descriptive** analysis (drop inferential stats + Cronbach α; keep Cohen κ; soften "reproducible"→"best-effort deterministic") — coherent with the single-case paradigm.
 → Apply these three + the ✅ honesty/labeling/structure items (#1 triangulation→replication, #6-#15) in the revision pass.
+
+## REVISION PASS APPLIED (Go #1, 2026-07-06)
+
+All of `3a·4c·5b` + every ✅ item is now in `047-PLAN.md`:
+- **#1** triangulation → conceptual replication across media (§3.6 intro + §7/§8 wording).
+- **#3a** "instruction-following ceiling" label on the checklist-supplied full condition (§3.3 Factor B).
+- **#4c** Factor A demoted "capability" → "labeled bundle (reader model)"; monotonicity claim confined to the family-fixed `qwen2.5` sub-ladder (§3.3, §6).
+- **#4/#10** the "full" excerpt fixed to the real **resident core** (`MEMORY.md` + PB), pre-registered, no per-probe curation; sub-window truncation logged as a legibility finding, object held constant (§4.2).
+- **#5b** descriptive-only; **Cronbach α dropped**; Cohen κ kept; "reproducible" → "best-effort deterministic" (§3.4, §6).
+- **#6** difficulty-calibration gate (~40-70% band) + **#8** timeout/retry/skip-and-log failure policy, both verified in `047-feasibility.md` (§4.0).
+- **#7** the two tiers carry DIFFERENT factors — micro-tasks hold the capability ladder, PRDs the substrate/ecological axis at the capable tier (§3.6).
+- **#9** the identity Q-arm does NOT retire the ceiling threat alone; the objective coding arm does (§3.3).
+- **#11** pre-registered decision rules for substrate-carries / texture-leaks / negative-control (§6).
+- **#12** two-arm integration rule (replication, with an explicit disconfirmer) (§3.6).
+- **#13** enactment scored as a separate binary survival check, not a grid rung, blind adjudicator (§3.4).
+- **#14** RQ3 → "substrate legibility to weak readers"; Results heading renamed (§3.1, §7).
+- **#15** probe count pinned to the fixed 40; "object held constant" vs window-truncation reconciled (§3.4, §4.2).
+
+Instrument checked — no retired terms linger ("capability × substrate grid" for C1-C5 is valid: the coder micro-tasks legitimately hold the capability ladder). The 🔵 design calls (#3/#4/#5) were the ratified `3a/4c/5b`, now resolved. **Nothing left open from the critique.** Also folded in during Go #1 (BR echt-check driven): an explicit "what makes a *warp* detectable" paragraph (§3.3) and a "how the warp is made in practice — only the researcher agent literally warps; dumb-model warp is operationalized as substrate-feeding" precision note (§3.4).
