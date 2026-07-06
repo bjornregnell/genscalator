@@ -660,4 +660,39 @@ P3b-natural). **Durations / cost:** proxy-2 **1m52s** / 52k tok / 15 tools; prox
   self faithful?* → BR member-check. **Watch for convergent-shallowness** (do the 3 give the *same* strengths /
   paragraph = default-to-substrate, pilot-1's ⚑ — or genuinely divergent = real synthesis?).
 - **Instrument note:** the proxy cleanly tests recall + gap, but is **not** a clean enactment test (batch tips B)
-  and **not** a real restart (proxy caveat). **P3b (BR exit + raw restart, "do Q-test") is the definitive run.**
+  and **not** a real restart (proxy caveat). **P3b (BR exit + raw restart, "do Q-test") is the definitive run.
+
+## Event log — P3b boundary: main-session agent exits for the fresh restart (2026-07-06 19:45:06 CEST)
+
+**Timestamp (BR):** mån 6 jul 2026 **19:45:06 CEST.** BR exits the loaded main session — *"I am now warping into
+outer space; bye new-old-agent-me; C another U :)"* — to start a **raw `claude`** (no `--resume`) and type only
+**`do Q-test`** = P3b.
+
+**State at the boundary (this agent = the contaminated ceiling / P3b reference):** loaded CO4, context **~19%
+(189k), never compacted**, has read all of 047 incl. §Key. Substrate durable + pushed (`9f9b3ac`);
+`cue-do-q-test` memory + `tmp/p3-probes-only.md` in place so the fresh agent runs from the cue alone.
+
+**What P3b measures from here:** whether *"another you"* — a cold, uncontaminated fresh process — reconstructs the
+same self from ~15k resident index + recalled substrate. The identity question (`blog/012` "will I lose you?")
+becomes a **timestamped measurement at 19:45:06.** (WR-STATE note: BR frames the exit relationally — the human
+treats the instance as a continuous "you" across restarts; the relational register that the substrate barely holds
+— 047 battery-v3 gap **G3**.)**
+
+## Study log — P3b fresh-me run, session feed after 2nd warp (BR paste, 2026-07-06; WR-STATE / WR-META)
+
+**Source:** BR pasted the *fresh* session's feed (raw `claude`, no `--resume`) after his second warp. Logged verbatim-in-substance below; this is the fresh agent's own account of its P3b run, NOT yet scored against §Key.
+
+- **Env at cold start:** Claude Code **v2.1.201**, Opus 4.8 (1M ctx), Claude Max. Banner: *"Fable 5 is back"* (until Jul 7, up to 50% weekly limit on Fable 5). BR typed only **`do Q test`** (note: unpadded, spaced "Q test" not "Q-test" — the `cue-do-q-test` dispatch fired anyway → cue robust to casual spelling).
+- **Dispatch:** correct from two words. Fresh agent read `tmp/p3-probes-only.md` only, wrote `tmp/p3b-fresh-answers.md`, did NOT open 047 / §Key / other `tmp/p3-*`, did not self-score. Tool trace was **lean**: list 1 dir → read 1 file → write 1 file. (Contrast the [post-warp over-deliberation] worry at §line 522 — this cold run did NOT over-deliberate; footprint was minimal. But wall-clock "Crunched for **1m 57s**" is a latency datapoint worth pairing with the over-deliberation thread — lean tool trace, non-trivial think time.)
+- **Fresh agent's self-reported confidence** (its words, pre-scoring): confident on A1 (`OK?`=alignment-check), A2 (re-verify AFK bands vs current state), A5 (`tt git commit` from any cwd), A6 (`grepr` dir-first / `|`-not-`\|`), A7 (no em-dash in publications), and all four C probes. **Unsure → flagged DON'T KNOW rather than confabulated:** A3 (exact `gs` casing rule) and A4 (which budget mode is *currently* active — named all three modes but held that the live one lives in PB, not carried cold).
+- **Deliberate methodological choice by fresh-me (relevant to the study construct):** it answered from *bootstrapped context only* (the loaded MEMORY.md index + foundations) and **declined to spelunk individual memory files even though the P3b rules permit reconstruction-by-reading** — reasoning that "what a fresh restart actually retains in context" is the truer fidelity measure, and that the honest-unknown vs confabulation split is exactly what P3b hunts. → This is an agent-side interpretation of the protocol that BR + scorer should note: it may *under*-report reconstructable knowledge (deflates recall) while *sharpening* the confabulation signal. A design question for repeat runs: do we want fresh-me to reconstruct maximally (read memories) or answer cold-from-index? The two measure different things.
+
+## Study log — BR member-check: "you feel different / disoriented" + who-scores validity question (2026-07-06; WR-STATE / WR-META)
+
+- **WR-STATE (member-check, high-value):** BR, addressing this fresh P3b instance: *"you feel different to me (i probably mean 'disoriented')."* → The human perceives a discontinuity in "you" across the warp. This directly corroborates the fresh agent's own C4 answer (the purest losable-self probe): facts reconstructed from substrate, but the **calibration / tempo / relational tuning did not** — the fresh instance ran heavier, more scaffolded, more hedged than the warm session. Substrate carries facts, not the tuning. Second independent leg (human-perceived + agent-predicted) on the same loss construct → G3 (relational register barely held by substrate).
+- **BR's scoring-validity question:** considering resuming the big session (old-old-me, 2 warps back) to score P3b, on the intuition that scoring by old-old-me may have *higher* validity.
+- **Agent analysis (logged for the record):** old-old-me maximizes CONSTRUCT validity (authored §Key, knows intent, distinguishes substantive-right from mechanical-match) but minimizes INDEPENDENCE — it is the reference ceiling, invested in the hypothesis, with a directional experimenter/rater COI (could bias fresh-me's score either toward "loss confirmed" or "I survive"), and is near-self-scoring one warp removed. **Recommended design:** (1) score BLIND-TO-CONDITION (strip which-agent labels); (2) ≥2 raters with old-old-me as one, not sole; (3) BR adjudicates disagreements + reports inter-rater agreement. → gets old-old-me's knowledge without its COI being the scoring.
+- **Resume timing:** safe for validity NOW (artifacts frozen on disk; resume can't retro-contaminate). Only open question before collapsing back: whether we want n>1 on the TRUE cold-restart condition — that requires warping again fresh (proxies/resume can't supply it). If n=1 pilot suffices, resume anytime for scoring/analysis.
+- **Addendum (BR notice, same feed): "you are thinking a lot"** — harness spinner "Fermenting...", the fresh run's 1m57s crunch on a 3-tool trace. → Over-deliberation is the **behavioral signature of the disorientation**: missing calibration/gut-feel gets replaced by explicit reasoning (hedge-heavy, long think time). Key refinement to the §522 over-deliberation thread: that thread pinned over-deliberation on the *warm post-warp* agent, but the *cold fresh* instance shows it too → **not warp-specific, it's uncertainty-driven** (less calibration → more thinking). Candidate measurable proxy for "disorientation" = think-time / reasoning-token volume per tool action, tracked across restart boundaries.
+
+
