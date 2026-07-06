@@ -138,3 +138,16 @@ be re-negotiated each session — the terse-precise codec extended to *control* 
   replace, a few **box-free Edits** beat a compiling scratch; reserve scratches for structural / many-site /
   newline-sensitive work. The human's box is **shared substrate** — agent work has a footprint on it (a cousin of the
   human-box-bookkeeping point above).
+- **Agent self-Q&A: zero-human-cost token spend that bypasses the input bottleneck (BR 2026-07-06, delighted).** The
+  agent answering its own pre-registered questions (the fresh-restart battery, `research/047`) **costs BR nothing** (no
+  typing) while **spending tokens** — ideal in spending-mode. BR: "brilliant … can you have many of them?" **Yes, and
+  it's a general mechanism:** the human's **typing is the bandwidth bottleneck** (comms-bandwidth); self-Q&A lets the
+  agent spend its cheap, abundant generation capacity WITHOUT consuming the human's scarce input bandwidth —
+  substrate-as-multiplier applied to the token economy. **Discipline that keeps it value, not theatre** (it carries the
+  full corroboration-asymmetry risk — the agent grading itself can burn tokens on confident-but-unverified prose): each
+  self-probe battery must (a) be **adversarial / falsifying**, not confirmation-seeking; (b) **ground** answers in
+  something checkable (code, tests, committed substrate); (c) **end in an actionable artifact** (a found bug, fix,
+  drift, or decision input); (d) be **periodically BR- or test-adjudicated**. Absent (a)–(d) it decays to confident
+  token-burn. Formalizes the bg-task repertoire (SM011) as **self-administered probe batteries**: consistency
+  self-audits, code-review P1–P6, guardrail-scenario tests, completeness critics, adversarial BHH probes — each
+  terminating in a checkable finding.
