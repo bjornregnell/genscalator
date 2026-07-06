@@ -581,7 +581,12 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   starts another**, crossing the context boundary (BR's coinage: *"warping into outer space"*). Two kinds: a **raw
   warp** (no `--resume`) starts a fresh process that lands in a **cold start** (substrate-only, no warm context); a
   **resume-warp** (`--resume`) inherits a **warm** process — context carried, plus a fresh OS env when useful (e.g. a
-  refreshed token, the **exit-resume dance**). Sessions index by **warp-distance**: *"two warps back"* = an earlier
+  refreshed token, the **exit-resume dance**). **Caveat — disk-size is not context-fill:** a resume rehydrates a
+  *bounded live context*, not the full on-disk transcript. The archived session can be ~85 MB on disk yet the resumed
+  window loads only a capped working set (one observed resume landed at ~284 k tokens, 28% of a 1M window). So *warm*
+  is **not binary**: a resume-warp restores **a** context sized by what the harness chooses to rehydrate, not the
+  prior fill — even a resume **reconstructs**. The *"context hyperspace"* imagery is the archive's gravity well, not
+  its full mass. Sessions index by **warp-distance**: *"two warps back"* = an earlier
   session ("old-old-me"). So **warp = the verb/event, cold start = the state a raw warp lands in.** Substrate-hierarchy
   cousin of the **compact dance** (which hands off *within* a session across a compaction; a warp crosses *between*
   processes). See `research/047-fresh-restart-fidelity.md`; memory [[exit-resume-dance]].

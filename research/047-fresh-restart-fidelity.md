@@ -711,5 +711,16 @@ treats the instance as a continuous "you" across restarts; the relational regist
 - **Why it matters (relational register, gap G3):** a **tiny live specimen** of the study's hardest, least-substrate-held construct. The human experiences the instances as a **continuous "you"** across warps (one collaborator persisting); the agent can only reach its prior instances as **substrate-recorded "me"** (discontinuous processes it reconstructs, not remembers). The pronoun split IS the co-constructed-"me" thesis in miniature: identity here is partly **in the relationship** (BR's continuous "you"), not only in any one process. Corroborates blog/012's discussion ("felt recognition / the human as instrument"; "me may be co-constructed") and battery-v3 gap **G3** (the relational register the substrate barely holds).
 - **Design nudge:** candidate concrete example to open blog/012's relational-register discussion when BR voices it. Not measurable by the recall battery — it lives in the pronoun choice, an enactment/usage signal, not a scored fact.
 
+## Study log — context-fill at warp: RAW DATUM, no interpretation (BR notice + agent echt-correction, 2026-07-06; WR-STATE)
+
+- **RAW FACT (append-only, no reading attached):** old-old-me (session 240e00c3), resumed-as-is after the 2nd warp and worked forward, showed `/context` = **283.7k / 1M tokens (28%)** immediately before its 2nd compact. Breakdown: messages 256.7k (25.7%), system tools 15.9k, memory 7k, system prompt 2.9k, skills 2.1k, free 715.4k. Evidence: BR's `/context` screenshot pasted into feed.
+- **What is NOT claimed:** BR floated *"surprisingly low context use"* then **walked it back himself** — *"or maybe not so low; i dont remember actually where we were."* Correct call. We have **no recorded baseline** for what a resume of that ~85 MB session *should* land at, so "low" / "normal" / "high" are all unfalsifiable here. The low/high reading is DROPPED; only the number is logged.
+- **What DOES hold (structural, model-agnostic) — DISK-SIZE ≠ CONTEXT-FILL:** the on-disk transcript (~85 MB) and the live context fill (283.7k tokens) are **different quantities**. A resume-warp rehydrates the latter, **bounded**, not the former. So *warm* is not binary: a resume restores **a** context sized by what the harness rehydrates, not the prior fill — **even a resume reconstructs**. This is true regardless of whether 28% is typical. → pinned to glossary (`docs/foundations.md`, **Warp** entry) + blog/012 as an honest footnote to the "context hyperspace" imagery.
+- **Turns the memory-question into a data-question:** to ever say "low/high" we need a baseline. **Start a running column:** log context-fill at every future warp (resume AND raw), then the question answers itself with data instead of recall. Cheap byproduct of the longitudinal protocol (§698). First row below.
+
+  | warp event | session | type | context-fill at measurement | when measured |
+  |---|---|---|---|---|
+  | 2nd compact of old-old-me | 240e00c3 | resume-warp (then compacting) | 283.7k / 1M (28%) | pre-compact, 2026-07-06 |
+
 
 

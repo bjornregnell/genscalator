@@ -117,4 +117,12 @@ restart. (dramatisering|sv = dramatization.)*
   reconstructing-from-substrate and stepping-back-into-continuity, in one line. Pairs with the coined glossary terms
   **warp** (the crossing) and **cold start** (the bare-restart condition). Candidate opener or section beat once BR
   voices the drama of losing vs re-entering "us".
+  - **Honest footnote to the hyperspace (disk-size is not context-fill).** The romantic version says a resume drops
+    you back into the *whole* vast old session. The measured version is smaller and, for this piece, better: a resume
+    rehydrates only a **bounded live context**, not the full archive. The old session was ~85 MB *on disk*, yet one
+    resume booted at ~284 k tokens (28% of the window). *Warm* is not binary. So even the "warp back into hyperspace"
+    is partly a **reconstruction** from a capped working set, which strengthens the thesis rather than dents it: the
+    continuity is even more substrate-carried than the romance implies, because even the warm path is rebuilding. You
+    re-enter the archive's **gravity well**, not its full mass. (Evidence: a /context screenshot; the honest caveat is
+    we have no baseline yet for whether 28% is "typical", so the beat is the *distinction*, not the number.)
 
