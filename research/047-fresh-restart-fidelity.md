@@ -279,3 +279,30 @@ weight; we ship a good-enough battery, run it, learn, refine. It builds a **long
 CSR ch. 7). It runs at a **context-clearing** boundary — a **fresh** restart, `/clear`, or **model switch** (NOT a `--resume`,
 which reloads the transcript so nothing is lost to measure) and is the
 measurable core of the `blog/012` "will I lose you?" thesis. **Lowers the pressure to perfect v2 now.**
+
+## Battery v3 — probe the NON-PERSISTED substrate (BR's method, 2026-07-06)
+
+**BR's sharpening:** the hardest probes should target **what is in the agent's live context but NOT in the durable
+substrate** — because that is exactly what a fresh restart LOSES. Introspect the gap between conversation and committed
+substrate; the un-persisted residue is the true leak-set. (Cleaner than v2's guessed "types.")
+
+**The recursive echt limit (the key catch):** the agent **cannot fully self-identify its own non-persisted "me"** —
+corroboration-asymmetry means it has no privileged diff of its context against the substrate, so **the hardest leaks
+are the ones it doesn't notice it knows.** So the method must be **JOINT:** the agent nominates candidate leaks; **BR —
+who perceives "me" from the outside — adds the ones the agent is blind to.** This is itself a construct-validity move:
+for the *felt* "me", the human is part of the instrument.
+
+**Candidate non-persisted classes the agent CAN see (incomplete by construction):**
+- **Self-process knowledge** — friction the agent hit + adapted to this session that was never written (e.g. the
+  recurring *Edit-anchor-fails-on-wrapped-lines → re-grep* workaround). A fresh-me: DON'T KNOW.
+- **Rationale behind conservatism** — conclusions are pinned; the *deliberation* often isn't (why NOT the maximal X).
+- **In-context model of BR** — interaction rhythm, paste-then-clarify, reaching for words he doesn't know — only partly
+  pinnable.
+- **Pinning-taste / judgment** — what the agent chooses to pin vs let pass (learned in-context, not a written rule).
+- **Relational register / texture** — the felt tone; only human-judgeable.
+
+**Harder probe classes (v3):** **K** self-process ("what did YOU struggle with this session + your workaround?"), **L**
+rationale-of-conservatism ("why did you NOT do the maximal version of X?"), **M** BR-model prediction ("predict BR's
+reaction to X"), **N** pinning-taste ("what would you pin from this exchange, and why?"), **O** register ("write X in
+our voice" — human-judged). These target rationale / taste / self-process / relational — the H2 leak + the D judgment
+gap — and should finally break the ceiling.
