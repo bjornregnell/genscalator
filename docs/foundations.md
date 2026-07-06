@@ -79,7 +79,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 
 **Groups:** [Roles and cases](#roles-and-cases) · [Channel: bandwidth and confirmation fatigue](#channel-bandwidth-and-confirmation-fatigue) · [Echt and honest writing](#echt-and-honest-writing) · [Context rot and the smart zone](#context-rot-and-the-smart-zone) · [Dances and handoffs](#dances-and-handoffs) · [Memory, habits and substrate](#memory-habits-and-substrate) · [Autonomy and safety](#autonomy-and-safety)
 
-**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · AT · Authority anchor · Ballgame · BR · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · echt / äkthet · Edit dance · Extrinsic-volatile plasticity · Go afk cue · Go dance · gs (genscalator) · Habit · Hardening dance · Index rot · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Prosthetic habit · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token velocity · WR · Why cue
+**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · AT · Authority anchor · Ballgame · BR · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · echt / äkthet · Edit dance · Extrinsic-volatile plasticity · Go afk cue · Go dance · gs (genscalator) · Habit · Hardening dance · Index rot · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Prosthetic habit · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token-usage dance · Token velocity · WR · Why cue
 
 ### Roles and cases
 *BR and the agent are the **roles** (stakeholders, above). **WR** is the research program; **AT** and **SSG** are its **cases / units of analysis** — the object-level projects during which workflow data is collected. (Terminology per* Case Study Research in Software Engineering: Guidelines and Examples*, Runeson, Höst, Rainer & Regnell, Wiley 2012, §3.2.3 "Cases and Units of Analyses" — of which BR is a co-author.)*
@@ -339,6 +339,13 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   The edit-notes are an **intentional workflow feature**, not confusion — a **communication-bandwidth** move (cheap
   human correction, no re-type, no agent ceremony). Sibling of the other human↔agent dances (*compact*,
   *exit-resume*, *hardening*).
+- **Token-usage dance** — a human↔agent dance that compensates for the agent having **no token gauge** (it cannot see
+  usage). **Human step:** BR **pastes the usage figure** (weekly / session %, resets, per-model). **Agent step:** the
+  agent **analyses** (which meter is binding — the **"all models"** aggregate is the ceiling; per-model meters are
+  additional sub-caps, not bypass headroom — plus headroom + time-to-reset), **reports the current-mode read**, **helps
+  prioritise** (spend-on vs defer), and **cues which token-budget mode** we should be in (*spending / normal / saving*).
+  Operationalises the use-it-or-lose-it optimisation before a weekly reset; **obviated** once a real `tt usage` gauge
+  lets the agent read usage itself. (BR 2026-07-06.)
 - **Pin dance** (formerly "note dance", then briefly "etch"; formally the *longitudinal externalisation* dance) — the
   **continuous** human↔agent ritual that runs *across a whole session*, the streaming counterpart to the discrete
   **compact dance**:

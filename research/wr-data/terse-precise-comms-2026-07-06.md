@@ -184,3 +184,14 @@ be re-negotiated each session — the terse-precise codec extended to *control* 
   the earlier self-Q&A caveat — self-Q&A that only *confirms* is theatre; self-Q&A that can *detect its own failure* is
   measurement. Surfaced by pilot-1's 16/16 ceiling (`research/047`). Echt applied to instruments: a reassuring self-test
   result may be an artifact of an insensitive test, and the agent must say so.
+- **Imprecise / not-fully-known words as a misdirection risk (BR 2026-07-06).** BR (second-language English, self-noted
+  "bad at English") sometimes reaches for a word he doesn't fully know (e.g. "pondering" — which happened to fit).
+  Risk: a word that is **wrong but plausible in context** could steer the agent to a **literal misread it acts on
+  confidently.** **Why it's usually low-risk:** the agent reads for **intent, not the literal token** — the whole
+  terse-precise codec + `OK?`/`why:` cues exist to carry intent through imprecise wording, and context disambiguates
+  most cases. **Real failure mode + corrective:** for a **consequential** action, **reflect the intent back before
+  executing** (the `OK?` move), never silently run a literal read; for low-stakes, decode-and-proceed and let BR
+  `edit:` it. The **not-dead-proof** reflex catches a word that pushes the agent somewhere odd (halt + flag). **The
+  burden is on the agent to confirm, not on BR to be precise** — BR may also describe intent plainly or write
+  **Swedish** (agent reads it). Sibling of the input-channel metadata-loss + `OK?` entries; a second-language
+  transparency property of this corpus (METHODOLOGY.md language-for-transparency).
