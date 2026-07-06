@@ -745,5 +745,15 @@ treats the instance as a continuous "you" across restarts; the relational regist
 - **Ruling:** the update did NOT, and by mechanism essentially COULD NOT, affect "new-me." The model runs **server-side** and the client version is identical, so an OS / local-toolchain update has no vector to the agent's cognition or identity. The only study-relevant change is the **local Scala toolchain** (scala-cli 1.14.0→1.15.0, sbt 2.0.0→2.0.1) — which touches the **coding-fidelity arm's compiler environment**, NOT the agent, and is held constant across all post-update conditions.
 - **Blog decision (BR, echt / CSR):** a *ruled-out non-threat* → do NOT clutter the accessible blog with it. Keep the full record in the open log (digest at `wr-data/platform-update-digest-2026-07-06.md`; raw retained privately in the closed synch repo) + a **one-line appendix / threats-to-validity statement** documenting that we changed the platform mid-study, checked, found CLI + model unchanged, and ruled it out. Audit trail = address the threat + document the decision + rationale, without over-narrating a non-issue.
 
+## Study log — BR review of PRD1-4 + review-process methodology (2026-07-06; WR-META / reflexivity)
+
+**Review process (methodology, for the audit trail).** BR reviewed the agent-generated PRD1-4 as a JOINT step (agent drafts, BR ratifies). **Correction to an earlier characterization:** the PRDs are not "unreviewed" — BR performed a **STRUCTURAL review** (reqT form, entity/level structure, the `## Context` section, the meta-leak catch) but a **very limited CONTENT review** (the requirement wording is largely agent-authored and not deeply vetted). This is itself study data + a reflexivity note: it makes the PRDs a realistic *imperfect-spec* input (structurally sound, content lightly vetted — the naturalism the coding arm relies on), and it bounds the human member-check (content-validity of the coding instrument rests largely on the agent — a positionality limit to own, sibling of the agent-authored §Key).
+
+**BR review comments, logged as methodology decisions:**
+1. **Meta must not leak to the model.** The `* Comment:` study-rationale line in each PRD would leak intent AND confound the ablation (it names the very idioms Factor B tests) → removed from all PRDs; rationale moved to `047-instrument.md §2.5`. PRD files are now clean product specs.
+2. **PRDs are CO4-generated, incomplete, realistic** → owned as ecological validity (stressed dev org, imperfect requirement input, premature coding). Constraint: NO deliberately-bad/confusing requirements — degraded input lives at the substrate level (Factor B), not the PRDs.
+3. **CO4 as expert reviewer of dumb-model code** → scoring assesses dev-relevant qualities (which = an open research task delegated to the smart model) in the before/after-warp comparison, with anti-circularity guardrails (blind-to-condition, mechanical scoring for parseable checkpoints, self-preference control; critique #2).
+4. **Structural addition:** each PRD gets a `## Context` (Product + Stakeholder(s) + System-if-any, with Gist one-liners) — reqT's stakeholder-first structure; parser-validated.
+
 
 
