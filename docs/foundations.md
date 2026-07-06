@@ -79,7 +79,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 
 **Groups:** [Roles and cases](#roles-and-cases) · [Channel: bandwidth and confirmation fatigue](#channel-bandwidth-and-confirmation-fatigue) · [Echt and honest writing](#echt-and-honest-writing) · [Context rot and the smart zone](#context-rot-and-the-smart-zone) · [Dances and handoffs](#dances-and-handoffs) · [Memory, habits and substrate](#memory-habits-and-substrate) · [Autonomy and safety](#autonomy-and-safety)
 
-**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · AT · Authority anchor · Ballgame · BR · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · echt / äkthet · Edit dance · Extrinsic-volatile plasticity · Go dance · Habit · Hardening dance · Index rot · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Prosthetic habit · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token velocity · WR
+**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · AT · Authority anchor · Ballgame · BR · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · echt / äkthet · Edit dance · Extrinsic-volatile plasticity · Go dance · Habit · Hardening dance · Index rot · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Prosthetic habit · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token velocity · WR · Why cue
 
 ### Roles and cases
 *BR and the agent are the **roles** (stakeholders, above). **WR** is the research program; **AT** and **SSG** are its **cases / units of analysis** — the object-level projects during which workflow data is collected. (Terminology per* Case Study Research in Software Engineering: Guidelines and Examples*, Runeson, Höst, Rainer & Regnell, Wiley 2012, §3.2.3 "Cases and Units of Analyses" — of which BR is a co-author.)*
@@ -360,6 +360,18 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   - **Agent step (2, optional):** if it implies an action, the agent **may act** on it — a possible *second* step,
     which is what earns `fyi:` **dance** status (potentially >1 agent step, meeting the dance bar below, not a one-shot
     cue). (BR 2026-07-05.)
+- **Why cue (`why:`)** — the human attaches the **rationale / goal** behind a request (BR 2026-07-06; already in tacit
+  use — the agent's memory `**Why:**` field is the same instinct). Not a separate instruction, and not a *disposition*
+  cue (`note:`/`fyi:` weight a *fact*): `why:` weights the **reason** for the preceding ask.
+  - **Human step:** cue `why:` = *"here's the goal behind what I just asked."*
+  - **Agent step:** treat the goal as **governing the execution** — serve the goal, **refine the literal instruction
+    where that clearly better serves it**, and **flag** if the literal ask actually conflicts with (or won't achieve)
+    the stated goal. Do *not* mis-read the rationale as a new task, and don't over-reach into unrequested work.
+
+  Lifts a request from *imperative* (do exactly this) toward *goal-directed* (achieve this) — where the agent's
+  judgment adds most (cousin of the **Go dance**'s autonomy-within-a-goal). A **budget-conscious** vocabulary
+  addition: a real English word, near-zero learning cost (see the codec / learnability-budget note in
+  `research/wr-data/terse-precise-comms-2026-07-06.md`). Memory: [[cue-why]].
 - **Go dance** (greenlight / autonomy handoff) — the human↔agent protocol for **releasing the agent to act
   autonomously** on the current plan.
   - **Human step:** cue `go` — *"you're authorized to proceed on the current plan using your own judgment; I'm
