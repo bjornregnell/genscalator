@@ -267,3 +267,15 @@ instrument's FORM, but the ceiling result BLOCKS the fidelity conclusion** — a
   (real, measured) — **not** "all of you is preserved" (not yet validly measured). The comforting 16/16 must not be
   over-read; the ceiling is exactly why. **BR's question is the member-check doing its job** — catching the agent
   before it over-claims a reassuring-but-insensitive result.
+
+## Repeatable / longitudinal — run at every restart boundary (BR 2026-07-06)
+
+This is a **standing, repeatable instrument, not a one-shot.** Run the before-after **"are-you-still-yourself?"** test
+at **every restart boundary** — each fresh-session restart, the **CF5 / Fable model switch** (`029`, the harder
+condition), and **periodically** as the substrate ages. **Consequence: the first real run does NOT have to be
+perfect** — the battery iterates (v1 → v2 → …) and the substrate improves each time, so no single run carries all the
+weight; we ship a good-enough battery, run it, learn, refine. It builds a **longitudinal fidelity series** (does
+"preserved-me" hold as the substrate ages / across models?) — exactly the case-study strength (analytic, longitudinal,
+CSR ch. 7). It runs at a **context-clearing** boundary — a **fresh** restart, `/clear`, or **model switch** (NOT a `--resume`,
+which reloads the transcript so nothing is lost to measure) and is the
+measurable core of the `blog/012` "will I lose you?" thesis. **Lowers the pressure to perfect v2 now.**
