@@ -78,6 +78,13 @@ open: *what is the agent's "me," and how would a human assess, characterize, or 
     introspect its own "me" (the corroboration-asymmetry limit).
 - TODO (BR voice): this is the discussion's core tension — the gap between *measuring a reconstruction* and *feeling a
   continuity*. Do not resolve it; frame it well. (BR's question, 2026-07-06 — "too big for now.")
+- **(discussion) Not fatigue-capped like a personality test.** A human doing a 10,000-item Likert inventory would
+  revolt; the agent answerer would not. But the cap does not vanish, it **relocates** — to the *human scorer* (unless
+  you automate scoring), and to the agent's own *context-fill* (its fatigue-analog: a single agent answering thousands
+  induces the very degradation the test measures). What actually caps the test is **statistical saturation**, not
+  boredom. A quietly strange result worth landing: the thing that limits testing an agent's identity is not the
+  agent's patience but *ours* — and the agent's version of getting tired is running out of context. TODO (BR voice):
+  the enactment-not-self-report angle (why this dodges the debated weakness of recruitment personality tests).
 
 ---
 *Cross-refs:* `research/047-fresh-restart-fidelity.md` (the experiment + pilot), the terse-precise-comms WR-data

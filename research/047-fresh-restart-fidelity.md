@@ -369,3 +369,23 @@ restarts** — the study's own *exit → clear-session restart* (point 3) can do
 event that clears swap + ballooned JVMs *and* gives the fresh session; but points 1-2 happen before it, so free RAM
 first; (3) keep agent fleets + scratches minimal during a run (they re-inflate the JVM). WR-data: precise-allow `ps`
 (tighter than `ps *`) is a settings-hardening item; agent scala-cli/metals RAM footprint now measured (8.3 GB).
+
+## Target n — why not 10³ / 10⁴ (BR member-check, refines Volume above)
+
+BR's point: **respondent-fatigue caps human questionnaires (~50-300 items) but NOT the agent answerer** — so that
+ceiling lifts. It doesn't vanish, it **relocates + splits into three bounds:**
+1. **The SCORER (BR) fatigues** — human-fatigue moves from answerer to *member-checker* (10⁴ answers = 10⁴ human
+   judgments). **Liftable** via an **auto-scorer:** recall vs the committed §Key = a script; enactment via an
+   agent-judge panel + BR validates the rubric + spot-checks a sample (how real psychometrics scales — validate the
+   instrument once, then auto-score thousands).
+2. **The answering agent's fatigue-analog is context-fill** — a *single* agent answering 10⁴ probes induces the very
+   context-rot it measures (self-confound, on-theme). **Liftable** by batching across fresh sub-agents (each a slice).
+3. **Diminishing statistical returns (the one bound that does NOT lift):** at N=1-case ~5-10 items/dimension saturates
+   the consistency estimate (Cronbach α), the per-trait rate CI shrinks ~1/√k (10→±0.15, 100→±0.05, 1000→±0.015 —
+   over-precision we don't need), and **10⁴ finds no new dimensions**, just re-measures the same ~18-40 traits finer.
+
+**Verdict:** **10³ is reachable AND worth it IF we auto-score + batch-answer** (the auto-scorer is the real enabler);
+**10⁴ is capacity we have but not value we need.** Value-justified target = **~18-40 dimensions × ~10-30 variations ≈
+10²-10³.** Psychometric lineage: multiple items/dimension = internal consistency; borrow reverse/pressure items
+(robustness), a lie-scale (faking = sycophancy probes), item-discrimination (the known-low control), test-retest (the
+repeatable longitudinal runs) — but our **enactment** probes beat the genre's debated **self-report** weakness.
