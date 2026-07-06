@@ -225,6 +225,10 @@ Fill the existing stub from the results. **Two triangulating halves:** the abstr
 - **Phase B — post-reset (after ~09:18 CEST), OPUS-heavy:** score everything at scale (Arm 3), run the analysis (§6), write the research doc (§7) + blog (§8). Commit continuously.
 - **Crash-resilience:** incremental writes; resumable orchestrator; bjornyx `nohup` survives local death; a stall costs only the unfinished tail, resumed next session.
 
+## 9b. Ralph-loop process (autonomous overnight run — BR)
+
+The unattended run is a **loop**; each round: (1) do a bounded unit of work (a collection batch / an analysis step / a writeup or blog section); (2) **if meaningful, spawn a CF5 (Fable 5) subagent to review it** — an independent model = fewer shared blind-spots, and Fable is the free bucket; (3) **master CO4 carefully adjudicates CF5's review comments and fixes only the GOOD ones** (NOT rubber-stamp — CF5 can over-flag too, like CO4 did); (4) **commit + push**; (5) next round. **Anti-rot:** subagents do the heavy lifting so the master stays lean; **commit AND PUSH every round** (**flaky box** — a crash/OOM must lose at most one round's work, so push it durable to the remote every round, not just commit locally); self-compact/warp between rounds; fully resumable. **Terminal state:** research + blog complete + CF5-reviewed, **pending BR's review** (load-bearing, not a rubber stamp). **Gated on Go #1** (feasibility + non-surf guard-audit) being cleared with BR present first — else a mid-loop guard prompt stalls the whole run while BR sleeps.
+
 ## 10. Guardrails & risks
 - **Guard-free by construction** (AFK); **rot → stop-and-report a stub**; **flaky local box** sidestepped (heavy work on bjornyx + cloud; local only orchestrates); **evidence tiers kept strictly separate** (real cold start vs proxies vs loaded vs ollama-legibility); **don't oversell** — claims stay proportional (analytic generalization, named threats).
 - **Reflexivity/COI** owned explicitly in the writeup (I am instrument + author; the guidelines are BR's own).
