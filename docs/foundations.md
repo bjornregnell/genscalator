@@ -385,12 +385,18 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 
   The mode-switch from **ballgame** (human in every volley) to **autonomous** for a bounded task; where
   `note:`/`pin:` govern *memory*, `go` governs *control / authorization*. Variants: "go [solo] menu" = `go` over a
-  menu of scoped tasks; **`go afk [SMn, ..]`** = the **AFK-strict** go — before acting the agent **re-verifies each
-  named item's AFK-safety against current state** (the solo menu's green/yellow/red bands are a *snapshot* and go stale
+  menu of scoped tasks; **`go afk [SMn, ..]`** = the **AFK-strict** go — the *human's* cue for *"I'm going AFK, run the
+  safe set"* (the agent has no keyboard and is never itself AFK; **AFK is the human's state**, and this cue hands the
+  work off into it) — before acting the agent **re-verifies each named item's AFK-safety against current state** (the
+  solo menu's green/yellow/red bands are a *snapshot* and go stale
   as we chat and revise plans), executes only the AFK-safe residue, and **hard-stops-and-flags** anything no longer
   green rather than asking mid-run (the human is away — no prompt may race them). It's the easy one-cue way to greenlight
-  genuinely-away work while catching risks that surfaced during planning; **`go X`** = a scoped go-verb (small curated
-  set — see `research/035-go-verb-vocabulary.md`).
+  genuinely-away work while catching risks that surfaced during planning. **Band selectors** — the target may be
+  explicit IDs *or* a whole AFK-safety band of the solo menu: **`go solo green`** = run the entire green band (fully
+  AFK-safe; the default away-batch); **`go solo yellow`** = also run yellow, where the human **accepts the agent may
+  stall** mid-item at a gated subtask while away (or fields it live if present); **`go solo red`** = only meaningful
+  with the human **present** (red needs a human in the loop). The re-verify still applies (bands are a snapshot).
+  **`go X`** = a scoped go-verb (small curated set — see `research/035-go-verb-vocabulary.md`).
   **Dance bar:** `go` qualifies as a *dance* because it has **≥2 interlocking steps — ≥1 human and ≥1 agent**; a
   one-directional signal with no answering step is just a cue. (BR 2026-07-04; cue `go` chosen for typability — g-o
   alternates hands.)

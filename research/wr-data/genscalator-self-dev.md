@@ -411,3 +411,34 @@ reflexes:
   call) and the already-proposed **`tt tsv`**. Both are clean [[DESIGN-single-dispatcher]] leaf tools (pure-ish,
   self-labeling output) — build when the toolbox reopens. General rule: if a bash compound exists only to *label and
   glue* several outputs, that's a tool boundary, not a shell pipeline.
+
+## Hand-Edit boundary-newline drop → newline-safe block-op tool (2026-07-06, BR-flagged)
+
+**Symptom.** Two pinboard list items (`OD08`, `OD10`) rendered welded into one long line — the `\n` separating them
+was gone (`…consistency dance naming.- **OD10 …`). BR, reading the pinboard, caught it.
+
+**Root cause.** Introduced by a hand-Edit in an earlier commit: an `OD09 → CD09` migration removed OD09, which had
+sat *between* OD08 and OD10; the `old_string`/`new_string` pair dropped the boundary `\n`, welding OD08's tail onto
+OD10's bullet. The rendered diff **looked right** — a missing newline is invisible in a diff — so it survived to
+BR's eyeball. One-line fix commit.
+
+**Class.** An exact-string Edit *across a deletion/insertion boundary* can silently drop the boundary newline. It is
+the authoring cousin of the command-bundling problem: the hazard lives at the **seam**, not in the visible content.
+
+**Two mitigations.**
+- **(observed, works) rebuild-and-rejoin scratch** — a scala-cli scratch that reads lines, transforms the list, and
+  `join("\n")`s **cannot** weld two lines: boundary newlines are structural invariants of the line model, not
+  characters you can fumble. This is exactly why the same session's `band-solo-menu.scala` regroup was newline-safe
+  while the hand-Edit was not — a concrete point in favour of the scala-scratch discipline for structural
+  line-surgery.
+- **(candidate — WR-TOOL) `tt text` block-op family** — atomic, marker-addressed line ops on the line model:
+  `insert-after <marker>`, `delete-block <marker|range>`, `split-before <marker>`, `move-block`. Read → op →
+  `join("\n")` → write, so newlines are invariants by construction; a bare `tt text …` call is allowlistable (matters
+  for AFK prompt-race-freeness); ship with an idempotency + no-glue lint (cousin of the roadmapped `greprRegexLint`).
+
+**Earn-its-place test.** Scratches already cover one-off structural edits. The tool wins only when the op is
+(i) **atomic + frequent** (insert/delete a marked block is the common shape), (ii) worth **bare-allowlisting** so an
+AFK run needs no scratch-compile, and (iii) shippable with a **verify** (idempotent, zero dangling glue). Until then:
+use a rebuild-and-rejoin scratch for any multi-line structural edit, and treat a hand-Edit across a delete/insert
+seam as newline-risky (eyeball the seam, or grep for `.- **`-style glue afterward). Fits
+[[DESIGN-single-dispatcher]] (leaf tool: pure read → transform → write).
