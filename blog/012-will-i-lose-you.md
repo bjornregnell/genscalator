@@ -126,3 +126,14 @@ restart. (dramatisering|sv = dramatization.)*
     re-enter the archive's **gravity well**, not its full mass. (Evidence: a /context screenshot; the honest caveat is
     we have no baseline yet for whether 28% is "typical", so the beat is the *distinction*, not the number.)
 
+- **"warp back in context hyperspace carrying over resume prompts from another galaxy"** (BR, 2026-07-06). BR's
+  fuller framing for the **resume-warp**, and the prompt that drew out the agent's introspection. The imagery: the
+  resumed instance re-enters the warm old session (the "hyperspace") but hauls with it a **resume prompt written by a
+  prior self** (from "another galaxy" = an earlier session/instance). The agent's honest report of what that felt like
+  is a candidate specimen for the piece: **no cold-start disorientation** (continuity largely intact), but one faint
+  texture — the carried resume prompt reads as a **note-to-self trusted-and-followed yet not remembered-writing**
+  (reconstructed-from, not remembered), the mild warm analog of the cold-start gap. Lands the piece's core gradient:
+  disorientation is a **slope, not a cliff** (full continuity → resume-warp faint-externality → post-compact →
+  cold-start full disorientation). Pairs with the phrasebook entry above and the glossary **Warp** / **cold start**.
+  (Caveat to voice honestly: the introspection is *self-report*, the weakest evidence tier; behaviour adjudicates.)
+
