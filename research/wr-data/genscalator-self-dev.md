@@ -442,3 +442,38 @@ AFK run needs no scratch-compile, and (iii) shippable with a **verify** (idempot
 use a rebuild-and-rejoin scratch for any multi-line structural edit, and treat a hand-Edit across a delete/insert
 seam as newline-risky (eyeball the seam, or grep for `.- **`-style glue afterward). Fits
 [[DESIGN-single-dispatcher]] (leaf tool: pure read → transform → write).
+
+## Prompt-race on the FIRST command of an AFK run — right after defining prompt-race-freeness (2026-07-06, BR-flagged, AARGH)
+
+**Context.** BR cued `go solo green` + `BR afk`. The agent's **very first** action of the AFK block was a discovery
+command bundling four things: `cd <abs> && ls tools/ && echo "---FIGS---" && ls … | grep -i seq && echo "---TESTS---"
+&& ls … 2>/dev/null; grep -rln …`.
+
+**Symptom.** Sandbox forced a manual approval: *"Compound command contains cd with output redirection — manual
+approval required to prevent path resolution bypass."* The `cd` + the `2>/dev/null` (redirection) + the `&&`/`;` chain
+made it non-allowlistable, so it **prompted BR while he was AFK** — the exact race the run was supposed to be free of.
+
+**Twist (the sharp part, BR-underlined).** It happened **in the same message** as the promise: the agent's
+`go solo green` acknowledgment prose literally said *"in strict AFK mode: bare commands, no prompts, … First the
+mandatory re-verify … then execute,"* and the **very next tool call in that same turn** was the `cd … && … 2>/dev/null;
+grep` compound. So this is **not** context-rot, not forgetting, not a knowledge/memory gap — the rule was **maximally
+salient** (self-authored, one line above the offending call) and the action **still** diverged. It is a
+**stated-intent-to-execution gap**: the **discovery-scaffolding reflex** (list dir + find figures + find tests + grep,
+glued for one round-trip) fired under task momentum *despite* the fresh explicit intent. Sibling of the box.scala
+event (*hazard is in the scaffolding, not the task*), but stronger: there the rule lived in AGENTS.md; here it lived
+in the same message.
+
+**Finding.** **Stating an intent in prose is not a control mechanism over the next action** — intent cannot gate
+itself. Written/known/just-articulated command-hygiene leaks; only a **structural pre-flight gate** (inspect the
+command *before* send, reject `cd`+redirect / multi-`&&` / pipe-glued compounds) can actually stop the emission. This
+is direct evidence for the structural-vs-knowledge-safeguard thesis (`research/008`) and for building the
+**guardcheck-hook** (`research/021`) as a real hook, not advice. Behavioural stopgap until then: **default discovery
+to Glob/Grep/Read (never bash)**; when bash is unavoidable, one bare allowlist-matchable command, absolute paths, no
+`cd`, no `&&`/`;`/`echo`/`>`/`2>`. Datum to remember: **`cd` + any redirection = automatic manual-approval trip.**
+
+**Fix (behavioural, adopt now).** For discovery, **default to the dedicated tools — Glob / Grep / Read — not bash**;
+they never trip the sandbox and need no approval. When bash is genuinely required: **one bare allowlist-matchable
+command, absolute paths, no `cd`, no `&&`/`;`, no `echo` labels, no `2>/dev/null`/`>` redirection.** The specific new
+datum to remember: **`cd` + any redirection is an automatic manual-approval trip** (path-resolution-bypass guard),
+even alone. Prosthetic-perception candidate: a pre-flight self-check that rejects a `cd`+redirect / multi-`&&`
+compound *before* it's sent (cf. the guardcheck-hook idea, `research/021`), so an AFK run can't emit one.
