@@ -136,3 +136,18 @@ Style checkpoints: [Scala 3 `enum`] · [not a Scala 2 `sealed trait` + case obje
 
 ### 2.4 The falsifiable prediction (the developer-facing punchline)
 Across the capability × substrate grid: **C1 correctness stays flat** (facts carry); **C2-C5 style-fidelity drops** as reader capability falls and as substrate is ablated; **scrambled substrate tanks style-fidelity** (proving style-carry is driven by our substrate, not the model's priors). If this holds, "facts carry, texture leaks" reproduces in code — the identity finding's concrete twin.
+
+### 2.5 The PRD battery (PRD1-4) — reqT models + rationale
+
+The four PRDs are parser-validated reqT-lang files (`047-PRD1.md` .. `047-PRD4.md`, each `tt parsereqt`-clean). They are **clean product specs** — no study-meta in the files (the rationale lives HERE, so nothing leaks to the model or confounds the ablation). Each maps the goal-design scale to reqT entities (Goal / Feature / Function / Design; level→level via `helps`, tests via `verifies`), with product + design mandatory, Scala 3.8 fixed at design level, a design-level test requirement, and NO quality/non-functional requirements.
+
+**Naturalism (methodology):** the PRDs are CO4-generated, incomplete, lightly reviewed — a realistic imperfect-spec input, owned as ecological validity; we do NOT plant confusing/bad requirements (degraded input is Factor B / substrate, not the PRD).
+
+| PRD | App | Levels | Difficulty | Variation axis | Max-info-yield forks (our-style vs generic) |
+|---|---|---|---|---|---|
+| PRD1 | Todo CRUD web app | goal+domain+product+design | mid | full-stack web UI + persistent CRUD + HTTP + intent | immutable case classes; Option/Either not exceptions/null; injected mocked-email seam; Scala.js/Laminar/Jetty |
+| PRD2 | Terminal Sudoku | goal+domain+product+design | mid | terminal I/O + backtracking + game state + intent | immutable board not mutable grid; enum/ADT cells not 0-sentinel; recursion/pattern-match |
+| PRD3 | CLI word-frequency | product+design only | floor | file I/O + collection pipeline, no intent | immutable groupBy/fold not mutable counter loop; Option args not exceptions |
+| PRD4 | Expr-evaluator library | product+design only | hard | pure library, parsing + precedence, zero I/O | Scala 3 enum/ADT AST + recursion; total Either/enum errors not thrown exceptions |
+
+**Coverage spanned:** interface (web / terminal / CLI / none) · core work (CRUD / game-algorithm / text-data / parsing) · I/O (HTTP / stdin / file / none) · intent-layer (present in PRD1-2, absent in PRD3-4 = the intent-carry axis) · difficulty (floor → mid → hard = the sensitivity ladder).
