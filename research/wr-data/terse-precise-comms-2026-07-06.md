@@ -29,3 +29,27 @@ edits.
 **Net:** a genuine, low-ambiguity bandwidth win; the residual risk is un-pinned novel compressions, mitigated by the
 existing note->pin pipeline. Worth watching for a real mis-decompression event (none yet this session) as the
 falsifier.
+
+## Risk (BR-raised): the codec can outgrow the human's memory (asymmetric)
+BR (2026-07-06): *"note the risk that the vocabulary gets esoteric and big may risk remembrance and ambiguous use by
+human (my near-term memory is not as good as yours, and you have all my allowed disk space for your long-term memory so
+you probably beat me there too)."*
+
+- **Asymmetric memory is the binding constraint.** The codec has two users with **unequal recall**: the agent's is
+  **durable + disk-backed** (memory files, foundations) and effectively unbounded; the human's is **near-term,
+  biological, limited**. So as the vocabulary grows large/esoteric, the **human** is the first to mis-remember or
+  mis-apply a cue (encode the *wrong* compression) — the mirror of the agent's mis-decode risk, and the **more likely**
+  failure, because the weaker-memory party sets the ceiling.
+- **Learnability budget = the human's, and it binds.** Same tradeoff already named for the `go X` verbs
+  (`035-go-verb-vocabulary`: "bounded by the learnability-budget — prune before adding"). Generalized: **the shared
+  vocabulary's size ceiling is the human's recall, not the agent's.** Adding a term carries a *human* memory cost even
+  when its agent cost is ~zero — so growth must be paid in the scarce budget, not the abundant one.
+- **Mitigations.** (a) **prune before adding** — retire dead cues; (b) keep cues **mnemonic + motor-cheap** (typeable,
+  non-colliding — `pin` over `etch`, `:Z` ergonomics); (c) the agent should **expand/offer the definition** of a term
+  the human seems to have half-forgotten rather than assume; (d) watch for a **human mis-encode** event (BR uses a cue
+  against its pinned def) as the falsifier that the codec has outgrown its budget.
+- **Reframe — the asymmetry is also the backstop.** The agent's durable memory isn't only a risk amplifier; it's the
+  safety net. BR need not hold the whole vocabulary — he holds the *frequent core* and **outsources the rest to the
+  agent on demand** (recall-as-a-service). So the design target is not "small vocabulary" but "**small active set for
+  the human + full set recallable via the agent**." (This is itself a nice instance of coupled-system capability:
+  the *pair* remembers more than either party.)
