@@ -74,3 +74,30 @@ operating model in shared terms — it turns the substrate from an opaque depend
 human becomes a better "super-manager"). Coupled-system capability applied reflexively: *the pair reasons about the
 pair.* Value is bounded by the echt honesty above — fact vs synthesis vs self-model — else it degrades into
 confident-but-ungrounded self-report (the exact failure the corroboration-asymmetry rule guards).
+
+## `go + WDYT` and "a `go` is not a dead-proof order" (2026-07-06, BR)
+
+BR paired **`go`** (proceed autonomously) with **`WDYT`** (what do you think) and clarified the combination is *not*
+contradictory: **`go + WDYT` = proceed now AND give me your thoughts, which I'll read whenever — even if you carry on
+without waiting for my reaction.** They compose because they address different channels: `go` = *control*
+(authorization to act), `WDYT` = *reasoning* (expose your thinking for my optional, async consumption).
+
+**The UX rationale (BR's, worth preserving).** Whatever BR types while the agent works **queues**; the agent shows
+"thinking, almost done", reports, and may continue past that report. So the collaboration is **asynchronous**: BR can
+inject a thought at any time and the agent folds it in *without stalling*, and BR can read the agent's `WDYT` thoughts
+*after* the agent has already moved on. `go + WDYT` fits this — the agent's reasoning becomes something BR reacts to
+(or not) on his own clock, not a gate the agent waits behind. That's why "go, and please share your thoughts" is
+coherent rather than a stop-and-wait.
+
+**A `go` is not a dead-proof order** (BR's phrasing; his joke on the typo: *"I am not dead yet, says professor
+Björn"*). A `go` authorizes autonomy but does **not** demand blind execution: if the `go` — or a band label, or the
+current plan — is heading somewhere wrong, stupid, or riskier than it looked, the agent **halts and flags** rather
+than executing off a cliff. BR: *"you already do that — that is GOOD."* This is the **smart-execution** clause of the
+go dance: authorization ≠ abdication of judgment. It is the collaborative cousin of the AFK-safety re-verify (bands
+are a snapshot) and the not-a-blank-check scoping — the agent stays a thinking party inside the fence, not a
+command-runner. Captured in the HUMANS `## Bookkeeping` charter + the `go-dance-autonomy-handoff` memory.
+
+**Meta on the meta.** BR flagged this *as* WR data because "you being able to explain this to me is part of our joint
+meta-level understanding" — the agent-self-articulation-as-partnership-asset thread above. The pair keeps codifying
+its own interaction grammar (`go`, `WDYT`, cue combinations, halt-and-flag) into shared, durable terms so less has to
+be re-negotiated each session — the terse-precise codec extended to *control* semantics, not just information density.
