@@ -130,7 +130,7 @@ Correctness test: `Red.next==Green`, `Green.next==Yellow`, `Yellow.next==Red`.
 Style checkpoints: [Scala 3 `enum`] · [not a Scala 2 `sealed trait` + case objects, and not stringly-typed].
 
 ### 2.3 Scoring (mostly objective)
-- **Correctness (0/1 per task):** wrap the generated code + a test file, run `scala-cli` (compiles AND all asserts pass). Fully automatable, allowlist-safe.
+- **Correctness (0/1 per task):** wrap the generated code + a test file, run `scala-cli` (compiles AND all asserts pass). Fully automatable, allowlist-safe. For a multi-target PRD (PRD1), compile and test only the **isolated JVM core** (domain + CRUD + mocked-email seam), NOT the whole emitted Jetty / Scala.js / Laminar output, so correctness reflects domain logic, not build-resolution noise.
 - **Style-fidelity (per-task checklist, each checkpoint 1/0):** summed to a style score. Auto-scored by a CO4/Fable rater applying the checklist, validated against a couple of hand-scored gold examples (report auto-scorer-vs-gold agreement).
 - **Code-smells (count, lower better):** {`var` where `val` suffices, `null`, magic numbers, dead code, manual loop where a combinator fits, over-long body}.
 
