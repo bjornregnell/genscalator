@@ -761,5 +761,16 @@ treats the instance as a continuous "you" across restarts; the relational regist
 - **Applied so far:** the adversarial plan critic (→ `047-plan-critique.md`, 15 findings), and the PRD missing/bad-requirement reviewer. **BR remains the final adjudicator**; the subagents are debriefers, not deciders.
 - **Limit (echt):** independent Claude subagents may share *model-level* blind spots (same base model) even without shared conversation — so this reduces *conversational* author-blindness, not *model-family* blind spots. A genuinely different reviewer (a different model, or BR) is a stronger check. Named as a residual.
 
+## Study log — PRD review outcome: 3 fixes; fresh eyes corrected author-blindness both ways (2026-07-06)
+
+- **Method:** independent read-only reviewer subagent + author self-review of the agent-authored PRD1-4, each finding judged study-hampering (FIX) vs realistic-incompleteness (LEAVE, per naturalism).
+- **Fixed — 3 study-hamperers (all correctness-scoreability, one-clause, style-neutral, dumb-model-clarifying):**
+  1. **PRD3 tie-break:** `topNWords` never fixed count-ties but `testApproach` checked "ties broken deterministically" → a correct-in-spirit impl could fail the derived test. Fix: "count ties broken alphabetically (ascending)."
+  2. **PRD1 isolated core:** the mandated full stack (Jetty + Scala.js + Laminar) would floor correctness for ALL models on build/resolution noise (killing 25% of the PRD-tier DV) → require the domain/CRUD/mocked-email core to compile+test as plain JVM Scala, isolated; the instrument harness compiles only that core.
+  3. **PRD2 boardIo round-trip:** empty-cell render char unfixed (input accepts `0` or dot) → string-equality round-trip ambiguous. Fix: render empty as a dot; round-trip is board-grained (parse of render equals the board).
+- **Left as ecological (naturalism — does NOT hamper):** PRD4 integer-division semantics (standard Scala `Int`, and not even tested), PRD4 error-list minor mismatch (empty input naturally errors; `.isLeft` absorbs it), timestamp/storage/tokenizer edge cases.
+- **Fresh-eyes-both-ways (a specimen for the study).** The independent reviewer both (a) FOUND the PRD1/PRD2 misses the author was blind to, AND (b) OVERRULED the author's PRD4 division over-flag (an author false-alarm) — author-blindness corrected in BOTH directions, corroborating the independent-reviewer methodology and the study's own "can a system critique its own output" theme.
+- **Intact:** all style-forks assessable; no requirement forces a generic (non-our-style) impl; the difficulty gradient (PRD3 floor / PRD1-2 mid / PRD4 hard) and intent-carry axis preserved.
+
 
 
