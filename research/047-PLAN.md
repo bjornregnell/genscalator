@@ -118,6 +118,8 @@ Each PRD is written in **reqT-lang** and structures its requirements along Laues
 
 **Location of details:** the full **PRD1-4 specs** (the reqT models) + **per-PRD rationale** (why this app, which variation axis it covers, the hypothesized information yield, and the goal/domain-optional decision) live in `047-instrument.md` (Part 2, alongside the C1-C5 micro-tasks and the Q-battery). The plan carries the *design*; the instrument carries the *content*.
 
+**Workflow — PRD creation is a JOINT task (not solo overnight).** The agent **drafts PRD1-4 in reqT-lang into `047-instrument.md` FIRST**; BR **reviews them** (interrupting his AFK to do so) before they enter the run. So building the PRD instruments is **human-gated** — like the joint surf and the feasibility gate — the agent proposes the specs, BR ratifies them.
+
 **Why the four levels matter for coding-fidelity:** a coding job lives mostly at **product/design** level (what to build, how specifically); **goal/domain** are the *intent and context the implementation must honor*. A PRD spanning all four tests whether a warped/dumb reader carries **high-level intent down into our-style code**, not merely transcribes a design spec (Lauesen's own point: the level you specify at depends on the "supplier" — here, the model under test). **reqT-lang** makes requirements parseable, so acceptance criteria can be machine-checked (the PRD self-scores the coding job).
 
 **reqT-lang mapping** (from BR's RE course L3+L4, slide "The goal-design scale in reqT"): the four levels map to reqT entity types, each carrying a `Spec`:
@@ -221,6 +223,7 @@ Fill the existing stub from the results. **Two triangulating halves:** the abstr
 2. **Joint surf** (grant web; read the ~8-12 refs with me).
 3. **Ratify the §Key** (the missing external anchor) and **adjudicate A4** (miss vs correct-enactment; 20 vs 21 of 22).
 4. **Run the feasibility + guard audit together**, then go AFK on a clean audit.
+5. **Review the drafted PRD1-4** (reqT-lang, in `047-instrument.md`) — a JOINT task; BR interrupts AFK to ratify the PRD instruments before they enter the run.
 
 ## 12. Assumptions flagged for your review
 - The fixed instrument is a *subset* of the 900-probe bank (feasibility-sized), not the whole bank — full-bank is future work.
