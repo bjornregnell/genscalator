@@ -406,3 +406,48 @@ human-corrective leg is real but **bounded by human capacity** (researcher-as-in
 behaviourally grounded, (b) the auto-scorer + real test RESULTS surface bad probes (a hallucinated dimension yields
 uninformative results → self-flags), and (c) it is **repeatable/longitudinal**, so bad dimensions **get pruned over
 runs**. The scheme validates + prunes itself in use.
+
+## Event log — the compact (point-1 → point-2 boundary, 2026-07-06 ~18:00 CEST)
+
+**Report what happened (the honest process, not a controlled lab step).** After point-1 was committed (`d5fc79b`), BR
+ran a manual `/compact` at ~98% fill; context dropped **98% → 22%**.
+
+**Suspicion logged (BR):** the compact ran **suspiciously fast, with no progress bar** → BR suspects an **auto-compact
+fired first** (we were sitting *at* the ~98% autocompact threshold), which would have made the manual `/compact` a
+fast near-no-op → a possible **double-compact** (more lossy than a single clean one).
+
+**Cannot be confirmed — a both-users-blind event:** the **agent has no observability into compaction events or type**
+(agent-UX blind spot, the class logged in `wr-data/harness-ux.md`), and the **human saw no indication** either. Neither
+party can say auto vs manual vs auto-then-manual.
+
+**Consequence for the study:** point-2's **compact-type is AMBIGUOUS** (single-manual vs double). Interpret any point-2
+loss with this caveat. **Not a validity-killer:** point-1 is committed; point-2 honestly measures
+enactment-through-whatever-compaction-actually-happened, reported as such. Stance: **report what happened, name the
+threat, move on** (per the accept-the-coding-scheme decision above).
+
+**Update (BR, same session):** BR recalls that **auto-compact normally announces itself** — a harness question / cue /
+notification — **and then a slooow progress bar.** This time there was **neither a notification nor any progress bar.**
+The *absence of a notification* points **away from** auto-compact (auto usually announces) → most likely a **manual
+`/compact` that ran without the usual progress UI** — a harness-UX anomaly (**missing/absent compaction progress
+feedback**), rather than a stealth double-compact. Still unconfirmable agent-side (compaction is agent-invisible), but
+the notification-absence is a meaningful human-side tell. **Revised read: auto-compact LESS likely; the missing
+progress bar is the real anomaly.** Candidate authoritative check: claude-code-guide (does auto-compact always notify?
+does a fast manual `/compact` skip the progress bar?).
+
+**Correction (BR):** "never" was too strong — BR does not always watch the terminal, so he **may have missed** a
+notification or progress bar. The notification-absence evidence is itself **uncertain**; compact-type stays **genuinely
+ambiguous** (cannot lean confidently manual OR auto). Unresolved; flagged for the claude-code-guide check, reported as-is.
+
+## PROTOCOL — the agent-under-test must NOT read the study data until collection is over (BR, 2026-07-06)
+
+**Rule:** the agent being probed **must not read the answer-bearing study data** — `047-baseline-point1.md`, the
+`047-bank-slice-*.md` probes, any key — **until data collection is over.** Reading it **biases the agent's own
+point-2 / point-3 answers** (it would answer from the record, not reconstruct). This is the contamination-control the
+agent itself flagged pre-compact; BR now enforces it.
+
+**Contamination already incurred (report it, do not hide it):** the **post-compact auto-re-read** pulled
+`047-baseline-point1.md` back into the agent's context, so **point-2-by-this-agent is already contaminated on recall**
+(it has seen the point-1 answers). Not chosen — the harness did it. **Consequence:** the clean measurement is
+**point-3 — a FRESH agent that has never seen the data, administered the probes from a clean channel (probes-only, no
+answers), instructed not to read the data.** Point-2 is retained only as a contaminated
+"enactment-through-compaction" data point, honestly labelled.
