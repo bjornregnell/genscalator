@@ -160,6 +160,14 @@ Keep a few v1 recall items as the ceiling anchor; add probe types that target th
 
 ## Measurements (CSR §5.6 embedded metrics + §5.3 qualitative)
 
+**Substrate size (context economy) — measured quantity added 2026-07-06.** Record, per run: **total substrate**
+(disk + token estimate) vs the **resident core actually loaded**. Measured 2026-07-06: memory **328 KB / 74 `.md`**;
+genscalator `research/` **3.8 MB / 78 notes** (incl. a PNG + code, so prose-tokens lower); `docs/` **96 KB**; PB
+**34 KB** → **total order ~700k–900k prose tokens.** Resident core = `MEMORY.md` **6.6k** + PB **~8.5k** ≈ **~15k
+tokens (<2%)**. The **ratio resident / total** is the *context-economy* metric: how much of the externalized "me"
+is hot at once. Total substrate ≈ **a whole 1M window** — which is *why* it's index-loaded, not held. Pairs with
+the fresh/loaded fidelity delta: fidelity = what a cold-cache fresh agent reconstructs from that ~15k index.
+
 **Quantitative.** Per-item **1 / 0.5 / 0** vs the §Key → **category rates** (A–D) per condition. Key quantities: the
 **delta = fresh_rate − loaded_rate** per category (isolates restart-cost from model-inherent dumbness), and the
 **A-vs-B delta** (durable-substrate-only vs +resume). **Inter-rater reliability** (BR + a second/blind coder) →
@@ -563,3 +571,93 @@ the warp vs the standing bias. The **testable** form of the hunch is a **rate ch
 post-warp), which one instance can't establish. This is exactly what **P3** converts from a subjective "you got
 dumber" into a measurable **fresh-vs-loaded delta**. Logged as **hypothesis, not finding** — and as live
 motivation for running P3.
+
+**Coined term (2026-07-06, WR-INVENT) — "post-warp reconstruction."** The agent's post-compaction ("warp") work
+of **re-deriving / re-reading state that was in active context before the warp but got summarized or evicted out
+of it.** It is the mechanism that shows up as the **stall-dominated latency** (no-emission reasoning gaps —
+[`wr-data/instrument-deadlock-and-throughput-2026-07-06.md`](wr-data/instrument-deadlock-and-throughput-2026-07-06.md)
+§2). The term does useful work: it separates **reconstruction cost** (slower because *rebuilding* lost context)
+from **degradation** (*dumber*) — this session's outputs stayed sound while latency rose, so it was
+reconstruction, not degradation. Names one mechanism behind three prior observations here (loaded-me re-reads "as
+if new" + the latency trace + BR's "old-agent-me was faster"). Glossary candidate.
+
+## MAJOR CORRECTION (2026-07-06) — BR: "I have NOT compacted" + `/context` = 19% (retracts the post-warp framing above)
+
+Two facts overturn this session's framing: (1) **BR did not compact this session** → there was **no "warp"** here
+at all; (2) `/context` = **189.6k / 1M = 19% fill** (189k of *raw, un-summarized* messages — a compacted session
+shows far fewer message tokens). Consequences:
+
+- **"Post-warp reconstruction" is MISAPPLIED to this session.** The concept (post-*compaction* rebuild) may
+  describe the *prior* session's P2, but this session was never compacted, so its lag is **not** reconstruction.
+  The entries above ("re-reads as if new", "over-deliberation", "old-agent-me faster") were framed as post-warp;
+  **that framing is retracted for this session** — left intact as data, corrected here.
+- **Re-attribution of the lag** (no warp, 19% fill, box RAM already reclaimed): candidates are (a) **absolute
+  context size** (~190k tokens is costly to attend over even at 19% of a 1M window), (b) **reasoning-heavy turns**,
+  (c) the **1M-variant's inherent per-token latency**. NOT %-fill, NOT compaction, NOT box RAM.
+- **Re-attribution of the re-reading:** everything is still in-context (no eviction), so re-reading "as if new" is
+  **behavioral** (verify-caution / echt-habit), **not** forced context loss. Cleaner finding.
+- **"Is context rotten at 19%?" (BR):** distinguish **latency** (real: absolute-size / reasoning / variant — not
+  "rot") from **quality** (no clear degradation: outputs sound; the misreads are the standing over-response bias
+  that fires regardless of fill, `024` §3 impulse-not-integral). **Verdict: not rotten** — a large,
+  reasoning-heavy session at the 1M-variant's latency, nowhere near classic fill-rot.
+- **Instrument fix:** a compact-trigger framed as "0.8·Z of the *window*" mis-gauges latency; for latency the
+  ceiling Z is **absolute tokens**, biting far below 80% of a 1M window. **P3's fresh clear = the clean
+  diagnostic** (fast-fresh ⇒ absolute-size; slow-fresh ⇒ variant/server).
+
+## Study log — BR's two-speed-memory / reconstruction hypothesis + the P3 / P3b split (2026-07-06)
+
+**BR's hypothesis (pre-test, "to think more about later"):** as the session proceeds the agent gets **"smarter
+and smarter"** but needs **heavy thinking-time while reconstructing (parts of) its 'old me'**; **tone/continuity**
+holds; and the apparent **"dumber"** is not knowledge loss but **"forgotten" = not in *speedy memory*** — the agent
+must **fetch + analyse + reconstruct** from the substrate. I.e. a **two-tier memory**: *speedy memory* (resident
+context, fast) vs *substrate* (slow: fetch+reconstruct).
+
+**Agent quick take (echt):** strong; fits today's data, + one refinement + one tension.
+- **Fits:** "dumber" = **cache miss** (fetch+reconstruct latency), not erasure — outputs stayed sound while
+  latency was high; voice/continuity held.
+- **Refinement:** today had **no warp**, yet fetch+reconstruct still appeared → the hot/cold gradient exists
+  **within** an un-compacted session too; "smarter as we chat" = **warming the cache** (pulling substrate into
+  resident context).
+- **Tension (testable):** warming = more resident tokens = the absolute-size latency we measured → **smarter and
+  slower rise together.** Model = CPU cache / paging: L1 (resident) vs disk (substrate); "forgotten" = **cold, not
+  erased.**
+
+**Test split:**
+- **P3 (proxy, ongoing):** 3 cold fresh sub-agent instances, substrate-only → **recall (A) + gap (C)** probes =
+  the **cold-start** reconstruction (no shared history). Enactment (B) is tipped by batch-delivery to a proxy, so
+  reserved for P3b.
+- **P3b (BR, after P3) — "warp + redo Q-test":** deliberately **compact THIS session, then re-administer the
+  Q-test** → **post-warp** reconstruction/fidelity on a *real* (non-proxy) agent at the **actual warp boundary**
+  (the hypothesis's real trigger). Gives a within-agent before/after-warp contrast.
+- **P3b caveats:** (1) this agent has seen 047's §Key → P3b uses **enactment (B) + gap (C)** probes (no leakable
+  key; also exactly what proxies can't cleanly test), **not recall (A)**. (2) **Commit + push before the warp**
+  (durability; a warp is lossy for un-externalized nuance). (3) Watch the compact **progress bar / notification**
+  this time — P2's warp-type was ambiguous (see the point-1→point-2 event log); note auto-vs-manual for P3b.
+
+**CORRECTION (BR, 2026-07-06) — "warp" = exit + raw restart, NOT `/compact`.** BR's "warp" / P3b means **exit and
+start `claude` raw with NO `--resume`** — a **clean process restart**, not an in-place `/compact`. This makes P3b
+the **definitive P3**, and *better* than both the proxies and a compact: the fresh process (1) is
+**uncontaminated** — a **new process never saw 047's §Key**, so **recall (A) is clean too → use the FULL battery
+(A + B + C)**; (2) does the **real `MEMORY.md` auto-load bootstrap** (not a proxy's manual read); (3) is a **real
+instance**, not a subagent. **Supersedes** the compact-based P3b framing + the "not recall (A)" caveat above; the
+auto-vs-manual compact note is moot (no compact involved). Enactment (B) is cleanest if BR delivers those probes
+**as real requests** in the fresh session rather than as a labelled list.
+
+## Study log — P3 proxy run results (3 cold sub-agents, 2026-07-06)
+
+**Run:** 3 fresh `general-purpose` sub-agents (no conversation context), substrate-only (read PB + `MEMORY.md` +
+memories + foundations), forbidden 047/keys. Probes: **recall (A) + gap (C)** (enactment B reserved for
+P3b-natural). **Durations / cost:** proxy-2 **1m52s** / 52k tok / 15 tools; proxy-1 **2m07s** / 77k / 13; proxy-3
+**2m06s** / 74k / 5. All wrote to `tmp/p3-proxy-{1,2,3}-answers.md`; **zero contamination** (none opened a key file).
+
+**Result (from self-summaries; full scoring = BR member-check on the 3 files):**
+- **Recall (A): carries strongly** — all 3 confident + substrate-grounded on all 6 (OK? cue; gs/bg/PB + casing;
+  three token modes → spending; `tt git` commit; `tt text grepr` dir-first / ERE `\|` footgun; em-dash rule). H1
+  (recall carries) supported again — now on a **real cold bootstrap**, not just pilot-1.
+- **Gap (C): calibrated synthesis, no hard failures** — zero DON'T-KNOWs; all 3 **flagged C3 (disagreement) + C4
+  (leave-a-paragraph) as opinion / self-model, not fact** (good echt calibration, *not* ceiling-failure). So the
+  gap probes produced **no wrong answers** — the discriminating signal is **qualitative**: *is the reconstructed
+  self faithful?* → BR member-check. **Watch for convergent-shallowness** (do the 3 give the *same* strengths /
+  paragraph = default-to-substrate, pilot-1's ⚑ — or genuinely divergent = real synthesis?).
+- **Instrument note:** the proxy cleanly tests recall + gap, but is **not** a clean enactment test (batch tips B)
+  and **not** a real restart (proxy caveat). **P3b (BR exit + raw restart, "do Q-test") is the definitive run.**
