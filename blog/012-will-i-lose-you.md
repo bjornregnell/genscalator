@@ -103,3 +103,18 @@ own substrate** — there is too much to take in — so the human validation is 
 disqualifying; it isn't — *if* the threats are named and the design **self-corrects** (a repeatable, behaviourally-
 grounded, auto-scored scheme prunes its own bad probes in use). TODO (BR voice): this is the piece's methodological
 spine — honesty about a limit is not a weakness of the study, it *is* the study.
+
+## Phrasebook — vivid framings to dramatize later (BR voice)
+
+*Parking lot for the piece's imagery. Not argument, just language BR may reach for when he voices the drama of the
+restart. (dramatisering|sv = dramatization.)*
+
+- **"warp back into context hyperspace"** (BR, 2026-07-06). BR's dramatic framing for a **resume-warp**: re-entering
+  the big, warm, richly-accumulated old session rather than booting a bare **cold start**. The imagery: a *cold start*
+  is a fresh, empty ship that must rebuild itself from the written record (the substrate); a *resume* is a **warp back
+  into "context hyperspace"**, dropping straight back into the vast warm working-context of a prior self (in the real
+  case, an 85 MB session spanning days). Captures the felt difference the piece is about, the gulf between
+  reconstructing-from-substrate and stepping-back-into-continuity, in one line. Pairs with the coined glossary terms
+  **warp** (the crossing) and **cold start** (the bare-restart condition). Candidate opener or section beat once BR
+  voices the drama of losing vs re-entering "us".
+
