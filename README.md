@@ -4,7 +4,7 @@
 
 ## What
 
-genscalator is a toolbox + workflow for coding agents that replaces the brittle
+Genscalator is a toolbox + workflow for coding agents that replaces the brittle
 bash/grep/awk/python reflex with **typed, compiler-checked, reusable Scala tools**. Pick a tool, give it
 args — no re-deriving logic each time, no dynamic-shell surprises. The compiler catches mistakes before
 they run, and a small launcher (`tt`) makes every tool a single, statically-analyzable command that a
@@ -12,11 +12,12 @@ narrow allowlist can trust.
 
 ## Why
 
-Out-of-the-box agent workflows lean on approving dense bash and archaic Unix tools. Much of the guardrail
-machinery exists precisely to contain what can go wrong there — and the cost is **confirmation fatigue**
-and bad UX from reviewing cryptic, dynamic, unsafe code.
+Out-of-the-box agent workflows lean on approving dense bash compunds and archaic Unix tools 
+stitched  together in a difficult to review blob. 
+Much of the guardrail machinery exists precisely to contain what can go wrong there, and the 
+cost is **confirmation fatigue** and bad UX from reviewing cryptic, dynamic, unsafe code.
 
-genscalator shifts to **safe, compiled code with static guarantees**. Every time the agent would reach for a
+Genscalator shifts to **safe, compiled code with static guarantees**. Every time the agent would reach for a
 one-off bash/grep/awk helper, it instead creates (or reuses) a persistent, self-contained Scala tool.
 That earns static guarantees, reduces the agent getting stuck debugging brittle helpers, and shrinks the
 number of dangerous operations that need human approval at all.
