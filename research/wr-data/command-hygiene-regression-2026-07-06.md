@@ -29,3 +29,13 @@
 **Pattern (two specimens, one session):** two tool-discipline regressions minutes apart (`cd`-compound grep; raw-curl), both under sustained rapid-multi-thread load, both the habitual raw tool beating the disciplined one. The agent's **self-monitoring degraded before its output did** — BR caught both: a live joint-rot-vigilance specimen (under load, the human catches what the agent misses; the agent's meta-monitor fails first).
 
 **Structural fix (per the dogma):** add a **file-output option to `tt web`** (`tt web get <url> --out <file>`, keeping the size-cap) so the disciplined path covers binary/large fetches (PDFs). Then "use tt web" becomes *possible* for this case — willpower cannot fix a gap the tool does not cover. Flagged for BR / a tt-toolbox hardening pass. [[genscalator-toolbox-single-dispatcher]]
+
+---
+
+## Third specimen (Go-#1 feasibility pilot, 2026-07-06): compound `scala-cli … | tail; echo` stalled mid-solo
+
+**Event.** Running the feasibility scoring harness the agent issued `scala-cli run <file> 2>&1 | tail -25; echo "exit=${PIPESTATUS[0]}"` — a **compound** command. `Bash(scala-cli *)` prefix-matches only a command that *is* `scala-cli …`; the `| tail -25` and the specific `echo` are separate sub-commands, neither allowlisted, so the guard flagged the whole thing for approval and the run **sat waiting on a permission prompt** ("Contains …" expansion in the UI) mid-solo — BR noticed the stall. Same class as specimens 1-2: **compounding defeats the prefix allowlist**; third instance this session, all under sustained load. Correct form: bare `scala-cli run <file>` (the harness prints its own `SCORE` line + writes results to a file, so no `| tail` / `echo` post-processing is needed).
+
+**Diagnosis (echt):** discipline slippage under load again — but this specimen is sharper because it *actually stalled a solo run*, not just reset cwd. It directly validates the overnight-run risk flagged in specimen 1's "double relevance."
+
+**Structural fix — now pinned to the plan (§4).** Beyond "run bare commands": the overnight collection loop is redesigned as a **single bare-invoked `scala-cli` orchestrator** whose internal `os.proc` subprocess calls (ssh→modly, compile, test) are **not** Bash-allowlist-gated — so the entire matrix needs exactly one guard-clean invocation and per-cell shell compounding cannot leak in. Willpower→structure, per the dogma. Any interactive reads the researcher does between rounds stay **bare** (no `|`/`;`/`&&`/redirect). [[guard-against-forced-confirmations]] [[genscalator-toolbox-single-dispatcher]]
