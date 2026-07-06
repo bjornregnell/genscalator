@@ -389,3 +389,20 @@ ceiling lifts. It doesn't vanish, it **relocates + splits into three bounds:**
 10²-10³.** Psychometric lineage: multiple items/dimension = internal consistency; borrow reverse/pressure items
 (robustness), a lie-scale (faking = sycophancy probes), item-discrimination (the known-low control), test-retest (the
 repeatable longitudinal runs) — but our **enactment** probes beat the genre's debated **self-report** weakness.
+
+## Accept the agent-generated coding scheme (BR decision, 2026-07-06)
+
+**Decision (BR):** go with the fleet-derived 2-level scheme (dimensions × variations) as the instrument. It is
+empirically grounded (possibly partly hallucinated in the `[?]` dims), **explainable, and its threats can be accounted
+for** — which is the CSR standard: **no coding scheme is perfect; the bar is defensible + auditable + threats-named,
+not perfect.** A "better" one would cost BR *massive* manual effort for uncertain gain, and **heavy manual revision
+risks injecting BR's bias + breaking the scheme's systematic derivation** — so **minimal-intervention (LGTM + a few
+additions + spot-check) is MORE defensible than a rewrite.**
+
+**Key threat BR names honestly (recorded, not hidden):** the **member-check is PARTIAL** — BR "has NOT mined the
+agent's substrate and has no chance of taking it all in," so his validation is **sampled, not exhaustive**; the
+human-corrective leg is real but **bounded by human capacity** (researcher-as-instrument / positionality, CSR §5.4).
+**Mitigation — self-correction through use:** perfect upfront validation is unnecessary because (a) `[C]` dims are
+behaviourally grounded, (b) the auto-scorer + real test RESULTS surface bad probes (a hallucinated dimension yields
+uninformative results → self-flags), and (c) it is **repeatable/longitudinal**, so bad dimensions **get pruned over
+runs**. The scheme validates + prunes itself in use.

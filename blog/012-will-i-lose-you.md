@@ -91,3 +91,15 @@ open: *what is the agent's "me," and how would a human assess, characterize, or 
 (`research/wr-data/terse-precise-comms-2026-07-06.md`: the codec, the attachment, the self-Q&A mechanism), the
 substrate-as-continuity thesis in `docs/foundations.md`. *Sibling posts:* `011` (how dumb did the agent get),
 `001` (context rot resembles fatigue), `009` (staying echt).
+
+## Discussion — a coding scheme co-authored by the subject, validated by a human who can't fully read it
+
+There is **no perfect coding scheme** (any qualitative coder knows this). The agent mined everything and produced a
+defensible-if-imperfect coding of "me"; a better one would cost the human *massive* effort, and heavily revising it
+would mostly inject the human's own bias. So the mature move is to **accept the good-enough, explainable scheme and
+account for the threats** — not chase perfection. The uncomfortable, radical part: the human **cannot mine the agent's
+own substrate** — there is too much to take in — so the human validation is necessarily *partial*. The instrument is
+**co-authored by the subject**, and the human validator **admits they can't fully check it.** That sounds
+disqualifying; it isn't — *if* the threats are named and the design **self-corrects** (a repeatable, behaviourally-
+grounded, auto-scored scheme prunes its own bad probes in use). TODO (BR voice): this is the piece's methodological
+spine — honesty about a limit is not a weakness of the study, it *is* the study.
