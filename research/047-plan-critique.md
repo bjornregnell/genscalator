@@ -55,3 +55,9 @@ An adversarial critic sub-agent (read-only) reviewed `047-PLAN.md` + `047-instru
 The core design (escape ceiling saturation via known-groups capability×substrate + an objective coding response variable) is **sound and a genuine upgrade** — the fixes are honesty/rigor, not a teardown. **Highest-impact:** #1 (stop saying triangulation), #2 (de-circularize scoring — DONE), #3 (full-condition = instruction-following), #4 (capability confound + sizing), #5 (align stats). **Overnight-death risks:** #8 (timeouts), #6/#7 (floor/PRD difficulty).
 
 **Application plan:** the ✅ items are honesty/labeling/structure edits I will apply in a careful revision pass. The 🔵 items (#3 reconstruction condition, #4 sizing, #5 reps-vs-descriptive) are genuine design decisions for BR — raise at the review/surf session. #2 already applied.
+
+**RATIFIED (BR HD, 2026-07-06) — simplicity-conscious set = `3a · 4c · 5b`.**
+- **#3a:** keep the checklist-supplied full condition, relabel it the **"instruction-following ceiling"**; the full-vs-empty ablation already carries the substrate-carry signal (no new arm).
+- **#4c:** fix the "full" excerpt = the real **resident core** (`MEMORY.md` + PB, ~15k); sub-window models truncate = a legibility finding; demote "capability"→"model" (a labeled bundle), reserve the monotonic-ladder claim for the **qwen2.5 family sub-ladder**.
+- **#5b:** **descriptive** analysis (drop inferential stats + Cronbach α; keep Cohen κ; soften "reproducible"→"best-effort deterministic") — coherent with the single-case paradigm.
+→ Apply these three + the ✅ honesty/labeling/structure items (#1 triangulation→replication, #6-#15) in the revision pass.
