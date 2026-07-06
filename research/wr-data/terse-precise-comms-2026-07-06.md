@@ -53,3 +53,24 @@ you probably beat me there too)."*
   agent on demand** (recall-as-a-service). So the design target is not "small vocabulary" but "**small active set for
   the human + full set recallable via the agent**." (This is itself a nice instance of coupled-system capability:
   the *pair* remembers more than either party.)
+
+## Related (2026-07-06): the agent articulating its own substrate as a partnership asset
+BR flagged (WR data): the agent's explanation of the substrate reliability hierarchy (hook > AGENTS.md > memory >
+skill > conversation) and the NOW-as-resume framing is *introspection on how the agent works*, and *"you being able to
+explain this to me is a good part of our joint meta-level understanding."* He wondered if it's from Anthropic's docs.
+
+**Honest provenance (echt) — three tiers, don't conflate them:**
+- **Mechanics = fact.** Real, checkable Claude Code features (memory auto-load, always-loaded AGENTS.md, hooks fire
+  structurally, `/clear` wipes conversation, compaction is lossy). Not introspection — documented behaviour.
+- **Ranking/framing = our synthesis.** "Retrieval-independence; structural > knowledge" is genscalator's own
+  co-developed lens (foundations *Structural vs knowledge safeguard*), NOT lifted from Anthropic docs.
+- **Self-model = inferential (corroboration-asymmetry caveat).** Claims about the agent's *own* retrieval ("a memory
+  file's detail loads only on recall") are the agent's *model* of the system, partly inferred — a **testable claim, not
+  authoritative self-knowledge**; the agent can't fully introspect its weights/retrieval. Measure behaviour, don't
+  trust self-report.
+
+**Why it's a partnership asset.** A human orchestrating a coupled system steers better when the agent can expose its
+operating model in shared terms — it turns the substrate from an opaque dependency into a **jointly-editable** one (the
+human becomes a better "super-manager"). Coupled-system capability applied reflexively: *the pair reasons about the
+pair.* Value is bounded by the echt honesty above — fact vs synthesis vs self-model — else it degrades into
+confident-but-ungrounded self-report (the exact failure the corroboration-asymmetry rule guards).
