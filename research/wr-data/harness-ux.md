@@ -718,3 +718,19 @@ selection. Won't re-prompt once set. Source: Claude Code *Fullscreen rendering* 
 the human-side cousin of the agent's command-hygiene reflex-races. Safe-by-design default for a power user = *opt-in,
 trivially reversible without losing the session*; needing a restart is friction. Defaults shouldn't fight established
 human habits.
+
+## Claude TUI edit-UX pushes flux-drafting to an external editor the agent can't see (2026-07-06, BR)
+
+**Observation.** BR drafts **in-flux content in a separate scratchpad editor the agent cannot see**, deliberately —
+partly because **another editor sometimes has better edit ergonomics than the Claude TUI** (typing / selecting /
+revising a volatile draft), and partly to **avoid confusing the agent** with churny half-formed text.
+
+**Two WR-relevant facts:**
+- **Harness edit-UX gap.** For heavy editing the TUI input surface is not always best; a power user routes
+  flux-editing to a dedicated editor. Upstream signal: the TUI's edit affordances (multi-line editing, selection,
+  revising a long draft) lag a real editor enough to lose that work to another tool. Cousin of the arrow-up-edit race
+  + mouse-mode + font-resize items above.
+- **Agent visibility gap (reach).** The agent's context is **not the full picture of BR's WIP** — there is an
+  invisible channel (the external scratchpad). Consequence: **don't assume completeness**; when BR references context
+  the agent hasn't seen, or a request seems to presume unstated material, it may live in the scratchpad — **ask rather
+  than hallucinate** the missing piece. Ties to *Reach (access horizon)* + the human-state perception gap (`011`).
