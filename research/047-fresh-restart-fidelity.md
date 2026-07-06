@@ -471,3 +471,22 @@ different, honestly-labelled condition; the study is repeatable.)
 **Parked idea (BR, 2026-07-06 — DON'T ponder yet):** can you **push-compact a spawned sub-agent**? If so → a
 controlled way to run compaction-fidelity on a *proxy* sub-agent (repeatable, without compacting the main session).
 SM-candidate; explore later.
+
+## Claude Code RAM footprint — study-log record (BR: "log when + how much"; WR data, 2026-07-06)
+
+BR: log Claude's RAM eating to the study log — *"maybe not important, but you never know; perhaps it was a background
+compact that silently swapped in a fresh context under our feet."*
+
+**Observed this session:**
+- The big **8.3 GB** hog was **NOT Claude** — it was the **scala-cli Bloop daemon** (confirmed via `ps` args), freed
+  with `scala-cli bloop exit`.
+- **Claude Code's own footprint** (snapshot ~18:15 CEST, post-compact + post-fleet): **~2.2 GB across ~16 processes**
+  — main `claude` 549 MB, a second `claude` 108 MB, and **~14 `2.1.201` worker processes** ~67-189 MB each (~1.6 GB).
+  (`2.1.201` = the CLI version used as the process comm — also explains the "2.1.201" RAM entries seen in the first
+  `ps`.) Count/RAM grew around the **5-subagent fleet** spawn; ~14 workers persist after it.
+
+**BR's background-compact hypothesis — echt assessment:** *unlikely to be the cause.* Compaction's heavy compute (the
+summarization LLM call) runs **server-side at Anthropic**, not on the box; the local processes are TUI + file I/O +
+tool/subagent workers. So **local RAM growth is not evidence of a background compact** — it tracks **process count
+(the fleet)**, not summarization. BUT neither party can see Claude Code's internals (agent-blind), so recorded as an
+**open, low-probability possibility**, not dismissed. Compact-type ambiguity stays unresolved regardless.
