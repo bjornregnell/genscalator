@@ -321,9 +321,11 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   Cause: a harness input-race — pressing ↑ to edit an already-Entered message is **too late** once the agent has
   begun processing it, so the correction posts as a **new** message (a double-post).
   - **Human step:** don't fight the race — **add a new message**, and for a simple typo send a terse `edit:` note.
-    Two forms, both valid: the **full `edit: wrong -> right`** (explicit fix), OR a **bare `edit: <token>`** (just the
-    mistyped word, or even a fragment) — which only **flags that a typo happened** and leaves it to the agent to work
-    out what was meant and whether it matters.
+    Two forms, both valid: the **full `edit: wrong -> right`** (explicit fix), OR a **bare `edit: <token>`** — which may
+    be the **mistyped word** *or* the **corrected word** (e.g. `edit: three` supplying the right word to replace a
+    "two") — that only **flags a typo happened** and leaves it to the agent to work out *which word in the prior
+    message it maps to*, what was meant, and whether it matters. **If it is unambiguously interpretable, apply it
+    silently** (BR 2026-07-06).
   - **Agent step (1):** treat a rapid near-identical pair (or an `edit:` / `I meant:` note) as **one** message, the
     later copy authoritative;
   - **Agent step (2):** apply the fix and act **once** — for `edit: X -> Y` a word-level substitution; for a **bare

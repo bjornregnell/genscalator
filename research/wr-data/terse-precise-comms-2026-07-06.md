@@ -127,3 +127,14 @@ be re-negotiated each session — the terse-precise codec extended to *control* 
   restart). The **exit-resume dance** is the session-continuity wrapper around a *human-substrate* maintenance event —
   the human's machine is part of the joint substrate, and its upkeep is a periodic cost (the human-side cousin of
   memory hygiene / index rot). Pairs with the mouse-mode + font-resize quirks (harness-ux) as human-side friction.
+- **Three token-budget modes (BR named 2026-07-06).** Joint work runs in **token-spending / normal / token-saving**,
+  set by weekly-limit headroom + reset proximity. The weekly reset (Tue 9 AM) makes unused budget
+  **use-it-or-lose-it** → in spending-mode "eat tokens on value" (thorough reviews, bg-tasks); in saving-mode favour
+  cheap items. A **period-level** posture, distinct from the per-turn quick/deep dial. **The optimization ("token
+  value for money"):** allocate spend to where it converts to the most project value *before* the reset zeroes the
+  unused remainder. Memory `token-budget-modes`.
+- **Scala-scratch box-load cost (BR observed 2026-07-06).** A scala-cli scratch **compiles** → a CPU spike on BR's box
+  (transient slowness during a memory sweep; BR confirmed minor). Refines `prefer-scala-scratch`: for a *trivial*
+  replace, a few **box-free Edits** beat a compiling scratch; reserve scratches for structural / many-site /
+  newline-sensitive work. The human's box is **shared substrate** — agent work has a footprint on it (a cousin of the
+  human-box-bookkeeping point above).
