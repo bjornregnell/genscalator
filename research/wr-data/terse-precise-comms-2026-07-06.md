@@ -195,3 +195,13 @@ be re-negotiated each session — the terse-precise codec extended to *control* 
   burden is on the agent to confirm, not on BR to be precise** — BR may also describe intent plainly or write
   **Swedish** (agent reads it). Sibling of the input-channel metadata-loss + `OK?` entries; a second-language
   transparency property of this corpus (METHODOLOGY.md language-for-transparency).
+- **Worked micro-example: three mechanisms converged + self-corrected on one small question (2026-07-06, BR flagged).**
+  On the trivial token-limit question ("does Fable-0% give free headroom?"), the whole methodology ran in miniature:
+  (1) the **token-usage dance** (BR pastes the figure → agent analyses); (2) the **echt / member-check loop** — BR's
+  intuition ("all-models must cap Fable too") **challenged the agent's confident slip** ("Fable = a free fresh
+  bucket"), the agent **echt-corrected** rather than defended, and an **external authoritative source** (Claude Max
+  docs via a `claude-code-guide` sub-agent) **adjudicated → confirmed BR**; (3) **triangulation** — human intuition +
+  agent reasoning + docs all converged. The value: a clean instance of **behaviour/artifacts adjudicate, introspection
+  only proposes** (METHODOLOGY.md §5) on a *verifiable* question — the loop that keeps self-Q&A / introspection honest,
+  shown working at small scale. The human-as-skeptical-member-checker caught a confident-but-wrong agent claim in under
+  a minute; the fix was **external verification, not mutual reassurance.**
