@@ -758,3 +758,19 @@ scratchpad?" **Honest answer: not directly — only by inference.**
 invisible-scratchpad reach gap): the harness strips signal the agent could use to calibrate how *settled* a message
 is. The agent reconstructs it heuristically; a lightweight opt-in marker would restore it losslessly. Bounded by the
 same echt honesty — inference is a testable model, not perception.
+
+## The scratchpad doubles as a manual buffer for session-meta artifacts (2026-07-06, BR)
+
+**Observation.** BR uses his external scratchpad to **stash session-meta artifacts** the harness gives no good home
+for: a **copy of `/context` output** (to paste back / compare later, since the input queue blocks re-running the slash
+command on demand) and the **agent-supplied resume prompt** (to paste after an exit-resume / box restart).
+
+**Why WR-relevant — two harness gaps push a persistence job onto the human:**
+- **No re-viewable meta-history.** `/context` is a one-shot readout; to track fill over time (or read it while the
+  queue is busy) BR must manually copy it out. A persistent **statusline fill indicator** (already an upstream ask)
+  removes the copy step.
+- **No first-class resume-artifact store.** The resume prompt is a durable handoff the agent generates, but the
+  harness has nowhere to *keep* it across a restart, so the human clipboards it via the scratchpad. **Agent-side fix
+  available now:** write the resume prompt to a known file (e.g. `notes/resume-prompt.md`) the fresh session
+  auto-reads, instead of riding the human's clipboard — the one artifact still on the clipboard while everything else
+  is externalized to PB/memory. Ties to the exit-resume dance + copy-paste-frame-rule.
