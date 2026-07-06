@@ -357,3 +357,15 @@ candidate, folds into SM013) and tripped the `;`-compound allowlist guard — in
 scratch-discipline traits are **real, not self-flattery**. **Fleet-fidelity constraint (BR 2026-07-06):** en-masse
 spawning + scratches have a **box-RAM footprint** (BR freed RAM mid-dig) — a real limit on fleet size for **SM015**,
 separate from token/harness caps.
+
+## Platform stability — a validity threat (BR 2026-07-06)
+
+**The flaky box can KILL the study's validity: a crash mid-run corrupts / invalidates the data** (mid-baseline,
+mid-compact, or mid-restart). RAM check: the box is memory-pressured — **6.1 GB swap in use**, and a single **8.3 GB
+`java` process** (PID 3182079, likely a stale Bloop / Metals / scala-cli JVM — fed by the agent's own scala-cli +
+metals work; the scratch/fleet box-footprint, corroborated by measurement). **Mitigations:** (1) **stabilize the box
+BEFORE the run** (reclaim the big JVM / restart) so it survives the baseline + post-compact points; (2) **fold the
+restarts** — the study's own *exit → clear-session restart* (point 3) can double as the **box-hygiene restart**, one
+event that clears swap + ballooned JVMs *and* gives the fresh session; but points 1-2 happen before it, so free RAM
+first; (3) keep agent fleets + scratches minimal during a run (they re-inflate the JVM). WR-data: precise-allow `ps`
+(tighter than `ps *`) is a settings-hardening item; agent scala-cli/metals RAM footprint now measured (8.3 GB).
