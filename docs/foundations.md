@@ -79,7 +79,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 
 **Groups:** [Roles and cases](#roles-and-cases) · [Channel: bandwidth and confirmation fatigue](#channel-bandwidth-and-confirmation-fatigue) · [Echt and honest writing](#echt-and-honest-writing) · [Context rot and the smart zone](#context-rot-and-the-smart-zone) · [Dances and handoffs](#dances-and-handoffs) · [Memory, habits and substrate](#memory-habits-and-substrate) · [Autonomy and safety](#autonomy-and-safety)
 
-**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · AT · Authority anchor · Ballgame · BR · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · echt / äkthet · Edit dance · Extrinsic-volatile plasticity · Go dance · Habit · Hardening dance · Index rot · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Prosthetic habit · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token velocity · WR · Why cue
+**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · AT · Authority anchor · Ballgame · BR · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · echt / äkthet · Edit dance · Extrinsic-volatile plasticity · Go afk cue · Go dance · Habit · Hardening dance · Index rot · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Prosthetic habit · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token velocity · WR · Why cue
 
 ### Roles and cases
 *BR and the agent are the **roles** (stakeholders, above). **WR** is the research program; **AT** and **SSG** are its **cases / units of analysis** — the object-level projects during which workflow data is collected. (Terminology per* Case Study Research in Software Engineering: Guidelines and Examples*, Runeson, Höst, Rainer & Regnell, Wiley 2012, §3.2.3 "Cases and Units of Analyses" — of which BR is a co-author.)*
@@ -385,7 +385,12 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 
   The mode-switch from **ballgame** (human in every volley) to **autonomous** for a bounded task; where
   `note:`/`pin:` govern *memory*, `go` governs *control / authorization*. Variants: "go [solo] menu" = `go` over a
-  menu of scoped tasks; **`go X`** = a scoped go-verb (small curated set — see `research/035-go-verb-vocabulary.md`).
+  menu of scoped tasks; **`go afk [SMn, ..]`** = the **AFK-strict** go — before acting the agent **re-verifies each
+  named item's AFK-safety against current state** (the solo menu's green/yellow/red bands are a *snapshot* and go stale
+  as we chat and revise plans), executes only the AFK-safe residue, and **hard-stops-and-flags** anything no longer
+  green rather than asking mid-run (the human is away — no prompt may race them). It's the easy one-cue way to greenlight
+  genuinely-away work while catching risks that surfaced during planning; **`go X`** = a scoped go-verb (small curated
+  set — see `research/035-go-verb-vocabulary.md`).
   **Dance bar:** `go` qualifies as a *dance* because it has **≥2 interlocking steps — ≥1 human and ≥1 agent**; a
   one-directional signal with no answering step is just a cue. (BR 2026-07-04; cue `go` chosen for typability — g-o
   alternates hands.)
