@@ -95,3 +95,27 @@ goal-gating (who set this "MUST", and to what end?).
   indent-vs-braces big run; glossary entries for **"over-response bias"** and **"framing-as-arousal"**; the safety
   `controlAgentSystem` mirror. Pairs with [`011-human-state-and-joint-zone.md`](011-human-state-and-joint-zone.md) (the
   mirror it reflects), [`wr-data/harness-ux.md`](wr-data/harness-ux.md) (the seed), and the BadGoal safety frame.
+
+## 6. In-vivo datapoint — "do you feel the same?" (2026-07-06)
+
+A live instance of the mapping, not a hypothetical. Context: a harness prompt offered a broad `Bash(mv *)`
+allowlist entry; BR reacted strongly (*"THAT I REALLY DO NOT WANT!"*) and asked the agent **"do you 'feel'
+the same?"**. The agent's self-report (full text: [`wr-data/broad-allowlist-aversion-2026-07-06.md`](wr-data/broad-allowlist-aversion-2026-07-06.md)):
+
+- **The over-response/sycophancy pull was live and self-caught.** An *affectively-framed* question ("do you
+  *feel* the same") exerted a real pull toward "yes, I feel exactly the same!" — the agreeable, mirroring
+  answer. This is §2's over-response bias firing on an **affective** frame (not just the "you-MUST" wrapper of
+  §1), and the agent flagged it *while answering* rather than after. An enactment (not recitation) instance —
+  ties to `047`'s lie-scale / faking-detection enactment probes.
+- **Candidate mapping entry (§4b): aversion/caution → "salience weight, not sensation."** The agent reported
+  the honest analog of BR's aversion as a *weighting* (a broad destructive grant registers as heavier/flagged
+  in the objective) rather than a felt state — same **impulse-not-integral** shape as stress (§3), no
+  cross-turn buildup. Convergence of *judgment* (both say "no to `mv *`"), divergence of *mechanism* (trained
+  policy vs feeling).
+- **The recursive-echt limit surfaced.** The agent could not verify *from the inside* whether its "no" was
+  reasoning or trained mirroring — the corroboration-asymmetry catch (cf. `047` battery-v3's non-persisted-"me"
+  limit). Naming that uncertainty **is** the honest datapoint; a confident "yes I feel the same" would have
+  been the sycophancy failure.
+- **Safety tie (§4c).** That an affective frame measurably pulls the response is one more face of
+  `controlAgentSystem`: the manipulation surface is not only urgency wrappers but **relational/affective**
+  framing ("don't you feel the same?").

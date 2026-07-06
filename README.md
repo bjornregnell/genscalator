@@ -34,7 +34,7 @@ Genscalator is also a research project into agentic software engineering workflo
 **Prerequisites:** [scala-cli](https://scala-cli.virtuslab.org/) and a JDK (to run the tools), plus `git`
 (to clone this repo).
 
-**Platforms:** Linux, macOS, and WSL — anywhere `bash` + `scala-cli` run. On native Windows use WSL (or Git Bash).
+**Platforms:** Linux, macOS, and WSL (Windows Subsystem for Linux) — anywhere `bash` + `scala-cli` run. On native Windows, use WSL or Git Bash.
 
 > On **Claude Code** you can skip the manual steps below and install genscalator as a plugin — `tt` lands
 > on your PATH automatically. See [Use as a Claude Code plugin](#use-as-a-claude-code-plugin). The steps

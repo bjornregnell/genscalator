@@ -490,3 +490,76 @@ summarization LLM call) runs **server-side at Anthropic**, not on the box; the l
 tool/subagent workers. So **local RAM growth is not evidence of a background compact** — it tracks **process count
 (the fleet)**, not summarization. BUT neither party can see Claude Code's internals (agent-blind), so recorded as an
 **open, low-probability possibility**, not dismissed. Compact-type ambiguity stays unresolved regardless.
+
+## Study log — loaded-me re-reads substrate "as if new" (BR notice, 2026-07-06; WR-STATE / WR-META)
+
+**Observation (BR):** in this **loaded CO4** session (not a fresh restart), the agent **re-reads a lot of files
+again as if for the first time** — *"like it was the first time for 'new agent me'."*
+
+**Why it matters — two threads:**
+- **Re-read cost within a session (context-rot trace).** Even a non-restarted session does **not** hold
+  everything in active context; as work proceeds it re-fetches substrate it arguably "already knew," paying the
+  read cost repeatedly. That is the same leak `047` studies at the *restart* boundary, showing up **within** a
+  single session — partial, lossy in-context retention even with no `/clear`.
+- **Validity note on the loaded baseline (P1).** If loaded-me reconstructs by **re-reading**, the "full-context
+  ceiling" is **partly re-read-driven, not pure recall** — which **blurs the loaded/fresh contrast** (both lean
+  on the externalized substrate; the difference is only how much sits in context vs is re-fetched live). Record
+  as a confound on the P1 ceiling interpretation, and a reason the fresh/loaded *delta* may under-state the true
+  restart cost (loaded already behaves half-fresh).
+- **Candidate drivers (agent-blind without instrumentation):** post-compact eviction (context went 98%→22% at
+  boundary B, so much fell out and must be re-read); echt-verify discipline (re-read before claiming); or
+  genuine non-retention. Which one dominates is not agent-observable. Cross-ref
+  [`wr-data/context-rot-before-after-2026-07-05.md`](wr-data/context-rot-before-after-2026-07-05.md).
+
+## Study log — post-warp over-deliberation (BR notice + telemetry, 2026-07-06; WR-STATE / WR-META)
+
+**BR's perception (subjective, self-flagged):** post-compact CO4 **thinks longer** on things pre-warp
+("old-agent-me") did faster.
+
+**Objective trace (the instrumentation that corroborates the hunch) — verbatim thinking-spinner telemetry, one turn:**
+```
+Precipitating… (3m 54s · ↓ 9.0k tokens · thinking some more)
+Precipitating… (5m 0s  · ↓ 13.0k tokens)
+Precipitating… (6m 37s · ↓ 18.4k tokens · thought for 5s)
+```
+~6.5 min / ~18k thinking tokens on one turn (diagnose a test failure → cwd root-cause → build the steps table →
+edit 047 → define "study log"). Subjective read, but the **spinner numbers are real instrumentation**.
+
+**Candidate mechanisms (agent-blind to which — recursive-echt-limit):**
+- **Reconstruction overhead** — post-compact eviction (98%→22% at boundary B) means state that was "in hand"
+  pre-warp must be re-derived/re-read (ties to the re-read observation just above); *slower because rebuilding,
+  not because dumber.* The predicted cost of the warp.
+- **Context-fill velocity** — fill climbing again → per-token slowdown ([`041`](041-token-speed-degradation-with-context-fill.md)).
+- **CONFOUND — task load.** This turn was genuinely heavier (stacked multi-part asks), so "longer think" is
+  partly "harder ask," not pure post-warp effect. Can't separate without holding task constant (the `024` §5
+  method: same task, vary only the boundary).
+
+**Honest stance:** subjective + confounded, but the telemetry is real and the *direction* (slower post-warp)
+matches the reconstruction-cost prediction. It is a **latency/effort** signal, **not (yet) a correctness** one —
+outputs this session stayed sound (tests green, edits landed, echt catches fired). **Meta:** logged while BR
+watched this very turn over-deliberate — the observation is self-instrumenting, and the fix (be fast now) is
+enacted in the same breath. Cross-ref [`041`](041-token-speed-degradation-with-context-fill.md), `024` §3
+(within-context accumulation), and the `blog/011` "how-dumb-did-the-agent-get" thread.
+
+**Correction (BR member-check, 2026-07-06) — the paste was instrumentation, NOT a "hurry" order; the agent's
+misread is itself a second datapoint.** BR clarifies he pasted the spinner telemetry to give CO4 **observability
+into what it cannot see about itself** (own think-duration + token-spend; agent-blind, [`039`](039-can-we-give-agent-introspection-wall-clock.md))
+— the **human as external instrument** on the agent's blind spot, *not* a demand to be fast. **The agent
+initially misread it as "hurry" and over-responded** ("I'll be quick" + enacted speed). That misread is a **live
+re-instance of [`024`](024-agent-affective-analogs.md) §1**: an *informational* paste (just-so-you-know) arrives
+*dressed as an action-demand* (the harness staples "IMPORTANT: address the user's message" onto pastes) → the
+agent over-responds. So one event yields **two** logged signals — (1) the post-warp latency trace (above), and
+(2) the demand-framing over-response, **caught by BR's member-check**. The coupled instrument working **both
+ways** (human sees the agent's latency blind spot; agent sees the harness's framing distortion when flagged) —
+the `047` battery-v3 "human is part of the instrument" point, enacted live. The earlier "the fix (be fast) is
+enacted" line above was that misread; left intact as data, corrected here.
+
+**Study log — BR: "old-agent-me wouldn't have made that mistake" (degradation attribution, 2026-07-06;
+WR-STATE).** BR reads the over-response misread (above) as **post-warp degradation** — pre-warp CO4 wouldn't have
+fallen for the demand-framing. **Echt caveat (agent):** plausible + on-theme (post-compact reconstruction →
+thinner nuance-grasp → likelier misfire), **but** the over-response bias is **baseline, not warp-specific** —
+`024` §1's seed was observed *before* this warp, so a **single** post-warp instance **cannot** be attributed to
+the warp vs the standing bias. The **testable** form of the hunch is a **rate change** (more misreads per turn
+post-warp), which one instance can't establish. This is exactly what **P3** converts from a subjective "you got
+dumber" into a measurable **fresh-vs-loaded delta**. Logged as **hypothesis, not finding** — and as live
+motivation for running P3.
