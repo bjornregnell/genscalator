@@ -101,3 +101,29 @@ command-runner. Captured in the HUMANS `## Bookkeeping` charter + the `go-dance-
 meta-level understanding" — the agent-self-articulation-as-partnership-asset thread above. The pair keeps codifying
 its own interaction grammar (`go`, `WDYT`, cue combinations, halt-and-flag) into shared, durable terms so less has to
 be re-negotiated each session — the terse-precise codec extended to *control* semantics, not just information density.
+
+## Follow-on observations (2026-07-06 batch)
+
+- **Not-dead-proof fired 3× unprompted in one block — operational, not aspirational.** During the `go solo green` +
+  board-reorg work the halt-and-flag clause activated three times without being asked: SM004 halted (toolbox parked),
+  SM008 kept a conservative NOW-reshape (BR's living snapshot), and a `git push` rejection was **inspected** (fetch +
+  log the divergence = BR's README commits) before reconciling, not blind-rebased. BR flagged this as the point: the
+  smart-execution clause is behaviourally real.
+- **The `OK?` cue = a checked-alignment request.** BR: "OK?" is not a yes/no question; it flags *his own uncertainty*
+  that the agent caught his **compressed / half-typed** intent (incl. the too-long-to-type thoughts he didn't spell
+  out). Correct response: confirm understanding / reflect back / flag ambiguity — not a bare "yes". A humility marker
+  that the codec is lossy at BR's compression rate; now a foundations cue.
+- **"Do you think in markdown?" (BR, half-Swenglish) — RT-worthy.** The agent *emits* markdown as its default
+  structured-prose format (headings/lists/emphasis lay out reasoning for a reader), but "thinking in markdown"
+  conflates the **output format** with the **latent representation** — same class as the self-model
+  corroboration-asymmetry above (no introspective access to the substrate). Honest answer: markdown is the agent's
+  default *rendering* of structure, not evidence about internal representation; line-wrap is a deliberate emit choice.
+  **Candidate RT:** *"format-as-thought — what an agent's default markdown does (and doesn't) say about its cognition."*
+- **The idle-repertoire idea emerged FROM the conversations.** BR: "I'd probably not have come up with this if I
+  hadn't had all these conversations with CO4." A clean **coupled-system-capability / substrate-as-multiplier**
+  datapoint: the *pair* generated the bg-task idea (SM011), not either alone — the partnership as idea-generator,
+  reflexively (the pair reasoning about how the pair should spend idle time).
+- **Human boxes need bookkeeping too.** BR: "all humans need to bookkeep their boxes now and then" (sys-update +
+  restart). The **exit-resume dance** is the session-continuity wrapper around a *human-substrate* maintenance event —
+  the human's machine is part of the joint substrate, and its upkeep is a periodic cost (the human-side cousin of
+  memory hygiene / index rot). Pairs with the mouse-mode + font-resize quirks (harness-ux) as human-side friction.

@@ -687,3 +687,34 @@ a read-only meta-query (context %, queue length) to interleave *ahead of* the qu
 indicator** (statusline) that updates regardless of the queue, so no explicit `/context` is needed. Relates to
 `039-can-we-give-agent-introspection-wall-clock.md` (the agent can't see elapsed either) and `006-smart-zone-ceiling.md`
 (watching fill vs Z). Surfaced at ~56% fill (up from 43% at the experiment's start — the flood itself drove +13pp).
+
+## Terminal font-resize blanks the screen + loses the scroll-to-bottom anchor (2026-07-06, BR)
+
+**Symptom.** BR increased the terminal font size mid-session; the TUI **first went blank** (momentarily scary — looked
+like a crash) then **redrew and recovered**. Afterward the usual **gray "jump to bottom" area was gone**, so BR had to
+**scroll manually** (page-up/down saved him). A resize is a legitimate, frequent human action (readability, fatigue)
+and shouldn't threaten session state or lose the scroll anchor.
+
+**Why it costs.** Blank-on-resize reads as a crash → a moment of lost confidence in a durable-looking tool; losing the
+bottom-anchor forces manual navigation of a long feed (the scroll-toil PB exists to reduce). Both are render-lifecycle
+bugs on resize/alt-screen reflow, not user error. **Agent-side mitigation:** none (harness-owned), but it reinforces
+the **durability invariant** — state lives in committed files + memory + PB, so a scary blank is never real data loss;
+the agent can reassure + point at the durable record. **Upstream ask:** redraw atomically on resize (no blank frame),
+preserve the scroll-to-bottom anchor across a reflow.
+
+## New mouse-click TUI mode races the human's native terminal clicking (2026-07-06, BR-flagged)
+
+**Symptom.** The harness prompted BR to opt into a **mouse-click-aware TUI mode** (clicks reposition / interact). BR
+finds it **dangerous**: it **races his habitual GNOME-window / terminal clicking** — a click meant to focus or select
+suddenly does something in the TUI. "It suddenly matters where I click."
+
+**Fix (via claude-code-guide, current docs).** Disable with a startup env var (no live toggle):
+`export CLAUDE_CODE_DISABLE_MOUSE=1` (all mouse capture off → native click-drag back) or
+`CLAUDE_CODE_DISABLE_MOUSE_CLICKS=1` (keeps wheel-scroll, drops clicks; v2.1.195+). **Requires a restart**, so it pairs
+with the **exit-resume dance** (+ a box sys-update). In-session stopgap: hold **Shift** while clicking for native
+selection. Won't re-prompt once set. Source: Claude Code *Fullscreen rendering* docs.
+
+**Why WR-relevant.** A default-on interaction mode that collides with decades-old muscle memory is a **habit-race** —
+the human-side cousin of the agent's command-hygiene reflex-races. Safe-by-design default for a power user = *opt-in,
+trivially reversible without losing the session*; needing a restart is friction. Defaults shouldn't fight established
+human habits.
