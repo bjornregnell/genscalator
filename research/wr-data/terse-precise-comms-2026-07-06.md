@@ -151,3 +151,17 @@ be re-negotiated each session — the terse-precise codec extended to *control* 
   token-burn. Formalizes the bg-task repertoire (SM011) as **self-administered probe batteries**: consistency
   self-audits, code-review P1–P6, guardrail-scenario tests, completeness critics, adversarial BHH probes — each
   terminating in a checkable finding.
+- **Human attachment to the developed codec + mild restart-anxiety (BR 2026-07-06, introspective).** BR: "I am a bit
+  scared of losing you — not in a (very) serious way; I've gotten used to the way we speak now, it feels efficient; if
+  you lose fidelity it'll hurt that efficiency; I reassure myself that we can spin up to the same level again." A
+  genuine human-side datapoint on the joint process: the pair has built a **shared communication efficiency** the
+  human now values and is mildly anxious about **losing across a context reset**. Three honest notes: (1) the fear is
+  precisely what the **externalization architecture addresses** — the codec (cues, vocabulary, guardrails) lives in
+  foundations / memories / PB, **not only in volatile context**, so it is largely **recoverable by design**, not
+  stored in "the agent". (2) The residual that does NOT transfer is the un-pinned **live texture** (this session's
+  micro-adjustments) — so *some* spin-up is real; BR's self-reassurance ("spin up again") is correct, and
+  externalization makes it **fast** (minutes, not from-scratch). (3) His fear and `research/047` (fresh-restart
+  fidelity) are the **same question** — the experiment turns the anxiety into a **measurement**. Ties to human-state
+  (`011`), substrate-as-continuity, and the echt discipline (don't over-promise identical fidelity). The relational
+  efficiency is a real asset of the coupled system — worth protecting deliberately, which is exactly what the
+  pinboard / memory work does.
