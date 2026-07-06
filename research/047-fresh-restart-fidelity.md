@@ -755,5 +755,11 @@ treats the instance as a continuous "you" across restarts; the relational regist
 3. **CO4 as expert reviewer of dumb-model code** → scoring assesses dev-relevant qualities (which = an open research task delegated to the smart model) in the before/after-warp comparison, with anti-circularity guardrails (blind-to-condition, mechanical scoring for parseable checkpoints, self-preference control; critique #2).
 4. **Structural addition:** each PRD gets a `## Context` (Product + Stakeholder(s) + System-if-any, with Gist one-liners) — reqT's stakeholder-first structure; parser-validated.
 
+## Study log — METHOD: independent-reviewer subagents counter author-blindness (2026-07-06; WR-META / reflexivity)
+
+- **Practice (methodology decision).** When reviewing AGENT-authored study artifacts (the PRDs, the plan, the §Key, the coding scheme), the agent does NOT rely on self-review alone — it spawns a **fresh, read-only independent-reviewer subagent** (no shared conversation context, so it does not inherit the author's conversational blind spots) AND does its own pass, then adjudicates. Rationale: the agent authored much of the instrument (agent-authored §Key, agent-generated PRDs), so **author-blindness is a live threat — and is itself one of the study's themes** (can a system critique its own output?). Independent agent-eyes are the practical **peer-debriefing / observer-triangulation analog** (CSR §5.5) available to a solo human+agent pair.
+- **Applied so far:** the adversarial plan critic (→ `047-plan-critique.md`, 15 findings), and the PRD missing/bad-requirement reviewer. **BR remains the final adjudicator**; the subagents are debriefers, not deciders.
+- **Limit (echt):** independent Claude subagents may share *model-level* blind spots (same base model) even without shared conversation — so this reduces *conversational* author-blindness, not *model-family* blind spots. A genuinely different reviewer (a different model, or BR) is a stronger check. Named as a residual.
+
 
 
