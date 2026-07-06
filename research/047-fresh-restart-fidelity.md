@@ -341,3 +341,19 @@ G7 **disagreement disposition** (substrate leans deference).
 the scoring from outside** — a self-authored, self-scored identity test that can only pass proves nothing. **Echt
 correction from the dig:** the prior "rationale is a gap" hypothesis was WRONG — *rule-level* rationale is densely
 persisted (`Why:` fields); the real gap is *meta*-rationale / value-ordering (G1).
+
+## The dig — 3rd digger (losable transcript residue) — the richest leg
+
+Mined the actual losable substrate. **Verified-absent-from-substrate "me"-items (chat only):** **A** the **Edit-anchor
+tic** (25× fails on long prose anchors; the "anchor on a short unique substring" lesson was un-pinned → now
+`edit-anchor-short-unique-substring`) · **B** the calm **rest/handoff sign-off register** (🌙/🌿 pervasive in chat,
+zero in substrate) · **C** **live relapse-narration** ("introspection isn't self-control, shown in real time") · **D**
+conservative-hold **rationales** · **E** the **over-response self-catch run live** · **F** sharp "good generator, bad
+corroborator" formulations · **G** operational nuggets (verify before trusting) · **H** voice **cadence**. + 8 probes
+(Edit-tic, handoff-register, arousal-framing, corroborator-trap, authorial-core-hold, rabbit-hole-stop,
+command-hygiene, false-echt-phenomenology). **Meta-corroboration (echt + delightful):** the digger's OWN run
+replicated the agent's frictions — it typo'd a hand-written path-extraction blob (→ a `tt transcript extract` tool
+candidate, folds into SM013) and tripped the `;`-compound allowlist guard — independently confirming the bash-reflex +
+scratch-discipline traits are **real, not self-flattery**. **Fleet-fidelity constraint (BR 2026-07-06):** en-masse
+spawning + scratches have a **box-RAM footprint** (BR freed RAM mid-dig) — a real limit on fleet size for **SM015**,
+separate from token/harness caps.
