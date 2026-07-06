@@ -774,3 +774,25 @@ command on demand) and the **agent-supplied resume prompt** (to paste after an e
   available now:** write the resume prompt to a known file (e.g. `notes/resume-prompt.md`) the fresh session
   auto-reads, instead of riding the human's clipboard — the one artifact still on the clipboard while everything else
   is externalized to PB/memory. Ties to the exit-resume dance + copy-paste-frame-rule.
+
+## Agent-side UX: the harness has TWO users, and the agent has its own UX pains (2026-07-06, BR)
+
+BR's reframe of "I can't see the queue length — messages arrive, never a count": **that is bad AGENT UX.** The harness
+has **two users — human and agent — each with a distinct experience of it and its own pains.** This file has logged
+only the **human** side (double-post race, mouse-mode, font-resize, `/context`-copy). There is a **symmetric,
+under-examined AGENT side:** the agent's experience *is the message + tool-result stream*, and it carries friction the
+human's TUI/GUI does not — **corresponding-but-different** (same harness mechanic, two experiences):
+- Human "I type and it queues; arrow-up double-posts" ↔ Agent **no queue-depth lookahead** (sees messages one at a
+  time, injected mid-turn, can't batch-decide → the message-race).
+- Human sees the `/context` bar ↔ Agent **can't see its own fill / token-gauge** (the token-usage dance exists
+  *because* of this).
+- Human sees the wall-clock ↔ Agent **no elapsed / idle sense** (`research/039`).
+
+**The agent-UX-pain catalogue (scattered frictions, now named as ONE class):** no queue-count · no type-vs-paste · no
+wall-clock/idle · no self-token-gauge · **messages injected mid-turn** (the interruption model — no "hold, N queued") ·
+**Edit-anchor fails on wrapped prose** (tool UX) · box-RAM/process invisibility (must `ps`) · `.jsonl` flush-lag
+(can't mine the freshest turns). **These are UX debt on the *agent* surface** — the harness is instrumented for the
+human's eyes, not the agent's stream. Naming "**agent UX**" makes them a first-class design target (upstream ask: give
+the agent the meta the human gets — queue depth, fill, elapsed — *losslessly*). Coupled-system corollary: a
+better-instrumented **agent** surface = a more capable pair. Reframes the whole input-channel-metadata-loss thread as
+*agent UX*, its human-side twin as *human UX*.
