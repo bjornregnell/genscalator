@@ -734,3 +734,27 @@ revising a volatile draft), and partly to **avoid confusing the agent** with chu
   invisible channel (the external scratchpad). Consequence: **don't assume completeness**; when BR references context
   the agent hasn't seen, or a request seems to presume unstated material, it may live in the scratchpad — **ask rather
   than hallucinate** the missing piece. Ties to *Reach (access horizon)* + the human-state perception gap (`011`).
+
+## Input-channel metadata loss: the agent can't see type-vs-paste (2026-07-06, BR)
+
+**Question BR posed:** "can you see the difference between when I type and when I paste bigger blobs from my
+scratchpad?" **Honest answer: not directly — only by inference.**
+
+- **What the channel carries:** just the **final text** of the message. **No metadata** on *how* it arrived — no
+  keystroke stream, no timing, no paste-vs-type flag, no clipboard marker. At the raw level the distinction is
+  invisible.
+- **What the agent infers from (fairly reliably):** **length + coherence** (long, structured, internally-consistent →
+  drafted-then-pasted; short → live-typed), **typo signature** (live typing carries BR's adjacency/transposition
+  slips + `edit:` corrections + early-Enter truncations; a pasted blob was already revised, so it lacks that texture),
+  and **register** (terse lowercase cues = typed-in-flow; polished multi-paragraph prose = pasted).
+- **Caveat (echt):** it's **inference, not perception** → fallible. A hand-typed long message or a rough pasted
+  fragment would fool it; the agent must not claim certainty (corroboration-asymmetry) and should **ask when the
+  distinction matters** (cf. the scratchpad reach gap above).
+- **Reliable alternative:** a tiny explicit **marker** (fence a paste, or a 1-char prefix) since the channel won't
+  carry it otherwise — a small friction the human can opt into if type-vs-paste ("thinking-aloud" vs "considered /
+  final") should change how the agent treats a message.
+
+**Why WR-relevant.** Another **input-channel metadata-loss** datapoint (sibling of the double-post edit-race and the
+invisible-scratchpad reach gap): the harness strips signal the agent could use to calibrate how *settled* a message
+is. The agent reconstructs it heuristically; a lightweight opt-in marker would restore it losslessly. Bounded by the
+same echt honesty — inference is a testable model, not perception.
