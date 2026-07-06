@@ -25,6 +25,10 @@ number of dangerous operations that need human approval at all.
 See [`docs/foundations.md`](docs/foundations.md) for the full goals, stakeholders (human / agent / Black
 Hat Hacker threat model), and glossary.
 
+### The bigger picture
+
+Genscalator is also a research project into agentic software engineering workflow productivity. The invention of typed tools is supported by a dog-fooding action research approach where genscalator is used in meta-level experiments and case studies on human-agent workflows. Emerging research questions and findings are reported in [`blog/`](todo) and research studies are brainstormed, designed and executed in [`reserach/`](todo), as we go, supported by the genscalator typed tools and joint human-agent workflow under development.     
+
 ## Install
 
 **Prerequisites:** [scala-cli](https://scala-cli.virtuslab.org/) and a JDK (to run the tools), plus `git`
