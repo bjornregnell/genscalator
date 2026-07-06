@@ -87,3 +87,12 @@ pair the felt problem with a concrete harness-side ask (widen the edit window; r
 health gauge; typed tools that remove the reflex).
 
 Pairs with the tt-toolbox DESIGN (`tools/DESIGN-single-dispatcher.md`) on the tooling half.
+
+## The agent's side of the UX (draft beat, 2026-07-06)
+
+> Stub for BR to voice. The symmetry to land: **agent UX pains are the inverse of the human's.** The harness has two
+> users and is instrumented for the human's eyes, not the agent's message-stream. **You can't see the agent's state**
+> (its context-fill, its reasoning) → it **over-explains**; **the agent can't see your queue** (or paste-vs-type, or
+> the wall-clock) → the **message-race**. A better-instrumented *agent* surface = a more capable pair. Catalogue:
+> `research/wr-data/harness-ux.md` (the agent-UX-pain class). "Sucks" for whom? Both users, differently — that is the
+> essay's other half.
