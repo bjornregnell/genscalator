@@ -79,7 +79,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 
 **Groups:** [Roles and cases](#roles-and-cases) · [Channel: bandwidth and confirmation fatigue](#channel-bandwidth-and-confirmation-fatigue) · [Echt and honest writing](#echt-and-honest-writing) · [Context rot and the smart zone](#context-rot-and-the-smart-zone) · [Dances and handoffs](#dances-and-handoffs) · [Memory, habits and substrate](#memory-habits-and-substrate) · [Autonomy and safety](#autonomy-and-safety)
 
-**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · AT · Authority anchor · Ballgame · BR · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · echt / äkthet · Edit dance · Extrinsic-volatile plasticity · Go afk cue · Go dance · gs (genscalator) · Habit · Hardening dance · Index rot · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Prosthetic habit · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token-usage dance · Token velocity · WR · Why cue
+**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · AT · Authority anchor · Ballgame · BR · Cold start · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · echt / äkthet · Edit dance · Extrinsic-volatile plasticity · Go afk cue · Go dance · gs (genscalator) · Habit · Hardening dance · Index rot · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Prosthetic habit · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token-usage dance · Token velocity · Warp · WR · Why cue
 
 ### Roles and cases
 *BR and the agent are the **roles** (stakeholders, above). **WR** is the research program; **AT** and **SSG** are its **cases / units of analysis** — the object-level projects during which workflow data is collected. (Terminology per* Case Study Research in Software Engineering: Guidelines and Examples*, Runeson, Höst, Rainer & Regnell, Wiley 2012, §3.2.3 "Cases and Units of Analyses" — of which BR is a co-author.)*
@@ -577,6 +577,24 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   it doesn't manufacture reasoning that isn't there). Since *strongest × richest* always wins, the leverage is
   **model-agnostic** — the bet does not depend on models plateauing. See the capability + stove-reflex excerpts
   in `research/RAW-DATA.md`.
+- **Warp** — the **action / event** of crossing a session boundary: the human **exits one Claude Code process and
+  starts another**, crossing the context boundary (BR's coinage: *"warping into outer space"*). Two kinds: a **raw
+  warp** (no `--resume`) starts a fresh process that lands in a **cold start** (substrate-only, no warm context); a
+  **resume-warp** (`--resume`) inherits a **warm** process — context carried, plus a fresh OS env when useful (e.g. a
+  refreshed token, the **exit-resume dance**). Sessions index by **warp-distance**: *"two warps back"* = an earlier
+  session ("old-old-me"). So **warp = the verb/event, cold start = the state a raw warp lands in.** Substrate-hierarchy
+  cousin of the **compact dance** (which hands off *within* a session across a compaction; a warp crosses *between*
+  processes). See `research/047-fresh-restart-fidelity.md`; memory [[exit-resume-dance]].
+- **Cold start** — the **true fresh-restart condition** (and its data): what a **raw warp** lands in — a raw `claude`
+  process, **no `--resume`, no warm working context**, reconstructing the working self **only from the durable
+  substrate** (layers 2–3: memory + `PB` + this glossary/foundations) plus the auto-loaded index. Deliberate resonance
+  with the CS sense (a serverless / cache *cold start* = fresh process, no warm state). It is the condition under test
+  in `research/047-fresh-restart-fidelity.md`: *does the externalized substrate carry the session across it?*
+  Finding-in-progress (n=1 real cold start, triangulated): **facts reconstruct, but calibration / tempo / relational
+  tuning do not** — the cold-started agent runs heavier, more hedged, **over-deliberates** (the *losable self*; the
+  human perceives it as "you feel different / disoriented"). Pairs with **warp**; contrast the warm continuation of a
+  **resume-warp**. Relatives: **Substrate**, **Extrinsic-volatile plasticity** (the cold start is exactly the moment
+  the volatile layer is gone and only the persistent substrate remains).
 ### Autonomy and safety
 - **Authority anchor (human)** — the human as the **non-delegable authority** for decisions the agent cannot
   self-corroborate: permission / security curation, "always-allow" grants, and final verdicts on the agent's own
