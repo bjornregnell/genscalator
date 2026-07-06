@@ -120,7 +120,13 @@ For each (model × substrate-condition × fixed coding-task): generate a Scala s
 ---
 
 ## 5. Joint-surf plan (gated — we do this together, before AFK)
-Read-before-cite: I read + summarize each so you genuinely know it before citing. **Essential (~8):** Runeson & Höst + Yin (CSR spine + analytic generalization; own the self-reference), Cronbach's α + Cohen's κ (we promised internal-consistency + inter-rater), social-desirability/self-report (the enactment-beats-self-report punchline), Lost-in-the-Middle (degradation is real + measured), context-window + RAG (the externalize-to-substrate footing). **Enriching (~3-4):** ELIZA effect (attachment/COI framing), action research, Ship of Theseus, Yerkes-Dodson (**analogy-only**, cite with an explicit "analogy not mechanism" caveat). Blog policy: Wikipedia + these cornerstones, no long list. I hand you the ranked target list; you grant web; I fetch + summarize.
+**Two reasons we cite related work — different urgency:**
+1. **NEED-to-know (do NOW, lightly):** enough current state-of-knowledge to *carry out the study correctly* — invoke concepts right, don't reinvent or contradict established facts. The only surfing gated before the run.
+2. **Position / contrast (DEFER to post-results):** grounding the *discussion and results* in the literature and contrasting our findings. You can't contrast results you don't have yet — so this happens after, and only as much as a specific result demands.
+
+**Scope for (1) now — do SOME effort, don't dig until we bleed:** prioritize **Wikipedia** + **seminal, highly-cited** work *if it exists*. This topic may be genuinely novel; if so, a cursory-but-honest search coming up thin is fine, and the **novelty is itself a finding** — claimable only after a quick **adjacency scan** (LLM agent memory, persona persistence, continual learning / catastrophic forgetting): glance next door before claiming the street is empty.
+
+**Reason-1 shortlist** (from the lit scout; read-before-cite — I read + summarize each so you genuinely know it before citing). **NEED-concepts (~6, Wikipedia-depth):** context-window + RAG (the externalize-to-substrate footing), Lost-in-the-Middle (degradation is real + measured), Cronbach's α + Cohen's κ (we promised internal-consistency + inter-rater), social-desirability/self-report (the enactment-beats-self-report punchline). **Method spine (already in hand as books):** Runeson & Höst + Yin + Wohlin ESE (own the self-reference). **Deferred to reason 2 / enriching:** ELIZA effect (attachment/COI), action research, Ship of Theseus, Yerkes-Dodson (analogy-only, "analogy not mechanism" caveat) — surf only if a drafted beat earns them. Blog policy: Wikipedia + these cornerstones, no long list. I hand you the ranked list; you grant web; I fetch + summarize.
 
 ---
 
