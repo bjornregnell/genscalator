@@ -451,3 +451,23 @@ agent itself flagged pre-compact; BR now enforces it.
 **point-3 — a FRESH agent that has never seen the data, administered the probes from a clean channel (probes-only, no
 answers), instructed not to read the data.** Point-2 is retained only as a contaminated
 "enactment-through-compaction" data point, honestly labelled.
+
+## Step 4b — BR updates + restarts the box (version-change confound, 2026-07-06)
+
+**Added to the sequence (BR):** between *exit* (4) and *clear-restart* (5) comes **4b: BR updates + restarts the box.**
+A box update may **silently download a new Claude Code CLI (or model)** → point-3's fresh agent could differ from
+point-1/2 by **more than a context-clear** (a **version-change confound**). Realistic (users update), but must be
+**measured**, not assumed away.
+
+**Version recorded PRE-update (point-1 / point-2 baseline):**
+- Claude Code CLI: **2.1.201**
+- Model: **claude-opus-4-8[1m]** (Opus 4.8, 1M context)
+
+**Procedure:** after 4b, BR runs `claude --version` (and notes the model in the new session's env) BEFORE point-3.
+**If either changed** → label point-3 as *context-clear + version-delta* (confounded), not a pure clear. If unchanged
+→ point-3 is a clean clear. Either way: **report what happened.** (A version bump is not a ruined run — it's just a
+different, honestly-labelled condition; the study is repeatable.)
+
+**Parked idea (BR, 2026-07-06 — DON'T ponder yet):** can you **push-compact a spawned sub-agent**? If so → a
+controlled way to run compaction-fidelity on a *proxy* sub-agent (repeatable, without compacting the main session).
+SM-candidate; explore later.
