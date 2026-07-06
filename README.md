@@ -6,7 +6,7 @@
 
 Genscalator is a toolbox + workflow for coding agents that replaces the brittle
 bash/grep/awk/python reflex with **typed, compiler-checked, reusable Scala tools**. Pick a tool, give it
-args — no re-deriving logic each time, no dynamic-shell surprises. The compiler catches mistakes before
+args. No re-deriving logic each time, no dynamic-shell surprises. The compiler catches mistakes before
 they run, and a small launcher (`tt`) makes every tool a single, statically-analyzable command that a
 narrow allowlist can trust.
 
