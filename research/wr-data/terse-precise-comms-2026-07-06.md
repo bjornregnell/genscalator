@@ -164,4 +164,23 @@ be re-negotiated each session — the terse-precise codec extended to *control* 
   fidelity) are the **same question** — the experiment turns the anxiety into a **measurement**. Ties to human-state
   (`011`), substrate-as-continuity, and the echt discipline (don't over-promise identical fidelity). The relational
   efficiency is a real asset of the coupled system — worth protecting deliberately, which is exactly what the
-  pinboard / memory work does.
+  pinboard / memory work does. **Two refinements BR added:** (i) the codec "feels efficient **AND fun**" — *fun* is a
+  real dimension of the joint process, not decoration (it likely sustains the collaboration + the effort BR puts in).
+  (ii) **BR has the same fear about the eventual CF5 model switch** (`research/029` cross-model) — the anxiety
+  generalizes from *context* reset to *model* swap. That is sharper: a model switch changes the substrate-*reader*
+  (capabilities, tokenization, style), so more of "the way we speak" is at risk than in a same-model restart. The
+  fresh-restart experiment (`047`) is the same-model lower-bound; a CF5 re-run of the same battery would measure the
+  cross-model delta on top. Human introspection on the joint process, logged.
+- **Ceiling-confound: a self-test the agent ACES is ambiguous (2026-07-06, BR: "WR data on your last pondering").** A
+  sharpening of the self-Q&A discipline above. When an agent **designs, answers, AND scores** its own probe battery, a
+  **near-perfect result cannot self-certify quality** — it is equally consistent with "the agent/substrate is genuinely
+  good" and with "the test lacks the sensitivity to detect failure." A **ceiling has no discriminating power.** This is
+  the **corroboration-asymmetry at the INSTRUMENT level** (not just the answer level): the loop is triply
+  self-referential (author + subject + scorer), so a pass proves the test *couldn't fail*, not that the thing is good.
+  **Corrective (generalizes beyond this study):** a self-assessment is informative only if it can **produce variance** —
+  include probes hard enough to fail, and a **known-low condition it is expected to score lower** (a discriminant /
+  negative control); an instrument that can only pass is not a measurement. This is exactly why the **objective
+  ground-truth key** and **BR's member-check** matter: they break the self-referential loop from *outside*. It sharpens
+  the earlier self-Q&A caveat — self-Q&A that only *confirms* is theatre; self-Q&A that can *detect its own failure* is
+  measurement. Surfaced by pilot-1's 16/16 ceiling (`research/047`). Echt applied to instruments: a reassuring self-test
+  result may be an artifact of an insensitive test, and the agent must say so.
