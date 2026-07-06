@@ -123,7 +123,8 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   and parse *without expansion*, a direct **communication-bandwidth** + **TE** lever: fewer tokens (and less
   human typing) carry the same intent, in both directions. Distinct from the project's *coined* terms
   (**CF**, **TE**, **Z**, **WR**, **AT**, **BHH**, **BadGoal**, **ralph loop**, **`gs`** = *genscalator* (**always
-  lower-case**, incl. paths like `gs/README`) …) which name domain concepts / the project —
+  lower-case**, incl. paths like `gs/README`), **`bg`** = an agent-solo *background task* (runs when the AFK menu is empty + human
+  away), **`PB`** = the closed pinboard `PIN-BOARD.md` …) which name domain concepts / the project —
   this entry is generic conversational glue. Both sides may use these freely; when a token is genuinely
   ambiguous in context, expand it once. Common set:
   - *Presence / status:* **BRB** be right back · **AFK** away from keyboard · **OOO** out of office ·
@@ -131,13 +132,19 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
     **TODO** to do (left) · **NM** never mind.
   - *Opinion / agreement:* **WDYT** what do you think · **IMO / IMHO** in my (humble) opinion ·
     **LGTM** looks good to me · **SGTM** sounds good to me · **ACK / NACK** acknowledged / rejected ·
-    **+1 / -1** agree / disagree · **FWIW** for what it's worth · **OTOH** on the other hand · **NBD** no big deal.
+    **+1 / -1** agree / disagree · **FWIW** for what it's worth · **OTOH** on the other hand · **NBD** no big deal ·
+    **OK?** *(BR cue, not a plain question)* = "are we aligned? I'm unsure you fully caught my **compressed /
+    half-typed** intent (incl. the too-long-to-type thoughts in my head)" → the agent **confirms understanding /
+    reflects it back / flags any ambiguity**, rather than answering a bare "yes".
   - *Meta / reference:* **TL;DR** short summary · **FYI** for your information · **ICYMI** in case you missed it ·
     **PTAL** please take a look · **AFAICT** as far as I can tell · **IIRC** if I recall correctly ·
     **AFAIK** as far as I know · **WRT** with respect to · **WDYM** what do you mean · **IDK** I don't know ·
     **RQ** research question · **N/A** not applicable · **e.g. / i.e.** for example / that is.
   - *Dev-flavored:* **PR** pull request · **MR** merge request · **RC** release candidate · **repro** reproduce ·
     **rebase / squash** git ops · **YAGNI** you aren't gonna need it · **DRY** don't repeat yourself.
+  - *Emoji convention (2026-07-06):* BR writes emoji as **`:shortcode:`** (e.g. `:tada:`) to skip typing UTF; when the
+    agent spots a `:shortcode:` in shared md BR wrote, it **renders it to a real emoji and asks if BR likes the pick**.
+    Headings carry a leading readability emoji (BR likes them; `PB` sweep).
 - **Quick / deep cues (`quick` / `deep`)** — a per-turn **depth dial** the human turns to set how much the agent should
   spend on *this* request: both the **token budget** (reasoning effort + output length) and **how much information** the
   human wants back. **`quick`** = *"few tokens, terse, skip the depth — a fast answer"*; **`deep`** = *"spend more, go
