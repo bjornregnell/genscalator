@@ -79,7 +79,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 
 **Groups:** [Roles and cases](#roles-and-cases) · [Channel: bandwidth and confirmation fatigue](#channel-bandwidth-and-confirmation-fatigue) · [Echt and honest writing](#echt-and-honest-writing) · [Context rot and the smart zone](#context-rot-and-the-smart-zone) · [Dances and handoffs](#dances-and-handoffs) · [Memory, habits and substrate](#memory-habits-and-substrate) · [Autonomy and safety](#autonomy-and-safety)
 
-**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · AT · Authority anchor · Ballgame · BR · Cold start · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · echt / äkthet · Edit dance · Edit vs clarification cues · Extrinsic-volatile plasticity · Go afk cue · Go dance · gs (genscalator) · Habit · Hardening dance · Index rot · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Prosthetic habit · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token-usage dance · Token velocity · Warp · WR · Why cue
+**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · AT · Authority anchor · Ballgame · BR · Cold start · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · Delegation dance · echt / äkthet · Edit dance · Edit vs clarification cues · Extrinsic-volatile plasticity · Go afk cue · Go dance · gs (genscalator) · Habit · Hardening dance · Index rot · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Prosthetic habit · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token-usage dance · Token velocity · Warp · WR · Why cue
 
 ### Roles and cases
 *BR and the agent are the **roles** (stakeholders, above). **WR** is the research program; **AT** and **SSG** are its **cases / units of analysis** — the object-level projects during which workflow data is collected. (Terminology per* Case Study Research in Software Engineering: Guidelines and Examples*, Runeson, Höst, Rainer & Regnell, Wiley 2012, §3.2.3 "Cases and Units of Analyses" — of which BR is a co-author.)*
@@ -467,6 +467,41 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   *Prevents:* degraded **human**-side decisions (the human dumb-zone, over-trust under *thriller state*); conserves
   attention for the high-stakes **ballgame** volleys that need it. Memory: [[tired-cue]],
   [[joint-rot-vigilance-recovery-kit]]. See `research/011-human-state-and-joint-zone.md`.
+
+- **Delegation dance** — the protocol by which the **super-agent** (`CO4`) hands **bounded, well-scoped**
+  work to a background **sub-agent** (default **`CF5`**, Fable-5) so the super-agent **stays responsive to
+  the human in chat** (no message-race, no long silent grind) while parallel work proceeds. The **twist vs
+  the other dances:** the interlocking second party is a **sub-agent**, not (only) the human — the human's
+  step is handing the task in and reading the report; the load-bearing interlock is **super-agent ↔
+  sub-agent**.
+  - **Decide step (super-agent):** per task, tag **📤 delegate** (scoped + verifiable + context-light — buys
+    responsiveness, parallelism, and **lower context rot on both sides**: the work never enters the
+    super-agent's window, and the sub-agent starts fresh) or **🧠 keep** (breakage-cost high, needs the
+    super-agent's global context, or edits our own tooling). **Choosing the model is part of the call** — in
+    **token-spending mode** a 📤 defaults to the **smartest sub-agent** (Fable-5); in saving-mode match model
+    to task.
+  - **Brief step (super-agent):** because a **sub-agent inherits only the brief — none of the super-agent's
+    memory / operating rules** — the brief must **pin the tool lane** (scala-cli / tt, *never* python3 / raw
+    shell), scope to **only the stated task**, and **forbid writing the memory index / `MEMORY.md`**
+    (memory-worthy insights are **drafted-and-returned**; the super-agent owns memory curation). There is
+    **no per-sub-agent permission lever** in the harness — the brief is the *only* behavioural channel; the
+    **shared allowlist** (human-owned) is the structural backstop (see *Structural vs knowledge safeguard* —
+    for a fresh sub-agent the knowledge layer is near-empty, so weight even harder toward structural).
+  - **Adjudicate step (super-agent):** verify every result before commit (e.g. a lossless token-compare
+    scratch); an under-constrained delegate **overreaches** (a logged specimen: a sub-agent chose python3 off
+    the safe lane and wrote into the memory index).
+  - **Human step:** hand the task in, read the report.
+
+  **The dilemma:** briefing cost + loss of the super-agent's global view can exceed the benefit of the extra
+  hands — the classic **professor / PhD-student** delegation dilemma. So it is a **per-task judgment, not a
+  blanket policy** ("some tasks are cheaper done than delegated"), and the delegate-vs-keep crossover **moves
+  with the budget regime**: under spending-mode where **rot is the binding currency, not tokens**, delegation
+  wins even when the super-agent already holds the context. Confound-safe for the longitudinal study (the
+  studied subject is the super-agent, unchanged; sub-agents are workers). Sibling of the *solo* dance (which
+  hands off **autonomy**) and the *compact* dance (which manages **context**). Memory: [[delegation-dance]];
+  deepened in `research/049-the-dilemma-of-delegation.md` (economics + briefing fidelity),
+  `research/050-does-delegation-lower-context-rot.md` (the empirical rot study), blog **BP013**, figure
+  `blog/figures/seq-delegation-dance.svg`. (BR 2026-07-07, name ratified.)
 
 ### Memory habits and substrate
 - **Memory hygiene (agent)** — keeping the agent's **durable memory store** (the persistent `MEMORY.md` + the
