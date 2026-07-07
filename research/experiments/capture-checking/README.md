@@ -98,6 +98,8 @@ proof the guard fires.
 | `poc3-crux-inject.scala` | only whitelisted slash-commands injectable | compiles + runs | ✅ prints `/compact /context` |
 | `poc3-crux-reject.scala` | a *pure* tap handler cannot inject | **compile error** | ✅ rejected: `capability inject cannot flow into capture set {}` |
 | `poc4-safe-mode-reject.scala` | safe mode blocks a forging cast | **compile error** | ✅ `Cannot use asInstanceOf in safe mode` |
+| `poc5-scoped-injector.scala` | scoped harness: allow-list + lifetime | compiles + runs | ✅ injects `/compact /context`, refuses `/Fast` |
+| `poc5-escape-reject.scala` | injector cannot escape its scope | **compile error** | ✅ `Capability inj outlives its scope` |
 
 **The two load-bearing compiler messages (verbatim):**
 
@@ -183,6 +185,38 @@ closed **by construction**. That is the prize SM016 hoped for.
 
 ---
 
+## Part 3b — v2: the scoped injector harness (the SM016 kernel)
+
+`poc5-scoped-injector.scala` puts the pieces together into the minimal SM016
+kernel, ~30 lines of pure Scala, mirroring the paper's `requestFileSystem`
+lifetime pattern (Sec 2/3.6):
+
+```scala
+def requestInject[T](allowed: Set[SlashCommand])(op: Injector^ => T)(using IOCapability): T =
+  val inj = new Injector(allowed)
+  op(inj)
+```
+
+Three layered guards, all verified:
+1. **Compile-time API shape** — `Injector.send` takes only a `SlashCommand`
+   enum; no raw-string / approve method exists (poc3).
+2. **Compile-time lifetime / escape** — `poc5-escape-reject` proves the injector
+   **cannot leak out of its block**: `Capability inj outlives its scope: it
+   leaks into outer capture set 's1`. So it can't be captured now and fired
+   later, outside the controlled window.
+3. **Runtime allow-list** — `send` refuses any `SlashCommand` outside the
+   granted `Set` (defense in depth): `poc5` injects `/compact /context` but
+   refuses `/Fast`. `using IOCapability` also makes `requestInject` impure, so
+   it can't be opened inside a `Classified.map`.
+
+**This mirrors the real TACIT design** (confirmed from `github.com/lampepfl/tacit`
+README, targeted look): their library exposes exactly this scoped shape —
+`requestFileSystem(root){...}`, `requestExecPermission(Set("ls")){...}`,
+`requestNetwork(Set(host)){...}` — so `requestInject(Set(cmd)){...}` is a
+faithful instance of the same pattern, not an invention. TACIT layout for
+reference: `library/impl/{Interface,FileOps,ProcessOps,WebOps,ClassifiedImpl}.scala`,
+MCP server in `src/`, safe mode via a `CodeValidator` + `--safe-mode`.
+
 ## Part 4 — Why this matters beyond SM016 (genscalator / `tt`)
 
 TACIT's thesis *is* genscalator's thesis, sharpened: the whole repo exists to
@@ -207,6 +241,8 @@ scala-cli run poc3-crux-inject.scala      # compiles + runs (prints /compact /co
 scala-cli compile poc2-local-purity.scala      # EXPECTED compile error (the proof)
 scala-cli compile poc3-crux-reject.scala       # EXPECTED compile error (the proof)
 scala-cli compile poc4-safe-mode-reject.scala  # EXPECTED compile error (the proof)
+scala-cli run poc5-scoped-injector.scala       # compiles + runs (allow-list + lifetime)
+scala-cli compile poc5-escape-reject.scala     # EXPECTED compile error (the proof)
 ```
 First run downloads the nightly toolchain (a few minutes); later runs are fast.
 
@@ -225,9 +261,13 @@ First run downloads the nightly toolchain (a few minutes); later runs are fast.
   hole. Per memory `agent-cant-internalize-huge-codebases`: distill via the
   paper + docs and learn from own compiler trials (as done here); note these
   links only for a *targeted symbol lookup* if ever strictly needed.
-- **Build a fuller `Injector` harness PoC**: scoped `requestInject(allowed:
-  Set[SlashCommand])`, a `Classified`-tapped input channel, and a stateful
-  multi-turn session — the minimal SM016 kernel.
+- ✅ **DONE (v2)** — scoped `requestInject(allowed: Set[SlashCommand])` kernel
+  with lifetime + escape control (`poc5`). Still open: a `Classified`-tapped
+  input channel wired to it, and a stateful multi-turn session.
+- **Read the paper appendices** (H: full `FileSystem` API + real compiler-error
+  examples + system prompts; A: CC intro; C: worked two-turn session; D:
+  `@assumeSafe`; G: CaMeL vs TACIT) — the PDF is fetched locally.
+- **Run the real TACIT MCP server** end-to-end (`github.com/lampepfl/tacit`).
 - **Separation / stateful capabilities** for a mutable terminal buffer.
 - **Whether current LLMs emit safe-mode Scala reliably** for our own tasks (the
   paper says yes for theirs; measure on `tt`-shaped tasks).
