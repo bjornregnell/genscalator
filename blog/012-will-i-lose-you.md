@@ -31,6 +31,40 @@
 - The pilot result, honestly: **recall carries almost perfectly.** Fresh agents, reading only the pinboard + memories
   + glossary, reproduced the whole session's grammar and state — down to the exact commit hashes.
 - TODO (BR voice): the felt relief of that. The substrate *works*. The fear's heavy version can be set down.
+- **Bridge (added 2026-07-07):** and then, to escape a perfect-score-that-cannot-detect-loss, the study grew a
+  second, objective arm, in code. That arm is where the fear got a surprising, honest answer (next section).
+
+## The coding-friend test — "did I lose you, my good coding friend?"
+
+*(The strongest and most surprising material, and the developer-facing anchor. Added 2026-07-07 from the completed
+study, `research/047`; beats + draft framing for BR to voice. No em-dashes in the final.)*
+
+- **Why code.** For a developer the fear is concrete: the partner still writes *working* code, but it stops *looking
+  like ours*. So we built an objective second arm, handing a batch of small Scala tasks to local models of many sizes,
+  under three substrate conditions (our conventions doc supplied, withheld, or replaced by a scrambled decoy), scoring
+  compile, test, and style automatically. 255 runs, 17 models, plus a finer two-rater style pass.
+- **What we expected:** the identity story's twin. A weaker or note-starved reader keeps correctness (facts) but loses
+  our style (texture). Clean, tidy, tweetable.
+- **What actually happened, the honest surprise: the tidy prediction was wrong, in three interesting ways.**
+  1. **Our style doc was redundant.** Supplying our conventions barely changed the output versus withholding it,
+     because idiomatic Scala 3 is *already* what a decent code model writes. We had carefully externalized a style the
+     models already knew. (Confirmed by the finer human-like raters, not just a crude linter, so it is not a
+     measurement artifact.) The lesson: **writing down a convention helps only where the reader does not already have
+     it.** Your *idiosyncratic* house rules are worth documenting; the parts that are just widely-shared good taste, the
+     model already has.
+  2. **A lying substrate DID do damage, exactly where it lied.** Feed a decoy ("prefer var, use null, avoid enum") and
+     style dropped, precisely on the dimensions the decoy attacked (immutability, modern idioms) and nowhere else. So
+     substrate has real causal power over texture; it just has little room to *help* when priors already align, and
+     plenty of room to *hurt* when it misleads.
+  3. **The gut-punch: more notes made the weaker models do WORSE.** Handing a small model our conventions *reduced* how
+     often its code even compiled and passed. The extra guidance competed for its limited attention and pushed it toward
+     constructs it then botched. **Handing your notes to a tired or junior partner can make them worse, not better.**
+- **The honest disconfirmer.** So "facts carry, texture leaks" did NOT reproduce in code, and we say so plainly. The
+  durable, more useful truth underneath: **substrate governs texture only where it is doing work the reader cannot
+  already do. Where it is redundant it is free at best; where it misleads or overloads a weak reader it is a cost.**
+- TODO (BR voice): this is the piece's best material now. A developer will feel #3 in their bones (we have all
+  over-stuffed a prompt and watched the model get dumber). Land it lightly and honestly; it is a genuinely
+  counterintuitive result that the careful measurement earned.
 
 ## The echt caveat (why the good news is smaller than it looks)
 - But do not over-read a perfect score. It was **ceiling-saturated**: the questions asked back *what we had just
