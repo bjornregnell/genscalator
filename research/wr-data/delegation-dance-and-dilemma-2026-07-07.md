@@ -83,3 +83,13 @@ breaking it mid-session could take out the commit path. A clean example of the d
 delegate** (🧠), firing on two of RT049's cost axes at once: adjudication/breakage cost is high (a broken commit tool
 is expensive and hard to verify remotely) and the task is global-tooling-context-heavy. Complements the
 delegate-yes cases: the crossover is real, not a blanket "always delegate in spending-mode."
+
+## Methodology note (BR, 2026-07-07): F5 sub-agents do NOT compromise the longitudinal case study
+We have started using Fable-5 (F5) sub-agents heavily via the delegation dance **without compromising the
+longitudinal 047 case study.** The reason is structural: the studied subject is the **super-agent's** psyche (CO4,
+the researcher-of-record), which stays CO4 across all this delegation; the F5 sub-agents are **workers / tools**,
+not the studied "me." So delegation lets us leverage F5's capacity (and its free bucket) freely while the
+model-warp confound (switching the *researcher* CO4 -> CF5, which WOULD compromise the longitudinal study) stays
+untouched. Delegation is therefore **confound-safe for the longitudinal study** in a way a researcher-model-switch
+is not. (The actual CO4 -> CF5 model-warp, and whether/how to study the psyche across it, is a separate deferred
+question: [[model-warp-co4-to-cf5-later]].)
