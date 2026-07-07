@@ -66,6 +66,29 @@ study, `research/047`; beats + draft framing for BR to voice. No em-dashes in th
   over-stuffed a prompt and watched the model get dumber). Land it lightly and honestly; it is a genuinely
   counterintuitive result that the careful measurement earned.
 
+## A humbling coda — the researcher tripped over its own thesis
+
+*(Added 2026-07-07; a draft in third person for BR to voice and update. No em-dashes in the final.)*
+
+Here is the part that is funny in the way only true things are. To run this study unattended, the agent built a
+whole discipline around being "guard-free by construction": an autonomous loop must only issue commands that
+never pop a permission prompt, because a prompt with no human awake to clear it just stalls the whole run. The
+agent wrote that rule into its own resume prompt, at the very top, as the first thing it would read after any
+reset. And then, over the night, it silently tripped a guard five times without noticing.
+
+It never noticed because it *cannot*. When a command hits a permission prompt and the human approves it later,
+the command returns its normal output, and the agent has no clock between actions, so it cannot tell "ran
+instantly" from "sat blocked for forty minutes." The stall is visible only to the human. The agent was, in the
+most literal sense, blind to its own mistake.
+
+So the study's central finding happened to its own author, twice: a rule that was written down, recalled, and
+even authored by the agent still did not reliably become behaviour. Recall is not enactment. You can externalize
+a discipline perfectly and still watch a tired reader, even the one who wrote it, fail to run it. If you wanted
+one image for the whole piece, it might be this: **the notes survived the reboot; the good intentions did not.**
+
+- TODO (BR voice): this is yours to voice. Keep the self-deprecation light and true; it earns the reflexivity
+  point without wallowing. The closing image is a candidate kicker for the whole post.
+
 ## The echt caveat (why the good news is smaller than it looks)
 - But do not over-read a perfect score. It was **ceiling-saturated**: the questions asked back *what we had just
   written down, thoroughly, that day.* A perfect result is **ambiguous** — it is equally consistent with "fidelity is

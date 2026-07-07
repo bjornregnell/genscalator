@@ -34,6 +34,25 @@
       + human relay*, NOT think-time alone (the crunch datapoint was mostly compile/test wall-clock). Report elapsed
       **and** its composition, or it misleads.
 
+## New motivation (2026-07-07, BR steer: "we need to give you a tt for that") — guard-stall invisibility raises the priority
+
+A sharper, safety-relevant consequence of the no-wall-clock gap surfaced during the Go #2 ralph loop
+(`research/wr-data/guard-stall-invisible-to-agent-2026-07-07.md`): because the agent has **no clock between
+tool calls**, a **guard-stall is invisible to it** — a permission prompt that the human approves *later*
+returns the command's **normal output**, so the agent cannot distinguish "ran instantly" from "stalled for
+40 minutes then got cleared." During the loop the agent tripped un-allowlisted `tail` five-plus times and
+**never registered a single stall**; only BR saw them. So the missing `dt` is not just a
+velocity/checkpoint nicety — it is the reason a whole **failure mode (my own guard-stalls) is
+perceptually inaccessible** to the agent, and therefore unlearnable and self-uncorrectable.
+
+**BR steer:** give the agent a **`tt`-based clock** (a `tt time` / `tt now` / elapsed-since-marker tool, or
+tool-result elapsed surfaced back) so the agent can read wall-time and **detect anomalous gaps** (a big
+elapsed on a trivial command ≈ "that stalled on a guard"). This closes the blind spot from the agent side,
+complementing the human-side detection. Concrete first prototype candidate, promoted by this datapoint:
+a `tt` tool the agent calls that returns current time + elapsed-since-last-mark, cheap and allowlisted.
+Ties to the structure-over-willpower argument in [[guard-stall-invisible-to-agent-2026-07-07]] and to the
+substrate-steering question in `research/048-substrate-content-power-over-tool-discipline.md`.
+
 ## Related
 - `tools/chrono.scala`, `research/007-token-budget-awareness.md`, `research/wr-data/harness-ux.md` (the crunch
   datapoint), [[at-code-plan-and-introspection]] (token velocity/acceleration), the **corroboration asymmetry** and
