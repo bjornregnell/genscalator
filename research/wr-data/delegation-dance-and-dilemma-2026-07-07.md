@@ -75,3 +75,11 @@ delegation-dilemma-consideration" rule, so the recognition was **primed by that 
 cold. What CO4 did do on its own: apply the reasoning correctly to *this specific task* without being told "delegate
 this one." So: positive but primed. A cleaner future probe = a delegation candidate handed in a LATER turn with no
 delegation-framing, to see if the flag fires cold. [[echt-effort-especially-self-generated]]
+
+## Introspection specimen (BR-flagged, 2026-07-07): a DON'T-delegate case
+Deciding how to implement `tt git pull --ff-only`, CO4 introspected: *"that's the delegation-dilemma saying breakage
+cost + own-tooling context, so keep it close."* The task edits the very tool CO4 commits with, so a sub-agent
+breaking it mid-session could take out the commit path. A clean example of the dilemma resolving to **DO NOT
+delegate** (🧠), firing on two of RT049's cost axes at once: adjudication/breakage cost is high (a broken commit tool
+is expensive and hard to verify remotely) and the task is global-tooling-context-heavy. Complements the
+delegate-yes cases: the crossover is real, not a blanket "always delegate in spending-mode."
