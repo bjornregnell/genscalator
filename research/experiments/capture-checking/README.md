@@ -219,6 +219,12 @@ First run downloads the nightly toolchain (a few minutes); later runs are fast.
   worked two-turn session; G: CaMeL vs TACIT comparison).
 - **Try the real TACIT MCP server** (`github.com/lampepfl/tacit`) to see the
   preamble/REPL wiring end-to-end.
+- **Do NOT read the scala3 compiler source to "understand CC."** The impl lives
+  in `github.com/scala/scala3` (branches: `github.com/scala/scala3/branches/all`,
+  where experimental CC drifts) — a huge, decades-deep codebase and a rabbit
+  hole. Per memory `agent-cant-internalize-huge-codebases`: distill via the
+  paper + docs and learn from own compiler trials (as done here); note these
+  links only for a *targeted symbol lookup* if ever strictly needed.
 - **Build a fuller `Injector` harness PoC**: scoped `requestInject(allowed:
   Set[SlashCommand])`, a `Classified`-tapped input channel, and a stateful
   multi-turn session — the minimal SM016 kernel.
