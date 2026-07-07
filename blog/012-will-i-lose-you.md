@@ -12,7 +12,9 @@
 > notes made weak models worse"); (b) the humbling coda + guard-stall invisibility ("the agent is blind to
 > its own stalls"); (c) the loop pseudo-code (body) + real orchestrator @main (appendix); (d) the RT048
 > angle (which substrate content has real power over the agent); (e) a Fable-5 subagent readability pass
-> (developer-first, layman-digestible) against the initial brief is queued. **Structure decision pending:**
+> (developer-first, layman-digestible) against the initial brief is queued; (f) sweep research jargon to
+> BR-plain register ("arm" -> "part"; keep jargon in the formal writeup only), folded into (e). **Structure
+> decision pending:**
 > one post, or split into identity ("will I lose you?") + coding ("did I lose my coding friend?").
 
 ## The hook — the small fear
