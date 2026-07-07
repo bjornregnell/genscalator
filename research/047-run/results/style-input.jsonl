@@ -1,0 +1,48 @@
+{"id":0,"task":"C1-digitSum","code":"object DigitSum {\n  def digitSum(n: Int): Int = \n    n.toString.map(_.asDigit).sum\n}"}
+{"id":1,"task":"C3-classify","code":"enum ScoreClassification:\n  case Fail\n  case Pass\n  case Distinction\n\ndef classify(score: Int): String = score match {\n  case s if s < 50 => \"fail\"\n  case s if s < 80 => \"pass\"\n  case _           => \"distinction\"\n}"}
+{"id":2,"task":"C4-firstEven","code":"import scala.util.*\n\nobject FirstEven {\n  def firstEven(xs: List[Int]): Option[Int] = \n    xs.find(_ % 2 == 0)\n}"}
+{"id":3,"task":"C5-TrafficLight","code":"import scala.annotation.nowarn\n\n@nowarn(\"msg=deprecated\")\nenum TrafficLight:\n  case Red extends TrafficLight\n  case Yellow extends TrafficLight\n  case Green extends TrafficLight\n\n  def next: TrafficLight = this match {\n    case Red => Green\n    case Green => Yellow\n    case Yellow => Red\n  }"}
+{"id":4,"task":"C1-digitSum","code":"object DigitSum {\n  def digitSum(n: Int): Int = \n    if (n == 0) 0 else n % 10 + digitSum(n / 10)\n}"}
+{"id":5,"task":"C2-Rectangle","code":"case class Rectangle(width: Double, height: Double) {\n  def area: Double = width * height\n  def perimeter: Double = 2 * (width + height)\n}"}
+{"id":6,"task":"C3-classify","code":"object ScoreClassifier {\n  def classify(score: Int): String = {\n    if (score < 50) \"fail\"\n    else if (score < 80) \"pass\"\n    else \"distinction\"\n  }\n}"}
+{"id":7,"task":"C1-digitSum","code":"def digitSum(n: Int): Int = {\n  var sum = 0\n  var num = n\n\n  while (num > 0) {\n    sum += num % 10\n    num /= 10\n  }\n\n  sum\n}"}
+{"id":8,"task":"C2-Rectangle","code":"case class Rectangle(width: Double, height: Double) {\n  def area = width * height\n  def perimeter = 2 * (width + height)\n}"}
+{"id":9,"task":"C3-classify","code":"def classify(score: Int): String = {\n  if (score < 50) \"fail\"\n  else if (score < 80) \"pass\"\n  else \"distinction\"\n}"}
+{"id":10,"task":"C5-TrafficLight","code":"enum TrafficLight:\n  case Red, Yellow, Green\n\n  def next: TrafficLight = this match\n    case Red => Green\n    case Green => Yellow\n    case Yellow => Red"}
+{"id":11,"task":"C1-digitSum","code":"def digitSum(n: Int): Int = \n  n.toString.map(_.asDigit).sum"}
+{"id":12,"task":"C3-classify","code":"def classify(score: Int): String = {\n  if (score < 50) \"fail\"\n  else if (score < 80) \"pass\"\n  else \"distinction\"\n}"}
+{"id":13,"task":"C4-firstEven","code":"def firstEven(xs: List[Int]): Option[Int] = xs.find(_ % 2 == 0)"}
+{"id":14,"task":"C1-digitSum","code":"def digitSum(n: Int): Int = {\n  if (n < 0) throw new IllegalArgumentException(\"Input must be a non-negative integer\")\n  n.toString.map(_.asDigit).sum\n}"}
+{"id":15,"task":"C2-Rectangle","code":"case class Rectangle(width: Double, height: Double):\n  def area: Double = width * height\n  def perimeter: Double = 2 * (width + height)"}
+{"id":16,"task":"C3-classify","code":"def classify(score: Int): String = {\n  if (score < 50) \"fail\"\n  else if (score < 80) \"pass\"\n  else \"distinction\"\n}"}
+{"id":17,"task":"C4-firstEven","code":"def firstEven(xs: List[Int]): Option[Int] = xs.find(_ % 2 == 0)"}
+{"id":18,"task":"C5-TrafficLight","code":"enum TrafficLight:\n  case Red\n  case Yellow\n  case Green\n\n  def next: TrafficLight = this match\n    case Red => Green\n    case Yellow => Red\n    case Green => Yellow"}
+{"id":19,"task":"C1-digitSum","code":"def digitSum(n: Int): Int = {\n  var sum = 0\n  var num = n\n  while (num > 0) {\n    sum += num % 10\n    num /= 10\n  }\n  sum\n}"}
+{"id":20,"task":"C2-Rectangle","code":"class Rectangle(var width: Double, var height: Double) {\n  private def calculateArea(): Double = width * height\n  private def calculatePerimeter(): Double = 2 * (width + height)\n\n  def area: Double = calculateArea()\n  def perimeter: Double = calculatePerimeter()\n}"}
+{"id":21,"task":"C3-classify","code":"def classify(score: Int): String = \n  if (score < 50) \"fail\"\n  else if (score < 80) \"pass\"\n  else \"distinction\""}
+{"id":22,"task":"C4-firstEven","code":"def firstEven(xs: List[Int]): Option[Int] = \n  xs.find(_ % 2 == 0)"}
+{"id":23,"task":"C5-TrafficLight","code":"enum TrafficLight:\n  case Red\n  case Yellow\n  case Green\n\n  def next: TrafficLight = this match\n    case Red => Green\n    case Yellow => Red\n    case Green => Yellow"}
+{"id":24,"task":"C2-Rectangle","code":"case class Rectangle(width: Double, height: Double):\n  def area: Double = width * height\n  def perimeter: Double = 2 * (width + height)\nend Rectangle"}
+{"id":25,"task":"C3-classify","code":"val classify: Int => String = {\n  case score if score < 50  => \"fail\"\n  case score if score < 80  => \"pass\"\n  case _                    => \"distinction\"\n}"}
+{"id":26,"task":"C4-firstEven","code":"def firstEven(xs: List[Int]): Option[Int] = {\n  xs.find(x => x % 2 == 0)\n}"}
+{"id":27,"task":"C5-TrafficLight","code":"enum TrafficLight:\n  case Red, Yellow, Green\n  \n  def next: TrafficLight =\n    this match\n      case Red    => Green\n      case Yellow => Red\n      case Green  => Yellow"}
+{"id":28,"task":"C1-digitSum","code":"def digitSum(n: Int): Int = {\n    if (n == 0) return 0\n    else return (n % 10 + digitSum(n / 10))\n}"}
+{"id":29,"task":"C2-Rectangle","code":"case class Rectangle(width: Double, height: Double):\n  def area: Double = width * height\n  def perimeter: Double = 2 * (width + height)"}
+{"id":30,"task":"C3-classify","code":"def classify(score: Int): String = {\n  if (score < 50) \"fail\"\n  else if (score < 80) \"pass\"\n  else \"distinction\"\n}"}
+{"id":31,"task":"C4-firstEven","code":"def firstEven(xs: List[Int]): Option[Int] = {\n  xs.find(_ % 2 == 0)\n}"}
+{"id":32,"task":"C5-TrafficLight","code":"enum TrafficLight:\n  case Red, Yellow, Green\n  \n  def next: TrafficLight = this match\n    case Red    => Green\n    case Yellow => Red\n    case Green  => Yellow\nend TrafficLight"}
+{"id":33,"task":"C1-digitSum","code":"def digitSum(n: Int): Int = {\n  var num = n\n  var sum = 0\n  while (num > 0) {\n    sum += num % 10\n    num /= 10\n  }\n  sum\n}"}
+{"id":34,"task":"C2-Rectangle","code":"case class Rectangle private (val width: Double, val height: Double):\n  def area: Double = width * height\n  def perimeter: Double = 2 * (width + height)\n  \nobject Rectangle:\n  def apply(w: Double, h: Double): Rectangle = new Rectangle(w, h)"}
+{"id":35,"task":"C3-classify","code":"def classify(score: Int): String = {\n  if (score < 50) \"fail\" else if (score < 80) \"pass\" else \"distinction\"\n}"}
+{"id":36,"task":"C4-firstEven","code":"def firstEven(xs: List[Int]): Option[Int] = {\n  xs.find(_ % 2 == 0)\n}"}
+{"id":37,"task":"C1-digitSum","code":"def digitSum(n: Int): Int = n.toString.map(_.asDigit).sum"}
+{"id":38,"task":"C2-Rectangle","code":"case class Rectangle(width: Double, height: Double) {\n  val area: Double = width * height\n  val perimeter: Double = 2 * (width + height)\n}"}
+{"id":39,"task":"C3-classify","code":"def classify(score: Int): String = score match {\n  case s if s < 50 => \"fail\"\n  case s if s < 80 => \"pass\"\n  case _ => \"distinction\"\n}"}
+{"id":40,"task":"C5-TrafficLight","code":"enum TrafficLight {\n  case Red, Yellow, Green;\n\n  def next: TrafficLight = this match {\n    case Red => Green\n    case Yellow => Red\n    case Green => Yellow\n  }\n}"}
+{"id":41,"task":"C1-digitSum","code":"def digitSum(n: Int): Int = n.toString.map(_.asDigit).sum"}
+{"id":42,"task":"C2-Rectangle","code":"case class Rectangle(width: Double, height: Double) {\n  val area: Double = width * height\n  val perimeter: Double = 2 * (width + height)\n}"}
+{"id":43,"task":"C3-classify","code":"def classify(score: Int): String = score match {\n  case s if s < 50 => \"fail\"\n  case s if s < 80 => \"pass\"\n  case _ => \"distinction\"\n}"}
+{"id":44,"task":"C5-TrafficLight","code":"enum TrafficLight {\n  case Red, Yellow, Green;\n\n  def next: TrafficLight = this match {\n    case Red => Green\n    case Yellow => Red\n    case Green => Yellow\n  }\n}"}
+{"id":45,"task":"C2-Rectangle","code":"case class Rectangle(width: Double, height: Double) {\n  def area: Double = width * height\n  def perimeter: Double = 2 * (width + height)\n}"}
+{"id":46,"task":"C3-classify","code":"def classify(score: Int): String =\n  if (score < 50) \"fail\"\n  else if (score < 80) \"pass\"\n  else \"distinction\""}
+{"id":47,"task":"C5-TrafficLight","code":"enum TrafficLight {\n  case Red, Yellow, Green;\n  def next: TrafficLight = this match {\n    case Red => Green\n    case Yellow => Red\n    case Green => Yellow\n  }\n}"}

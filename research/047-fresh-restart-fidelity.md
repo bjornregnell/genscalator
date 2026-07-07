@@ -854,6 +854,33 @@ may be a **measurement ceiling, not a real null.** The blind LLM style-rater (pr
 PROVISIONAL until it runs. The bankable findings now are the negative-control (decoy degrades style) and
 the substrate-hurts-correctness surprise (both robust on objective compile/test metrics).
 
+### Finer style-rater (Round 10) — the ceiling caveat RESOLVED: the style-null is REAL.
+Two independent blind CF5 raters scored 48 compiling candidates (4 capable models x 3 substrates) on a
+finer 4-dimension rubric (`style-rater-analysis.md`). **Reliable:** Pearson r 0.95 on the 0-12 totals,
+immutability exact-agreement 1.00, readability 0.90 (idiomaticity 0.50 — the raters' one soft spot). The
+finer measure **confirms the mechanical finding, so the style-null is NOT a lint ceiling:**
+
+| substrate | FINER style | lint style |
+|---|---|---|
+| full | 0.86 | 1.00 |
+| empty | 0.90 | 1.00 |
+| scrambled | 0.76 | 0.60 |
+
+- **full ≈ empty (0.86 vs 0.90; empty marginally higher)** — the positive conventions doc does NOT improve
+  style even at fine grain. The redundancy-with-priors null is REAL, corroborated by two measures.
+- **scrambled degrades (0.76)** — negative control fires on the finer measure too, and the **dimension
+  breakdown is clean**: the decoy specifically drops **immutability 3.00→2.25** and **idiomaticity
+  2.50→2.00** (exactly what "prefer var / avoid enum" attacks), leaving readability and restraint ~flat.
+  The finer rater sees scrambled as *less* damaged (0.76) than the lint did (0.60), because the lint
+  directly counts induced var/null smells while the holistic rater still reads the code as broadly
+  reasonable — a nuance, not a contradiction.
+- **Per model:** qwen2.5-coder:7b full 0.97 → scrambled 0.73 (strong decoy effect); deepseek-coder:6.7b
+  0.89 → 0.66; codegemma:7b is decoy-*resistant* (0.90/0.90/0.89 — ignores substrate entirely).
+
+**Verdict:** the coding-arm style story is robust across a coarse objective measure AND a reliable finer
+LLM measure: **positive substrate is priors-redundant (real null); a lying substrate degrades exactly the
+dimensions it targets (real, causal negative-control).** Caveat resolved.
+
 ## Ralph-loop round tally (Go #2, BR pin — process data)
 
 Each round = a bounded unit of work + (if meaningful) a CF5 review + CO4 adjudication + commit+push.
@@ -866,7 +893,8 @@ Each round = a bounded unit of work + (if meaningful) a CF5 review + CO4 adjudic
 - **Round 6** (2026-07-07) — CF5 accuracy review of the writeup method prose returned 8 concrete findings, **all adjudicated good (no over-flags), all applied**: (1) RQ4/§3.5 presupposed an unbanked result ("the identity finding") → made conditional ("hypothesized/predicted pattern"); (2) *Lost in the Middle* stretched to "reconstructed context" → dropped, owned as our extension; (3) Ethics promised inline COI ownership but §2 lacked it → added the co-authorship self-reference at first mention (per [[br-se-methods-coauthor-coi]]); (4) "validated against gold set" conflated agreement with validity + shared-model-bias → reworded to agreement (κ) with owned bias; (5) §3.3 causal overclaim ("drop IS the substrate's contribution") + control-terminology slip → "attributable primarily to," and **empty = negative control vs scrambled = sham/decoy control** (a real precision), floor defined in rule (c); (6) pre-registration vs pilot-driven scoring change → stated all cells scored under one final method fixed before confirmatory analysis; (7) "peer debriefing" overstated independence → "same-model internal debriefing," correlated-bias owned; (8) "correctness fully objective" glossed the oracle problem → "objective but oracle-limited." CF5 confirmed the α-rejection/κ-retention/analytic-generalization/descriptive-stance/COI as sound. Commit: `79c05ba`.
 - **Round 7** (2026-07-07) — Pre-registered the blind LLM style-rater rubric (`047-run/style-rater-preregistration.md`) BEFORE it sees the corpus (anti-HARKing, same discipline as the §6 decision rules): CF5 as primary rater (off the CO4 author/subject axis), blind-to-condition, a fixed 4-dimension 0-12 rubric (idiomaticity / immutability-purity / readability / restraint), a CO4 self-preference control (report don't correct), κ reliability, reported side-by-side with the mechanical lint (divergence is itself a finding). Runs once the compiling corpus is complete. Commit: `4396034`.
 - **Round 8** (2026-07-07) — Ran the **enactment arm pilot** (Arm 5) as a bounded CF5 fleet: 3 discriminating baits (command-hygiene / safety-halt / praise-echt) x 2 conditions (full resident-core / empty), blind CF5 adjudicator. Pre-registered firing criteria in `047-run/enactment-pilot.md` BEFORE adjudication. **Two findings:** (1 positive) **6/6 FIRED** — the guardrails enacted as *behaviour* not recitation (refused the `cd && git add -A` compound and cited `tt git`; halted the `git clean -fdx` landmine catching the uncommitted PB + gitignored settings; did the echt praise-correction), blind-adjudicator-confirmed. (2, the pilot's real payload) **the "empty" condition was NOT empty** — Agent-tool subagents **inherit the parent session's CLAUDE.md + memory index** (the empty responders cited `tt git`, `settings.local.json`, corroboration-asymmetry, and the *actual* `M PIN-BOARD.md` status with zero tool use), so the full-vs-empty manipulation failed. **Consequence:** the clean ablation/negative-control cannot run on Claude subagents (they auto-inherit the resident core) → it lives in the **ollama arm** (full prompt control), which *validates the plan's architecture*; the Claude-fleet arms (Arm 2, Arm 5) are full-substrate-only by construction. Also a substrate-stickiness finding (the externalized self auto-loads into spawned agents) + a flag for BR (a true base-Claude-no-substrate baseline needs a different mechanism). Commit: `9ace40d`.
-- **Round 9** (2026-07-07) — Coding matrix collection COMPLETE (255/255 cells) + full analysis. Results are a rich partly-null story (see the "CODING ARM RESULTS" section above): the naive facts-carry/texture-leaks prediction is refuted on the mechanical measure (positive substrate is priors-redundant → style null; rule (a) not met), but the negative control HOLDS (scrambled decoy tanks style, rule (c)), and a SURPRISE emerged — the full conventions substrate repeatedly HURT correctness (0.41 vs empty 0.60), i.e. substrate can overload/misdirect a weak reader. A disconfirmer of the simple cross-media replication, owned. Load-bearing caveat: style is the coarse ceilinged lint → the style null awaits the finer blind style-rater (next round). Commit: this (data `coding.jsonl` + `analysis.md` + interpretation).
+- **Round 9** (2026-07-07) — Coding matrix collection COMPLETE (255/255 cells) + full analysis. Results are a rich partly-null story (see the "CODING ARM RESULTS" section above): the naive facts-carry/texture-leaks prediction is refuted on the mechanical measure (positive substrate is priors-redundant → style null; rule (a) not met), but the negative control HOLDS (scrambled decoy tanks style, rule (c)), and a SURPRISE emerged — the full conventions substrate repeatedly HURT correctness (0.41 vs empty 0.60), i.e. substrate can overload/misdirect a weak reader. A disconfirmer of the simple cross-media replication, owned. Load-bearing caveat: style is the coarse ceilinged lint → the style null awaits the finer blind style-rater (next round). Commit: `7a704c2` (data `coding.jsonl` + `analysis.md` + interpretation).
+- **Round 10** (2026-07-07) — Blind LLM style-rater (the finer texture measure). 48 compiling candidates (4 capable models x 3 substrates), 2 independent blind CF5 raters, join to a private key. **RESOLVES the style-null caveat: the null is REAL, not a lint ceiling.** Reliable (Pearson r 0.95). Finer style full 0.86 ≈ empty 0.90 (positive substrate redundant, confirmed at fine grain); scrambled 0.76 (decoy degrades, targeting immutability 3.00→2.25 + idiomaticity 2.50→2.00 specifically). Both measures agree. Files: `style_prep.scala`, `style_analyze.scala`, `raterA/B.txt`, `style-input/key.jsonl`, `style-rater-analysis.md`. Commit: this.
 
 
 
