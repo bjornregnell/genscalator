@@ -109,20 +109,20 @@ research doc: the scoring-rubric discussion, most of the phrasebook, the loop se
 
 ### OUTLINE B — split (recommended)
 **`012` identity (reflective essay):** hook -> reframe (warp/hyperspace/galaxy live here) -> we measured it
-(recall carries) -> echt/ceiling caveat -> **one-paragraph coding summary + cross-link to 013** (this teaser
+(recall carries) -> echt/ceiling caveat -> **one-paragraph coding summary + cross-link to the coding post** (this teaser
 paragraph must carry finding #3 in one sentence) -> model switch (029 foreshadow) -> takeaway/human note ->
 "me" discussion (this post's deep end) -> scoring-rubric discussion (it is about the *identity* instrument, the
 Q-battery Key, so it belongs here) -> full COI disclosure.
 
-**`013` coding (experiment report):** cold open on the concrete fear (working code that stops looking like ours)
+**The coding post (experiment report)** (note: `013` is now taken by the delegation post; if we split, the coding post takes the next free blog number, e.g. `014`): cold open on the concrete fear (working code that stops looking like ours)
 + 2-3 sentences of self-contained setup (we externalize our Scala conventions; does handing them over matter?)
 + one link back to 012 -> the experiment (17 models, 3 substrate conditions, 255 runs, auto-scored + finer
 2-rater pass; what we predicted) -> the three surprises (body) -> honest disconfirmer + durable lesson -> how
 the loop ran (short) -> **the humbling coda lands here** -> RT048 seam (which substrate content has power over
 the agent, as future work) -> Appendix (@main + thread-timeout note) -> one-line COI footer pointing at 012.
 
-**Seams:** substrate concept = full in 012, 2-sentence self-contained version in 013 (013 must NOT require
-012). One cross-link paragraph per post at its natural seam, not scattered links. Publish 013 first or same-day
+**Seams:** substrate concept = full in 012, 2-sentence self-contained version in the coding post (which must NOT require
+012). One cross-link paragraph per post at its natural seam, not scattered links. Publish the coding post first or same-day
 if reach matters (it stands alone and is the shareable one).
 
 ---
