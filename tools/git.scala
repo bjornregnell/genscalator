@@ -2,9 +2,9 @@
 //> using jvm 21
 //> using dep com.lihaoyi::os-lib:0.11.8
 
-// git — typed, SAFE git helper for agents. It exposes ONLY add/commit/push (never reset, rebase, --force,
-// rm, or clean — the destructive verbs stay off the tool entirely, so `Bash(tt git *)` cannot become a
-// data-loss vector). Its whole reason to exist: the commit message is read from a FILE (`--message-file`),
+// git — typed, SAFE git helper for agents. It exposes ONLY add/commit/push plus fast-forward-only pull and
+// fetch (never reset, rebase, merge, --force, rm, or clean — the destructive/interactive verbs stay off the
+// tool entirely, so `Bash(tt git *)` cannot become a data-loss vector). Its whole reason to exist: the commit message is read from a FILE (`--message-file`),
 // so message prose containing shell-glob metachars (backticks, `$`, `!`, `<->`, `{a,b}`, bare `*`) NEVER
 // appears on the command line — which kills the recurring "commit-message metachar" allowlist tripwire at
 // the source, and lets messages legitimately contain `code` spans again.
@@ -23,7 +23,9 @@ object Git {
     System.err.println(
       """git: usage:
         |  tt git commit --repo <dir> --message-file <path> [--add <pathspec>]... [--push]
-        |safe subset: add/commit/push only (no reset/rebase/force/rm/clean); message read from file.""".stripMargin)
+        |  tt git pull  --repo <dir>   (fast-forward only)
+        |  tt git fetch --repo <dir>
+        |safe subset: add/commit/push/pull(--ff-only)/fetch only (no reset/rebase/force/rm/clean/merge); message read from file.""".stripMargin)
     sys.exit(2)
 
   private def run(repo: os.Path, args: String*): (Int, String) =
@@ -35,6 +37,8 @@ object Git {
   def dispatch(args: String*): Unit =
     args.toList match
       case "commit" :: rest => commit(rest)
+      case "pull"   :: rest => pull(rest)
+      case "fetch"  :: rest => fetch(rest)
       case _                => usage()
 
   private def commit(args: List[String]): Unit =
@@ -69,6 +73,29 @@ object Git {
       val (pc, pout) = run(repo, "push")
       if pc != 0 then fail(s"git push failed:\n$pout")
       println(s"pushed $sha")
+
+  private def repoArg(args: List[String], cmd: String): os.Path =
+    args match
+      case "--repo" :: v :: Nil =>
+        val r = os.Path(v, os.pwd)
+        if !os.exists(r / ".git") && run(r, "rev-parse", "--git-dir")._1 != 0 then fail(s"not a git repo: $r")
+        r
+      case _ => fail(s"usage: tt git $cmd --repo <dir>")
+
+  // pull is FF-ONLY: it never creates a merge commit, runs merge hooks, or leaves conflicts — it either
+  // fast-forwards or fails loudly, so it stays inside the safe (non-destructive, non-interactive) subset.
+  private def pull(args: List[String]): Unit =
+    val repo = repoArg(args, "pull")
+    val (c, out) = run(repo, "pull", "--ff-only")
+    if c != 0 then fail(s"git pull --ff-only failed:\n$out")
+    println(if out.nonEmpty then out else "pull: up to date")
+
+  // fetch is read-only: it updates remote-tracking refs, never the working tree.
+  private def fetch(args: List[String]): Unit =
+    val repo = repoArg(args, "fetch")
+    val (c, out) = run(repo, "fetch")
+    if c != 0 then fail(s"git fetch failed:\n$out")
+    println(if out.nonEmpty then out else "fetch: up to date")
 }
 
 @main def gitCommitPush(args: String*): Unit = Git.dispatch(args*)
