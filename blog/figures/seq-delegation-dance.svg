@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1967.7" height="528" viewBox="0 0 1967.7 528" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+  <style>
+    :root { --bg:#ffffff; --fg:#1b1b2b; --box:#eef0fb; --boxline:#9aa0d0; --life:#c3c3d6; --line:#5a5f86; --notebg:#fff6d8; --noteline:#e0c86a; }
+    @media (prefers-color-scheme: dark) { :root { --bg:#1b1b24; --fg:#e6e6f0; --box:#2a2d44; --boxline:#5a5f86; --life:#44465e; --line:#a6abd8; --notebg:#403a23; --noteline:#8a7a3a; } }
+    text { fill: var(--fg); }
+    .canvas { fill: var(--bg); }
+    .lbl { font-size: 13px; }
+    .title { font-size: 16px; font-weight: 600; }
+    .box { fill: var(--box); stroke: var(--boxline); stroke-width: 1; }
+    .note { fill: var(--notebg); stroke: var(--noteline); stroke-width: 1; }
+    .life { stroke: var(--life); stroke-width: 1; stroke-dasharray: 4 4; }
+    .msg { stroke: var(--line); stroke-width: 1.4; }
+    .ret { stroke: var(--line); stroke-width: 1.2; stroke-dasharray: 6 4; }
+    .head { fill: var(--line); }
+  </style>
+  <rect class="canvas" x="0" y="0" width="1967.7" height="528"/>
+  <text class="title" x="983.8" y="28" text-anchor="middle">The delegation dance (super-agent offloads to a sub-agent, stays responsive)</text>
+  <line class="life" x1="341.3" y1="76" x2="341.3" y2="480"/>
+  <rect class="box" x="296.3" y="42" width="90" height="34" rx="6"/>
+  <text class="lbl" x="341.3" y="59" text-anchor="middle" dominant-baseline="central">BR</text>
+  <rect class="box" x="296.3" y="480" width="90" height="34" rx="6"/>
+  <text class="lbl" x="341.3" y="497" text-anchor="middle" dominant-baseline="central">BR</text>
+  <line class="life" x1="983.8" y1="76" x2="983.8" y2="480"/>
+  <rect class="box" x="853" y="42" width="261.7" height="34" rx="6"/>
+  <text class="lbl" x="983.8" y="59" text-anchor="middle" dominant-baseline="central">Claude Opus 4.8 (super-agent)</text>
+  <rect class="box" x="853" y="480" width="261.7" height="34" rx="6"/>
+  <text class="lbl" x="983.8" y="497" text-anchor="middle" dominant-baseline="central">Claude Opus 4.8 (super-agent)</text>
+  <line class="life" x1="1626.4" y1="76" x2="1626.4" y2="480"/>
+  <rect class="box" x="1543.9" y="42" width="165" height="34" rx="6"/>
+  <text class="lbl" x="1626.4" y="59" text-anchor="middle" dominant-baseline="central">Fable-5 sub-agent</text>
+  <rect class="box" x="1543.9" y="480" width="165" height="34" rx="6"/>
+  <text class="lbl" x="1626.4" y="497" text-anchor="middle" dominant-baseline="central">Fable-5 sub-agent</text>
+  <line class="msg" x1="341.3" y1="106" x2="982.8" y2="106"/>
+  <path class="head" stroke="none" d="M 983.8 106 L 974.8 102 L 974.8 110 Z"/>
+  <text class="lbl" x="662.6" y="99" text-anchor="middle">a task (in chat)</text>
+  <path class="msg" fill="none" d="M 983.8 152 L 1049.8 152 L 1049.8 168 L 989.8 168"/>
+  <path class="head" stroke="none" d="M 989.8 168 L 998.8 164 L 998.8 172 Z"/>
+  <text class="lbl" x="1057.8" y="154" text-anchor="start">delegation-dilemma check (scoped? verifiable? rot? token-mode? which model?)</text>
+  <line class="msg" x1="983.8" y1="198" x2="1625.4" y2="198"/>
+  <path class="head" stroke="none" d="M 1626.4 198 L 1617.4 194 L 1617.4 202 Z"/>
+  <text class="lbl" x="1305.1" y="191" text-anchor="middle">brief + spawn a bounded unit (background, fresh context)</text>
+  <line class="ret" x1="983.8" y1="244" x2="342.3" y2="244"/>
+  <path class="msg" fill="none" d="M 350.3 240 L 341.3 244 L 350.3 248"/>
+  <text class="lbl" x="662.6" y="237" text-anchor="middle">stay responsive, keep chatting</text>
+  <line class="ret" x1="1626.4" y1="290" x2="984.8" y2="290"/>
+  <path class="msg" fill="none" d="M 992.8 286 L 983.8 290 L 992.8 294"/>
+  <text class="lbl" x="1305.1" y="283" text-anchor="middle">result (done in its own lean context)</text>
+  <path class="msg" fill="none" d="M 983.8 336 L 1049.8 336 L 1049.8 352 L 989.8 352"/>
+  <path class="head" stroke="none" d="M 989.8 352 L 998.8 348 L 998.8 356 Z"/>
+  <text class="lbl" x="1057.8" y="338" text-anchor="start">adjudicate + verify (keep only the good work)</text>
+  <path class="msg" fill="none" d="M 983.8 382 L 1049.8 382 L 1049.8 398 L 989.8 398"/>
+  <path class="head" stroke="none" d="M 989.8 398 L 998.8 394 L 998.8 402 Z"/>
+  <text class="lbl" x="1057.8" y="384" text-anchor="start">commit + push</text>
+  <line class="ret" x1="983.8" y1="428" x2="342.3" y2="428"/>
+  <path class="msg" fill="none" d="M 350.3 424 L 341.3 428 L 350.3 432"/>
+  <text class="lbl" x="662.6" y="421" text-anchor="middle">report</text>
+</svg>

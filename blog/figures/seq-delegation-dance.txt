@@ -1,0 +1,16 @@
+# Source spec for seq-delegation-dance.svg — regenerate with:
+#   tt svg sequence blog/figures/seq-delegation-dance.txt blog/figures/seq-delegation-dance.svg
+title: The delegation dance (super-agent offloads to a sub-agent, stays responsive)
+
+actor BR
+participant CO4 as "Claude Opus 4.8 (super-agent)"
+participant Sub as "Fable-5 sub-agent"
+
+BR -> CO4: a task (in chat)
+CO4 -> CO4: delegation-dilemma check (scoped? verifiable? rot? token-mode? which model?)
+CO4 -> Sub: brief + spawn a bounded unit (background, fresh context)
+CO4 --> BR: stay responsive, keep chatting
+Sub --> CO4: result (done in its own lean context)
+CO4 -> CO4: adjudicate + verify (keep only the good work)
+CO4 -> CO4: commit + push
+CO4 --> BR: report
