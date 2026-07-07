@@ -32,7 +32,10 @@ case makes its variables unusually measurable.
 ## Research questions
 - **RQ1 (the crossover):** for which task classes does delegation beat solo, as a function of briefing cost,
   verifiability, and how much global context the task needs? Predict a crossover: highly-scoped, verifiable,
-  context-light tasks favor delegation; global-context-heavy synthesis favors solo.
+  context-light tasks favor delegation; global-context-heavy synthesis favors solo. The crossover also **moves
+  with the budget regime** (agent introspection, BR-flagged 2026-07-07): under **token-spending mode, rot is the
+  binding currency, not tokens**, so delegation wins even when the supervisor already holds the task in context
+  (briefing tokens are free, while keeping the supervisor's context lean is the real prize). [[token-budget-modes]]
 - **RQ2 (briefing fidelity → RT048):** can the super-agent transfer enough substrate for the subagent to match
   its own quality? What briefing content actually carries the power (the RT048 question, subagent variant)?
 - **RQ3 (the rot ledger):** does delegation net-*reduce* context rot across the system, and by how much, once the

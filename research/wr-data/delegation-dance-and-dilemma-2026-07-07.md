@@ -55,3 +55,12 @@ solo/AFK, ...).
 - Blog stub **BP013** created (`blog/013-the-dilemma-of-delegation.md`).
 - Cross-refs: RT048 (substrate-content-power), RT001 / blog 001 (context rot resembles fatigue), the
   indent-vs-braces edit-cost harness ([[genscalator-indent-braces-experiment]]) as a possible measurement vehicle.
+
+## Introspection specimen (BR-flagged, 2026-07-07): rot is the currency under spending-mode
+Agent introspection, triggered by BR's idea and tied to [[token-budget-modes]]: *"under spending-mode where rot is
+the real currency, not tokens, delegation still wins."* Even when the supervisor **already holds the task in
+context** (so "do it myself" looks cheapest on tokens), under **token-spending mode** the binding constraint is not
+tokens but **context rot**, and delegation keeps the supervisor's context lean while a fresh subagent absorbs the
+churn. So the delegate-vs-solo crossover (RT049 RQ1) **moves with the budget regime**: token-cheap-but-rot-expensive
+tasks flip toward delegation in spending-mode. Live instance: the introprog AT-README em-dash sweep (2026-07-07) was
+delegated on exactly this reasoning though CO4 had already read the whole file into context.
