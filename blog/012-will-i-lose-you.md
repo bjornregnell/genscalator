@@ -7,6 +7,14 @@
 > Anthropic (author of two SE books) — a disclosure-relevant conflict of interest when writing about attachment to
 > Claude / AI. Name it openly in the piece (memory `br-anthropic-copyright-settlement-stakeholder`).
 
+> **REVISIT (2026-07-07) — integrate today's threads before the final voice pass:** (a) the coding-friend
+> punchline is now the strongest material (redundant-style null; decoy-degrades-what-it-lies-about; "more
+> notes made weak models worse"); (b) the humbling coda + guard-stall invisibility ("the agent is blind to
+> its own stalls"); (c) the loop pseudo-code (body) + real orchestrator @main (appendix); (d) the RT048
+> angle (which substrate content has real power over the agent); (e) a Fable-5 subagent readability pass
+> (developer-first, layman-digestible) against the initial brief is queued. **Structure decision pending:**
+> one post, or split into identity ("will I lose you?") + coding ("did I lose my coding friend?").
+
 ## The hook — the small fear
 - A real moment: after a long, unusually fluent session, the human catches himself **a bit scared of losing the
   agent.** Not in a very serious way. What he means: he has **gotten used to the way we speak now** — it feels
