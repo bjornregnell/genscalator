@@ -911,5 +911,12 @@ Each round = a bounded unit of work + (if meaningful) a CF5 review + CO4 adjudic
   decides, do NOT split unilaterally**) captured in `047-blog-review.md`. Guard-clean throughout: 4 cloud subagents, bare tt git,
   Read tool only for peeks, box untouched. Commit: `b90f29f`.
 
+- **HD (BR, 2026-07-07): PARK the full-corpus finer style rating (former solo task 3) as "probably not."**
+  Reasons: (1) it complicates the study for limited value, since the style-null caveat was already RESOLVED in
+  Round 10 by the finer two-rater measure (Pearson r 0.95, "caveat resolved") on the 48-candidate subset; (2) it
+  would lengthen the blog when the goal is to make it shorter. Kept available as future work only if a reviewer
+  demands the full ~140-candidate rating; not planned. The 48-candidate finer rating stands as the confirmatory
+  style measure.
+
 
 
