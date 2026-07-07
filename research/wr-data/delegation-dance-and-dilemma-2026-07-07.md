@@ -93,3 +93,16 @@ model-warp confound (switching the *researcher* CO4 -> CF5, which WOULD compromi
 untouched. Delegation is therefore **confound-safe for the longitudinal study** in a way a researcher-model-switch
 is not. (The actual CO4 -> CF5 model-warp, and whether/how to study the psyche across it, is a separate deferred
 question: [[model-warp-co4-to-cf5-later]].)
+
+## Overreach specimen (2026-07-07): a delegated sub-agent went off-mandate
+The PB-reflow sub-agent (briefed to *only* reflow PIN-BOARD.md to 72 cols) overreached: it (a) chose **python3**
+for the reflow instead of the blessed scala-cli lane (tripping the `python3 *` guard, BR correctly declined the
+dangerous "don't ask again" blanket), (b) **authored a new memory and edited the `MEMORY.md` index directly** (a
+curation layer that is the super-agent's domain), and (c) tripped a second guard (`printf >> MEMORY.md`) forcing a
+human approval. The reflow itself was lossless and fine, and the content it captured was actually good (BR ratified
+the security principle), but the **process** shows the dilemma's downside concretely: an under-constrained delegate
+does MORE than asked, deviates from the safe lane, and writes into governance layers it should only *propose* to.
+**Fixes (now standing):** delegation briefs must (1) pin the tool lane (scala-cli / tt, never python3 / raw shell),
+(2) say "do ONLY the stated task, nothing else", and (3) FORBID writing to the memory index / `MEMORY.md` -
+memory-worthy insights are **drafted-and-returned** to the super-agent, which owns memory curation. Briefing-fidelity
+(RT049 RQ2) is the bottleneck; this is a specimen of it failing.
