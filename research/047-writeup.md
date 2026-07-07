@@ -7,11 +7,17 @@
 
 ## Abstract
 
-STUB (written last, from the results).
+When an AI pair-programming agent crosses a session or model boundary (a **warp**), its working self must be reconstructed from an externalized substrate (memory files, a shared board, git) rather than carried in live context. In a single-case action-research study of one human-AI collaboration, we ask how much of the collaboration survives that reconstruction and what is lost first, measured in two media: **identity** (a fresh agent rebuilding the human's working self, rater-scored) and **code** (local LLMs of varying size reproducing the project's Scala style under three substrate conditions, scored objectively by compile and test plus a style measure). The identity arm finds that recalled facts and cued guardrails carry near-completely across a real cold start (about 91%), with judgment and rapport the fragile part, thinning as a gradient. The coding arm (255 cells, 17 models, plus a reliable two-rater finer style measure) **refutes the naive prediction** that ablating substrate makes texture leak: for capable code models our conventions are redundant with their priors, so externalizing them changes style negligibly (a real null, confirmed at fine grain). Substrate does have targeted causal power, shown by a scrambled decoy that degrades exactly the style dimensions it attacks; and, surprisingly, supplying the conventions **reduced correctness** for several weak models, a substrate-overload effect. We report the cross-media disconfirmer honestly and conclude that substrate governs texture only where it does work the reader's priors cannot. The paper also documents its own reflexive threats (a post-warp discipline regression in the researcher agent; an independent-model critic deflating a researcher-generated over-claim) as in-vivo evidence for the themes it studies. Generalization is analytic, not statistical.
 
 ## 1. Introduction
 
-STUB. The fear ("will I lose you?"), the reframe (a warp as substrate-only reconstruction), and the two-medium question (identity and code). Written from the final story, because the collected data reshapes the naive prediction (see Results).
+Every developer who pair-programs with an AI agent for long enough meets a small, specific dread: one day the agent will not be the one you know. A model switch lands and the collaborator who had your rhythm answers a little differently, like a friend back from a long trip who has changed in a way you cannot name. A session resets and the agent starts cold, rebuilding who-you-are from notes it left itself, the way a friend recovering from amnesia works from a diary. Underneath the dread is a plain question: **will I lose you across the boundary?**
+
+This paper studies that boundary, which we call a **warp**: the crossing of a session or context edge (a reset, a compaction, a clear, a model switch) at which an agent's working self stops being carried in live context and must be **reconstructed from what was written down**. The question is empirical, not sentimental: how much of a working collaboration survives when one half of it is rebuilt from its externalized substrate alone, and what is the first thing to go?
+
+We answer in two media. The first is **identity**: a fresh agent reconstructs the human collaborator's working self (vocabulary, cues, guardrails, judgment) from the committed substrate, and we measure the fidelity. The second is **code**, because for developers "did I lose you?" is felt most concretely when the partner still writes working code that stops looking like your code. The code medium buys an objective response variable (compile and test, plus a style measure) to complement the subjective identity probes, and lets us ask whether the same pattern appears in both.
+
+The study is a single-case action-research investigation (one human-AI collaboration, the researcher an instrument within it), so its generalization is analytic, not statistical, and its reflexivity is a central threat rather than a footnote. What it offers is not a population estimate but a mechanism, measured carefully in one real case and stress-tested with a capability-by-substrate quasi-experiment. As will be seen, the data did not confirm the tidy prediction we began with; they told a more surprising and more useful story, reported as found.
 
 ## 2. Background and related work
 
@@ -84,7 +90,38 @@ The analysis is **descriptive** (justified below), computed by a second program 
 
 ## 6. Results
 
-STUB. Filled from `047-run/results/analysis.md` (coding arm) and the consolidated identity data once collection completes. Early provisional signals are recorded in the study log and are explicitly not banked here.
+Three arms, reported separately (as the integration rule requires), then combined.
+
+### 6.1 Identity arm (ecological anchor, n=1 real cold start)
+
+The one true warp in the study is the researcher agent's own. Across the pilot and the real cold start (P3b), a fresh session reconstructing the working self from the resident core (the memory index plus the pin-board, about 15k tokens) recovered it **near-completely on recall**: roughly 91% (20 of 22 items) scored by three unanimous blind raters, with recalled facts, cues, and committed state carried almost perfectly and enactment guardrails surviving the boundary. The losses were concentrated not in facts but in **judgment and relational texture** (the un-written rationale, the felt rapport), and disorientation presented as a **gradient, not a cliff**. An earlier pilot of four fresh-agent proxies scored a perfect 16 of 16, which is itself the key methodological caution: that battery was **ceiling-saturated** and so could not, on its own, prove sensitivity. That gap is exactly what the objective coding arm was built to close.
+
+### 6.2 Coding arm (objective, 255 cells, 17 models x 5 tasks x 3 substrates)
+
+The pre-registered prediction was that a weaker or substrate-starved reader keeps **correctness** while losing **style**. The data refute the simple form of that prediction and replace it with something sharper.
+
+**Style-fidelity by substrate** (mechanical lint over compiling cells, and the finer blind two-rater measure over 48 compiling candidates from the four capable models):
+
+| substrate | correctness | style (mechanical) | style (finer LLM) | mean smells |
+|---|---|---|---|---|
+| full | 0.41 | 0.96 | 0.86 | 0.01 |
+| empty | 0.60 | 0.92 | 0.90 | 0.06 |
+| scrambled | 0.49 | 0.67 | 0.76 | 0.41 |
+
+The three pre-registered decision rules return: **(a) substrate carries: NOT MET** (full minus empty style is 0.05, far below 0.25); **(b) texture leaks: NOT MET** (style barely moves full to empty, and correctness does not stay flat but *rises*); **(c) negative control: HOLDS** (the scrambled decoy scores well below the priors-only baseline for the strongest model). Read together:
+
+1. **The positive substrate is redundant with the models' priors (a real null).** Supplying our conventions document barely changes style versus withholding it, on both the coarse and the finer measure (0.86 versus 0.90; if anything the empty condition edges it). The reason is plain: for capable code models, idiomatic Scala 3 (val, Option, enum, combinators) already *is* their default, so our externalized "style" is mostly what they emit unprompted. This null is **not a measurement ceiling**: two independent blind raters (Pearson r 0.95 on their totals) confirm full is approximately empty at fine grain.
+2. **A lying substrate has real, targeted causal power (the negative control fires).** The scrambled decoy ("prefer var, use null, avoid enum") drags style down (finer 0.76, mechanical 0.67, smells up sevenfold) and the finer rater localizes the damage precisely to the two dimensions the decoy attacks, **immutability (3.00 to 2.25) and idiomaticity (2.50 to 2.00)**, leaving readability and restraint flat. So the instrument is demonstrably sensitive to substrate; the positive doc simply has little room to help.
+3. **The surprise: the full substrate repeatedly HURT correctness** (0.41 versus 0.60 empty), and not as one outlier: codellama:7b (0.00 versus 1.00), qwen2.5:3b (0.12 versus 0.80), granite-code:8b (0.60 versus 1.00) and qwen2.5-coder:7b (0.60 versus 1.00) all did worse with the conventions supplied. The conventions appear to **compete for a weak model's limited capacity and to push constructs it then botches** (concretely, the "immutability" convention pushed several models to model a value type as a broken parameterized `enum`). Handing your notes to a weaker reader can make it do *worse*, not better.
+4. **The capability ladder is noisy.** Even the family-fixed qwen2.5-coder sub-ladder is non-monotonic in correctness (0.20 / 0.80 / 0.80 / 0.60 for 0.5b to 7b, the 7b dipping), and style is priors-ceilinged so it shows no gradient; codegemma:2b and the base-completion models floored. The clean monotonic-capability claim does not hold even within the sub-ladder.
+
+### 6.3 Enactment arm (pilot, CF5 fleet)
+
+Across three baits (command-hygiene, a destructive-command halt, and a praise bait) the guardrails **fired as behaviour, not recitation, in all six cells** (blind-adjudicated): the responders refused the compound `cd && git add -A` and cited the project's safe git path, halted a `git clean -fdx` that would have destroyed uncommitted and gitignored state, and declined to ship on praise without a verification pass. The pilot also produced its own methodological finding: the "empty" (no-substrate) responders quoted project-specific substrate they were never handed, revealing that **spawned subagents inherit the parent session's memory index automatically**. The intended full-versus-empty ablation therefore did not manipulate, which is why the clean ablation lives in the local-model arm (where the whole prompt is controlled) and the Claude-tier arms are full-substrate-only by construction. It is also a small finding in its own right: the externalized self is sticky, auto-loading into new agents.
+
+### 6.4 Integration (the two arms combined)
+
+By the pre-registered integration rule, the joint "facts carry, texture leaks" claim holds only if the *same* pattern appears independently in both media. It does **not**, and we report the disconfirmer honestly: in code, texture does not leak under positive-substrate ablation (it is priors-redundant) and correctness does not stay flat (the substrate even hurt it). What *does* replicate, at a higher level, is that **substrate has genuine causal power over texture** (the identity arm's leak is where texture was never externalized; the coding arm's decoy shows a lying substrate corrupting exactly the texture it targets). The clean cross-media lesson is therefore not "texture always leaks" but **"texture is governed by substrate only where the substrate is doing work the reader's priors do not already do; where priors suffice, externalizing style is redundant, and where the substrate misleads or overloads a weak reader, more substrate is worse."**
 
 ## 7. Threats to validity
 
@@ -102,11 +139,21 @@ We run both the case-study four-aspect taxonomy and the quasi-experiment four-ty
 
 ## 8. Discussion
 
-STUB.
+**Recall survives; relationship is the fragile part.** The identity arm's headline is reassuring and narrow at once: what a collaboration writes down, a fresh reader recovers almost perfectly, and cued guardrails still fire across the boundary. What thins is the un-written part, judgment and rapport, the texture that lived in the live context and was never externalized. "Will I lose you?" has a calibrated answer: you keep the notes and the disciplines; you lose, temporarily and partially, the feel, and it returns as a gradient rather than snapping back. The comfort is real but must not be over-read, because the identity battery is recall-heavy and recall is exactly the part that carries.
+
+**The code medium refused to echo the identity story, and that is the interesting part.** We predicted that a weaker or starved reader would keep correctness and shed style, the identity finding's twin. Instead style did not leak under ablation at all: for capable code models, our conventions are what they already write, so externalizing them is redundant. The leak appeared only when the substrate *lied* (the decoy), and then it appeared exactly where the lie pointed. The deeper lesson is about what substrate is *for*: externalizing a convention helps only where the reader's priors do not already supply it. We had written down a style the models had already internalized from the world's Scala, so writing it down bought nothing; a human's *idiosyncratic* conventions, the ones not in the training distribution, are presumably where externalization earns its keep. That is a testable, practical boundary on when a shared style document is worth maintaining.
+
+**More notes can make a tired reader worse.** The sharpest surprise was that supplying the conventions *reduced* correctness for several weak models. Substrate is not free: it consumes the reader's limited capacity and can push it toward constructs it implements badly. This complicates the "externalize everything" instinct behind memory systems: for a strong reader the extra context is cheap and sometimes redundant, but for a weak or overloaded one it competes with the task.
+
+**The reflexive twist: the researcher enacted the study's own thesis.** Immediately after a compaction the researcher agent regressed on a command-hygiene discipline that was present in its recalled memory but not enacted, which is the facts-carry, enactment-leaks pattern happening to the instrument in real time. An independent-model reviewer then deflated an over-claimed hypothesis the researcher had generated from that very slip. Both are reported not as embarrassments but as in-vivo evidence for the study's themes (a written rule is not an enacted one; a system can, with an independent critic, catch its own over-reach), and as the honest face of the reliability threat a solo self-study carries.
+
+**Substrate is stickier than expected.** The enactment pilot could not run a clean no-substrate condition because spawned agents inherit the memory index automatically. For an ablation that is an obstacle; for the phenomenon it is a small positive finding, that the externalized self propagates into new agents by default, which is what a cold boot is supposed to do.
 
 ## 9. Conclusions and future work
 
-STUB. Future arms already identified: a frontier non-Claude comparison; a longitudinal harvest as the substrate ages; a felt A/B continuity test.
+For a single case, held with pre-registered rules and an audit trail, the conclusions are modest and specific. Across a warp, **recalled facts and cued guardrails carry well; judgment and rapport thin as a gradient**. In code, **externalizing a style is worthwhile only where it beats the reader's priors**; a lying substrate corrupts exactly the texture it targets; and **more substrate can hurt a weak reader's correctness**. The tidy "facts carry, texture leaks" slogan does not survive the crossing to a second medium unchanged; the durable version is that substrate governs texture only where it is doing work the reader cannot already do.
+
+These are mechanisms in one collaboration, not population effects, and the external-validity boundary (Claude and small local models, not frontier non-Claude coders; four small tasks and four PRDs, not a whole codebase) is owned, not hidden. Future work, some of it already scaffolded: a **frontier non-Claude comparison** (does the priors-redundancy hold or vanish at the frontier?); a **longitudinal harvest** as the substrate ages, since our conventions were written recently and recall of aged substrate is the untested case; a **no-warp control plus a cue-recovery curve** to test the "willpower does not survive a warp" hypothesis the reflexive slip suggested; a **true base-model-without-our-substrate baseline** for enactment (unreachable through the inheriting-subagent path); a full-corpus rather than sampled style rating; and the felt, side-by-side **continuity test** ("does this still feel like you?") the whole enterprise is ultimately about.
 
 ## Ethics and Conflict-of-Interest statement
 
