@@ -45,6 +45,11 @@ This very session: after `/compact` the supervisor (CO4) sat at ~5% context whil
 synthesis + an AT grind did the heavy lifting; pre-compact it was ~52%. Direction consistent with H, but
 confounded by the compact itself and n=1. A specimen, not evidence.
 
+**Second reflexive specimen (2026-07-07): a clean delegation dogfood.** The introprog AT-README em-dash sweep was
+handed to a fresh sub-agent that did the 45-edit pass in its own context while the supervisor verified + committed
+and stayed lean. BR flagged this as evidence the delegation-dilemma study is worth doing. Still confounded (no solo
+control arm was run alongside), but a clean, well-scoped instance of exactly the manipulation this study proposes.
+
 ## Threats / limits
 - Rot is genuinely hard to measure cleanly (RT001's own caveats carry over); the study is only as good as the
   proxy.

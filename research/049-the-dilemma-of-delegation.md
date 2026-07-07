@@ -65,7 +65,10 @@ literature (to be cited read-before-cite if the blog leans on it).
 - Is there a stable "delegate if ..." rule, or is it irreducibly a per-task judgment (the meta-finding that CO4
   authored the delegation *pinning* itself because it was context-heavy)?
 - Interaction with model tier: does the crossover move when the subagent is Fable-5 vs Opus vs a tiny local model?
-  (Ties Factor A of 047.)
+  (Ties Factor A of 047.) **Practical rule (BR 2026-07-07): model choice IS part of the delegation decision.** In
+  **token-spending mode, default to the smartest / top-tier sub-agent** (quality first, cost moot; Fable-5 is the
+  sweet spot, top-tier plus a free bucket); in saving-mode, match the model to the task (mechanical work to a cheaper
+  tier). So a "delegate?" call always carries a "to which model?" answer. [[token-budget-modes]]
 - The empirical test of the rot-reduction bonus (RQ3) is spun out as its own study design: **RT050**
   (`research/050-does-delegation-lower-context-rot.md`).
 - Feeds blog **BP013** (`blog/013-the-dilemma-of-delegation.md`).

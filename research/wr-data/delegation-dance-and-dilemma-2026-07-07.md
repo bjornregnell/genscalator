@@ -3,7 +3,7 @@
 **Event.** While CO4 was proposing to run solo tasks via subagents, BR got an idea: lean on **Fable-5 (CF5)
 subagents more**, deliberately, so that the super-agent (CO4) **stays responsive to BR in chat** and the risk of
 **message-race** drops, while parallel subagents **eat tokens in parallel** (aligned with token-spending mode).
-BR named this a **dance** and asked what to call it. Working name (CO4 proposal, pending BR ratification): the
+BR named this a **dance** and asked what to call it. Working name (CO4 proposal, ratified by BR 2026-07-07): the
 **delegation dance**. It joins the established dance family (compact, hardening, go, note, pin, exit-resume,
 solo/AFK, ...).
 
@@ -64,3 +64,14 @@ tokens but **context rot**, and delegation keeps the supervisor's context lean w
 churn. So the delegate-vs-solo crossover (RT049 RQ1) **moves with the budget regime**: token-cheap-but-rot-expensive
 tasks flip toward delegation in spending-mode. Live instance: the introprog AT-README em-dash sweep (2026-07-07) was
 delegated on exactly this reasoning though CO4 had already read the whole file into context.
+
+## Test specimen (BR probe, 2026-07-07): did the super-agent spot the delegation opportunity itself?
+BR handed a task ("measure the Swedish % left in compendium-en.pdf") as a **covert probe**: would CO4, unprompted,
+recognize it as a delegation candidate and reason about whether to delegate given the current mode? **Result (echt,
+with the priming caveat):** CO4 DID flag it, tagging it as a delegation candidate and reasoning "scoped, verifiable,
+build output would rot my context, we are in spending-mode" before delegating. **But** the honest calibration: in the
+*same* message BR had just instructed CO4 to adopt the standing "indicate delegate-or-not under
+delegation-dilemma-consideration" rule, so the recognition was **primed by that instruction in the same turn**, not
+cold. What CO4 did do on its own: apply the reasoning correctly to *this specific task* without being told "delegate
+this one." So: positive but primed. A cleaner future probe = a delegation candidate handed in a LATER turn with no
+delegation-framing, to see if the flag fires cold. [[echt-effort-especially-self-generated]]
