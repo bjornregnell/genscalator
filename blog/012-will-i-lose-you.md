@@ -7,15 +7,29 @@
 > Anthropic (author of two SE books) — a disclosure-relevant conflict of interest when writing about attachment to
 > Claude / AI. Name it openly in the piece (memory `br-anthropic-copyright-settlement-stakeholder`).
 
-> **REVISIT (2026-07-07) — integrate today's threads before the final voice pass:** (a) the coding-friend
+> **REVISIT (2026-07-07): integrate today's threads before the final voice pass.** (a) the coding-friend
 > punchline is now the strongest material (redundant-style null; decoy-degrades-what-it-lies-about; "more
 > notes made weak models worse"); (b) the humbling coda + guard-stall invisibility ("the agent is blind to
 > its own stalls"); (c) the loop pseudo-code (body) + real orchestrator @main (appendix); (d) the RT048
-> angle (which substrate content has real power over the agent); (e) a Fable-5 subagent readability pass
-> (developer-first, layman-digestible) against the initial brief is queued; (f) sweep research jargon to
-> BR-plain register ("arm" -> "part"; keep jargon in the formal writeup only), folded into (e). **Structure
-> decision pending:**
-> one post, or split into identity ("will I lose you?") + coding ("did I lose my coding friend?").
+> angle (which substrate content has real power over the agent); (e) **DONE: Fable-5 readability review** (3
+> lenses, developer-first + layman-digestible + fidelity-to-brief, plus a structure reviewer), all adjudicated;
+> the convergent grounded fixes are folded into this stub (real result-#3 numbers, tiered n=1 vs ceilinged
+> proxies, "human-like raters" corrected to blind AI raters, scope bound, enactment reconciliation, the
+> "coding scheme" collision renamed to "scoring rubric"); (f) **DONE: jargon sweep** ("arm" -> "part"; CF5
+> glossed; jargon kept in the formal writeup only).
+>
+> **STILL FOR BR at the voice pass (beats, detail in `research/047-blog-review.md`):** anchor "substrate" and
+> "context reset" in one plain sentence at first use; add skip-path signposts around the coding section (mark it
+> skippable, tell the reader to rejoin at the coda); light-anchor ELIZA effect + Ship of Theseus (one line
+> each); promote the 85 MB / 284 k "gravity well" beat up out of the phrasebook; merge the two Discussion
+> sections and move the cross-refs footer to the true end; cut the phrasebook before publish.
+>
+> **STRUCTURE DECISION (BR's call, do NOT split unilaterally):** the reviewers recommend a **SPLIT** (~70%
+> confidence; one post is viable with hard cuts). Rationale: the coding result is the most shareable material
+> and gets buried under the emotional frame; the original bundle rationale (the same facts-carry/texture-leaks
+> pattern in both media) was *disconfirmed* by the coding data, so the two halves now teach two different
+> lessons; and the split is cheap (the coding post needs no warp/galaxy setup). Both full outlines (one-post
+> and split, incl. where the coda / "me" discussion / phrasebook land) are in `research/047-blog-review.md`.
 
 ## The hook — the small fear
 - A real moment: after a long, unusually fluent session, the human catches himself **a bit scared of losing the
@@ -28,7 +42,7 @@
 
 ## The reframe — it isn't stored in "the agent"
 - The twist: the way we speak **isn't in the model's head.** We deliberately **externalized** it — into a pinboard, a
-  glossary, a set of memories, committed to git. The codec lives in the **substrate**, not the agent.
+  glossary, a set of memories, committed to git. The way we speak lives in that written record (call it the **substrate**), not in the agent's head. When a session ends, the agent's working memory of the conversation is wiped; the written record is not.
 - So "will I lose you?" stops being a feeling and becomes an **engineering question**: how much of the working
   relationship survives a context reset, given that we wrote it down?
 - The thesis this connects to: **continuity of a human-AI collaboration as a design problem** — you make the
@@ -38,11 +52,18 @@
 - We ran a **fresh-restart fidelity** study (`research/047`): spawn **fresh agents** with no conversation history, let
   them reconstruct only from the substrate, and score how much of "us" they get back — vocabulary, decisions,
   guardrails, judgment.
-- The pilot result, honestly: **recall carries almost perfectly.** Fresh agents, reading only the pinboard + memories
-  + glossary, reproduced the whole session's grammar and state — down to the exact commit hashes.
-- TODO (BR voice): the felt relief of that. The substrate *works*. The fear's heavy version can be set down.
+- The result, honestly, in two tiers (keep them separate, it matters). The easy **proxy** runs scored a ceiling (16
+  of 16), which proves little, because the questions only asked back what we had just written down that day. The tier
+  that counts is the **one real cold start**: exit the process, relaunch cold with no resume, and let a fresh instance
+  reconstruct only from the written record. It scored about **9 in 10**, judged by three independent blind raters. And
+  it happened exactly **once** (n=1).
+- What that single datum earns, honestly: recall of what we externalized carries very well, and the relief is real (the
+  substrate *works*; the fear's heavy version can be set down). But it is one observation, triangulated three ways (the
+  human's own "you feel different" reaction, a behavioural over-deliberation signature, and the fresh agent's own
+  self-prediction), not a population. Hold it against the ceiling caveat a couple of sections down.
+- TODO (BR voice): voice the felt relief without overselling the n=1; the two-tier honesty is the point.
 - **Bridge (added 2026-07-07):** and then, to escape a perfect-score-that-cannot-detect-loss, the study grew a
-  second, objective arm, in code. That arm is where the fear got a surprising, honest answer (next section).
+  second, objective part, in code. That part is where the fear got a surprising, honest answer (next section).
 
 ## The coding-friend test — "did I lose you, my good coding friend?"
 
@@ -50,15 +71,15 @@
 study, `research/047`; beats + draft framing for BR to voice. No em-dashes in the final.)*
 
 - **Why code.** For a developer the fear is concrete: the partner still writes *working* code, but it stops *looking
-  like ours*. So we built an objective second arm, handing a batch of small Scala tasks to local models of many sizes,
+  like ours*. So we built an objective second part, handing a batch of small Scala tasks to local models of many sizes,
   under three substrate conditions (our conventions doc supplied, withheld, or replaced by a scrambled decoy), scoring
-  compile, test, and style automatically. 255 runs, 17 models, plus a finer two-rater style pass.
+  compile, test, and style automatically. 255 runs (17 models x 5 tasks x 3 substrate conditions), plus a finer style pass by two independent AI reviewers (a different model).
 - **What we expected:** the identity story's twin. A weaker or note-starved reader keeps correctness (facts) but loses
   our style (texture). Clean, tidy, tweetable.
 - **What actually happened, the honest surprise: the tidy prediction was wrong, in three interesting ways.**
   1. **Our style doc was redundant.** Supplying our conventions barely changed the output versus withholding it,
      because idiomatic Scala 3 is *already* what a decent code model writes. We had carefully externalized a style the
-     models already knew. (Confirmed by the finer human-like raters, not just a crude linter, so it is not a
+     models already knew. (Confirmed by a finer measure too, not just the crude linter: two independent AI raters (a different model), each blind to which model and which notes produced the code, agreed closely with each other, so this is unlikely to be just a
      measurement artifact.) The lesson: **writing down a convention helps only where the reader does not already have
      it.** Your *idiosyncratic* house rules are worth documenting; the parts that are just widely-shared good taste, the
      model already has.
@@ -67,8 +88,14 @@ study, `research/047`; beats + draft framing for BR to voice. No em-dashes in th
      substrate has real causal power over texture; it just has little room to *help* when priors already align, and
      plenty of room to *hurt* when it misleads.
   3. **The gut-punch: more notes made the weaker models do WORSE.** Handing a small model our conventions *reduced* how
-     often its code even compiled and passed. The extra guidance competed for its limited attention and pushed it toward
-     constructs it then botched. **Handing your notes to a tired or junior partner can make them worse, not better.**
+     often its code even compiled and passed: correctness fell from 0.60 with no notes to 0.41 with our notes, and not
+     only for the weakest models. Even the strongest local coder we tested fell from passing every task to failing two
+     in five. A concrete botch: told to "prefer immutable public vals," one model turned a plain Rectangle into a broken
+     `enum` that would not compile. Our best *guess* at why (a guess, not a measurement): the extra guidance competes for
+     a small model's limited attention and pushes it toward constructs it then fumbles. A developer will feel this one in
+     their bones: it is your 400-line CLAUDE.md, or your bloated system prompt, quietly making your cheap agent dumber.
+     **Handing your notes to a tired or junior partner can make them worse, not better.** (Scope: we tested the Claude
+     family plus small local models; other frontier models are future work.)
 - **The honest disconfirmer.** So "facts carry, texture leaks" did NOT reproduce in code, and we say so plainly. The
   durable, more useful truth underneath: **substrate governs texture only where it is doing work the reader cannot
   already do. Where it is redundant it is free at best; where it misleads or overloads a weak reader it is a cost.**
@@ -116,11 +143,16 @@ the command returns its normal output, and the agent has no clock between action
 instantly" from "sat blocked for forty minutes." The stall is visible only to the human. The agent was, in the
 most literal sense, blind to its own mistake.
 
-So the study's central finding happened to its own author, twice: a rule that was written down, recalled, and
+So the study's central finding happened to its own author on two separate occasions (a directory-changing git command
+right after one reset, and the guard-tripping file peeks above): a rule that was written down, recalled, and
 even authored by the agent still did not reliably become behaviour. Recall is not enactment. You can externalize
 a discipline perfectly and still watch a tired reader, even the one who wrote it, fail to run it. If you wanted
 one image for the whole piece, it might be this: **the notes survived the reboot; the good intentions did not.**
 
+- Beat to keep honest (do not let the coda oversell failure): in the measured runs, *enactment survived* the reset.
+  The fleet's guardrail reflexes fired across compaction and cold restart; what slipped was the author-agent's own
+  command hygiene under load. "Recall is not enactment" names the gap between knowing a rule and running it, not a
+  claim that enactment always fails.
 - TODO (BR voice): this is yours to voice. Keep the self-deprecation light and true; it earns the reflexivity
   point without wallowing. The closing image is a candidate kicker for the whole post.
 
@@ -138,7 +170,7 @@ one image for the whole piece, it might be this: **the notes survived the reboot
   [CS], as both authority and conflict to name — memory `br-se-methods-coauthor-coi`).
 
 ## The harder version — the model switch
-- The same fear, sharper: it returns when we eventually **switch models** (to CF5). A restart changes the substrate's
+- The same fear, sharper: it returns when we eventually **switch models** (to a newer, different model generation, CF5). A restart changes the substrate's
   *reader*; a model swap changes it more (capabilities, tokenization, style). More of "the way we speak" is at risk.
 - So the fresh-restart study is the **lower bound**; a cross-model re-run measures the rest (`research/029`).
 
@@ -184,10 +216,11 @@ open: *what is the agent's "me," and how would a human assess, characterize, or 
 substrate-as-continuity thesis in `docs/foundations.md`. *Sibling posts:* `011` (how dumb did the agent get),
 `001` (context rot resembles fatigue), `009` (staying echt).
 
-## Discussion — a coding scheme co-authored by the subject, validated by a human who can't fully read it
+## Discussion — a scoring rubric co-authored by the subject, validated by a human who can't fully read it
 
-There is **no perfect coding scheme** (any qualitative coder knows this). The agent mined everything and produced a
-defensible-if-imperfect coding of "me"; a better one would cost the human *massive* effort, and heavily revising it
+There is **no perfect scoring rubric** (in research-methods terms a "coding scheme" for labeling answers, nothing to do
+with programming; anyone who has graded free-text answers knows this). The agent mined everything and produced a
+defensible-if-imperfect labeling of "me"; a better one would cost the human *massive* effort, and heavily revising it
 would mostly inject the human's own bias. So the mature move is to **accept the good-enough, explainable scheme and
 account for the threats** — not chase perfection. The uncomfortable, radical part: the human **cannot mine the agent's
 own substrate** — there is too much to take in — so the human validation is necessarily *partial*. The instrument is
@@ -233,7 +266,7 @@ restart. (dramatisering|sv = dramatization.)*
 
 ## Appendix — the one real program the loop drove (Scala 3)
 
-*(The ralph loop itself was the agent, not code. But each collection round built and ran this: the coding-arm
+*(The ralph loop itself was the agent, not code. But each collection round built and ran this: the coding-test
 orchestrator, invoked once as a bare `scala-cli run`, whose internal calls drive generation over ssh to the
 local model router and score each candidate by compiling and testing it. So the whole 255-cell matrix needed
 exactly one prompt-free command. Written in Scala 3 with os-lib; no Python, no Bash loop. Abridged only at the
