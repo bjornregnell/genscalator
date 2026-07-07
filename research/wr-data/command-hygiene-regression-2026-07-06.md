@@ -51,3 +51,17 @@
 - Meta-honesty: a memory being *recalled* is not the same as it being *enacted*. Corroboration-asymmetry again — I would have self-reported "yes I follow tt-git discipline"; behaviour adjudicated otherwise.
 
 **Structural fix (survives the warp — the load-bearing part).** Willpower resolutions do not survive a compact (this specimen proves it). The fix must live in the artifact that reloads on every warp: a **loud COMMAND-HYGIENE header at the very top of the resume prompt** (`muntabot/tmp/resume-prompt.md`) with the concrete forbidden/allowed git shapes, so post-warp-me reads it *before* the first tool call. Added now. Also: for the ralph loop, git inspection uses `tt git log --repo <dir>` / `tt git status --repo <dir>` (bare), never `cd`. [[commit-via-tt-git-not-raw-cd-git]] [[commit-via-tt-git-not-raw-cd-git]] [[exit-resume-dance]]
+
+---
+
+## Fifth specimen (Go-#2 ralph loop, 2026-07-07): raw `tail` on background output stalled the AFK loop, INVISIBLY
+
+**Event.** During the unattended ralph loop the agent used `tail -n N <file>` repeatedly to check the
+background coding-matrix progress. **`tail` is not in the allowlist** (grep/ssh/scala-cli/tt/git -C are; tail
+is not), so each prompted and **stalled the AFK loop** until BR cleared it. The correct tool was the **Read
+tool** (allowlisted for `/tmp/claude-1000/**`; the background-bash guidance even said so). Same class as
+specimens 1-4 (a habitual raw shell tool beating the disciplined path), but with a **new, sharper finding:
+the stall was invisible to the agent** — an approved-later prompt returns normal output and the agent has no
+clock between calls, so it never registered any of the five stalls; only BR saw them. Full write-up +
+implications (joint-vigilance blind spot, a third structure-over-willpower argument, agent time/stall-
+blindness) in **`guard-stall-invisible-to-agent-2026-07-07.md`**.
