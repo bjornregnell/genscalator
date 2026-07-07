@@ -55,3 +55,42 @@ settings for SUB-agents?"* This note answers it, because the answer reshapes how
 Cross-refs: `delegation-dance-and-dilemma-2026-07-07.md` (the overreach specimen this analyses),
 `interpreter-allowlist-hazard-2026-07-07.md`, memory `delegation-dance` (briefs pin the tool lane),
 `never-allowlist-interpreters`, RT049 (briefing fidelity = the bottleneck).
+
+## Correction / refinement (authoritative, via `claude-code-guide`, 2026-07-07)
+
+An authoritative harness check refines the pessimistic claim above ("the
+brief is the ONLY lever"). Precise picture:
+
+- **Per-SPAWN scoping does NOT exist** — confirmed. The only per-spawn
+  levers are **`model`** and **`isolation: worktree`**. You cannot pass a
+  narrower allowlist, tool set, or skill list when spawning a sub-agent.
+- **BUT there IS a structural lever the earlier note missed: the custom
+  sub-agent DEFINITION** (`.claude/agents/*.md` frontmatter). It can:
+  - **restrict tools** via `tools:` (allowlist) + `disallowedTools:`;
+  - **control skills** — sub-agents inherit *access* to all skills via
+    the `Skill` tool (not auto-preloaded); remove `Skill` from `tools:`
+    to deny skills entirely, or `skills:` to *preload* chosen ones;
+  - **set `permissionMode:`** (though a parent in `bypassPermissions` /
+    `acceptEdits` overrides it — so the parent's mode caps the child's);
+  - restrict `mcpServers:`.
+  - Permissions allow/deny are still **inherited** from `settings.json`
+    (no per-agent narrowing there), but tools + skills + permissionMode
+    are constrainable at the **agent-type** granularity.
+
+- **The real upgrade for delegation safety:** the tool-lane discipline
+  need not live only in a fragile per-spawn **brief** (knowledge, and for
+  a fresh sub-agent a near-empty one). We can **author a restricted
+  worker agent TYPE** (e.g. `gs-worker`) whose **frontmatter fixes the
+  privilege** (no `Skill`, tight `tools:`, safe `permissionMode`) and
+  whose **system-prompt body permanently bakes** "scala-cli / tt only,
+  never python3 / raw shell, do only the stated task, never write the
+  memory index." That converts the fix from **knowledge → structural**
+  (`foundations.md` *Structural vs knowledge safeguard*): the discipline
+  fires without the super-agent remembering to re-brief it each time.
+  **Caveat:** it is agent-type granularity, not per-task; and authoring/
+  editing `.claude/agents/` is a **config change → BR-approved** (the
+  authority anchor; hardening dance). Filed as a PB backlog item.
+- **Net:** "least-privilege delegation IS achievable" — just at the
+  agent-TYPE level (author a restricted definition), not per-spawn. The
+  earlier "no lever" was half-right (no per-spawn lever) and half-wrong
+  (there is an agent-type lever). Corrected here for the record.
