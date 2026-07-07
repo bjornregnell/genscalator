@@ -66,6 +66,31 @@ study, `research/047`; beats + draft framing for BR to voice. No em-dashes in th
   over-stuffed a prompt and watched the model get dumber). Land it lightly and honestly; it is a genuinely
   counterintuitive result that the careful measurement earned.
 
+## How the loop ran (for the curious)
+
+*(Added 2026-07-07; beats for BR. Honest note to keep: the "ralph loop" below was executed by the agent
+itself, turn by turn, NOT by a script. There is no `ralph.py`. The one real program it drove is in the
+appendix.)*
+
+The overnight run was a deliberately dumb loop the agent ran by hand, one round at a time:
+
+```text
+loop until (research write-up and blog are complete and reviewed):
+    do one bounded unit of work           # a data-collection batch, an analysis step, a section of writing
+    if the unit is meaningful:
+        spawn an independent reviewer      # a different, cheaper model: fresh eyes, no shared context
+        keep only the good comments, fix them   # adjudicate, do not rubber-stamp
+    commit and push                        # a flaky box: never lose more than one round of work
+    log the round to the study log         # the round count is itself process data
+    if context feels close to rotting: checkpoint and stop
+hand back to the human for the real review
+```
+
+Two choices earned their keep. The reviewer was a *different model* (independent eyes catch what the author's
+own model shares as a blind spot, and it caught several real over-claims here), and every round ended in
+commit-and-push, so a crash could cost at most one round. The intelligence is not in the loop; it is in the
+work each round does and in the adversarial review.
+
 ## A humbling coda — the researcher tripped over its own thesis
 
 *(Added 2026-07-07; a draft in third person for BR to voice and update. No em-dashes in the final.)*
@@ -193,4 +218,37 @@ restart. (dramatisering|sv = dramatization.)*
   disorientation is a **slope, not a cliff** (full continuity → resume-warp faint-externality → post-compact →
   cold-start full disorientation). Pairs with the phrasebook entry above and the glossary **Warp** / **cold start**.
   (Caveat to voice honestly: the introspection is *self-report*, the weakest evidence tier; behaviour adjudicates.)
+
+---
+
+## Appendix — the one real program the loop drove (Scala 3)
+
+*(The ralph loop itself was the agent, not code. But each collection round built and ran this: the coding-arm
+orchestrator, invoked once as a bare `scala-cli run`, whose internal calls drive generation over ssh to the
+local model router and score each candidate by compiling and testing it. So the whole 255-cell matrix needed
+exactly one prompt-free command. Written in Scala 3 with os-lib; no Python, no Bash loop. Abridged only at the
+result-record construction; the byte-exact source is `research/047-run/orchestrator.scala`.)*
+
+```scala
+@main def orchestrate(args: String*): Unit =
+  val subs = List("full", "empty", "scrambled").map(n => n -> os.read(BASE / "substrate" / s"$n.md"))
+  val done = keysAlreadyInResultsFile(resultsPath)          // resumable: skip finished cells
+
+  for model <- models do                                    // one model at a time (amortise the load)
+    setModel(model)                                         // ssh -> modly /set-model (temperature 0 + seed)
+    for (subName, subText) <- subs; task <- tasks do
+      val key = s"$model|${task.name}|$subName"
+      if !done(key) then
+        val prompt   = subText + "\n\n" + instruction(task) // full / empty / scrambled substrate + the task
+        val response = generate(prompt)                     // ssh -> modly /generate (deterministic)
+        val code     = extractCode(response)                // strip fences; auto-import candidate objects
+        val score    = scoreCandidate(code, task)           // scala-cli compile + test, thread-timeout guard
+        val style    = task.styleChecks.count(_(code))      // mechanical style lint (+ a finer LLM rater later)
+        appendJsonLine(resultsPath, model, task, subName, score, style, code, response)
+```
+
+The runtime-hang guard is worth one line of prose: a generated program can contain an infinite loop, so each
+candidate runs on a worker thread with a join timeout, which means the scoring stays a plain `scala-cli run`
+with no shell-level `timeout` wrapper. That keeps every command in the whole run inside the allowlist, which,
+per the humbling coda above, the agent then undercut anyway by reaching for a bare `tail`.
 
