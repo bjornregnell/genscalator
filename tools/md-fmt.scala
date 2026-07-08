@@ -1,6 +1,7 @@
 //> using scala 3.8.4
 //> using jvm 21
 //> using file lib.scala
+//> using file mdparse.scala
 
 // md-fmt — markdown-aware line reflow to a target width (SM012 first cut).
 // Reflows prose / list-item / blockquote blocks to <= --line-width columns while
@@ -81,51 +82,27 @@ object MdFmt:
     res += cur.toString
     res.toVector
 
-  // --- line classifiers (structure-preserving: these lines pass through verbatim) ---
-  private val bulletRe = """^(\s*)([-*+]\s+|\d+\.\s+)(.*)$""".r
-  def isFence(l: String): Boolean = { val t = l.trim; t.startsWith("```") || t.startsWith("~~~") }
-  def isHeading(l: String): Boolean = l.trim.startsWith("#")
-  def isTable(l: String): Boolean = l.trim.startsWith("|")
-  def isHR(l: String): Boolean = l.trim.matches("(-{3,}|\\*{3,}|_{3,})")
-  def isBlank(l: String): Boolean = l.trim.isEmpty
-  def isQuote(l: String): Boolean = l.trim.startsWith(">")
-  def isSpecial(l: String): Boolean =
-    isHeading(l) || isTable(l) || isHR(l) || isBlank(l) || isFence(l) || isQuote(l)
-
-  /** Pure reflow: markdown text -> reflowed markdown at width `w`, joined by '\n' (no trailing '\n'). */
-  def reflow(input: String, w: Int): String =
-    val lines = input.linesIterator.toVector
+  /** Render a parsed block stream back to reflowed markdown at width `w`, joined by '\n' (no trailing '\n').
+    * Wrappable blocks (Quote/Para/Item) are re-wrapped; pass-through blocks are emitted verbatim. */
+  def renderReflow(blocks: Vector[MdParse.Block], w: Int): String =
+    import MdParse.Block.*
     val out = ArrayBuffer[String]()
-    var inFence = false; var i = 0
-    while i < lines.length do
-      val line = lines(i)
-      if isFence(line) then { out += line; inFence = !inFence; i += 1 }
-      else if inFence then { out += line; i += 1 }
-      else if isBlank(line) then { out += ""; i += 1 }
-      else if isHeading(line) || isTable(line) || isHR(line) then { out += line; i += 1 }
-      else if isQuote(line) then
-        val q = ArrayBuffer[String]()
-        while i < lines.length && isQuote(lines(i)) do
-          q += lines(i).trim.stripPrefix(">").stripPrefix(" "); i += 1
-        wrap("> ", "> ", q.mkString(" "), w).foreach(out += _)
-      else
-        val (firstPrefix, contentFirst, hangDefault) = bulletRe.findFirstMatchIn(line) match
-          case Some(m) =>
-            val lead = m.group(1); val marker = m.group(2)
-            (lead + marker, m.group(3), lead + " " * cpLen(marker))
-          case None =>
-            val lead = line.takeWhile(_ == ' ')
-            (lead, line.drop(lead.length), lead)
-        val contents = ArrayBuffer[String](contentFirst.trim)
-        val contIndents = ArrayBuffer[Int]()
-        i += 1
-        while i < lines.length && !isSpecial(lines(i)) && bulletRe.findFirstMatchIn(lines(i)).isEmpty do
-          contIndents += lines(i).takeWhile(_ == ' ').length
-          contents += lines(i).trim; i += 1
-        // continuation indent = the author's own (min of the gathered lines), else marker-aligned
-        val hang = if contIndents.nonEmpty then " " * contIndents.min else hangDefault
-        wrap(firstPrefix, hang, contents.mkString(" "), w).foreach(out += _)
+    blocks.foreach {
+      case Blank                             => out += ""
+      case Fence(lines)                      => lines.foreach(out += _)
+      case Heading(raw)                      => out += raw
+      case Rule(raw)                         => out += raw
+      case Table(rows)                       => rows.foreach(out += _)
+      case Quote(text)                       => wrap("> ", "> ", text, w).foreach(out += _)
+      case Para(lead, hang, text)            => wrap(lead, hang, text, w).foreach(out += _)
+      case Item(lead, marker, hang, text, _) => wrap(lead + marker, hang, text, w).foreach(out += _)
+    }
     out.mkString("\n")
+
+  /** Pure reflow: markdown text -> reflowed markdown at width `w` (no trailing '\n'). Parses via the shared
+    * `MdParse` front-end, then re-wraps — one parser, two renderers (this reflow + ssg's HTML). */
+  def reflow(input: String, w: Int): String =
+    renderReflow(MdParse.parse(input), w)
 
   /** True iff a and b are identical after removing all whitespace and blockquote `>` markers —
     * i.e. the reflow only moved line breaks / indentation / quote prefixes around, changing no words. */
