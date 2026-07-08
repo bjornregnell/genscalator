@@ -64,6 +64,12 @@ The canonical conventions live in [`../../blog/README.md`](../../blog/README.md)
 updated`) · the **Audience** line · the 004→008 **arc** conventions (backwards cliffhangers, the TMPP stack) ·
 cross-links into `research/`. These arc conventions are **young** — encode the stable core, leave room to evolve
 (like `scala-style` growing from use).
+- **The status/preamble blockquote is working memory while drafting, but reader-noise at publish — trim it as a post
+  nears `published`/`deployed`.** A long, detailed banner (status history, outline notes, the full audience list,
+  source pointers) is *useful to the agent* (BR: "our memory bot") while drafting; to a reader it is clutter sitting
+  above the post. So as publish approaches, prune the preamble to the minimum a reader wants (a short status line, a
+  tight audience line, a `See also:` if helpful) and push any working notes down into `research/` or an HTML comment.
+  (BR, 2026-07-08.)
 - **Coined terms stay MUTABLE until first *deploy*.** A dance/concept name can be renamed freely while it lives only in
   drafts + research (nothing *published*) — so run the cheap tests before lock-in (e.g. BR's **embodied cue-word typing
   test**: type the candidate many times fast, judge by motor ergonomics, not just meaning). The name **locks when the
