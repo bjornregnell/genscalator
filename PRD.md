@@ -305,6 +305,26 @@ The next real release is **v0.9.0** — v0.1.0–v0.8.0 have shipped (see PAST/I
 * Feature: contextRotMeter helps Goal: jointHumanAgentProductivity
 * Feature: contextRotMeter helps Goal: safeGeneration
 
+### Release v2.0 (far future) — the super-harness
+
+> STUB (BR pin 2026-07-08): a goal-level placeholder to complete the super-harness for a v2.0 release, to be
+> elaborated in reqT-lang from goal-level down (the reqt-lang skill + the dashboard section). See the CC-clamp /
+> capability-harness thread in `research/047-*` and the SM016 / SM022 work items.
+
+* Goal: completeSuperHarness has
+  * Gist: a pure-Scala capability harness (the "CC-clamp") the super-agent drives by injecting a WHITELISTED slash-command enum; capture-checking makes non-whitelisted injection impossible (the enum membership IS the security boundary). Umbrella for the live joint dashboard, the session-log tap, and the idle/context signals the model cannot self-read.
+  * Spec: STUB — elaborate from goal-level down. The harness taps `/context` + session activity + the session log, and hosts a local dashboard.
+* Goal: completeSuperHarness helps Goal: jointHumanAgentProductivity
+* Goal: completeSuperHarness helps Goal: safeGeneration
+
+* Feature: superHarnessDashboard has
+  * Gist: a live localhost dashboard (served by `tt serv`, loopback-only) of agent-side introspection metrics and human-side behavioral proxies — a shared mirror for joint rot-vigilance, NOT surveillance.
+  * Spec: STUB. DATA-SOVEREIGNTY — no data leaves the user's control (all local / on-box); the "not psychiatrists" disclaimer is VISIBLE in the human-psyche visualization; human metrics are member-checked proxies, never clinical diagnoses. Keep the data out of BHH hands.
+* Feature: superHarnessDashboard helps Goal: completeSuperHarness
+* Feature: superHarnessDashboard hurts Goal: controlHumanSystem
+* Feature: superHarnessDashboard hurts Goal: exfiltrateSecrets
+* Feature: superHarnessDashboard relatesTo Feature: contextRotMeter
+
 ## PAST
 
 Requirements implemented (or cancelled). Move requirements from FUTURE to PAST as they ship. The IMPLEMENTED
