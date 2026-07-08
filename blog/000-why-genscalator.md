@@ -1,6 +1,6 @@
 # Why genscalator?
 
-> **Status: initialized 2026-07-03; drafted 2026-07-07.** The "why", an intro and project background a newcomer reads first.
+> **Status: initialized 2026-07-03; drafted 2026-07-07; published 2026-07-08; deployed 2026-07-08.** The "why", an intro and project background a newcomer reads first.
 > **Audience:** anyone strolling by (this is blog zero), including non-specialists with no engineering background,
 > or any developer hit by brittle agent shell usage or confirmation fatigue.
 > **See also:** `docs/foundations.md`, `research/METHODOLOGY.md`
@@ -27,7 +27,7 @@ eventually degrading beyond repair).
 After some careful thinking, in parallel with starting to develop my agentic software engineering skills on pet
 projects, I realized that my next big project must be: **`genscalator`**, power-tools for human-agent
 collaboration productivity. Why? While over weeks developing an increasingly more productive code generation
-workflow together with [Anthropic's Claude Code](https://en.wikipedia.org/wiki/Claude_(AI)), I also got caught
+workflow together with [Anthropic's Claude Code](https://en.wikipedia.org/wiki/Claude_%28AI%29), I also got caught
 in real User Experience (UX) problems and pitfalls, and the agent repeatedly did some very stupid things with brittle, unsafe
 dynamic tools such as bash, awk, sed and python. The agent even got dragged down a rabbit hole trying to fix its
 own runtime bugs while it got exhausted in an agent sickness known as *[context rot](https://www.trychroma.com/research/context-rot)* (there is no Wikipedia article on
@@ -97,7 +97,7 @@ And here is where it stops being just a toolbox and becomes the project I actual
 ## Close
 Genscalator is still early days and very much work-in-progress. But Claude and I have come far already in proving the concept. The agent bangs into the harness's permission wall far less often now, although context rot can still cause regressions. Instead of brittle bash we get deeper and deeper into the safe land of typed tools. We develop more [tools](https://codeberg.org/bjornregnell/genscalator/src/branch/main/tools) as we go, and we lift the agent's behaviour thanks to genscalator = the toolbox (`tt`) + skills + docs. And along the way we gather important research from challenging case studies where human+agent embark on ever bigger and more interesting things.
 
-One big apple to pick from the knowledge tree is a new and still-experimental Scala language feature called [Capture Checking](https://nightly.scala-lang.org/docs/reference/experimental/capture-checking/basics.html), which I hope will make genscalator's code generation even safer and boost human-agent productivity. It is on the [roadmap](https://codeberg.org/bjornregnell/genscalator/src/branch/main/PRD.md), and an interesting research direction to dive into. 
+One big apple to pick from the knowledge tree is a new and still-experimental Scala language feature called [Capture Checking](https://nightly.scala-lang.org/docs/reference/experimental/capture-checking/basics.html), which I hope will make genscalator's code generation even safer and boost human-agent productivity. It is on the roadmap, and an interesting research direction to dive into. 
 
 Maybe genscalator can unlock even more ambitious projects. So maybe this is not my "last big project" before I retire, after all. (And retirement does not mean me stopping to try to do cool things with software, then with even more competent AI software engineers helping us...)
 
