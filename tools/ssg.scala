@@ -153,7 +153,12 @@ object Ssg:
         val idAttr = if lvl >= 2 then s""" id="$id"""" else ""
         sb ++= s"<h$lvl$idAttr>${renderInline(txt)}</h$lvl>\n"
       case Rule(_)       => flush(); sb ++= "<hr>\n"
-      case Para(_, _, t) => flush(); sb ++= s"<p>${renderInline(t)}</p>\n"
+      case Para(_, _, t) =>
+        flush()
+        // Drop HTML comments (<!-- ... -->), including whole-paragraph author notes like AGENT-DRAFT scaffolding,
+        // so they never render as visible text. Code fences are separate blocks, so this never touches code.
+        val visible = "(?s)<!--.*?-->".r.replaceAllIn(t, _ => "").trim
+        if visible.nonEmpty then sb ++= s"<p>${renderInline(visible)}</p>\n"
       case Quote(t)      =>
         flush()
         // Strip the internal **Status: ...** bookkeeping span so it never reaches readers (SM032 trim-at-publish);

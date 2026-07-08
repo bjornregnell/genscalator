@@ -168,3 +168,9 @@ class SsgSuite extends munit.FunSuite:
   test("renderBlocks drops a blockquote that is ONLY a status span (nothing left to show)") {
     assertEquals(renderBlocks(MdParse.parse("> **Status: drafted 2026-07-03.**")).trim, "")
   }
+  test("renderBlocks drops HTML comments so author scaffolding never renders") {
+    assertEquals(renderBlocks(MdParse.parse("<!-- AGENT-DRAFT: BR to revoice -->")).trim, "")
+    val out = renderBlocks(MdParse.parse("real text <!-- hidden note --> more"))
+    assert(!clue(out).contains("hidden"))
+    assert(out.contains("real text") && out.contains("more"))
+  }
