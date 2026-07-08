@@ -125,8 +125,9 @@ external dependency — pure JDK.)
 
 What's shipped so far, per release: [`CHANGELOG.md`](CHANGELOG.md).
 For the toolbox-specific roadmap (new/extended `tt` tools), see [`tools/README.md`](tools/README.md#roadmap).
+For general goals and requirements see the [Product Requirements Document](PRD.md)
 
-**Planned, not yet built — roughly cheapest-to-build first:**
+**Planned, not yet built - roughly cheapest-to-build first:**
 - **Update awareness** — an *inform-only* update skill + a read-only version-check (compare the installed
   version against upstream `marketplace.json`) so staleness is visible. It hands the human the update
   commands but **never self-updates the operating rules** — adopting new rules stays a human-reviewed step
@@ -136,7 +137,6 @@ For the toolbox-specific roadmap (new/extended `tt` tools), see [`tools/README.m
   a blind `curl … | bash` (that opaque-pipe pattern is exactly the confirmation-fatigue / RCE risk
   genscalator argues against).
 - Native compilation.
-- A Java-vs-Scala token-efficiency experiment (out-of-the-box vs genscalator).
 - Tool safety flags: `--safe-mode`, `--sandboxed`, `--audit`.
 - Capture-Checking **Safe-mode** PoC → pure tools safe by default.
 - **Cross-tool packaging:** an MCP server so the tools are first-class in Codex/opencode too. (The
@@ -232,3 +232,11 @@ Copyright of all code in this repo is owned by the maintainers of the genscalato
 The genscalator repository is currently maintained by:
 * [Professor Björn Regnell](https://bjornregnell.se)
 * You? If you are interested to become a maintainer, send email to genscalator at bjornregnell.se
+
+## Commercial Support
+
+* For commerical support and consultancy in using genscalator to improve agentic software engineering productivity contact genscalator@bjornregnell.se
+
+## Doantions
+
+Genscalator is developed as a liberally licenced open source software project that anyone can use. If you want to support the maintenance and implementation of new features of genscalator contact genscalator@bjornregnell.se
