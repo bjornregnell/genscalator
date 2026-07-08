@@ -352,6 +352,7 @@ object Ssg:
         .getOrElse(BuiltinTemplate)
     Files.createDirectories(outDir)
     val referenced = scala.collection.mutable.Set[String]()
+    val written = scala.collection.mutable.Set[String]()
     val figRef = "(?:src|href)=\"figures/([^\"]+)\"".r
     for md <- sources do
       val name = md.getFileName.toString.stripSuffix(".md")
@@ -359,7 +360,17 @@ object Ssg:
       figRef.findAllMatchIn(html).foreach(m => referenced += m.group(1))
       val out = outDir.resolve(s"$name.html")
       Files.write(out, html.getBytes("UTF-8"))
+      written += s"$name.html"
       System.err.println(s"ssg: wrote $out")
+    // Set render (--out / --status): the out-dir should hold EXACTLY this set's pages, so a page dropped from the
+    // set (e.g. unpublished) is pruned rather than left behind to be deployed. Single-file legacy mode does NOT prune.
+    if outOpt.isDefined || statusOpt.isDefined then
+      import scala.jdk.CollectionConverters.*
+      val st = Files.list(outDir)
+      try st.iterator.asScala
+        .filter(p => Files.isRegularFile(p) && p.getFileName.toString.endsWith(".html") && !written.contains(p.getFileName.toString))
+        .foreach { p => Files.delete(p); System.err.println(s"ssg: pruned stale $p") }
+      finally st.close()
     // Figures: copy ONLY the ones the rendered pages actually reference, and prune anything else from the
     // output figures/ dir. So the deploy set never carries unrelated posts' assets (reference-aware, self-cleaning).
     val srcFigures = srcDir.resolve("figures")
