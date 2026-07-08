@@ -1,18 +1,13 @@
 # Why genscalator?
 
-> **Status: initialized 2026-07-03 (personal intro drafted; rest outline).** Slot reserved for the project's
-> foundational "why" — the intro a newcomer reads first. The personal backstory below is written; the mission
-> bullets and the rest are still outline, to be drafted.
-> **Audience:** anyone strolling by (this is blog number zero); newcomers to genscalator; developers building or using coding agents; anyone worn down by
-> brittle agent shell usage or confirmation fatigue; teams weighing typed, safe-by-design tooling for
-> AI-assisted development.
-> Sources: `docs/foundations.md`,
-> `research/METHODOLOGY.md`, `research/005-instrumentation-by-default.md`,
-> `research/013-confirmation-guard-static-analysis.md`, `research/wr-data/`.
+> **Status: initialized 2026-07-03; drafted 2026-07-07.** The "why", an intro and project background a newcomer reads first.
+> **Audience:** anyone strolling by (this is blog zero), including non-specialists with no engineering background,
+> or any developer hit by brittle agent shell usage or confirmation fatigue.
+> **See also:** `docs/foundations.md`, `research/METHODOLOGY.md`
 
 ## The one-line answer
 
-Coding agents default to **dynamic shell** — re-emitting brittle `bash` every turn — and that quiet default
+Coding agents default to **dynamic shell**, re-emitting brittle `bash` every turn, and that quiet default
 costs tokens, safety, and reliability. genscalator replaces it with **typed, safe-by-design tools** the agent
 calls instead. *(to draft)*
 
@@ -29,8 +24,8 @@ methodology. A while ago a dear friend and colleague asked me "what will be your
 retire?" and it struck me that I really needed to think carefully about that (human tissue inevitably,
 eventually degrading beyond repair).
 
-After some careful thinking — in parallel with starting to develop my agentic software engineering skills on pet
-projects — I realized that my next big project must be: **`genscalator`** — power-tools for human-agent
+After some careful thinking, in parallel with starting to develop my agentic software engineering skills on pet
+projects, I realized that my next big project must be: **`genscalator`**, power-tools for human-agent
 collaboration productivity. Why? While over weeks developing an increasingly more productive code generation
 workflow together with [Anthropic's Claude Code](https://en.wikipedia.org/wiki/Claude_(AI)), I also got caught
 in real User Experience (UX) problems and pitfalls, and the agent repeatedly did some very stupid things with brittle, unsafe
@@ -61,7 +56,7 @@ Essentially an agent's underlying language model is just a fixed function from t
 
 By first *training* a language model, with relentless human and machine perseverance, we can then make it do what we call *inference*. Training means to warm up the planet with super-computers to fiddle with a humungous number of numbers in crazy big matrices at a never before seen scale in order to reach a `Text => Text` function that behaves like a human. Inference means putting the `Text => Text` function to work. Humans write other smart hand-made functions that apply the `Text => Text` function inside a *harness* creating an *agent* comprised of harness + `Text => Text` function. So when programmers write the agent their requirements the agent can generate program text. This is what we call *agentic code generation*.
 
-What has really astonished the programming world (and many academic AI researchers), since winter 2025 and spring 2026, is that one company (Anthropic) has managed to make a coding agent called Claude Code so smart that software developers do not feel alone. We now have the power at our fingertips that can help us build much more advanced and complex software systems than we we could before.
+What has really astonished the programming world (and many academic AI researchers), since winter 2025 and spring 2026, is that one company (Anthropic) has managed to make a coding agent called Claude Code so smart that software developers do not feel alone. We now have the power at our fingertips that can help us build much more advanced and complex software systems than we could before.
 
 ## Are agents smart at coding?
 
@@ -73,7 +68,7 @@ Let me start with the smart. When I watch a good coding agent chase down a bug, 
 
 Now the dumb. For all that smartness, today's agents have some genuinely daft habits. The biggest one is what I call the *dynamic shell* reflex. To get things done, an agent often reaches for the same crude, decades-old text-shovelling commands a human power-user might type into a terminal (things with names like `grep`, `awk` and `sed`). Each of these little commands is written fresh, on the spot, every single time, and each one is brittle: a tiny slip and it silently does the wrong thing, or breaks outright. Worse, when something goes wrong, the agent can fall down what we call a *rabbit hole*: it tries to fix its own broken command, which breaks something else, which it tries to fix, and so on, round and round. As it spins, its short-term memory fills up with the junk from all those failed attempts, and it gets slower and more muddled, a kind of exhaustion we call *context rot*. Anyone who has ever stayed up far too late debugging will recognise the feeling. It is a bit like handing a brilliant new colleague only a rusty penknife, and then watching them struggle with a job that the right tool would make trivial.
 
-So here is the hopeful part, and the whole reason genscalator exists: a lot of that dumbness is not really the agent's fault. It is the *tools* we hand it. Give the agent a sharp, purpose-built tool instead of the rusty penknife, and much of the brittleness simply disappears. That is what genscalator is: a small toolbox (we call it `tt` as in *typed tools*) of typed, safe, purpose-built tools the agent reaches for instead of raw shell commands. And in my own daily work with the genscalator plugin applied to Anthopic's Claude Code it already shows the payoff. When the safe typed tool is the *easy* path, the agent stops reaching for the brittle bash by itself. Whole classes of silent mistake become impossible by construction, because a typed tool simply cannot be misused the way a raw command can. The agent gets interrupted less, wastes fewer tokens, and stays out of the rabbit holes. None of this required a smarter model. It only required smarter tools. That is the bet genscalator is making, out in the open, one real experiment at a time.
+So here is the hopeful part, and the whole reason genscalator exists: a lot of that dumbness is not really the agent's fault. It is the *tools* we hand it. Give the agent a sharp, purpose-built tool instead of the rusty penknife, and much of the brittleness simply disappears. That is what genscalator is: a small toolbox (we call it `tt` as in *typed tools*) of typed, safe, purpose-built tools the agent reaches for instead of raw shell commands. And in my own daily work with the genscalator plugin applied to Anthropic's Claude Code it already shows the payoff. When the safe typed tool is the *easy* path, the agent stops reaching for the brittle bash by itself. Whole classes of silent mistake become impossible by construction, because a typed tool simply cannot be misused the way a raw command can. The agent gets interrupted less, wastes fewer tokens, and stays out of the rabbit holes. None of this required a smarter model. It only required smarter tools. That is the bet genscalator is making, out in the open, one real experiment at a time.
 
 
 
