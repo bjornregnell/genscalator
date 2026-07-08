@@ -84,8 +84,8 @@ if !check && !Files.isDirectory(Paths.get(localDir)) then
 val netrc = Paths.get(System.getProperty("user.home"), ".netrc")
 if !Files.isRegularFile(netrc) then
   die:
-    s"""|no ~/.netrc 
-        |create it (chmod 600) with your one.com SFTP machine/login/password 
+    s"""|no ~/.netrc
+        |create it (chmod 600) with your one.com SFTP machine/login/password
         |(see this file's header).
         |""".stripMargin
 
