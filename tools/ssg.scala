@@ -143,12 +143,14 @@ object Ssg:
       + "|([a-z]?\"(?:\\\\.|[^\"\\\\\\n])*\")"                                    // 4 string
       + "|('(?:\\\\.|[^'\\\\])')"                                                 // 5 char literal
       + "|(\\b0[xX][0-9a-fA-F_]+|\\b0[bB][01_]+|\\b\\d[\\d_]*(?:\\.\\d[\\d_]*)?(?:[eE][+-]?\\d+)?[fFdDlL]?)" // 6 number
-      + "|([A-Za-z_][A-Za-z0-9_]*)" ).r                                          // 7 word
+      + "|(\\b(?:def|class|trait|enum|object)\\b)(\\s+)([A-Za-z_][A-Za-z0-9_]*)"  // 7 def-keyword, 8 ws, 9 decl name
+      + "|([A-Za-z_][A-Za-z0-9_]*)" ).r                                          // 10 word
     token.replaceAllIn(escaped, m =>
       val out =
         if m.group(1) != null || m.group(2) != null then span("tok-comment", m.matched)
         else if m.group(3) != null || m.group(4) != null || m.group(5) != null then span("tok-str", m.matched)
         else if m.group(6) != null then span("tok-num", m.matched)
+        else if m.group(7) != null then span("tok-kw", m.group(7)) + m.group(8) + span("tok-def", m.group(9))
         else
           val w = m.matched
           if scalaKeywords.contains(w) then span("tok-kw", w)

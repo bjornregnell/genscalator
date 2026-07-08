@@ -23,6 +23,7 @@
   --tok-num: #953800;
   --tok-comment: #6e7781;
   --tok-type: #0550ae;
+  --tok-def: #cf222e;
   color-scheme: light;
 }
 :root[data-theme="dark"] {
@@ -42,6 +43,7 @@
   --tok-num: #ffa657;
   --tok-comment: #8b949e;
   --tok-type: #79c0ff;
+  --tok-def: #ff7b72;
   color-scheme: dark;
 }
 @media (prefers-color-scheme: dark) {
@@ -62,6 +64,7 @@
     --tok-num: #ffa657;
     --tok-comment: #8b949e;
     --tok-type: #79c0ff;
+    --tok-def: #ff7b72;
     color-scheme: dark;
   }
 }
@@ -322,6 +325,7 @@ pre > code {
 .tok-num { color: var(--tok-num); }
 .tok-comment { color: var(--tok-comment); font-style: italic; }
 .tok-type { color: var(--tok-type); }
+.tok-def { color: var(--tok-def); font-weight: 600; }
 
 /* Tables: scroll inside their own box, never the page */
 table {

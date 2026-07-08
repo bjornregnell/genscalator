@@ -135,6 +135,10 @@ class SsgSuite extends munit.FunSuite:
     assert(highlightScala(escape("inline val x = 2")).contains("<span class=\"tok-soft\">inline</span>"))
     assert(highlightScala("\"hi\"").contains("<span class=\"tok-str\">\"hi\"</span>"))
     assert(highlightScala(escape("a < b")).contains("a &lt; b"))  // operator + escaped entity untouched
+    val defs = highlightScala(escape("class Foo\ndef baz\nenum E"))
+    assert(clue(defs).contains("<span class=\"tok-kw\">class</span> <span class=\"tok-def\">Foo</span>"))
+    assert(defs.contains("<span class=\"tok-def\">baz</span>"))
+    assert(defs.contains("<span class=\"tok-def\">E</span>"))
   }
 
   // --- page assembly ---
