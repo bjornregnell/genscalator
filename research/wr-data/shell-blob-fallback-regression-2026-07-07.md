@@ -109,3 +109,25 @@ file mutation, regardless of content, so the safe path (`Write`/`Edit`) is the
 reflex under momentum, even for the super-agent. (Silver lining: the self-catch
 + immediate honest flag is the [[echt-effort-especially-self-generated]]
 discipline working; but echt reporting of a slip is not the same as not slipping.)
+
+## Instance 4 (2026-07-08, DURING COMPACT-PREP) — a new variant, and it failed
+
+CO4, mid-compact-prep, committed the wr-data sweep note with a **heredoc feeding
+`/dev/stdin`** as the message file: `tt git commit ... --message-file /dev/stdin
+<<'EOF' ... EOF`. A new shape of the same regression — the content blob is the
+heredoc body (not `printf`/`echo`), and it compounds a `<<` redirect onto the
+command. Three notes:
+1. **It FAILED** (exit 2 — `tt git` cannot read `/dev/stdin` as `--message-file`)
+   and the runner backgrounded it oddly. So the wrong-lane move also did not
+   even work: double cost (broke the rule AND wasted a cycle).
+2. **Context = compact-prep momentum.** The slip fired while rushing to a safe
+   stop before compacting — the exact fatigue/hurry moment the header warns of.
+   recalled != enacted, again, now under end-of-session momentum.
+3. **Self-caught immediately** (flagged before even checking the result), redone
+   via Write + `--message-file <path>`. Detector worked; preventer still absent.
+
+Widens the fix: the structural guard AND the header rule must cover ANY
+content-blob mechanism — `printf`, `echo`, AND heredoc/`<<` — feeding a file or
+message arg. Header rule broadened from "no printf/echo > file" to: **no content
+blob on a command line by ANY mechanism; message + file content always via Write
++ a `--*-file <path>` arg.**
