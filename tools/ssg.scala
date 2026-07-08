@@ -7,10 +7,14 @@
 // actually use to self-contained HTML, consuming the SAME `MdParse.parse` front-end that md-fmt reflows through
 // (one parser, two renderers). EFFECTFUL: reads markdown, writes .html files (like svg/gvdot).
 //   tt ssg <src> <out-dir> [--template <file>]
+//   tt ssg --out <out-dir> <file.md>... [--template <file>]     render a CHOSEN SET of files in one pass
 //     <src>          a .md file (rendered alone) OR a dir (every non-underscore .md rendered)
 //     <out-dir>      output dir (created if missing); each <name>.md -> <out-dir>/<name>.html
-//     --template F   HTML template with {{TITLE}} + {{CONTENT}} slots; else <srcdir>/_template.html; else builtin
-//   A sibling `figures/` dir next to the source is copied to <out-dir>/figures so relative images resolve.
+//     --out D + list render exactly the listed files together into D (so the figure-prune below sees the
+//                    UNION of all their references, not one page at a time) -- SM030
+//     --template F   HTML template with {{TITLE}} + {{CONTENT}} + optional {{TOC}} slots; else <srcdir>/_template.html; else builtin
+//   Only the `figures/` a rendered page actually links are copied to <out-dir>/figures, and stale ones are pruned
+//   (reference-aware, self-cleaning) so the output never carries unrelated posts' assets.
 //
 // Helpers live inside `object Ssg`; only the @main is top-level. The rendering is PURE (renderPage: md+template
 // -> html) and unit-tested; the @main does the file I/O. Deferred: nested lists (rendered flat here), footnotes,
@@ -211,24 +215,44 @@ object Ssg:
 
   private val Usage =
     """ssg — hand-rolled markdown -> static HTML site generator
-      |  ssg <src> <out-dir> [--template <file>]
-      |    <src> = a .md file or a dir of .md files; <out-dir> created if missing""".stripMargin
+      |  ssg <src> <out-dir> [--template <file>]                 # src = a .md file OR a dir of .md files
+      |  ssg --out <out-dir> <file.md>... [--template <file>]    # render a chosen SET of files in one pass
+      |    <out-dir> created if missing; only figures referenced by the rendered pages are copied""".stripMargin
 
   def dispatch(args: String*): Unit =
-    val (pos, tmplOpt) = args.toList match
-      case s :: o :: "--template" :: t :: Nil => (List(s, o), Some(t))
-      case s :: o :: Nil                       => (List(s, o), None)
-      case _ => System.err.println("ssg: bad arguments"); System.err.println(Usage); sys.exit(2)
-    val src = Paths.get(pos(0)).toAbsolutePath.normalize
-    val outDir = Paths.get(pos(1)).toAbsolutePath.normalize
-    if !Files.exists(src) then { System.err.println(s"ssg: no such source: $src"); sys.exit(2) }
-    val srcDir = if Files.isDirectory(src) then src else src.getParent
-    val sources: Vector[Path] =
-      if Files.isDirectory(src) then
-        val st = Files.list(src)
-        try { import scala.jdk.CollectionConverters.*; st.iterator.asScala.filter(isMarkdown).toVector.sorted } finally st.close()
-      else Vector(src)
-    if sources.isEmpty then { System.err.println(s"ssg: no .md files under $src"); sys.exit(2) }
+    val a = args.toVector
+    def optVal(name: String): Option[String] =
+      val i = a.indexOf(name); if i >= 0 && i + 1 < a.length then Some(a(i + 1)) else None
+    val tmplOpt = optVal("--template")
+    val outOpt  = optVal("--out")
+    val flags = Set("--template", "--out")
+    val positionals =
+      val b = scala.collection.mutable.ArrayBuffer[String]()
+      var i = 0
+      while i < a.length do
+        if flags.contains(a(i)) then i += 2 else { b += a(i); i += 1 }
+      b.toVector
+    val (sources, outDir, srcDir): (Vector[Path], Path, Path) = outOpt match
+      case Some(o) =>
+        // list mode (SM030): every positional is a source .md file, rendered together into <o>
+        if positionals.isEmpty then { System.err.println("ssg: --out needs one or more source .md files"); System.err.println(Usage); sys.exit(2) }
+        val srcs = positionals.map(p => Paths.get(p).toAbsolutePath.normalize)
+        for s <- srcs do if !Files.isRegularFile(s) then { System.err.println(s"ssg: no such source file: $s"); sys.exit(2) }
+        (srcs, Paths.get(o).toAbsolutePath.normalize, srcs.head.getParent)
+      case None =>
+        // legacy mode: <src> <out-dir>, src is a .md file or a dir of .md files
+        positionals match
+          case Vector(s, od) =>
+            val src = Paths.get(s).toAbsolutePath.normalize
+            if !Files.exists(src) then { System.err.println(s"ssg: no such source: $src"); sys.exit(2) }
+            val srcs =
+              if Files.isDirectory(src) then
+                val st = Files.list(src)
+                try { import scala.jdk.CollectionConverters.*; st.iterator.asScala.filter(isMarkdown).toVector.sorted } finally st.close()
+              else Vector(src)
+            (srcs, Paths.get(od).toAbsolutePath.normalize, if Files.isDirectory(src) then src else src.getParent)
+          case _ => System.err.println("ssg: bad arguments"); System.err.println(Usage); sys.exit(2)
+    if sources.isEmpty then { System.err.println("ssg: no .md sources to render"); sys.exit(2) }
     val discovered = srcDir.resolve("_template.html")
     val template =
       tmplOpt.map(Lib.readUtf8)
