@@ -98,6 +98,27 @@ class SsgSuite extends munit.FunSuite:
     assert(out.contains("<td>1</td>"))
   }
 
+  // --- heading ids + table of contents ---
+  test("slugify matches GitHub-style anchors (drops punctuation, spaces to hyphens)") {
+    assertEquals(slugify("5.5 Could this just be chance?"), "55-could-this-just-be-chance")
+    assertEquals(slugify("1. Two syntaxes, one language"), "1-two-syntaxes-one-language")
+  }
+  test("headingSlugs de-duplicates GitHub-style (-1, -2)") {
+    assertEquals(headingSlugs(MdParse.parse("## Foo\n\n## Foo")), Vector("foo", "foo-1"))
+  }
+  test("renderBlocks adds an id to h2 but not h1") {
+    val out = renderBlocks(MdParse.parse("# Title\n\n## Section one"))
+    assert(clue(out).contains("<h1>Title</h1>"))
+    assert(out.contains("""<h2 id="section-one">Section one</h2>"""))
+  }
+  test("buildToc lists h2/h3 as anchor links; empty when fewer than two") {
+    val toc = buildToc(MdParse.parse("## A\n\n### B\n\n## C"))
+    assert(clue(toc).contains("""<a href="#a">A</a>"""))
+    assert(toc.contains("""<a href="#b">B</a>"""))
+    assert(toc.contains("toc-sub"))
+    assertEquals(buildToc(MdParse.parse("## Only one")), "")
+  }
+
   // --- page assembly ---
   test("renderPage fills TITLE from the first h1 and the CONTENT slot") {
     val page = renderPage("# My Post\n\nhello", "<title>{{TITLE}}</title>|{{CONTENT}}")

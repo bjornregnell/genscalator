@@ -73,6 +73,22 @@ object Ssg:
     val hashes = t.takeWhile(_ == '#').length
     (math.min(hashes, 6), t.drop(hashes).trim)
 
+  /** GitHub-style heading id: lowercase, drop punctuation, spaces -> hyphens. Matches the anchors authors
+    * hand-write in the prose (e.g. blog 002's `#55-could-this-just-be-chance`). */
+  def slugify(headingText: String): String =
+    plainTitle(headingText).toLowerCase.replaceAll("[^a-z0-9\\s-]", "").trim.replaceAll("\\s+", "-")
+
+  /** One id per Heading block, in document order, de-duplicated GitHub-style (append -1, -2, ...). */
+  def headingSlugs(blocks: Vector[MdParse.Block]): Vector[String] =
+    import MdParse.Block.*
+    val seen = scala.collection.mutable.Map[String, Int]()
+    blocks.collect { case Heading(raw) => headingParts(raw)._2 }.map { txt =>
+      val base = { val s = slugify(txt); if s.isEmpty then "section" else s }
+      seen.get(base) match
+        case None    => seen(base) = 0; base
+        case Some(n) => seen(base) = n + 1; s"$base-${n + 1}"
+    }
+
   private def splitRow(r: String): Vector[String] =
     r.trim.stripPrefix("|").stripSuffix("|").split("\\|", -1).map(_.trim).toVector
   private def isSep(r: String): Boolean =
@@ -120,11 +136,15 @@ object Ssg:
     import MdParse.Block.*
     val sb = StringBuilder()
     val pending = ArrayBuffer[Item]()
+    val ids = headingSlugs(blocks).iterator
     def flush(): Unit = if pending.nonEmpty then { sb ++= renderList(pending.toVector); pending.clear() }
     blocks.foreach {
       case it: Item      => pending += it
       case Blank         => flush()
-      case Heading(raw)  => flush(); val (lvl, txt) = headingParts(raw); sb ++= s"<h$lvl>${renderInline(txt)}</h$lvl>\n"
+      case Heading(raw)  =>
+        flush(); val (lvl, txt) = headingParts(raw); val id = ids.next()
+        val idAttr = if lvl >= 2 then s""" id="$id"""" else ""
+        sb ++= s"<h$lvl$idAttr>${renderInline(txt)}</h$lvl>\n"
       case Rule(_)       => flush(); sb ++= "<hr>\n"
       case Para(_, _, t) => flush(); sb ++= s"<p>${renderInline(t)}</p>\n"
       case Quote(t)      => flush(); sb ++= s"<blockquote>\n<p>${renderInline(t)}</p>\n</blockquote>\n"
@@ -134,13 +154,32 @@ object Ssg:
     flush()
     sb.toString
 
+  /** A right-side "On this page" list from the h2/h3 headings (same-page anchor links); "" if fewer than 2. */
+  def buildToc(blocks: Vector[MdParse.Block]): String =
+    import MdParse.Block.*
+    val ids = headingSlugs(blocks)
+    val entries = blocks.collect { case Heading(raw) => raw }.zip(ids).map { (raw, id) =>
+      val (lvl, txt) = headingParts(raw); (lvl, id, plainTitle(txt))
+    }.filter { (lvl, _, _) => lvl == 2 || lvl == 3 }
+    if entries.size < 2 then return ""
+    val sb = StringBuilder("<aside class=\"toc\" aria-label=\"On this page\">\n")
+    sb ++= "<div class=\"toc-title\">On this page</div>\n<nav>\n<ul>\n"
+    entries.foreach { (lvl, id, text) =>
+      val cls = if lvl == 3 then " class=\"toc-sub\"" else ""
+      sb ++= s"""<li$cls><a href="#$id">${escape(text)}</a></li>\n"""
+    }
+    sb ++= "</ul>\n</nav>\n</aside>\n"
+    sb.toString
+
   /** PURE: markdown + template -> a full HTML page. Title = the first level-1 heading (plain), else "Untitled". */
   def renderPage(md: String, template: String): String =
     import MdParse.Block.*
     val blocks = MdParse.parse(md)
     val title = blocks.collectFirst { case Heading(raw) if headingParts(raw)._1 == 1 => plainTitle(headingParts(raw)._2) }
       .getOrElse("Untitled")
-    template.replace("{{TITLE}}", escape(title)).replace("{{CONTENT}}", renderBlocks(blocks))
+    template.replace("{{TITLE}}", escape(title))
+      .replace("{{TOC}}", buildToc(blocks))
+      .replace("{{CONTENT}}", renderBlocks(blocks))
 
   val BuiltinTemplate: String =
     """<!doctype html>
@@ -196,14 +235,32 @@ object Ssg:
         .orElse(if Files.isRegularFile(discovered) then Some(Lib.readUtf8(discovered.toString)) else None)
         .getOrElse(BuiltinTemplate)
     Files.createDirectories(outDir)
+    val referenced = scala.collection.mutable.Set[String]()
+    val figRef = "(?:src|href)=\"figures/([^\"]+)\"".r
     for md <- sources do
       val name = md.getFileName.toString.stripSuffix(".md")
       val html = renderPage(Lib.readUtf8(md.toString), template)
+      figRef.findAllMatchIn(html).foreach(m => referenced += m.group(1))
       val out = outDir.resolve(s"$name.html")
       Files.write(out, html.getBytes("UTF-8"))
       System.err.println(s"ssg: wrote $out")
-    val figures = srcDir.resolve("figures")
-    if Files.isDirectory(figures) then
-      copyTree(figures, outDir.resolve("figures")); System.err.println(s"ssg: copied figures/ -> ${outDir.resolve("figures")}")
+    // Figures: copy ONLY the ones the rendered pages actually reference, and prune anything else from the
+    // output figures/ dir. So the deploy set never carries unrelated posts' assets (reference-aware, self-cleaning).
+    val srcFigures = srcDir.resolve("figures")
+    val outFigures = outDir.resolve("figures")
+    if referenced.nonEmpty && Files.isDirectory(srcFigures) then
+      import scala.jdk.CollectionConverters.*
+      for rel <- referenced do
+        val f = srcFigures.resolve(rel)
+        if Files.isRegularFile(f) then
+          val dst = outFigures.resolve(rel)
+          Files.createDirectories(dst.getParent)
+          Files.copy(f, dst, java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+      if Files.isDirectory(outFigures) then
+        val walk = Files.walk(outFigures)
+        try walk.iterator.asScala.filter(p => Files.isRegularFile(p)).foreach { p =>
+          if !referenced.contains(outFigures.relativize(p).toString) then Files.delete(p)
+        } finally walk.close()
+      System.err.println(s"ssg: ${referenced.size} referenced figure(s) -> $outFigures")
 
 @main def staticSiteGen(args: String*): Unit = Ssg.dispatch(args*)
