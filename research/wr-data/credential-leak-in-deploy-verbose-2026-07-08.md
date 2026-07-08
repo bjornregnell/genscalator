@@ -48,4 +48,32 @@ narrow semantics can guarantee it does not.
 ## Disposition
 Feeds the [[hardening-dance]], a future `tt deploy`, RT052 (deploy friction/throughput), and the deploy-odyssey
 record ([[shell-blob-fallback-regression-2026-07-07]] is a sibling process-slip log). Action on BR: rotate the
-SFTP password; then the real production push can proceed with the fixed (redacting) tool.
+SFTP password; then the real production push can proceed.
+
+## Update (2026-07-08): the contained-def resolution + the capture-checking lesson
+BR's follow-up reframed the fix as a *containment boundary*, which is both cleaner than redact-and-relay and the
+point where capture checking (CC) becomes the right tool.
+
+**The contained-def shape (shipped).** `deployblog.sc` now runs lftp through a `runContained(script): (Int, String)`
+def that reads lftp's merged stdout+stderr into a LOCAL string and NEVER prints it. deployblog prints only its OWN
+summary, synthesized from values it controls (localDir / remoteDir / the local file list). The credential-bearing
+lftp output dies inside the def; it is surfaced only on `--check` (where the remote listing IS the point) or on a
+failure, and even then redacted. This removes the reliance on a redaction regex on the normal path: the secret is
+never printed at all, rather than printed-then-scrubbed.
+
+**Why this is the CC-relevant framing** (two corrections to the first-pass "CC can't help here"):
+1. *Capturing, not inheriting, is the enabling move.* With `Redirect.INHERIT`, lftp writes straight to the
+   terminal and the bytes never enter the program, so no type system can reach them. CAPTURING pulls the
+   secret-bearing bytes back INTO the typed world, where the program's handling of them is governable.
+2. *"A def that never itself prints" = "a def that does not capture the console/print capability."* In a CC +
+   safe-mode world (the SM017 PoC), that is not a discipline you hope holds -- CC can PROVE at compile time the def
+   cannot print, because it does not hold the capability. It captures the *network* capability (to do sftp) but
+   not the *console* one, and CC distinguishes them.
+
+So CC governs *containment of the print effect* (capability lens), which is distinct from and complementary to
+labelling the secret as data (a `Secret`/`Classified` IFC wrapper). Airtight version: CC contains the print
+capability inside the runner; if secret-bearing data must cross the def boundary, wrap it as `Secret` so callers
+inherit the constraint. Caveat: Java IO (`ProcessBuilder` / `BufferedReader`) is not capability-typed, so a real
+CC proof needs capability-typed facades over the Java IO -- which is exactly why the CC-verified version belongs in
+a nightly experiment, NOT in this production deploy tool (kept on stable so nightly/CC churn never breaks a deploy).
+Pinned as **SM033**.
