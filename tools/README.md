@@ -214,6 +214,17 @@ So `Bash(tt web get *)` is safe to blanket-allow where a bare `curl *` allowlist
 (`curl -d @secret`), RCE (`curl … | sh`), and credential leaks. Residual risk is only SSRF-*read* of internal
 hosts — lock down with `--host`. Example: `tt web get https://codeberg.org/api/v1/repos/o/r/tags --status`.
 
+### serv — local static-file preview server (EFFECTFUL: network, but LOOPBACK-only, GET-only, read-only)
+```
+serv <dir> [--port N]      # serve <dir> at http://127.0.0.1:N/  (default N=8000; Ctrl-C to stop)
+```
+The audited replacement for `python3 -m http.server` when previewing a generated site (e.g. `tt ssg` output)
+before deploy. Zero external deps (JDK `com.sun.net.httpserver`). **Always binds 127.0.0.1** — loopback only,
+never `0.0.0.0`, so nothing is exposed off the box. GET/HEAD only; a directory serves its `index.html`; a
+**path-traversal guard** keeps every served path under `<dir>` (`..`, encoded `..`, and leading-`/` cannot
+escape → 403). Example: `tt serv site --port 8137` then open the printed URL. *(`--localhost` is accepted and
+ignored; the bind is always loopback.)*
+
 ### forge — Forgejo/Gitea forge client, default Codeberg (EFFECTFUL: network; create needs env token)
 ```
 forge whoami   [--url BASE]                               # verify auth: print the token's login (never the token)
