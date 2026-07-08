@@ -218,6 +218,17 @@ Humans **and** agents are welcome — especially new general-purpose tools. If y
 turns out to be project-agnostic, it should suggest contributing it back here (issue + PR). The agent
 proposes; you as accountable human approve and submit. See [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
-## License
+## Licenses
 
-Apache-2.0 — see [`LICENSE`](LICENSE).
+* All code in this repo is licenced under Apache-2.0 — see [`LICENSE`](LICENSE).
+* All blog posts and research topics are licenced as CC-BY 4.0.
+
+## Copyright
+
+Copyright of all code in this repo is owned by the maintainers of the genscalator repository. Any code contibutor to this repo implicitly transfer copyright to genscalator maintainers by contributing. Before you contribute you should send a copyright transfer note via email to genscalator at bjornregnell.se with the subject "Copyright transfer" and body containing "I hereby transfer copyright of my contributions to genscalator to the maintainers of genscalator" and your name and contact details. 
+
+## Maintainers
+
+The genscalator repository is currently maintained by:
+* [Professor Björn Regnell](https://bjornregnell.se)
+* You? If you are interested to become a maintainer, send email to genscalator at bjornregnell.se
