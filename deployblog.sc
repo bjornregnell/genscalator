@@ -75,12 +75,10 @@ def listLocalFiles(root: Path): Vector[Path] =
     try { import scala.jdk.CollectionConverters.*; s.iterator.asScala.filter(p => Files.isRegularFile(p)).toVector.sorted }
     finally s.close()
 
-// The CONTAINED def (the capability-boundary shape): run lftp with `script` on its stdin and read its merged
-// stdout+stderr into a LOCAL string that this def NEVER prints. lftp's verbose log embeds sftp://login:password@host,
-// so by not printing here, no secret can reach the terminal, the session transcript, or any log. Returns the exit
-// code and the captured text; the CALLER decides what (if anything) to surface, and redacts the password if it does.
-// (A capture-checked variant -- where the compiler PROVES this scope cannot hold the console/print capability --
-//  belongs in a nightly CC experiment, not in this production deploy tool.)
+// Run lftp with `script` on its stdin and capture its merged stdout+stderr into a LOCAL string; the caller prints
+// its OWN synthesized summary rather than lftp's verbose log. With the username-in-URL form (below) lftp reads the
+// password from ~/.netrc itself, so the password never appears in this script, the process list, or lftp's output
+// -- there is nothing to redact. Returns the exit code and the captured text (surfaced only on --check / failure).
 def runContained(script: String): (Int, String) =
   val pb = new ProcessBuilder("lftp")
   pb.redirectErrorStream(true)
@@ -175,11 +173,13 @@ while toks.hasNext do
     case _ => ()
 flush()
 
-val (host, login, password) = entries.collectFirst {
-  case (h, (u, pw)) if h.endsWith(".service.one") && u.nonEmpty && pw.nonEmpty => (h, u, pw)
-}.getOrElse(die("no complete `machine <...>.service.one` entry (with login + password) found in ~/.netrc."))
+// deployblog reads only the machine (host) + login; the PASSWORD stays in ~/.netrc and is read by lftp itself
+// (username-in-URL below), so no secret ever enters this script, the process list, or the output.
+val (host, login) = entries.collectFirst {
+  case (h, (u, _)) if h.endsWith(".service.one") && u.nonEmpty => (h, u)
+}.getOrElse(die("no `machine <...>.service.one` entry (with a login) found in ~/.netrc."))
 
-// ---- build the lftp command script (creds go on stdin, never on the command line) ----
+// ---- build the lftp command script (username in the URL; lftp reads the password from ~/.netrc itself) ----
 val mirrorOpts = Seq(
   "-R",                                   // reverse = upload (local -> remote)
   if doDelete then "--delete" else "",
@@ -196,8 +196,7 @@ val action =
 // keys first and one.com disconnects with "too many authentication failures".
 val lftpScript =
   s"""|set sftp:connect-program "ssh -a -x -oStrictHostKeyChecking=accept-new -oPubkeyAuthentication=no -oPreferredAuthentications=password"
-      |open sftp://$host
-      |user ${q(login)} ${q(password)}
+      |open sftp://$login@$host
       |$action
       |bye
       |""".stripMargin
@@ -214,12 +213,12 @@ else
 // ---- run lftp CONTAINED: its output is captured locally and never printed on the normal path ----
 val (code, captured) = runContained(lftpScript)
 if code == 0 then
-  if check then println(captured.replace(password, "***").trim)   // the remote listing IS the point of --check
+  if check then println(captured.trim)   // the remote listing IS the point of --check
   println(s"deployblog: done${if dryRun then " (dry-run: nothing changed)" else "."}")
   // --release: ONLY after a real (non-dry-run) successful upload, stamp the promoted posts deployed.
   if release && !dryRun then
     println("deployblog: upload OK  ->  promoting published:deployed")
     statusUpdate("published:deployed")
 else
-  System.err.println(captured.replace(password, "***"))           // redacted diagnostics on failure only
+  System.err.println(captured)           // full diagnostics on failure (no password appears - lftp reads it from ~/.netrc)
   die(s"lftp exited $code -- check the ~/.netrc credentials, that SFTP is enabled, and the remote path.")
