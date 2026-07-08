@@ -46,6 +46,22 @@ class SsgSuite extends munit.FunSuite:
     assertEquals(renderInline("![alt](figures/f.svg)"), """<img src="figures/f.svg" alt="alt">""")
   }
 
+  // --- intra-site link rewriting (.md -> .html) ---
+  test("siteHref rewrites a relative .md link to .html, preserving any #fragment") {
+    assertEquals(siteHref("003-bigger.md"), "003-bigger.html")
+    assertEquals(siteHref("002-style.md#55-could-this-just-be-chance"), "002-style.html#55-could-this-just-be-chance")
+    assertEquals(siteHref("../research/experiments/x/README.md"), "../research/experiments/x/README.html")
+  }
+  test("siteHref leaves absolute URLs, mailto, pure anchors, and non-md paths untouched") {
+    assertEquals(siteHref("https://a.b/c.md"), "https://a.b/c.md")
+    assertEquals(siteHref("mailto:x@y.z"), "mailto:x@y.z")
+    assertEquals(siteHref("#section"), "#section")
+    assertEquals(siteHref("figures/f.svg"), "figures/f.svg")
+  }
+  test("inline: a relative .md link renders with an .html href") {
+    assertEquals(renderInline("[next](003-bigger.md)"), """<a href="003-bigger.html">next</a>""")
+  }
+
   // --- headings ---
   test("headingParts counts hashes and caps at 6") {
     assertEquals(headingParts("# Title"), (1, "Title"))

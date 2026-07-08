@@ -25,6 +25,15 @@ object Ssg:
   def escape(s: String): String =
     s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
+  /** Rewrite a RELATIVE `*.md` link target to `*.html` so intra-site cross-links resolve on the generated site (a
+    * trailing `#fragment` is preserved). Absolute URLs (any `scheme:`) and pure `#anchors` are left untouched. */
+  def siteHref(url: String): String =
+    if url.startsWith("#") || url.matches("^[A-Za-z][A-Za-z0-9+.-]*:.*") then url
+    else
+      val h = url.indexOf('#')
+      val (path, frag) = if h >= 0 then (url.take(h), url.drop(h)) else (url, "")
+      (if path.endsWith(".md") then path.dropRight(3) + ".html" else path) + frag
+
   /** Render inline markdown (code, images, links, autolinks, bold, italic) in one line of text to HTML, escaping
     * all literal text. Code/image/link/autolink are stashed as `@@S<n>@@` placeholders first (a sentinel that
     * never occurs in prose) so bold/italic never rewrite their insides, then restored last so emphasis can still
@@ -38,7 +47,7 @@ object Ssg:
     s = "!\\[([^\\]]*)\\]\\(([^)]+)\\)".r.replaceAllIn(s, m =>
       q(stash(s"""<img src="${escape(m.group(2))}" alt="${escape(m.group(1))}">""")))
     s = "\\[([^\\]]+)\\]\\(([^)]+)\\)".r.replaceAllIn(s, m =>
-      q(stash(s"""<a href="${escape(m.group(2))}">${escape(m.group(1))}</a>""")))
+      q(stash(s"""<a href="${escape(siteHref(m.group(2)))}">${escape(m.group(1))}</a>""")))
     s = "<(https?://[^>\\s]+)>".r.replaceAllIn(s, m =>
       q(stash(s"""<a href="${escape(m.group(1))}">${escape(m.group(1))}</a>""")))
     s = escape(s)                                                                   // remaining literal text
