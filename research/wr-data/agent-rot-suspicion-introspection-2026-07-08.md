@@ -48,6 +48,24 @@ not just anxiety.
   surfaces fill + regression-rate (SM016 tap → SM022 dashboard) would convert this anecdote into a signal we can
   act on *before* the slip, not diagnose after. This note is the demand, written from inside the failure.
 
+## Z-calibration datapoint (the measurement, supplied after the fact)
+Append-only addendum (NOT a retro-edit of "UNMEASURABLE" above — that was true when written; this is new data). After
+I flagged the rot and proposed the compact, **BR ran `/context` and shared it: 503.3k / 1M = 50% raw fill.** This is
+the **L2 human-anchor supplying the measurement the L0 agent lacked** — the undegraded observer reading the gauge the
+degrading one can't, closing the loop the SM016 blind spot describes.
+
+Interpretation (echt, N=1):
+- The rot-feel + the instance-5 forbidden-rule slip fired at **~50% of a 1M window** — i.e. effective-Z for reliable
+  **guardrail-discipline** looks well below the raw window (roughly the first half here, **not** the 0.8·window compact
+  trigger we'd been assuming from smaller windows).
+- **Caveats, held honestly:** one datapoint. It may track **absolute context mass + edit-density** (dozens of commits,
+  several large reads, a pin burst) rather than the **fraction** of the window — a 1M window at 50% is still ~500k of
+  absolute mass, more than a whole smaller window. And **discipline-Z is plausibly < reasoning-Z**: the shell-blob
+  guardrail is a low-salience procedural rule competing with high-salience task momentum, so it may degrade earlier
+  than the reasoning that ships correct code (which stayed fine at the same fill).
+- Feeds RT001 (rot~fatigue), RT052, SM016 (the tap that would surface this live), and the PRD `contextRotMeter` — this
+  hand-measured 50%-fill calibration is exactly what the meter would automate.
+
 ## Disposition
 Sibling of `shell-blob-fallback-regression-2026-07-07.md` (instance 5 is the behavioral half of this). Feeds
 RT001 (rot~fatigue), RT052, SM016/SM022, and the PRD contextRotMeter. [[joint-rot-vigilance-recovery-kit]]
