@@ -10,7 +10,7 @@
 //   tt ssg --out <out-dir> <file.md>... [--template <file>]     render a CHOSEN SET of files in one pass
 //   tt ssg --status <s[,s]> --out <dir> <blog-dir>              render posts whose CURRENT status is in the set
 //                                                               (+ index.md always), one pass -- SM032
-//   tt ssg --promote <from>-><to> [--date <d>] <dir|files>      append a status transition to matching posts -- SM032
+//   tt ssg --status-update <from>:<to> [--date <d>] <dir|files>      append a status transition to matching posts -- SM032
 //     <src>          a .md file (rendered alone) OR a dir (every non-underscore .md rendered)
 //     <out-dir>      output dir (created if missing); each <name>.md -> <out-dir>/<name>.html
 //     --out D + list render exactly the listed files together into D (so the figure-prune below sees the
@@ -209,7 +209,7 @@ object Ssg:
   // The blog "status preamble" is a single blockquote line, e.g.
   //   > **Status: initialized 2026-07-03; drafted 2026-07-07.** ...
   // i.e. a semicolon-separated history of `<verb> <date>` transitions inside one **Status: ...** span. The
-  // CURRENT status is the LAST verb; promotion APPENDS a `; <to> <date>` transition (the preamble is trimmed at
+  // CURRENT status is the LAST verb; a status update APPENDS a `; <to> <date>` transition (the preamble is trimmed at
   // publish, so this bookkeeping never reaches readers). Both functions are PURE + unit-tested.
   private val StatusRe = "(?s)\\*\\*Status:\\s*(.*?)\\*\\*".r
 
@@ -221,11 +221,18 @@ object Ssg:
 
   /** Append a `; <to> <date>` transition to the status preamble IFF the post's current status equals `from`
     * (case-insensitive); returns the rewritten markdown, or None if it does not match (or has no preamble). PURE. */
-  def promoteStatus(md: String, from: String, to: String, date: String): Option[String] =
+  def updateStatus(md: String, from: String, to: String, date: String): Option[String] =
     if !currentStatus(md).contains(from.toLowerCase) then None
     else StatusRe.findFirstMatchIn(md).map: m =>
       val inner = m.group(1).trim.stripSuffix(".").trim
       md.substring(0, m.start) + s"**Status: $inner; $to $date.**" + md.substring(m.end)
+
+  /** Parse a `from:to` status-transition spec (legacy `from->to` also accepted); None if malformed. */
+  def parseTransition(spec: String): Option[(String, String)] =
+    val parts = if spec.contains("->") then spec.split("->") else spec.split(":")
+    parts.map(_.trim) match
+      case Array(f, t) if f.nonEmpty && t.nonEmpty => Some((f, t))
+      case _ => None
 
   // ---------- tool (effectful) ----------
   private def isMarkdown(p: Path): Boolean =
@@ -248,7 +255,7 @@ object Ssg:
       |  ssg <src> <out-dir> [--template <file>]                 # src = a .md file OR a dir of .md files
       |  ssg --out <out-dir> <file.md>... [--template <file>]    # render a chosen SET of files in one pass
       |  ssg --status <s[,s]> --out <dir> <blog-dir>             # render posts whose current status is in the set
-      |  ssg --promote <from>-><to> [--date <d>] <dir|files>     # append a status transition to matching posts
+      |  ssg --status-update <from>:<to> [--date <d>] <dir|files>     # append a status transition to matching posts
       |    <out-dir> created if missing; only figures referenced by the rendered pages are copied""".stripMargin
 
   def dispatch(args: String*): Unit =
@@ -258,9 +265,9 @@ object Ssg:
     val tmplOpt    = optVal("--template")
     val outOpt     = optVal("--out")
     val statusOpt  = optVal("--status")
-    val promoteOpt = optVal("--promote")
+    val statusUpdateOpt = optVal("--status-update")
     val dateOpt    = optVal("--date")
-    val flags = Set("--template", "--out", "--status", "--promote", "--date")
+    val flags = Set("--template", "--out", "--status", "--status-update", "--date")
     val positionals =
       val b = scala.collection.mutable.ArrayBuffer[String]()
       var i = 0
@@ -279,21 +286,19 @@ object Ssg:
     def resolveDate: String = dateOpt match
       case None | Some("today") => java.time.LocalDate.now.toString
       case Some(d)              => d
-    // --promote FROM->TO [--date D] <dir-or-files>: append a status transition to matching posts (SM032). No render.
-    promoteOpt match
+    // --status-update FROM->TO [--date D] <dir-or-files>: append a status transition to matching posts (SM032). No render.
+    statusUpdateOpt match
       case Some(spec) =>
-        val parts = spec.split("->").map(_.trim)
-        if parts.length != 2 || parts.exists(_.isEmpty) then { System.err.println("ssg: --promote needs FROM->TO (e.g. published->deployed)"); sys.exit(2) }
-        val (from, to) = (parts(0), parts(1))
+        val (from, to) = parseTransition(spec).getOrElse { System.err.println("ssg: --status-update needs FROM:TO (e.g. published:deployed)"); System.err.println(Usage); sys.exit(2) }
         val date = resolveDate
         val files = postFiles()
-        if files.isEmpty then { System.err.println("ssg: --promote needs a source dir or .md file(s)"); sys.exit(2) }
+        if files.isEmpty then { System.err.println("ssg: --status-update needs a source dir or .md file(s)"); sys.exit(2) }
         var n = 0
         for f <- files do
-          promoteStatus(Lib.readUtf8(f.toString), from, to, date) match
-            case Some(updated) => Files.write(f, updated.getBytes("UTF-8")); System.err.println(s"ssg: promoted ${f.getFileName} ($from -> $to $date)"); n += 1
+          updateStatus(Lib.readUtf8(f.toString), from, to, date) match
+            case Some(updated) => Files.write(f, updated.getBytes("UTF-8")); System.err.println(s"ssg: updated ${f.getFileName} ($from -> $to $date)"); n += 1
             case None          => ()
-        println(s"ssg: --promote $from -> $to  ($n post(s) updated, dated $date)")
+        println(s"ssg: --status-update $from -> $to  ($n post(s) updated, dated $date)")
         return
       case None => ()
     val (sources, outDir, srcDir): (Vector[Path], Path, Path) = statusOpt match
