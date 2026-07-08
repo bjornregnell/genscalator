@@ -28,7 +28,7 @@
 //      (the `machine` value is the Host from Host Settings; it ends in .service.one)
 //
 // USAGE
-//   # render the deploy set first (adjust to whatever you are publishing):
+//   # render the deploy set first (adjust to whatever you are deploying):
 //   tt ssg blog/index.md tmp/site
 //   tt ssg blog/000-why-genscalator.md tmp/site
 //   tt ssg blog/002-braceful-or-braceless-or-the-common-style.md tmp/site
@@ -36,7 +36,7 @@
 //   # ALWAYS dry-run first to confirm the target path before touching the live site:
 //   scala-cli run deployblog.sc -- --dry-run
 //
-//   # then publish for real:
+//   # then deploy for real:
 //   scala-cli run deployblog.sc                                   # defaults: tmp/site -> webroots/www/blog (additive)
 //   scala-cli run deployblog.sc -- tmp/site webroots/www/blog      # explicit local + remote dir
 //   scala-cli run deployblog.sc -- tmp/site webroots/www/blog --delete  # exact mirror (removes stale remote files)
@@ -56,7 +56,7 @@
 import java.nio.file.{Files, Paths}
 import scala.collection.mutable
 
-def die(msg: String): Nothing = { System.err.println(s"publish: $msg"); sys.exit(2) }
+def die(msg: String): Nothing = { System.err.println(s"deployblog: $msg"); sys.exit(2) }
 
 def onPath(exe: String): Boolean =
   Option(System.getenv("PATH")).exists(_.split(java.io.File.pathSeparator)
@@ -83,7 +83,11 @@ if !check && !Files.isDirectory(Paths.get(localDir)) then
 // ---- read host + credentials from ~/.netrc ----
 val netrc = Paths.get(System.getProperty("user.home"), ".netrc")
 if !Files.isRegularFile(netrc) then
-  die("no ~/.netrc -- create it (chmod 600) with your one.com SFTP machine/login/password (see this file's header).")
+  die:
+    s"""|no ~/.netrc 
+        |create it (chmod 600) with your one.com SFTP machine/login/password 
+        |(see this file's header).
+        |""".stripMargin
 
 // minimal .netrc tokenizer: machine <h> ... login <l> ... password <p> ... (until next machine/default)
 val toks = Files.readString(netrc).split("\\s+").filter(_.nonEmpty).iterator
@@ -120,16 +124,16 @@ val action =
 // PreferredAuthentications=password force password auth -- otherwise ssh offers all your
 // keys first and one.com disconnects with "too many authentication failures".
 val lftpScript =
-  s"""set sftp:connect-program "ssh -a -x -oStrictHostKeyChecking=accept-new -oPubkeyAuthentication=no -oPreferredAuthentications=password"
-     |open sftp://$host
-     |user ${q(login)} ${q(password)}
-     |$action
-     |bye
-     |""".stripMargin
+  s"""|set sftp:connect-program "ssh -a -x -oStrictHostKeyChecking=accept-new -oPubkeyAuthentication=no -oPreferredAuthentications=password"
+      |open sftp://$host
+      |user ${q(login)} ${q(password)}
+      |$action
+      |bye
+      |""".stripMargin
 
 println(
-  if check then s"publish: --check  connect to $host and list the login directory (read-only, no changes)"
-  else s"publish: ${if dryRun then "DRY-RUN " else ""}mirror  $localDir  ->  $host:$remoteDir  (${if doDelete then "exact mirror, --delete" else "additive"})"
+  if check then s"deployblog: --check  connect to $host and list the login directory (read-only, no changes)"
+  else s"deployblog: ${if dryRun then "DRY-RUN " else ""}mirror  $localDir  ->  $host:$remoteDir  (${if doDelete then "exact mirror, --delete" else "additive"})"
 )
 
 // ---- run lftp, feeding the script on its stdin ----
@@ -140,5 +144,5 @@ val proc = pb.start()
 proc.getOutputStream.write(lftpScript.getBytes("UTF-8"))
 proc.getOutputStream.close()
 val code = proc.waitFor()
-if code == 0 then println(s"publish: done${if dryRun then " (dry-run: nothing changed)" else "."}")
+if code == 0 then println(s"deployblog: done${if dryRun then " (dry-run: nothing changed)" else "."}")
 else die(s"lftp exited $code -- check the ~/.netrc credentials, that SFTP is enabled, and the remote path.")
