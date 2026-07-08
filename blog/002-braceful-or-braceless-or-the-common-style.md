@@ -41,8 +41,7 @@ interesting than "braces win" or "indentation wins":
 > **p ≈ 0.46**; full analysis in [§5.5](#55-could-this-just-be-chance)). LLMs are stochastic, and a handful of them
 > is too few to prove a style effect. What is worth sharing here is the **experimental design and the direction of
 > the outcome** - as a template and a hypothesis for larger studies - **not** a settled result. Please read the
-> rest with that caveat in the foreground. *(A larger, preregistered follow-up that aims to settle it is laid out in
-> [003](003-bigger-common-style-experiment.md).)*
+> rest with that caveat in the foreground.
 
 ## 1. Two syntaxes, one language
 
@@ -373,20 +372,19 @@ mattering.
 
 ## 7. What would make this a verdict - future work
 
-This is a pilot, and §5.5 was blunt: with seven models the effect is not significant. That is a **map of exactly
-what a follow-up needs** - and it is no longer just a wishlist: the follow-up is now **designed and preregistered**
-(frozen design in [`BIG-RUN-PREREG.md`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/experiments/indent-vs-braces/BIG-RUN-PREREG.md); write-up in the
-next post, [003](003-bigger-common-style-experiment.md)). Roughly in order of leverage:
+This is a pilot, and §5.5 was blunt: with seven models the effect is not significant. A **larger confirmatory experiment is the follow-up this pilot points to** - only more models can buy the statistical power
+to turn a suggestive direction into a verdict - and the rest of this section maps what such a study would need.
+Whether and when one gets run is another matter; this pilot stands on its own. Roughly in order of leverage:
 
 - **More models - for statistical power (the primary lever).** The pilot's effect is small (d ≈ 0.37, inflated by
-  outliers), so **~55 models** are needed for 80% power. The planned run is a **confirmatory, out-of-sample** sweep
+  outliers), so **~55 models** are needed for 80% power. A **confirmatory, out-of-sample** sweep
   of **~50 small models disjoint from the pilot's seven**, on the same task family - enough to genuinely confirm or
   refute the direction. Honest catch: the usable ≤8B-model universe (~40–60) sits right at that ~55, so even a
   larger run may land at the *edge* of significance - in which case a **well-powered null** is itself the result.
   (Only *more models* buys this: cranking repeats and pooling cells is the pseudoreplication that faked p = 0.008.)
 - **A capability gradient - bigger models, bigger hardware.** A 6 GB card runs many *small* models but no mid-tier
   ones; adding those (on a larger GPU) would trace how the effect shrinks from weak models toward the frontier,
-  bridging this post's two endpoints. Planned as a second tier, not a prerequisite.
+  bridging this post's two endpoints. A second tier, not a prerequisite.
 - **More kinds of edit.** Every task here is one move - *wrap a block in a new `else`*. Extract-a-helper,
   add-a-`case`, rename-and-reindent, merge-two-branches each stress whitespace differently, and braceless may well
   **win** on some. A style verdict needs an edit *suite*, not a single operation.
@@ -402,15 +400,15 @@ next post, [003](003-bigger-common-style-experiment.md)). Roughly in order of le
   inputs slips through. Property-based or multi-input probes would harden the grade.
 - **Beyond one language.** Significant indentation is not unique to Scala (Python, Haskell, F#, Nim…). Whether the
   edit-cost asymmetry generalises is an open, testable question.
-- **Preregistration + the reflexivity guard - done, not deferred.** The follow-up's hypotheses, sample size,
-  primary test, and analysis are **fixed and committed *before* any data is collected** (that is what
+- **Preregistration and the reflexivity guard.** A fuller study should fix its hypotheses, sample size,
+  primary test, and analysis **before any data is collected** (that is what
   *preregistration* means - the antidote to fishing: you can't try many tests and report the smallest p, or stop the
   moment it looks good), with a standing commitment to report the null if it stands. The "don't let the agent grade
   its own homework" firewall (automatic behavioural grader, public raw data) scales with it.
 
 None of this is exotic - it is the ordinary path from a suggestive pilot to a result you could stake a style policy
-on. The contribution of *this* post is the **design, the harness, and an honest null**; the **verdict is the next
-post**, [003](003-bigger-common-style-experiment.md).
+on. The contribution of *this* post is the **design, the harness, and an honest null**; the verdict itself would
+take a larger study.
 
 ## 8. Beyond Scala
 
