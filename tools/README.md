@@ -44,6 +44,23 @@ tt text freq  run.log  '\[fallback\] ([a-z][^,]*)'
 tt text grepr src .scala,.java 'TODO'
 ```
 
+### md-fmt — markdown-aware line reflow to a target width (PURE by default; `--write` is the one guarded effect)
+```
+md-fmt <file>                        # reflow to stdout at the default width (80)
+md-fmt <file> --line-width N         # target N columns
+md-fmt <file> --write                # rewrite the file in place (content-guarded)
+```
+Reflows prose / list-item / blockquote blocks while PRESERVING structure: headings, ``` fences, |tables|,
+`---` rules, blank lines, blockquote `>` prefixes, list markers + the author's continuation indent. Never
+breaks inside `` `inline code` `` or `[links](url)`. Idempotent. A content-preservation guard REFUSES any
+result (and any `--write`) that would change the text beyond whitespace + `>` — so it can only re-flow, never
+re-word. (SM012 first cut; deferred: fuzzy/semantic-line-break modes, post-edit-hook wiring, `:shortcode:`
+emoji.) Examples:
+```
+tt md-fmt notes/plan.md --line-width 82        # print reflowed at 82 cols (the PB width)
+tt md-fmt notes/plan.md --line-width 82 --write  # ... and rewrite in place
+```
+
 ### files — typed find / find|wc / grep -l replacement (PURE)
 ```
 files <dir> <ext>                    # count + list files under dir ending <ext>     (find)
