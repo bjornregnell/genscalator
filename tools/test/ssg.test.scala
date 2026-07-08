@@ -129,3 +129,36 @@ class SsgSuite extends munit.FunSuite:
   test("renderPage defaults the title to Untitled when there is no h1") {
     assert(renderPage("no heading", "<title>{{TITLE}}</title>{{CONTENT}}").contains("<title>Untitled</title>"))
   }
+
+  // --- status preamble (SM032) ---
+  test("currentStatus reads the LAST verb of the status history") {
+    assertEquals(currentStatus("# T\n\n> **Status: initialized 2026-07-03; drafted 2026-07-07.** intro"), Some("drafted"))
+    assertEquals(currentStatus("> **Status: drafted 2026-07-03.** more"), Some("drafted"))
+  }
+  test("currentStatus is None without a status preamble") {
+    assertEquals(currentStatus("# T\n\njust prose"), None)
+  }
+  test("currentStatus stops at the first ** (does not swallow a following bold span)") {
+    assertEquals(currentStatus("> **Status: drafted 2026-07-03.** **Author: BR.**"), Some("drafted"))
+  }
+  test("promoteStatus appends a transition when the current status matches `from`") {
+    val md = "# T\n\n> **Status: initialized 2026-07-03; drafted 2026-07-07.** intro"
+    assertEquals(promoteStatus(md, "drafted", "published", "2026-07-08"),
+      Some("# T\n\n> **Status: initialized 2026-07-03; drafted 2026-07-07; published 2026-07-08.** intro"))
+  }
+  test("promoteStatus returns None when the current status does not match `from`") {
+    assertEquals(promoteStatus("> **Status: drafted 2026-07-03.**", "published", "deployed", "2026-07-08"), None)
+  }
+  test("promoteStatus then currentStatus reflects the new status (round-trip, case-insensitive from)") {
+    val up = promoteStatus("> **Status: drafted 2026-07-03.**", "Drafted", "published", "2026-07-08").get
+    assertEquals(currentStatus(up), Some("published"))
+    assertEquals(promoteStatus(up, "published", "deployed", "2026-07-09").map(currentStatus), Some(Some("deployed")))
+  }
+  test("renderBlocks strips the internal Status span from a preamble blockquote, keeping the rest") {
+    val out = renderBlocks(MdParse.parse("> **Status: drafted 2026-07-03; published 2026-07-08.** **Audience:** readers"))
+    assert(!clue(out).contains("Status"))
+    assert(out.contains("<strong>Audience:</strong> readers"))
+  }
+  test("renderBlocks drops a blockquote that is ONLY a status span (nothing left to show)") {
+    assertEquals(renderBlocks(MdParse.parse("> **Status: drafted 2026-07-03.**")).trim, "")
+  }

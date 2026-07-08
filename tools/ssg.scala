@@ -8,6 +8,9 @@
 // (one parser, two renderers). EFFECTFUL: reads markdown, writes .html files (like svg/gvdot).
 //   tt ssg <src> <out-dir> [--template <file>]
 //   tt ssg --out <out-dir> <file.md>... [--template <file>]     render a CHOSEN SET of files in one pass
+//   tt ssg --status <s[,s]> --out <dir> <blog-dir>              render posts whose CURRENT status is in the set
+//                                                               (+ index.md always), one pass -- SM032
+//   tt ssg --promote <from>-><to> [--date <d>] <dir|files>      append a status transition to matching posts -- SM032
 //     <src>          a .md file (rendered alone) OR a dir (every non-underscore .md rendered)
 //     <out-dir>      output dir (created if missing); each <name>.md -> <out-dir>/<name>.html
 //     --out D + list render exactly the listed files together into D (so the figure-prune below sees the
@@ -151,7 +154,12 @@ object Ssg:
         sb ++= s"<h$lvl$idAttr>${renderInline(txt)}</h$lvl>\n"
       case Rule(_)       => flush(); sb ++= "<hr>\n"
       case Para(_, _, t) => flush(); sb ++= s"<p>${renderInline(t)}</p>\n"
-      case Quote(t)      => flush(); sb ++= s"<blockquote>\n<p>${renderInline(t)}</p>\n</blockquote>\n"
+      case Quote(t)      =>
+        flush()
+        // Strip the internal **Status: ...** bookkeeping span so it never reaches readers (SM032 trim-at-publish);
+        // keep any other preamble prose the author wrote (Audience / Author / Sources).
+        val cleaned = StatusRe.replaceAllIn(t, _ => "").replaceAll("^\\s+", "")
+        if cleaned.nonEmpty then sb ++= s"<blockquote>\n<p>${renderInline(cleaned)}</p>\n</blockquote>\n"
       case Fence(lines)  => flush(); sb ++= renderFence(lines)
       case Table(rows)   => flush(); sb ++= renderTable(rows)
     }
@@ -197,6 +205,28 @@ object Ssg:
       |{{CONTENT}}
       |</body></html>""".stripMargin
 
+  // ---------- status preamble (SM032) ----------
+  // The blog "status preamble" is a single blockquote line, e.g.
+  //   > **Status: initialized 2026-07-03; drafted 2026-07-07.** ...
+  // i.e. a semicolon-separated history of `<verb> <date>` transitions inside one **Status: ...** span. The
+  // CURRENT status is the LAST verb; promotion APPENDS a `; <to> <date>` transition (the preamble is trimmed at
+  // publish, so this bookkeeping never reaches readers). Both functions are PURE + unit-tested.
+  private val StatusRe = "(?s)\\*\\*Status:\\s*(.*?)\\*\\*".r
+
+  /** The current status verb of a post (lowercased), or None if it has no status preamble. */
+  def currentStatus(md: String): Option[String] =
+    StatusRe.findFirstMatchIn(md).flatMap: m =>
+      m.group(1).trim.stripSuffix(".").split(";").map(_.trim).filter(_.nonEmpty)
+        .lastOption.map(_.split("\\s+").head.toLowerCase)
+
+  /** Append a `; <to> <date>` transition to the status preamble IFF the post's current status equals `from`
+    * (case-insensitive); returns the rewritten markdown, or None if it does not match (or has no preamble). PURE. */
+  def promoteStatus(md: String, from: String, to: String, date: String): Option[String] =
+    if !currentStatus(md).contains(from.toLowerCase) then None
+    else StatusRe.findFirstMatchIn(md).map: m =>
+      val inner = m.group(1).trim.stripSuffix(".").trim
+      md.substring(0, m.start) + s"**Status: $inner; $to $date.**" + md.substring(m.end)
+
   // ---------- tool (effectful) ----------
   private def isMarkdown(p: Path): Boolean =
     val n = p.getFileName.toString
@@ -217,41 +247,93 @@ object Ssg:
     """ssg — hand-rolled markdown -> static HTML site generator
       |  ssg <src> <out-dir> [--template <file>]                 # src = a .md file OR a dir of .md files
       |  ssg --out <out-dir> <file.md>... [--template <file>]    # render a chosen SET of files in one pass
+      |  ssg --status <s[,s]> --out <dir> <blog-dir>             # render posts whose current status is in the set
+      |  ssg --promote <from>-><to> [--date <d>] <dir|files>     # append a status transition to matching posts
       |    <out-dir> created if missing; only figures referenced by the rendered pages are copied""".stripMargin
 
   def dispatch(args: String*): Unit =
     val a = args.toVector
     def optVal(name: String): Option[String] =
       val i = a.indexOf(name); if i >= 0 && i + 1 < a.length then Some(a(i + 1)) else None
-    val tmplOpt = optVal("--template")
-    val outOpt  = optVal("--out")
-    val flags = Set("--template", "--out")
+    val tmplOpt    = optVal("--template")
+    val outOpt     = optVal("--out")
+    val statusOpt  = optVal("--status")
+    val promoteOpt = optVal("--promote")
+    val dateOpt    = optVal("--date")
+    val flags = Set("--template", "--out", "--status", "--promote", "--date")
     val positionals =
       val b = scala.collection.mutable.ArrayBuffer[String]()
       var i = 0
       while i < a.length do
         if flags.contains(a(i)) then i += 2 else { b += a(i); i += 1 }
       b.toVector
-    val (sources, outDir, srcDir): (Vector[Path], Path, Path) = outOpt match
-      case Some(o) =>
-        // list mode (SM030): every positional is a source .md file, rendered together into <o>
-        if positionals.isEmpty then { System.err.println("ssg: --out needs one or more source .md files"); System.err.println(Usage); sys.exit(2) }
-        val srcs = positionals.map(p => Paths.get(p).toAbsolutePath.normalize)
-        for s <- srcs do if !Files.isRegularFile(s) then { System.err.println(s"ssg: no such source file: $s"); sys.exit(2) }
-        (srcs, Paths.get(o).toAbsolutePath.normalize, srcs.head.getParent)
-      case None =>
-        // legacy mode: <src> <out-dir>, src is a .md file or a dir of .md files
-        positionals match
-          case Vector(s, od) =>
-            val src = Paths.get(s).toAbsolutePath.normalize
-            if !Files.exists(src) then { System.err.println(s"ssg: no such source: $src"); sys.exit(2) }
-            val srcs =
-              if Files.isDirectory(src) then
-                val st = Files.list(src)
-                try { import scala.jdk.CollectionConverters.*; st.iterator.asScala.filter(isMarkdown).toVector.sorted } finally st.close()
-              else Vector(src)
-            (srcs, Paths.get(od).toAbsolutePath.normalize, if Files.isDirectory(src) then src else src.getParent)
-          case _ => System.err.println("ssg: bad arguments"); System.err.println(Usage); sys.exit(2)
+    // resolve <dir-or-files> positionals to concrete post .md files (a dir expands to its non-underscore .md)
+    def postFiles(): Vector[Path] =
+      positionals.flatMap { p =>
+        val path = Paths.get(p).toAbsolutePath.normalize
+        if Files.isDirectory(path) then
+          val st = Files.list(path)
+          try { import scala.jdk.CollectionConverters.*; st.iterator.asScala.filter(isMarkdown).toVector.sorted } finally st.close()
+        else Vector(path)
+      }.distinct
+    def resolveDate: String = dateOpt match
+      case None | Some("today") => java.time.LocalDate.now.toString
+      case Some(d)              => d
+    // --promote FROM->TO [--date D] <dir-or-files>: append a status transition to matching posts (SM032). No render.
+    promoteOpt match
+      case Some(spec) =>
+        val parts = spec.split("->").map(_.trim)
+        if parts.length != 2 || parts.exists(_.isEmpty) then { System.err.println("ssg: --promote needs FROM->TO (e.g. published->deployed)"); sys.exit(2) }
+        val (from, to) = (parts(0), parts(1))
+        val date = resolveDate
+        val files = postFiles()
+        if files.isEmpty then { System.err.println("ssg: --promote needs a source dir or .md file(s)"); sys.exit(2) }
+        var n = 0
+        for f <- files do
+          promoteStatus(Lib.readUtf8(f.toString), from, to, date) match
+            case Some(updated) => Files.write(f, updated.getBytes("UTF-8")); System.err.println(s"ssg: promoted ${f.getFileName} ($from -> $to $date)"); n += 1
+            case None          => ()
+        println(s"ssg: --promote $from -> $to  ($n post(s) updated, dated $date)")
+        return
+      case None => ()
+    val (sources, outDir, srcDir): (Vector[Path], Path, Path) = statusOpt match
+      case Some(sel) =>
+        // status-selection (SM032): positional = the blog dir; render posts whose CURRENT status is in `sel`
+        // (comma-separated), plus index.md always, one-pass into --out (so the figure-prune sees their union).
+        val wanted = sel.split(",").map(_.trim.toLowerCase).filter(_.nonEmpty).toSet
+        val out = outOpt.map(o => Paths.get(o).toAbsolutePath.normalize)
+          .getOrElse { System.err.println("ssg: --status needs --out <dir>"); System.err.println(Usage); sys.exit(2) }
+        val dir = positionals.headOption.map(p => Paths.get(p).toAbsolutePath.normalize)
+          .getOrElse { System.err.println("ssg: --status needs a source directory"); System.err.println(Usage); sys.exit(2) }
+        if !Files.isDirectory(dir) then { System.err.println(s"ssg: --status source is not a dir: $dir"); sys.exit(2) }
+        val all =
+          val st = Files.list(dir)
+          try { import scala.jdk.CollectionConverters.*; st.iterator.asScala.filter(isMarkdown).toVector } finally st.close()
+        val selected = all.filter(p => currentStatus(Lib.readUtf8(p.toString)).exists(wanted.contains))
+        val index    = all.filter(_.getFileName.toString == "index.md")
+        val srcs = (index ++ selected).distinct.sorted
+        if srcs.isEmpty then { System.err.println(s"ssg: no posts with status in {${wanted.mkString(", ")}} under $dir"); sys.exit(2) }
+        (srcs, out, dir)
+      case None => outOpt match
+        case Some(o) =>
+          // list mode (SM030): every positional is a source .md file, rendered together into <o>
+          if positionals.isEmpty then { System.err.println("ssg: --out needs one or more source .md files"); System.err.println(Usage); sys.exit(2) }
+          val srcs = positionals.map(p => Paths.get(p).toAbsolutePath.normalize)
+          for s <- srcs do if !Files.isRegularFile(s) then { System.err.println(s"ssg: no such source file: $s"); sys.exit(2) }
+          (srcs, Paths.get(o).toAbsolutePath.normalize, srcs.head.getParent)
+        case None =>
+          // legacy mode: <src> <out-dir>, src is a .md file or a dir of .md files
+          positionals match
+            case Vector(s, od) =>
+              val src = Paths.get(s).toAbsolutePath.normalize
+              if !Files.exists(src) then { System.err.println(s"ssg: no such source: $src"); sys.exit(2) }
+              val srcs =
+                if Files.isDirectory(src) then
+                  val st = Files.list(src)
+                  try { import scala.jdk.CollectionConverters.*; st.iterator.asScala.filter(isMarkdown).toVector.sorted } finally st.close()
+                else Vector(src)
+              (srcs, Paths.get(od).toAbsolutePath.normalize, if Files.isDirectory(src) then src else src.getParent)
+            case _ => System.err.println("ssg: bad arguments"); System.err.println(Usage); sys.exit(2)
     if sources.isEmpty then { System.err.println("ssg: no .md sources to render"); sys.exit(2) }
     val discovered = srcDir.resolve("_template.html")
     val template =
