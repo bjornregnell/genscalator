@@ -27,19 +27,20 @@
 //      then lock it down:   chmod 600 ~/.netrc
 //      (the `machine` value is the Host from Host Settings; it ends in .service.one)
 //
-// USAGE
-//   # render the deploy set first (adjust to whatever you are deploying):
-//   tt ssg blog/index.md tmp/site
-//   tt ssg blog/000-why-genscalator.md tmp/site
-//   tt ssg blog/002-braceful-or-braceless-or-the-common-style.md tmp/site
+// USAGE  (run from the genscalator root)
+//   STATUS-DRIVEN FLOW (SM032, recommended) -- each post carries a status preamble; `deployed` = what should be live:
+//     scala-cli run deployblog.sc -- --serve             # render the published+deployed posts, preview on :8000
+//     scala-cli run deployblog.sc -- --release --dry-run # render + show what WOULD upload, change nothing
+//     scala-cli run deployblog.sc -- --release           # promote published:deployed + push, one idempotent shot
+//     scala-cli run deployblog.sc -- --push              # (re)render + upload just the already-deployed set
+//     scala-cli run deployblog.sc -- --status-update published:deployed   # only stamp status (no render/upload)
+//   These call `tt ssg` to render (by status) + append status transitions. A spec uses a colon (from:to).
 //
-//   # ALWAYS dry-run first to confirm the target path before touching the live site:
-//   scala-cli run deployblog.sc -- --dry-run
-//
-//   # then deploy for real:
-//   scala-cli run deployblog.sc                                   # defaults: tmp/site -> webroots/www/blog (additive)
-//   scala-cli run deployblog.sc -- tmp/site webroots/www/blog      # explicit local + remote dir
-//   scala-cli run deployblog.sc -- tmp/site webroots/www/blog --delete  # exact mirror (removes stale remote files)
+//   LOW-LEVEL FLOW (mirror a pre-rendered dir as-is):
+//     tt ssg --status published,deployed --out tmp/site blog   # render the deploy set yourself
+//     scala-cli run deployblog.sc -- --dry-run                 # ALWAYS dry-run first to confirm the target path
+//     scala-cli run deployblog.sc                              # defaults: tmp/site -> webroots/www/blog (additive)
+//     scala-cli run deployblog.sc -- tmp/site webroots/www/blog --delete   # exact mirror (removes stale remote files)
 //
 // REMOTE PATH NOTE
 //   On SFTP login you land in your one.com account home. bjornregnell.se's public web
@@ -53,7 +54,7 @@
 //   after the first connect).
 // =============================================================================
 
-import java.nio.file.{Files, Paths}
+import java.nio.file.{Files, Path, Paths}
 import scala.collection.mutable
 
 def die(msg: String): Nothing = { System.err.println(s"deployblog: $msg"); sys.exit(2) }
@@ -66,19 +67,89 @@ def onPath(exe: String): Boolean =
 // special characters survive; the value travels on lftp's stdin, never on argv.
 def q(s: String): String = "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
 
+// List every regular file under `root` (sorted), so we can synthesize our OWN upload summary from local state.
+def listLocalFiles(root: Path): Vector[Path] =
+  if !Files.isDirectory(root) then Vector.empty
+  else
+    val s = Files.walk(root)
+    try { import scala.jdk.CollectionConverters.*; s.iterator.asScala.filter(p => Files.isRegularFile(p)).toVector.sorted }
+    finally s.close()
+
+// The CONTAINED def (the capability-boundary shape): run lftp with `script` on its stdin and read its merged
+// stdout+stderr into a LOCAL string that this def NEVER prints. lftp's verbose log embeds sftp://login:password@host,
+// so by not printing here, no secret can reach the terminal, the session transcript, or any log. Returns the exit
+// code and the captured text; the CALLER decides what (if anything) to surface, and redacts the password if it does.
+// (A capture-checked variant -- where the compiler PROVES this scope cannot hold the console/print capability --
+//  belongs in a nightly CC experiment, not in this production deploy tool.)
+def runContained(script: String): (Int, String) =
+  val pb = new ProcessBuilder("lftp")
+  pb.redirectErrorStream(true)
+  val proc = pb.start()
+  proc.getOutputStream.write(script.getBytes("UTF-8"))
+  proc.getOutputStream.close()
+  val captured = new String(proc.getInputStream.readAllBytes(), "UTF-8")
+  (proc.waitFor(), captured)
+
 // ---- args ----
-val positional = args.filterNot(_.startsWith("--")).toList
+def optVal(name: String): Option[String] =
+  val i = args.indexOf(name); if i >= 0 && i + 1 < args.length then Some(args(i + 1)) else None
+val valueFlags = Set("--status-update", "--date")           // flags that consume the next arg
+val positional =
+  val b = scala.collection.mutable.ArrayBuffer[String]()
+  var i = 0
+  while i < args.length do
+    val x = args(i)
+    if valueFlags.contains(x) then i += 2
+    else if x.startsWith("--") then i += 1
+    else { b += x; i += 1 }
+  b.toList
 val flags      = args.filter(_.startsWith("--")).toSet
 val localDir   = positional.lift(0).getOrElse("tmp/site")
 val remoteDir  = positional.lift(1).getOrElse("webroots/www/blog")
+val blogDir    = "blog"                               // source posts dir (relative to cwd = the genscalator root)
 val doDelete   = flags.contains("--delete")
 val dryRun     = flags.contains("--dry-run")
 val check      = flags.contains("--check")
+val serve      = flags.contains("--serve")
+val push       = flags.contains("--push")
+val release    = flags.contains("--release")
+val statusUpdateOpt = optVal("--status-update")
+val dateOpt    = optVal("--date")
+
+// ---- SM032 status-driven orchestration: shell out to `tt` (ssg render/promote, serv) ----
+// deployblog stays a thin ORCHESTRATOR + transport: rendering lives in `tt ssg` (tested), so the
+// render -> preview -> deploy gate survives. A status spec uses a colon (from:to; the arrow form also works).
+def tt(ttArgs: String*): Int =
+  if !onPath("tt") then die("`tt` not found on PATH (needed to render/serve/promote for --serve/--push/--release).")
+  val pb = new ProcessBuilder(("tt" +: ttArgs.toVector)*); pb.inheritIO(); pb.start().waitFor()
+def render(statusSel: String): Unit =
+  println(s"deployblog: render (status in {$statusSel})  ->  $localDir")
+  val rc = tt("ssg", "--status", statusSel, "--out", localDir, blogDir)
+  if rc != 0 then die(s"render failed (tt ssg --status exited $rc)")
+def statusUpdate(spec: String): Unit =
+  val rc = tt(("ssg" +: "--status-update" +: spec +: (dateOpt.map(d => Seq("--date", d)).getOrElse(Nil) :+ blogDir))*)
+  if rc != 0 then die(s"promote failed (tt ssg --status-update exited $rc)")
+
+// standalone --status-update: mutate status only (no render, no upload)
+statusUpdateOpt match
+  case Some(spec) if !push && !release && !serve => statusUpdate(spec); sys.exit(0)
+  case _ => ()
+
+// --serve: render the deploy candidates (published + deployed) and preview locally (loopback only, no network)
+if serve then
+  render("published,deployed")
+  println(s"deployblog: previewing $localDir on http://127.0.0.1:8000  (Ctrl-C to stop)")
+  sys.exit(tt("serv", localDir))
+
+// --push re-renders the already-deployed set (idempotent); --release also renders the published posts it is
+// about to promote, and stamps them deployed AFTER a successful upload (push-then-stamp keeps the source honest).
+if push then render("deployed")
+if release then render("published,deployed")
 
 // ---- checks ----
 if !onPath("lftp") then die("`lftp` not found. Install it:  sudo apt install lftp")
 if !check && !Files.isDirectory(Paths.get(localDir)) then
-  die(s"local dir not found: $localDir  (render it first with `tt ssg <post> $localDir`)")
+  die(s"local dir not found: $localDir  (render it first with `tt ssg`, or use --push/--release/--serve)")
 
 // ---- read host + credentials from ~/.netrc ----
 val netrc = Paths.get(System.getProperty("user.home"), ".netrc")
@@ -131,18 +202,24 @@ val lftpScript =
       |bye
       |""".stripMargin
 
-println(
-  if check then s"deployblog: --check  connect to $host and list the login directory (read-only, no changes)"
-  else s"deployblog: ${if dryRun then "DRY-RUN " else ""}mirror  $localDir  ->  $host:$remoteDir  (${if doDelete then "exact mirror, --delete" else "additive"})"
-)
+// ---- report our OWN plan (synthesized from localDir/remoteDir -- never from lftp's credential-bearing output) ----
+if check then
+  println(s"deployblog: --check  connect to $host and list the login directory (read-only, no changes)")
+else
+  val mode = if doDelete then "exact mirror (--delete)" else "additive"
+  println(s"deployblog: ${if dryRun then "DRY-RUN " else ""}mirror  $localDir  ->  $host:$remoteDir  ($mode)")
+  val root = Paths.get(localDir)
+  for f <- listLocalFiles(root) do println(s"  ${if dryRun then "would send" else "send"}  ${root.relativize(f)}")
 
-// ---- run lftp, feeding the script on its stdin ----
-val pb = new ProcessBuilder("lftp")
-pb.redirectErrorStream(true)
-pb.redirectOutput(ProcessBuilder.Redirect.INHERIT)
-val proc = pb.start()
-proc.getOutputStream.write(lftpScript.getBytes("UTF-8"))
-proc.getOutputStream.close()
-val code = proc.waitFor()
-if code == 0 then println(s"deployblog: done${if dryRun then " (dry-run: nothing changed)" else "."}")
-else die(s"lftp exited $code -- check the ~/.netrc credentials, that SFTP is enabled, and the remote path.")
+// ---- run lftp CONTAINED: its output is captured locally and never printed on the normal path ----
+val (code, captured) = runContained(lftpScript)
+if code == 0 then
+  if check then println(captured.replace(password, "***").trim)   // the remote listing IS the point of --check
+  println(s"deployblog: done${if dryRun then " (dry-run: nothing changed)" else "."}")
+  // --release: ONLY after a real (non-dry-run) successful upload, stamp the promoted posts deployed.
+  if release && !dryRun then
+    println("deployblog: upload OK  ->  promoting published:deployed")
+    statusUpdate("published:deployed")
+else
+  System.err.println(captured.replace(password, "***"))           // redacted diagnostics on failure only
+  die(s"lftp exited $code -- check the ~/.netrc credentials, that SFTP is enabled, and the remote path.")
