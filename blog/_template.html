@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<style>
+/* Theme variables: light is default, dark via data-theme or OS preference. */
+:root {
+  --bg: #ffffff;
+  --bg-soft: #f5f6f8;
+  --text: #1e2228;
+  --text-muted: #5c6672;
+  --accent: #2456a6;
+  --accent-hover: #17417f;
+  --border: #e3e6ea;
+  --code-bg: #f5f6f8;
+  --code-text: #2d3440;
+  --quote-border: #c9cfd6;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --bg: #14161a;
+  --bg-soft: #1d2026;
+  --text: #d6dae0;
+  --text-muted: #97a0ab;
+  --accent: #82abe8;
+  --accent-hover: #a6c4f0;
+  --border: #2b2f36;
+  --code-bg: #1d2026;
+  --code-text: #ccd3dc;
+  --quote-border: #454c56;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14161a;
+    --bg-soft: #1d2026;
+    --text: #d6dae0;
+    --text-muted: #97a0ab;
+    --accent: #82abe8;
+    --accent-hover: #a6c4f0;
+    --border: #2b2f36;
+    --code-bg: #1d2026;
+    --code-text: #ccd3dc;
+    --quote-border: #454c56;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html {
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: clamp(1rem, 0.95rem + 0.3vw, 1.125rem);
+  line-height: 1.65;
+  overflow-x: hidden;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Shared fluid column for header, main, footer */
+.wrap {
+  width: 100%;
+  max-width: 70ch;
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 4vw, 2rem);
+}
+
+/* Header */
+.site-header {
+  border-bottom: 1px solid var(--border);
+}
+.site-header .wrap {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-block: 0.7rem;
+}
+.brand {
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  text-decoration: none;
+}
+.brand:hover { color: var(--accent); }
+.site-nav {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.site-nav a {
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+.site-nav a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+/* Theme toggle: compact three-state segmented control */
+.theme-toggle {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.theme-toggle button {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.72rem;
+  line-height: 1;
+  padding: 0.35rem 0.55rem;
+  cursor: pointer;
+}
+.theme-toggle button:hover { color: var(--text); }
+.theme-toggle button[aria-pressed="true"] {
+  background: var(--bg-soft);
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Main content */
+main {
+  flex: 1;
+  padding-block: clamp(1.5rem, 5vw, 3rem);
+}
+
+/* Typography */
+h1, h2, h3, h4 {
+  line-height: 1.25;
+  margin: 2em 0 0.6em;
+  font-weight: 700;
+}
+h1 { font-size: 1.85em; margin-top: 0.4em; }
+h2 { font-size: 1.4em; }
+h3 { font-size: 1.15em; }
+h4 { font-size: 1em; color: var(--text-muted); }
+
+p { margin: 0 0 1.1em; }
+p, li { overflow-wrap: break-word; }
+
+strong { font-weight: 700; }
+em { font-style: italic; }
+
+a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+}
+a:hover { color: var(--accent-hover); }
+
+ul, ol {
+  margin: 0 0 1.1em;
+  padding-left: 1.5em;
+}
+li { margin-bottom: 0.3em; }
+li > ul, li > ol {
+  margin-top: 0.3em;
+  margin-bottom: 0.3em;
+}
+
+blockquote {
+  margin: 1.2em 0;
+  padding: 0.2em 1.1em;
+  border-left: 3px solid var(--quote-border);
+  color: var(--text-muted);
+}
+blockquote p:last-child { margin-bottom: 0; }
+
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2.5em 0;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Code */
+code, pre {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+code {
+  background: var(--code-bg);
+  color: var(--code-text);
+  border-radius: 4px;
+  padding: 0.12em 0.35em;
+  font-size: 0.88em;
+  overflow-wrap: break-word;
+}
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.9rem 1.1rem;
+  margin: 1.2em 0;
+  overflow-x: auto;
+  line-height: 1.5;
+}
+pre > code {
+  background: none;
+  border-radius: 0;
+  padding: 0;
+  font-size: 0.85em;
+  overflow-wrap: normal;
+}
+
+/* Tables: scroll inside their own box, never the page */
+table {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  margin: 1.2em 0;
+  font-size: 0.95em;
+}
+th, td {
+  border: 1px solid var(--border);
+  padding: 0.45em 0.8em;
+  text-align: left;
+  vertical-align: top;
+}
+thead th {
+  background: var(--bg-soft);
+  font-weight: 600;
+}
+
+/* Footer */
+.site-footer {
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+.site-footer .wrap {
+  padding-block: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  justify-content: space-between;
+}
+.site-footer a { color: var(--text-muted); }
+.site-footer a:hover { color: var(--accent); }
+
+/* Small screens: tighten header spacing */
+@media (max-width: 26rem) {
+  .site-nav { gap: 0.7rem; }
+  .brand { font-size: 1.05rem; }
+}
+</style>
+<script>
+(function () {
+  var KEY = "br-theme";
+  var root = document.documentElement;
+
+  function apply(mode) {
+    if (mode === "light" || mode === "dark") {
+      root.setAttribute("data-theme", mode);
+    } else {
+      root.removeAttribute("data-theme"); /* auto: follow OS */
+    }
+  }
+
+  function saved() {
+    try { return localStorage.getItem(KEY); } catch (e) { return null; }
+  }
+
+  apply(saved()); /* run before paint to avoid theme flash */
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var buttons = document.querySelectorAll(".theme-toggle button");
+
+    function refresh() {
+      var mode = saved();
+      if (mode !== "light" && mode !== "dark") mode = "auto";
+      buttons.forEach(function (b) {
+        b.setAttribute("aria-pressed", String(b.dataset.mode === mode));
+      });
+    }
+
+    buttons.forEach(function (b) {
+      b.addEventListener("click", function () {
+        var mode = b.dataset.mode;
+        try {
+          if (mode === "auto") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) { /* storage unavailable: still apply for this page */ }
+        apply(mode === "auto" ? null : mode);
+        refresh();
+      });
+    });
+
+    refresh();
+  });
+})();
+</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="https://bjornregnell.se">BR</a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="blog/index.html">Blog</a>
+      <div class="theme-toggle" role="group" aria-label="Color theme">
+        <button type="button" data-mode="light" title="Light theme">Light</button>
+        <button type="button" data-mode="dark" title="Dark theme">Dark</button>
+        <button type="button" data-mode="auto" title="Follow system theme">A</button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+{{CONTENT}}
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>Björn Regnell</span>
+    <a href="https://bjornregnell.se">bjornregnell.se</a>
+  </div>
+</footer>
+
+</body>
+</html>

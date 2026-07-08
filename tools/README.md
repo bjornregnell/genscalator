@@ -225,6 +225,19 @@ never `0.0.0.0`, so nothing is exposed off the box. GET/HEAD only; a directory s
 escape → 403). Example: `tt serv site --port 8137` then open the printed URL. *(`--localhost` is accepted and
 ignored; the bind is always loopback.)*
 
+### ssg — hand-rolled markdown -> static HTML site generator (EFFECTFUL: writes .html files)
+```
+ssg <src> <out-dir> [--template <file>]     # <src> = a .md file or a dir of .md files
+```
+Renders the GitHub-flavored-markdown subset we use to self-contained HTML, consuming the SAME `MdParse.parse`
+front-end that `md-fmt` reflows through (one parser, two renderers). Handles headings, paragraphs, blockquotes,
+bold/italic (incl. `*italic*` inside `**bold**` and intraword-underscore safety), inline `code`, `[links](url)`,
+`<autolinks>`, `![images]`, fenced code (a `language-*` class), GFM tables, and bullet/ordered lists. Template
+resolution: `--template F`, else `<srcdir>/_template.html`, else a minimal builtin; slots are `{{TITLE}}` (first
+h1) and `{{CONTENT}}`. A sibling `figures/` dir is copied so relative images resolve. Preview with `tt serv`.
+Deferred (SM019 refinement): nested lists (rendered flat), footnotes, reference links, syntax highlighting.
+Example: `tt ssg blog/002-....md tmp/site` then `tt serv tmp/site` and open the URL.
+
 ### forge — Forgejo/Gitea forge client, default Codeberg (EFFECTFUL: network; create needs env token)
 ```
 forge whoami   [--url BASE]                               # verify auth: print the token's login (never the token)
