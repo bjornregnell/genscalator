@@ -131,3 +131,26 @@ content-blob mechanism — `printf`, `echo`, AND heredoc/`<<` — feeding a file
 message arg. Header rule broadened from "no printf/echo > file" to: **no content
 blob on a command line by ANY mechanism; message + file content always via Write
 + a `--*-file <path>` arg.**
+
+## Instance 5 (2026-07-08, at the tail of a VERY long session, right after proposing a compact)
+
+CO4 committed a placeholder mid-pin with `tt git commit ... --message-file /dev/stdin
+<<'EOF' ... EOF` — the SAME heredoc-to-`/dev/stdin` shape as instance 4. It FAILED (exit
+2, backgrounded oddly), exactly like instance 4. No damage (self-caught: checked the
+repo, no bad commit landed, redid via Write + `--message-file <path>`). Two things make
+this the sharpest longitudinal specimen yet:
+
+1. **It fired after DOZENS of correct `--message-file <path>` commits in the same
+   session.** The discipline held all session and then slipped at the *tail*. So
+   recalled-AND-repeatedly-correctly-enacted STILL degrades to a slip once fatigue /
+   end-of-session momentum sets in. The knowledge safeguard fails at exactly the moment
+   it is most needed (the long-session tail), which is the strongest evidence yet that a
+   header rule + repeated correct practice are necessary-but-insufficient; only a
+   STRUCTURAL submit-time guard ([[hardening-dance]]) is a real preventer.
+2. **It happened right AFTER CO4 had itself proposed the compact dance** (flagged the
+   long session + rot risk) and then kept accepting "one more pin" instead of stopping.
+   So the slip is a direct symptom of the very long-session cost the compact was meant to
+   avoid — an RT052 datapoint: **when the agent proposes a checkpoint, continuing to
+   accept more work is itself the risk.** Joint-rot-vigilance lesson: act on the
+   agent-proposed compact, don't defer it for more captures. The pinning throughput
+   (BR rapid-firing tt-table pins) was valuable, but each "one more" raised slip odds.
