@@ -9,7 +9,7 @@
 
 Coding agents default to **dynamic shell**, re-emitting brittle `bash` every turn, and that quiet default
 costs tokens, safety, and reliability. genscalator replaces it with **typed, safe-by-design tools** the agent
-calls instead. *(to draft)*
+calls instead.
 
 (If you thought that was difficult to understand, because maybe you are not a programmer, but just happened to come by for some other reason than wanting to know why and how to use genscalator, then there are actually in this (my first special blog post on genscalator) a few paragraphs below that are meant to be readable for *anyone*, not just engineers.)
 
@@ -95,7 +95,7 @@ What does this look like concretely? We take the do-anything binaries an agent r
 And here is where it stops being just a toolbox and becomes the project I actually care about. Every tool has instrumentation built in, so the agent *reads a gauge* instead of guessing (how full is my memory? how fast am I burning tokens?). We have worked out little rituals, we call them *dances*, for handing work back and forth without losing the thread: for saving state before the agent's memory is compacted, or for me stepping away while it works. And the whole thing is run as real research, Action Research and Design Science, done in the open, on a genuine software build, with the friction logged as we go. The tools, the skills, the write-ups: those artifacts *are* the contribution.
 
 ## Close
-genscalator = the toolbox (`tt`) + skills + docs distilled from doing real work this way. *(to draft)*
+genscalator = the toolbox (`tt`) + skills + docs distilled from doing real work this way.
 
 Maybe genscalator can unlock even more ambitious projects. So maybe this is not my "last big project" before I retire, after all. (And retirement does not mean me stopping to try to do cool things with software, then with even more competent AI software engineers helping us...)
 

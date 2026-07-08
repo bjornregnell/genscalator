@@ -8,10 +8,10 @@
 > context on this project is assumed - it is meant to be read on its own.
 > Sources: the open note *["Towards a Common Scala Style Recommendation"](https://docs.google.com/document/d/14ZBGKNHUW4d8hDWIi5i6QquClX3_iXva-iMy5KpFU3I/edit?usp=sharing)*
 > (Odersky, Regnell & Kerr, 2026); the genscalator indent-vs-braces edit-cost experiment
-> ([`../research/experiments/indent-vs-braces/RESULTS.md`](../research/experiments/indent-vs-braces/RESULTS.md),
-> [`README.md`](../research/experiments/indent-vs-braces/README.md)); and the framing notes
-> [`../research/001-scala-style-evolution.md`](../research/001-scala-style-evolution.md) and
-> [`../research/017-scala-style-recommendations.md`](../research/017-scala-style-recommendations.md).
+> ([`../research/experiments/indent-vs-braces/RESULTS.md`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/experiments/indent-vs-braces/RESULTS.md),
+> [`README.md`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/experiments/indent-vs-braces/README.md)); and the framing notes
+> [`../research/001-scala-style-evolution.md`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/001-scala-style-evolution.md) and
+> [`../research/017-scala-style-recommendations.md`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/017-scala-style-recommendations.md).
 
 ## The short version
 
@@ -127,7 +127,7 @@ rule and the agent-edit-safety rule coincide."* This post puts numbers on that i
 ## 5. The experiment
 
 The full harness, raw data, and analysis scripts are in the repository
-([`../research/experiments/indent-vs-braces/`](../research/experiments/indent-vs-braces/)); everything below is
+([`../research/experiments/indent-vs-braces/`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/experiments/indent-vs-braces/)); everything below is
 reproducible.
 
 ### 5.1 Research questions
@@ -164,7 +164,7 @@ error), or **FAIL_MISSCOPE** (compiles but wrong - the *silent* hazard). A secon
   (a 6 GB card only fits small, quantised models): the qwen2.5 family (incl. coder variants), gemma2/gemma3, and
   aya-expanse. Plus a frontier anchor, **Claude Opus 4.8**, run through a subagent workflow on the identical tasks.
 - **Volume:** 7 × 3 tasks × 3 styles × 6 repeats = **378 local cells**, plus 27 Opus cells.
-- Raw rows: [`results-raw.tsv`](../research/experiments/indent-vs-braces/results-raw.tsv). (A note on
+- Raw rows: [`results-raw.tsv`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/experiments/indent-vs-braces/results-raw.tsv). (A note on
   terminology: the code and raw data call the style variable `regime`; the prose now says *style*.)
 
 ### 5.4 Results
@@ -252,7 +252,7 @@ replication is the **model** - so we have **n = 7**, not 378.
 style tags *within each model* produce an aggregate gap as large as the one we saw? Because n is small we can
 enumerate the null distribution **exactly** - all 6⁷ = 279,936 within-model relabellings for the omnibus test, all
 2⁷ = 128 sign-flips for each pairwise one. It is **non-parametric** (assumes no bell curve) and **deterministic**:
-no random seed, so anyone re-running [`significance.scala`](../research/experiments/indent-vs-braces/significance.scala)
+no random seed, so anyone re-running [`significance.scala`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/experiments/indent-vs-braces/significance.scala)
 gets identical p-values. A **Friedman test** (the standard non-parametric blocked ANOVA) is reported alongside as a
 familiar cross-check.
 
@@ -328,9 +328,9 @@ and larger runs.
 ### 5.7 Reproduce it yourself
 
 Everything needed to re-run or re-analyse this lives in the repository under
-[`research/experiments/indent-vs-braces/`](../research/experiments/indent-vs-braces/):
+[`research/experiments/indent-vs-braces/`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/experiments/indent-vs-braces/):
 
-- **Raw data** - [`results-raw.tsv`](../research/experiments/indent-vs-braces/results-raw.tsv): one row per cell
+- **Raw data** - [`results-raw.tsv`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/experiments/indent-vs-braces/results-raw.tsv): one row per cell
   (`task, style, model, run, graded, out_tokens, diff_lines`), where `graded` is `PASS` / `FAIL_COMPILE` /
   `FAIL_MISSCOPE`.
 - **Task corpus** - `tasks/`: the *before* files per style + the style-neutral edit instruction + the oracle.
@@ -375,7 +375,7 @@ mattering.
 
 This is a pilot, and §5.5 was blunt: with seven models the effect is not significant. That is a **map of exactly
 what a follow-up needs** - and it is no longer just a wishlist: the follow-up is now **designed and preregistered**
-(frozen design in [`BIG-RUN-PREREG.md`](../research/experiments/indent-vs-braces/BIG-RUN-PREREG.md); write-up in the
+(frozen design in [`BIG-RUN-PREREG.md`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/experiments/indent-vs-braces/BIG-RUN-PREREG.md); write-up in the
 next post, [003](003-bigger-common-style-experiment.md)). Roughly in order of leverage:
 
 - **More models - for statistical power (the primary lever).** The pilot's effect is small (d ≈ 0.37, inflated by
@@ -450,17 +450,17 @@ tool grade its own homework - you are reading the right blog. That is much of wh
 - M. Odersky, B. Regnell, R. Kerr, *Towards a Common Scala Style Recommendation*, open note, January 2026.
   <https://docs.google.com/document/d/14ZBGKNHUW4d8hDWIi5i6QquClX3_iXva-iMy5KpFU3I/edit?usp=sharing>
 - genscalator, *indent-vs-braces edit-cost experiment* - design
-  [`README.md`](../research/experiments/indent-vs-braces/README.md), results
-  [`RESULTS.md`](../research/experiments/indent-vs-braces/RESULTS.md), raw data
-  [`results-raw.tsv`](../research/experiments/indent-vs-braces/results-raw.tsv).
-- Background: [`../research/001-scala-style-evolution.md`](../research/001-scala-style-evolution.md),
-  [`../research/017-scala-style-recommendations.md`](../research/017-scala-style-recommendations.md).
+  [`README.md`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/experiments/indent-vs-braces/README.md), results
+  [`RESULTS.md`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/experiments/indent-vs-braces/RESULTS.md), raw data
+  [`results-raw.tsv`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/experiments/indent-vs-braces/results-raw.tsv).
+- Background: [`../research/001-scala-style-evolution.md`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/001-scala-style-evolution.md),
+  [`../research/017-scala-style-recommendations.md`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/017-scala-style-recommendations.md).
 
 ## Appendix A - the test programs (and why each is shaped that way)
 
 The full corpus - all three sizes × three styles, the oracle `after.*` files, and the behavioural `probe.scala` -
 is in the repo under
-[`research/experiments/indent-vs-braces/tasks/`](../research/experiments/indent-vs-braces/tasks/). This appendix
+[`research/experiments/indent-vs-braces/tasks/`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/experiments/indent-vs-braces/tasks/). This appendix
 shows the essentials and, for each design choice, *what it buys the experiment*.
 
 ### A.1 The edit - and why this one
