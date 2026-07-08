@@ -94,8 +94,13 @@ or flag it as speculation — don't smuggle it in wearing a grounded voice (see 
   for blog X" so the human captures it before it's gone. When a post lacks a figure, leave a **`[figure: …]` caption
   placeholder** asking for the real image — better a request than an empty post or a decorative filler.
 
-## 8. References — real, live, accessible
-- **Try to give each post relevant references with accessible, *live* links** — a near-end "References" section.
+## 8. Further Reading — real, live, accessible
+- **Name the near-end section "Further Reading", not "References" or "Bibliography".** Those two carry an
+  academic-citation duty (they imply *everything listed was cited in-text*) and read as jargon in a blog;
+  **"Further Reading"** is reader-facing and, deliberately, *lets you include genuinely interesting sources you did
+  not explicitly cite* (a "want to go deeper?" list). Where a few entries really are the load-bearing evidence for
+  claims, put those first. (BR, 2026-07-08.)
+- **Try to give each post relevant references with accessible, *live* links** in that Further Reading section.
   Grounding (§2) extends to citations: a named source with no link, or a paywall-only one, is weak; a **checked,
   freely-accessible** link is echt.
 - **Verify links resolve before shipping.** A hallucinated or dead URL is **false echt** — a genuine-looking citation
