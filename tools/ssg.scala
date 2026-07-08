@@ -51,9 +51,9 @@ object Ssg:
     def q(s: String): String = java.util.regex.Matcher.quoteReplacement(s)
     var s = raw
     s = "`([^`]+)`".r.replaceAllIn(s, m => q(stash(s"<code>${escape(m.group(1))}</code>")))
-    s = "!\\[([^\\]]*)\\]\\(([^)]+)\\)".r.replaceAllIn(s, m =>
+    s = "!\\[([^\\]]*)\\]\\(((?:[^()]|\\([^()]*\\))*)\\)".r.replaceAllIn(s, m =>
       q(stash(s"""<img src="${escape(m.group(2))}" alt="${escape(m.group(1))}">""")))
-    s = "\\[([^\\]]+)\\]\\(([^)]+)\\)".r.replaceAllIn(s, m =>
+    s = "\\[([^\\]]+)\\]\\(((?:[^()]|\\([^()]*\\))*)\\)".r.replaceAllIn(s, m =>
       q(stash(s"""<a href="${escape(siteHref(m.group(2)))}">${escape(m.group(1))}</a>""")))
     s = "<(https?://[^>\\s]+)>".r.replaceAllIn(s, m =>
       q(stash(s"""<a href="${escape(m.group(1))}">${escape(m.group(1))}</a>""")))

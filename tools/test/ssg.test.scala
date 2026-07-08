@@ -31,6 +31,12 @@ class SsgSuite extends munit.FunSuite:
   test("inline: a code span inside a link resolves (nested placeholder)") {
     assertEquals(renderInline("[`code`](u)"), """<a href="u"><code>code</code></a>""")
   }
+  test("inline: a URL with balanced parens is not truncated at the first paren") {
+    assertEquals(renderInline("[t](https://en.wikipedia.org/wiki/Claude_(AI))"),
+      """<a href="https://en.wikipedia.org/wiki/Claude_(AI)">t</a>""")
+    assertEquals(renderInline("![a](figures/plot_(v2).svg)"),
+      """<img src="figures/plot_(v2).svg" alt="a">""")
+  }
 
   // --- inline code / links / images / autolinks (stashed, escaped, protected) ---
   test("inline: code span is escaped and its insides are not emphasised") {
