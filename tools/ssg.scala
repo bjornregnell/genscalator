@@ -118,12 +118,53 @@ object Ssg:
     sb ++= "</table>\n"
     sb.toString
 
+  // Scala 3.4 lexical syntax: the regular (hard) keywords and the soft keywords (colored as distinct classes).
+  private val scalaKeywords = Set(
+    "abstract", "case", "catch", "class", "def", "do", "else", "enum", "export", "extends", "false", "final",
+    "finally", "for", "given", "if", "implicit", "import", "lazy", "match", "new", "null", "object", "override",
+    "package", "private", "protected", "return", "sealed", "super", "then", "throw", "trait", "true", "try",
+    "type", "val", "var", "while", "with", "yield"
+  )
+  private val scalaSoftKeywords = Set(
+    "as", "derives", "end", "extension", "infix", "inline", "opaque", "open", "transparent", "using"
+  )
+
+  /** Lean, single-pass Scala highlighter for code fences. NOT a parser: one regex classifies each token, and the
+    * handler emits a SEMANTIC class only (no colour here - the palette lives in the template's CSS variables).
+    * Input is already HTML-escaped; unmatched text (operators, entities like &lt;, whitespace) passes through.
+    * Classes: tok-comment, tok-str, tok-num, tok-kw (hard keyword), tok-soft (soft keyword), tok-type (Capitalized
+    * word). Deliberately shallow - keywords + literals + type-by-convention, no operators or semantics. */
+  def highlightScala(escaped: String): String =
+    def span(cls: String, txt: String): String = s"""<span class="$cls">$txt</span>"""
+    val token =
+      ( "(?s)(/\\*.*?\\*/)"                                                       // 1 block comment
+      + "|(//[^\\n]*)"                                                            // 2 line comment
+      + "|([a-z]?\"\"\"(?:.*?)\"\"\")"                                            // 3 triple-quoted string
+      + "|([a-z]?\"(?:\\\\.|[^\"\\\\\\n])*\")"                                    // 4 string
+      + "|('(?:\\\\.|[^'\\\\])')"                                                 // 5 char literal
+      + "|(\\b0[xX][0-9a-fA-F_]+|\\b0[bB][01_]+|\\b\\d[\\d_]*(?:\\.\\d[\\d_]*)?(?:[eE][+-]?\\d+)?[fFdDlL]?)" // 6 number
+      + "|([A-Za-z_][A-Za-z0-9_]*)" ).r                                          // 7 word
+    token.replaceAllIn(escaped, m =>
+      val out =
+        if m.group(1) != null || m.group(2) != null then span("tok-comment", m.matched)
+        else if m.group(3) != null || m.group(4) != null || m.group(5) != null then span("tok-str", m.matched)
+        else if m.group(6) != null then span("tok-num", m.matched)
+        else
+          val w = m.matched
+          if scalaKeywords.contains(w) then span("tok-kw", w)
+          else if scalaSoftKeywords.contains(w) then span("tok-soft", w)
+          else if w.head.isUpper then span("tok-type", w)
+          else w
+      java.util.regex.Matcher.quoteReplacement(out))
+
   private def renderFence(lines: Vector[String]): String =
     val lang = lines.head.trim.dropWhile(c => c == '`' || c == '~').trim
     val afterOpen = lines.drop(1)
     val body = if afterOpen.nonEmpty && MdParse.isFence(afterOpen.last) then afterOpen.dropRight(1) else afterOpen
     val cls = if lang.nonEmpty then s""" class="language-$lang"""" else ""
-    s"<pre><code$cls>${escape(body.mkString("\n"))}</code></pre>\n"
+    val escaped = escape(body.mkString("\n"))
+    val content = if lang == "scala" then highlightScala(escaped) else escaped
+    s"<pre><code$cls>$content</code></pre>\n"
 
   /** Render a run of list items as one or more lists (flat; a sub-run switches list type when `ordered` flips).
     * Nested lists are deferred (SM019 refinement) — items render at one level. */

@@ -95,7 +95,7 @@ class SsgSuite extends munit.FunSuite:
   test("renderBlocks: code fence gets a language class and is escaped, not reflowed") {
     val out = renderBlocks(MdParse.parse("```scala\nval x = a < b\n```"))
     assert(clue(out).contains("""<pre><code class="language-scala">"""))
-    assert(out.contains("val x = a &lt; b"))
+    assert(out.contains("""<span class="tok-kw">val</span> x = a &lt; b"""))
   }
   test("renderBlocks: GFM table with header row") {
     val out = renderBlocks(MdParse.parse("| a | b |\n|---|---|\n| 1 | 2 |"))
@@ -123,6 +123,18 @@ class SsgSuite extends munit.FunSuite:
     assert(toc.contains("""<a href="#b">B</a>"""))
     assert(toc.contains("toc-sub"))
     assertEquals(buildToc(MdParse.parse("## Only one")), "")
+  }
+
+  // --- scala syntax highlighting (SM034) ---
+  test("highlightScala emits semantic token classes; operators/entities pass through") {
+    val out = highlightScala(escape("def f(x: Int) = 1 // c"))
+    assert(clue(out).contains("<span class=\"tok-kw\">def</span>"))
+    assert(out.contains("<span class=\"tok-type\">Int</span>"))
+    assert(out.contains("<span class=\"tok-num\">1</span>"))
+    assert(out.contains("<span class=\"tok-comment\">// c</span>"))
+    assert(highlightScala(escape("inline val x = 2")).contains("<span class=\"tok-soft\">inline</span>"))
+    assert(highlightScala("\"hi\"").contains("<span class=\"tok-str\">\"hi\"</span>"))
+    assert(highlightScala(escape("a < b")).contains("a &lt; b"))  // operator + escaped entity untouched
   }
 
   // --- page assembly ---

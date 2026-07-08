@@ -17,6 +17,12 @@
   --code-bg: #f5f6f8;
   --code-text: #2d3440;
   --quote-border: #c9cfd6;
+  --tok-kw: #8250df;
+  --tok-soft: #0b7285;
+  --tok-str: #1a7f37;
+  --tok-num: #953800;
+  --tok-comment: #6e7781;
+  --tok-type: #0550ae;
   color-scheme: light;
 }
 :root[data-theme="dark"] {
@@ -30,6 +36,12 @@
   --code-bg: #1d2026;
   --code-text: #ccd3dc;
   --quote-border: #454c56;
+  --tok-kw: #d2a8ff;
+  --tok-soft: #56d4dd;
+  --tok-str: #7ee787;
+  --tok-num: #ffa657;
+  --tok-comment: #8b949e;
+  --tok-type: #79c0ff;
   color-scheme: dark;
 }
 @media (prefers-color-scheme: dark) {
@@ -44,6 +56,12 @@
     --code-bg: #1d2026;
     --code-text: #ccd3dc;
     --quote-border: #454c56;
+    --tok-kw: #d2a8ff;
+    --tok-soft: #56d4dd;
+    --tok-str: #7ee787;
+    --tok-num: #ffa657;
+    --tok-comment: #8b949e;
+    --tok-type: #79c0ff;
     color-scheme: dark;
   }
 }
@@ -296,6 +314,14 @@ pre > code {
   font-size: 0.85em;
   overflow-wrap: normal;
 }
+
+/* Syntax highlighting: semantic token classes from ssg; the palette is the --tok-* variables above */
+.tok-kw { color: var(--tok-kw); font-weight: 700; }
+.tok-soft { color: var(--tok-soft); }
+.tok-str { color: var(--tok-str); }
+.tok-num { color: var(--tok-num); }
+.tok-comment { color: var(--tok-comment); font-style: italic; }
+.tok-type { color: var(--tok-type); }
 
 /* Tables: scroll inside their own box, never the page */
 table {
