@@ -198,7 +198,7 @@ The next real release is **v0.9.0** — v0.1.0–v0.8.0 have shipped (see PAST/I
 * Feature: typedToolsTestSuite has
   * Design: testTooling has
     * Gist: use [mUnit](https://docs.scala-lang.org/toolkit/testing-intro.html) for test suites
-    * Why: its a curated part of the Scala toolbox
+    * Why: it's a curated part of the Scala toolbox
   * Spec: extend coverage to `tt web` + `tt forge` (offline usage/arg-error paths), matching the htmltext/chrono pattern — a parked AGENT-owned task.
 * Feature: typedToolsTestSuite verifies Goal: verifiedTypedTools
 * Goal: verifiedTypedTools helps Goal: safeGeneration
