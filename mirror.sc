@@ -102,7 +102,8 @@ def rmrf(p: Path): Unit =
 
 // ---- plan (printed up front, so the intent is visible even if a push fails on auth) ----
 println(s"mirror: master (source of truth) = $master")
-mirrors.foreach((n, url) => println(s"mirror:   -> $n  ($url)"))
+mirrors.foreach: (n, url) => 
+  println(s"mirror:   -> $n  ($url)")
 
 // ---- clone the master exactly ----
 println(s"mirror: cloning master --mirror -> $bare")
@@ -113,12 +114,13 @@ if git("clone", "--mirror", master, bare.toString) != 0 then
 
 // ---- push --mirror to each target ----
 var failures = 0
-for (name, url) <- mirrors do
+for (name, url) <- mirrors do {  // the real action
   println(s"mirror: ${if dryRun then "DRY-RUN " else ""}push --mirror -> $name  ($url)")
   val cmd = (Seq("-C", bare.toString, "push", "--mirror") ++ (if dryRun then Seq("--dry-run") else Nil)) :+ url
   if git(cmd*) != 0 then
     failures += 1
     System.err.println(s"mirror: FAILED $name - is an SSH key set up for this host on blixten? (the deferred joint step)")
+} 
 
 if failures == 0 then
   println(s"mirror: done${if dryRun then " (dry-run: nothing pushed)" else s", ${mirrors.size} mirror(s) synced to the master"}.")
