@@ -233,7 +233,7 @@ proposes; you as accountable human approve and submit. See [`CONTRIBUTING.md`](C
 
 ## Copyright
 
-Copyright of all code in this repo is owned by the maintainers of the genscalator repository. Any code contibutor to this repo implicitly transfer copyright to genscalator maintainers by contributing. Before you contribute you should send a copyright transfer note via email to genscalator at bjornregnell.se with the subject "Copyright transfer" and body containing "I hereby transfer copyright of my contributions to genscalator to the maintainers of genscalator" and your name and contact details. 
+Copyright of all code in this repo is owned by the maintainers of the genscalator repository. Any code contributor to this repo implicitly transfers copyright to genscalator maintainers by contributing. Before you contribute you should send a copyright transfer note via email to genscalator at bjornregnell.se with the subject "Copyright transfer" and body containing "I hereby transfer copyright of my contributions to genscalator to the maintainers of genscalator" and your name and contact details. 
 
 ## Maintainers
 
@@ -243,8 +243,8 @@ The genscalator repository is currently maintained by:
 
 ## Commercial Support
 
-* For commerical support and consultancy in using genscalator to improve agentic software engineering productivity contact genscalator@bjornregnell.se
+* For commercial support and consultancy in using genscalator to improve agentic software engineering productivity contact genscalator@bjornregnell.se
 
-## Doantions
+## Donations
 
 Genscalator is developed as a liberally licenced open source software project that anyone can use. If you want to support the maintenance and implementation of new features of genscalator contact genscalator@bjornregnell.se
