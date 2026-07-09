@@ -169,6 +169,31 @@ dependency**, and coupling has its own cost. Prefer a little repetition when:
 dependency/coupling cost**, and leave a one-line *why* when you keep the repetition. Neither blind DRY nor blind
 copy-paste. (This mirrors the skill's whole posture: pragmatic, conscious, local tradeoffs — §Intro.)
 
+## 6. Braces vs braceless: the common style
+Scala 3 allows both brace and braceless (significant-indentation) syntax. Genscalator follows the **common
+style** set out in the open note *"Towards a Common Scala Style Recommendation"* (Martin Odersky, Björn
+Regnell, Rex Kerr; 2026-01-07). The rule, verified against that source:
+
+- **Put braces around a *long* scope that is not terminated by a keyword.** A scope is **long** when it
+  "contains blank lines which are not already embedded in a nested construct." Braces are unnecessary when a
+  closing keyword — `else`, `do`, `yield`, `case`, or `catch` — already terminates the scope (that keyword is
+  the end marker).
+- **Short scopes stay braceless (colon-indent)**, or take braces where they aid understanding. For short
+  class/function bodies the note gives *no* recommendation — `:`-indent or braces, as you prefer.
+- **Prefer braces over `end` markers** when a scope is long enough to want a marker.
+- **Compensate for fewer braces with blank lines placed by logical structure**, so the vertical rhythm braces
+  used to provide survives.
+- **Prefer the new control constructs** (`if-then-else`, not `if (...) else`).
+
+This is not brace-dogma; it is where **human legibility and agent-edit-safety coincide.** The note's
+agent-code-generation analysis calls braces-on-long-scopes a *"genuine sweet spot — near braces-everywhere on
+safety, near braceless on surface tokens":* a brace insertion is O(1) tokens, whereas a braceless edit forces
+a line-by-line re-indent and risks a **silent mis-scope** bug (agents are least reliable with whitespace
+semantics). In this toolbox: `mirror.sc`'s braced `for`-body (a long scope) beside its one-line `foreach:`
+colon form (a short one); the `object ToolName { … }` wrapper of §1 (a long scope earns its braces).
+genscalator's own indent-vs-braces experiment (reported in blog post 002) runs the measurable comparison the
+note proposes — braceless / braces-everywhere / common style — across edit-error-rate and token cost.
+
 ## Shape
 ```scala
 //> using scala 3.8.4
