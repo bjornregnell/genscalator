@@ -6,6 +6,15 @@ allowed-tools: Bash(scala-cli run *) Bash(scala-cli compile *) Bash(scalex *)
 
 # genscalator Scala style
 
+> **Genscalator land, in one breath (especially if you're a sub-agent landing cold):** you're writing Scala the
+> genscalator way — **direct style** (read → compute → print, immutable by default), **lean** (JDK + the `tt`
+> toolbox first, then the dependency cascade in §1), **safe by construction** (Safe-mode / capture-checking
+> ready, auditable, allowlistable — no blobs, no interpreter deps), and **pragmatic, not dogmatic** (balance
+> safety / token-efficiency / performance consciously and locally, with a one-line *why*). The compiler and the
+> next reader — human OR agent — are allies: a tool's effects obvious at a glance, its intent clear without
+> running it. Sibling skills: **tt-toolbox** = WHICH tool to run; **this** = HOW to write one;
+> **scala-code-review** = the adversarial check before you call it done.
+
 Write tools so the **compiler catches mistakes** *and* the code stays **easy for both humans and agents to
 read, review, and trust** — a tool's effects obvious at a glance, its intent clear without running it. The
 compiler and the reader are allies, not a tradeoff. This is **pragmatic, not dogmatic**: you're balancing
@@ -20,6 +29,18 @@ make the tradeoff **consciously and locally**, and leave a one-line comment sayi
 black-and-white.
 
 ## 1. Direct style, lean dependencies
+- **Preference cascade (HD, BR 2026-07-10), when choosing HOW to build something.** Prefer, in order:
+  **(1) JDK / stdlib**, then **(2) hand-roll** if the slice is small, bounded, and paired-test-verifiable,
+  then **(3) a small direct-style Java/Scala lib** (no big frameworks, no effect systems, no reflection
+  magic), then **(4) whatever ships without security risk or dependency hell**, then **(5) escalate to BR**
+  (don't wing it). Each step down adds *surface*: audit cost, security surface, dependency hell, cognitive
+  magic.
+  - **Crossover (2 vs 3):** hand-roll the *small bounded* thing (a lexer, a CSV state machine); a small
+    readable lib beats hand-rolling a *fiddly / decades-deep* domain (the "don't write a Scala compiler"
+    line, which is exactly what "a small, well-understood library beats hand-rolling something fiddly" below
+    already means).
+  - **Security gate (overrides every tier):** never a dependency that needs an interpreter / arbitrary-exec
+    runtime (node/python) or is otherwise un-auditable / un-allowlistable.
 - **Helpers live inside `object ToolName`; only the `@main` (and any genuinely-public, reusable API) stays
   top-level.** A top-level `private def` still lands in the *package* scope, so when the whole `tools/` (or
   the Metals/BSP workspace) compiles as **one target**, two files that each declare a top-level `usage`
@@ -168,6 +189,13 @@ copy-paste. (This mirrors the skill's whole posture: pragmatic, conscious, local
 - **Effects smuggled into something labelled pure**, or `cd`/`&&`/pipes baked into a tool — it should print
   the final answer itself.
 - **Re-emitting brittle bash from inside Scala** — if you need an effect, make it a typed, reusable driver.
+- **Runtime-reflection "mystery-meat" frameworks** (the Spring-Boot archetype), where the actual behaviour is
+  assembled at runtime by annotation-scanning, classpath magic, and reflective dependency injection, so you
+  *can't tell what the program does by reading it*, only by running it and praying. The exact opposite of this
+  skill's core value (effects obvious at a glance, intent clear without running): no `@Autowired` séances, no
+  invisible bean-wiring, no "it works because a proxy the compiler never saw decided it should." If a
+  dependency's behaviour lives in reflection you can't follow at compile time, it's a no-go; reach back up the
+  cascade (JDK, hand-roll, or a small lib you can actually *read*).
 
 Background: [`../../docs/foundations.md`](../../docs/foundations.md) (safe by design, capture checking),
 [`../../tools/README.md`](../../tools/README.md) (conventions). Picking which tool to run: the
