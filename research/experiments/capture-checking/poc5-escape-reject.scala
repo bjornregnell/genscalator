@@ -1,4 +1,4 @@
-//> using scala 3.nightly
+//> using scala 3.10.0-RC1-bin-20260707-a4dab1a-NIGHTLY
 // PoC 5b (v2) — LIFETIME / ESCAPE control (EXPECTED COMPILE FAILURE).
 // The block tries to smuggle the Injector OUT of its scope by returning a
 // closure that retains `inj`. Because `inj` is local to `requestInject`, the

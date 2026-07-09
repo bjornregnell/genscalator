@@ -1,4 +1,4 @@
-//> using scala 3.nightly
+//> using scala 3.10.0-RC1-bin-20260707-a4dab1a-NIGHTLY
 // PoC 3b — THE SM016 CRUX, the capture-checking guarantee (EXPECTED COMPILE
 // FAILURE — that failure is the proof).
 //

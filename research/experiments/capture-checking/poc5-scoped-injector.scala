@@ -1,4 +1,4 @@
-//> using scala 3.nightly
+//> using scala 3.10.0-RC1-bin-20260707-a4dab1a-NIGHTLY
 // PoC 5 (v2) — a SCOPED injector harness: the SM016 kernel in pure Scala.
 // Mirrors the paper's `requestFileSystem` lifetime pattern (Sec 2/3.6):
 //   - `requestInject` creates an Injector capability, runs `op` with it; the

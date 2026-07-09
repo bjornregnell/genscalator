@@ -1,4 +1,4 @@
-//> using scala 3.nightly
+//> using scala 3.10.0-RC1-bin-20260707-a4dab1a-NIGHTLY
 // PoC 2 — LOCAL PURITY, the paper's core leak-prevention mechanism (Sec 2/3.3).
 // Goal: prove the compiler REJECTS a classified-data leak by construction.
 // A `Classified[T].map` accepts ONLY a pure function `T -> U` (empty capture

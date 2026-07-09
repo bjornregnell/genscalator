@@ -1,4 +1,4 @@
-//> using scala 3.nightly
+//> using scala 3.10.0-RC1-bin-20260707-a4dab1a-NIGHTLY
 // PoC 4 — SAFE MODE closes the escape hatches (EXPECTED COMPILE FAILURE).
 // `import language.experimental.safe` (paper Sec 3.5) extends capture checking
 // into a capability-safe SUBSET: no unchecked casts / pattern matches, no
