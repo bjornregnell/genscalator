@@ -246,6 +246,8 @@ scala-cli compile poc5-escape-reject.scala     # EXPECTED compile error (the pro
 scala-cli compile poc6-contained-runner.scala  # compiles (SM033 containment proof)
 scala-cli compile poc6-contained-reject.scala  # EXPECTED compile error (the proof)
 scala-cli compile poc7-airtight-secret.scala   # compiles (CC + Secret compose)
+scala-cli compile poc8-pure-tap.scala          # compiles (SM017 v3: the pure tap)
+scala-cli compile poc8-tap-launder-reject.scala # EXPECTED compile error (the proof)
 ```
 First run downloads the nightly toolchain (a few minutes); later runs are fast.
 
@@ -332,3 +334,31 @@ say `3.nightly` and will fail to fetch until re-pinned — a cheap follow-up).
 Deliverable status: the compile-time containment proof + the airtight CC+Secret
 composition, both verified 2026-07-10. The worked example for the SM017 writeup and
 a blog beat: *"a def that does not hold the console capability cannot leak."*
+
+---
+
+## Part 8 — SM017 v3 increment: the pure tap (poc8)
+
+Closes the poc5 open item ("a `Classified`-tapped input channel wired to it") and
+proves the SEPARATION the SM016 synthesis depends on: a component that TAPS BR's
+keystrokes can observe but can never ACT.
+
+`requestTap(handler: Classified[String] -> Unit)` runs the handler over the tapped
+input under a PURE `->` arrow. Tapped input is `Classified` (an IFC label; cf. poc7
+`Secret`).
+
+- **`poc8-pure-tap.scala` — compiles.** A handler that only observes the tapped
+  input (e.g. measures its length for a fatigue/idle proxy) captures no capability.
+- **`poc8-tap-launder-reject.scala` — EXPECTED compile error (the proof).** A
+  handler that captures the Injector to act on what it read is rejected:
+  ```
+  Found:    (c: Classified[String]) ->{inj} Unit
+  Required: Classified[String] -> Unit
+  Note that capability `inj` cannot flow into capture set {}.
+  ```
+  The tap -> inject laundering path — reading BR's keystrokes and injecting in
+  response, the self-escalation channel SM016 must close — is not expressible.
+  Reading can never become acting, by construction.
+
+Still open for SM017 v3: a stateful multi-turn session, separation checking for a
+mutable terminal buffer, and running the real TACIT MCP server end-to-end.
