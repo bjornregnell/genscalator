@@ -2,6 +2,14 @@
 
 **Power tools for agents: smarter, safer, faster.**
 
+> **Mirrors and EU sovereignty.** The sovereign master of this repository lives on **Codeberg** (EU-hosted):
+> [codeberg.org/bjornregnell/genscalator](https://codeberg.org/bjornregnell/genscalator). It is mirrored
+> verbatim to [GitHub](https://github.com/bjornregnell/genscalator),
+> [GitLab](https://gitlab.com/bjornregnell/genscalator), and
+> [LTH coursegit](https://coursegit.cs.lth.se/bjorn.regnell/genscalator) for reach and redundancy. Please open
+> issues and contribute on the **Codeberg master**; the mirrors are read-only copies kept in sync by
+> `mirror.sc`.
+
 ## What
 
 Genscalator is a toolbox + workflow for coding agents that replaces the brittle
