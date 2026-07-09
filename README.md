@@ -20,8 +20,8 @@ narrow allowlist can trust.
 
 ## Why
 
-Out-of-the-box agent workflows lean on approving dense bash compunds and archaic Unix tools 
-stitched  together in a difficult to review blob. 
+Out-of-the-box agent workflows lean on approving dense bash compounds and archaic Unix tools 
+stitched together in a difficult to review blob. 
 Much of the guardrail machinery exists precisely to contain what can go wrong there, and the 
 cost is **confirmation fatigue** and bad UX from reviewing cryptic, dynamic, unsafe code.
 
@@ -35,7 +35,7 @@ Hat Hacker threat model), and glossary.
 
 ### The bigger picture
 
-Genscalator is also a research project into agentic software engineering workflow productivity. The invention of typed tools is supported by a dog-fooding action research approach where genscalator is used in meta-level experiments and case studies on human-agent workflows. Emerging research questions and findings are reported in [`blog/`](todo) and research studies are brainstormed, designed and executed in [`reserach/`](todo), as we go, supported by the genscalator typed tools and joint human-agent workflow under development.     
+Genscalator is also a research project into agentic software engineering workflow productivity. The invention of typed tools is supported by a dog-fooding action research approach where genscalator is used in meta-level experiments and case studies on human-agent workflows. Emerging research questions and findings are reported in [`blog/`](https://bjornregnell.se/blog) and research studies are brainstormed, designed and executed in [`research/`](research/), as we go, supported by the genscalator typed tools and joint human-agent workflow under development.     
 
 ## Install
 
