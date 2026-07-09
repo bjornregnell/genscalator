@@ -2,13 +2,7 @@
 
 **Power tools for agents: smarter, safer, faster.**
 
-> **Mirrors and EU sovereignty.** The sovereign master of this repository lives on **Codeberg** (EU-hosted):
-> [codeberg.org/bjornregnell/genscalator](https://codeberg.org/bjornregnell/genscalator). It is mirrored
-> verbatim to [GitHub](https://github.com/bjornregnell/genscalator),
-> [GitLab](https://gitlab.com/bjornregnell/genscalator), and
-> [LTH coursegit](https://coursegit.cs.lth.se/bjorn.regnell/genscalator) for reach and redundancy. Please open
-> issues and contribute on the **Codeberg master**; the mirrors are read-only copies kept in sync by
-> `mirror.sc`.
+This repository is mirrored across several hosts for digital sovereignty; see [Mirrors and digital sovereignty](#mirrors-and-digital-sovereignty) at the bottom.
 
 ## What
 
@@ -248,3 +242,12 @@ The genscalator repository is currently maintained by:
 ## Donations
 
 Genscalator is developed as a liberally licenced open source software project that anyone can use. If you want to support the maintenance and implementation of new features of genscalator contact genscalator@bjornregnell.se
+
+## Mirrors and digital sovereignty
+
+The genscalator repo is mirrored from [Codeberg](https://codeberg.org/bjornregnell/genscalator) to [GitHub (owned by Microsoft)](https://github.com/bjornregnell/genscalator), [GitLab](https://gitlab.com/bjornregnell/genscalator) and [LTH coursegit](https://coursegit.cs.lth.se/bjorn.regnell/genscalator) in the spirit of [digital sovereignty](https://en.wikipedia.org/wiki/Digital_sovereignty), to address the debated "Trump kill switch" potentially enabled by US laws such as:
+- [IEEPA (1977)](https://en.wikipedia.org/wiki/International_Emergency_Economic_Powers_Act)
+- the [CLOUD Act (2018)](https://en.wikipedia.org/wiki/CLOUD_Act)
+- [FISA Section 702](https://en.wikipedia.org/wiki/FISA_of_1978_Amendments_Act_of_2008)
+
+Even former Microsoft CEO Bill Gates, while calling a shutdown unlikely, said he was "certain until recently" about Microsoft's security from such interference and expects to be "certain again" in a few years; the sharper warnings come from Danish and Swedish security officials and Sweden's prime minister. See [Swedish public service news SVT (updated 2026-01-29)](https://www.svt.se/nyheter/utrikes/bill-gates-om-europas-techoro-var-saker-fram-till-nyligen) (text in Swedish, video clip in English).
