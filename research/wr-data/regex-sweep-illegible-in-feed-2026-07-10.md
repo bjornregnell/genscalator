@@ -1,0 +1,9 @@
+# Sub-agent regex sweeps were illegible in the shared feed - a review-overload specimen (2026-07-10)
+
+**Event.** During the README + public-docs spell-pass fleet, a copy-editor sub-agent ran correct but human-opaque mechanical scans (raw regex such as `\b(\w+) \1\b` for doubled words, double-space scans, dictionary passes) that surfaced in the shared feed with NO plain-language narration. BR (watching) could not tell what was being checked or whether it mattered; the sub-agent itself apologized ("sorry about the noise") and flagged it as WR data for the super-agent to persist (its brief forbids wr-data writes).
+
+**Why it is data.** A channel-bandwidth / review-overload specimen, and a sibling of the "don't slap a blob in my face" confirmation-fatigue thread: there, illegible COMMANDS force fatigue-approvals; here, illegible OUTPUT (raw regex scrolling past) spends the human's attention with no signal. The human's review bandwidth is the scarce resource - opaque mechanical work in the feed burns it for nothing. Delegation compounds it: sub-agent activity is visible to BR, so a fleet multiplies the noise.
+
+**Lesson / fix (applied immediately, same session).** Agents (super- and sub-) should NARRATE mechanical sweeps in reader-terms ("checking for doubled words", "dictionary pass") and keep the raw regex / commands BELOW THE FOLD. The follow-on report-only agents in this very pass were briefed "narrate in plain reader-terms; keep raw regex out of the summary" - the lesson enacted mid-session. Generalizes to the delegation-dance brief template: sub-agents summarize in HUMAN terms, not tool terms.
+
+**Ties:** [[educate-lead-with-one-screen]], the confirmation-fatigue / blob thread (illegibility as the shared root), [[writing-anchor-points-for-skimmers]], [[delegation-dance]] (brief template), [[joint-rot-vigilance-recovery-kit]] (protect the human's bandwidth), RT047.
