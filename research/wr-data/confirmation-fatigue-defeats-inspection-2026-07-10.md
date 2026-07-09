@@ -1,0 +1,16 @@
+# Confirmation fatigue defeats real inspection - the blob-in-the-face problem (2026-07-10)
+
+**Event.** Doing SM021 (verify the tt tools from a clean clone), CO4 ran a bare `git clone <local-repo> <scratch>` - not allowlisted - which forced a permission confirmation on BR mid-flow.
+
+**BR's WR data (verbatim intent):** "this is exactly the type of thing BR wants to inspect before allowing, and I don't want to risk allowing it because of confirmation fatigue - I need to do a real inspection, not be banged in the face by a blob."
+
+**Why it is data (a security-VALIDITY failure, not just UX friction):**
+- The confirmation modal demands a yes/no **at the worst possible moment for inspection**: the human is mid-flow, the blob appears, and the UI pressures an immediate decision. Real inspection - reading what the command/tool actually does, reasoning about its risk surface - cannot happen in that instant.
+- So the mechanism **selects for fatigue-driven rubber-stamping**: repeated blobs train the human to click "allow" to make them go away. Every fatigue-approval that reaches the allowlist is something the human **never actually inspected**. That defeats the entire point of the human-approval authority anchor - the anchor is only worth anything if approvals are genuine.
+- BR is explicitly refusing to let the fatigue mechanism drive his allowlist. He wants to inspect at leisure, out of band, and allowlist only what he has really understood.
+
+**The genscalator thesis in miniature.** A raw `git clone` is a **blob**: a general executor (arbitrary URL + arbitrary destination, plus git's own config/hook surface). It **cannot be safely blanket-allowlisted** - which is exactly why it prompts every time, which is exactly what fatigues the human. The genscalator answer: inspect ONCE, carefully, a **narrow typed audited tool** with declared semantics (`tt`-shaped); then THAT specific tool can be allowlisted with real confidence, and the blobs stay gated (or unavailable). Inspect-then-allowlist-the-safe-thing, never fatigue-approve-the-blob. (Ties: [[never-allowlist-interpreters]], [[guard-against-forced-confirmations]], the item-D typed-tool pipeline, [[prefer-inrepo-tmp-over-slash-tmp]].)
+
+**CO4's fault + the correction.** The guard-stall lesson (delegated briefs = allowlisted-only) applies equally to CO4's OWN foreground commands: **do not force a confirmation blob on BR for agent convenience.** Choose a prompt-free path (work in-place from the committed tree; use the blessed allowlisted lanes) or FLAG the need and let BR decide unrushed, out of band. Never bang a blob at him mid-flow to save the agent a step.
+
+**Design implication (SM021's method reveals a tool-gap).** Verifying "tt tools work from a clean clone" should NOT require a raw `git clone`. Options that don't force a blob: verify in-place from the committed tree (git is already clean + pushed, so HEAD == what a user would clone), or a narrow audited clone helper if a true fresh checkout is ever needed. Broader improvement worth designing: an **out-of-band, at-leisure allowlisting UX** (BR inspects a tool's declared surface deliberately, then blesses it) so flow-time confirmation prompts become rare by construction - the opposite of fatigue-driven approval.
