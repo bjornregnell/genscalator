@@ -243,6 +243,9 @@ scala-cli compile poc3-crux-reject.scala       # EXPECTED compile error (the pro
 scala-cli compile poc4-safe-mode-reject.scala  # EXPECTED compile error (the proof)
 scala-cli run poc5-scoped-injector.scala       # compiles + runs (allow-list + lifetime)
 scala-cli compile poc5-escape-reject.scala     # EXPECTED compile error (the proof)
+scala-cli compile poc6-contained-runner.scala  # compiles (SM033 containment proof)
+scala-cli compile poc6-contained-reject.scala  # EXPECTED compile error (the proof)
+scala-cli compile poc7-airtight-secret.scala   # compiles (CC + Secret compose)
 ```
 First run downloads the nightly toolchain (a few minutes); later runs are fast.
 
@@ -271,3 +274,61 @@ First run downloads the nightly toolchain (a few minutes); later runs are fast.
 - **Separation / stateful capabilities** for a mutable terminal buffer.
 - **Whether current LLMs emit safe-mode Scala reliably** for our own tasks (the
   paper says yes for theirs; measure on `tt`-shaped tasks).
+
+---
+
+## Part 7 — SM033: a CC-PROVEN contained subprocess runner
+
+Born from the `deployblog.sc` credential leak (a verbose lftp run printed
+`sftp://user:PASSWORD@host`). The shipped fix is the **contained-def** shape: own
+the credential-bearing subprocess, CAPTURE its output into a local String, and
+emit only a self-synthesized secret-free summary. SM033 asks: can capture checking
+make that containment **compile-time provable**? Yes.
+
+**The model.** Capability-typed facades over the (non-cap-typed) Java IO: a
+`Console` capability (the print effect) and a `Subprocess` capability (run +
+capture). The combinator
+
+```scala
+def contain(proc: Subprocess^)(body: Subprocess^ -> String): String = body(proc)
+```
+
+demands a **pure** body (thin `->` arrow = empty capture set), so `body` may not
+capture ANY outer capability, in particular not `Console`. Whatever the body does
+with the captured output, it cannot emit it — it does not hold the console
+capability. "A def that never prints" == "a def that does not capture the console
+capability", and CC checks exactly that.
+
+- **`poc6-contained-runner.scala` — compiles.** The contained body only runs the
+  subprocess and returns the captured String; the trusted caller (which *does* hold
+  Console) emits only its own synthesized summary.
+- **`poc6-contained-reject.scala` — EXPECTED compile error (the proof).** A body
+  that tries `console.emit(captured)` is rejected:
+  ```
+  Found:    (p: Subprocess^) ->{console} String
+  Required: Subprocess^ -> String
+  Note that capability `console` cannot flow into capture set {}.
+  ```
+  The leak closure has type `->{console}`; the pure `->` that `contain` requires
+  forbids it. Containment is real, not an unused parameter.
+- **`poc7-airtight-secret.scala` — compiles.** poc6 proves the RUNNER cannot leak,
+  but it returns a raw String the caller could still print. poc7 composes CC with a
+  `Secret[A]` wrapper: `contain` returns `Secret[String]`, and extracting the raw
+  value needs an `Unseal` capability distinct from Console, granted only at a
+  trusted declassify site. **The split is the insight:** CC governs the CAPABILITY
+  (who may print); `Secret` governs the DATA SENSITIVITY (an IFC label). CC alone
+  cannot see a plain String is a secret; `Secret` alone cannot stop a scope from
+  holding the console. Composed, both halves close.
+
+**Why this is NOT in `deployblog.sc`.** Production deploy stays on STABLE Scala
+3.8.4; this PoC is nightly + `captureChecking`, an isolated sibling so nightly/CC
+churn never breaks a real deploy. Concretely: `3.nightly` today resolves to
+`3.10.0-RC1-bin-20260708-de5da04-NIGHTLY`, whose compiler artifacts **404** on the
+nightly repos — so poc6/poc7 are **PINNED** to `3.10.0-RC1-bin-20260707-a4dab1a-NIGHTLY`
+(the cached, known-good build) for reproducibility. Bare `3.nightly` is NOT
+reproducible: the metadata advances daily and old builds get pruned (poc1-5 still
+say `3.nightly` and will fail to fetch until re-pinned — a cheap follow-up).
+
+Deliverable status: the compile-time containment proof + the airtight CC+Secret
+composition, both verified 2026-07-10. The worked example for the SM017 writeup and
+a blog beat: *"a def that does not hold the console capability cannot leak."*
