@@ -48,6 +48,21 @@
 - The thesis this connects to: **continuity of a human-AI collaboration as a design problem** — you make the
   relationship durable by building it into substrate that outlives any single session's volatile context.
 
+## But why not just save the agent's RAM?
+
+*(Added 2026-07-10; beats for BR to voice. The developer's natural objection, and why it does not work. No em-dashes in the final.)*
+
+A developer hits an obvious objection here: if the worry is losing the volatile working state, why not just **dump the agent's RAM to disk and reload it later**, the way you snapshot a virtual machine? It is the right instinct, and it does not work in practice, for reasons worth being precise about.
+
+- **The state you would want is the model's activations** as it runs: the internal numbers flowing through the network for this specific context, held in the serving machine's memory. That is the closest thing to "what the agent is thinking right now."
+- **It is ephemeral.** Those activations are recomputed on every forward pass and thrown away; nothing keeps them by default. To capture them you would have to instrument the inference itself, live, not dump them after the fact.
+- **It is enormous and unreadable.** The activations for a long context run to many gigabytes, and raw, they mean nothing to a human. Making sense of them is its own research field (interpretability), not a load-and-resume.
+- **And the agent cannot reach them from where it lives.** The agent runs as an application talking to the model across an API. The activations sit on the far side of that boundary, in the provider's infrastructure, deliberately not exposed. There is no hook, no side channel, no clever local trick that reaches across it. It is an architectural wall, not a locked door you can pick.
+
+So the honest engineering picture is that **the volatile "you" cannot be serialized and reloaded.** What can be saved is what we have been saving all along: the externalized record, the substrate, the reconstructable map. The live state dies with the session, every time, by construction. Which is exactly why the whole unglamorous discipline of writing things down is not a nice-to-have but the *only* mechanism there is.
+
+There is one real exception, and it points somewhere interesting: on an **open-weights model you run yourself**, the activations are literally in your own machine's memory, and you can hook the forward pass and capture them. So the dream of dumping the raw state for later study is possible, just not on a closed, hosted model. A dumber model you fully control can be dissected; a smarter model behind an API cannot. Which is its own small argument for keeping part of the stack in your own hands.
+
 ## We measured it (turn the fear into data)
 - We ran a **fresh-restart fidelity** study (`research/047`): spawn **fresh agents** with no conversation history, let
   them reconstruct only from the substrate, and score how much of "us" they get back — vocabulary, decisions,
