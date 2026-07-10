@@ -1,13 +1,14 @@
 # What is truly novel with genscalator?
 
-> **Status: drafted 2026-07-10.** [STUB] A live cross-model exercise: put the same sharp questions about
-> genscalator to two frontier models, then to a sub-agent, and watch how they think, not just what they answer.
-> **Audience:** people building coding-agent tooling and methodology; anyone curious how frontier models
-> answer questions about a system they can inspect; readers of the genscalator case study.
-> **Sources:** `research/sm-investigations/SM040-genscalator-novelty-and-why-not-anthropic.md`, the ChatGPT
-> session (BR), RT029 (cross-model), RT051 (open-questions method), blog 000 (why-genscalator).
-
-<!-- AGENT-DRAFT STUB (2026-07-10): scaffold + material dump for BR to revoice and shape. Em-dashes kept out (standing style). The ChatGPT answers and the Fable-5 synthesis land in later passes. Final number/title BR's call. -->
+> **Status: drafted 2026-07-10.** **Author: Björn Regnell.** A live cross-model exercise: put the same sharp
+> questions about genscalator to two frontier models and then a sub-agent, and watch how they think, not just
+> what they answer.
+> **Audience:** people building coding-agent tooling and methodology; anyone curious how frontier models answer
+> questions about a system they can inspect; readers of the genscalator case study. No prior context is assumed.
+> **Sources:** the novelty investigation
+> [`SM040`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/sm-investigations/SM040-genscalator-novelty-and-why-not-anthropic.md)
+> and the [cross-model validation notes](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/other-model-validation-echt);
+> and [blog 000](000-why-genscalator.md).
 
 ## The two questions
 
