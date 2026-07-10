@@ -138,6 +138,16 @@ datapoint.
   unit effort?**" — the productivity question, backed by WR-data episodes + the cross-model caveat.
 - **Shares its job with RT054** (the accessible seminar): both must explain the key dances accessibly and back
   them with data; draft once, reuse.
+- **TODO, title allusion (decide later; keep the current title for now):** two candidate films to riff on (or
+  drop): [**Dances with Wolves**](https://en.wikipedia.org/wiki/Dances_With_Wolves) (1990, dir. Kevin Costner)
+  and [**The Horse Whisperer**](https://en.wikipedia.org/wiki/The_Horse_Whisperer_(film)) (1998, dir. Robert
+  Redford). *The Horse Whisperer* is arguably the closer parallel (a human who learns to **understand and
+  communicate with** the other, rather than merely dance alongside it). **We keep BOTH references in the piece** (decided); the only open call is **which film gets promoted to the
+  blog TITLE**. The current "Dancing with agents" rides on *Dances with Wolves*; *The Horse Whisperer* could
+  take the title instead with a re-verbed phrasing (e.g. "Whispering with agents"). Not a skip, a title choice. **And it may become TWO posts eventually**, one per film, if a deeper analogy can
+  be developed for each (*Dances with Wolves*: the outsider who earns a name by moving alongside the other;
+  *The Horse Whisperer*: learning to understand and communicate with the other). Explore whether each film
+  sustains its own distinct piece.
 
 ---
 
