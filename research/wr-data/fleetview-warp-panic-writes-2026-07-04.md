@@ -38,3 +38,21 @@ the agent's memory/history lives in *external structure*, and the agent can not 
 session `3b97e878` → resumed fork `240e00c3` = the current session.) **Cue-driven, not spontaneous** — the human
 pointed; the agent then knew *where its own substrate lived* and how to query it. One for the psyche thread (006):
 substrate-awareness as an agent capability, and the human cue as its trigger.
+
+## Timestamp retrofit (2026-07-10, evidence-timestamp enhancement)
+Exact per-message UTC times, recovered from each spawned session's line-4 `"operation":"enqueue","timestamp"` field
+(the instant BR hit send). Append-only: the "roughly chronological" list above is the ORIGINAL record; this block
+times it AND corrects the ordering.
+- `a90ad1bc` "aaargh I want back…" — **11:18:07.341Z**  ← actually FIRST (the original list guessed it third)
+- `4be4cf37` "on screen now:" — 11:18:36.792Z
+- `6678a402` "UX CHANGED under my feet WR DATA!!!!" — 11:18:57.506Z
+- `6a3e4595` "anything lost?" — 11:19:12.468Z
+- `74493417` "its now a 2-column table…" — 11:19:39.448Z
+- `79120670` "I get no answers from you" — 11:20:26.181Z
+- `142ec29c` "should we do the exit resume dance?" — 11:20:39.373Z
+- `8bd07a15` "see screenshot here…" — 11:21:44.094Z
+- `5240f18f` (the header paste) — no enqueue line; date via its user-message line.
+Window **11:18:07–11:21:44Z = 13:18–13:21 CEST (3m37s)**, consistent with the screenshot filename `13-19-52`
+(mid-warp) and its git add 2026-07-04 13:48:10 +0200. Method (record for the enhancement): prefer the EARLIEST hit,
+verify it is a human-typed `type:"user"` line (not a tool_result echo), and search sibling session files in the
+project dir. Transcript-based, so PERISHABLE per `cleanupPeriodDays`. ([[raw-data-append-only]].)

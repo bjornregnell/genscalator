@@ -77,3 +77,11 @@ inherit the constraint. Caveat: Java IO (`ProcessBuilder` / `BufferedReader`) is
 CC proof needs capability-typed facades over the Java IO -- which is exactly why the CC-verified version belongs in
 a nightly experiment, NOT in this production deploy tool (kept on stable so nightly/CC churn never breaks a deploy).
 Pinned as **SM033**.
+
+## Timestamp retrofit (2026-07-10, evidence-timestamp enhancement)
+Git-anchored bracket (git dates are NON-perishable, unlike the transcript): the leak event was **before** this
+note's add-commit **2026-07-08 20:57:08 +0200**; contained by fix commit `0012bec` ("deployblog: contained-def
+shape…") **2026-07-08 21:21:54 +0200**; SM033 follow-up `75392cd` **2026-07-09 12:34:13 +0200**. So leak <
+20:57:08+02 on 07-08, contained < 21:21:54+02 — about 25 min from record-to-containment on the git record. The
+exact transcript stamp of the dry-run is recoverable by grepping an `lftp` / `sftp://` output fragment if wanted.
+([[raw-data-append-only]].)

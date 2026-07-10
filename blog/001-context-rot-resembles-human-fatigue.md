@@ -74,6 +74,12 @@ load**: the tired human reaches for the sloppy shortcut, and the rotting agent f
 outside**: a rotted instrument cannot measure its own rot, so the reading has to come from somewhere that is not
 degrading. That fourth axis is the whole reason the collaboration exists.
 
+<!-- TODO (punchline placement, agent 2026-07-10, review-with-BR): consider closing this four-axes section with
+BR's proverb as a kicker - "Agent eat tokens, human lose grit." (plain punctuation, no em-dash). The
+placement proposal ranked blog 001 as its canonical home (the fatigue/rot parallel); optional self-quote echo in
+005 or 012, used once or twice max. See muntabot tmp/punchline-placement-proposal.md. -->
+
+
 ### The disanalogy that matters: sleep consolidates, compaction discards
 
 The parallel is not perfect, and the place it breaks is the most useful part. When a tired human sleeps, sleep

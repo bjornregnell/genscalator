@@ -52,3 +52,14 @@ moves through a no-clobber `tt` tool; never accept option 2 for `mv`.
 
 **One-line honest summary for BR:** *Same answer, different machinery — and I flagged the one bias that would
 make me fake agreement, because faking it would corrupt exactly the thing you're studying.*
+
+## Timestamp retrofit (2026-07-10, evidence-timestamp enhancement)
+The utterance is in session `6259cd13-…jsonl` line 68, timestamp **2026-07-06T16:48:35.656Z** (18:48:35 CEST).
+True verbatim (append-only; upgrades the "verbatim-ish" above, which is kept): *"WR data; previous session I think
+this was allowed per session; i am not sure; the suggested 2. Yes, and is giving ok to `mv *`  and THAT I REALLY DO
+NOT WANT!"* **Pin latency:** this note's git add-commit is 2026-07-06 19:12:59 +0200 = **24 min after** the
+utterance (a clean pin-latency datapoint). **Method lesson (record for the enhancement):** the same phrase also hit
+the MAIN session `240e00c3` line 17275, but that is an ECHO — a tool_result re-reading the synthesis file,
+2026-07-07T18:31:04Z — NOT the utterance. So the retrofit rule is: prefer the EARLIEST hit, verify it is a
+human-typed `type:"user"` line (not a tool_result), and search sibling session files, not only the current one.
+([[raw-data-append-only]].)
