@@ -79,7 +79,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 
 **Groups:** [Roles and cases](#roles-and-cases) · [Channel: bandwidth and confirmation fatigue](#channel-bandwidth-and-confirmation-fatigue) · [Echt and honest writing](#echt-and-honest-writing) · [Context rot and the smart zone](#context-rot-and-the-smart-zone) · [Dances and handoffs](#dances-and-handoffs) · [Memory, habits and substrate](#memory-habits-and-substrate) · [Autonomy and safety](#autonomy-and-safety)
 
-**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · AT · Authority anchor · Ballgame · BR · Cold start · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confabulation · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · Delegation dance · echt / äkthet · echt-mimicry · Edit dance · Edit vs clarification cues · Extrinsic-volatile plasticity · Go afk cue · Go dance · Go dial ((go)/go/GO) · gs (genscalator) · Guard stall · Habit · Hardening dance · Index rot · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Prosthetic habit · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token-usage dance · Token velocity · Warp · WR · Why cue
+**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · AT · Authority anchor · Ballgame · BR · Cold start · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confabulation · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · Delegation dance · echt / äkthet · echt-mimicry · Edit dance · Edit vs clarification cues · Extrinsic-volatile plasticity · Go afk cue · Go dance · Go dial ((go)/go/GO) · gs (genscalator) · Guard stall · Habit · Hardening dance · Hot context · Index rot · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Prosthetic habit · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token-usage dance · Token velocity · Warp · WR · Why cue
 
 ### Roles and cases
 *BR and the agent are the **roles** (stakeholders, above). **WR** is the research program; **AT** and **SSG** are its **cases / units of analysis** — the object-level projects during which workflow data is collected. (Terminology per* Case Study Research in Software Engineering: Guidelines and Examples*, Runeson, Höst, Rainer & Regnell, Wiley 2012, §3.2.3 "Cases and Units of Analyses" — of which BR is a co-author.)*
@@ -190,6 +190,14 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   so quality stays high (see *smart zone / dumb zone*). (b) is the one that bites silently. genscalator tools serve
   both: a tool is a small stable thing the agent *calls*, vs re-deriving bash + re-reading its output, which
   bloats context.
+- **Hot context** — the state in which the material relevant to the current work is already **resident in the
+  agent's context window** (and the underlying prompt-cache is warm): all of it at the agent's fingertips,
+  needing no re-reading, re-fetching, or re-deriving. "Doing X while the context is hot" = doing related work
+  **now**, before a compact / clear / reload discards or cools it. Two reinforcing senses — the *material* is
+  loaded (immediately usable and coherent), and the *cache* is warm (cheap and fast to continue, the ~5-minute
+  prompt-cache window). It cools when the relevant material scrolls out, is compacted away, or the cache TTL
+  lapses; then the same work costs a reload. So *hot* is the cheap-and-capable window for a cluster of related
+  tasks. Cf. *Context usage / fill* (how full), *Smart zone* (how sharp), *Compact dance* (what cools it).
 - **Smart zone / dumb zone** — the region of context-window fill where the agent reasons well ("smart")
   vs. where it degrades ("dumb") — even though tokens remain below the hard limit. The boundary (X%) is
   often FAR below 100% — possibly ~30% on large-context models ("lost in the middle" / *effective context
