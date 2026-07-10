@@ -213,7 +213,11 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   decisions **while the context is still *hot*** (loaded, coherent, at the agent's fingertips) — before a warp
   cools or discards them. The *pin dance* in high gear: prefer **many small durable captures** (glossary terms,
   memories, RTs, SM pins, blog beats) over new deep work, because the marginal value now is **banking what the
-  hot context already holds**, not generating more that would also need banking. Gated by rot (a "not getting
+  hot context already holds**, not generating more that would also need banking. **Modus operandi with sub-agents** (BR 2026-07-10): prefer to
+  run useful **investigations as sub-agents** that store their results in `tmp/` (durable across the warp) and
+  **refresh the resume-prompt at each step**, so the post-compact agent is aware of the sub-agent results and can
+  pick them up — the super-agent then spends its own scarce hot budget on harvesting and banking, not on deep work
+  it can delegate (*delegation dance*). Gated by rot (a "not getting
   too dumb" check — stop harvesting into degraded output). Cf. *Hot context*, *Pin dance*, *Compact dance*.
 - **Hot context** — the state in which the material relevant to the current work is already **resident in the
   agent's context window** (and the underlying prompt-cache is warm): all of it at the agent's fingertips,
@@ -405,7 +409,11 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   - **Human step:** cue `pin:` ("save this durably — you pick where unless I say") or `WR data:` (pin to the WR corpus).
   - **Agent step:** persist that content out of the volatile context (substrate #1) into **durable committed items**
     (memory, `wr-data/`, notes, blog, this glossary) — **choosing the home** and **questioning whether it earns a
-    durable slot**, moving each insight *down the substrate hierarchy as it arises*.
+    durable slot**, moving each insight *down the substrate hierarchy as it arises*. **Evidence-timestamp retrofit** (BR 2026-07-10):
+    when the pinned content cites specific evidence (an utterance, event, slip), also retrofit that evidence's REAL
+    timestamp from the substrate — the session-jsonl `timestamp` field (prefer the EARLIEST human-typed
+    `type:"user"` hit, not a tool_result echo) and/or git commit dates — not just the pin date; the substrate is
+    queryable, so *when* is recoverable data, not memory (proven to the second by the `wr-data/` retrofits 2026-07-10).
 
   **Why it matters:** it keeps the *effective working-context* small even as *raw fill* climbs — the mechanism behind
   "capable at 0.88 fill" (`research/wr-data/harness-ux.md`), i.e. *why* raw fill ≠ working-context. Both roles are

@@ -45,7 +45,7 @@ plausibly be designed away by a tool. Suggested fields:
 
 | field | meaning |
 |---|---|
-| `when` | date (the session stamps it — sessions can't generate dates blindly, so write it explicitly) |
+| `when` | date-time of the **evidence event** (the session stamps the pin-date; when it differs from evidence-time, note BOTH — the gap is *pin latency*, itself a WR metric). Retrofit the evidence time-of-day from the transcript `timestamp` field / git dates when recoverable (evidence-timestamp enhancement, 2026-07-10). |
 | `context` | task / project the agent was doing (e.g. introprog/autotranslate) |
 | `action` | what the agent was trying to do |
 | `command` | the actual command / tool call that needed approval |
