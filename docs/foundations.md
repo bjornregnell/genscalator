@@ -79,7 +79,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 
 **Groups:** [Roles and cases](#roles-and-cases) · [Channel: bandwidth and confirmation fatigue](#channel-bandwidth-and-confirmation-fatigue) · [Echt and honest writing](#echt-and-honest-writing) · [Context rot and the smart zone](#context-rot-and-the-smart-zone) · [Dances and handoffs](#dances-and-handoffs) · [Memory, habits and substrate](#memory-habits-and-substrate) · [Autonomy and safety](#autonomy-and-safety)
 
-**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · AT · Authority anchor · Ballgame · BR · Cold start · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · Delegation dance · echt / äkthet · Edit dance · Edit vs clarification cues · Extrinsic-volatile plasticity · Go afk cue · Go dance · gs (genscalator) · Habit · Hardening dance · Index rot · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Prosthetic habit · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token-usage dance · Token velocity · Warp · WR · Why cue
+**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · AT · Authority anchor · Ballgame · BR · Cold start · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · Delegation dance · echt / äkthet · Edit dance · Edit vs clarification cues · Extrinsic-volatile plasticity · Go afk cue · Go dance · gs (genscalator) · Guard stall · Habit · Hardening dance · Index rot · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Prosthetic habit · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token-usage dance · Token velocity · Warp · WR · Why cue
 
 ### Roles and cases
 *BR and the agent are the **roles** (stakeholders, above). **WR** is the research program; **AT** and **SSG** are its **cases / units of analysis** — the object-level projects during which workflow data is collected. (Terminology per* Case Study Research in Software Engineering: Guidelines and Examples*, Runeson, Höst, Rainer & Regnell, Wiley 2012, §3.2.3 "Cases and Units of Analyses" — of which BR is a co-author.)*
@@ -326,6 +326,15 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   (the AARGH lesson, [[guard-against-forced-confirmations]]). "Give me a solo-safe menu" = filter to items the agent
   can do alone; the **AFK menu** tightens that to the prompt-race-free residue for a genuinely absent human. What's
   left over (build glue, web to new domains, settings, publish) is *needs-human* / *outward-facing*.
+- **Guard stall** (adj. *guard-stall-safe*) — the agent's work is **halted** when a harness guardrail fires: a
+  not-yet-allowlisted command triggers an allow/deny **confirmation** that waits for the human. Because answering it
+  is a **confirmation-fatigue-risky** interaction, in **AFK / overnight solo mode** it can silently **stall the whole
+  job** until the human returns to release it (the SM016a specimen: a background sub-agent's un-allowlisted probe
+  stalled ~11h, invisibly). It is exactly the failure that *prompt-race-free* / *AFK-safe* prevents (see *Solo-safe*):
+  run only **bare allowlist-matchable** commands so no guard fires. **Structural sharpening** — prefer a typed tool
+  with a **uniform allowlist surface** (e.g. `tt text`, allowlisted as a whole) over a raw shell whose allowlist is
+  **ragged per-flag** (a raw `grep -A` stalls where `tt text context` does not). See *Confirmation fatigue*,
+  [[guard-against-forced-confirmations]].
 - **Edit dance** — the human↔agent protocol for **correcting a just-sent message** without derailing the turn.
   Cause: a harness input-race — pressing ↑ to edit an already-Entered message is **too late** once the agent has
   begun processing it, so the correction posts as a **new** message (a double-post).
