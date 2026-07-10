@@ -141,3 +141,19 @@ or flag it as speculation — don't smuggle it in wearing a grounded voice (see 
   *first* mention** — "our own …", "in earlier work of ours", "BR's book …" — so the reader sees it *in the flow*, not
   buried in the end reference list. Transparency at the point of use (echt), **not** a heavy "conflict of interest"
   ritual. (Note it in the ref's `comment` too, but the inline body flag is the one that matters.)
+
+## 9. Acronyms and jargon — spell out first, earn the acronym (BR, 2026-07-10)
+Each post is **self-contained**: a reader may land on it cold, so terms must resolve *in the post*, not only in an
+earlier one (cf. the anchor-points-for-skimmers rule — disambiguate at the landing point).
+- **Spell out on first use, per post.** The first mention of a term gets its full form; a reader shouldn't have to
+  have read post 001 to follow post 009.
+- **Introduce an acronym only if it *amortizes*.** An acronym has a cost (it loads the reader's working memory with
+  the expansion) and a benefit (letters saved per reuse). Introduce `agentic SE` / `TE` / etc. in parentheses only
+  if you will **reuse it enough** in that post (rough rule of thumb: ~3+ times) to pay back the memory cost. Used
+  once or twice, spell it out every time and skip the acronym — it earns nothing, it only taxes the reader.
+- **Gloss a colliding acronym.** When an acronym clashes with a known one (e.g. **ASE** also = the *Automated
+  Software Engineering* conference), add a one-line disambiguating note the first time you adopt it.
+- **Lean on established field acronyms; don't mint new ones.** Prefer a modifier + a known acronym (**agentic SE**,
+  **agentic RE**) over a brand-new coinage — no bare "ARE" (unsearchable, no traction). The glossary in
+  `docs/foundations.md` always carries the acronym (it *is* the lookup surface); the *posts* follow this per-post rule.
+- Candidate for an eventual `ssg` / blog **lint** (flag an acronym used only once, or introduced without a spell-out).
