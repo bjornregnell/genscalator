@@ -18,3 +18,33 @@ the warp and is regenerated. Reassuring corollary: the "disinformation" is ephem
 across warps the way real substrate does - the warp is a *cleanse* for harness chrome even as it preserves
 substrate. Ties: [[harness-status-line-can-misrepresent-a-trust-nit-2026-07-10]], blog 012 (what survives a warp),
 [[agent-surfaces-substrate-size-measures-three-kinds-2026-07-10]].
+
+## RESULT (2026-07-10, right after the compact): prediction FALSIFIED
+**It DID survive.** BR watched the post-compact spinner still read *"Next: Render Arc-2 set to HTML and hand off to
+BR for deploy"* - the exact stale hint - AND it persisted through the resume-prompt paste too. BR (delighted):
+*"HA! it DID survive that fake news!!!"* My prediction was wrong. Recording the falsification (echt: the call lost).
+
+### Why it survived - the mechanism I got wrong
+I assumed the "Next:" line is **re-inferred fresh each turn** from current context. It is NOT. The decisive tell:
+the surviving hint names **Arc-2 render** - ancient work from a *much earlier* state, not anything in the current
+or recent context. A fresh per-turn inference would name *current* work. So the "Next:" hint is a **STICKY** piece
+of harness state: set once when it was genuinely true, never refreshed, and **the compact does not clear it.**
+(Contrast the live spinner *metrics* - elapsed time, token counter - which ARE truly per-turn ephemeral. So harness
+chrome is not one thing: at least two classes - **sticky hints** vs **live metrics**.)
+
+### The corollary INVERTS (this is the important part)
+My "reassuring corollary" was: the disinformation is ephemeral, so it *cannot accumulate* across warps; the warp is
+a *cleanse*. **False.** The sticky "Next:" hint is in fact *more* persistent than the conversation itself - it
+outlived a compact that discarded 890k tokens of messages. So stale chrome **can** carry across warps and persist
+indefinitely until something overwrites it. The warp does NOT cleanse this chrome. That is a *worse* trust nit than
+predicted: the one piece of on-screen state that misrepresents what the agent is doing is also the stickiest.
+
+### What still holds, and the lesson
+The high-level durable-vs-ephemeral distinction is intact - the **checkable substrate** (commits, pins,
+resume-prompt) remains ground truth. What's corrected is "chrome dies with the warp": for the sticky-hint class it
+is false. **Lesson:** trust only the checkable substrate, never the "Next:" line; and it will NOT self-clear across
+a warp, so it can only be trusted to the extent the agent last set it accurately (or ignored entirely). A clean win
+for [[guardcheck-hook-structural-fix]]-style *structural* trust (verify the substrate) over reading the chrome.
+Method note: this is exactly why we make predictions FALSIFIABLE and BR member-checks them - the falsification
+taught more than a confirmation would have. Ties: [[raw-grep-regression-after-compact-2026-07-10]] (also a
+post-warp finding this session).
