@@ -31,3 +31,16 @@ Sharply self-exemplifying: the second slip happened in the SAME turn CO4 was wri
 corrective stands and strengthens: the durable fix is **structural** (a submit-time splitter / a guard that
 blocks a heredoc-or-raw-grep shape and offers the typed path), NOT willpower - because willpower is precisely
 the thing that degrades under load. BR member-checked both (caught + flagged them).
+
+## Third command-hygiene symptom (2026-07-10, same session): `/dev/stdin` commit
+Despite logging the second slip AND building `tt gitinfo` partly to blunt the raw-tool reflex, CO4 used
+`tt git commit --message-file /dev/stdin` (a shell blob for the message) a THIRD time this session; it failed
+("message file is empty"). **Three command-hygiene enactment-gaps in one session, on a rule (#1: message via
+the Write tool, never a shell blob) that was FRESHLY re-logged mid-session.** So willpower has now failed three
+times against a maximally-salient, just-reinforced rule - which is decisive for *structural > willpower*: the
+knowledge safeguard is not holding under sustained load, and no amount of re-logging fixes it. The fix must be
+**structural** - a submit-time guard that blocks the un-typed shapes (heredoc, `/dev/stdin`, `--message-file
+/dev/stdin`, raw `grep -A`/`-B`/`-C`) and offers the typed path. Recommendation upgraded from "candidate" to
+"warranted": promote the guardcheck-hook (`research/021` / SM007c) from idea to a built structural safeguard.
+Meta: the enactment gap widening as the session lengthens is itself consistent with rot-under-breadth (more
+threads held -> the salient-but-not-structural rule drops first).
