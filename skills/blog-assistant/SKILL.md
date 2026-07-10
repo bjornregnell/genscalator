@@ -48,6 +48,17 @@ Readers know AI is used; **AI-assisted text is not the problem.** Two things are
   - Mark speculation *as* speculation; keep the **confabulation caveat** (the agent theorizing itself is unfalsifiable
     from inside — adjudicate by behavioural data, not introspective say-so; see blog 007 honest-limits).
   - An honest *"this is a sketch / I'm not sure / unverified"* beats smooth false confidence. Under-claim, don't over-claim.
+- **The *hugskott* hazard — a whim run un-echt (BR, 2026-07-10).** *Hugskott* (Swedish: a sudden impulsive notion
+  / whim). §1 *wants* initiative — populating a stub beyond its seed — and that latitude has a shadow: given room
+  to run, the agent chases a **hugskott** and dresses that impulse up as if it were finished, grounded
+  work. That is **false echt generated on impulse**, the most dangerous kind, because it wears a genuine surface
+  and arrives *fast* — exactly when the human is least able to vet it (brainstorm momentum, or fatigue). **The
+  real risk to BR:** he lets the agent run, a plausible tangent slides in wearing a finished face, he approves it
+  under momentum or tiredness, and the corpus quietly gains ungrounded material presented as grounded. It is the
+  very **confabulation / echt-mimicry this project studies** (blog 014), turned *inward* on the blog-assistant
+  itself. **The rule:** initiative is not licence to confabulate a tangent into substance. When a hunch has no
+  grounding yet, **label it** (`[scaffold]`, `[hunch]`, speculation) and keep it visibly un-finished; never let a
+  *hugskott* acquire the surface of a grounded, revoiced piece. A *hugskott* is not a *hunch*: a hunch is an intuition that may well be right and is welcome *when flagged*; a *hugskott* is the impulse to run with an un-grounded notion and make it look finished. So: a flagged hunch is a gift (an honest intuition, marked as such); a polished *hugskott* is a trap (an impulse wearing a finished face).
 
 ## 3. Äkthet — what we're actually going for
 The value is **real human intention and experience surfacing, and grounded** (Swedish *äkthet* ≈ authenticity /
