@@ -38,6 +38,39 @@ class SsgSuite extends munit.FunSuite:
       """<img src="figures/plot_(v2).svg" alt="a">""")
   }
 
+  // --- footnotes ([^id] references + [^id]: definitions) ---
+  test("footnote: a ref renders as a numbered superscript link and the def appears in a footnotes section") {
+    val html = renderPage("See here[^n].\n\n[^n]: the note.\n", "{{CONTENT}}")
+    assert(clue(html).contains("""<sup class="fn-ref" id="fnref-1"><a href="#fn-1">1</a></sup>"""))
+    assert(clue(html).contains("""<section class="footnotes">"""))
+    assert(clue(html).contains("""<li id="fn-1">"""))
+    assert(clue(html).contains("the note."))
+    assert(clue(html).contains("""href="#fnref-1""""))
+  }
+  test("footnote: a [^id]: definition paragraph does not render as a normal <p>") {
+    val html = renderPage("x[^a].\n\n[^a]: def text.\n", "{{CONTENT}}")
+    assert(!clue(html).contains("<p>[^a]: def text.</p>"))
+  }
+  test("footnote: numbered by order of first reference (two footnotes)") {
+    val html = renderPage("A[^one] then B[^two].\n\n[^one]: first.\n\n[^two]: second.\n", "{{CONTENT}}")
+    assert(clue(html).contains("""id="fnref-1"><a href="#fn-1">1</a>"""))
+    assert(clue(html).contains("""id="fnref-2"><a href="#fn-2">2</a>"""))
+    assert(clue(html).indexOf("first.") < clue(html).indexOf("second."))
+  }
+  test("footnote: a definition's inline markdown (a link) is rendered in the section") {
+    val html = renderPage("q[^w].\n\n[^w]: see [wiki](https://example.org/x).\n", "{{CONTENT}}")
+    assert(clue(html).contains("""<a href="https://example.org/x">wiki</a>"""))
+  }
+  test("footnote: a page with no footnotes emits no footnotes section (regression)") {
+    val html = renderPage("# Title\n\nJust prose.\n", "{{CONTENT}}")
+    assert(!clue(html).contains("footnotes"))
+  }
+  test("footnote: a [^id] inside a code span is NOT converted (protected)") {
+    val html = renderInline("`arr[^2]` literal", Some(Footnotes()))
+    assert(clue(html).contains("<code>arr[^2]</code>"))
+    assert(!clue(html).contains("fn-ref"))
+  }
+
   // --- inline code / links / images / autolinks (stashed, escaped, protected) ---
   test("inline: code span is escaped and its insides are not emphasised") {
     assertEquals(renderInline("`a **b** <c>`"), "<code>a **b** &lt;c&gt;</code>")

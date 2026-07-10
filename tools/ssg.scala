@@ -45,7 +45,7 @@ object Ssg:
     * all literal text. Code/image/link/autolink are stashed as `@@S<n>@@` placeholders first (a sentinel that
     * never occurs in prose) so bold/italic never rewrite their insides, then restored last so emphasis can still
     * wrap them. */
-  def renderInline(raw: String): String =
+  def renderInline(raw: String, fn: Option[Footnotes] = None): String =
     val store = ArrayBuffer[String]()
     def stash(html: String): String = { store += html; s"@@S${store.size - 1}@@" }
     def q(s: String): String = java.util.regex.Matcher.quoteReplacement(s)
@@ -57,6 +57,12 @@ object Ssg:
       q(stash(s"""<a href="${escape(siteHref(m.group(2)))}">${escape(m.group(1))}</a>""")))
     s = "<(https?://[^>\\s]+)>".r.replaceAllIn(s, m =>
       q(stash(s"""<a href="${escape(m.group(1))}">${escape(m.group(1))}</a>""")))
+    // footnote references [^id] -> a numbered superscript link (stashed so escape/emphasis leave it alone; code
+    // spans were already stashed above, so a [^x] inside `code` is protected). Only when a registry is supplied.
+    fn.foreach: f =>
+      s = "\\[\\^([^\\]]+)\\]".r.replaceAllIn(s, m =>
+        val n = f.refNumber(m.group(1).trim)
+        q(stash(s"""<sup class="fn-ref" id="fnref-$n"><a href="#fn-$n">$n</a></sup>""")))
     s = escape(s)                                                                   // remaining literal text
     s = "\\*\\*(.+?)\\*\\*".r.replaceAllIn(s, m => q(s"<strong>${m.group(1)}</strong>")) // non-greedy: allows *italic* inside
     s = "(?<![A-Za-z0-9])_([^_]+)_(?![A-Za-z0-9])".r.replaceAllIn(s, m => q(s"<em>${m.group(1)}</em>")) // no intraword _
@@ -73,6 +79,29 @@ object Ssg:
   def plainTitle(text: String): String =
     val t = "\\[([^\\]]+)\\]\\([^)]+\\)".r.replaceAllIn(text, m => java.util.regex.Matcher.quoteReplacement(m.group(1)))
     t.replace("**", "").replace("*", "").replace("`", "").replace("_", "").trim
+
+  // ---------- footnotes ([^id] refs + [^id]: defs -> numbered superscript links + a bottom section) ----------
+  /** A `[^id]: text` paragraph is a footnote DEFINITION; group(1)=id, group(2)=the definition text (joined). */
+  val FootnoteDefRe = "(?s)^\\[\\^([^\\]]+)\\]:\\s*(.*)$".r
+
+  /** Collects footnote definitions + the reference order over one page, and renders the bottom section. Footnotes
+    * are NUMBERED by order of first reference (GitHub/pandoc convention) and listed in that order. */
+  final class Footnotes:
+    private val order = scala.collection.mutable.LinkedHashMap[String, Int]()   // id -> number, first-reference order
+    private val defs  = scala.collection.mutable.Map[String, String]()          // id -> raw definition text
+    def define(id: String, text: String): Unit = { defs.getOrElseUpdate(id, text); () }  // first definition wins
+    def refNumber(id: String): Int = order.getOrElseUpdate(id, order.size + 1)
+    /** The `<section class="footnotes">` (empty if nothing was referenced). `renderDef` renders a definition's
+      * inline markdown (so a link / emphasis inside a footnote still works). */
+    def section(renderDef: String => String): String =
+      if order.isEmpty then ""
+      else
+        val sb = StringBuilder("<section class=\"footnotes\">\n<hr>\n<ol>\n")
+        for (id, n) <- order do
+          val body = defs.get(id).map(renderDef).getOrElse(s"<em>[missing footnote: ${escape(id)}]</em>")
+          sb ++= s"""<li id="fn-$n">$body&nbsp;<a href="#fnref-$n" class="fn-back" aria-label="Back to content">&#8617;</a></li>""" + "\n"
+        sb ++= "</ol>\n</section>\n"
+        sb.toString
 
   // ---------- block rendering ----------
   def headingParts(raw: String): (Int, String) =
@@ -170,7 +199,7 @@ object Ssg:
 
   /** Render a run of list items as one or more lists (flat; a sub-run switches list type when `ordered` flips).
     * Nested lists are deferred (SM019 refinement) — items render at one level. */
-  def renderList(items: Vector[MdParse.Block.Item]): String =
+  def renderList(items: Vector[MdParse.Block.Item], fn: Option[Footnotes] = None): String =
     val sb = StringBuilder()
     var i = 0
     while i < items.length do
@@ -178,36 +207,36 @@ object Ssg:
       val tag = if ordered then "ol" else "ul"
       sb ++= s"<$tag>\n"
       while i < items.length && items(i).ordered == ordered do
-        sb ++= s"<li>${renderInline(items(i).text)}</li>\n"; i += 1
+        sb ++= s"<li>${renderInline(items(i).text, fn)}</li>\n"; i += 1
       sb ++= s"</$tag>\n"
     sb.toString
 
-  def renderBlocks(blocks: Vector[MdParse.Block]): String =
+  def renderBlocks(blocks: Vector[MdParse.Block], fn: Option[Footnotes] = None): String =
     import MdParse.Block.*
     val sb = StringBuilder()
     val pending = ArrayBuffer[Item]()
     val ids = headingSlugs(blocks).iterator
-    def flush(): Unit = if pending.nonEmpty then { sb ++= renderList(pending.toVector); pending.clear() }
+    def flush(): Unit = if pending.nonEmpty then { sb ++= renderList(pending.toVector, fn); pending.clear() }
     blocks.foreach {
       case it: Item      => pending += it
       case Blank         => flush()
       case Heading(raw)  =>
         flush(); val (lvl, txt) = headingParts(raw); val id = ids.next()
         val idAttr = if lvl >= 2 then s""" id="$id"""" else ""
-        sb ++= s"<h$lvl$idAttr>${renderInline(txt)}</h$lvl>\n"
+        sb ++= s"<h$lvl$idAttr>${renderInline(txt, fn)}</h$lvl>\n"
       case Rule(_)       => flush(); sb ++= "<hr>\n"
       case Para(_, _, t) =>
         flush()
         // Drop HTML comments (<!-- ... -->), including whole-paragraph author notes like AGENT-DRAFT scaffolding,
         // so they never render as visible text. Code fences are separate blocks, so this never touches code.
         val visible = "(?s)<!--.*?-->".r.replaceAllIn(t, _ => "").trim
-        if visible.nonEmpty then sb ++= s"<p>${renderInline(visible)}</p>\n"
+        if visible.nonEmpty then sb ++= s"<p>${renderInline(visible, fn)}</p>\n"
       case Quote(t)      =>
         flush()
         // Strip the internal **Status: ...** bookkeeping span so it never reaches readers (SM032 trim-at-publish);
         // keep any other preamble prose the author wrote (Audience / Author / Sources).
         val cleaned = StatusRe.replaceAllIn(t, _ => "").replaceAll("^\\s+", "")
-        if cleaned.nonEmpty then sb ++= s"<blockquote>\n<p>${renderInline(cleaned)}</p>\n</blockquote>\n"
+        if cleaned.nonEmpty then sb ++= s"<blockquote>\n<p>${renderInline(cleaned, fn)}</p>\n</blockquote>\n"
       case Fence(lines)  => flush(); sb ++= renderFence(lines)
       case Table(rows)   => flush(); sb ++= renderTable(rows)
     }
@@ -237,9 +266,15 @@ object Ssg:
     val blocks = MdParse.parse(md)
     val title = blocks.collectFirst { case Heading(raw) if headingParts(raw)._1 == 1 => plainTitle(headingParts(raw)._2) }
       .getOrElse("Untitled")
+    // footnotes: register every `[^id]: ...` definition paragraph, drop those blocks from the body, then render
+    // (references become numbered superscript links and a footnotes <section> is appended at the end).
+    val fn = Footnotes()
+    blocks.foreach { case Para(_, _, t) => FootnoteDefRe.findFirstMatchIn(t).foreach(m => fn.define(m.group(1).trim, m.group(2).trim)); case _ => () }
+    val body = blocks.filterNot { case Para(_, _, t) => FootnoteDefRe.findFirstMatchIn(t).isDefined; case _ => false }
+    val content = renderBlocks(body, Some(fn)) + fn.section(t => renderInline(t, Some(fn)))
     template.replace("{{TITLE}}", escape(title))
       .replace("{{TOC}}", buildToc(blocks))
-      .replace("{{CONTENT}}", renderBlocks(blocks))
+      .replace("{{CONTENT}}", content)
 
   val BuiltinTemplate: String =
     """<!doctype html>
@@ -248,7 +283,8 @@ object Ssg:
       |<title>{{TITLE}}</title>
       |<style>body{max-width:44rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif;line-height:1.6}
       |pre{overflow-x:auto;background:#f4f4f4;padding:1rem;border-radius:6px}code{font-family:ui-monospace,monospace}
-      |table{border-collapse:collapse}th,td{border:1px solid #ccc;padding:.3rem .6rem}img{max-width:100%}</style>
+      |table{border-collapse:collapse}th,td{border:1px solid #ccc;padding:.3rem .6rem}img{max-width:100%}
+      |sup.fn-ref{font-size:.75em;line-height:0}.footnotes{font-size:.9em;margin-top:2rem}.footnotes li{margin:.3rem 0}.fn-back{text-decoration:none;margin-left:.25rem}</style>
       |</head><body>
       |{{CONTENT}}
       |</body></html>""".stripMargin
