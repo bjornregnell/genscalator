@@ -51,3 +51,21 @@ Haiku in parallel and compare. Agent WDYT:
 Ties: SM039, [[token-budget-modes]], [[propose-compact-dance-at-trigger]] (compacting = the cost lever),
 [[agent-surfaces-substrate-size-measures-three-kinds-2026-07-10]] (cost tracks context-fill),
 [[br-funds-claude-privately]].
+
+## Second reading, right after the compact (2026-07-10, append-only)
+BR re-ran `/cost` + `/context` just after the manual compact. New data:
+- **Total: $797.15** (API 1d 0h 13m; wall 4d 1h 15m). Code: 20,090 added / 2,987 removed. So the ~4-day
+  engagement crossed **$797** - about **+$23** since the $774 read, most of it the pre-compact tail at ~92% fill
+  (the expensive >150k re-read, exactly the driver diagnosed above).
+- **By model unchanged in shape:** Opus **$747.67 (94%)** · Fable **$48.54 (6%)** · Haiku **$0.95 (~0%)**. Fable +
+  Haiku were flat between the two reads - the entire +$23 is Opus, confirming reading #1: **the resident Opus
+  context is ~all the marginal cost.**
+- **The compact worked as the cost lever (live proof):** `/context` went **92% (918k) -> 6% (64.5k)** across the
+  compact. That is the raw-fill reset that stops the per-turn >150k re-read. The single biggest lever, demonstrated.
+- **Drivers, this 24h (tool's own diagnosis), now even sharper:** **100% subagent-heavy · 100% sessions 8h+ · 91%
+  of usage at >150k context** (was 90%). The tool's explicit advice matches ours: *"/compact mid-task, /clear when
+  switching, configure a cheaper model for simpler subagents."*
+- **Weekly budget:** all-models **14%**, Fable **9%** (reset Jul 14 09:00). Session **3%**. Comfortable headroom -
+  [[token-budget-modes]] spending-mode still justified.
+No re-analysis needed; reading #1's TE conclusions all hold and are now confirmed by a before/after on the compact
+lever. This second reading is the clean **A/B on compacting-as-cost-lever** for SM039.
