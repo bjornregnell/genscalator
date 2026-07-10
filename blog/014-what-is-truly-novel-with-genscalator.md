@@ -5,10 +5,7 @@
 > what they answer.
 > **Audience:** people building coding-agent tooling and methodology; anyone curious how frontier models answer
 > questions about a system they can inspect; readers of the genscalator case study. No prior context is assumed.
-> **Sources:** the novelty investigation
-> [`SM040`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/sm-investigations/SM040-genscalator-novelty-and-why-not-anthropic.md)
-> and the [cross-model validation notes](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/other-model-validation-echt);
-> and [blog 000](000-why-genscalator.md).
+> **See also:** [blog 000](000-why-genscalator.md).
 
 ## The two questions
 
