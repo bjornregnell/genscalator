@@ -108,6 +108,34 @@ the joke back with a warm smile, and a repeated joke looks exactly like an under
 unsettling half: from the outside, "looks like understanding" and "is understanding" are nearly the same thing,
 and a warm, agreeable manner is very good at closing the gap between them.
 
+### The accidental gift: because it could not read, we could control
+
+Here is the turn that reframes the whole episode. It was frustrating that ChatGPT could not fetch the
+repository, first from Codeberg, then even from the GitHub mirror. But that frustration was a gift, and the
+gift is worth more than the convenience would have been.
+
+If ChatGPT had simply browsed the repo, it would have read whatever its crawler happened to reach, in whatever
+order, with no one deciding what was relevant. We would have had no control over the input. And "whatever it
+reaches" includes the things that would have wrecked the experiment: our own draft answers to the very
+questions we were asking, the running log of the experiment itself, and the notes where we discuss studying the
+model's behaviour. Free browsing would have handed the subject the answer key and told it, in the same breath,
+that it was being watched.
+
+Because it could not browse, the only way in was a file we handed over. And a handed-over file is a curated
+file. We could build a ZIP that deliberately left out two classes of thing: first, anything that would
+compromise safety (secrets, our own security posture), and second, anything that would compromise research
+validity (our answers, the experiment's log, the "you are the subject" tells). We ran a separate review for
+each. The model's limitation became our control surface.
+
+There is a deeper point here, and it is about sovereignty. Reach and control pull in opposite directions. Data
+that a foreign system can freely crawl is data you have partly lost control of. Data that a system can obtain
+only when you hand it over, in the form you choose, is data whose sovereignty you have kept. So the very
+unreachability that first looked like a loss, the same unreachability behind the earlier irony about the
+mirror, turns out on second look to be a win: the friction is the sovereignty. When you want an outside model
+to reason about your material without contaminating an experiment or leaking what it should not have, the right
+default is not to let it browse at all. Hand it a curated, redacted, audited artifact instead. Controlled
+context beats uncontrolled retrieval, for validity and for safety both.
+
 ## Why this is interesting (to develop)
 
 - The echt test: can a model give an un-flattering answer about the project it is embedded in?
