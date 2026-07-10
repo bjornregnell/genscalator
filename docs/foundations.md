@@ -79,7 +79,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 
 **Groups:** [Roles and cases](#roles-and-cases) · [Channel: bandwidth and confirmation fatigue](#channel-bandwidth-and-confirmation-fatigue) · [Echt and honest writing](#echt-and-honest-writing) · [Context rot and the smart zone](#context-rot-and-the-smart-zone) · [Dances and handoffs](#dances-and-handoffs) · [Memory, habits and substrate](#memory-habits-and-substrate) · [Autonomy and safety](#autonomy-and-safety)
 
-**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · AT · Authority anchor · Ballgame · BR · Cold start · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · Delegation dance · echt / äkthet · Edit dance · Edit vs clarification cues · Extrinsic-volatile plasticity · Go afk cue · Go dance · gs (genscalator) · Guard stall · Habit · Hardening dance · Index rot · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Prosthetic habit · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token-usage dance · Token velocity · Warp · WR · Why cue
+**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · AT · At will go · Authority anchor · Ballgame · BR · Cold start · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · Delegation dance · echt / äkthet · Edit dance · Edit vs clarification cues · Extrinsic-volatile plasticity · Go afk cue · Go dance · gs (genscalator) · Guard stall · Habit · Hardening dance · Index rot · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Prosthetic habit · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token-usage dance · Token velocity · Warp · WR · Why cue
 
 ### Roles and cases
 *BR and the agent are the **roles** (stakeholders, above). **WR** is the research program; **AT** and **SSG** are its **cases / units of analysis** — the object-level projects during which workflow data is collected. (Terminology per* Case Study Research in Software Engineering: Guidelines and Examples*, Runeson, Höst, Rainer & Regnell, Wiley 2012, §3.2.3 "Cases and Units of Analyses" — of which BR is a co-author.)*
@@ -334,7 +334,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   run only **bare allowlist-matchable** commands so no guard fires. **Structural sharpening** — prefer a typed tool
   with a **uniform allowlist surface** (e.g. `tt text`, allowlisted as a whole) over a raw shell whose allowlist is
   **ragged per-flag** (a raw `grep -A` stalls where `tt text context` does not). See *Confirmation fatigue*,
-  [[guard-against-forced-confirmations]].
+  [[guard-against-forced-confirmations]]. **Shorthand:** just *stall* where the context is unambiguous.
 - **Edit dance** — the human↔agent protocol for **correcting a just-sent message** without derailing the turn.
   Cause: a harness input-race — pressing ↑ to edit an already-Entered message is **too late** once the agent has
   begun processing it, so the correction posts as a **new** message (a double-post).
@@ -358,7 +358,9 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   human correction, no re-type, no agent ceremony). Sibling of the other human↔agent dances (*compact*,
   *exit-resume*, *hardening*).
 - **Token-usage dance** — a human↔agent dance that compensates for the agent having **no token gauge** (it cannot see
-  usage). **Human step:** BR **pastes the usage figure** (weekly / session %, resets, per-model). **Agent step:** the
+  usage). **Human step:** BR **pastes the usage figure** (weekly / session %, resets, per-model) — now obtainable
+  **in-TUI** via the slash-commands **`/usage`** (quota / resets / per-model) and **`/cost`** (session spend), so BR
+  runs those and pastes the output into the feed rather than digging through the web GUI settings (BR 2026-07-10). **Agent step:** the
   agent **analyses** (which meter is binding — the **"all models"** aggregate is the ceiling; per-model meters are
   additional sub-caps, not bypass headroom — plus headroom + time-to-reset), **reports the current-mode read**, **helps
   prioritise** (spend-on vs defer), and **cues which token-budget mode** we should be in (*spending / normal / saving*).
@@ -432,6 +434,12 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   stall** mid-item at a gated subtask while away (or fields it live if present); **`go solo red`** = only meaningful
   with the human **present** (red needs a human in the loop). The re-verify still applies (bands are a snapshot).
   **`go X`** = a scoped go-verb (small curated set — see `research/035-go-verb-vocabulary.md`).
+  **`at will go`** (HD BR 2026-07-10) = a **timing modifier** on `go`: proceed on the current plan **at the agent's
+  own convenient moment** — low-priority, fit-it-in, no need to drop current work (the short form of "when convenient,
+  go"). It anchors the LOW end of a one-verb **urgency spectrum**: **`at will go`** (whenever it fits) · plain **`go`**
+  (normal) · a proposed caps **`GO`** at the HIGH end (*preempt* — down tools, checkpoint the current atomic unit,
+  this supersedes; for a racing feed where the human spots a wrong heading, BR proposal 2026-07-10). Memory
+  [[cue-at-will-go]].
   **Dance bar:** `go` qualifies as a *dance* because it has **≥2 interlocking steps — ≥1 human and ≥1 agent**; a
   one-directional signal with no answering step is just a cue. (BR 2026-07-04; cue `go` chosen for typability — g-o
   alternates hands.)
