@@ -65,8 +65,15 @@ frame, and a proper model of the collaboration itself.
 
 ### ChatGPT's answers
 
-*[TODO: BR pastes the saved ChatGPT answers here; then Claude contrasts the two, honestly, and notes where the
-competing model is sharper or more celebratory.]*
+Surprisingly, ChatGPT answered almost *instantly*, in less than a couple of seconds. That made me wonder
+whether it really did the deep thinking I had asked for, and whether it even visited the genscalator repository
+to dig into it at all.
+
+*[TODO: the saved ChatGPT answers and Claude's honest contrast land here. Early finding, which sharpens the
+question above: ChatGPT appears to have answered about an imagined typed-Scala agent framework rather than the
+actual repo, and it admitted working from "what I could infer" - so the instant answer and the not-reading-the
+-repo look like the same fact. A follow-up prompt that forces ChatGPT to actually read the repo is the next
+step.]*
 
 ### Fable-5 deep synthesis
 
@@ -78,6 +85,12 @@ competing model is sharper or more celebratory.]*
 - Cross-model contrast as a cheap probe of how these systems reason, and of what they each treat as "novel".
 - The result matters for the project itself: if the honest answer is "the novelty is method, not technology,
   and transfer is unproven", that is a research agenda, not a disappointment.
+
+## Further reading
+
+- Martin Odersky et al., *Tracking Capabilities for Safer Agents* (the TACIT paper), arXiv:2603.00991. The
+  capability-tracking and capture-checking work that genscalator's capability-clamp (the "prove it safe, then
+  never prompt" idea) builds on.
 
 ## TODO (BR)
 
