@@ -33,6 +33,21 @@ fails BY DEFAULT, in every direction tried, regardless of host or vendor.
   reliable test is a HUMAN incognito-browser check. Do not trust a model's fetch to confirm a doc is publicly
   readable.
 
+## Fourth beat (2026-07-10): a human echt-test RESOLVED the ambiguity and confirmed the point
+BR's wife - logged out, a genuine "kreti och pleti" reader - opened the SAME Google Doc in a real browser and
+**could read it**. Two things follow:
+1. **The doc was PUBLIC all along.** So the "login wall" my WebFetch hit was NOT a restriction; it was the
+   non-JS-crawler-vs-JS-SPA degradation I had flagged as the echt caveat. My fetch-based lean ("probably still
+   Restricted") was WRONG, and the human test corrected it in one move. A clean self-exemplifying case: **a
+   model's fetch cannot judge a doc's public-readability, and here it produced a FALSE NEGATIVE** that a human
+   browser immediately disproved. The earlier caveat ("do not trust a model's fetch") was right, and this is its
+   proof.
+2. **Human-in-a-real-browser succeeds where the model fetch fails - for a SECOND reason.** The gap is not only
+   login / permission; even a fully-public doc is unreadable to the model because its fetcher does not run the
+   JavaScript app a human browser does. So the human is the conduit twice over: past the permission wall AND past
+   the JS-rendering wall. Beats 1-3 (only the title crosses to the machine) plus this (a human reads the full
+   body) is the whole finding in one arc: **metadata crosses to the machine; content crosses only via the human.**
+
 Ties: the substrate-access thesis, the sovereignty/control reframe (unreachability = control - "the friction is
 the sovereignty"), the Reciprocal section of
 `../other-model-validation-echt/2026-07-10-claude-on-chatgpt-on-genscalator-novelty.md`, and blog 014.
