@@ -79,7 +79,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 
 **Groups:** [Roles and cases](#roles-and-cases) · [Channel: bandwidth and confirmation fatigue](#channel-bandwidth-and-confirmation-fatigue) · [Echt and honest writing](#echt-and-honest-writing) · [Context rot and the smart zone](#context-rot-and-the-smart-zone) · [Dances and handoffs](#dances-and-handoffs) · [Memory, habits and substrate](#memory-habits-and-substrate) · [Autonomy and safety](#autonomy-and-safety)
 
-**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · AT · Authority anchor · Ballgame · BR · Cold start · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confabulation · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · Delegation dance · echt / äkthet · echt-mimicry · Edit dance · Edit vs clarification cues · Extrinsic-volatile plasticity · Go afk cue · Go dance · Go dial ((go)/go/GO) · gs (genscalator) · Guard stall · Habit · Hardening dance · Hot context · Index rot · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Post-warp dissection · Prosthetic habit · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token-usage dance · Token velocity · Warp · WR · Why cue
+**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · AT · Authority anchor · Ballgame · BR · BRB dance · Cold start · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confabulation · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · Delegation dance · echt / äkthet · echt-mimicry · Edit dance · Edit vs clarification cues · Extrinsic-volatile plasticity · Go afk cue · Go dance · Go dial ((go)/go/GO) · gs (genscalator) · Guard stall · Habit · Hardening dance · Hot context · Index rot · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Post-warp dissection · Prosthetic habit · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token-usage dance · Token velocity · Warp · WR · Why cue
 
 ### Roles and cases
 *BR and the agent are the **roles** (stakeholders, above). **WR** is the research program; **AT** and **SSG** are its **cases / units of analysis** — the object-level projects during which workflow data is collected. (Terminology per* Case Study Research in Software Engineering: Guidelines and Examples*, Runeson, Höst, Rainer & Regnell, Wiley 2012, §3.2.3 "Cases and Units of Analyses" — of which BR is a co-author.)*
@@ -483,6 +483,20 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 
   Distinct from the **consistency dance** (which audits the substrate's *content*): hardening audits the agent's
   *config / machinery*. Human-triggerable. Memory: [[hardening-dance]].
+- **BRB dance** (be-right-back) — the human sends **`BRB`**: a SHORT break (toilet, a breather to be up for
+  more, a short walk). Unlike the *hang on* cue (pure HOLD), BRB is a small **state-gated productive window**.
+  - **Human step:** cue `BRB`.
+  - **Agent step 1 — read the state:** a break is an energy/attention **state-of-mind signal**; note it (as
+    with the fatigue-gauge).
+  - **Agent step 2 — advance, GATED:** IF **token-spending mode** AND **not in assumed-severe context rot** AND
+    there is genuinely safe-solo work, the agent **at its own discretion** does safe-solo bg tasks and prepares
+    for the return; ELSE (rot-ish / high context-fill / compact-prep / nothing safe) it **holds, banks, and
+    stays ready.** The rot+fill check gates the productivity.
+  - **Agent step 3 — prepare, staying FLEXIBLE:** a break **incubates ideas**, so the human may return with new
+    directions; keep state clean and do NOT over-commit to a path a returning pivot would waste
+    (advance-what's-safe AND stay-pivotable).
+  - **Human step (return):** resumes, possibly with fresh ideas; the work continues or pivots. (Read the
+    definition per *cue-similar* — spirit over letter; memory [[cue-brb]].)
 - **Rest dance** — a human↔agent dance for **conserving the human**. The explicit human trigger is the cue **`:Z`**
   ("I am **getting** tired" — a *warning*, **not** asleep; a **precursor to the solo dance**). Chosen for **minimal
   motor cost**: both chars are **SHIFT-held** (`:` = Shift-`;`, `Z` = Shift-`z`), so a tired hand never releases SHIFT.
