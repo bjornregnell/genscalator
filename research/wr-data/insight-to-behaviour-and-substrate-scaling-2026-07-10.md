@@ -41,3 +41,16 @@ of the SM035 code-hosting sovereignty / EU-sovereignty ethos.
 direction -> **candidate for a new RT** ("generalizing the super-harness beyond Anthropic / harness
 sovereignty"); flagged for BR to confirm the ID on return. Ties PRD v2.0 super-harness, SM016/SM022, the SM035
 sovereignty ethos.
+
+## Correction (BR, 2026-07-10): don't keep the substrate human-sized - make it JOINTLY grokkable
+The agent's WDYT on this framed a "tension: encode-for-enactment vs keep-substrate-human-sized." BR corrects
+the SECOND horn, and the correction matters: **it is PERFECTLY OK - and probably NECESSARY - that the substrate
+is too big for the human ALONE, as long as the human+agent PAIR can grok it together.** So there is no
+size-bounding tension to resolve. The substrate SHOULD grow past human-solo capacity; the resolution is **joint
+grokkability** - the agent as the human's live index / navigator into an intentionally-oversized substrate
+(coupled-system capability; substrate-as-multiplier). The super-harness is precisely what makes an
+oversized-for-human-alone substrate jointly-grokkable. Reframe: the goal is NOT "encode efficiently to stay
+human-sized" but "encode freely AND build the agent-assisted navigation that keeps the PAIR's grok-capacity
+ahead of the substrate's growth." So Reflection 2's "the human now needs the agent's help to stay consistent
+with foundations" is a **feature of the design working as intended, not a warning sign** - it is the coupled
+system doing what it exists to do.
