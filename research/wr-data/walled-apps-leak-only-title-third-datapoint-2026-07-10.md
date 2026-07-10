@@ -34,7 +34,7 @@ fails BY DEFAULT, in every direction tried, regardless of host or vendor.
   readable.
 
 ## Fourth beat (2026-07-10): a human echt-test RESOLVED the ambiguity and confirmed the point
-BR's wife - logged out, a genuine "kreti och pleti" reader - opened the SAME Google Doc in a real browser and
+A logged-out human - a genuine "kreti och pleti" reader in an ordinary browser - opened the SAME Google Doc and
 **could read it**. Two things follow:
 1. **The doc was PUBLIC all along.** So the "login wall" my WebFetch hit was NOT a restriction; it was the
    non-JS-crawler-vs-JS-SPA degradation I had flagged as the echt caveat. My fetch-based lean ("probably still
