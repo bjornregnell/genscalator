@@ -433,6 +433,45 @@ class CliSuite extends munit.FunSuite:
     assert(clue(out).toLowerCase.contains("usage"))
   }
 
+  // --- wr stamp (transcript-timestamp retrofit lookup) ---
+  test("wr stamp: finds a match and prints timestamp + type + session + snippet") {
+    val d = os.temp.dir()
+    try
+      os.write(d / "abc12345.jsonl",
+        "{\"type\":\"user\",\"timestamp\":\"2026-07-06T16:48:35.656Z\",\"message\":{\"content\":\"giving ok to mv star THAT I REALLY DO NOT WANT\"}}\n" +
+        "{\"type\":\"assistant\",\"timestamp\":\"2026-07-06T16:49:00.000Z\",\"message\":{\"content\":\"noted\"}}\n")
+      val (code, out, _) = run("wr", "stamp", d.toString, "REALLY DO NOT WANT")
+      assertEquals(code, 0)
+      assert(clue(out).contains("2026-07-06T16:48:35.656Z"))
+      assert(clue(out).contains("[user]"))
+      assert(clue(out).contains("abc12345"))
+    finally os.remove.all(d)
+  }
+  test("wr stamp: --user skips non-user entries (exit 1 when only an assistant matches)") {
+    val d = os.temp.dir()
+    try
+      os.write(d / "s.jsonl", "{\"type\":\"assistant\",\"timestamp\":\"2026-07-06T00:00:00Z\",\"message\":{\"content\":\"noted here\"}}\n")
+      val (code, out, _) = run("wr", "stamp", d.toString, "noted", "--user")
+      assertEquals(code, 1)
+      assert(clue(out).toLowerCase.contains("no match"))
+    finally os.remove.all(d)
+  }
+  test("wr stamp: sorts matches earliest-first") {
+    val d = os.temp.dir()
+    try
+      os.write(d / "s.jsonl",
+        "{\"type\":\"user\",\"timestamp\":\"2026-07-06T10:00:00Z\",\"message\":{\"content\":\"beta marker\"}}\n" +
+        "{\"type\":\"user\",\"timestamp\":\"2026-07-06T09:00:00Z\",\"message\":{\"content\":\"alpha marker\"}}\n")
+      val (_, out, _) = run("wr", "stamp", d.toString, "marker")
+      assert(clue(out).indexOf("09:00:00") < clue(out).indexOf("10:00:00"))
+    finally os.remove.all(d)
+  }
+  test("wr with no args prints usage and exits 2") {
+    val (code, out, _) = run("wr")
+    assertEquals(code, 2)
+    assert(clue(out).toLowerCase.contains("usage"))
+  }
+
   // --- svg (textual sequence-diagram spec → self-contained, theme-aware SVG for blogs & reports) ---
   test("svg sequence: renders an <svg> with lifeline labels and a message label to stdout") {
     val f = os.temp(contents = "actor Alice\nactor Bob\nAlice -> Bob: hello\n", suffix = ".txt")
