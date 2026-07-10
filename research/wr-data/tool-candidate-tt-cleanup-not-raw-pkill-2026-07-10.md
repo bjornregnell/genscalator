@@ -13,6 +13,12 @@ started (tracked + scoped, never arbitrary PIDs), (b) runs `scala-cli bloop exit
 roughly how much it freed. **DECLARED narrow semantics** (only genscalator-spawned scala-cli/serv JVMs) =
 allowlist-safe, unlike `pkill`. It fits `tt box` because that tool already owns "operate on a named box".
 
+**Companion read subcommand (BR, 2026-07-10): `tt box mem` / `tt box status [host]`** - report a box's memory /
+health (done today via a raw `/proc/meminfo` Read). Same rationale, and a REMOTE angle a raw local read can't
+serve: `tt box` is host-pinned, so `tt box status bjornyx.local` could report a *different* box's memory (relevant
+to the SM045 pilot's "dumb models on bjornyx.local"). So `tt box` grows a small box-ops family: **status/mem**
+(read) + **clean/stop** (act).
+
 ## The Bloop-restart catch (operationally important)
 Any `tt` / scala-cli command **re-spawns the Bloop build server**, so a cleanup (tool or manual) must be the
 **LAST action** - running it and then a `tt git commit` undoes it. Observed today: a commit printed "Starting
