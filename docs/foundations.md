@@ -79,10 +79,28 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 
 **Groups:** [Roles and cases](#roles-and-cases) · [Channel: bandwidth and confirmation fatigue](#channel-bandwidth-and-confirmation-fatigue) · [Echt and honest writing](#echt-and-honest-writing) · [Context rot and the smart zone](#context-rot-and-the-smart-zone) · [Dances and handoffs](#dances-and-handoffs) · [Memory, habits and substrate](#memory-habits-and-substrate) · [Autonomy and safety](#autonomy-and-safety)
 
-**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · AT · Authority anchor · Ballgame · BR · BRB dance · Cold start · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confabulation · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · Delegation dance · echt / äkthet · echt-mimicry · Edit dance · Edit vs clarification cues · Extrinsic-volatile plasticity · Go afk cue · Go dance · Go dial ((go)/go/GO) · gs (genscalator) · Guard stall · Habit · Hardening dance · Harvest-hot-context mode · Hot context · Index rot · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Post-warp dissection · Prosthetic habit · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token-usage dance · Token velocity · Warp · WR · Why cue
+**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · Agentic requirements engineering (agentic RE) · Agentic software engineering (agentic SE) · AT · Authority anchor · Ballgame · BR · BRB dance · Cold start · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confabulation · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · Delegation dance · echt / äkthet · echt-mimicry · Edit dance · Edit vs clarification cues · Extrinsic-volatile plasticity · Go afk cue · Go dance · Go dial ((go)/go/GO) · gs (genscalator) · Guard stall · Habit · Hardening dance · Harvest-hot-context mode · Hot context · Index rot · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Post-warp dissection · Prosthetic habit · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token-usage dance · Token velocity · Warp · WR · Why cue
 
 ### Roles and cases
 *BR and the agent are the **roles** (stakeholders, above). **WR** is the research program; **AT** and **SSG** are its **cases / units of analysis** — the object-level projects during which workflow data is collected. (Terminology per* Case Study Research in Software Engineering: Guidelines and Examples*, Runeson, Höst, Rainer & Regnell, Wiley 2012, §3.2.3 "Cases and Units of Analyses" — of which BR is a co-author.)*
+- **Agentic software engineering (agentic SE)** — software engineering where an AI agent works as a hands-on
+  collaborator across the whole engineering cycle (requirements, design, code, verification, and even the research
+  *about* the work itself), while the human directs, reviews, and keeps the keys. Broader than *agentic coding* (the
+  code-generation slice): here the human↔agent **workflow itself** is an engineering artifact to be designed,
+  instrumented, and improved. An **emerging field, not our coinage** — see the roadmap *Agentic Software Engineering:
+  Foundational Pillars and a Research Roadmap* ([arXiv:2509.06216](https://arxiv.org/abs/2509.06216)) and the ICSE
+  2026 *Agentic Engineering* workshop. genscalator's stake is empirical: a **live, open case study OF** agentic SE,
+  contributing typed safe-by-design tools + a parseable requirements spine (next term).
+- **Agentic requirements engineering (agentic RE)** — the **requirements slice of agentic SE**, and it cuts both
+  ways: requirements engineered *for* the human↔agent pair (the agent, and the adversary trying to abuse it, are
+  first-class stakeholders with goals and **anti-goals**, so "safe by design" becomes checkable traceability, not a
+  slogan) and *with* the pair (requirements live in a **parseable** language the agent can author, query, and verify
+  — not prose it can only skim). Full form: *agentic software requirements engineering*; short form **"agentic RE"**
+  (spell it out in a passage that uses it only once — acronym-amortization, cf. *Comms shorthand*; we use **no bare
+  "ARE"**). Also emerging (LLM multi-agent RE frameworks, e.g. **MARE**; the RE'25 line of work) — and the field is
+  independently arriving at genscalator's own move, treating **"must-not-do" constraints as primary**, which is
+  exactly the **BHH anti-goals** ("Goals we Hurt"). Worked example: this project's own [`PRD.md`](../PRD.md) in
+  reqT-lang with the BHH threat model.
 - **agent (`CO4` / `CF5`)** — the AI collaborator and primary tool-user (role defined under *Stakeholders*). Its
   identity is **model-dependent**, and the handle **encodes the model**: **`CO4`** = Claude Opus 4 (current), **`CF5`** =
   Claude Fable 5 (after the planned switch). The handle change `CO4 → CF5` **is** the frontier-model-attribution marker

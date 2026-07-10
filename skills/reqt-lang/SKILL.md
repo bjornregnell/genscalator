@@ -13,6 +13,10 @@ genscalator's own thesis* — migrate insight into **structure the agent can rel
 model is diffable, queryable, and traceable (`Feature requires Feature`, `Target verifies Goal`) where a prose
 PRD is not.
 
+This practice has a name worth using: **agentic requirements engineering** (agentic RE) — the requirements slice
+of *agentic software engineering* (agentic SE). See `docs/foundations.md` for the definitions; this skill is how
+the agent actually *does* agentic RE on `PRD.md`.
+
 ## 1. Core rule: parse, don't guess
 When (re)structuring reqT-lang, confirm with the REAL parser instead of trusting a mental model of the grammar:
 - `tt parsereqt parse FILE` → prints the `Model(...)` so you see how entities/relations/attributes actually
