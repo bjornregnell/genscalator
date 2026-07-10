@@ -168,3 +168,15 @@ earlier one (cf. the anchor-points-for-skimmers rule — disambiguate at the lan
   **agentic RE**) over a brand-new coinage — no bare "ARE" (unsearchable, no traction). The glossary in
   `docs/foundations.md` always carries the acronym (it *is* the lookup surface); the *posts* follow this per-post rule.
 - Candidate for an eventual `ssg` / blog **lint** (flag an acronym used only once, or introduced without a spell-out).
+
+## 10. Swedish loanwords - the adopted set (BR, 2026-07-10)
+BR's blogs deliberately use a few Swedish loanwords as project vocabulary - his register, and they carry a meaning
+English has no crisp single word for. **Decided and in use:**
+- **äkthet** - authenticity / genuineness (the *echt* value; see §3 and `docs/foundations.md`).
+- **hugskott** - a sudden impulse / whim; here, the name for the un-echt-tangent hazard (see §2).
+
+**Candidate, reserved** (noted, not yet used): **lagom** - "just the right amount", neither too much nor too
+little; earmarked for when a post discusses **tradeoffs / balance**.
+
+On first use in a post, briefly gloss a loanword (per §9's spell-out-first rule). Do NOT add new loanwords on a
+whim - that would itself be a *hugskott*; the set grows by BR's decision, not the agent's initiative.
