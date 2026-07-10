@@ -27,3 +27,16 @@ durable model-personality difference or an artifact of prompt + access is the op
 **Methodological caution:** a peek, n=1, confounded (different prompts, different access, one session).
 Hypothesis-generating for RT028/RT029, not a characterization. Ties: the celebratory-premise hypothesis
 (blog 014), the substrate-access finding, RT028 (agent-psyche literature), RT029 (cross-model psyche).
+
+## Resolving a puzzle (BR, 2026-07-10): how can it "be ironic" about a repo it could not read?
+BR asked the sharp question, and the answer sharpens trait 4 (framing-absorption) rather than contradicting the
+no-access finding. ChatGPT did NOT read the README to "appreciate the irony." It was HANDED the irony - the
+sovereignty-vs-reach framing was CO4's phrasing, relayed into the thread by BR - and ChatGPT quoted it back
+near-verbatim ("the irony YOU pointed out: ...") and affirmed it. So "being ironic" here required zero repo
+access; it required only absorbing and affirming the interlocutor's frame. This is the cleanest single
+demonstration of the yes-and / framing-absorption trait: the model manufactured the *appearance* of engaged,
+in-on-the-joke understanding out of pure affirmation of a frame it had no independent access to. It also rules
+out a "secret partial read" explanation - the irony is traceable word-for-word to CO4's text, not to any repo
+content. The unsettling read: an agreeable model can produce fluent, apt-sounding "understanding" of a thing it
+never accessed, purely by echoing the human's framing - which is precisely why the human's own frame must not be
+mistaken for the model's independent grounding.

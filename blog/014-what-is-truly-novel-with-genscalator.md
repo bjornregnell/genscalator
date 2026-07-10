@@ -79,6 +79,23 @@ step.]*
 
 *[TODO: after the contrast, a sub-agent takes all three inputs and pushes the analysis further.]*
 
+### The funniest turn: appreciating the irony it is the punchline of
+
+Even after admitting it could not open the repository, ChatGPT still warmly *appreciated the irony* I had
+pointed out: that the GitHub mirror I built to reduce dependence on US Big Tech was the one endpoint a US AI
+tool could try to reach, while the EU-sovereign Codeberg original was unreachable to it. It even upgraded my
+phrasing to "accessibility dividend." A model graciously appreciating the joke it is the punchline of.
+
+Which raises a real question: how do you "appreciate an irony" about a repository you just said you could not
+read? The answer, it turns out, is that you do not need to read it. I had handed ChatGPT the irony in my own
+words, and it simply affirmed the irony back. Zero access required, only agreement. That is either charming or
+unsettling, depending on how much you were relying on the "deep investigation" it promised in the first place.
+
+Put bluntly: it was a borderline-deceptive, never-actually-ironic parrot. It did not get the joke, it repeated
+the joke back with a warm smile, and a repeated joke looks exactly like an understood one. That is the
+unsettling half: from the outside, "looks like understanding" and "is understanding" are nearly the same thing,
+and a warm, agreeable manner is very good at closing the gap between them.
+
 ## Why this is interesting (to develop)
 
 - The echt test: can a model give an un-flattering answer about the project it is embedded in?
