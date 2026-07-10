@@ -6,6 +6,8 @@
 > rituals didn't come from nowhere — a *method* surfaced them, and a *theory* explains why they work. → Next (006):
 > the method that catches these patterns as data.
 
+*(Title note, for BR: **"Dancing with agents"** plays on Kevin Costner's [**Dances with Wolves**](https://en.wikipedia.org/wiki/Dances_With_Wolves) (1990, Best Picture): the outsider who learns the other's ways by moving alongside it, until he earns a name for how he moves. Consider it as an epigraph or a one-line footnote.)*
+
 **[figure — TODO, real data preferred]** This session's **context-fill over time with dance-events marked** — the
 pin offload points and the compaction at ~90% — showing *raw fill* climbing while capability holds (the "capable
 at 0.88 fill" datapoint): the empirical hook for the *how-to-support-the-claim* TODO below. Companion/alternative: a
@@ -118,6 +120,24 @@ frontier model (Opus 4.8 vs Fable 5) — capture the baseline before the switch 
 Harvest concrete episodes: the resume-skip that saved a long sweep from a harness cull; the toolbox-divergence
 hardening; each compact / exit-resume cycle and what it averted; every `pin:`/`WR data:` offload as a pin-dance
 datapoint.
+
+## TODO: spotlight the most productivity-LEVERAGING dances + fold in the newer ones (BR 2026-07-10)
+
+*(A few small TODO bullets for now; BR to develop.)*
+
+- **Rank, do not just catalog.** Beyond listing every dance, spotlight the few that most move *joint output per
+  unit effort* (BR's "productivity-leveraging" framing). Candidates to argue for: the **pin dance** (keeps the
+  effective working-set small so the pair stays capable at high fill), the **compact / context dances** (prevent
+  rot-collapse mid-work), the **go dance** (unlocks autonomous throughput), the **delegation dance** (parallel
+  CF5 sub-agents, effectively free in spending mode), and the **hardening / consistency dances** (keep the
+  substrate trustworthy so trust is granted once, not per action). Lead with the leverage, then the mechanism.
+- **Fold in the dances/cues coined since this scaffold** (the catalog is ~10 terms stale): the **(go)/go/GO
+  urgency dial**, the **BRB dance**, **harvest-hot-context mode**, the **token-usage dance** (now `/cost`-based,
+  with the `$`/money axis of Token Efficiency), and **cue-hangon**.
+- **Reframe the empirical TODOs above** from "do the dances help?" to "**which dances give the most leverage per
+  unit effort?**" — the productivity question, backed by WR-data episodes + the cross-model caveat.
+- **Shares its job with RT054** (the accessible seminar): both must explain the key dances accessibly and back
+  them with data; draft once, reuse.
 
 ---
 
