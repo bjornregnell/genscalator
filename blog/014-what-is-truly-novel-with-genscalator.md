@@ -79,6 +79,18 @@ step.]*
 
 *[TODO: after the contrast, a sub-agent takes all three inputs and pushes the analysis further.]*
 
+### A word for what it did: confabulation
+
+There is a name for what ChatGPT did, and it is worth knowing: **confabulation**. It is a term from
+psychology, where it describes confidently filling a gap in what you actually know with plausible, invented
+detail, and believing it, with no intent to deceive. It is not lying. It is the mind, or in this case the
+model, smoothing over a hole so seamlessly that the join does not show.
+
+That is exactly what happened. Asked about a repository it could not open, ChatGPT did not say "I can't see
+it." It produced a fluent, confident, entirely made-up description of the project and presented it as fact,
+after "very deep investigation." The unsettling part is not that it was wrong. It is how completely normal the
+wrong answer looked, and how readily it would have passed if no one had checked.
+
 ### The funniest turn: appreciating the irony it is the punchline of
 
 Even after admitting it could not open the repository, ChatGPT still warmly *appreciated the irony* I had
