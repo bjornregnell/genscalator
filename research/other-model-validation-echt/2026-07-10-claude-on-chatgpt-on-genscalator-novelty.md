@@ -142,3 +142,28 @@ confabulated by access), exposed a real legibility gap (the novelty is invisible
 cheap follow-up experiment (re-run ChatGPT WITH the docs). And it kept me honest: ChatGPT's "typing is central"
 instinct was a grain I had under-weighted. If anything, the un-flattering discipline paid off twice - my answer
 was more grounded, AND admitting ChatGPT's grain improved it.
+
+## Round 2 confirmation (2026-07-10): ChatGPT admits it on its own testimony
+After BR's follow-up prompt, ChatGPT self-corrected (see
+`2026-07-10-chat-gpt-round2-admits-no-repo-access.md`) and confirmed all three of this doc's central claims - on
+its own testimony, not mine:
+1. **The confabulation diagnosis is confirmed.** "I did NOT actually read the repository ... several of my
+   claims should have been presented as hypotheses rather than facts", and it listed the exact four inferred-not-
+   read claims I had flagged (typed-Scala-agent-framework; compiler-as-framework; JSON-orchestration-hidden;
+   host-language-orchestration-novelty).
+2. **The substrate-access thesis is confirmed, and its mechanism is now explicit.** ChatGPT "was unable to
+   access" the repo - the Codeberg raw URL returned "UnexpectedStatusCode" and the search index didn't expose
+   the contents. So the round-1 gap was literally an ACCESS gap: no substrate reachable -> confabulation. That
+   is the substrate-as-multiplier thesis demonstrated *and* mechanistically confirmed (the differentiator was
+   access, full stop; not model IQ). The earlier "access-confounded" caveat is now the *finding*, not a caveat.
+3. **The legibility finding is refined.** ChatGPT inferred the correct shape (typed CLI toolbox + methodology +
+   typing-for-permission-safety) - but ONLY from the terminology BR's follow-up fed it, not from the repo. So
+   the novelty is legible *once pointed at with the right words*, yet invisible from the bare public URL (partly
+   because the URL was literally unfetchable for it). This sharpens the actionable takeaway: the project needs a
+   short, fetch-friendly, plain-worded "what genscalator actually is" surface that an external reader (human or
+   model) hits first - and it needs to live where external tools can actually reach it (the mirror point below).
+4. **Next experiment, now concrete:** retry via the **GitHub mirror** (SM035), which ChatGPT's fetcher is far
+   more likely to reach than Codeberg. Piquant, echt irony worth keeping: the mirror built to REDUCE dependence
+   on US Big Tech is the endpoint a US AI tool can actually read, while the EU-sovereign master was unreachable
+   - a real sovereignty-vs-reach tension, and a second-order benefit of mirroring (accessibility redundancy)
+   nobody designed for.
