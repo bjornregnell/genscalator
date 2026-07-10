@@ -780,3 +780,39 @@ class CliSuite extends munit.FunSuite:
     assert(clue(out).contains("wk 50%"))
     assert(clue(out).contains("resets 2d"))
   }
+
+  // --- harden (Layer-1 deterministic secret scanner; SM042) ---
+  test("harden egress: flags AWS key + high-entropy assignment + PEM + sensitive filename; gates placeholders; redacts") {
+    val d = os.temp.dir()
+    try
+      os.write(d / "config.txt",
+        "aws_key = AKIAIOSFODNN7EXAMPLE\n" +
+          "api_key = aB3xK9mZ2pQ7rT5vW8yDdF1gH4jL6nP\n" +
+          "-----BEGIN RSA PRIVATE KEY-----\n" +
+          "password = your-placeholder-here\n")
+      os.write(d / ".netrc", "machine x login y password z\n")
+      val (code, out, _) = run("harden", "egress", d.toString)
+      assertEquals(code, 1) // candidates found
+      assert(clue(out).contains("aws-access-key"))
+      assert(clue(out).contains("secret-assignment(api_key)"))
+      assert(clue(out).contains("pem-private-key"))
+      assert(clue(out).contains("sensitive-filename"))
+      assert(clue(out).contains("AKIA")) // redacted prefix shown
+      assert(!clue(out).contains("AKIAIOSFODNN7EXAMPLE")) // the RAW secret is NEVER printed
+      assert(!clue(out).contains("your-placeholder")) // low-entropy placeholder gated out
+    finally os.remove.all(d)
+  }
+  test("harden egress: a clean dir reports 0 candidates at exit 0 (the word 'password' in prose is not a hit)") {
+    val d = os.temp.dir()
+    try
+      os.write(d / "readme.md", "# hello\njust some prose mentioning the word password in passing\n")
+      val (code, out, _) = run("harden", "egress", d.toString)
+      assertEquals(code, 0)
+      assert(clue(out).toLowerCase.contains("clean"))
+    finally os.remove.all(d)
+  }
+  test("harden with no args prints usage and exits 2") {
+    val (code, out, _) = run("harden")
+    assertEquals(code, 2)
+    assert(clue(out).toLowerCase.contains("harden"))
+  }
