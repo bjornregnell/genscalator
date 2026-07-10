@@ -61,8 +61,9 @@ object Ssg:
     // spans were already stashed above, so a [^x] inside `code` is protected). Only when a registry is supplied.
     fn.foreach: f =>
       s = "\\[\\^([^\\]]+)\\]".r.replaceAllIn(s, m =>
-        val n = f.refNumber(m.group(1).trim)
-        q(stash(s"""<sup class="fn-ref" id="fnref-$n"><a href="#fn-$n">$n</a></sup>""")))
+        val (n, first) = f.refAnchor(m.group(1).trim)
+        val idAttr = if first then s""" id="fnref-$n"""" else ""
+        q(stash(s"""<sup class="fn-ref"$idAttr><a href="#fn-$n">$n</a></sup>""")))
     s = escape(s)                                                                   // remaining literal text
     s = "\\*\\*(.+?)\\*\\*".r.replaceAllIn(s, m => q(s"<strong>${m.group(1)}</strong>")) // non-greedy: allows *italic* inside
     s = "(?<![A-Za-z0-9])_([^_]+)_(?![A-Za-z0-9])".r.replaceAllIn(s, m => q(s"<em>${m.group(1)}</em>")) // no intraword _
@@ -83,6 +84,12 @@ object Ssg:
   // ---------- footnotes ([^id] refs + [^id]: defs -> numbered superscript links + a bottom section) ----------
   /** A `[^id]: text` paragraph is a footnote DEFINITION; group(1)=id, group(2)=the definition text (joined). */
   val FootnoteDefRe = "(?s)^\\[\\^([^\\]]+)\\]:\\s*(.*)$".r
+  /** MdParse joins ADJACENT `[^id]:` definition lines (no blank between) into one Para; this splits such a Para
+    * back into its (id, text) pairs (each def's text runs non-greedily up to the next def start or end). */
+  private val FootnoteDefSplitRe = "(?s)\\[\\^([^\\]]+)\\]:\\s*(.*?)(?=\\s*\\[\\^[^\\]]+\\]:|\\z)".r
+  def isFootnoteDefPara(t: String): Boolean = FootnoteDefRe.findFirstMatchIn(t).isDefined
+  def footnoteDefsIn(t: String): List[(String, String)] =
+    FootnoteDefSplitRe.findAllMatchIn(t).map(m => (m.group(1).trim, m.group(2).trim)).toList
 
   /** Collects footnote definitions + the reference order over one page, and renders the bottom section. Footnotes
     * are NUMBERED by order of first reference (GitHub/pandoc convention) and listed in that order. */
@@ -91,6 +98,9 @@ object Ssg:
     private val defs  = scala.collection.mutable.Map[String, String]()          // id -> raw definition text
     def define(id: String, text: String): Unit = { defs.getOrElseUpdate(id, text); () }  // first definition wins
     def refNumber(id: String): Int = order.getOrElseUpdate(id, order.size + 1)
+    private val anchored = scala.collection.mutable.Set[String]()   // ids whose first-reference anchor was emitted
+    /** (number, isFirstReference) — only the FIRST reference of an id carries the fnref anchor id, so ids stay unique. */
+    def refAnchor(id: String): (Int, Boolean) = { val n = refNumber(id); (n, anchored.add(id)) }
     /** The `<section class="footnotes">` (empty if nothing was referenced). `renderDef` renders a definition's
       * inline markdown (so a link / emphasis inside a footnote still works). */
     def section(renderDef: String => String): String =
@@ -269,8 +279,8 @@ object Ssg:
     // footnotes: register every `[^id]: ...` definition paragraph, drop those blocks from the body, then render
     // (references become numbered superscript links and a footnotes <section> is appended at the end).
     val fn = Footnotes()
-    blocks.foreach { case Para(_, _, t) => FootnoteDefRe.findFirstMatchIn(t).foreach(m => fn.define(m.group(1).trim, m.group(2).trim)); case _ => () }
-    val body = blocks.filterNot { case Para(_, _, t) => FootnoteDefRe.findFirstMatchIn(t).isDefined; case _ => false }
+    blocks.foreach { case Para(_, _, t) if isFootnoteDefPara(t) => footnoteDefsIn(t).foreach((id, txt) => fn.define(id, txt)); case _ => () }
+    val body = blocks.filterNot { case Para(_, _, t) => isFootnoteDefPara(t); case _ => false }
     val content = renderBlocks(body, Some(fn)) + fn.section(t => renderInline(t, Some(fn)))
     template.replace("{{TITLE}}", escape(title))
       .replace("{{TOC}}", buildToc(blocks))

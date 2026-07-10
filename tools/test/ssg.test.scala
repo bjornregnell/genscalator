@@ -70,6 +70,19 @@ class SsgSuite extends munit.FunSuite:
     assert(clue(html).contains("<code>arr[^2]</code>"))
     assert(!clue(html).contains("fn-ref"))
   }
+  test("footnote: stacked definitions with no blank line between them are split correctly") {
+    val html = renderPage("A[^a] and B[^b].\n\n[^a]: alpha.\n[^b]: beta.\n", "{{CONTENT}}")
+    assert(clue(html).contains("alpha."))
+    assert(clue(html).contains("beta."))
+    assert(!clue(html).contains("missing footnote"))
+    assert(clue(html).contains("""<li id="fn-1">"""))
+    assert(clue(html).contains("""<li id="fn-2">"""))
+  }
+  test("footnote: repeated references to one footnote emit the fnref id only once (unique ids)") {
+    val html = renderPage("X[^r] and again[^r].\n\n[^r]: once.\n", "{{CONTENT}}")
+    assertEquals(clue("id=\"fnref-1\"".r.findAllIn(html).size), 1)   // only the FIRST ref carries the id
+    assertEquals(clue("href=\"#fn-1\"".r.findAllIn(html).size), 2)   // both refs still link to the footnote
+  }
 
   // --- inline code / links / images / autolinks (stashed, escaped, protected) ---
   test("inline: code span is escaped and its insides are not emphasised") {
