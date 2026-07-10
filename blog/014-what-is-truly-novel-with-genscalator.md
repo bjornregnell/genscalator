@@ -127,14 +127,26 @@ compromise safety (secrets, our own security posture), and second, anything that
 validity (our answers, the experiment's log, the "you are the subject" tells). We ran a separate review for
 each. The model's limitation became our control surface.
 
-There is a deeper point here, and it is about sovereignty. Reach and control pull in opposite directions. Data
-that a foreign system can freely crawl is data you have partly lost control of. Data that a system can obtain
-only when you hand it over, in the form you choose, is data whose sovereignty you have kept. So the very
-unreachability that first looked like a loss, the same unreachability behind the earlier irony about the
-mirror, turns out on second look to be a win: the friction is the sovereignty. When you want an outside model
-to reason about your material without contaminating an experiment or leaking what it should not have, the right
-default is not to let it browse at all. Hand it a curated, redacted, audited artifact instead. Controlled
-context beats uncontrolled retrieval, for validity and for safety both.
+### The friction is the sovereignty
+
+That control was not so much a lucky accident as a glimpse of a principle. Reach and control pull in opposite
+directions, and we usually only notice the reach.
+
+Data that a foreign system can freely crawl is data you have partly lost control of. It reads what it likes, in
+whatever order, and caches or trains on what it reads, and you were never in the loop. Data that the same
+system can obtain only when you hand it over, in the form you choose, is data whose sovereignty you have kept.
+You decide what goes in, what stays out, and what gets redacted on the way.
+
+So the very unreachability that first looked like a loss, the same unreachability behind the earlier irony
+about the mirror, turns out on second look to be a win. The friction is not in the way of the sovereignty. The
+friction *is* the sovereignty. A thing that is effortless for an outside system to ingest is a thing you no
+longer govern.
+
+There is a plain working rule in this, well beyond our little experiment. When you want an outside model to
+reason about your material without contaminating a result or leaking what it should not see, the right default
+is not to let it browse at all. Hand it a curated, redacted, audited artifact instead. Controlled context beats
+uncontrolled retrieval, for validity and for safety both. The moment access becomes frictionless, curation
+becomes impossible, and curation is where both your safety and your honesty live.
 
 ## Why this is interesting (to develop)
 
