@@ -167,3 +167,19 @@ its own testimony, not mine:
    on US Big Tech is the endpoint a US AI tool can actually read, while the EU-sovereign master was unreachable
    - a real sovereignty-vs-reach tension, and a second-order benefit of mirroring (accessibility redundancy)
    nobody designed for.
+
+## Round 3 (2026-07-10): the GitHub mirror ALSO failed - fetch-inaccessibility is total
+BR retried via the GitHub mirror + explicit `raw.githubusercontent.com` URLs. ChatGPT: "I could NOT actually
+read those files ... the fetch did not return the file contents. Instead, it fell back to generic pages about
+GitHub raw URLs" (it landed on `githubraw.com`, a generic explainer, not the repo). It again retracted the
+specific claims, again inferred the correct shape only from BR's terminology, and acknowledged the
+sovereignty-vs-reach irony (calling it an "accessibility dividend"). **New, sharper finding:** ChatGPT could not
+fetch this repo from ANY url tried (Codeberg raw -> UnexpectedStatusCode; GitHub raw -> generic fallback page).
+So the mirror-for-reach fix did NOT work either - the binding constraint is not the HOST but **ChatGPT's
+browsing environment, which does not reliably fetch arbitrary git-host raw files at all.** Implication for the
+legibility thread: the reliable external-grounding channel is not "make a fetch-friendly surface" but
+**human-mediated context injection** (paste the Markdown, upload a ZIP). So an external model's access to
+genscalator depends on the human carrying the substrate across - exactly as the resident agent (CO4) has it
+wired in. The contrast sharpens to its strongest form: the coupled system (BR + CO4 + substrate) versus an
+external model (no substrate, and no reliable way to fetch one). **The substrate advantage is not merely
+"richer context" - it is context the external model literally cannot obtain on its own.**
