@@ -183,3 +183,20 @@ genscalator depends on the human carrying the substrate across - exactly as the 
 wired in. The contrast sharpens to its strongest form: the coupled system (BR + CO4 + substrate) versus an
 external model (no substrate, and no reliable way to fetch one). **The substrate advantage is not merely
 "richer context" - it is context the external model literally cannot obtain on its own.**
+
+## Round-4 pre-registration (2026-07-10): the priming bias to expect, and how to read the grounded answer
+Before BR uploads the validity-hardened ZIP (ChatGPT can finally READ the repo), a CF5 research-validity review
+flagged an UNAVOIDABLE observation-effect. Even after excluding the experiment's running logs and redacting the
+"Live specimen" primer, ChatGPT will still learn from the repo that genscalator studies agent/human psyche,
+sycophancy, and confabulation; prizes "echt", un-flattering, prior-art-naming answers; and runs cross-model
+methodology. So the PREDICTED bias is NOT flattery but **performed epistemic humility (echt-mimicry)** -
+volunteering "not novel", hedging, self-flagellation - because the repo teaches it what answer this audience
+rewards. **Pre-registered interpretation rule for round 4:** treat an "unusually humble / un-flattering" tone as
+partially PROMPT-and-repo-induced, and weight most heavily the parts ChatGPT could ONLY get from the files -
+specific prior-art citations, correct identification of what the `tt` toolbox actually is, the built-on-MCP
+point, real quoted passages - over its tone. **Validity hardening applied to the ZIP:** excluded the two
+wr-data notes that are the running log of THIS experiment (`br-thriller-mode-...`, `dances-converge-...`) plus
+the earlier answer-bearing set; redacted foundations' "Live specimen" sentence in the zip copy. **Residual weak
+channel accepted:** the numbering gaps (blog 014 + SM040 absent from their dirs) let a very attentive reader
+infer *something* was withheld, but not what - not worth further surgery. (Optional not-yet-done: redact
+research/029 lines 133-134, a "we score other models' tics" sentence - MEDIUM severity.)
