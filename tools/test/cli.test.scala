@@ -466,6 +466,51 @@ class CliSuite extends munit.FunSuite:
       assert(clue(out).indexOf("09:00:00") < clue(out).indexOf("10:00:00"))
     finally os.remove.all(d)
   }
+  test("wr stamp --human keeps a genuine human-typed string line") {
+    val d = os.temp.dir()
+    try
+      os.write(d / "s.jsonl",
+        "{\"type\":\"user\",\"timestamp\":\"2026-07-06T09:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"UNIQUEPHRASE from BR\"}}\n")
+      val (code, out, _) = run("wr", "stamp", d.toString, "UNIQUEPHRASE", "--human")
+      assertEquals(code, 0)
+      assert(clue(out).contains("2026-07-06T09:00:00Z"))
+      assert(clue(out).contains("[user]"))
+    finally os.remove.all(d)
+  }
+  test("wr stamp --human DROPS a tool_result echo (type==user but has toolUseResult) that --user would keep") {
+    val d = os.temp.dir()
+    try
+      os.write(d / "s.jsonl",
+        "{\"type\":\"user\",\"timestamp\":\"2026-07-06T09:00:00Z\",\"toolUseResult\":{\"stdout\":\"x\"}," +
+          "\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"t1\",\"content\":\"ECHOMARK back\"}]}}\n")
+      // --human filters the echo out entirely → no matches (exit 1)
+      val (codeH, outH, _) = run("wr", "stamp", d.toString, "ECHOMARK", "--human")
+      assertEquals(codeH, 1)
+      assert(clue(outH.toLowerCase).contains("no match"))
+      // the coarse --user WOULD keep it (the very footgun --human fixes)
+      assertEquals(run("wr", "stamp", d.toString, "ECHOMARK", "--user")._1, 0)
+    finally os.remove.all(d)
+  }
+  test("wr stamp --human drops isMeta chrome and <command-name> wrappers") {
+    val d = os.temp.dir()
+    try
+      os.write(d / "s.jsonl",
+        "{\"type\":\"user\",\"isMeta\":true,\"timestamp\":\"2026-07-06T09:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"METAMARK ctx\"}}\n" +
+          "{\"type\":\"user\",\"timestamp\":\"2026-07-06T09:01:00Z\",\"message\":{\"role\":\"user\",\"content\":\"<command-name>/context</command-name> CMDMARK\"}}\n")
+      assertEquals(run("wr", "stamp", d.toString, "METAMARK", "--human")._1, 1) // meta dropped
+      assertEquals(run("wr", "stamp", d.toString, "CMDMARK", "--human")._1, 1)  // command wrapper dropped
+    finally os.remove.all(d)
+  }
+  test("wr stamp --human keeps an array text block (image+text style paste)") {
+    val d = os.temp.dir()
+    try
+      os.write(d / "s.jsonl",
+        "{\"type\":\"user\",\"timestamp\":\"2026-07-06T09:00:00Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"ARRTEXTMARK here\"}]}}\n")
+      val (code, out, _) = run("wr", "stamp", d.toString, "ARRTEXTMARK", "--human")
+      assertEquals(code, 0)
+      assert(clue(out).contains("[user]"))
+    finally os.remove.all(d)
+  }
   test("wr with no args prints usage and exits 2") {
     val (code, out, _) = run("wr")
     assertEquals(code, 2)
