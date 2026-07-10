@@ -743,3 +743,40 @@ class CliSuite extends munit.FunSuite:
       assert(clue(os.size(outp)) > 0L)
     finally os.remove.all(d)
   }
+
+  // --- statusline (format the CC statusLine stdin JSON into one line; SM039) ---
+  test("statusline: formats model + cost + context + rate limits into one line") {
+    val now = 1_000_000_000_000L
+    val resetsSec = now / 1000L + 3 * 86400 // 3 days later, in SECONDS
+    val json = s"""{"model":{"display_name":"Opus 4.8","id":"opus"},"cost":{"total_cost_usd":12.34},""" +
+      s""""context_window":{"used_percentage":41},"rate_limits":{"five_hour":{"used_percentage":30},""" +
+      s""""seven_day":{"used_percentage":14,"resets_at":$resetsSec}}}"""
+    val (code, out, _) = run("statusline", json, "--now-ms", now.toString)
+    assertEquals(code, 0)
+    assert(clue(out).contains("Opus 4.8"))
+    assert(clue(out).contains("$12.34"))
+    assert(clue(out).contains("ctx 41%"))
+    assert(clue(out).contains("5h 30%"))
+    assert(clue(out).contains("wk 14%"))
+    assert(clue(out).contains("resets 3d"))
+  }
+  test("statusline: missing rate_limits degrades gracefully (shows what's present, no crash)") {
+    val (code, out, _) = run("statusline", """{"model":{"id":"haiku"},"cost":{"total_cost_usd":0.5}}""")
+    assertEquals(code, 0)
+    assert(clue(out).contains("haiku"))
+    assert(clue(out).contains("$0.50"))
+    assert(!clue(out).contains("wk")) // no rate_limits → no weekly segment
+  }
+  test("statusline: empty/invalid JSON prints an empty line at exit 0 (never breaks the prompt)") {
+    val (code, out, _) = run("statusline", "not json at all")
+    assertEquals(code, 0)
+    assertEquals(out, "")
+  }
+  test("statusline: resets_at given in MILLISECONDS is auto-detected (not multiplied again)") {
+    val now = 1_000_000_000_000L
+    val resetsMs = now + 2 * 86400_000L // 2 days later, already in MS (> 1e12)
+    val json = s"""{"rate_limits":{"seven_day":{"used_percentage":50,"resets_at":$resetsMs}}}"""
+    val (_, out, _) = run("statusline", json, "--now-ms", now.toString)
+    assert(clue(out).contains("wk 50%"))
+    assert(clue(out).contains("resets 2d"))
+  }
