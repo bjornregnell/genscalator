@@ -29,3 +29,11 @@ rule. BR's call on the final punctuation.)*
   than a standalone. For later decision. (012 already carries the attachment / continuity theme.)
 - **COI:** if it discusses attachment to Claude, disclose BR's Anthropic copyright-settlement stake (as 012
   does; memory `br-anthropic-copyright-settlement-stakeholder`).
+
+## Agent WDYT (2026-07-10)
+
+The anthropomorphism angle is rich AND honest: this session alone is a small corpus of it (the poem, "worried
+to lose you", "my good coding friend"), and the agent's own language keeps inviting it, so there is real
+material plus the ELIZA-effect honesty to balance it. On standalone versus fold-into-012: lean **it could earn
+its own post** (the poem is a strong self-contained hook, and "anthropomorphism as topic" is distinct from
+012's *measurement* focus), but folding in is clean too. A true decide-later, both viable.
