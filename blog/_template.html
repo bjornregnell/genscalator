@@ -348,6 +348,14 @@ thead th {
   font-weight: 600;
 }
 
+/* Footnotes: [^id] refs -> superscript links + a bottom section (ssg) */
+sup.fn-ref { font-size: 0.72em; line-height: 0; white-space: nowrap; }
+sup.fn-ref a { text-decoration: none; padding: 0 0.1em; }
+.footnotes { margin-top: 2.5em; font-size: 0.9em; color: var(--text-muted); }
+.footnotes ol { padding-left: 1.3em; }
+.footnotes li { margin-bottom: 0.5em; }
+.footnotes .fn-back { text-decoration: none; margin-left: 0.3em; }
+
 /* Footer */
 .site-footer {
   border-top: 1px solid var(--border);
