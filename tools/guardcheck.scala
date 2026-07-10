@@ -1,5 +1,6 @@
 //> using scala 3.8.4
 //> using jvm 21
+//> using dep com.lihaoyi::ujson:4.4.3
 
 // guardcheck — flag the shell-command / commit-message patterns that trip the confirmation guard OR are banned
 // agent reflexes, and print the safe rewrite. This is the "prosthetic habit" as a tool (foundations glossary):
@@ -7,10 +8,14 @@
 // recalling a rule at the instant of action. Derived from the real guard fires in
 // research/013-confirmation-guard-static-analysis.md (§5 avoidance ruleset, §6 the pre-submit check).
 //
-// PURE: reads the text arg, computes, prints. No I/O beyond stdout.
+// The `cmd`/`msg` CHECKS are PURE (text in, findings out). The `hook` mode wires the SAME cmd-checks into a
+// Claude Code PreToolUse Bash hook: it reads the tool-call JSON on stdin (or as an arg, for testing) and emits
+// a permission-decision JSON (deny on any HIGH finding, ask on MED-only) so the safe form is reached
+// AUTOMATICALLY, not by remembering to run the check. See tmp/guardcheck-hook-proposal.md (SM007c).
 //   tt guardcheck cmd "<shell command>"     # chaining / substitution / pipes / redirects / raw grep + literals
 //   tt guardcheck msg "<commit message>"    # commit-message traps: line-leading #, =word, <-> / <N-M>
-// Exit: 0 = clean, 1 = at least one finding, 2 = usage error.
+//   tt guardcheck hook [<json>]             # PreToolUse hook: stdin (or arg) JSON -> permission-decision JSON
+// Exit: cmd/msg -> 0 clean, 1 finding(s), 2 usage. hook -> always 0 (it signals via the emitted JSON).
 import scala.util.matching.Regex
 
 // Helpers (the Check/Finding types, the detector combinators, the check lists, report/usage) scoped in this
@@ -45,6 +50,14 @@ object Guardcheck {
     Check("HIGH", "backtick substitution",
       "backtick command substitution is unanalyzable by construction",
       "use the typed file tools or a literal path", has("`")),
+    Check("HIGH", "/dev/stdin commit sink",
+      "feeding a commit message via /dev/stdin — the banned shape that produced empty commits this session",
+      "write the message to a FILE, then tt git commit --repo <dir> --message-file <path> --add <path> --push",
+      has("/dev/stdin")),
+    Check("HIGH", "heredoc / here-string (<<)",
+      "a heredoc or here-string feeds a shell blob the path-resolution guard cannot analyse (empty-commit trap)",
+      "write content to a file with the Write tool and pass it as a --message-file / file argument, never via <<",
+      has("<<")),
     Check("MED", "pipe to head/tail/wc",
       "an output-SHAPING pipe a typed tool should absorb as a flag",
       "use the tool's --limit / --tail / --count flag instead of a pipe", has(raw"\|\s*(head|tail|wc)\b")),
@@ -54,6 +67,10 @@ object Guardcheck {
     Check("MED", "raw recursive grep",
       "a raw recursive grep for a scan — the banned reflex",
       "use tt text grepr <abs-dir> <ext> <regex>", has(raw"\bgrep\s+-\S*r")),
+    Check("MED", "grep context flags (-A/-B/-C)",
+      "raw grep with -A/-B/-C context flags is not allowlisted -> guard stall (the banned reflex)",
+      "use tt text context <file> <regex> <n>, or tt text grepr <abs-dir> <ext> <regex>",
+      has(raw"\bgrep\s+-\S*[ABC]")),
     Check("MED", "output redirect (>)",
       "a > redirect (esp. combined with cd) trips the path-resolution guard",
       "give the tool a file-sink flag; do not redirect around it", has(raw"[^0-9]>\s*\S")),
@@ -87,16 +104,42 @@ object Guardcheck {
         println(s"      fix: ${f.fix}")
       1
 
+  /** PURE: given the raw PreToolUse stdin JSON, return the hook decision JSON (empty string = allow / clean).
+    * Extracts `.tool_input.command`, runs the SAME cmdChecks; any HIGH -> deny, else MED-only -> ask. */
+  def decideFromJson(stdinJson: String): String =
+    val command =
+      try ujson.read(stdinJson).obj.get("tool_input").flatMap(_.obj.get("command")).map(_.str).getOrElse("")
+      catch case _: Throwable => ""
+    if command.isEmpty then ""
+    else
+      val findings = cmdChecks.flatMap(_.find(command))
+      if findings.isEmpty then ""
+      else
+        val decision = if findings.exists(_.severity == "HIGH") then "deny" else "ask"
+        val reason = findings.sortBy(f => if f.severity == "HIGH" then 0 else 1)
+          .map(f => s"[${f.severity}] ${f.name}: ${f.fix}").mkString("  |  ")
+        ujson.write(ujson.Obj(
+          "hookSpecificOutput" -> ujson.Obj(
+            "hookEventName" -> "PreToolUse",
+            "permissionDecision" -> decision,
+            "permissionDecisionReason" -> reason)))
+
   def usage(): Unit =
     println("""guardcheck — flag shell/commit-message patterns that trip the guard or are banned reflexes
-      |  tt guardcheck cmd "<shell command>"    check a command (chaining, substitution, pipes, redirects, raw grep)
+      |  tt guardcheck cmd "<shell command>"    check a command (chaining, substitution, pipes, redirects, raw grep, /dev/stdin, heredoc)
       |  tt guardcheck msg "<commit message>"   check a commit message (line-leading #, =word, angle-glob)
-      |exit: 0 clean, 1 finding(s), 2 usage""".stripMargin)
+      |  tt guardcheck hook [<json>]            PreToolUse hook: reads tool-call JSON on stdin (or as an arg), emits a permission-decision JSON
+      |exit: cmd/msg -> 0 clean, 1 finding(s), 2 usage; hook -> 0""".stripMargin)
 
   def dispatch(args: String*): Unit =
     args.toList match
       case "cmd" :: rest if rest.nonEmpty => sys.exit(report("cmd", rest.mkString(" "), cmdChecks))
       case "msg" :: rest if rest.nonEmpty => sys.exit(report("msg", rest.mkString(" "), msgChecks))
+      case "hook" :: rest =>
+        val json = if rest.nonEmpty then rest.mkString(" ") else scala.io.Source.stdin.mkString
+        val out = decideFromJson(json)
+        if out.nonEmpty then println(out)
+        sys.exit(0)
       case _ => usage(); sys.exit(2)
 }
 

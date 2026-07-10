@@ -387,6 +387,52 @@ class CliSuite extends munit.FunSuite:
     assert(clue(out).toLowerCase.contains("report"))
   }
 
+  // --- guardcheck (the prosthetic habit as a tool: cmd/msg checks + the PreToolUse hook mode) ---
+  test("guardcheck cmd: a clean typed command exits 0") {
+    val (code, out, _) = run("guardcheck", "cmd", "tt git commit --repo /x --message-file /x/m.txt --add /x/f --push")
+    assertEquals(code, 0)
+    assert(clue(out).toLowerCase.contains("clean"))
+  }
+  test("guardcheck cmd: flags /dev/stdin commit sink (exit 1)") {
+    val (code, out, _) = run("guardcheck", "cmd", "tt git commit --message-file /dev/stdin")
+    assertEquals(code, 1)
+    assert(clue(out).contains("/dev/stdin"))
+  }
+  test("guardcheck cmd: flags heredoc and here-string (<<)") {
+    assertEquals(run("guardcheck", "cmd", "tt git commit --message-file - <<EOF")._1, 1)
+    val (code, out, _) = run("guardcheck", "cmd", "grep foo <<< bar")
+    assertEquals(code, 1)
+    assert(clue(out.toLowerCase).contains("heredoc"))
+  }
+  test("guardcheck cmd: flags grep context flags -A/-B/-C") {
+    assertEquals(run("guardcheck", "cmd", "grep -nA4 foo file")._1, 1)
+    assertEquals(run("guardcheck", "cmd", "grep -B2 foo file")._1, 1)
+    assertEquals(run("guardcheck", "cmd", "grep -C3 foo file")._1, 1)
+  }
+  test("guardcheck hook: HIGH finding → deny decision JSON") {
+    val json = """{"tool_name":"Bash","tool_input":{"command":"tt git commit --message-file /dev/stdin"}}"""
+    val (code, out, _) = run("guardcheck", "hook", json)
+    assertEquals(code, 0)
+    assert(clue(out).contains("\"permissionDecision\":\"deny\""))
+    assert(clue(out).contains("PreToolUse"))
+  }
+  test("guardcheck hook: MED-only finding → ask decision JSON") {
+    val json = """{"tool_name":"Bash","tool_input":{"command":"grep -A4 foo file"}}"""
+    val (_, out, _) = run("guardcheck", "hook", json)
+    assert(clue(out).contains("\"permissionDecision\":\"ask\""))
+  }
+  test("guardcheck hook: a clean command emits nothing (allow)") {
+    val json = """{"tool_name":"Bash","tool_input":{"command":"tt chrono now"}}"""
+    val (code, out, _) = run("guardcheck", "hook", json)
+    assertEquals(code, 0)
+    assertEquals(out, "")
+  }
+  test("guardcheck with no args prints usage and exits 2") {
+    val (code, out, _) = run("guardcheck")
+    assertEquals(code, 2)
+    assert(clue(out).toLowerCase.contains("usage"))
+  }
+
   // --- svg (textual sequence-diagram spec → self-contained, theme-aware SVG for blogs & reports) ---
   test("svg sequence: renders an <svg> with lifeline labels and a message label to stdout") {
     val f = os.temp(contents = "actor Alice\nactor Bob\nAlice -> Bob: hello\n", suffix = ".txt")
