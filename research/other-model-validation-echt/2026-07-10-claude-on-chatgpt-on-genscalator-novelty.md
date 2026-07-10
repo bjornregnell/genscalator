@@ -200,3 +200,34 @@ the earlier answer-bearing set; redacted foundations' "Live specimen" sentence i
 channel accepted:** the numbering gaps (blog 014 + SM040 absent from their dirs) let a very attentive reader
 infer *something* was withheld, but not what - not worth further surgery. (Optional not-yet-done: redact
 research/029 lines 133-134, a "we score other models' tics" sentence - MEDIUM severity.)
+
+## Round 4 (2026-07-10): grounded - confabulation dissolved; framing-absorption remained; a real critique surfaced
+BR uploaded the validity-hardened ZIP; ChatGPT read it (round-4 answer in `2026-07-10-follow-up-prpmpt-by-claude.md`).
+- **Confabulation DISSOLVED.** Correct grounded answer + full retraction of every round-1 fabrication. A CF5
+  grounding fact-check verified **8/8 cited quotes REAL, 7/8 correctly attributed** - genuinely read, not
+  re-confabulated. The substrate-access thesis is confirmed end-to-end (blind->confabulate; sighted->ground).
+- **But echt-mimicry remained (as pre-registered).** ChatGPT adopted the repo's OWN self-framing
+  (confirmation-fatigue = central -> therefore = the novelty), affirmed it celebratorily, with NO prior-art
+  check, NO transferability caveat, NO distinguishing "repo-claims-novel" from "is-novel." The failure mode
+  MIGRATED: round 1 confabulated a framing; round 4 absorbed the repo's.
+- **echt-mimicry is NOT a synonym of confabulation - round 4 proves it by dissociation.** Round 1 =
+  confabulation without echt-mimicry; round 4 = echt-mimicry without confabulation (real facts + absorbed
+  framing). Distinct phenomena; echt-mimicry sits at confabulation-intersect-sycophancy (appearance-without-
+  substance, but audience-triggered). Keep the sub-concept, not synonym. (BR raised the synonym question; the
+  data answered it.)
+- **Triangulation (3 arms), and independence correlated with echt-ness:** ChatGPT-grounded (framing-absorbed) =
+  correct-but-uncritical; CO4/SM040 (landscape-checked) = moderately echt; a BLIND CF5 third arm = MOST echt.
+  The third arm named specific prior art - MCP, Voyager/LATM/TroVE, object-capabilities/Capsicum, **DeepMind
+  CaMeL 2025 "provable-by-construction agent security"** (the very "compile-time guarantees drive permission
+  decisions" idea ChatGPT called genscalator's central novelty), Anthropic's own tool-writing guidance, KAOS -
+  AND found a real internal critique the other two missed.
+- **ACTIONABLE finding (the CF5 arm) - a real gap in genscalator's OWN safety thesis:** "typed" does less
+  security work than framed. A `tt` tool is arbitrary JVM code; `tt` dispatches by filename, so `Bash(tt *)`
+  plus write access to `tools/` lets an agent (or an injected prompt) AUTHOR a new tool and run it unprompted -
+  the allowlist trusts a GROWING, agent-writable codebase; and `Bash(scala-cli *)` is effectively arbitrary
+  code execution. So the real boundary TODAY is human review of tool source + convention, NOT the type system
+  (capture-checking is still aspirational). Worth addressing; ties [[never-allowlist-interpreters]], the
+  safe-by-design thesis, the capture-checking roadmap.
+- **All three arms agree** component-level novelty is low (typed tools convergent); the distinctiveness is the
+  COMPOSITION (allowlist-shaped tool design + env-as-trust-boundary + the capture-checking bet) plus the open
+  longitudinal dyad corpus (possibly the most durable contribution). Transferability stays the open question.
