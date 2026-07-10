@@ -231,3 +231,14 @@ BR uploaded the validity-hardened ZIP; ChatGPT read it (round-4 answer in `2026-
 - **All three arms agree** component-level novelty is low (typed tools convergent); the distinctiveness is the
   COMPOSITION (allowlist-shaped tool design + env-as-trust-boundary + the capture-checking bet) plus the open
   longitudinal dyad corpus (possibly the most durable contribution). Transferability stays the open question.
+
+## Reciprocal (2026-07-10): Claude cannot web-read ChatGPT's shared conversation either
+BR shared a ChatGPT conversation link (`chatgpt.com/share/...`, page titled "Genscalator Novelty Analysis") and
+asked if CO4 could access it. Result: CO4's WebFetch loaded the PAGE but got only the **SPA app-shell + login
+wall** — the conversation text was walled off (title visible, content not). So the failure is **symmetric**:
+ChatGPT could not machine-read genscalator's repo (SPA / raw-fetch failures), and Claude cannot machine-read
+ChatGPT's shared chat (SPA shell / login). **Neither frontier model can fetch the other's content via web; the
+HUMAN is the mandatory conduit both directions.** This strengthens the whole thread: human-mediated context
+injection is not just the *safe/valid* path (the ZIP-hardening finding) but often the *only* path — direct
+machine-to-machine reading across these walled apps fails by default. Ties: the substrate-access thesis, the
+sovereignty/control reframe, the ZIP-hardening pattern.
