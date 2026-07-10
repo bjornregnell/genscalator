@@ -62,3 +62,16 @@ as the RT051 grounding and the contextRotMeter L1 canary file). Positive datapoi
 ## Disposition
 Pinned here (WR data) per BR. Graduated to **RT052** (the umbrella research topic) — see
 `research/052-human-throughput-and-value-aligned-spend.md`.
+
+## Timestamp retrofit (2026-07-10, SM044a-S6) — evidence-time recovered from the transcript
+Retrofitted via `tt wr stamp` on the muntabot project dir (append-only; the day-dated claims above stand):
+- **The brain-dump** (§"The brain-dump", the "pocket money" / "productive = external value" utterance) was
+  enqueued at **2026-07-08T11:19:00.848Z = 13:19:00 CEST** (session `240e00c3`, the earliest datable form is the
+  `queue-operation` enqueue line; the processed `type:user` entry follows ~2 min later at 11:20:51Z).
+- **The addendum** (§"Addendum", *"the STRENGTH of CO4 is to keep MANY threads in mind…"*) was enqueued at
+  **2026-07-08T11:21:08.858Z = 13:21:08 CEST** — **~2 min 8 s after** the main brain-dump, one continuous burst.
+- Method nuance (a wr-stamp finding): the *earliest* datable form of a human utterance can be a `queue-operation` /
+  `attachment` entry (the send moment), which precedes the `type:user` processing entry and is what `--user`/`--human`
+  would skip — so the retrofit rule "earliest hit across all entry types" (Mode.All), not just `--human`, gives the
+  truest send time. Anchors this RT052 motivation statement on the session timeline (mid-morning UTC, the token-reset
+  topic it is literally about). Ties: [[wr-stamp-dogfood-transcript-format-2026-07-10]], [[raw-data-append-only]].

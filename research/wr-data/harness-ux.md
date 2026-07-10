@@ -561,6 +561,13 @@ of the "AARGH" is the agent's inference from timing + the `cd`-reset in the imme
 reacting to something else, redirect — but the compound-command rule-violation is objective regardless.
 **Reflex-rate note (feeds `../029-cross-model-psyche-comparison.md`):** logged as an Opus-4.8 (pre-Fable-5) main-loop
 reflex datapoint, so the same reflex-rate can be compared after the frontier-model switch.
+**Timestamp retrofit (2026-07-10, SM044a-S7) — "< 5 min" is now MEASURED.** The reflex command's tool_use fired at
+**2026-07-04T17:12:45.332Z = 19:12:45 CEST** (session `240e00c3`; the exact `cd … && for f in …; do if [ -e "$f" ]…`
+existence-check, recovered via `tt wr stamp 'if \[ -e'`). Blog commit times (genscalator git, durable backstop):
+blog 005 dances scaffold `34babf5` at 19:11:24 CEST, blog 004 compaction-UX pain `a879c26` at 19:08:09 CEST. So the
+reflex re-fired **1 min 21 s after committing blog 005** and **4 min 36 s after committing blog 004** — both inside
+five minutes, the felt "< 5 min" replaced by a measured interval. Sharpens the flagship structure-over-willpower
+datapoint that blog 006 + the SYNTHESIS cite. (Append-only; the claim above stands, now dated.)
 
 ### Follow-on (BR, live, same episode) — compounding DEFEATS the allowlist; the approval-race corrupts authority `#security` `#afk`
 The reflex is not just noise — it has a **security** consequence that this episode exposed:

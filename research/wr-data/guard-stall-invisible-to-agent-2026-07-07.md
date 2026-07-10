@@ -63,3 +63,18 @@ calls**.
 Candidate for the 047 writeup/blog: *"the agent is time-blind and stall-blind between calls"* is a real
 contribution to the human-AI collaboration picture, and a fourth reflexive specimen of the study's themes.
 [[at-code-plan-and-introspection]] [[echt-effort-especially-self-generated]]
+
+## Timestamp retrofit (2026-07-10, SM044a-S3) — the first stall pinned to the second
+Retrofitted via `tt wr stamp` on the muntabot project dir (append-only; the commit-bracketed estimates above stand).
+- **The first suspicious tail is now exact:** the `tail -n 30` on the study log (the one that returned "no output",
+  §"The regression", felt as "~00:40-00:50 CEST") fired at **2026-07-06T22:45:02.479Z = 2026-07-07 00:45:02 CEST**
+  (session `240e00c3`, `tail -n 30 …/research/047…`). The felt bracket was right to within minutes — a clean
+  member-check of the estimate.
+- **The box-progress window** (§"The regression", the `.../tasks/<id>.output` peeks, felt "~01:00 to ~01:56 CEST")
+  sits in the same session's transcript right after; every `tail` tool_use carries an exact `timestamp`, so the full
+  per-command stall profile (tool_use time → next human-approval message = the invisible stall duration) is
+  MEASURABLE by the same method — not fully enumerated here (lower marginal value than the first-tail confirmation),
+  flagged as a cheap follow-up if the 047/blog writeup wants a per-command duration chart.
+- Method caveat (why "measured" beats "felt"): transcript timestamps are UTC; +02:00 gives CEST. Perishable under
+  `cleanupPeriodDays` — done now while the session file survives. Ties: [[wr-stamp-dogfood-transcript-format-2026-07-10]],
+  [[raw-data-append-only]].
