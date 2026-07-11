@@ -28,6 +28,24 @@ invisible wait — [[guard-stall-invisible-to-agent-2026-07-07]]). You cannot bo
 AND keep a per-command ask on the release, without one of: (a) the human stays for the one ask, (b) the ask-rule is
 temporarily lifted (a human settings change), or (c) the **agent flags it upfront**.
 
+## BR's refinement (2026-07-11): the per-command ask is GOOD; triage allow/deny/ask per new tool
+BR: *"'the harness's ask-rule is per-command' — that is actually GOOD."* Reframe: the per-command ask on an effectful
+verb is not merely friction to route around — it is the **correct, desired boundary**, and it works *because* it is
+per-command (a task-level "go" should NOT silently blanket-authorise every future consequential command).
+
+**Process finding (BR):** **revise the `allow`/`deny`/`ask` sections of `settings.local.json` per EACH new tool.** When
+a `tt` tool (or verb) ships, its classification is a deliberate decision: **read/pure → allow** (blanket-allowlistable,
+silent) · **effectful/outward → ask** (a human confirms) · **dangerous → deny**. This is a standing **release-hygiene
+step** — a new tool is not "done" until its allow/deny/ask home is decided. (Ties the v0.9.0 release: the ~14 new
+tools each want a triage pass — folds into SM041 allowlist deep-mine.)
+
+**Introspection datapoint (BR-validated as WR data):** the agent flagged, *unprompted*, its OWN prior inability to
+anticipate the ask-rule ("I said no-stall, but release-create is an ASK, not an allow"). BR flags this
+self-introspection as valuable: the agent **noticing and naming its own blind spot** (a mis-prediction about the guard
+surface) is the good self-monitoring behaviour — it converts a silent blind spot into a logged, correctable one, and
+the human's member-check ("that is actually good") is the ground-truth confirmation. Ties:
+[[joint-rot-vigilance-recovery-kit]], corroboration asymmetry (agent surfaces the candidate miss; human confirms).
+
 ## Agent lesson (echt)
 I told BR "the tools make it safe (no stall)" *before* running it — but `release-create` is an **ASK**, not an allow,
 so I **under-anticipated the ask-rule**. I should have warned "**this one will prompt you — stay for the single
