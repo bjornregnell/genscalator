@@ -6,12 +6,6 @@
 > **Audience:** Scala developers weighing a Scala-3 style policy; language designers and SIP folk; builders of
 > agentic coding tooling; and anyone setting a codebase style convention for AI-assisted development. No prior
 > context on this project is assumed - it is meant to be read on its own.
-> Sources: the open note *["Towards a Common Scala Style Recommendation"](https://docs.google.com/document/d/14ZBGKNHUW4d8hDWIi5i6QquClX3_iXva-iMy5KpFU3I/edit?usp=sharing)*
-> (Odersky, Regnell & Kerr, 2026); the genscalator indent-vs-braces edit-cost experiment
-> ([`../research/experiments/indent-vs-braces/RESULTS.md`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/experiments/indent-vs-braces/RESULTS.md),
-> [`README.md`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/experiments/indent-vs-braces/README.md)); and the framing notes
-> [`../research/001-scala-style-evolution.md`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/001-scala-style-evolution.md) and
-> [`../research/017-scala-style-recommendations.md`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/017-scala-style-recommendations.md).
 
 ## The short version
 
