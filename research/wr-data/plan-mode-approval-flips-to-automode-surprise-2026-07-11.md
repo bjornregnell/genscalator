@@ -58,6 +58,19 @@ state pattern as the sticky "Next:" line ([[does-harness-disinformation-survive-
 asserts a state ("release-prep in progress") that isn't real. Third instance this session of harness chrome eroding
 trust in the display — reinforcing **trust the checkable substrate (git/commits), not the chrome.**
 
+## Git-workflow blind spot + spontaneous substrate-check (BR, 2026-07-11)
+BR flagged that the p-mode pain *"also affects the git workflow WITHOUT THE AGENT REALLY KNOWING what is happening"* —
+a plan approval **can** create a branch/worktree that silently diverts commits, and the agent cannot perceive that
+from the chrome (a **harness-state blind spot**, sibling of the guard-stall invisibility). The recovery datapoint BR
+also named: prompted by his cyan-marker cue, the agent **spontaneously introspected** — it reasoned "is this a branch?
+are my commits on main?" and **verified the substrate** (`tt gitinfo` → `main`, 0 ahead/0 behind; `git worktree list`
+→ a single `main` worktree, clean). So the git flow was **not** actually diverted; the marker is cosmetic. The pattern
+that worked is the **joint-vigilance loop**: the human sees the chrome anomaly, the agent resolves it by querying the
+**checkable substrate** (git) rather than trusting or guessing the chrome. Both halves are needed — the agent is blind
+to harness-side git state, but can dispel the uncertainty on cue by reading the substrate. Ties:
+[[guard-stall-invisible-to-agent-2026-07-07]] (structural blind spots), [[joint-rot-vigilance-recovery-kit]],
+[[does-harness-disinformation-survive-a-compact-2026-07-10]] (trust the substrate, not the chrome).
+
 ## What held (recovery)
 The agent had made only a **READ** (zero edits/commits/pushes) before BR interjected, and on the surprise it
 **stopped and clarified rather than barreling on** — surfaced the mechanic, confirmed nothing had changed, and
