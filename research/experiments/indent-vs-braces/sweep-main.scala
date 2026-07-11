@@ -12,7 +12,7 @@
 import scala.util.Try
 
 val Root  = os.Path("/home/bjornr/git/berg/bjornregnell/genscalator/research/experiments/indent-vs-braces")
-val Modly = "http://bjornyx.local:8080"
+val Modly = sys.env.getOrElse("MODLY_URL", "http://bjornyx.local:8080")  // replicator: export MODLY_URL to override
 val Styles = List("braceless", "braces", "common")
 val DefaultModels = List("qwen2.5:3b", "qwen2.5:7b", "qwen2.5-coder:7b", "qwen-coder-local:latest",
   "gemma2:9b", "gemma3:latest", "aya-expanse:8b")

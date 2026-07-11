@@ -6,7 +6,7 @@
 // modly-pilot — one-shot probe of the modly local-model axis: set a model, send task 001's braceless
 // before+instruction, print the raw completion so we can see whether a local model returns gradable code.
 //   scala-cli run modly-pilot.scala -- <model>
-val Modly = "http://bjornyx.local:8080"
+val Modly = sys.env.getOrElse("MODLY_URL", "http://bjornyx.local:8080")  // replicator: export MODLY_URL to override
 
 @main def pilot(model: String): Unit =
   val dir = os.Path("/home/bjornr/git/berg/bjornregnell/genscalator/research/experiments/indent-vs-braces/tasks/001-wrap-dispatch-in-else")
