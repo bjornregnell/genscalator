@@ -43,6 +43,34 @@ together — hence not built yet.
 3. Wrap as the `crud-web-app-seed` skill (writes the template into a chosen dir + a README with run steps).
 4. Verify a newcomer can go from `skill → running app` in a couple of commands.
 
+## UPDATE (2026-07-11): stack DECIDED (BR) + latest-version sweep
+**BR's decisions:**
+- **Build = latest sbt 1.x (HD).** Since ScalaJS is blocked on the sbt-2.x combo (sbt-scalajs not migrated), revert
+  from sbt 2.x to **latest sbt 1.x** for the seed. So **Path A** is chosen (not the scala-cli-native Path B).
+- **Scala = 3.9.0-RC1** (BR pin — the coming LTS). Verified: **3.9.0-RC1 + Scala.js 1.22.0 + Laminar 17.2.1 compiles
+  clean**, so the RC works with the client stack. ⚠️ **3.9.0-RC2 is already the maven `latest`** — BR to confirm RC1
+  vs RC2 (both should work; binary-compat within 3.x).
+
+**Latest versions (maven-central, 2026-07-11):**
+
+| component | maven latest | seed pick | note |
+|---|---|---|---|
+| Scala 3 | **3.9.0-RC2** | **3.9.0-RC1** (BR) | RC2 out; BR pinned RC1 (coming LTS) |
+| sbt | 2.0.1 | **latest 1.x = 1.12.13** | HD: revert to 1.x (sbt-scalajs not on 2.x) |
+| Scala.js | **1.22.0** | 1.22.0 | current |
+| Laminar | 18.0.0-M5 *(milestone)* | **17.2.1** *(latest stable)* | avoid the 18.x milestone in a seed |
+| scalajs-dom | **2.8.1** | 2.8.1 | Laminar pulls it transitively |
+| sbt-scalajs | **1.22.0** (`_2.12_1.0`) | 1.22.0 | sbt-1.x plugin; no sbt-2.x build exists |
+| sbt-scalajs-crossproject | groupId is **`org.portable-scala`** (not `org.scala-js`) | ~1.3.x | confirm exact ver at build |
+| server deps | — | **JDK only** | per BR |
+
+**Next: build the seed (Path A).** An sbt **1.12.13** multi-project build: `common` (portable cross-project, shared
+datamodel) · `server` (JDK-only HTTP) · `client` (Scala.js + Laminar CRUD UI), all Scala **3.9.0-RC1**, direct common
+style. **Build-verification wrinkle:** `Bash(sbt --client *)` is allowlisted, but a *fresh* scratch project may need a
+plain-`sbt` bootstrap (NOT allowlisted → could stall in AFK). So: author the template + verify the **sources** compile
+solo via scala-cli; the full **sbt-build** verification is best run with BR present or once a solo-safe sbt path is
+confirmed.
+
 ## Method note (AFK-safe)
 All checks were solo-safe: scala-cli compile (allowlisted, resolves deps without a harness ack) + `tt web get`
 (allowlisted `Bash(tt *)`, so no domain-ack stall) for the maven-central metadata. No WebFetch (which would have
