@@ -243,10 +243,21 @@ object Ssg:
         if visible.nonEmpty then sb ++= s"<p>${renderInline(visible, fn)}</p>\n"
       case Quote(t)      =>
         flush()
-        // Strip the internal **Status: ...** bookkeeping span so it never reaches readers (SM032 trim-at-publish);
-        // keep any other preamble prose the author wrote (Audience / Author / Sources).
-        val cleaned = StatusRe.replaceAllIn(t, _ => "").replaceAll("^\\s+", "")
-        if cleaned.nonEmpty then sb ++= s"<blockquote>\n<p>${renderInline(cleaned, fn)}</p>\n</blockquote>\n"
+        // Strip the internal **Status: ...** bookkeeping span (SM032 trim-at-publish), but distil a reader-facing
+        // byline from it — `Published <d> · updated <d>` (SM051) — and fold it in right after the leading
+        // **Author: …** span. Any other preamble prose the author wrote (Audience / Author) is kept.
+        val cleaned = StatusRe.replaceAllIn(t, _ => "").replaceAll("^\\s+", "").replaceAll("\\s+$", "")
+        val byline  = StatusRe.findFirstMatchIn(t).flatMap(m => readerByline(m.group(1)))
+        if cleaned.nonEmpty || byline.isDefined then
+          var inner = if cleaned.nonEmpty then renderInline(cleaned, fn) else ""
+          for b <- byline do
+            val badge = s"""<span class="post-byline">${escape(b)}</span>"""
+            val i = inner.indexOf("</strong>")   // end of the leading **Author: …** span (Status already stripped)
+            inner =
+              if i >= 0 then inner.substring(0, i + 9) + " " + badge + inner.substring(i + 9)
+              else if inner.nonEmpty then s"$inner $badge"
+              else badge
+          sb ++= s"<blockquote>\n<p>$inner</p>\n</blockquote>\n"
       case Fence(lines)  => flush(); sb ++= renderFence(lines)
       case Table(rows)   => flush(); sb ++= renderTable(rows)
     }
@@ -294,7 +305,8 @@ object Ssg:
       |<style>body{max-width:44rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif;line-height:1.6}
       |pre{overflow-x:auto;background:#f4f4f4;padding:1rem;border-radius:6px}code{font-family:ui-monospace,monospace}
       |table{border-collapse:collapse}th,td{border:1px solid #ccc;padding:.3rem .6rem}img{max-width:100%}
-      |sup.fn-ref{font-size:.75em;line-height:0}.footnotes{font-size:.9em;margin-top:2rem}.footnotes li{margin:.3rem 0}.fn-back{text-decoration:none;margin-left:.25rem}</style>
+      |sup.fn-ref{font-size:.75em;line-height:0}.footnotes{font-size:.9em;margin-top:2rem}.footnotes li{margin:.3rem 0}.fn-back{text-decoration:none;margin-left:.25rem}
+      |.post-byline{font-style:italic;font-size:.92em;color:#666}</style>
       |</head><body>
       |{{CONTENT}}
       |</body></html>""".stripMargin
@@ -320,6 +332,21 @@ object Ssg:
     else StatusRe.findFirstMatchIn(md).map: m =>
       val inner = m.group(1).trim.stripSuffix(".").trim
       md.substring(0, m.start) + s"**Status: $inner; $to $date.**" + md.substring(m.end)
+
+  /** The reader-facing byline distilled from a Status inner (the `;`-separated `<verb> <date>` history): SM051.
+    * `Published <d> · updated <d>` when the post has both a `published` transition and at least one `updated` (the
+    * LATEST update date only); `Published <d>` when it was never updated; None when there is no `published` verb
+    * (still-drafted posts carry no reader byline). The internal `initialized`/`drafted`/`deployed` bookkeeping is
+    * dropped — readers see only publication and the most recent revision. PURE + unit-tested. */
+  def readerByline(statusInner: String): Option[String] =
+    val trans = statusInner.trim.stripSuffix(".").split(";").iterator
+      .map(_.trim).filter(_.nonEmpty)
+      .map { s => val p = s.split("\\s+", 2); (p(0).toLowerCase, if p.length > 1 then p(1).trim else "") }
+      .toVector
+    trans.find(_._1 == "published").map(_._2).map: pub =>
+      trans.filter(_._1 == "updated").lastOption.map(_._2).filter(_.nonEmpty) match
+        case Some(u) => s"Published $pub · updated $u"
+        case None    => s"Published $pub"
 
   /** Parse a `from:to` status-transition spec (legacy `from->to` also accepted); None if malformed. */
   def parseTransition(spec: String): Option[(String, String)] =

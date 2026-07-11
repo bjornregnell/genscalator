@@ -229,9 +229,11 @@ class SsgSuite extends munit.FunSuite:
     assertEquals(parseTransition("a:b:c"), None)
   }
   test("renderBlocks strips the internal Status span from a preamble blockquote, keeping the rest") {
-    val out = renderBlocks(MdParse.parse("> **Status: drafted 2026-07-03; published 2026-07-08.** **Audience:** readers"))
+    // still-drafted (no `published` verb) → no reader byline, so this isolates the pure strip behaviour
+    val out = renderBlocks(MdParse.parse("> **Status: initialized 2026-07-03; drafted 2026-07-07.** **Audience:** readers"))
     assert(!clue(out).contains("Status"))
     assert(out.contains("<strong>Audience:</strong> readers"))
+    assert(!out.contains("post-byline"))
   }
   test("renderBlocks drops a blockquote that is ONLY a status span (nothing left to show)") {
     assertEquals(renderBlocks(MdParse.parse("> **Status: drafted 2026-07-03.**")).trim, "")
@@ -241,4 +243,42 @@ class SsgSuite extends munit.FunSuite:
     val out = renderBlocks(MdParse.parse("real text <!-- hidden note --> more"))
     assert(!clue(out).contains("hidden"))
     assert(out.contains("real text") && out.contains("more"))
+  }
+
+  // --- reader-facing byline (SM051) ---
+  test("readerByline surfaces published + the LATEST update, dropping internal verbs") {
+    assertEquals(readerByline("drafted 2026-07-03; published 2026-07-08; deployed 2026-07-08; updated 2026-07-11"),
+      Some("Published 2026-07-08 · updated 2026-07-11"))
+  }
+  test("readerByline: a never-updated published post shows just Published") {
+    assertEquals(readerByline("initialized 2026-07-01; drafted 2026-07-03; published 2026-07-08"),
+      Some("Published 2026-07-08"))
+  }
+  test("readerByline: with several updates only the LAST update date is shown") {
+    assertEquals(readerByline("published 2026-07-08; updated 2026-07-09; updated 2026-07-11"),
+      Some("Published 2026-07-08 · updated 2026-07-11"))
+  }
+  test("readerByline: a still-drafted post (no published verb) carries no byline") {
+    assertEquals(readerByline("initialized 2026-07-01; drafted 2026-07-03"), None)
+  }
+  test("readerByline tolerates a trailing period on the status history") {
+    assertEquals(readerByline("published 2026-07-08; updated 2026-07-11."),
+      Some("Published 2026-07-08 · updated 2026-07-11"))
+  }
+  test("renderBlocks folds the byline in right after the Author span and strips the internal verbs") {
+    val md = "> **Status: drafted 2026-07-03; published 2026-07-08; deployed 2026-07-08; updated 2026-07-11.** **Author: Björn Regnell.** Some intro."
+    val out = renderBlocks(MdParse.parse(md))
+    assert(clue(out).contains("""<strong>Author: Björn Regnell.</strong> <span class="post-byline">Published 2026-07-08 · updated 2026-07-11</span>"""))
+    assert(!out.contains("Status") && !out.contains("drafted") && !out.contains("deployed"))
+    assert(out.contains("Some intro."))
+  }
+  test("renderBlocks byline for a never-updated post reads Published only (no update clause)") {
+    val out = renderBlocks(MdParse.parse("> **Status: published 2026-07-08.** **Author: BR.** hi"))
+    assert(clue(out).contains("""<span class="post-byline">Published 2026-07-08</span>"""))
+    assert(!out.contains("updated"))
+  }
+  test("renderBlocks renders the byline even when the blockquote is ONLY a published status span") {
+    val out = renderBlocks(MdParse.parse("> **Status: published 2026-07-08.**"))
+    assert(clue(out).contains("""<span class="post-byline">Published 2026-07-08</span>"""))
+    assert(out.contains("<blockquote>"))
   }
