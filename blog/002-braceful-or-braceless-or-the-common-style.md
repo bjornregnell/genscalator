@@ -118,13 +118,16 @@ Here is our code-examples from above using the proposed common style:
 ```scala
 def scan(s: String): String = {
   val sb = StringBuilder()
+
   var i = 0
   while i < s.length do {
     if s(i) == 'a' 
     then sb ++= "A"
     else sb += s(i)
+
     i += 1
   }
+  
   sb.toString
 }
 ```
