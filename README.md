@@ -118,7 +118,7 @@ for one job; install that only if you use the tool.
 
 | Requirement | What / version | Install | Docs |
 |------|----------------|---------|------|
-| **`tt` runner + all tools** | **Scala 3.8.4** compiler on a **JDK 21+**, run via **scala-cli**. The per-tool library deps — `os-lib` 0.11.8, `ujson` 4.4.3, `requests` 0.9.3 (plus `munit` 1.3.3 for the test suite) — are declared inline and **fetched automatically by scala-cli** (cached after first run). | Install **scala-cli + a JDK** — see [Install](#install); scala-cli fetches the compiler + libraries on first use. | [scala-cli](https://scala-cli.virtuslab.org/) · [Scala 3.8.4](https://www.scala-lang.org/download/) |
+| **`tt` runner + all tools** | • **Scala 3.8.4** compiler<br>• a **JDK 21+**<br>• run via **scala-cli** (it fetches the compiler)<br>• libraries — **auto-fetched by scala-cli**, cached: `os-lib` 0.11.8 · `ujson` 4.4.3 · `requests` 0.9.3 · `munit` 1.3.3 *(tests only)* | Install **scala-cli + a JDK** — see [Install](#install); scala-cli fetches the compiler + libraries on first use. | [scala-cli](https://scala-cli.virtuslab.org/) · [Scala 3.8.4](https://www.scala-lang.org/download/) |
 | **`tt gvdot`** *(optional)* | **graphviz** (`dot`) — lays out sequence diagrams to pdf/png/svg | `sudo apt install graphviz` (Debian/Ubuntu); `brew install graphviz` (macOS) | [graphviz.org](https://graphviz.org/) · `dot -h` · `man dot` |
 
 Tools degrade gracefully when their dependency is missing: `tt gvdot` still prints DOT source without `dot`, and
