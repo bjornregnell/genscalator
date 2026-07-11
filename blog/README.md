@@ -54,7 +54,7 @@ in order, and the final one repeats:
 - **deployed** — live on the site (**bjornregnell.se**, via the static-site generator). Distinct from *published*: a
   post can be published-as-text yet not yet on the site, and a *deployed* post that is later **updated** has drifted
   from what's live (→ needs a redeploy). Track `deployed` vs `updated` so we always know which live posts are stale.
-- **updated** — a post-publication revision; **repeats**, each with its own date, so the change history stays visible.
+- **updated** — a post-publication revision; **repeats**, each with its own date, so the change history stays visible. **When you revise an already-`deployed` post, append a fresh `updated <date>` line to its banner *before* re-deploying** so the stamp records the edit and marks the live copy stale until the redeploy lands (enacted 2026-07-11 on post 002). A purely cosmetic or structural fix (e.g. reordering preamble lines) does **not** warrant an `updated` stamp; `updated` tracks reader-relevant revisions, not trivial edits.
 
 Each status is stamped with its date — e.g. *Status: drafted 2026-07-03*, or after release
 *Status: published 2026-08-01; deployed 2026-08-02; updated 2026-09-15*. A post never silently changes state.
