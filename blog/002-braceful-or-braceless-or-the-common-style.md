@@ -113,7 +113,7 @@ like the way Scala programmers already use optional parentheses without starting
 > **Use braces to delimit *long* blocks; let *short* code stay braceless.** A block counts as "long" when it
 > "contains blank lines which are not already embedded in a nested construct."
 
-Here is our code-examples from above using the proposed common style:
+Here is our code example from above using the proposed common style:
 
 ```scala
 def scan(s: String): String = {
@@ -131,6 +131,16 @@ def scan(s: String): String = {
   sb.toString
 }
 ```
+
+Two things are worth spelling out. First, the **blank lines are doing real work**: each one makes its enclosing
+scope *"long"* in the note's sense (a scope that holds a blank line not embedded in a nested construct), and that
+is exactly what earns the braces. Take them away and both scopes are short again, so the common style collapses
+back to the braceless version at the top.
+
+Second, some of the layout here is **the author's call, not the style's**. The common style governs *when* a scope
+takes braces; it says nothing about finer whitespace. The `if` is split so its `then` and `else` branches line up
+column-for-column, which (subjectively) makes the two mutations easy to compare - a readability choice the common
+style leaves entirely to whoever writes the code.
 
 The note gives six recommendations (condensed): prefer braces over `end` markers; put braces around long scopes,
 except where a closing keyword like `else`/`case`/`catch` already ends the scope; add blank lines to compensate
