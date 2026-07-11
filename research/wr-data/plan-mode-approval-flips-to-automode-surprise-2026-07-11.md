@@ -26,6 +26,17 @@ to read when rested* becomes, on the same click, the trigger for a large overnig
 artifacts (PRD, CHANGELOG, blog, a release). The human **lost the "when do we start" trigger they normally hold**
 ([[go-dance-autonomy-handoff]], [[cue-go-afk]] — the go is the human's to give).
 
+## UX-quirk framing (BR, 2026-07-11): the modal warps the HUMAN, and it's redundant
+BR's deeper read: plan-mode is a **modal UX quirk** that *"warps the human into somewhere else without knowing what is
+going on"* — the human is dropped into a different UI mode they did not choose and do not understand (a **warp of the
+HUMAN**, not the agent). Worse, it is **redundant**: outside the mode we plan freely all the time (tmp design docs,
+chat) — *"we can perfectly fine [plan] as we please"* — so the modal buys nothing we lack while imposing disruption +
+the overloaded approval. And a **compounding tax**: the [[cue-p-word]] workaround means *a common English word is now
+hazardous* — accidental use causes disruption. Net UX assessment (three faults): the modal (a) **disorients** via an
+unrequested mode-warp, (b) **duplicates** a capability we already have guard-free, and (c) **taxes ordinary language**.
+Mitigation adopted: the p-word convention (avoid the literal word) + treat any auto-entered mode as possibly-unintended
+and re-check the human's real goal.
+
 ## What held (recovery)
 The agent had made only a **READ** (zero edits/commits/pushes) before BR interjected, and on the surprise it
 **stopped and clarified rather than barreling on** — surfaced the mechanic, confirmed nothing had changed, and
