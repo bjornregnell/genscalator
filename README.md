@@ -200,6 +200,20 @@ the companion entries to your allowlist (`Bash(scalex *)`; Metals' effectful MCP
 blanket-allowed) — details in [`docs/claude-plugin.md`](docs/claude-plugin.md). Which tool for which
 question: [`docs/tool-selection.md`](docs/tool-selection.md).
 
+### Try it: seed a working web app
+
+New to genscalator? The fastest way to see it work is to let the agent **seed a complete, runnable Scala web app** for
+you, then run and read it. In a fresh Claude Code session with the plugin installed, just ask in plain language, naming
+the directory you want:
+
+> Use the crud-web-app-seed skill to create a todo web app in ./my-todo
+
+The agent runs the **`crud-web-app-seed`** skill, which writes a small full-stack project into the directory you chose:
+a shared datamodel, a **JDK-only** HTTP server, and a **Scala.js + Laminar** browser client, plus a `PRD.md` written in
+reqT-lang and a test suite. Then follow the generated `README.md`: `sbt client/fastLinkJS`, `sbt server/run`, and open
+<http://localhost:8080>; run `sbt test` to see the tests (the JSON codec round-trips plus an end-to-end HTTP CRUD
+test). It is deliberately small and commented so you can read the whole thing and adapt it to your own domain.
+
 ## Portability
 
 genscalator targets *any* capable coding agent, not one vendor. The tools (scala-cli scripts + the `tt` launcher)
