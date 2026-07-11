@@ -48,3 +48,14 @@ for [[guardcheck-hook-structural-fix]]-style *structural* trust (verify the subs
 Method note: this is exactly why we make predictions FALSIFIABLE and BR member-checks them - the falsification
 taught more than a confirmation would have. Ties: [[raw-grep-regression-after-compact-2026-07-10]] (also a
 post-warp finding this session).
+
+## Update (2026-07-11): even stickier than the falsification found - it survives EVERYTHING
+BR returned on a **new day**, after an (unexpected) plan-mode approval modal, and the SAME ghost status was still on
+screen: *"Building blog index page… (3m 54s · ↓ 13.8k tokens · thinking more) — Next: Render Arc-2 set to HTML and
+hand off to BR for deploy."* So this one stale "Next:" hint has now survived, cumulatively: **a manual compact → a
+plan-mode enter/exit cycle → an overnight gap into a new day.** "Survives a warp" undersells it — it is effectively
+**permanent-sticky until something explicitly overwrites it**, across every boundary we have tested. This strengthens
+the corrected mechanism (a sticky hint, never re-inferred) and the inverted corollary (the disinformation does NOT
+self-clear — it *persists and compounds* across boundaries). The single on-screen element that misrepresents what the
+agent is doing is also the most durable chrome on the screen — a real, compounding trust nit, now well-evidenced.
+Ties: [[plan-mode-approval-flips-to-automode-surprise-2026-07-11]] (the same return's second harness-UX finding).
