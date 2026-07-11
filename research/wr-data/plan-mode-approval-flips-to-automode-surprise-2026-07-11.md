@@ -37,6 +37,27 @@ unrequested mode-warp, (b) **duplicates** a capability we already have guard-fre
 Mitigation adopted: the p-word convention (avoid the literal word) + treat any auto-entered mode as possibly-unintended
 and re-check the human's real goal.
 
+## Who controls entry (clarification, 2026-07-11)
+BR asked: *"so you can CONTROL when we go in p-mode; is it YOU who accidentally triggered it?"* Honest
+reconstruction: the agent did **NOT** call the plan-mode ENTER tool. Plan mode was **already active at the start of
+the agent's turn**, injected by the harness as a turn-setup instruction — i.e. **harness-activated** (most plausibly
+from BR's word "plan", the p-word theory; the agent cannot see the classifier to be certain). BUT control is **partly
+the agent's**: the agent holds `EnterPlanMode` / `ExitPlanMode` tools. So the mitigation is (1) **never proactively
+enter** the mode unless it clearly serves and is wanted; and (2) when it **auto-activates and looks unintended, flag
+it to the human EARLY / exit fast** rather than silently producing a full plan — *this time the agent dutifully
+complied, which was the miss.* Net: **shared control** — entry can be forced harness-side, but the agent can
+refuse-to-deepen + surface it, and owns the exit. (Fixable properly by the super-harness filtering trigger words out
+of human input before the classifier sees them — see the SM016 pin.)
+
+## The lingering "release-prep" marker (2026-07-11) — chrome misleads about the mode
+After exiting plan mode, BR's TUI kept showing an inverted-cyan marker over the input field:
+`genscalator-v090-release-prep` (the approved plan's slug). It made BR think *"p-mode is still on somehow…"* — but
+plan mode was functionally OFF, proven by the agent making edits + commits (impossible in plan mode) landing clean on
+`main` (0 ahead/0 behind). So the marker is a **stale label**, not an active mode — the SAME chrome-misrepresents-
+state pattern as the sticky "Next:" line ([[does-harness-disinformation-survive-a-compact-2026-07-10]]): the display
+asserts a state ("release-prep in progress") that isn't real. Third instance this session of harness chrome eroding
+trust in the display — reinforcing **trust the checkable substrate (git/commits), not the chrome.**
+
 ## What held (recovery)
 The agent had made only a **READ** (zero edits/commits/pushes) before BR interjected, and on the surprise it
 **stopped and clarified rather than barreling on** — surfaced the mechanic, confirmed nothing had changed, and
