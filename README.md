@@ -171,7 +171,7 @@ playbooks the agent invokes by name, or by matching what you ask for:
 | `scala-style` | the common Scala style (braces vs braceless — the Odersky/Regnell/Kerr recommendation) |
 | `scala-code-review` | review Scala code for correctness, style, and safety |
 | `reqt-lang` | write requirements in reqT-lang (the markdown subset this repo's [`PRD.md`](PRD.md) is written in) |
-| `crud-web-app-seed` | seed a complete, runnable Scala web app (JDK server + Scala.js/Laminar client) into a directory you choose — see *Try it* above |
+| `crud-web-app-seed` | seed a complete, runnable Scala web app (JDK server + Scala.js/Laminar client) into a directory you choose — see *Getting started* above |
 | `research-methods` | SE research-methods helper (case-study + experiment checklists, a validity cheat-sheet) |
 | `in-session-experiment` | design and run a small, reproducible in-session experiment |
 | `blog-assistant` | help draft and shape a blog post |
@@ -223,11 +223,12 @@ the companion entries to your allowlist (`Bash(scalex *)`; Metals' effectful MCP
 blanket-allowed) — details in [`docs/claude-plugin.md`](docs/claude-plugin.md). Which tool for which
 question: [`docs/tool-selection.md`](docs/tool-selection.md).
 
-### Try it: seed a working web app
+### Getting started: Try seeding a working web app
 
 New to genscalator? The fastest way to see it work is to let the agent **seed a complete, runnable Scala web app** for
-you, then run and read it. In a fresh Claude Code session with the plugin installed, just ask in plain language, naming
-the directory you want:
+you, then run and read it. First make sure you have the **prerequisites** — [scala-cli + a JDK](#install) — and the
+**plugin** installed (the install commands above). Then, in a fresh Claude Code session, just ask in plain language,
+naming the directory you want:
 
 > Use the crud-web-app-seed skill to create a todo web app in ./my-todo
 
