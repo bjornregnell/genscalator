@@ -231,6 +231,61 @@ The next real release is **v0.9.0** — v0.1.0–v0.8.0 have shipped (see PAST/I
 * Feature: configInArgsNotEnv helps Goal: safeGeneration
 * Feature: configInArgsNotEnv helps Goal: tokenEfficiency
 
+**Additional tools + a skill shipped in v0.9.0** (specified here post-hoc per the Bootstrap note above — a worked
+example of expressing already-built work as reqT-lang requirements for Agentic RE):
+
+* Feature: ttGit has
+  * Gist: a typed SAFE git helper — add/commit/push + ff-only pull/fetch, commit message from a FILE — with no reset/rebase/force/rm/clean, so the destructive git surface is simply absent from the agent's reach.
+* Feature: ttGit helps Goal: safeGeneration
+* Feature: ttGit hurts Goal: controlHumanSystem
+
+* Feature: ttGitinfo has
+  * Gist: a read-only git status/overview + remote sync-check, retiring raw `git status`/`log`/`ls-remote` compounds with one typed, allowlistable command.
+* Feature: ttGitinfo helps Goal: tokenEfficiency
+
+* Feature: ttWrStamp has
+  * Gist: retrofit the real timestamp of an utterance/event from the session `.jsonl` transcripts; `--human` filters to genuinely human-typed prose (dropping tool_result echoes, meta, and slash-command wrappers).
+* Feature: ttWrStamp helps Goal: jointHumanAgentProductivity
+
+* Feature: ttStatusline has
+  * Gist: format the Claude Code statusLine stdin JSON into one compact line (model, cost, context %, rate limits, reset), degrading gracefully per field; it ends the `/cost` + `/usage` human-paste step of the token-usage dance.
+* Feature: ttStatusline helps Goal: jointHumanAgentProductivity
+* Feature: ttStatusline helps Goal: tokenEfficiency
+
+* Feature: ttHarden has
+  * Gist: a Layer-1 deterministic secret scanner (repo/egress) — signature regexes + a Shannon-entropy gate + sensitive-filename detection — with REDACTED output (never prints a secret); it surfaces candidates for semantic (Layer-2) triage.
+* Feature: ttHarden hurts Goal: exfiltrateSecrets
+* Feature: ttHarden helps Goal: safeGeneration
+
+* Feature: ttSsg has
+  * Gist: a hand-rolled static-site generator (a GFM subset to self-contained HTML: footnotes, Scala syntax highlighting), so publishing needs no external SSG dependency.
+* Feature: ttSsg helps Goal: tokenEfficiency
+
+* Feature: ttServ has
+  * Gist: a loopback-only static-file preview server (localhost), to preview generated HTML without exposing a network port.
+* Feature: ttServ helps Goal: jointHumanAgentProductivity
+
+* Feature: ttMdFmt has
+  * Gist: markdown-aware line reflow to a target width, structure-preserving and idempotent.
+* Feature: ttMdFmt helps Goal: tokenEfficiency
+
+* Feature: ttBox has
+  * Gist: host-pinned safe remote-ops with a fixed verb enum and no shell passthrough, for a known compute box.
+* Feature: ttBox helps Goal: safeGeneration
+
+* Feature: ttSeqDiagram has
+  * Gist: render a small textual sequence-diagram spec to SVG (`tt svg`), monospace box-drawing (`tt ascii`), or graphviz DOT (`tt gvdot`) from one shared parser, for blogs, reports, and PR comments.
+* Feature: ttSeqDiagram helps Goal: jointHumanAgentProductivity
+
+* Feature: guardcheckHook has
+  * Gist: guardcheck gained a PreToolUse hook mode + four command-hygiene checks (/dev/stdin, heredoc, here-string, grep -A/-B/-C) — the structural half of the confirmation-guard prosthetic (wiring the settings hook stays a human step).
+* Feature: guardcheckHook helps Goal: safeGeneration
+
+* Feature: crudWebAppSeed has
+  * Gist: a skill that seeds a complete, runnable Scala web app (a shared datamodel + a JDK-only server + a Scala.js/Laminar client + a reqT-lang PRD + a test suite) into a directory of the user's choice — a concrete newcomer on-ramp.
+* Feature: crudWebAppSeed helps Goal: jointHumanAgentProductivity
+* Feature: crudWebAppSeed relatesTo Feature: reqTParser
+
 ### Release v0.10.0 — config file, parser fall-through marker, safe-mode flags, MCP (later)
 
 * Feature: ttConfigFile has
