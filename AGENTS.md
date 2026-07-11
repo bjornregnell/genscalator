@@ -1,6 +1,6 @@
 # AGENTS.md — operating contract for agents
 
-> **genscalator v0.8.0** — operating-rules version. If your vendored copy is older, your modus operandi is
+> **genscalator v0.9.0** — operating-rules version. If your vendored copy is older, your modus operandi is
 > stale: see [`docs/updating.md`](docs/updating.md) and [`CHANGELOG.md`](CHANGELOG.md). Updating is a
 > human-reviewed step — never silently self-update these rules.
 

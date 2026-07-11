@@ -6,9 +6,58 @@ All notable changes to genscalator. Versions follow the git tags (`vX.Y.Z`); the
 Updating genscalator is a **human-reviewed** step — see [`docs/updating.md`](docs/updating.md). Skim this
 file before adopting a new version: it changes the agent's operating rules, so review beats blind pull.
 
-## Unreleased — docs + research accretion + `tt svg` / `tt ascii` / `tt gvdot` (sessions 2026-06-30 → 2026-07-05)
-Mostly docs/research; **three new sequence-diagram tools** (`tt svg`, `tt ascii`, `tt gvdot`), all sharing one spec
-parser (`tools/seqspec.scala`). Version bump pending. Human review pending (see [`HUMANS.md`](HUMANS.md)).
+## v0.9.0 — 2026-07-11 — the toolbox + onboarding release
+The biggest release yet: **~14 new `tt` tools**, a **web-app seed skill**, guardcheck's auto-firing **hook mode**, and
+a large docs/research/blog accretion. Operating rules touched (the `L → Z` rename, new dances, agentic-SE/RE terms) →
+version bump. Human review pending (see [`HUMANS.md`](HUMANS.md)). *(reqT-lang `PRD.md` was re-engineered to specify
+these as forward-looking requirements — honestly post-hoc mined from the substrate, as a worked Agentic-RE example.)*
+
+**New tools (since v0.8.0):**
+- **`tt harden`** — Layer-1 deterministic secret scanner (`repo`/`egress`): signature regexes + a Shannon-entropy
+  gate + sensitive-filename detection; **redacted** output (never prints a secret); exit 1 on candidates for semantic
+  (Layer-2) triage. Pure JDK; deliberately no bare-blob detection (false-positive control). (SM042)
+- **`tt statusline`** — formats the Claude Code `statusLine` stdin JSON into one line (model · $ · context% · rate
+  limits · reset); every segment independently guarded so it degrades gracefully and never breaks the prompt. Ends the
+  `/cost` / `/usage` paste step of the token-usage dance. (SM039)
+- **`tt wr stamp`** — retrofit the real timestamp of an utterance/event from the session `.jsonl` transcripts;
+  **`--human`** filters to genuinely human-typed prose (drops tool_result echoes / meta / slash-command wrappers). (SM044)
+- **`tt gitinfo`** — read-only git status/overview + remote sync-check (retires raw `git status`/`log`/`ls-remote`).
+- **`tt git`** — typed **safe** git helper: add/commit/push + ff-only pull/fetch, commit message from a FILE; no
+  reset/rebase/force/rm/clean.
+- **`tt web`** — safe read-only HTTP GET (no credential headers, size-capped, optional `--host` allowlist), retiring
+  the dual-use `curl` reflex. **`tt forge`** — typed Forgejo/Gitea (Codeberg) client: read releases/tags + an
+  env-token `release-create` (token never via a flag, only a human-set env var).
+- **`tt ssg`** — hand-rolled static-site generator (GFM subset → self-contained HTML; footnotes + Scala highlighting).
+  **`tt serv`** — loopback-only static-file preview server. **`tt md-fmt`** — markdown-aware line reflow
+  (structure-preserving, idempotent). **`tt box`** — host-pinned safe remote-ops (fixed verbs, no shell passthrough).
+- The three sequence-diagram tools **`tt svg`** / **`tt ascii`** / **`tt gvdot`** (one shared spec parser) — detailed
+  below.
+
+**Enhancements:**
+- **`tt guardcheck` gained a PreToolUse hook mode** + four new command-hygiene checks (`/dev/stdin`, heredoc,
+  here-string, `grep -A/-B/-C`) — the structural half of the confirmation-guard prosthetic (SM007c). *(Wiring the
+  settings hook itself stays a human step.)*
+- **`tt ssg`** footnotes + Scala syntax highlighting; **`tt parsereqt`** lint hardening.
+
+**New skill — `crud-web-app-seed`:**
+- Seeds a complete, runnable Scala web app into a directory of the user's choice: a shared datamodel + a tiny
+  dependency-free JSON codec, a **JDK-only** HTTP server, and a **Scala.js + Laminar** client — plus a reqT-lang
+  `PRD.md` (with `verifies`-traceability) and a beginner test suite. Build + `sbt test` verified (sbt 1.x, Scala
+  3.9.0-RC1). A concrete newcomer on-ramp; see the README's *Try it* section.
+
+**Docs / foundations:**
+- **Agentic software engineering / agentic RE** glossary terms (align + cite emerging prior art, not coin); the
+  **plan-mode / p-word** convention; the evidence-timestamp pin-dance clause; the acronym-amortization rule + adopted
+  Swedish-loanword set in the `blog-assistant` skill.
+
+**Research / blog:** a large accretion — the ChatGPT cross-model experiment (SM040) → blog 014; the TE-efficiency,
+usage/cost, and secret-scan investigations (SM039/042/044/045); many wr-data findings (cost snapshots, harness-UX /
+trust nits, command-hygiene regressions, sub-agent confabulation, the surf-AFK lesson); blog stubs 015–019; the Bill
+Venners "Quality from GenAI" convergence note (SM046). See `research/README.md` + `blog/`.
+
+---
+
+Detail from the 2026-06-30 → 2026-07-05 window (docs/research + the sequence-diagram tools):
 - **New tool `tt gvdot --sequence-diagram`** — the graphviz sibling: renders the **same** spec by generating **DOT**
   and shelling to **`dot`** (auto-layout → pdf/png/svg). Effectful driver; **needs graphviz** (`sudo apt install
   graphviz`) for the render path, else prints DOT source. Safe: `dot` run as **argv, no shell**, DOT fed on stdin
