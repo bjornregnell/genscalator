@@ -12,6 +12,11 @@ args. No re-deriving logic each time, no dynamic-shell surprises. The compiler c
 they run, and a small launcher (`tt`) makes every tool a single, statically-analyzable command that a
 narrow allowlist can trust.
 
+The tools and workflow are **language-agnostic** — use genscalator to generate and manage code in **any language**.
+When you generate **Scala**, you get extra help from the bundled Scala skills (`scala-style` for the common style,
+`scala-code-review`, `reqt-lang`) and the optional [Scala-code companions](#companions-for-scala-code-recommended)
+(scalex, Metals MCP).
+
 ## Why
 
 Out-of-the-box agent workflows lean on approving dense bash compounds and archaic Unix tools 
