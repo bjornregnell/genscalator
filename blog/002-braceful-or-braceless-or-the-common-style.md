@@ -113,6 +113,22 @@ like the way Scala programmers already use optional parentheses without starting
 > **Use braces to delimit *long* blocks; let *short* code stay braceless.** A block counts as "long" when it
 > "contains blank lines which are not already embedded in a nested construct."
 
+Here is our code-examples from above using the proposed common style:
+
+```scala
+def scan(s: String): String = {
+  val sb = StringBuilder()
+  var i = 0
+  while i < s.length do {
+    if s(i) == 'a' 
+    then sb ++= "A"
+    else sb += s(i)
+    i += 1
+  }
+  sb.toString
+}
+```
+
 The note gives six recommendations (condensed): prefer braces over `end` markers; put braces around long scopes,
 except where a closing keyword like `else`/`case`/`catch` already ends the scope; add blank lines to compensate
 for fewer braces; add braces anywhere they aid understanding; prefer the new control syntax (`if-then-else`); and
