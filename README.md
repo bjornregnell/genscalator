@@ -112,12 +112,14 @@ tests see the tool sources without any `//> using file` wiring, and a plain `sca
 
 ## Tool dependencies
 
-Most `tt` tools need only **scala-cli + a JDK** (the pure tools use just the JDK). A few tools shell out to an
-**external program** for one job; install it only if you use that tool:
+Most `tt` tools need only **scala-cli + a JDK** — scala-cli fetches the Scala compiler and the small library set on
+first run, then caches them (no manual library install). A few tools additionally shell out to an **external program**
+for one job; install that only if you use the tool.
 
-| Tool | External dependency | Install | Docs |
-|------|--------------------|---------|------|
-| `tt gvdot` | **graphviz** (`dot`) — lays out sequence diagrams to pdf/png/svg | `sudo apt install graphviz` (Debian/Ubuntu); `brew install graphviz` (macOS) | [graphviz.org](https://graphviz.org/) · `dot -h` · `man dot` |
+| Requirement | What / version | Install | Docs |
+|------|----------------|---------|------|
+| **`tt` runner + all tools** | **Scala 3.8.4** compiler on a **JDK 21+**, run via **scala-cli**. The per-tool library deps — `os-lib` 0.11.8, `ujson` 4.4.3, `requests` 0.9.3 (plus `munit` 1.3.3 for the test suite) — are declared inline and **fetched automatically by scala-cli** (cached after first run). | Install **scala-cli + a JDK** — see [Install](#install); scala-cli fetches the compiler + libraries on first use. | [scala-cli](https://scala-cli.virtuslab.org/) · [Scala 3.8.4](https://www.scala-lang.org/download/) |
+| **`tt gvdot`** *(optional)* | **graphviz** (`dot`) — lays out sequence diagrams to pdf/png/svg | `sudo apt install graphviz` (Debian/Ubuntu); `brew install graphviz` (macOS) | [graphviz.org](https://graphviz.org/) · `dot -h` · `man dot` |
 
 Tools degrade gracefully when their dependency is missing: `tt gvdot` still prints DOT source without `dot`, and
 errors with the install hint only on the render path. (The sibling renderers `tt svg` and `tt ascii` need **no**
@@ -156,6 +158,27 @@ Use the **full Codeberg URL with `.git`** — the short `owner/repo` form resolv
 `.git` suffix makes Claude Code clone the repo (where `marketplace.json` lives).
 Details, the recommended allowlist, and caveats: [`docs/claude-plugin.md`](docs/claude-plugin.md).
 (You still need `scala-cli` + a JDK installed.)
+
+### What you get
+
+Installing the plugin puts the `tt` toolbox on your PATH (see [Usage](#usage)) and adds a set of **skills** — focused
+playbooks the agent invokes by name, or by matching what you ask for:
+
+| Skill | What it does |
+|-------|--------------|
+| `tt-toolbox` | how to use and choose the `tt` tools — the toolbox habit |
+| `contribute-tool` | scaffold, test, and contribute a new `tt` tool back upstream |
+| `scala-style` | the common Scala style (braces vs braceless — the Odersky/Regnell/Kerr recommendation) |
+| `scala-code-review` | review Scala code for correctness, style, and safety |
+| `reqt-lang` | write requirements in reqT-lang (the markdown subset this repo's [`PRD.md`](PRD.md) is written in) |
+| `crud-web-app-seed` | seed a complete, runnable Scala web app (JDK server + Scala.js/Laminar client) into a directory you choose — see *Try it* above |
+| `research-methods` | SE research-methods helper (case-study + experiment checklists, a validity cheat-sheet) |
+| `in-session-experiment` | design and run a small, reproducible in-session experiment |
+| `blog-assistant` | help draft and shape a blog post |
+
+The plugin also ships the operating contract [`AGENTS.md`](AGENTS.md) — the shared human↔agent **conventions** (tool
+selection, comms shorthand, the workflow "dances", the safe-by-design allowlist habit) that the agent reads as its
+modus operandi. Full glossary and cues live in [`docs/foundations.md`](docs/foundations.md).
 
 ### Recommended Claude Code settings (initial cut)
 
