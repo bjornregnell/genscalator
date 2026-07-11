@@ -27,13 +27,15 @@ object Main:
 
   def delete(id: Int): Boolean = lock.synchronized(store.remove(id).isDefined)
 
-  def start(port: Int): Unit =
+  // Start the server and RETURN it, so callers (e.g. the test suite) can `server.stop(0)`.
+  def start(port: Int): HttpServer =
     val server = HttpServer.create(InetSocketAddress("localhost", port), 0)
     server.createContext("/api/todos", ApiHandler)
     server.createContext("/", StaticHandler)
     server.setExecutor(null)
     server.start()
-    println(s"todo-seed server on http://localhost:$port")
+    println(s"todo-seed server on http://localhost:${server.getAddress.getPort}")
+    server
 
   private def respond(ex: HttpExchange, code: Int, body: String, ctype: String = "application/json"): Unit =
     val bytes = body.getBytes("UTF-8")

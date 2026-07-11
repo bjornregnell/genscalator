@@ -13,7 +13,10 @@ lazy val server =
   project
     .in(file("server"))
     .dependsOn(common.jvm)
-    .settings(name := "todo-server")
+    .settings(
+      name := "todo-server",
+      libraryDependencies += "org.scalameta" %% "munit" % "1.3.4" % Test,
+    )
 
 lazy val client =
   project

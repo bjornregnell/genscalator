@@ -49,6 +49,15 @@ for a small app. Parse + lint it with `tt parsereqt parse PRD.md` and `tt parser
 * Component: client has
   * Gist: the Scala.js + Laminar frontend.
 
+## Tests
+* Component: test has
+  * Gist: the seed's test suite (in `server/src/test`), runnable with `sbt test` (5 tests, all green).
+* Feature: jsonRoundTripTests has
+  * Gist: munit tests that the shared JSON codec encodes and parses back the same Todo (TodoJsonSuite).
+* Feature: httpCrudTests has
+  * Gist: an end-to-end munit test that starts the real server and drives create, list, toggle, and delete over HTTP
+    (ServerCrudSuite) — the whole backend, tested without a browser.
+
 ## Relations
 * Feature: crudApi requires Feature: todoModel
 * Feature: crudApi requires Feature: jsonCodec
@@ -65,3 +74,8 @@ for a small app. Parse + lint it with `tt parsereqt parse PRD.md` and `tt parser
 * Component: common has Feature: jsonCodec
 * Component: server has Feature: crudApi
 * Component: client has Feature: laminarUi
+* Feature: jsonRoundTripTests verifies Feature: jsonCodec
+* Feature: jsonRoundTripTests verifies Feature: todoModel
+* Feature: httpCrudTests verifies Feature: crudApi
+* Component: test has Feature: jsonRoundTripTests
+* Component: test has Feature: httpCrudTests
