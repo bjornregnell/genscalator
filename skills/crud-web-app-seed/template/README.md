@@ -59,7 +59,7 @@ Stack: Scala **3.9.0-RC1** (the coming LTS) · sbt **1.12.13** · Scala.js **1.2
 Then open <http://localhost:8080> and add a few todos.
 
 Re-run `sbt client/fastLinkJS` after you change the client. If the server says it cannot find the built JavaScript,
-it prints the path it looked for; set `TODO_CLIENT_JS` to the real `.../client-fastopt/main.js` path.
+it prints the path it looked for; set `TODO_CLIENT_JS` to the real `.../todo-client-fastopt/main.js` path.
 
 *Tip (preview just the UI):* `tt serv` is genscalator's static preview server. It serves files, so it is handy for
 looking at built HTML/JS, but the todo CRUD needs the JDK server above for its `/api/todos` calls to work.

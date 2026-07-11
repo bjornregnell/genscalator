@@ -62,7 +62,7 @@ object Main:
   // The Scala.js client output, produced by `sbt client/fastLinkJS`. Override with env TODO_CLIENT_JS if your Scala
   // version dir differs. This is the one bit a newcomer may need to adjust; the README says so.
   private val clientJs =
-    sys.env.getOrElse("TODO_CLIENT_JS", "client/target/scala-3.9.0-RC1/client-fastopt/main.js")
+    sys.env.getOrElse("TODO_CLIENT_JS", "client/target/scala-3.9.0-RC1/todo-client-fastopt/main.js")
 
   object StaticHandler extends HttpHandler:
     def handle(ex: HttpExchange): Unit =

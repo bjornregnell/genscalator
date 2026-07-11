@@ -31,7 +31,8 @@ Scala **3.9.0-RC1** (coming LTS) · sbt **1.12.13** · Scala.js **1.22.0** · La
 stacks too.
 
 ## Status (2026-07-11)
-Sources are **compile-verified** on Scala 3.9.0-RC1: `common` round-trips its JSON and compiles to both JVM and JS,
-`server` compiles JDK-only, `client` compiles to Scala.js (Laminar). The full **sbt build** + browser run is pending a
-first `sbt` verification (bare `sbt` was not runnable in the AFK-safe command set). See
-`genscalator/research/sm049-crud-web-app-seed-feasibility.md` + `sm049-crud-seed-design-sketch.md`.
+**sbt build VERIFIED.** `sbt compile` (all modules, Scala 3.9.0-RC1) and `sbt client/fastLinkJS` (produces `main.js`)
+both pass with exit 0 via sbt 1.12.13 + sbt-scalajs 1.22.0. Sources also compile-verified via scala-cli (`common`
+round-trips its JSON on both platforms). The build test found and fixed one bug: the server's default client-JS path
+(`todo-client-fastopt`, from `name := "todo-client"`). Remaining human step: `sbt server/run` and open the browser to
+click through the CRUD. See `genscalator/research/sm049-crud-web-app-seed-feasibility.md`.
