@@ -1,6 +1,6 @@
 # Braceful, braceless, or the common style?
 
-> **Status: drafted 2026-07-03; published 2026-07-08; deployed 2026-07-08.** **Author: Björn Regnell.** A Scala-syntax post that judges braces vs
+> **Status: drafted 2026-07-03; published 2026-07-08; deployed 2026-07-08; updated 2026-07-11.** **Author: Björn Regnell.** A Scala-syntax post that judges braces vs
 > significant indentation not only by human taste but by a second, newer yardstick: **what it costs a coding
 > *agent* to edit the code.**
 > **Audience:** Scala developers weighing a Scala-3 style policy; language designers and SIP folk; builders of
@@ -121,13 +121,13 @@ def scan(s: String): String = {
 
   var i = 0
   while i < s.length do {
-    if s(i) == 'a' 
+    if s(i) == 'a'
     then sb ++= "A"
     else sb += s(i)
 
     i += 1
   }
-  
+
   sb.toString
 }
 ```
@@ -151,6 +151,33 @@ Crucially, the note **calls for exactly the experiment this post reports** - "a 
 edit-error-rates and token costs" across the three styles. The note argues, from first principles plus an
 analysis contributed by Claude Code, that braces-on-long-scopes is a "sweet spot" where *"the human-legibility
 rule and the agent-edit-safety rule coincide."* This post puts numbers on that intuition - and complicates it.
+
+### Adhering to the common style with `scalafmt`
+
+You need not apply this by hand. The standard Scala formatter, [`scalafmt`](https://scalameta.org/scalafmt/), now
+ships a **`common` preset** that approximates this exact recommendation - contributed by a scalafmt maintainer and
+pointed straight at the note's discussion thread ([PR #5304](https://github.com/scalameta/scalafmt/pull/5304),
+merged June 2026, released and documented since). Enable it in `.scalafmt.conf`:
+
+```conf
+version = "3.11.3"
+runner.dialect = scala3
+rewrite.scala3.preset = common
+```
+
+As of v3.11.2 that preset expands to:
+
+```conf
+rewrite.scala3.convertToNewSyntax = true            # if-then-else, while-do, ...
+rewrite.scala3.newSyntax.deprecated = false
+rewrite.scala3.endMarker.remove.blankGaps.min = 1
+rewrite.scala3.optionalBraces.insert.blankGaps.min = 1
+```
+
+The last line is the rule from the example above, mechanized: **once a scope spans a blank line, scalafmt puts the
+braces in** - the same "a blank line makes a block long" trigger, applied for you. It only *approximates* the note
+(scalafmt's own word): it does the mechanical part - new control syntax, braces and end markers on long scopes - and
+leaves the calls the note reserves for the author (like the aligned `if` above) to you.
 
 ## 5. The experiment
 
