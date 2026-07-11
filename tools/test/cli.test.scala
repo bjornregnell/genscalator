@@ -816,3 +816,9 @@ class CliSuite extends munit.FunSuite:
     assertEquals(code, 2)
     assert(clue(out).toLowerCase.contains("harden"))
   }
+
+  // --- forge release-edit (arg contract; the effectful PATCH path needs a live forge, so only arg errors here) ---
+  test("forge release-edit without a repo or tag prints usage and exits 2 (before any token/network)") {
+    assertEquals(run("forge", "release-edit")._1, 2)            // no repo
+    assertEquals(run("forge", "release-edit", "foo/bar")._1, 2) // repo but no tag
+  }

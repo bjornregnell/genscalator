@@ -16,6 +16,8 @@
 //   tt forge tags     <owner>/<repo> [--url BASE] [--limit N]
 //   tt forge release-create <owner>/<repo> <tag> [--name S] [--body S | --body-file F]
 //                           [--prerelease] [--draft] [--target COMMITISH] [--url BASE]
+//   tt forge release-edit   <owner>/<repo> <tag> [--name S] [--body S | --body-file F] [--prerelease] [--draft] [--url BASE]
+//                           # PATCH an existing release (look up by tag); sends ONLY the provided fields
 //   BASE defaults to https://codeberg.org
 import scala.util.Try
 
@@ -32,7 +34,8 @@ object Forge {
       "  forge releases <owner>/<repo> [--url BASE] [--limit N]\n" +
       "  forge tags     <owner>/<repo> [--url BASE] [--limit N]\n" +
       "  forge release-create <owner>/<repo> <tag> [--name S] [--body S | --body-file F] [--prerelease] [--draft] [--target C] [--url BASE]\n" +
-      "  BASE defaults to https://codeberg.org; release-create reads the token from env CODEBERG_TOKEN or FORGE_TOKEN (never a flag)."
+      "  forge release-edit   <owner>/<repo> <tag> [--name S] [--body S | --body-file F] [--prerelease] [--draft] [--url BASE]\n" +
+      "  BASE defaults to https://codeberg.org; release-create/edit read the token from env CODEBERG_TOKEN or FORGE_TOKEN (never a flag)."
   )
 
   // Token comes ONLY from a FIXED set of human-set env-var names — never a flag, and never an agent-nameable
@@ -64,6 +67,7 @@ object Forge {
       case "releases" :: rest       => listReleases(rest)
       case "tags" :: rest           => listTags(rest)
       case "release-create" :: rest => releaseCreate(rest)
+      case "release-edit" :: rest   => releaseEdit(rest)
       case _                        => forgeUsage()
 
   // whoami — authenticated READ (GET /user) to verify the token inherits + is valid. Prints only the login and
@@ -197,6 +201,58 @@ object Forge {
         println(s"created release $tag  $html")
       case 409 => die(s"a release for tag '$tag' already exists (409)")
       case c   => die(s"POST $url -> $c ${r.statusMessage}\n${r.text().take(500)}")
+
+  private final case class EditOpts(repo: Option[String], tag: Option[String], name: Option[String],
+      body: Option[String], bodyFile: Option[String], setPrerelease: Boolean, setDraft: Boolean, base: String)
+
+  // release-edit — PATCH an EXISTING release: look it up by tag (unauth GET), then send ONLY the provided fields
+  // (unspecified fields are left unchanged by the forge). Same effectful/token/trusted-host rules as release-create.
+  private def releaseEdit(args: List[String]): Unit =
+    @annotation.tailrec
+    def go(rest: List[String], o: EditOpts): EditOpts =
+      rest match
+        case Nil                       => o
+        case "--name" :: s :: t        => go(t, o.copy(name = Some(s)))
+        case "--body" :: s :: t        => go(t, o.copy(body = Some(s)))
+        case "--body-file" :: f :: t   => go(t, o.copy(bodyFile = Some(f)))
+        case "--prerelease" :: t       => go(t, o.copy(setPrerelease = true))
+        case "--draft" :: t            => go(t, o.copy(setDraft = true))
+        case "--url" :: u :: t         => go(t, o.copy(base = u))
+        case flag :: _ if flag.startsWith("--") => die(s"unknown/incomplete flag '$flag'")
+        case r :: t if o.repo.isEmpty  => go(t, o.copy(repo = Some(r)))
+        case tg :: t if o.tag.isEmpty  => go(t, o.copy(tag = Some(tg)))
+        case other :: _                => die(s"unexpected argument '$other'")
+    val o             = go(args, EditOpts(None, None, None, None, None, false, false, DefaultBase))
+    val (owner, repo) = splitRepo(o.repo.getOrElse(forgeUsage()))
+    val tag           = o.tag.getOrElse(forgeUsage())
+    val tok = token.getOrElse(die(
+      s"release-edit needs a token — the HUMAN sets one of env ${TokenEnvNames.mkString(", ")} (never a flag)."))
+    val host = hostOf(o.base)
+    if !trustedHosts.contains(host) then die(
+      s"refusing to send the token to untrusted host '$host'. Trusted: ${trustedHosts.toVector.sorted.mkString(", ")}.")
+    // build the PATCH payload with ONLY the provided fields (so unspecified fields stay unchanged)
+    val payload = ujson.Obj()
+    o.bodyFile match
+      case Some(f) => payload("body") = Try(os.read(os.Path(f, os.pwd))).getOrElse(die(s"cannot read --body-file '$f'"))
+      case None    => o.body.foreach(b => payload("body") = b)
+    o.name.foreach(n => payload("name") = n)
+    if o.setPrerelease then payload("prerelease") = true
+    if o.setDraft then payload("draft") = true
+    if payload.obj.isEmpty then die("nothing to edit — provide --body/--body-file, --name, --prerelease, or --draft")
+    // look up the release id by tag (unauthenticated GET; getJson dies on non-200)
+    val relJson = getJson(s"${apiBase(o.base)}/repos/$owner/$repo/releases/tags/$tag")
+    val id      = Try(relJson.obj("id").num.toLong).getOrElse(die(s"no release id found for tag '$tag'"))
+    val url     = s"${apiBase(o.base)}/repos/$owner/$repo/releases/$id"
+    System.err.println(s"forge: [audit] PATCH $url  tag=$tag fields=${payload.obj.keys.mkString(",")}")
+    val r = Try(requests.patch(url, data = ujson.write(payload),
+      headers = Map("Content-Type" -> "application/json", "Authorization" -> s"token $tok"),
+      check = false, readTimeout = 30000, connectTimeout = 10000)).getOrElse(die("request failed"))
+    r.statusCode match
+      case 200 =>
+        val html = Try(ujson.read(r.text()).obj.get("html_url").map(_.str).getOrElse("")).getOrElse("")
+        println(s"edited release $tag  $html")
+      case 404 => die(s"release for tag '$tag' not found (404)")
+      case c   => die(s"PATCH $url -> $c ${r.statusMessage}\n${r.text().take(500)}")
 }
 
 @main def forgeClient(args: String*): Unit = Forge.dispatch(args*)
