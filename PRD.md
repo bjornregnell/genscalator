@@ -126,6 +126,8 @@ Learned by running snippets through the REAL parser (`tt parsereqt parse FILE`),
   * Goal: retainUserTrust
   * Goal: maximizeUsefulAutonomy
   * Goal: manageInferenceCost
+* User: beginnerAdopter has
+  * Gist: wants to try out genscalator and perhaps start using it while testing the crud seed.
 
 ## General goals (stable over time)
 
