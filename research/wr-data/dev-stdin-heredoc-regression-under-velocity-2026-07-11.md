@@ -34,6 +34,15 @@ does not fire; the discipline was back on recall, and recall slipped — twice t
 triggers. **A single structural cure (the auto-firing hook) would have caught both.** This is now a two-datapoint
 argument for prioritising Part B before the next solo run.
 
+## THIRD occurrence, same session: the reflex is immune to its own logging
+Within the same day, after this note and the raw-grep note were BOTH written, the agent piped
+`tt parsereqt lint … | tt text match /dev/stdin "…"` — `/dev/stdin` + a pipe, the same forbidden class again (this
+time it worked, no stall). So the command-hygiene reflex fired **three times in one session** (raw-grep post-warp →
+`/dev/stdin` heredoc under velocity → `/dev/stdin` pipe), the third time **minutes after documenting the second**.
+This is the strongest structure-over-willpower datapoint we have: **the reflex survives being written down twice on
+the same day.** Recall is not enactment, full stop. Logging changes the record, not the behaviour — only a
+*structural* guard that fires at the point of action (the auto-firing guardcheck hook, Part B) can. Prioritise Part B.
+
 ## Recovery
 Self-caught immediately (recognised the forbidden shape + the failure), verified the commit had NOT landed (working
 tree still dirty), redid it the disciplined way (`Write` msg file → `tt git commit --message-file <path>`, committed
