@@ -67,6 +67,23 @@ Source material to mine (Workflow-Research "WR data", logged live during real ag
 - `research/006-smart-zone-ceiling.md` — fill-vs-rot, monitor-tick cadence as a rot knob.
 - Related memories: harness-double-post-edit-race, no-interrupting-modals-during-flow, propose-compact-dance-at-trigger.
 
+**TODO stub — the plan-mode ("p-word") trap** *(2026-07-11 episode; a fresh, self-contained UX-pain specimen, maybe a
+second staged mini-episode after the FleetView warp).* What happened, in line with the WR data: an ordinary word
+("plan") in a chat message silently switched the harness into **plan-mode-the-workflow** (a keyword collision; the
+human meant *draft a design doc*, not "enter the mode"). It **warped the human into a modal state** they never
+requested (*"somewhere else without knowing what is going on"*), and its **approval was overloaded** (accept = execute
+now), which flipped the agent into autonomous execution unexpectedly. Then **misleading chrome outlived it**: a stale
+*"Next: Render Arc-2…"* status line (which survived a compact, a plan-mode cycle, and an overnight gap) plus a lingering
+inverted-cyan `…-release-prep` marker that made the human think the mode was still on. Three UX faults: a disorienting
+mode-warp, redundancy (we already plan freely in tmp docs and chat), and a language tax (having to avoid a common
+word). The deeper theme is 004's spine: **trust the checkable substrate, not the chrome** (the agent dispelled the "is
+my git flow diverted?" worry by reading git, not the marker). It fits the 004 family too: a timing/observability/control
+race between a human action and the system's mode-classifier. Sources:
+[`plan-mode-approval-flips-to-automode-surprise-2026-07-11.md`](../research/wr-data/plan-mode-approval-flips-to-automode-surprise-2026-07-11.md),
+[`does-harness-disinformation-survive-a-compact-2026-07-10.md`](../research/wr-data/does-harness-disinformation-survive-a-compact-2026-07-10.md).
+Harness-side asks: separate a plan's *acceptance* from its *execution-trigger*; do not mode-switch on ordinary words;
+clear stale status chrome. Structural fix idea: de-trigger words in the super-harness input tap (SM016).
+
 **The compaction pain (BR) + the ask.** `[for BR to voice in the first person]` Compaction is the highest-stakes
 routine action in a long run — it *rewrites the shared memory* — and yet the UX around *when* to do it is reactive, not
 proactive. This session the only signal I got was the harness firing **"Context is 90% full … Use `/compact` now"** —
