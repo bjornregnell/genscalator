@@ -6,16 +6,20 @@
 > **Audience:** researchers, research-policy folk, and anyone curious whether competition or collaboration gets
 > better science, tested with a reproducible agent fleet. No prior context assumed.
 
-<!-- AGENT-DRAFT STUB (2026-07-10): captures BR's brainstormed study idea; scaffold + TODO for BR to develop. Em-dashes kept out. -->
+<!-- AGENT-DRAFT (revoiced 2026-07-12): the framing prose is now drafted in BR's voice; the study design below is
+BR's own material, lightly kept. Awaiting his final pass on the design + metrics. Em-dashes kept out. -->
 
-[scaffold: the question. Research culture leans hard on competition - for grants, for priority, for prestige.
-Does fierce competition actually escalate researchers to better work, or does collaboration do better? This post
-proposes a way to probe it with an agent fleet, where both modes run under identical conditions and can be
-compared.]
+Research culture runs on competition. We compete for grants, for priority, for who got there first, for prestige.
+The assumption underneath all of it is that competition sharpens us, that the pressure of rivals escalates
+researchers to better work. But is that actually true? Or would we do better science by helping each other more?
+It is an old question, and normally an unanswerable one, because you cannot run the same research group twice under
+two different social rules and compare the results. But with a fleet of agent "researchers" you can. Same task,
+same conditions, two social modes, held side by side. Here is one way to probe it.
 
 ## The study idea
 
-TODO: draft the meat of this study design.
+The shape is simple: generate the same kind of work under two social rules, then have a real expert judge the
+output blind. Concretely -
 
 - **The task.** A fleet run where agents generate realistic **research funding applications** into ASE (agentic
   software engineering).
@@ -38,7 +42,9 @@ TODO: draft the meat of this study design.
 - Even without the human reviewer, the run yields a novel **dataset**: agent-generated funding proposals under two
   social modes.
 
-## TODO (BR revoice)
-- Develop the design + metrics: what "escalate" means, how to score, how to blind.
-- Line up the retired VR / VINNOVA reviewer(s); decide feasibility.
-- Decide the publishable fallback if human review falls through (the generated corpus + the design).
+## TODO (BR final pass + real-world calls)
+- Framing prose is drafted (agent revoice); the design bullets are your own material kept intact - **read and
+  make the whole thing yours.**
+- **Yours to develop:** the design + metrics - what "escalate" means, how to score, how to blind.
+- **Yours to line up:** the retired VR / VINNOVA reviewer(s); decide feasibility.
+- **Yours to decide:** the publishable fallback if human review falls through (the generated corpus + the design).
