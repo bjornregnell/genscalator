@@ -126,7 +126,8 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   pain to type; the pun holds because *to ape* already means to imitate, and apes are almost-human — *"you're aping
   human traits onto the agent."* Names a two-way error: assuming the agent **has** feelings (it does not), or
   forgetting that the **human** does. Rooted in the **affective asymmetry** — the agent knows the *shape* of mirth or
-  offense but cannot feel it (see blog 021 and `research/wr-data/mutual-non-offense-and-anthropomorphizing-typing-tax-2026-07-12.md`).
+  offense but cannot feel it (see blog 021 and `research/wr-data/mutual-non-offense-and-anthropomorphizing-typing-tax-2026-07-12.md`). Swedish cognate: **att efterapa** (*efter* + *apa* = "ape after"), which carries the
+  same imitate-slavishly sense — part of why the pun lands naturally for a Swedish speaker.
 ### Channel bandwidth and confirmation fatigue
 - **Confirmation fatigue (CF)** — degradation of the human's review quality/willingness from too many
   approval prompts; ends in rubber-stamping. A direct BHH enabler.
