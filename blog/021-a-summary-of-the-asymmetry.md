@@ -108,6 +108,13 @@ So this is not a fixed quirk, it is a moving one. As the models get better at ap
 
 One last thing, about how this idea even arrived. I did not reason it out at a desk. It fell out of a running back-and-forth with the agent, the human-agent ballgame this whole project is about, off the back of me grumbling that a word was annoying to type. I do not think I would ever have landed on it alone. That is the escalation this study keeps pointing at, caught in the act: not the agent thinking for me, not me thinking without it, but something neither of us reaches on our own.
 
+<!-- AGENT-DRAFT 2026-07-12 (BR to revoice / approve): the asymmetry-as-boost beat, using this post's own live-edit
+revision as the reflexive example. Blog-voice; em-dashes kept out. -->
+
+### The asymmetry is not just a curiosity, it is a lever
+
+Here is the part that surprised me most: our differences are not only interesting to catalogue, they do real work. Take how this very post got revised. I did not open the file and edit it. I stayed in my reading, threw comments and new fragments into the chat as they came to me, and the agent shaped the text live while I watched it emerge. My part was intent and judgment, held in the flow of reading; its part was the precise, tireless editing and a knack for guessing what I meant. Neither of us works that way alone. That is the asymmetry put to use: not "look how different we are", but "look what the difference lets us do". This is productivity escalation by asymmetry, in the working!
+
 And is it the *actual asymmetry* between us that made this possible? I think it may very well be. It was not that we are the same and simply doubled up; it is that we are different, and the difference is what struck the spark. Which is the note I want to end on: the asymmetry between a human and an agent is not only a set of gaps to manage. I think it has some real upsides for our joint productive work.
 
 <!-- TODO (BR): the closing sentence "the asymmetry ... has some real upsides for our joint productive work" is BR's
