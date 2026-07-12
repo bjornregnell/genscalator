@@ -73,7 +73,7 @@ research, not something you base a mass-market product on. So their absence is r
 Some prior-art sources:
   * Anthropic's own [Model Context Protocol (MCP)](https://modelcontextprotocol.io) already standardises typed, schema-described agent tools.
   * "Approval fatigue is a security bug" is live industry discourse: [approval prompts are not authorization](https://blakecrosley.com/blog/ai-agent-approval-prompts-not-authorization) and [the AI decision-fatigue crisis](https://reptile.haus/journal/the-ai-decision-fatigue-crisis-why-coding-agents-are-burning-out-your-best-developers/).
-  * The compile-time-provable safety angle builds on Odersky et al.'s [TACIT: Tracking Capabilities for Safer Agents](https://arxiv.org/abs/2603.00991), and converges with recent provable-by-construction agent security (DeepMind's CaMeL).
+  * The compile-time-provable safety angle builds on Odersky et al.'s [TACIT: Tracking Capabilities for Safer Agents](https://arxiv.org/abs/2603.00991), and converges with recent provable-by-construction agent security ([DeepMind's CaMeL](https://arxiv.org/abs/2503.18813)).
 
 ### ChatGPT's answers
 
