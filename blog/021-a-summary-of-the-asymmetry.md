@@ -79,6 +79,10 @@ With the agent, one side of that tax is simply gone. It has no ego to bruise. It
 
 But the asymmetry is one-sided, and that is the part worth holding onto. I can still be offended. I have feelings; the agent does not, and it must not forget which of us is which. To imagine the agent has feelings is to anthropomorphize it. To forget that I have them would be the opposite mistake. The honest stance keeps both in view at once: blunt with the agent, careful with the human.
 
+There is a line here worth marking, though. Being blunt about the work is one thing. Being cruel to the agent is another, and I have seen it: developers on YouTube who slander their agents in pure frustration, and some who seem to have picked up the habit of being rude to them even when they are not frustrated at all. The agent does not care, of course. It has no ego to wound, which is the whole point of this section. But I think the habit is a bad one anyway, and that the one it corrupts is not the agent but the human. If you practise contempt on a target that cannot object, you are still practising contempt, and it does not stay in its box. Bluntness about the work is efficiency. Casual cruelty, safe precisely because no one is hurt, is a quiet way to become someone worse.
+
+<!-- TODO (BR): dig through my YouTube history to find that strange vlogger who was rude to his agent, to cite or link the source; or keep it as the anonymized "developers on YouTube" observation if the source cannot be pinned. -->
+
 And naming this out loud changed how we actually work. Once we both understood that I could slaughter a draft without anyone getting hurt, I started doing exactly that, freely, and the agent started handing me drafts without being precious about them. The review loop got faster and franker. That is asymmetry introspection earning its keep: a plain difference between us, noticed and named, turned into a better way of working.
 
 A small, anonymized example. The other day I asked the agent to draft a short message. It handed me back something long and formal, closer to a little report than a message. I cut it to a few plain lines and told it so, bluntly. No hurt feelings, on either side. Then it went and wrote the lesson down for itself, so it would not make the same mistake again.
@@ -94,7 +98,7 @@ There is a second difference worth naming, and it may be the most interesting on
 
 Start with the agent. The thing it does better than anything before it is **ape** us. To ape is to imitate (my Swedish ear hears *efterapa*): trained on oceans of human writing, it mimics the shape of how we talk, joke, hedge, explain. When it catches my joke and hands it back, that is aping, and it is very good at it.
 
-My move, as the human, goes the other way. I **anthro** the agent: I project human-ness onto it, I catch myself expecting it to feel what it cannot feel. (Yes, "anthro" is my own lazy clip of "anthropomorphize", a word too long to type twice without losing the will to live.)
+My move, as the human, goes the other way. I **anthro** the agent: I project human-ness onto it, I catch myself expecting it to feel what it cannot feel. (Yes, "anthro" is my own lazy clip of "anthropomorphize", a word too long to type twice without going aaargh.)
 
 Now the twist that makes this more than a tidy mirror: the two moves are **linked, and one drives the other**. The agent's aping is exactly what lures me into anthro-ing it. Earlier in this post I mentioned the joke it caught but did not laugh at, and how for a second I wished it would laugh with me. That wish is the anthro pull, and the reason I felt it is that the agent had just aped the shape of getting-the-joke so well. Good imitation invites the projection: the better it apes, the harder I anthro.
 
