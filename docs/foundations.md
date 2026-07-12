@@ -79,7 +79,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 
 **Groups:** [Roles and cases](#roles-and-cases) · [Channel: bandwidth and confirmation fatigue](#channel-bandwidth-and-confirmation-fatigue) · [Echt and honest writing](#echt-and-honest-writing) · [Context rot and the smart zone](#context-rot-and-the-smart-zone) · [Dances and handoffs](#dances-and-handoffs) · [Memory, habits and substrate](#memory-habits-and-substrate) · [Autonomy and safety](#autonomy-and-safety)
 
-**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · Agentic requirements engineering (agentic RE) · Agentic software engineering (agentic SE) · AT · Authority anchor · Ballgame · BR · BRB dance · Cold start · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confabulation · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · Delegation dance · echt / äkthet · echt-mimicry · Edit dance · Edit vs clarification cues · Extrinsic-volatile plasticity · Go afk cue · Go dance · Go dial ((go)/go/GO) · gs (genscalator) · Guard stall · Habit · Hardening dance · Harvest-hot-context mode · Hot context · Index rot · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Post-warp dissection · Prosthetic habit · P-word / plan-mode modal · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Thriller state · Token acceleration · Token efficiency (TE) · Token-usage dance · Token velocity · Warp · WR · Why cue
+**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · Agentic requirements engineering (agentic RE) · Agentic software engineering (agentic SE) · AT · Authority anchor · Ballgame · BR · BRB dance · Cold start · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confabulation · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · Delegation dance · echt / äkthet · echt-mimicry · Edit dance · Edit vs clarification cues · Extrinsic-volatile plasticity · Go afk cue · Go dance · Go dial ((go)/go/GO) · gs (genscalator) · Guard stall · Habit · Hardening dance · Harvest-hot-context mode · Hot context · Index rot · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Post-warp dissection · Prosthetic habit · P-word / plan-mode modal · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Swedish-marker cue (|sv) · Thriller state · Token acceleration · Token efficiency (TE) · Token-usage dance · Token velocity · Warp · WR · Why cue
 
 ### Roles and cases
 *BR and the agent are the **roles** (stakeholders, above). **WR** is the research program; **AT** and **SSG** are its **cases / units of analysis** — the object-level projects during which workflow data is collected. (Terminology per* Case Study Research in Software Engineering: Guidelines and Examples*, Runeson, Höst, Rainer & Regnell, Wiley 2012, §3.2.3 "Cases and Units of Analyses" — of which BR is a co-author.)*
@@ -193,8 +193,19 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   misinterpreted without the added words** — so the cue is itself **data**: it flags that the original was genuinely
   ambiguous, and the agent should both apply the clarification AND register the ambiguity (a candidate
   comms-precision / misread-risk specimen). Different weight: `edit:` says *"I mis-typed"*; `clarification:` says *"I
-  under-specified and it mattered."* **Cues, not dances** — a single human signal, no interlocking answering step.
+  under-specified and it mattered."* **Terse variant of `edit:`:** `*wrong;right` / `*right` (the `*` stands in for
+  `edit:`) — same low-stakes fix; BR keeps both the `*` and the spelled-out `edit:` forms (2026-07-12). **Cues, not
+  dances** — a single human signal, no interlocking answering step.
   Memory: [[cue-edit-vs-clarification]]. (BR 2026-07-07.)
+- **Swedish-marker cue (`|sv`)** — a suffix tag marking that the immediately-preceding word/phrase is Swedish
+  (e.g. `dramatisering|sv`; generalizes to `|<lang>`). **What to do with it is context-dependent** (refined
+  2026-07-12, BR's "dance-twist"): **in chat / internal docs**, keep the word as-is (don't "correct" a real
+  Swedish word as an English typo) and gloss inline if useful; **in official / publication docs** (skills, blogs,
+  PRD, README) it usually means *"a great Swedish word BR knows but isn't sure of the good English for"* → render
+  it in **good English**, not preserved Swedish (`buller|sv` → "noise"), and if the best rendering is **not
+  straightforward, chat about options** first (a discuss-the-rendering mini-dance). Also a WR datum: the human
+  supplies the concept, the agent supplies the English — complementary strengths, an escalation beat. **Cue with a
+  small embedded discuss-step** for hard renderings. Memory: [[cue-sv-swedish-marker]]. (BR 2026-07-12.)
 - **Thriller state (human)** — a human affective state of **high arousal / excitement** — the breakthrough-work
   "this is thrilling" high (cf. blog 004's emotional stakes). Productive, but carries an **over-trust risk**: an excited
   human rubber-stamps advanced agent work they haven't fully reviewed (a cousin of *confirmation fatigue* / *review
