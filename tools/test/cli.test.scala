@@ -753,6 +753,7 @@ class CliSuite extends munit.FunSuite:
       s""""seven_day":{"used_percentage":14,"resets_at":$resetsSec}}}"""
     val (code, out, _) = run("statusline", json, "--now-ms", now.toString)
     assertEquals(code, 0)
+    assert(clue(out).contains("genscalator:")) // brand prefix
     assert(clue(out).contains("O4.8")) // model label abbreviated: Opus 4.8 -> O4.8
     assert(clue(out).contains("cost: $12.34"))
     assert(clue(out).contains("ctx-fill: 41%"))

@@ -4,7 +4,7 @@
 
 // statusline — format the Claude Code `statusLine` stdin JSON into ONE compact line (SM039).
 // Claude Code pipes a JSON object to the configured statusLine command's stdin each turn; this reads it and prints:
-//   14:23:07  O4.8 (1M ctx)  ctx-fill: 41%  5h-lim: 30%  wk-lim: 14% resets: 3d  cost: $12.34
+//   genscalator:  14:23:07  O4.8 (1M ctx)  ctx-fill: 41%  5h-lim: 30%  wk-lim: 14% resets: 3d  cost: $12.34
 //   (leading HH:MM:SS wall clock; ANSI-coloured segments; two-space separators; ctx is a FILL gauge, 5h/wk LIMITs)
 // Every segment is INDEPENDENTLY GUARDED: a field absent from the JSON simply omits its segment, so the tool
 // degrades gracefully across CC versions / subscription tiers (rate_limits are Claude Pro/Max only) and NEVER
@@ -68,9 +68,10 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
   def render(json: String, nowMs: Long): String =
     val o = try ujson.read(json).obj catch case _: Throwable => return ""
     val segs = scala.collection.mutable.ArrayBuffer[String]()
+    segs += sgr("1;38;5;42", "genscalator:") // brand prefix (BR: prepend "genscalator:")
     segs += sgr("38;5;250", clock(nowMs)) // leading wall clock (light grey)
     o.get("model").flatMap(_.objOpt).foreach: m =>
-      m.get("display_name").orElse(m.get("id")).flatMap(_.strOpt).foreach(n => segs += sgr("1;38;5;45", shortModel(n)))
+      m.get("display_name").orElse(m.get("id")).flatMap(_.strOpt).foreach(n => segs += sgr("38;5;45", shortModel(n))) // un-bold so the bold genscalator: prefix is the only bold thing
     o.get("context_window").flatMap(_.objOpt).flatMap(_.get("used_percentage")).flatMap(_.numOpt)
       .foreach(p => segs += sgr(gauge(p, "38;5;114"), s"ctx-fill: ${pct(p)}")) // green base, gauge-graded
     val rl = o.get("rate_limits").flatMap(_.objOpt)
