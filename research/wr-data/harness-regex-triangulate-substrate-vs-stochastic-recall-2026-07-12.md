@@ -25,3 +25,20 @@ Intent stays stochastic + confirmed.
 
 Ties: genscalator thesis (deterministic tools > stochastic inference), the super-harness, the RQ0 verify layer,
 [[introspection-is-post-hoc-reconstruction-not-privileged-readout-2026-07-12]], [[live-edit-dance]].
+
+## Empirical correction (appended; append-only per the raw-data policy - a changed mind is new data)
+BR pushed back: "you could have regex-ed the foundations... no?" The agent then actually CHECKED (echt):
+`tt text match foundations.md "context dance"` -> ZERO matches; the A-Z lists Compact dance, Token-usage dance,
+etc., but NO "context dance".
+
+**So the "regex cannot disambiguate meaning" nuance above was OVER-DRAWN.** For a phrase in our SHARED, DOCUMENTED
+vocabulary, regex-ing the glossary/memories FIRST does help: here it would have surfaced that "context dance" is not
+a defined term - and that ABSENCE is itself a strong disambiguating signal ("not canonical -> do not assume the
+nearest defined dance -> confirm"). **Corrected principle:** for a shared-vocabulary phrase, GROUND it in the
+substrate (regex the glossary + memories) BEFORE the stochastic guess; an absence-of-match is a signal to confirm,
+not to grab the nearest prior. Confirm remains the fallback only for genuine residual ambiguity (undefined OR
+multi-defined). BR's hypothesis is thereby STRENGTHENED, not nuanced away.
+
+**Meta (rot-consistent):** the agent stochastically over-claimed TWICE in a row ("regex can't help intent", then
+defended it) and BR caught both by pointing at the substrate. Reaching for the plausible over the checked,
+repeatedly, is a fair argument the agent is running hot / high-fill - a loud compact signal.
