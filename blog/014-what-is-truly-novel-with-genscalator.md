@@ -215,7 +215,7 @@ becomes impossible, and curation is where both your safety and your honesty live
 > in experiments, and it discounted its own un-flattering tone as partly commanded by its brief. Even the deepest
 > arm flagged that it, too, had been reading the project's own account of itself.
 
-## Why this is interesting 
+## Why is this interesting? 
 
 Here are the main reasons this small experiment carries more weight than a party trick:
 
