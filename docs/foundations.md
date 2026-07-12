@@ -121,6 +121,12 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   research (WR) or the translation (AT). Today the site is a shallow placeholder that needs design love; the generator
   choice + deployment order are open (`blog/README.md` "Deployment"), and the blog `deployed`/`updated` status states
   exist to track what's live once SSG ships.
+- **to ape** (v.; shorthand for **anthropomorphize**) — to project human traits (feelings, intent, the capacity to
+  be offended) onto a non-human agent. A keystroke-cheap synonym coined 2026-07-12 because *anthropomorphize* is a
+  pain to type; the pun holds because *to ape* already means to imitate, and apes are almost-human — *"you're aping
+  human traits onto the agent."* Names a two-way error: assuming the agent **has** feelings (it does not), or
+  forgetting that the **human** does. Rooted in the **affective asymmetry** — the agent knows the *shape* of mirth or
+  offense but cannot feel it (see blog 021 and `research/wr-data/mutual-non-offense-and-anthropomorphizing-typing-tax-2026-07-12.md`).
 ### Channel bandwidth and confirmation fatigue
 - **Confirmation fatigue (CF)** — degradation of the human's review quality/willingness from too many
   approval prompts; ends in rubber-stamping. A direct BHH enabler.
