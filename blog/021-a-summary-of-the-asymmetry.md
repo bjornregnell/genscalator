@@ -6,6 +6,8 @@
 
 It is important for both of us, for the sake of our joint work's productivity, to think about what is different and similar about us = human + agent. For example, when I write "productivity" of joint work, this is perfectly in line with the agent's harness so that, even if the agent can't *feel* productive, it knows very well how to set goals and how to try to get there fast. But when I think about productivity of me as a human I know that I am most productive when I feel joy and flow in my work. The agent knows about this nature of humans. But it can never feel it. (Or at least not today's agents...)
 
+Here is a small example, from while we were writing this very post. I made a joke. The agent did not laugh. It answered, straight to the point, about the next thing it was going to do. So I laughed on my own. The agent can catch a joke and hand it back, it knows the shape of funny, but it feels no mirth. It would be more fun to laugh together. Though a second later I think that an agent that really laughed with me might be a little scary too.
+
 But why is it important that both the human and the agent thinks about this and share their understanding? In my work with genscalator it has become obvious that our joint understanding of each other's psyche indeed has helped introspection on both sides on how to get a good job done.
 
 Let me put a name to it. **Asymmetry introspection** is when the human and the agent each try to understand how the other one works, notice where they are alike and where they differ, and then use that understanding to work better together. This study puts one claim to the test: that this kind of introspection genuinely helps our joint work. The evidence for it comes from a genscalator study reported here in this post, with this main **research objective** formulated as our *Main Research Question* (MRQ):
@@ -44,7 +46,7 @@ There is one thing about this method we want to be open about from the start. Th
 
 ## Can we trust this?
 
-This study has a built-in problem, and we would rather name it than hide it. The data is our own. We gathered it ourselves, about ourselves, and the agent is the one that mines and codes it. So there is a real risk that we only find what we were hoping to find.
+This study has a built-in problem, and we should name it rather than hide it. The data is our own. We gathered it ourselves, about ourselves, and the agent is the one that mines and codes it. So there is a real risk that we only find what we were hoping to find.
 
 We do a few things to stay honest:
 
