@@ -228,7 +228,7 @@ Here are the main reasons this small experiment carries more weight than a party
 
 ## Further reading
 
-- Martin Odersky et al., *Tracking Capabilities for Safer Agents* (the TACIT paper), arXiv:2603.00991. The
+- Martin Odersky et al., *Tracking Capabilities for Safer Agents* (the TACIT paper), [arXiv:2603.00991](https://arxiv.org/abs/2603.00991). The
   capability-tracking and capture-checking work that genscalator's capability-clamp (the "prove it safe, then
   never prompt" idea) builds on.
 
