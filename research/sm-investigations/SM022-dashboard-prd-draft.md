@@ -17,6 +17,11 @@ contextRotMeter`). This draft elaborates it **goal-level down** per SM022, addin
   first-class, traceable Feature);
 - **two Targets** that `verify` the goals - `dashboardDataEgressBytes` (zero
   off-box egress) and `proxyMemberCheckRate` (proxies kept honest vs BR).
+- **an audio sibling** - `agentSoundCues`: an OPTIONAL out-of-band sound-cue channel (fed by the same
+  SM016 tap) so a human whose eyes are on another window *hears* what the agent is doing - above all a
+  gentle chime ("a nice bing") when an agent message needs a human decision. The visual dashboard and the
+  audio cues are two surfacings of the same tap; distinct cues for distinct event classes, per-event and
+  off by default, human-owned. (BR pin 2026-07-12.)
 
 BR's echt guardrails are wired as relations, not prose: data-sovereignty is a Goal
 with a zero-egress Target; the "not psychiatrists" disclaimer is a Feature that
@@ -70,6 +75,14 @@ for rendering).
   * Spec: rendered inside the humanProxiesPanel visualization (not a footnote), stating the proxies are non-clinical and member-checked. A UI requirement, not optional chrome.
 * Feature: notPsychiatristsDisclaimer implements Feature: humanProxiesPanel
 * Feature: notPsychiatristsDisclaimer helps Goal: retainUserTrust
+
+* Feature: agentSoundCues has
+  * Gist: an OPTIONAL out-of-band AUDIO channel - distinct, pleasant sound cues that tell a human whose eyes are on another window what the agent is doing, above all when an agent message needs a human decision.
+  * Spec: fed by the same SM016 tap as the dashboard; maps agent-event classes to distinct cues (needs-human-decision, done or idle-waiting, error or blocked); the needs-decision cue is a gentle chime (a nice bing), never jarring; per-event enable, volume, and mute live in human-owned settings; OFF by default; played locally, no audio telemetry.
+* Feature: agentSoundCues helps Goal: completeSuperHarness
+* Feature: agentSoundCues helps Goal: jointHumanAgentProductivity
+* Feature: agentSoundCues requires Feature: harnessTap
+* Feature: agentSoundCues relatesTo Feature: superHarnessDashboard
 
 * Target: dashboardDataEgressBytes verifies Goal: dashboardDataSovereignty
 * Target: proxyMemberCheckRate verifies Goal: sharedRotVigilanceMirror
