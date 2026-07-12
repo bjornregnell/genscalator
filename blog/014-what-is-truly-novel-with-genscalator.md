@@ -228,8 +228,10 @@ Here are the main reasons this small experiment carries more weight than a party
 
 ## Further reading
 
-- **Tracking Capabilities for Safer Agents** (the TACIT paper), by Martin Odersky, Yaoyu Zhao, Yichen Xu, Oliver Bračevac, Cao Nguyen Pham [arXiv:2603.00991](https://arxiv.org/abs/2603.00991) (View [pdf](https://arxiv.org/abs/2603.00991)). 
+- **Tracking Capabilities for Safer Agents** (the TACIT paper), by *Martin Odersky, Yaoyu Zhao, Yichen Xu, Oliver Bračevac, Cao Nguyen Pham*, [arXiv:2603.00991](https://arxiv.org/abs/2603.00991) (View [pdf](https://arxiv.org/abs/2603.00991)). 
   - This is the capability-tracking and capture-checking work that perhaps in the future can make help genscalator's goals being realized to a fuller extent: *if **proven** safe then   no need to prompt for human approval thus avoiding confirmation fatigue*.
+
+- **Defeating Prompt Injections by Design** by *Edoardo Debenedetti, Ilia Shumailov, Tianqi Fan, Jamie Hayes, Nicholas Carlini, Daniel Fabian, Christoph Kern, Chongyang Shi, Andreas Terzis, Florian Tramèr*, [arXiv:2503.18813](https://arxiv.org/abs/2503.18813) (View [pdf](https://arxiv.org/pdf/2503.18813)).
 
 **A note on conflicts.** This post was written with Claude (Anthropic's Opus model), running on Anthropic's own
 harness, and it weighs both Anthropic and a competitor (OpenAI's ChatGPT). So the main analyst here is not a
