@@ -33,6 +33,12 @@ rigor. Rigor underneath, plain words on top.
 - **CSR process steps** we follow: (1) design [this plan], (2) prepare for collection [scheme +
   manifest], (3) collect evidence [already largely done via WR logging], (4) analysis [code ->
   pattern -> abstraction], (5) report [blog 021]. **[CHECK]** step names vs the book.
+- **RQ ladder, RQ0 first (TENTATIVE, BR 2026-07-12):** a feasibility question sits *before* RQ1/RQ2.
+  *RQ0: what concrete evidence is there for asymmetry in human-agent conversation?* (wording under discussion;
+  "conversation" may widen to "collaboration / interaction"). RQ0 is answered by a **light first sweep** over the
+  census that estimates how dense and concrete the asymmetry signal is, and **gates** whether the full RQ1/RQ2
+  coding is worth the climb. Its output is a **rate** over the census (asymmetry-evident vs symmetric-or-neutral),
+  not a highlight reel, so the confirmation-bias guard (category D) applies from step one.
 
 ## 2. Data: our WR-data dance *is* the collection; this study is *selection*
 
@@ -95,6 +101,11 @@ dated and justified (constant comparison, audit trail).
 ## 4. Coding procedure
 
 1. **Manifest pass** - enumerate the corpus, count and list specimens, no coding. Output: a manifest.
+1b. **RQ0 feasibility sweep (TENTATIVE)** - a fast, low-resolution pass over the census tagging each specimen for
+   asymmetry evidence (yes / no / maybe + a rough type), NOT the full scheme. Output: the signal-density rate + a
+   **go / no-go / scope-down** decision before committing to full coding. May be **multi-sweep** (a second light
+   pass if the first is ambiguous). Cheap by design: it exists to avoid climbing the mountain if there is nothing
+   at the top.
 2. **Freeze v0 scheme** - only after BR approves this plan.
 3. **Code each specimen** -> (categories, subcodes, metadata, a one-line rationale, source anchor),
    written to an **append-only coding log** (`research/asymmetry/coding.tsv` or `.md`).

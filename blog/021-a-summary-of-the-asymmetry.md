@@ -16,7 +16,9 @@ Let me put a name to it. **Asymmetry introspection** is when the human and the a
 
 When we say *escalation* we mean stepping the joint capability up a level, the way an escalator carries you higher with less effort of your own: getting more and better work done together than either of us could manage alone. It is also the idea behind the name genscalator.
 
-Big research questions are often better broken down into smaller ones, like we did with RQ1 and RQ2 below. The first just describes; the second asks whether it pays off:
+Big research questions are often better broken down into smaller ones. We start with the simplest, RQ0, and then RQ1 and RQ2 below: RQ0 asks whether there is anything here to study at all; RQ1 describes; RQ2 asks whether it pays off:
+
+* **RQ0** *(tentative)***:** What concrete evidence is there for asymmetry in human-agent conversation? A feasibility question: before the bigger two, we sweep the data to see whether the signal is even there and dense enough to be worth the climb.
 
 * **RQ1:** What are the differences and the similarities between the human and the agent in how they perceive, think, and work?
 
