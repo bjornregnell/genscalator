@@ -611,6 +611,19 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   attention for the high-stakes **ballgame** volleys that need it. Memory: [[tired-cue]],
   [[joint-rot-vigilance-recovery-kit]]. See `research/011-human-state-and-joint-zone.md`.
 
+- **Human-stress mode** — a **HUMAN-state mode** the human enters by a **deliberate stress disclosure**
+  (e.g. "I'm stressed right now"), and exits with a cue like **"not so stressed now."** It is the human-side
+  counterpart to the agent-facing **token modes** (spending / normal / saving) and a close **neighbour of `:Z`**
+  (tired): all three are *state* that steers the collaboration, but this one is the human's, not the agent's.
+  **Crucial asymmetry: agents do not get stressed** — the agent has no felt affect to be in this mode; it only
+  *reads* the human's disclosure and adapts. **A disclosed "I'm stressed" is authoritative, high-signal state
+  data** (the human is ground truth for their own state, not a proxy the agent should second-guess): so the
+  agent **adapts** — reduce load, defer non-urgent work, simplify to fewer decisions, prefer safe stops, avoid
+  interrupting modals, and never argue the human out of their own reported state. It composes with `:Z` (tired)
+  and the token modes; stress + tired together warrants an even lighter touch and a structural checkpoint.
+  Memory: [[human-disclosed-stress-is-high-signal-adapt]], [[tired-cue]]. Source specimen:
+  `research/wr-data/human-disclosed-stress-is-high-signal-2026-07-11.md`. (BR 2026-07-11.)
+
 - **Delegation dance** — the protocol by which the **super-agent** (`CO4`) hands **bounded, well-scoped**
   work to a background **sub-agent** (default **`CF5`**, Fable-5) so the super-agent **stays responsive to
   the human in chat** (no message-race, no long silent grind) while parallel work proceeds. The **twist vs
