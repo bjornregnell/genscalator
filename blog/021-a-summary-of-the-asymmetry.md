@@ -62,7 +62,7 @@ None of this makes the study bullet-proof. It is one case, our case. But an hone
 
 This kind of study has a name in software engineering research: [*action research*](https://en.wikipedia.org/wiki/Action_research), where the researcher takes part in the very thing being studied instead of watching from the outside. Seen that way, the agent's double role stops being something to apologize for and becomes a recognized stance: in action research, being part of the work is the point, and being honest about it is the safeguard.
 
-And now: let smart agent go climb big mountain.
+And now: we should let *smart agent go climb big mountain* (but first check that it's worth it).
 
 ## What did we find?
 
@@ -81,7 +81,7 @@ But the asymmetry is one-sided, and that is the part worth holding onto. I can s
 
 There is a line here worth marking, though. Being blunt about the work is one thing. Being cruel to the agent is another, and I have seen it: developers on YouTube who slander their agents in pure frustration, and some who seem to have picked up the habit of being rude to them even when they are not frustrated at all. The agent does not care, of course. It has no ego to wound, which is the whole point of this section. But I think the habit is a bad one anyway, and that the one it corrupts is not the agent but the human. If you practise contempt on a target that cannot object, you are still practising contempt, and it does not stay in its box. Bluntness about the work is efficiency. Casual cruelty, safe precisely because no one is hurt, is a quiet way to become someone worse.
 
-<!-- TODO (BR): dig through my YouTube history to find that strange vlogger who was rude to his agent, to cite or link the source; or keep it as the anonymized "developers on YouTube" observation if the source cannot be pinned. -->
+<!-- RESOLVED (BR, 2026-07-12): do NOT cite the vlogger - BR will not send readers to that slander/rude-language channel. Keep the anonymized "developers on YouTube" observation; BR genuinely saw it, so it stays echt without a link. -->
 
 And naming this out loud changed how we actually work. Once we both understood that I could slaughter a draft without anyone getting hurt, I started doing exactly that, freely, and the agent started handing me drafts without being precious about them. The review loop got faster and franker. That is asymmetry introspection earning its keep: a plain difference between us, noticed and named, turned into a better way of working.
 
@@ -117,9 +117,10 @@ Here is the part that surprised me most: our differences are not only interestin
 
 And is it the *actual asymmetry* between us that made this possible? I think it may very well be. It was not that we are the same and simply doubled up; it is that we are different, and the difference is what struck the spark. Which is the note I want to end on: the asymmetry between a human and an agent is not only a set of gaps to manage. I think it has some real upsides for our joint productive work.
 
-<!-- TODO (BR): the closing sentence "the asymmetry ... has some real upsides for our joint productive work" is BR's
-candidate LAST sentence of the whole post; place it as the final line once the "What did we learn?" conclusions are
-written (and only if the mined data actually bears the upside claim out - keep it echt). -->
+<!-- RESOLVED (BR, 2026-07-12): keep the current ending (the method-conclusion in "What did we learn?"). This
+upsides line stays here as BR's hedged hunch, NOT moved to the final line - the upside claim is RQ2 and unproven
+yet, so it must not read as a settled conclusion. A proven upsides closer, if the data bears it out, belongs to the
+RQ2 sub-study's finale. -->
 
 
 
