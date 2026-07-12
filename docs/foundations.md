@@ -79,7 +79,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 
 **Groups:** [Roles and cases](#roles-and-cases) · [Channel: bandwidth and confirmation fatigue](#channel-bandwidth-and-confirmation-fatigue) · [Echt and honest writing](#echt-and-honest-writing) · [Context rot and the smart zone](#context-rot-and-the-smart-zone) · [Dances and handoffs](#dances-and-handoffs) · [Memory, habits and substrate](#memory-habits-and-substrate) · [Autonomy and safety](#autonomy-and-safety)
 
-**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · Agentic requirements engineering (agentic RE) · Agentic software engineering (agentic SE) · AT · Authority anchor · Ballgame · BR · BRB dance · Cold start · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confabulation · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · Delegation dance · echt / äkthet · echt-mimicry · Edit dance · Edit vs clarification cues · Extrinsic-volatile plasticity · Go afk cue · Go dance · Go dial ((go)/go/GO) · gs (genscalator) · Guard stall · Habit · Hardening dance · Harvest-hot-context mode · Hot context · Index rot · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Post-warp dissection · Prosthetic habit · P-word / plan-mode modal · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Swedish-marker cue (|sv) · Thriller state · Token acceleration · Token efficiency (TE) · Token-usage dance · Token velocity · Warp · WR · Why cue
+**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · Agentic requirements engineering (agentic RE) · Agentic software engineering (agentic SE) · AT · Authority anchor · Ballgame · BR · BRB dance · Cold start · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confabulation · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · Delegation dance · echt / äkthet · echt-mimicry · Edit dance · Edit vs clarification cues · Extrinsic-volatile plasticity · Go afk cue · Go dance · Go dial ((go)/go/GO) · gs (genscalator) · Guard stall · Habit · Hardening dance · Harvest-hot-context mode · Hot context · Index rot · Live-edit dance · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Post-warp dissection · Prosthetic habit · P-word / plan-mode modal · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Swedish-marker cue (|sv) · Thriller state · Token acceleration · Token efficiency (TE) · Token-usage dance · Token velocity · Warp · WR · Why cue
 
 ### Roles and cases
 *BR and the agent are the **roles** (stakeholders, above). **WR** is the research program; **AT** and **SSG** are its **cases / units of analysis** — the object-level projects during which workflow data is collected. (Terminology per* Case Study Research in Software Engineering: Guidelines and Examples*, Runeson, Höst, Rainer & Regnell, Wiley 2012, §3.2.3 "Cases and Units of Analyses" — of which BR is a co-author.)*
@@ -303,6 +303,18 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   are how the agent *notices* before halting.
 ### Dances and handoffs
 *Human↔agent protocols — each has **≥2 interlocking steps** (≥1 human, ≥1 agent), else it's just a cue. The **compact trigger** and **consolidation point** below are the timing rules for the compact dance.*
+- **Live-edit dance** — the high-flow **do-what-I-mean doc-editing** protocol (validated on the blog 021 review,
+  2026-07-12). While reviewing, the human throws review comments / new text fragments into the **chat feed** (often
+  cue-less, relying on session context) and the agent applies them **live** to the file; the text co-emerges in the
+  human's reading flow.
+  - **(1) direct** *(human)* — throw an edit intent into the feed, in natural language, **without touching the file**.
+  - **(2) enact** *(agent)* — infer target + intent from context, edit the file live, commit at sensible units, and
+    stay quiet so the feed does not congest.
+  - **Invariant: ONE writer.** The agent is the SOLE editor of the buffer; the human edits *indirectly, through the
+    agent*. **Edit-buffer racing is forbidden** (two writers clobber the file); session-**feed** racing is tolerated
+    and handled (the *we-are-racing* rules). If the human wants the pen, an explicit handoff. A deliberate inversion
+    of *no-clobber* — the human cedes the buffer on purpose — and the DWIM dream (emacs / vi / Interlisp) made real
+    because the agent understands intent. See [[live-edit-dance]], `research/wr-data/live-edit-dance-dwim-2026-07-12.md`. (BR 2026-07-12.)
 - **Compact dance** — the deliberate **hand-off ritual across a context compaction**, so crossing it costs
   little of what matters. Context compaction (summarizing the transcript to reclaim window space) is the main
   smart-zone hygiene move — but a naive compact *loses* live state (decisions just made, the exact next step,
