@@ -435,6 +435,15 @@ Whether and when one gets run is another matter; this pilot stands on its own. R
 - **A capability gradient - bigger models, bigger hardware.** A 6 GB card runs many *small* models but no mid-tier
   ones; adding those (on a larger GPU) would trace how the effect shrinks from weak models toward the frontier,
   bridging this post's two endpoints. A second tier, not a prerequisite.
+- **The models' training diet - arguably the variable beneath all the others.** A model can only fluently read,
+  edit, and produce a style it saw enough of while it was trained. That is very likely what is really driving the
+  per-model split: aya-expanse cannot produce braceless Scala at all, and the simplest explanation is that its
+  training corpus held little or none of it. If that is right, then "which style costs an agent more" is downstream
+  of "which style the training data contained" - and as the public Scala corpus shifts (say the common style
+  spreads, or more braceless Scala 3 gets written), the very numbers reported here could move with it. A fuller
+  study would treat training-data composition as a first-class variable: compare models whose corpora are known to
+  differ in their style mix, and read style adherence and edit cost against it. (I owe this framing to a good point
+  from `TRoland` in the Scala contributors thread - see Credits.)
 - **More kinds of edit.** Every task here is one move - *wrap a block in a new `else`*. Extract-a-helper,
   add-a-`case`, rename-and-reindent, merge-two-branches each stress whitespace differently, and braceless may well
   **win** on some. A style verdict needs an edit *suite*, not a single operation.
@@ -503,6 +512,17 @@ tool grade its own homework - you are reading the right blog. That is much of wh
   [`results-raw.tsv`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/experiments/indent-vs-braces/results-raw.tsv).
 - Background: [`../research/001-scala-style-evolution.md`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/001-scala-style-evolution.md),
   [`../research/017-scala-style-recommendations.md`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/017-scala-style-recommendations.md).
+
+## Credits
+
+- I have had many fruitful discussions with Martin Odersky on language design over several years. We have
+  explicitly talked in general about making language design empirically grounded (with human language users in
+  mind). I'm sure that all our intellectually stimulating exchanges have primed me in getting the idea for this
+  pilot study. Thanks Martin! For everything!! And for Scala!!!
+- Rex Kerr is a fast and careful reviewer. It sounds like a paradox. It's not by him. Thanks, Rex!
+- I got valuable [input from `TRoland`](https://contributors.scala-lang.org/t/a-scala-common-style-pilot-study/7497/3?u=bjornregnell),
+  which rendered an update of the text to include the point that the training set of language models used in code
+  generation may have a significant impact on agents' abilities to read, edit and generate code.
 
 ## Appendix A - the test programs (and why each is shaped that way)
 
