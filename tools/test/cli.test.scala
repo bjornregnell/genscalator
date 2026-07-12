@@ -753,7 +753,7 @@ class CliSuite extends munit.FunSuite:
       s""""seven_day":{"used_percentage":14,"resets_at":$resetsSec}}}"""
     val (code, out, _) = run("statusline", json, "--now-ms", now.toString)
     assertEquals(code, 0)
-    assert(clue(out).contains("Opus 4.8"))
+    assert(clue(out).contains("O4.8")) // model label abbreviated: Opus 4.8 -> O4.8
     assert(clue(out).contains("cost: $12.34"))
     assert(clue(out).contains("ctx-fill: 41%"))
     assert(clue(out).contains("5h-lim: 30%"))
@@ -787,6 +787,11 @@ class CliSuite extends munit.FunSuite:
     val (_, out, _) = run("statusline", json, "--now-ms", now.toString)
     assert(clue(out).contains("5h-lim: 68%"))
     assert(clue(out).contains("resets: 2h34m"))
+  }
+  test("statusline: prepends a HH:MM:SS wall clock, and abbreviates the model label") {
+    val (_, out, _) = run("statusline", """{"model":{"display_name":"Fable 5 (1M context)"}}""", "--now-ms", "1000000000000")
+    assert("""\d\d:\d\d:\d\d""".r.findFirstIn(out).isDefined, clue(out)) // a HH:MM:SS clock is present
+    assert(clue(out).contains("F5 (1M ctx)")) // Fable 5 (1M context) -> F5 (1M ctx)
   }
 
   // --- harden (Layer-1 deterministic secret scanner; SM042) ---

@@ -4,8 +4,8 @@
 
 // statusline — format the Claude Code `statusLine` stdin JSON into ONE compact line (SM039).
 // Claude Code pipes a JSON object to the configured statusLine command's stdin each turn; this reads it and prints:
-//   Opus 4.8 (1M context) · ctx-fill: 41% · 5h-lim: 30% · wk-lim: 14% resets: 3d · cost: $12.34
-//   (each segment ANSI-coloured; dim middot separators; ctx is a FILL gauge, 5h/wk are rate LIMITs)
+//   14:23:07  O4.8 (1M ctx)  ctx-fill: 41%  5h-lim: 30%  wk-lim: 14% resets: 3d  cost: $12.34
+//   (leading HH:MM:SS wall clock; ANSI-coloured segments; two-space separators; ctx is a FILL gauge, 5h/wk LIMITs)
 // Every segment is INDEPENDENTLY GUARDED: a field absent from the JSON simply omits its segment, so the tool
 // degrades gracefully across CC versions / subscription tiers (rate_limits are Claude Pro/Max only) and NEVER
 // crashes the prompt — a bad/empty stdin prints an empty line, exit 0.
@@ -13,7 +13,7 @@
 //   "statusLine": { "type": "command", "command": "tt statusline" }
 // Fields consumed (per https://code.claude.com/docs/en/statusline.md — confirm against a real invocation):
 //   model.display_name|model.id · cost.total_cost_usd · context_window.used_percentage ·
-//   rate_limits.five_hour.used_percentage · rate_limits.seven_day.{used_percentage,resets_at}
+//   rate_limits.five_hour.{used_percentage,resets_at} · rate_limits.seven_day.{used_percentage,resets_at}
 // Reads stdin by default; also accepts the JSON as a positional arg + `--now-ms N` (both for deterministic tests).
 object StatuslineTool: // NB not "Statusline" — that collides case-only with the `statusLine` @main on case-insensitive FS
   def pct(v: Double): String = s"${v.round.toInt}%"
@@ -23,10 +23,24 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
   // 256-colour; on a terminal without 256-colour support the sequences degrade to plain text.
   val ESC: Char = 27.toChar // the ANSI escape byte (0x1B); explicit to avoid any \u-escape ambiguity
   def sgr(code: String, s: String): String = s"${ESC}[${code}m${s}${ESC}[0m"
-  val sep: String = " " + sgr("38;5;242", "·") + " " // dim middot between parts (was a plain grey dot)
+  val sep: String = "  " // two spaces between parts (the middot was dropped to save horizontal space)
   /** Gauge colour by level: a distinct healthy hue per part, escalating to orange >= 70% and red >= 90%. */
   def gauge(p: Double, healthy: String): String =
     if p >= 90 then "38;5;203" else if p >= 70 then "38;5;214" else healthy
+
+  /** Local wall-clock HH:MM:SS from an epoch-ms (from --now-ms in tests, else System.currentTimeMillis). PURE. */
+  def clock(nowMs: Long): String =
+    java.time.Instant.ofEpochMilli(nowMs).atZone(java.time.ZoneId.systemDefault())
+      .toLocalTime.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"))
+
+  /** Abbreviate the model label: "Opus 4.8 (1M context)" -> "O4.8 (1M ctx)"; "Fable 5" -> "F5"; etc. PURE. */
+  def shortModel(name: String): String =
+    name
+      .replaceFirst("^Opus ",   "O")
+      .replaceFirst("^Sonnet ", "S")
+      .replaceFirst("^Fable ",  "F")
+      .replaceFirst("^Haiku ",  "H")
+      .replace("context", "ctx")
 
   /** Relative "time until reset" from an epoch that may be in SECONDS or MILLISECONDS (auto-detected). PURE. */
   def relReset(resetsAt: Long, nowMs: Long): String =
@@ -54,8 +68,9 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
   def render(json: String, nowMs: Long): String =
     val o = try ujson.read(json).obj catch case _: Throwable => return ""
     val segs = scala.collection.mutable.ArrayBuffer[String]()
+    segs += sgr("38;5;250", clock(nowMs)) // leading wall clock (light grey)
     o.get("model").flatMap(_.objOpt).foreach: m =>
-      m.get("display_name").orElse(m.get("id")).flatMap(_.strOpt).foreach(n => segs += sgr("1;38;5;45", n))
+      m.get("display_name").orElse(m.get("id")).flatMap(_.strOpt).foreach(n => segs += sgr("1;38;5;45", shortModel(n)))
     o.get("context_window").flatMap(_.objOpt).flatMap(_.get("used_percentage")).flatMap(_.numOpt)
       .foreach(p => segs += sgr(gauge(p, "38;5;114"), s"ctx-fill: ${pct(p)}")) // green base, gauge-graded
     val rl = o.get("rate_limits").flatMap(_.objOpt)
