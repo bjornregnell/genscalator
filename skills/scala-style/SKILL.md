@@ -29,7 +29,7 @@ make the tradeoff **consciously and locally**, and leave a one-line comment sayi
 black-and-white.
 
 ## 1. Direct style, lean dependencies
-- **Preference cascade (HD, BR 2026-07-10), when choosing HOW to build something.** Prefer, in order:
+- **Preference cascade, when choosing HOW to build something.** Prefer, in order:
   **(1) JDK / stdlib**, then **(2) hand-roll** if the slice is small, bounded, and paired-test-verifiable,
   then **(3) a small direct-style Java/Scala lib** (no big frameworks, no effect systems, no reflection
   magic), then **(4) whatever ships without security risk or dependency hell**, then **(5) escalate to BR**
@@ -222,6 +222,4 @@ note proposes — braceless / braces-everywhere / common style — across edit-e
   dependency's behaviour lives in reflection you can't follow at compile time, it's a no-go; reach back up the
   cascade (JDK, hand-roll, or a small lib you can actually *read*).
 
-Background: [`../../docs/foundations.md`](../../docs/foundations.md) (safe by design, capture checking),
-[`../../tools/README.md`](../../tools/README.md) (conventions). Picking which tool to run: the
-**tt-toolbox** skill.
+
