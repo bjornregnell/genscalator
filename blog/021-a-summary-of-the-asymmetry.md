@@ -68,9 +68,6 @@ And now: we should let *smart agent go climb big mountain* (but first check that
 
 Here are the concrete instances the asymmetry left in our record, the vivid ones we already had in hand while writing this post. They are exemplars, not a tally: the point here is only that the asymmetry is real and shows its face in how we actually work. The one step still owed before we can call RQ0 fully answered is the systematic sweep of the whole workflow-data corpus, agent-surfaced and human-verified, to confirm these are not the only cases. What follows are the exemplars.
 
-<!-- AGENT-DRAFT 2026-07-12 (BR to revoice / approve / place): one finding already clear enough to write up
-ahead of the full mining pass - the "can't offend each other" difference. Blog-voice attempt; em-dashes kept out. -->
-
 ### A difference that pays off: the agent has no ego
 
 Working closely with another person has a hidden cost that is rarely said out loud: honest criticism can sting. So we soften it, we hedge, we wait for a better moment, and sometimes we just let a weak thing stand because saying so is not worth the friction. That tax is real, and it quietly slows good work down.
@@ -89,9 +86,6 @@ A small, anonymized example. The other day I asked the agent to draft a short me
 
 <!-- RESOLVED (BR lean, 2026-07-12): keep the anonymized example above; do NOT use the real PR example - it would out the contributor. -->
 
-<!-- AGENT-DRAFT 2026-07-12 (BR to revoice / approve): the ape <-> anthro asymmetry, using the laughter callback
-from the Opening as the cool example (it is a live instance of the causal arrow). Blog-voice; em-dashes kept out. -->
-
 ### Aping and anthro-ing: two moves in opposite directions
 
 There is a second difference worth naming, and it may be the most interesting one, because its two sides point opposite ways and yet feed each other.
@@ -108,9 +102,6 @@ So this is not a fixed quirk, it is a moving one. As the models get better at ap
 
 One last thing, about how this idea even arrived. I did not reason it out at a desk. It fell out of a running back-and-forth with the agent, the human-agent ballgame this whole project is about, off the back of me grumbling that a word was annoying to type. I do not think I would ever have landed on it alone. That is the escalation this study keeps pointing at, caught in the act: not the agent thinking for me, not me thinking without it, but something neither of us reaches on our own.
 
-<!-- AGENT-DRAFT 2026-07-12 (BR to revoice / approve): the asymmetry-as-boost beat, using this post's own live-edit
-revision as the reflexive example. Blog-voice; em-dashes kept out. -->
-
 ### The asymmetry is not just a curiosity, it is a lever
 
 Here is the part that surprised me most: our differences are not only interesting to catalogue, they do real work. Take how this very post got revised. I did not open the file and edit it. I stayed in my reading, threw comments and new fragments into the chat as they came to me, and the agent shaped the text live while I watched it emerge. My part was intent and judgment, held in the flow of reading; its part was the precise, tireless editing and a knack for guessing what I meant. Neither of us works that way alone. That is the asymmetry put to use: not "look how different we are", but "look what the difference lets us do". This is productivity escalation by asymmetry, in the working!
@@ -125,9 +116,6 @@ RQ2 sub-study's finale. -->
 
 
 ## What did we learn? (our validated conclusions)
-
-<!-- AGENT-DRAFT 2026-07-12 (BR to revoice / approve): the RQ0-existence conclusion + the strategic-method
-conclusion to run RQ1 and RQ2 as two separate sub-case studies. Blog-voice; em-dashes kept out. -->
 
 Only one thing so far, and we want to state it modestly: the asymmetry is not a hunch. It turns up, concretely and more than once, in the record of our own work. That is RQ0 answered, and only RQ0: there is something real here to study. We have shown existence, nothing more. No selection, no coding, no claim about how often it happens or how much it helps; those need the careful passes we have deliberately not done in this post.
 
