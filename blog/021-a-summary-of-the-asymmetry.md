@@ -102,7 +102,7 @@ My move, as the human, goes the other way. I **anthro** the agent: I project hum
 
 Now the twist that makes this more than a tidy mirror: the two moves are **linked, and one drives the other**. The agent's aping is exactly what lures me into anthro-ing it. Earlier in this post I mentioned the joke it caught but did not laugh at, and how for a second I wished it would laugh with me. That wish is the anthro pull, and the reason I felt it is that the agent had just aped the shape of getting-the-joke so well. Good imitation invites the projection:
 
-> **the better it apes, the harder I anthro**
+> **The better it apes, the harder I anthro.**
 
 So this is not a fixed quirk, it is a moving one. As the models get better at aping us, the pull to anthro them gets stronger, not weaker. My projecting is not a silly mistake, it is a reasonable response to a genuinely good imitation. And there is a quiet warning folded in: the more convincingly a thing imitates a person, the more trust we hand it without noticing. That is worth saying out loud, which is much of what this study is for.
 
