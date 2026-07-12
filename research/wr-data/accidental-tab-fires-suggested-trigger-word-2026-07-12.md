@@ -44,3 +44,22 @@ accepts).
 
 Ties: [[cue-p-word]], [[guard-against-forced-confirmations]], [[no-interrupting-modals-during-flow]], blog 021,
 `harness-ux.md`.
+
+## Agent reasoning + blog home (pinned 2026-07-12)
+
+**Reasoning link:** this incident *validates* the very principle the agent's own guardrails run on - confirm
+before irreversible / outward actions, precisely so a momentum-slip (agent) or a reflex-tab (human) cannot
+fire a consequential action. The tab-slip is the human-side proof that the principle is not paranoia:
+frictionless commit of a consequential, machine-suggested payload is exactly the failure the guardrails exist
+to stop.
+
+**Blog home** (BR wants it placed; the human-agent exchange should also seed some mirth in the reader):
+- **004 (Why Claude's UX sometimes sucks) = primary.** 004's own TODO already calls for "the mis-click that
+  lands 'yes' on the wrong prompt" - this IS that, first-person. It also lets 004 *escalate* from "a UX
+  papercut that guts the all-in human" to "the same frictionless affordance is a **safety** property" - the
+  nuke analogy is the bridge, tying straight to genscalator's safe-by-design ethos.
+- **010 (What we should be afraid of) = short callback.** Our tiny tab-slip is the homely, disarming version
+  of 010's reframe (the mundane near-term danger, not the sci-fi singularity): a frictionless consequential
+  action, scaled up, is the real fear. Light banter landing a dark point.
+- **New post? Not yet** - 004 (UX-as-safety) + 010 (danger reframe) cover it; fold in. If the
+  "friction-proportional-to-stakes / UX-is-a-safety-property" theme accumulates, it can graduate to its own BP.
