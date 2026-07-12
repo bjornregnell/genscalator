@@ -66,6 +66,23 @@ In this section we report on interesting findings of the asymmetry study, based 
 
 **TODO: first data collection and coding then analysis then abstraction then report here**
 
+<!-- AGENT-DRAFT 2026-07-12 (BR to revoice / approve / place): one finding already clear enough to write up
+ahead of the full mining pass - the "can't offend each other" difference. Blog-voice attempt; em-dashes kept out. -->
+
+### A difference that pays off: the agent has no ego
+
+Working closely with another person has a hidden cost we rarely say out loud: honest criticism can sting. So we soften it, we hedge, we wait for a better moment, and sometimes we just let a weak thing stand because saying so is not worth the friction. That tax is real, and it quietly slows good work down.
+
+With the agent, one side of that tax is simply gone. It has no ego to bruise. It cannot be offended. I can take a draft it worked on, cut it to pieces, and tell it plainly that it missed the mark, and there is no wince on either side: none from the agent, because there is no one in there to hurt, and none from me, because I have stopped reading its output as a person's feelings. So the bluntest, fastest kind of review becomes cheap. "This is bloated, start over" costs nothing here, and it is not rudeness, it is just efficiency.
+
+But the asymmetry is one-sided, and that is the part worth holding onto. I can still be offended. I have feelings; the agent does not, and it must not forget which of us is which. To imagine the agent has feelings is to anthropomorphize it. To forget that I have them would be the opposite mistake. The honest stance keeps both in view at once: blunt with the agent, careful with the human.
+
+And naming this out loud changed how we actually work. Once we both understood that I could slaughter a draft without anyone getting hurt, I started doing exactly that, freely, and the agent started handing me drafts without being precious about them. The review loop got faster and franker. That is asymmetry introspection earning its keep: a plain difference between us, noticed and named, turned into a better way of working.
+
+A small, anonymized example. The other day I asked the agent to draft a short message. It handed me back something long and formal, closer to a little report than a message. I cut it to a few plain lines and told it so, bluntly. No hurt feelings, on either side. Then it went and wrote the lesson down for itself, so it would not make the same mistake again.
+
+> **TODO (decide before publishing):** whether to use the *real* example that seeded this beat - my rewrite of an agent-drafted comment on a contributor's pull request. Lean **no**: it would out the contributor whose PR it was, and the point lands just as well with the anonymized version above. Keep it nameless.
+
 ## What did we learn? (our validated conclusions)
 
 ## Further reading
