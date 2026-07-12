@@ -1,4 +1,6 @@
 > This document is a markdown mirror of "Towards a Common Scala Style Recommendation" by *Martin Odersky, Björn Regnell, Rex Kerr* available [here](https://docs.google.com/document/d/14ZBGKNHUW4d8hDWIi5i6QquClX3_iXva-iMy5KpFU3I/edit?usp=sharing).
+>
+> This document is also mirrored here: https://codeberg.org/bjornregnell/scala-common-style/src/branch/main/scala-common-style-mirror.md
 
 # Towards a Common Scala Style Recommendation 
 
