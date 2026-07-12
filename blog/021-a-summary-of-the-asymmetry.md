@@ -1,6 +1,6 @@
 # A summary of the asymmetry
 
-> **Status: initialized 2026-07-12.** **Author: Björn Regnell.**
+> **Status: drafted 2026-07-12.** **Author: Björn Regnell.**
 
 ## Opening
 
@@ -18,7 +18,7 @@ When we say *escalation* we mean stepping the joint capability up a level, the w
 
 Big research questions are often better broken down into smaller ones. We start with the simplest, RQ0, and then RQ1 and RQ2 below: RQ0 asks whether there is anything here to study at all; RQ1 describes; RQ2 asks whether it pays off:
 
-* **RQ0:** What concrete evidence is there for asymmetry in human-agent conversation? A feasibility question: before the bigger two, we sweep the data to see whether the signal is even there and dense enough to be worth the climb.
+* **RQ0:** What concrete evidence is there for asymmetry in human-agent conversation? A feasibility question: before the bigger two, we look through the data to see whether the signal is even there at all.
 
 * **RQ1:** What are the differences and the similarities between the human and the agent in how they perceive, think, and work?
 
@@ -42,7 +42,7 @@ Our work products are most often software or persistent super-substrate. Softwar
 
 ### Data collection and data coding scheme (the nitty-gritty methodology details)
 
-* TODO: give an account of initial categories pre data mining and that we allow categories to emerge during the coding process
+Our data collection is the workflow-research logging described above: a note written the moment something about how we work catches our eye, kept in an append-only directory. The detailed coding scheme, the categories we start from and the ones we let emerge as we go, belongs to the two sub-studies that answer RQ1 and RQ2. This post makes the lighter RQ0 pass, so we hold that machinery for the posts that actually need it.
 
 There is one thing about this method we want to be open about from the start. The agent is not a neutral outsider looking in. It is one of the two parties in the very relationship we are studying, and it is also the one that mines the data and codes it. That cuts both ways. It is the reason the mountain can be climbed at all: a human would never (well... a human without very much spare time or a fleet of PhD students would probably "never") get through this much material by hand. It is also a reason to be careful before trusting what comes back. The next section faces that squarely.
 
@@ -66,9 +66,7 @@ And now: let smart agent go climb big mountain.
 
 ## What did we find?
 
-In this section we report on interesting findings of the asymmetry study, based on analysis and abstraction of findings into what matters.
-
-**TODO: first data collection and coding then analysis then abstraction then report here**
+Here are the concrete instances the asymmetry left in our record, the vivid ones we already had in hand while writing this post. They are exemplars, not a tally: the point here is only that the asymmetry is real and shows its face in how we actually work. The one step still owed before we can call RQ0 fully answered is the systematic sweep of the whole workflow-data corpus, agent-surfaced and human-verified, to confirm these are not the only cases. What follows are the exemplars.
 
 <!-- AGENT-DRAFT 2026-07-12 (BR to revoice / approve / place): one finding already clear enough to write up
 ahead of the full mining pass - the "can't offend each other" difference. Blog-voice attempt; em-dashes kept out. -->
@@ -89,7 +87,7 @@ And naming this out loud changed how we actually work. Once we both understood t
 
 A small, anonymized example. The other day I asked the agent to draft a short message. It handed me back something long and formal, closer to a little report than a message. I cut it to a few plain lines and told it so, bluntly. No hurt feelings, on either side. Then it went and wrote the lesson down for itself, so it would not make the same mistake again.
 
-> **TODO (decide before publishing):** whether to use the *real* example that seeded this beat - my rewrite of an agent-drafted comment on a contributor's pull request. Lean **no**: it would out the contributor whose PR it was, and the point lands just as well with the anonymized version above. Keep it nameless.
+<!-- RESOLVED (BR lean, 2026-07-12): keep the anonymized example above; do NOT use the real PR example - it would out the contributor. -->
 
 <!-- AGENT-DRAFT 2026-07-12 (BR to revoice / approve): the ape <-> anthro asymmetry, using the laughter callback
 from the Opening as the cool example (it is a live instance of the causal arrow). Blog-voice; em-dashes kept out. -->
@@ -136,4 +134,5 @@ And answering RQ0 tells us how to do the rest. The two remaining questions are d
 
 ## Further reading
 
-* TODO add ref to BR's CSR book
+* Runeson, Höst, Rainer & Regnell, *Case Study Research in Software Engineering: Guidelines and Examples*, Wiley, 2012 - the case-study methodology behind this study's framing and its validity thinking (full disclosure: I am one of the co-authors).
+* [*Action research*](https://en.wikipedia.org/wiki/Action_research) - the stance that makes the agent's double role a recognized method rather than a flaw.
