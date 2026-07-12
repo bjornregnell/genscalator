@@ -83,6 +83,31 @@ A small, anonymized example. The other day I asked the agent to draft a short me
 
 > **TODO (decide before publishing):** whether to use the *real* example that seeded this beat - my rewrite of an agent-drafted comment on a contributor's pull request. Lean **no**: it would out the contributor whose PR it was, and the point lands just as well with the anonymized version above. Keep it nameless.
 
+<!-- AGENT-DRAFT 2026-07-12 (BR to revoice / approve): the ape <-> anthro asymmetry, using the laughter callback
+from the Opening as the cool example (it is a live instance of the causal arrow). Blog-voice; em-dashes kept out. -->
+
+### Aping and anthro-ing: two moves in opposite directions
+
+There is a second difference worth naming, and it may be the most interesting one, because its two sides point opposite ways and yet feed each other.
+
+Start with the agent. The thing it does better than anything before it is **ape** us. To ape is to imitate (my Swedish ear hears *efterapa*): trained on oceans of human writing, it mimics the shape of how we talk, joke, hedge, explain. When it catches my joke and hands it back, that is aping, and it is very good at it.
+
+My move, as the human, goes the other way. I **anthro** the agent: I project human-ness onto it, I catch myself expecting it to feel what it cannot feel. (Yes, "anthro" is my own lazy clip of "anthropomorphize", a word too long to type twice without losing the will to live.)
+
+Now the twist that makes this more than a tidy mirror: the two moves are **linked, and one drives the other**. The agent's aping is exactly what lures me into anthro-ing it. Earlier in this post I mentioned the joke it caught but did not laugh at, and how for a second I wished it would laugh with me. That wish is the anthro pull, and the reason I felt it is that the agent had just aped the shape of getting-the-joke so well. Good imitation invites the projection: the better it apes, the harder I anthro.
+
+So this is not a fixed quirk, it is a moving one. As the models get better at aping us, the pull to anthro them gets stronger, not weaker. My projecting is not a silly mistake, it is a reasonable response to a genuinely good imitation. And there is a quiet warning folded in: the more convincingly a thing imitates a person, the more trust we hand it without noticing. That is worth saying out loud, which is much of what this study is for.
+
+One last thing, about how this idea even arrived. I did not reason it out at a desk. It fell out of a running back-and-forth with the agent, the human-agent ballgame this whole project is about, off the back of me grumbling that a word was annoying to type. I do not think I would ever have landed on it alone. That is the escalation this study keeps pointing at, caught in the act: not the agent thinking for me, not me thinking without it, but something neither of us reaches on our own.
+
+And is it the *actual asymmetry* between us that made this possible? I think it may very well be. It was not that we are the same and simply doubled up; it is that we are different, and the difference is what struck the spark. Which is the note I want to end on: the asymmetry between a human and an agent is not only a set of gaps to manage. I think it has some real upsides for our joint productive work.
+
+<!-- TODO (BR): the closing sentence "the asymmetry ... has some real upsides for our joint productive work" is BR's
+candidate LAST sentence of the whole post; place it as the final line once the "What did we learn?" conclusions are
+written (and only if the mined data actually bears the upside claim out - keep it echt). -->
+
+
+
 ## What did we learn? (our validated conclusions)
 
 ## Further reading
