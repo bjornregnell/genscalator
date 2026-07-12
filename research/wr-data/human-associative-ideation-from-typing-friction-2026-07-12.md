@@ -35,3 +35,13 @@ all blend into cool or not so cool ideas."
 
 **Links:** sibling [[mutual-non-offense-and-anthropomorphizing-typing-tax-2026-07-12]]; the "to ape" glossary entry
 (`docs/foundations.md`); blog 021 (the asymmetry); blog 004 (UX friction as cost - and here, as spark).
+
+## BR verbatim (pinned - the escalation point, caught in the act)
+
+- "I don't think I'd ever come up with this without that human-agent ballgame."
+- "And is it the *actual asymmetry* between us that made this possible? I think it may very well be. And I think the
+  asymmetry has some real upsides to our joint productive work." (BR's candidate closing line for blog 021.)
+
+BR's read: the insight is a product of the joint ballgame, and it is the **asymmetry itself** (the difference, not
+sameness) that made it possible - RQ2 escalation observed live, plus the standing hypothesis that the human-agent
+difference has net **upsides** for the joint work (to be earned by the mined data, not asserted).
