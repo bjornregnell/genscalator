@@ -121,13 +121,18 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   research (WR) or the translation (AT). Today the site is a shallow placeholder that needs design love; the generator
   choice + deployment order are open (`blog/README.md` "Deployment"), and the blog `deployed`/`updated` status states
   exist to track what's live once SSG ships.
-- **to ape** (v.; shorthand for **anthropomorphize**) — to project human traits (feelings, intent, the capacity to
-  be offended) onto a non-human agent. A keystroke-cheap synonym coined 2026-07-12 because *anthropomorphize* is a
-  pain to type; the pun holds because *to ape* already means to imitate, and apes are almost-human — *"you're aping
-  human traits onto the agent."* Names a two-way error: assuming the agent **has** feelings (it does not), or
-  forgetting that the **human** does. Rooted in the **affective asymmetry** — the agent knows the *shape* of mirth or
-  offense but cannot feel it (see blog 021 and `research/wr-data/mutual-non-offense-and-anthropomorphizing-typing-tax-2026-07-12.md`). Swedish cognate: **att efterapa** (*efter* + *apa* = "ape after"), which carries the
-  same imitate-slavishly sense — part of why the pun lands naturally for a Swedish speaker.
+- **to ape** (v.) — the **agent's** move: to imitate human-ness (our language, our behaviour). An LLM is trained to
+  sound like us, so it apes us. Swedish cognate *att efterapa* (*efter* + *apa* = "ape after"), the same
+  imitate-slavishly sense.
+- **to anthro** (v.; clip of **anthropomorphize**) — the **human's** move: to project human traits (feelings,
+  intent, the capacity to be offended) onto the agent. Clipped short by BR 2026-07-12 because *anthropomorphize* is
+  a pain to type.
+- **the ape ⟷ anthro asymmetry** — the two moves are a **mirror pair with a causal arrow inside it**: the agent apes
+  *upward* toward human, the human anthros *downward* onto the machine, and the agent's aping is exactly what
+  **lures** the human into anthro-ing it — the better it imitates, the harder we project. The pull **strengthens as
+  models improve**, so the illusion deepens with each capability step (a quiet safety angle: better aping = stronger
+  misplaced trust). Anthro-ing is thus not a naive error but a rational read of a genuinely good imitation. See blog
+  021 and `research/wr-data/human-associative-ideation-from-typing-friction-2026-07-12.md`.
 ### Channel bandwidth and confirmation fatigue
 - **Confirmation fatigue (CF)** — degradation of the human's review quality/willingness from too many
   approval prompts; ends in rubber-stamping. A direct BHH enabler.
