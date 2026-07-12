@@ -374,6 +374,10 @@ example of expressing already-built work as reqT-lang requirements for Agentic R
 * Goal: completeSuperHarness helps Goal: jointHumanAgentProductivity
 * Goal: completeSuperHarness helps Goal: safeGeneration
 
+* Goal: noCacophony has
+  * Gist: humans don't want the bings to become concentration-hurting noise; the audio channel stays tailorable and quiet by default so it aids focus rather than wrecking it.
+* Goal: noCacophony helps Goal: jointHumanAgentProductivity
+
 * Feature: superHarnessDashboard has
   * Gist: a live localhost dashboard (served by `tt serv`, loopback-only) of agent-side introspection metrics and human-side behavioral proxies — a shared mirror for joint rot-vigilance, NOT surveillance.
   * Spec: STUB. DATA-SOVEREIGNTY — no data leaves the user's control (all local / on-box); the "not psychiatrists" disclaimer is VISIBLE in the human-psyche visualization; human metrics are member-checked proxies, never clinical diagnoses. Keep the data out of BHH hands.

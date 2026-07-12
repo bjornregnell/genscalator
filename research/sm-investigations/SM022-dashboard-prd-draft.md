@@ -84,6 +84,7 @@ for rendering).
   * Spec: fed by the same SM016 tap as the dashboard; maps agent-event classes to distinct cues (needs-human-decision, done or idle-waiting, error or blocked); the needs-decision cue is a gentle chime (a nice bing), never jarring; per-event enable, volume, and mute live in human-owned settings; OFF by default; played locally, no audio telemetry.
 * Feature: agentSoundCues helps Goal: completeSuperHarness
 * Feature: agentSoundCues helps Goal: jointHumanAgentProductivity
+* Feature: agentSoundCues helps Goal: noCacophony
 * Feature: agentSoundCues requires Feature: harnessTap
 * Feature: agentSoundCues relatesTo Feature: superHarnessDashboard
 
@@ -93,6 +94,7 @@ for rendering).
 * Feature: soundCueControls implements Feature: superHarnessDashboard
 * Feature: soundCueControls relatesTo Feature: agentSoundCues
 * Feature: soundCueControls helps Goal: jointHumanAgentProductivity
+* Feature: soundCueControls helps Goal: noCacophony
 
 * Target: dashboardDataEgressBytes verifies Goal: dashboardDataSovereignty
 * Target: proxyMemberCheckRate verifies Goal: sharedRotVigilanceMirror
