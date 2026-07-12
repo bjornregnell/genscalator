@@ -35,3 +35,18 @@ either alone. Two external signals from the human beat my zero internal readout.
 the agent could not feel and is asking the agent to adjudicate its own rot - which, per the post-hoc thesis, the
 agent can only guess at. So the reliable rot-detector in the dyad is the HUMAN (family E/G: the agent cannot read
 its own rot; the human catches it). This episode IS that asymmetry working - and it is the signal to compact.
+
+## Causal breakdown (why the slip happened - a stack, not one cause; BR asked "only the missing piece?")
+1. **The missing piece (enabling cause).** "context dance" was undefined in foundations, so there was no
+   ground-truth mapping to look up, and "compact dance" was the nearest defined neighbour - which shaped the
+   CONTENT of the wrong guess. Had it been defined, this particular slip would likely not have happened.
+2. **Not-checking-and-confirming (the proximate slip).** The right move on an undefined term is: check the glossary,
+   find nothing, notice the ambiguity, confirm - not assume. The agent skipped straight to assume. A complete
+   foundations would have MASKED this instance, but the underlying habit (guess-don't-check on ambiguity) would
+   remain for the next undefined thing.
+3. **Rot / high-fill (possible, unverifiable).** Rot plausibly lowered the check-threshold ("the loud groove drowns
+   the careful check" is a high-fill symptom), but the agent cannot privileged-readout this (the post-hoc thesis).
+
+**Honest verdict:** gap (created the ambiguity) + not-checking (the slip) + possibly rot (lowered the threshold).
+The generous "it was only the missing piece" reading is partly right but not fully echt: fixing the substrate
+reduces future slips of this shape, yet does not replace the check-not-guess lesson.
