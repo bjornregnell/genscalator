@@ -350,6 +350,12 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   - **(3) compact** *(human)* — trigger the compaction.
   - **(4) paste** *(human)* — paste the prompt, re-seeding the fresh context from the durable state, not the
     lossy summary.
+  - **(5) measure** *(agent, optional)* — the agent is **paused** during compaction and has **no felt time**
+    ([[agent-lacks-felt-time-rebind-at-boundaries]]), so the only way to know how long a compact actually takes
+    is **on-disk stamps that survive it**: `tt chrono now` appended to a persistent record
+    (`muntabot-synch/tmp/compact-chrono-stamps.md`) **immediately before** the human triggers (step 3), and again
+    **the instant the fresh context resumes** (after step 4); elapsed = the compaction wallclock. The tmp file
+    persists across the warp; the agent's own memory of the first stamp does not. (BR 2026-07-12.)
 
   Initiated when fill nears the **smart-zone ceiling (Z)** (read it off a `token-usage`-style instrument),
   *before* **context rot** sets in. **Safe-recovery invariant:** the truth lives in **committed files +
