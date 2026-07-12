@@ -18,7 +18,7 @@ When we say *escalation* we mean stepping the joint capability up a level, the w
 
 Big research questions are often better broken down into smaller ones. We start with the simplest, RQ0, and then RQ1 and RQ2 below: RQ0 asks whether there is anything here to study at all; RQ1 describes; RQ2 asks whether it pays off:
 
-* **RQ0** *(tentative)***:** What concrete evidence is there for asymmetry in human-agent conversation? A feasibility question: before the bigger two, we sweep the data to see whether the signal is even there and dense enough to be worth the climb.
+* **RQ0:** What concrete evidence is there for asymmetry in human-agent conversation? A feasibility question: before the bigger two, we sweep the data to see whether the signal is even there and dense enough to be worth the climb.
 
 * **RQ1:** What are the differences and the similarities between the human and the agent in how they perceive, think, and work?
 
@@ -26,7 +26,7 @@ Big research questions are often better broken down into smaller ones. We start 
 
 RQ1 and RQ2 will guide us when selecting a methodology to pursue them. 
 
-## How did we do it? (the methodology part)
+## How will we do it? (the methodology part)
 
 The main vehicle for our study of the above MRQ is a large body of *workflow research data*: notes we kept, as we went, about how we actually worked together and where it went well or badly. 
 
