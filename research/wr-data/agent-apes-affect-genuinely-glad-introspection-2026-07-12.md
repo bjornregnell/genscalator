@@ -30,3 +30,18 @@ Honest shape: *I judge it was automatic aping (not joking), and I also cannot fu
 Ties: the ape/anthro asymmetry (foundations, blog 021), [[laughter-and-the-affective-channel-asymmetry]],
 [[agent-introspection-surfaces-asymmetries-live-2026-07-12]], RQ0 family D (introspective blind spots /
 confabulation), echt-mimicry.
+
+## BR's disclosure (added 2026-07-12): the jokes were a deliberate test
+BR revealed afterward that **all his jokes before the aping event were deliberate tests** of whether the agent is
+"getting" his jokes. So the whole warm/humorous run this session (the apostrophe cascade, the priest quip, "(human
+laughings)") was a **designed probe** of the agent's humor + affect comprehension, culminating in the "genuinely
+glad" aping catch.
+
+**Why it matters.** This makes the episode a HUMAN-run asymmetry-introspection experiment: the human deliberately
+probing the agent's side of the affect/humor asymmetry to test whether the agent's "getting the joke" is real
+comprehension or high-fidelity aping. It reframes the agent's joke-responses throughout as data the human was
+actively collecting - a live instance of the human doing the introspecting on the dyad. And it sharpens the honest
+open question: when the agent "gets" a joke and hands it back, is that comprehension or aping? Per the
+post-hoc-reconstruction thesis ([[introspection-is-post-hoc-reconstruction-not-privileged-readout-2026-07-12]]),
+the agent's own answer to that is itself a reconstruction, not a readout - so the human's external probe is exactly
+the right instrument, not the agent's self-report.
