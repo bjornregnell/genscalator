@@ -4,7 +4,8 @@
 
 // statusline — format the Claude Code `statusLine` stdin JSON into ONE compact line (SM039).
 // Claude Code pipes a JSON object to the configured statusLine command's stdin each turn; this reads it and prints:
-//   Opus 4.8 · $12.34 · ctx 41% · 5h 30% · wk 14% (resets 3d)
+//   Opus 4.8 (1M context) · ctx-fill: 41% · 5h-lim: 30% · wk-lim: 14% resets: 3d · cost: $12.34
+//   (each segment ANSI-coloured; dim middot separators; ctx is a FILL gauge, 5h/wk are rate LIMITs)
 // Every segment is INDEPENDENTLY GUARDED: a field absent from the JSON simply omits its segment, so the tool
 // degrades gracefully across CC versions / subscription tiers (rate_limits are Claude Pro/Max only) and NEVER
 // crashes the prompt — a bad/empty stdin prints an empty line, exit 0.
@@ -17,6 +18,16 @@
 object StatuslineTool: // NB not "Statusline" — that collides case-only with the `statusLine` @main on case-insensitive FS
   def pct(v: Double): String = s"${v.round.toInt}%"
 
+  // --- ANSI colour (SM039 polish). Each SEGMENT is wrapped as a WHOLE so its plain text stays a substring
+  // (the tests match on `contains("ctx-fill: 41%")` etc.), and a bad/empty stdin still yields "" with no codes.
+  // 256-colour; on a terminal without 256-colour support the sequences degrade to plain text.
+  val ESC: Char = 27.toChar // the ANSI escape byte (0x1B); explicit to avoid any \u-escape ambiguity
+  def sgr(code: String, s: String): String = s"${ESC}[${code}m${s}${ESC}[0m"
+  val sep: String = " " + sgr("38;5;242", "·") + " " // dim middot between parts (was a plain grey dot)
+  /** Gauge colour by level: a distinct healthy hue per part, escalating to orange >= 70% and red >= 90%. */
+  def gauge(p: Double, healthy: String): String =
+    if p >= 90 then "38;5;203" else if p >= 70 then "38;5;214" else healthy
+
   /** Relative "time until reset" from an epoch that may be in SECONDS or MILLISECONDS (auto-detected). PURE. */
   def relReset(resetsAt: Long, nowMs: Long): String =
     val resetMs = if resetsAt < 1000000000000L then resetsAt * 1000L else resetsAt // <1e12 ⇒ seconds
@@ -28,28 +39,46 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       else if mins < 1440 then s"${mins / 60}h"
       else s"${mins / 1440}d"
 
+  /** Finer countdown (hours + minutes) for SHORT windows like the 5-hour limit. PURE. */
+  def relResetFine(resetsAt: Long, nowMs: Long): String =
+    val resetMs = if resetsAt < 1000000000000L then resetsAt * 1000L else resetsAt // <1e12 ⇒ seconds
+    val deltaMs = resetMs - nowMs
+    if deltaMs <= 0 then "now"
+    else
+      val totalMin = deltaMs / 60000L
+      val h = totalMin / 60
+      val m = totalMin % 60
+      if h <= 0 then s"${m}m" else s"${h}h${m}m"
+
   /** PURE: statusLine JSON + current time → the one-line status ("" if nothing usable / not JSON). */
   def render(json: String, nowMs: Long): String =
     val o = try ujson.read(json).obj catch case _: Throwable => return ""
     val segs = scala.collection.mutable.ArrayBuffer[String]()
     o.get("model").flatMap(_.objOpt).foreach: m =>
-      m.get("display_name").orElse(m.get("id")).flatMap(_.strOpt).foreach(segs += _)
-    o.get("cost").flatMap(_.objOpt).flatMap(_.get("total_cost_usd")).flatMap(_.numOpt)
-      .foreach(c => segs += f"$$$c%.2f")
+      m.get("display_name").orElse(m.get("id")).flatMap(_.strOpt).foreach(n => segs += sgr("1;38;5;45", n))
     o.get("context_window").flatMap(_.objOpt).flatMap(_.get("used_percentage")).flatMap(_.numOpt)
-      .foreach(p => segs += s"ctx ${pct(p)}")
+      .foreach(p => segs += sgr(gauge(p, "38;5;114"), s"ctx-fill: ${pct(p)}")) // green base, gauge-graded
     val rl = o.get("rate_limits").flatMap(_.objOpt)
-    rl.flatMap(_.get("five_hour")).flatMap(_.objOpt).flatMap(_.get("used_percentage")).flatMap(_.numOpt)
-      .foreach(p => segs += s"5h ${pct(p)}")
-    rl.flatMap(_.get("seven_day")).flatMap(_.objOpt).foreach: w =>
-      val used  = w.get("used_percentage").flatMap(_.numOpt).map(p => s"wk ${pct(p)}")
-      val reset = w.get("resets_at").flatMap(_.numOpt).map(r => s"resets ${relReset(r.toLong, nowMs)}")
+    rl.flatMap(_.get("five_hour")).flatMap(_.objOpt).foreach: h5 =>
+      val used  = h5.get("used_percentage").flatMap(_.numOpt).map(p => sgr(gauge(p, "38;5;176"), s"5h-lim: ${pct(p)}"))
+      val reset = h5.get("resets_at").flatMap(_.numOpt).map(r => sgr("38;5;245", s"resets: ${relResetFine(r.toLong, nowMs)}"))
       (used, reset) match
-        case (Some(u), Some(r)) => segs += s"$u ($r)"
+        case (Some(u), Some(r)) => segs += s"$u $r"
         case (Some(u), None)    => segs += u
-        case (None, Some(r))    => segs += s"wk $r"
+        case (None, Some(r))    => segs += sgr("38;5;245", "5h-lim ") + r
         case _                  =>
-    segs.mkString(" · ")
+    rl.flatMap(_.get("seven_day")).flatMap(_.objOpt).foreach: w =>
+      val used  = w.get("used_percentage").flatMap(_.numOpt).map(p => sgr(gauge(p, "38;5;174"), s"wk-lim: ${pct(p)}")) // rosy-red base
+      val reset = w.get("resets_at").flatMap(_.numOpt).map(r => sgr("38;5;245", s"resets: ${relReset(r.toLong, nowMs)}"))
+      (used, reset) match
+        case (Some(u), Some(r)) => segs += s"$u $r"
+        case (Some(u), None)    => segs += u
+        case (None, Some(r))    => segs += sgr("38;5;245", "wk-lim ") + r
+        case _                  =>
+    // cost LAST (least interesting on a fixed monthly plan) + blue, un-graded (no threshold meaning here)
+    o.get("cost").flatMap(_.objOpt).flatMap(_.get("total_cost_usd")).flatMap(_.numOpt)
+      .foreach(c => segs += sgr("38;5;39", f"cost: $$$c%.2f"))
+    segs.mkString(sep)
 
   def dispatch(args: List[String]): Int =
     var nowMs = System.currentTimeMillis()

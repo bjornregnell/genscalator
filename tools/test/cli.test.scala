@@ -754,11 +754,11 @@ class CliSuite extends munit.FunSuite:
     val (code, out, _) = run("statusline", json, "--now-ms", now.toString)
     assertEquals(code, 0)
     assert(clue(out).contains("Opus 4.8"))
-    assert(clue(out).contains("$12.34"))
-    assert(clue(out).contains("ctx 41%"))
-    assert(clue(out).contains("5h 30%"))
-    assert(clue(out).contains("wk 14%"))
-    assert(clue(out).contains("resets 3d"))
+    assert(clue(out).contains("cost: $12.34"))
+    assert(clue(out).contains("ctx-fill: 41%"))
+    assert(clue(out).contains("5h-lim: 30%"))
+    assert(clue(out).contains("wk-lim: 14%"))
+    assert(clue(out).contains("resets: 3d"))
   }
   test("statusline: missing rate_limits degrades gracefully (shows what's present, no crash)") {
     val (code, out, _) = run("statusline", """{"model":{"id":"haiku"},"cost":{"total_cost_usd":0.5}}""")
@@ -777,8 +777,16 @@ class CliSuite extends munit.FunSuite:
     val resetsMs = now + 2 * 86400_000L // 2 days later, already in MS (> 1e12)
     val json = s"""{"rate_limits":{"seven_day":{"used_percentage":50,"resets_at":$resetsMs}}}"""
     val (_, out, _) = run("statusline", json, "--now-ms", now.toString)
-    assert(clue(out).contains("wk 50%"))
-    assert(clue(out).contains("resets 2d"))
+    assert(clue(out).contains("wk-lim: 50%"))
+    assert(clue(out).contains("resets: 2d"))
+  }
+  test("statusline: five_hour resets_at renders a fine h/m countdown") {
+    val now = 1_000_000_000_000L
+    val resetSec = now / 1000L + (2 * 3600 + 34 * 60) // 2h34m later, in SECONDS
+    val json = s"""{"rate_limits":{"five_hour":{"used_percentage":68,"resets_at":$resetSec}}}"""
+    val (_, out, _) = run("statusline", json, "--now-ms", now.toString)
+    assert(clue(out).contains("5h-lim: 68%"))
+    assert(clue(out).contains("resets: 2h34m"))
   }
 
   // --- harden (Layer-1 deterministic secret scanner; SM042) ---
