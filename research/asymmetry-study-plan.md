@@ -12,6 +12,11 @@ coding study over our existing workflow-research (WR) corpus. It defines the des
 selection, a **pre-hoc coding scheme**, the coding procedure, the validity treatment, and the
 human-audit. It does **not** do any coding yet.
 
+**Writing stance (BR 2026-07-12):** the *study* stays methodologically honest, but the *account* (blog 021)
+is **accessible, not academic** - we drop the formal case-study-protocol / checklist scaffolding and the
+esoteric validity vocabulary, and speak plainly to a developer reader, while staying true to the underlying
+rigor. Rigor underneath, plain words on top.
+
 ## 1. Research design (CSR framing)
 
 - **Type:** a single-case, longitudinal, **action-research** case study. The researchers are
@@ -75,7 +80,9 @@ inventory only, no coding.
 - **C. Positive-effect evidence** (bears on RQ2). Subcodes: *whose* introspection (human / agent /
   joint) x *what changed* (behaviour / tooling / substrate / decision) x *outcome* (software quality /
   super-substrate quality / speed / trust).
-- **D. Negative / null.** Introspection that did not help, or misfired. Required, for honesty.
+- **D. Negative / null.** Introspection that did NOT help, misfired, or made things worse. **Kept and
+  weighted equally** - it is the guard against confirmation bias: a study that only hunts for wins will always
+  find them, so the RQ2 benefit claim is credible only if we also count the misses.
 
 **Per-specimen metadata (coded alongside):** date; who flagged it (human / agent); work-product type
 (**software** vs **persistent super-substrate**); directionality (who introspected about whom); source
@@ -107,17 +114,24 @@ dated and justified (constant comparison, audit trail).
 
 ## 6. Human-audit / member-check (a real check, not a rubber-stamp)
 
-- BR independently codes a **random sample** (proposal: ~15-20% of the census, or a fixed N ~ 20-30
-  **[CHECK preferred size]**) against the frozen scheme, **blind** to the agent's codes.
-- Compute a simple **percent-agreement per category** (and note *where* and *why* it diverges). We are
-  not claiming a formal kappa unless you want one **[CHECK]**.
+- BR independently codes a **random 20% sample** of the census against the frozen scheme, **blind** to the
+  agent's codes, with a small **floor** (about a dozen specimens) so a small corpus still gets a real check
+  rather than two items. (The exact count is fixed after the manifest pass counts the corpus.)
+- Compute a plain **percent-agreement per category**, and - more telling - look at *where* and *why* we
+  diverge. We keep it plain (percent agreement), not a formal statistic, per the accessible stance.
 - Divergences resolved by discussion; a category that will not hold up to a human read is revised or
   dropped.
 - **Report the agreement number in blog 021** - it is what makes RQ2 credible.
 - BR also **member-checks the final findings** (ground truth on his own interiority; the anthropomorphism
   caution - the agent never asserts the human's inner state as known).
 
-## 7. Validity (CSR's four types) + reflexivity
+## 7. "Can we trust this?" - validity kept honest, spoken plainly
+
+**Stance (BR 2026-07-12):** the four standard validity categories in the table below - *construct, internal,
+external, reliability* - are too esoteric for a developer audience, so we do NOT use those names in the public
+account. The blog keeps the plain heading **"Can we trust this?"** and everyday words. But we keep the four
+categories as a **private completeness checklist** whenever we review that account, so we never quietly drop a
+real threat. The table is that internal checklist; the blog is its plain-language translation.
 
 | type | threat here | mitigation |
 |------|-------------|------------|
@@ -132,17 +146,18 @@ dated and justified (constant comparison, audit trail).
 
 ## 8. Artifacts & where they live
 
-- Proposed home: a new `research/asymmetry/` dir (manifest, frozen scheme, append-only coding log,
-  emergent-codes list, analysis notes). **[CHECK]** or fold under an `RT` number if you prefer.
+- Home (**BR approved**): a new **`research/asymmetry/`** dir (manifest, frozen scheme, append-only coding
+  log, emergent-codes list, analysis notes).
 - Optionally a `research/NNN.md` study file with a running **Study log**.
 
-## 9. Open questions for BR
+## 9. Decisions (resolved with BR, 2026-07-12)
 
-1. Human-audit sample size (fixed N vs percentage), and percent-agreement vs a formal kappa.
-2. Home for the artifacts: a new `research/asymmetry/` dir, or an `RT` number.
-3. Confirm negative/null (category D) is weighted equally with positive evidence (I recommend yes).
-4. Any CSR-specific structure you want mirrored (e.g. the case-study protocol / a checklist).
-5. Confirm the four-validity framing and the CSR vocabulary match the book (you are ground truth).
+1. **Human-audit:** a random **20%** of the census, blind, floor about a dozen specimens; plain percent-agreement.
+2. **Artifact home:** a new **`research/asymmetry/`** dir.
+3. **Category D (negative/null):** kept and **weighted equally** (the confirmation-bias guard).
+4. **Form:** **accessible, not academic** - no formal case-study protocol / checklist scaffolding.
+5. **Validity vocabulary:** the four CSR categories are an **internal checklist only**; the public account uses
+   the plain **"Can we trust this?"** framing and never names construct / internal / external / reliability.
 
 ## 10. Scope guard
 
