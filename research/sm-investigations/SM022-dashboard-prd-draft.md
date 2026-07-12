@@ -22,6 +22,9 @@ contextRotMeter`). This draft elaborates it **goal-level down** per SM022, addin
   gentle chime ("a nice bing") when an agent message needs a human decision. The visual dashboard and the
   audio cues are two surfacings of the same tap; distinct cues for distinct event classes, per-event and
   off by default, human-owned. (BR pin 2026-07-12.)
+- **easy live cue controls** - `soundCueControls`: the served dashboard carries one-click on/off flips (and
+  mute-all) for each sound cue, so the human tailors the mix live and keeps the bings from becoming a cacophony -
+  no editing settings files. (BR pin 2026-07-12.)
 
 BR's echt guardrails are wired as relations, not prose: data-sovereignty is a Goal
 with a zero-egress Target; the "not psychiatrists" disclaimer is a Feature that
@@ -83,6 +86,13 @@ for rendering).
 * Feature: agentSoundCues helps Goal: jointHumanAgentProductivity
 * Feature: agentSoundCues requires Feature: harnessTap
 * Feature: agentSoundCues relatesTo Feature: superHarnessDashboard
+
+* Feature: soundCueControls has
+  * Gist: one-click on/off flips on the served dashboard for each sound cue (plus mute-all), so the human tailors the mix live and keeps the bings from becoming a cacophony.
+  * Spec: per-cue toggles rendered in the localhost dashboard (tt serv SM020, tt table gen html SM026), flippable without editing settings files; changes take effect immediately; the human owns the mix; off by default.
+* Feature: soundCueControls implements Feature: superHarnessDashboard
+* Feature: soundCueControls relatesTo Feature: agentSoundCues
+* Feature: soundCueControls helps Goal: jointHumanAgentProductivity
 
 * Target: dashboardDataEgressBytes verifies Goal: dashboardDataSovereignty
 * Target: proxyMemberCheckRate verifies Goal: sharedRotVigilanceMirror
