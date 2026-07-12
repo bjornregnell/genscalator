@@ -4,11 +4,11 @@
 
 ## Opening
 
-It is important for both of us, for the sake of our joint work's productivity, to think about what is different and similar about us = human + agent. For example, when I write "productivity" of joint work, this is perfectly in line with the agent's harness so that, even if the agent can't *feel* productive, it knows very well how to set goals and how to try to get there fast. But when I think about productivity of me as a human I know that I am most productive when I feel joy and flow in my work. The agent knows about this nature of humans. But it can never feel it. (Or atleast not today's agents...)
+It is important for both of us, for the sake of our joint work's productivity, to think about what is different and similar about us = human + agent. For example, when I write "productivity" of joint work, this is perfectly in line with the agent's harness so that, even if the agent can't *feel* productive, it knows very well how to set goals and how to try to get there fast. But when I think about productivity of me as a human I know that I am most productive when I feel joy and flow in my work. The agent knows about this nature of humans. But it can never feel it. (Or at least not today's agents...)
 
 But why is it important that both the human and the agent thinks about this and share their understanding? In my work with genscalator it has become obvious that our joint understanding of each other's psyche indeed has helped introspection on both sides on how to get a good job done.
 
-Let me put a name to it. **Asymmetry introspection** is when the human and the agent each try to understand how the other one works, notice where they are alike and where they differ, and then use that understanding to work better together. This study puts one claim to the test: that this kind of introspection genuinely helps our joint work. The evidence for it comes from a genscalator study reported here in this post, with this main **reserach objective** formulated as our *Main Reserach Question* (MRQ):
+Let me put a name to it. **Asymmetry introspection** is when the human and the agent each try to understand how the other one works, notice where they are alike and where they differ, and then use that understanding to work better together. This study puts one claim to the test: that this kind of introspection genuinely helps our joint work. The evidence for it comes from a genscalator study reported here in this post, with this main **research objective** formulated as our *Main Research Question* (MRQ):
 
 > **What can mutual, joint human-agent knowledge and introspection on their differences and similarities bring to the *escalation* of their joint software engineering and code generation?**
 
@@ -20,13 +20,13 @@ Big research questions are often better broken down into smaller ones, like we d
 
 * **RQ2:** Does mutual introspection on those differences and similarities improve the joint work, both the software we build and the persistent super-substrate we keep?
 
-RQ1 and RQ2 will guide us when selecting a methodology to persue them. 
+RQ1 and RQ2 will guide us when selecting a methodology to pursue them. 
 
 ## How did we do it? (the methodology part)
 
 The main vehicle for our study of the above MRQ is a large body of *workflow research data*: notes we kept, as we went, about how we actually worked together and where it went well or badly. 
 
-We, that is Prof. Björn Regnell (aka "human") and Anthropic's Claude Code with underlying language model Claude Opus 4.8 (aka "agent"), have gathered and bookkept all our research data in one big append-directory. The first step, and one that would have been big a mountain to climb for a human, is the slow and tedious work of going through it all to find everything relevant to
+We, that is Prof. Björn Regnell (aka "human") and Anthropic's Claude Code with underlying language model Claude Opus 4.8 (aka "agent"), have gathered and bookkept all our research data in one big append-directory. The first step, and one that would have been a big mountain to climb for a human, is the slow and tedious work of going through it all to find everything relevant to
 
   * differences in human-agent psyche
 
@@ -40,7 +40,7 @@ Our work products are most often software or persistent super-substrate. Softwar
 
 * TODO: give an account of initial categories pre data mining and that we allow categories to emerge during the coding process
 
-There is one thing about this method we want to be open about from the start. The agent is not a neutral outsider looking in. It is one of the two parties in the very relationship we are studying, and it is also the one that mines the data and codes it. That cuts both ways. It is the reason the mountain can be climbed at all: a human would never (well... a human without very much spare time or a fleed of PhD students, would probably "never") get through this much material by hand. It is also a reason to be careful before trusting what comes back. The next section faces that squarely.
+There is one thing about this method we want to be open about from the start. The agent is not a neutral outsider looking in. It is one of the two parties in the very relationship we are studying, and it is also the one that mines the data and codes it. That cuts both ways. It is the reason the mountain can be climbed at all: a human would never (well... a human without very much spare time or a fleet of PhD students would probably "never") get through this much material by hand. It is also a reason to be careful before trusting what comes back. The next section faces that squarely.
 
 ## Can we trust this?
 
@@ -54,7 +54,7 @@ We do a few things to stay honest:
 
 None of this makes the study bullet-proof. It is one case, our case. But an honest single case, with its raw data open and its coding checked by a human, is worth more than a tidy story you cannot inspect.
 
-(By the way, this kind of research is formally known as [*action research*](todo-wikipedia-link) by the academic software engineeirng research comunity.)
+This kind of study has a name in software engineering research: [*action research*](https://en.wikipedia.org/wiki/Action_research), where the researcher takes part in the very thing being studied instead of watching from the outside. Seen that way, the agent's double role stops being something to apologize for and becomes a recognized stance: in action research, being part of the work is the point, and being honest about it is the safeguard.
 
 And now: let smart agent go climb big mountain.
 
