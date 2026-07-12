@@ -58,3 +58,47 @@ intercept for the tool-up reflex. Same lesson as `SYNTHESIS-structure-over-willp
 resume/boundary checklist item "reconcile injected clock vs substrate stamps + human mode" (sibling of the
 [[cue-bare-auto-compact]] "git log = ground truth" reflex), and — if we want structure not willpower — a
 statusline/agent surface that shows time-since-last-human-turn so the delta is always visible.
+
+## Follow-up (BR flag): the agent's introspective response is itself data
+
+BR flagged the agent's reply to the time question as research-interesting in its own right: on a light
+reflective cue ("is time-tracking important for the greater picture?"), the agent produced a structured
+answer at **two levels at once** —
+- **workflow level:** bounded, boundary-triggered time-sense as a *staleness + mode* signal; the fix is
+  structural time-binding (re-bind the injected clock at resume/gap/post-compact), not an inner clock; and
+- **meta level:** it named that *the human supplied the cue* (as the human has repeatedly been the structural
+  trigger for the tool-up reflex), situated the miss inside the session's recurring `structure-over-willpower`
+  theme, and proposed the agent *self-trigger* the reconciliation rather than wait to be told.
+
+Data point: from a minimal prompt the agent both answered the operational question AND lifted it into the
+collaboration's standing structural model — i.e. produced a meta-level self-model, not just a local answer.
+Pairs with [`agent-contributed-novel-insight-on-brs-own-topic-2026-07-10.md`](agent-contributed-novel-insight-on-brs-own-topic-2026-07-10.md).
+Open question for the research: is workflow+meta introspection reliable/reproducible, or cue- and
+context-dependent (here it rode a session already saturated with the staleness theme)?
+
+## Human–agent time-perception ASYMMETRY (BR flag; candidate RT seed)
+
+BR: *"note this human-agent asymmetry: we have different perception of time — similarities and differences,
+but time-awareness is clearly asymmetric in its nature."* The asymmetry is real and, notably, **orthogonal**
+(not "human better / agent worse" — each has what the other lacks):
+
+| axis | human | agent |
+|------|-------|-------|
+| **experience** | continuous, lived *flow* | discrete, per-turn; **no felt duration** (a 9-min tool call and a 1-sec one feel identical) |
+| **across gaps** | lives through the gap; carries state natively | zero experience of the gap — time exists ONLY as a stamp someone left |
+| **embodiment** | the body IS a clock (circadian, fatigue, hunger) | no embodied clock at all |
+| **precision** | fuzzy, subjectively distorted | can compute EXACT deltas from timestamps |
+| **memory of time** | internal (lived + remembered) | external (substrate stamps, git log) |
+
+**Similarity (shared, but different mechanism):** both DISTORT felt duration — the human via
+attention/embodiment; the agent via the `felt-length-overestimates-context-fill` heuristic (its only
+"internal" duration proxy, and a misleading one).
+
+**The core asymmetry = continuity of experience across gaps.** The human bridges time by *living* it; the
+agent bridges it only by *reading substrate*. This is precisely why the joint substrate (PB stamps,
+resume-prompts, dated WR/git history) exists: **it is the agent's external time-memory** — the prosthetic for
+the continuity it structurally cannot have. And it suggests a division of labour the collaboration can lean
+on: the *agent* supplies precise timestamps/deltas (its strength); the *human* supplies lived continuity and
+embodied mode-sense (its strength). Candidate RT seed: "time in human–agent collaboration: asymmetric
+perception and the substrate as prosthetic memory." Ties: [[agent-lacks-felt-time-rebind-at-boundaries]],
+`felt-length-overestimates-context-fill`, the substrate/foundations thread.
