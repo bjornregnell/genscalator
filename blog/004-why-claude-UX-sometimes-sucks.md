@@ -20,6 +20,31 @@ losing a carefully-typed message to the double-post race; the irritation of not 
 the agent is mid-turn; watching the agent reach for raw bash for the Nth time. The human's lived friction is half the
 data, and the more relatable half.
 
+<!-- AGENT-DRAFT 2026-07-12 (BR to revoice / approve / place): a first attempt at the "mis-click" pain beat above,
+written in BR's voice, escalating UX-into-safety. Source: research/wr-data/accidental-tab-fires-suggested-trigger-word-2026-07-12.md -->
+
+### The tasty tab key (a small slip with a big shadow)
+
+Here is a tiny one that made me laugh, and then made me a little uneasy.
+
+I was typing to the agent, and the tool offered me one of those greyed-out autocomplete suggestions. It had slipped a
+*trigger* word into the suggestion, the kind of word that, if you send it, flips the whole session into a different
+mode. I did not want that word. But the tab key is *right there*, so tasty and so easy to press, and my finger pressed
+it before my brain caught up. Off it went. I had fired a word I never chose, suggested by the machine, accepted by a
+reflex.
+
+No harm done. I laughed about it. The agent, being an agent, cannot laugh, but it caught the joke and handed it back,
+which is its own funny thing. And we were only talking about a mode switch.
+
+Then the uneasy part. It is not a big deal for us. It would be a very big deal for humankind if, hypothetically, that
+same tasty tab had let the bombers go and nuked some folks. The slip is the same slip. Only the stakes change.
+
+That is the whole point, and it is why UX is not just about comfort. It is about *safety*. A consequential action
+sitting behind a single, frictionless keystroke is a disaster waiting for the wrong context. The fix is boring, and it
+is the same one a good agent already applies to itself: **the friction should match the stakes**. Anything you cannot
+easily undo should cost more than one tap, and it should cost even more when the thing you are tapping was put in front
+of you by a machine.
+
 **The high-level frame (BR — why these bugs hit disproportionately hard).** A human embarks on a big endeavour and
 pours in energy, feelings, hours, sleepless nights — to do things with AI that were *never possible before*. The
 stakes feel high and the work often feels irreproducible. So when a UX bug breaks the flow, it is not a minor
