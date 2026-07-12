@@ -7,7 +7,10 @@
 > not a neutral position. And I, BR, am a member of a class-action copyright settlement with Anthropic, a second
 > conflict to disclose. Read the argument on its merits and weigh the source.
 
-*(STUB. Raw reasoning dumped by the agent; my authorial voice pass is pending.)*
+*(AGENT-DRAFT, reviewed 2026-07-12. The argument prose is already close to my register, so the agent did NOT
+speculatively rewrite it. **Not publish-ready:** the "bigger mythos" section rests on media claims I have not yet
+verified at source, and the web echt-check was deliberately left for me to do, not run unattended. BR final pass +
+the source check pending.)*
 
 ## The stunt: attribution-by-default
 
@@ -32,6 +35,11 @@ keeps the keys" principle, not modesty. I blog the AI involvement openly, in the
 open, like this. Transparency does not need a trailer that implies a co-authorship it cannot hold.
 
 ## The bigger mythos: when the model is literally named Mythos
+
+> ⚠️ **UNVERIFIED - do not publish this section until the sources are read.** The TIME piece, the Computer Sweden
+> column, and the Claude Mythos "too dangerous" positioning are, as of this draft, from search snippets only. Read
+> the actual sources, confirm the characterization (and that the Swedish column is straight, not ironic), and widen
+> the evidence to a pattern before any of this goes out. Web-checking is BR's own step (egress to vet).
 
 Here the marketing gets almost too on-the-nose. Anthropic's high-end model is called **Claude Mythos**[^mythos], and in
 2026 it arrived wrapped in exactly the narrative worth naming: too powerful to hand to the general public,
@@ -71,8 +79,10 @@ tells about itself; capital-M *Mythos* is a proper name, here Anthropic's model 
 model's name IS the mythos. See Wikipedia's disambiguation page: [Mythos
 (disambiguation)](https://en.wikipedia.org/wiki/Mythos_(disambiguation)).
 
-## TODO (BR revoice)
-- Revoice throughout in my register; check the tone is fair, not shrill; keep it short by relocating detail to links.
-- Do the media-reference echt check above BEFORE publishing the mythos section.
+## TODO (BR final pass)
+- The argument prose was already close to your register, so the agent left it alone rather than drift your voice on
+  a COI-sensitive post - **read it and confirm the tone is fair, not shrill**, and trim any detail to links.
+- **The blocker:** do the media echt-check for the mythos section (flagged above) BEFORE publishing it. This is
+  your step - it needs live web egress you vet, not an unattended run.
 - Decide whether the "detail that never slips" observation stays here or spins into its own companion post.
 - Keep the COI disclaimer on any published version.
