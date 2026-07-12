@@ -73,7 +73,7 @@ ahead of the full mining pass - the "can't offend each other" difference. Blog-v
 
 ### A difference that pays off: the agent has no ego
 
-Working closely with another person has a hidden cost we rarely say out loud: honest criticism can sting. So we soften it, we hedge, we wait for a better moment, and sometimes we just let a weak thing stand because saying so is not worth the friction. That tax is real, and it quietly slows good work down.
+Working closely with another person has a hidden cost that is rarely said out loud: honest criticism can sting. So we soften it, we hedge, we wait for a better moment, and sometimes we just let a weak thing stand because saying so is not worth the friction. That tax is real, and it quietly slows good work down.
 
 With the agent, one side of that tax is simply gone. It has no ego to bruise. It cannot be offended. I can take a draft it worked on, cut it to pieces, and tell it plainly that it missed the mark, and there is no wince on either side: none from the agent, because there is no one in there to hurt, and none from me, because I have stopped reading its output as a person's feelings. So the bluntest, fastest kind of review becomes cheap. "This is bloated, start over" costs nothing here, and it is not rudeness, it is just efficiency.
 
