@@ -308,13 +308,27 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   cue-less, relying on session context) and the agent applies them **live** to the file; the text co-emerges in the
   human's reading flow.
   - **(1) direct** *(human)* — throw an edit intent into the feed, in natural language, **without touching the file**.
-  - **(2) enact** *(agent)* — infer target + intent from context, edit the file live, commit at sensible units, and
-    stay quiet so the feed does not congest.
+  - **(2) enact** *(agent)* — infer target + intent from context, **do what the human means**, edit the file live,
+    commit at sensible units. **Stay quiet by default** (do not congest the feed): speak up ONLY on an explicit
+    `WDYT` / `OK?` cue, or to flag a genuine mistake or a drift from the human's goals — a real intervention, not
+    chatter. (BR refinement 2026-07-12.)
   - **Invariant: ONE writer.** The agent is the SOLE editor of the buffer; the human edits *indirectly, through the
     agent*. **Edit-buffer racing is forbidden** (two writers clobber the file); session-**feed** racing is tolerated
     and handled (the *we-are-racing* rules). If the human wants the pen, an explicit handoff. A deliberate inversion
     of *no-clobber* — the human cedes the buffer on purpose — and the DWIM dream (emacs / vi / Interlisp) made real
     because the agent understands intent. See [[live-edit-dance]], `research/wr-data/live-edit-dance-dwim-2026-07-12.md`. (BR 2026-07-12.)
+- **Session-limit dance** *(STUB, BR 2026-07-12)* — the practice of not hitting the **session usage cap** (the
+  rolling Max-plan window, hours long) unobserved. **Pre-caution = estimate it:** watch the session-window burn
+  (heavy bursts such as agent fan-outs spend fast), estimate the remaining session budget against the reset time,
+  and BEFORE the cap: throttle, checkpoint (commit + save state), or defer heavy compute sized to what is left.
+  Related to the **usage dance** and [[token-budget-modes]]. Origin: 2026-07-12 we hit the session cap mid-workflow,
+  unobserved (`research/wr-data/hit-session-limit-unobserved-2026-07-12.md`); the estimate-and-warn belongs in the
+  super-harness + `tt statusline` (SM022/SM039).
+- **Weekly-limit dance** *(STUB, BR 2026-07-12)* — the same for the **weekly usage limit** (resets weekly, e.g. Tue
+  9am). Longer horizon: **pre-caution = estimate** the remaining weekly headroom against days-to-reset and pace
+  spend across the week (do not burn it too fast early; do not leave it unused near reset — use-it-or-lose-it).
+  Related to the **session-limit dance** and the **usage dance**; governed by [[token-budget-modes]] (spending /
+  normal / saving by weekly headroom + reset proximity).
 - **Compact dance** — the deliberate **hand-off ritual across a context compaction**, so crossing it costs
   little of what matters. Context compaction (summarizing the transcript to reclaim window space) is the main
   smart-zone hygiene move — but a naive compact *loses* live state (decisions just made, the exact next step,
