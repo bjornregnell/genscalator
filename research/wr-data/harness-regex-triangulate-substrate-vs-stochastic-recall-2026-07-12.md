@@ -42,3 +42,20 @@ multi-defined). BR's hypothesis is thereby STRENGTHENED, not nuanced away.
 **Meta (rot-consistent):** the agent stochastically over-claimed TWICE in a row ("regex can't help intent", then
 defended it) and BR caught both by pointing at the substrate. Reaching for the plausible over the checked,
 repeatedly, is a fair argument the agent is running hot / high-fill - a loud compact signal.
+
+## The real punchline: a DOUBLE FAILURE / dubbelfel (BR disclosed + named, appended)
+BR then disclosed honestly: he proposed regex-ing the foundations because he BELIEVED "context dance" was in there
+- and it was NOT. So the HUMAN also mis-remembered a substrate fact, exactly as the agent stochastically assumed
+the mapping. BR named it: **a "double failure" (dubbelfel, Swedish for a tennis double fault) - BOTH serves failed.**
+
+**This flips the episode from asymmetry into a SIMILARITY (RQ1).** Both parties confabulated a substrate fact from
+fallible recall; the DETERMINISTIC substrate-check (the regex) corrected BOTH. So "the human is the reliable
+verifier" is too generous: on substrate FACTS the human is also fallible, and the real arbiter is the SUBSTRATE,
+not either mind. This STRENGTHENS BR's hypothesis: regex-triangulation is the shared ground truth that beats BOTH
+the agent's stochastic recall AND the human's memory. (Parallel to the post-hoc-introspection thesis: both
+introspect post-hoc; here, both mis-recall substrate facts.)
+
+**And it scales with substrate size.** BR also noted "substrate is getting biiig" - the WR corpus grew a lot this
+session. The bigger the substrate, the LESS reliable either party's recall of what is in it, and the MORE the
+deterministic regex-check earns its keep. The dubbelfel is a small preview of the confabulation risk a large
+substrate poses to BOTH minds - and the argument for making substrate-grounding the default (a super-harness job).
