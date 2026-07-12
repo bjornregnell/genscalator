@@ -114,9 +114,10 @@ dated and justified (constant comparison, audit trail).
 
 ## 6. Human-audit / member-check (a real check, not a rubber-stamp)
 
-- BR independently codes a **random 20% sample** of the census against the frozen scheme, **blind** to the
-  agent's codes, with a small **floor** (about a dozen specimens) so a small corpus still gets a real check
-  rather than two items. (The exact count is fixed after the manifest pass counts the corpus.)
+- BR independently codes a **fixed, small sample - default N = 10 specimens** (sized so the blind pass fits in
+  **~30 minutes**, roughly 3 minutes each), drawn at random from the census, **blind** to the agent's codes.
+  An **absolute number, not a percentage**, so BR's effort stays bounded (~half an hour) whatever the corpus
+  size. It is a pragmatic sanity check on the agent's coding, not a formal reliability study.
 - Compute a plain **percent-agreement per category**, and - more telling - look at *where* and *why* we
   diverge. We keep it plain (percent agreement), not a formal statistic, per the accessible stance.
 - Divergences resolved by discussion; a category that will not hold up to a human read is revised or
@@ -152,7 +153,8 @@ real threat. The table is that internal checklist; the blog is its plain-languag
 
 ## 9. Decisions (resolved with BR, 2026-07-12)
 
-1. **Human-audit:** a random **20%** of the census, blind, floor about a dozen specimens; plain percent-agreement.
+1. **Human-audit:** a **fixed N = 10** specimens (absolute, not a percentage; ~30 min of blind coding, ~3 min
+   each), drawn at random, blind; plain percent-agreement. A pragmatic sanity check, not a formal study.
 2. **Artifact home:** a new **`research/asymmetry/`** dir.
 3. **Category D (negative/null):** kept and **weighted equally** (the confirmation-bias guard).
 4. **Form:** **accessible, not academic** - no formal case-study protocol / checklist scaffolding.
