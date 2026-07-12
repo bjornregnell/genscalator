@@ -33,11 +33,14 @@ rigor. Rigor underneath, plain words on top.
 - **CSR process steps** we follow: (1) design [this plan], (2) prepare for collection [scheme +
   manifest], (3) collect evidence [already largely done via WR logging], (4) analysis [code ->
   pattern -> abstraction], (5) report [blog 021]. **[CHECK]** step names vs the book.
-- **RQ ladder, RQ0 first (BR 2026-07-12):** a feasibility question sits *before* RQ1/RQ2.
-  *RQ0: what concrete evidence is there for asymmetry in human-agent conversation?* RQ0 is answered by a **light first sweep** over the
-  census that estimates how dense and concrete the asymmetry signal is, and **gates** whether the full RQ1/RQ2
-  coding is worth the climb. Its output is a **rate** over the census (asymmetry-evident vs symmetric-or-neutral),
-  not a highlight reel, so the confirmation-bias guard (category D) applies from step one.
+- **RQ ladder + serialization (BR 2026-07-12):** RQ0 sits *before* RQ1/RQ2 and is answered in **blog 021** by
+  **demonstrating existence**: the agent sweeps the WR corpus for concrete asymmetry instances and BR echt-verifies
+  each is genuinely in the data. No selection, coding, rate, or effect claim - **existence only**. That result
+  yields a **strategic-method conclusion**: RQ1 (descriptive - what the differences/similarities are) and RQ2
+  (harder, associational - whether introspection helps) are different research questions and get **two separate
+  (sub-)case studies**, each its own post with its own coding and honesty checks. Everything heavy below (the
+  pre-hoc scheme §3, the rate, the category-D guard, the human-audit §6) belongs to those RQ1/RQ2 sub-studies, NOT
+  to 021's existence pass.
 
 ## 2. Data: our WR-data dance *is* the collection; this study is *selection*
 
@@ -100,11 +103,10 @@ dated and justified (constant comparison, audit trail).
 ## 4. Coding procedure
 
 1. **Manifest pass** - enumerate the corpus, count and list specimens, no coding. Output: a manifest.
-1b. **RQ0 feasibility sweep** - a fast, low-resolution pass over the census tagging each specimen for
-   asymmetry evidence (yes / no / maybe + a rough type), NOT the full scheme. Output: the signal-density rate + a
-   **go / no-go / scope-down** decision before committing to full coding. May be **multi-sweep** (a second light
-   pass if the first is ambiguous). Cheap by design: it exists to avoid climbing the mountain if there is nothing
-   at the top.
+1b. **RQ0 existence sweep (for blog 021)** - the agent surfaces concrete asymmetry instances from the WR corpus;
+   BR echt-verifies each is genuinely in the data. Output: a demonstration of **existence** (real, verified
+   examples), NOT a rate, selection, or coding. Answers RQ0 and grounds the strategic conclusion to run RQ1 and RQ2
+   as two separate sub-case studies. (A signal-density rate, if ever wanted, belongs to the RQ1 sub-study, not here.)
 2. **Freeze v0 scheme** - only after BR approves this plan.
 3. **Code each specimen** -> (categories, subcodes, metadata, a one-line rationale, source anchor),
    written to an **append-only coding log** (`research/asymmetry/coding.tsv` or `.md`).

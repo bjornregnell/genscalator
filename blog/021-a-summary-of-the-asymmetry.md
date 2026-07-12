@@ -50,6 +50,8 @@ There is one thing about this method we want to be open about from the start. Th
 
 This study has a built-in problem, and we should name it rather than hide it. The data is our own. We gathered it ourselves, about ourselves, and the agent is the one that mines and codes it. So there is a real risk that we only find what we were hoping to find.
 
+A word on what this post is actually claiming, because it changes what you should demand of it. Here we are only showing that the asymmetry **exists**: that concrete instances of it are really there in our record. We are not claiming yet how common it is, or that it reliably helps; that is the work of the two studies to come. So the honesty test for this post is simple and strict: every example is a real, dated entry in our append-only workflow data, and I, the human, checked that each one is actually there and not something the agent over-read or invented. The coding scheme and the formal audit mentioned below are the machinery for those coming studies, not for this existence pass.
+
 We do a few things to stay honest:
 
 * **The raw data is append-only.** We do not go back and rewrite an old note to fit a new idea. If we change our minds, that is a new entry, not a quiet edit of the old one.
@@ -124,6 +126,13 @@ written (and only if the mined data actually bears the upside claim out - keep i
 
 
 ## What did we learn? (our validated conclusions)
+
+<!-- AGENT-DRAFT 2026-07-12 (BR to revoice / approve): the RQ0-existence conclusion + the strategic-method
+conclusion to run RQ1 and RQ2 as two separate sub-case studies. Blog-voice; em-dashes kept out. -->
+
+Only one thing so far, and we want to state it modestly: the asymmetry is not a hunch. It turns up, concretely and more than once, in the record of our own work. That is RQ0 answered, and only RQ0: there is something real here to study. We have shown existence, nothing more. No selection, no coding, no claim about how often it happens or how much it helps; those need the careful passes we have deliberately not done in this post.
+
+And answering RQ0 tells us how to do the rest. The two remaining questions are different animals, and lumping them together would blur both. RQ1, what exactly the differences and similarities are, is descriptive: it wants a careful, coded pass over the whole corpus. RQ2, whether knowing them actually improves the work, is a harder, causal-flavoured claim that has to count the misses as well as the wins. So the strategic conclusion of this post is itself about method: we will pursue RQ1 and RQ2 as two separate sub-case studies, each its own focused post, each with its own coding and its own honesty checks. This post only had to show the ground was worth digging. It is.
 
 ## Further reading
 
