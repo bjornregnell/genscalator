@@ -149,3 +149,28 @@ can happen"). Consequences:
 graceful entry (declare `afk`, agent switches to safe-solo / prep-only), the return cue (*"i am back"* → `rm
 afk`), and the bing-bing/return-handling. The afk-mode add/rm and the bing-bing are already the pieces; the
 dance would name and formalise the whole entry→away→return loop. Deferred until BR says more.
+
+## Temporal cross-check: the gs clock and the "Wrangling" spinner are CONSISTENT (2026-07-13)
+BR (empirical): during one long turn he relayed three (gs-clock, spinner-elapsed) pairs and asked whether the
+two time displays align. **They do.** Computing `gs-clock − spinner-elapsed` recovers a **constant turn-start**:
+
+| gs clock | Wrangling spinner | ⇒ turn start |
+|---|---|---|
+| 16:35:07 | 6m37s | 16:28:30 |
+| 16:36:29 | 8m17s | 16:28:12 |
+| 16:37:39 | 9m14s | 16:28:25 |
+
+All ~**16:28:2x**, agreeing within **~18 s**. **Conclusion (BR): "clock and Wrangling are consistent."** Two
+independent sources measuring the same real timeline from different anchors: the **gs clock** = absolute
+wall-time re-rendered on each event; the **spinner** = a *live* elapsed counter since turn start. The ~18 s
+spread is sampling/rounding (whole-second spinner vs HH:MM:SS clock, read a moment apart).
+
+**Refines the frozen-clock finding.** The gs clock is NOT frozen-forever: it **re-renders on every event**, and
+each human message IS an event, so during an active back-and-forth it tracks near-real-time at each exchange; it
+freezes ONLY in a *true* idle gap (no events between renders). So "frozen at idle" is precise — frozen at
+*idle*, not merely *between renders*. (Feeds **SM063**, the honest clock-mechanics doc.)
+
+**Why it matters.** (1) It **validates the instrument**: at each render the clock is honest (near-current), so
+the disinfo risk is confined to the idle gap, not active use. (2) Methodologically, the live spinner and the
+event-rendered clock **triangulate** the same timeline — two independent time sources agreeing is a mini
+reproducibility check on the harness's own timekeeping. Ties: [[joint-clock-two-party-progress-stalls-2026-07-13]].
