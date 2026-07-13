@@ -27,3 +27,18 @@ remaining work.
 Ties: [[cue-eta-idle]], [[propose-compact-dance-at-trigger]] (felt > actual), [[joint-rot-vigilance-recovery-kit]],
 [[cue-we-are-racing]] (the feed-overlap the queue came from), [[ignore-joke-noise-when-heads-down]] (the flow
 being protected).
+
+## Generalization: the human can't hold the growing SYSTEM either (2026-07-13)
+Same session, BR asked to "implement" `token-saving` — a mode that **already existed** — and earlier forgot the
+restart's purpose and asked whether SM059 was pinned when it already was. BR named it: *"agent gets aware that
+[the] human can't keep all of this in [his] head."* So the queue-overflow finding generalizes from the human's
+own recent MESSAGES to the whole **system state** (modes, tools, SMs, features, pins). Consequences:
+- The **agent (in context) + the substrate (PB, docs, memories)** are the human's memory; he increasingly asks
+  *"is X already there / did we do Y?"* — and the agent must **answer from the substrate, not guess** (it did:
+  "token-saving already exists", "that's SM059").
+- **Substrate-check before build:** when asked to build/pin something, first check whether it already exists, to
+  avoid duplicates.
+- This is the direct motivation for the **query-tools** pinned this session — `gs prd find` (SM065) and
+  `gs pinboard` (SM066) exist *because* the human can no longer navigate the blob by memory; he needs to ASK it.
+Ties: [[humans-md-agent-sole-writer]], SM065/SM066 (the query-tools this motivates), [[cue-bare-auto-compact]]
+(reconcile via substrate), the substrate-over-mechanism thesis.
