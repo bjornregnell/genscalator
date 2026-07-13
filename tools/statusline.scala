@@ -4,7 +4,7 @@
 
 // statusline — format the Claude Code `statusLine` stdin JSON into ONE compact line (SM039).
 // Claude Code pipes a JSON object to the configured statusLine command's stdin each turn; this reads it and prints:
-//   genscalator:  14:23:07  O4.8 (1M ctx)  ctx-fill: 41%  5h-lim: 30%  wk-lim: 14% resets: 3d  cost: $12.34
+//   genscalator:  14:23:07  O4.8 (1M ctx)  ctx-fill: 41%  5h-lim: 30%  wk-lim: 14% resets: 3d  cost: $12
 //   (leading HH:MM:SS wall clock; ANSI-coloured segments; two-space separators; ctx is a FILL gauge, 5h/wk LIMITs)
 // Every segment is INDEPENDENTLY GUARDED: a field absent from the JSON simply omits its segment, so the tool
 // degrades gracefully across CC versions / subscription tiers (rate_limits are Claude Pro/Max only) and NEVER
@@ -15,6 +15,11 @@
 //   model.display_name|model.id · cost.total_cost_usd · context_window.used_percentage ·
 //   rate_limits.five_hour.{used_percentage,resets_at} · rate_limits.seven_day.{used_percentage,resets_at}
 // Reads stdin by default; also accepts the JSON as a positional arg + `--now-ms N` (both for deterministic tests).
+// `--warn N` sets the usage-limit warn threshold (default 80): a 5h/wk limit at/above it turns its % AND its
+// reset countdown RED (the ambient slice of the SM022b usage-limit WARNING). `--ctx-warn N` sets the context-
+// fill dumb-zone threshold (default 30 = the smart-zone ceiling Z): ctx-fill reds at/above it and oranges at
+// the compact-dance trigger 0.8*Z. Configure in the settings command string, e.g.
+// "command": "tt statusline --warn 85 --ctx-warn 28".
 object StatuslineTool: // NB not "Statusline" — that collides case-only with the `statusLine` @main on case-insensitive FS
   def pct(v: Double): String = s"${v.round.toInt}%"
 
@@ -24,9 +29,20 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
   val ESC: Char = 27.toChar // the ANSI escape byte (0x1B); explicit to avoid any \u-escape ambiguity
   def sgr(code: String, s: String): String = s"${ESC}[${code}m${s}${ESC}[0m"
   val sep: String = "  " // two spaces between parts (the middot was dropped to save horizontal space)
+  val Red: String = "38;5;203" // shared "danger" red (the gauge cap AND the usage-limit warn colour)
   /** Gauge colour by level: a distinct healthy hue per part, escalating to orange >= 70% and red >= 90%. */
   def gauge(p: Double, healthy: String): String =
-    if p >= 90 then "38;5;203" else if p >= 70 then "38;5;214" else healthy
+    if p >= 90 then Red else if p >= 70 then "38;5;214" else healthy
+  /** For a usage LIMIT: RED at/above the configurable warn threshold (default 80%), else the normal gauge.
+   *  This is the ambient slice of the usage-limit WARNING (SM022b): a limit past the threshold turns red so
+   *  an approaching cap is seen before it blocks — and its reset countdown reddens with it (see render). */
+  def limGauge(p: Double, warn: Double, healthy: String): String =
+    if p >= warn then Red else gauge(p, healthy)
+  /** For CONTEXT FILL: reds at ctxWarn — the smart-zone ceiling Z, i.e. the point of risking the "dumb zone"
+   *  (context rot) — and oranges at the compact-dance trigger 0.8*Z. Tied to the compact-dance math, NOT the
+   *  generic 90% cap: a context window well below any hard limit is already rot-risky, so it must warn early. */
+  def ctxGauge(p: Double, ctxWarn: Double): String =
+    if p >= ctxWarn then Red else if p >= 0.8 * ctxWarn then "38;5;214" else "38;5;114"
 
   /** Local wall-clock HH:MM:SS from an epoch-ms (from --now-ms in tests, else System.currentTimeMillis). PURE. */
   def clock(nowMs: Long): String =
@@ -65,7 +81,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       if h <= 0 then s"${m}m" else s"${h}h${m}m"
 
   /** PURE: statusLine JSON + current time → the one-line status ("" if nothing usable / not JSON). */
-  def render(json: String, nowMs: Long): String =
+  def render(json: String, nowMs: Long, warn: Double = 80, ctxWarn: Double = 30): String =
     val o = try ujson.read(json).obj catch case _: Throwable => return ""
     val segs = scala.collection.mutable.ArrayBuffer[String]()
     segs += sgr("1;38;5;42", "genscalator:") // brand prefix (BR: prepend "genscalator:")
@@ -73,19 +89,23 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     o.get("model").flatMap(_.objOpt).foreach: m =>
       m.get("display_name").orElse(m.get("id")).flatMap(_.strOpt).foreach(n => segs += sgr("38;5;45", shortModel(n))) // un-bold so the bold genscalator: prefix is the only bold thing
     o.get("context_window").flatMap(_.objOpt).flatMap(_.get("used_percentage")).flatMap(_.numOpt)
-      .foreach(p => segs += sgr(gauge(p, "38;5;114"), s"ctx-fill: ${pct(p)}")) // green base, gauge-graded
+      .foreach(p => segs += sgr(ctxGauge(p, ctxWarn), s"ctx-fill: ${pct(p)}")) // green base; reds at the dumb-zone threshold (Z)
     val rl = o.get("rate_limits").flatMap(_.objOpt)
     rl.flatMap(_.get("five_hour")).flatMap(_.objOpt).foreach: h5 =>
-      val used  = h5.get("used_percentage").flatMap(_.numOpt).map(p => sgr(gauge(p, "38;5;176"), s"5h-lim: ${pct(p)}"))
-      val reset = h5.get("resets_at").flatMap(_.numOpt).map(r => sgr("38;5;245", s"resets: ${relResetFine(r.toLong, nowMs)}"))
+      val usedP  = h5.get("used_percentage").flatMap(_.numOpt)
+      val warned = usedP.exists(_ >= warn) // at/above the warn threshold: colour BOTH the % and its reset red
+      val used   = usedP.map(p => sgr(limGauge(p, warn, "38;5;176"), s"5h-lim: ${pct(p)}"))
+      val reset  = h5.get("resets_at").flatMap(_.numOpt).map(r => sgr(if warned then Red else "38;5;245", s"resets: ${relResetFine(r.toLong, nowMs)}"))
       (used, reset) match
         case (Some(u), Some(r)) => segs += s"$u $r"
         case (Some(u), None)    => segs += u
         case (None, Some(r))    => segs += sgr("38;5;245", "5h-lim ") + r
         case _                  =>
     rl.flatMap(_.get("seven_day")).flatMap(_.objOpt).foreach: w =>
-      val used  = w.get("used_percentage").flatMap(_.numOpt).map(p => sgr(gauge(p, "38;5;174"), s"wk-lim: ${pct(p)}")) // rosy-red base
-      val reset = w.get("resets_at").flatMap(_.numOpt).map(r => sgr("38;5;245", s"resets: ${relReset(r.toLong, nowMs)}"))
+      val usedP  = w.get("used_percentage").flatMap(_.numOpt)
+      val warned = usedP.exists(_ >= warn) // at/above the warn threshold: colour BOTH the % and its reset red
+      val used   = usedP.map(p => sgr(limGauge(p, warn, "38;5;174"), s"wk-lim: ${pct(p)}")) // rosy-red base
+      val reset  = w.get("resets_at").flatMap(_.numOpt).map(r => sgr(if warned then Red else "38;5;245", s"resets: ${relReset(r.toLong, nowMs)}"))
       (used, reset) match
         case (Some(u), Some(r)) => segs += s"$u $r"
         case (Some(u), None)    => segs += u
@@ -93,20 +113,24 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
         case _                  =>
     // cost LAST (least interesting on a fixed monthly plan) + blue, un-graded (no threshold meaning here)
     o.get("cost").flatMap(_.objOpt).flatMap(_.get("total_cost_usd")).flatMap(_.numOpt)
-      .foreach(c => segs += sgr("38;5;39", f"cost: $$$c%.2f"))
+      .foreach(c => segs += sgr("38;5;39", s"cost: $$${c.toLong}")) // whole dollars, TRUNCATED (cents are noise on a fixed monthly plan; saves horiz space; never overstates)
     segs.mkString(sep)
 
   def dispatch(args: List[String]): Int =
-    var nowMs = System.currentTimeMillis()
+    var nowMs   = System.currentTimeMillis()
+    var warn    = 80.0 // usage-limit warn threshold (%); set via `--warn N` in the settings command string
+    var ctxWarn = 30.0 // context-fill dumb-zone threshold (%, the smart-zone ceiling Z); set via `--ctx-warn N`
     val pos = scala.collection.mutable.ArrayBuffer[String]()
     val a = args.toVector
     var i = 0
     while i < a.length do
       a(i) match
-        case "--now-ms" if i + 1 < a.length => nowMs = a(i + 1).toLongOption.getOrElse(nowMs); i += 2
-        case other                          => pos += other; i += 1
+        case "--now-ms"   if i + 1 < a.length => nowMs   = a(i + 1).toLongOption.getOrElse(nowMs); i += 2
+        case "--warn"     if i + 1 < a.length => warn    = a(i + 1).toDoubleOption.getOrElse(warn); i += 2
+        case "--ctx-warn" if i + 1 < a.length => ctxWarn = a(i + 1).toDoubleOption.getOrElse(ctxWarn); i += 2
+        case other                            => pos += other; i += 1
     val json = pos.headOption.getOrElse(scala.io.Source.stdin.mkString)
-    println(render(json, nowMs))
+    println(render(json, nowMs, warn, ctxWarn))
     0
 
 @main def statusLine(args: String*): Unit = sys.exit(StatuslineTool.dispatch(args.toList))

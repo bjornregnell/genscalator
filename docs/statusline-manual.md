@@ -14,7 +14,7 @@ your prompt.
 ## What a full line looks like
 
 ```
-genscalator:  14:23:07  O4.8 (1M ctx)  ctx-fill: 41%  5h-lim: 30%  wk-lim: 14% resets: 3d  cost: $12.34
+genscalator:  14:23:07  O4.8 (1M ctx)  ctx-fill: 41%  5h-lim: 30%  wk-lim: 14% resets: 3d  cost: $12
 ```
 
 Segments are separated by two spaces, in a fixed left-to-right order. If the line is wider than your
@@ -28,12 +28,12 @@ falls off first by design.
 | **`genscalator:`** | bold green | The plugin plus statusline are active. If this prefix is **absent**, genscalator is not wired up. | Nothing — it is your at-a-glance "am I live?" indicator. |
 | **`14:23:07`** | light grey | Local wall clock, HH:MM:SS. **It freezes while the agent is working and ticks again when control returns to you.** | Use the freeze/tick as a turn signal: ticking clock = your move in the ballgame; frozen = the agent has the ball. |
 | **`O4.8 (1M ctx)`** | cyan | The model, abbreviated (`Opus 4.8` → `O4.8`, `Sonnet` → `S`, `Fable` → `F`, `Haiku` → `H`) and its context window. | Confirm you are on the model you intend. |
-| **`ctx-fill: 41%`** | green (→ orange ≥ 70%, red ≥ 90%) | How full the context window is. | This is the rot axis. As it climbs toward the smart-zone ceiling (roughly 24–30% of a 1M window is where the compact trigger sits in this workflow), plan a **compact dance** — consolidate, commit, then compact — rather than letting it auto-compact mid-thought. |
-| **`5h-lim: 30%`** | purple (→ orange/red by the same thresholds) | Fraction of your rolling 5-hour session limit used. | If it is high and climbing, ease off or wrap up before you get blocked. |
-| **`resets: 2h34m`** | dim grey | Fine countdown (hours + minutes) until the 5-hour window resets. Shown only if CC sends `rate_limits.five_hour.resets_at`. | Tells you how long until the session budget refreshes. |
-| **`wk-lim: 14%`** | rosy red (→ orange/red by threshold) | Fraction of your weekly (7-day) limit used. | The slow-moving budget. High + a distant reset = pace the week. |
-| **`resets: 3d`** | dim grey | Coarse countdown (m / h / d) until the weekly window resets. | When the weekly budget refreshes. |
-| **`cost: $12.34`** | blue | Notional API-equivalent cost of the session. | On a fixed monthly plan this is **not** a real charge — it is the least interesting number, which is why it is placed last and drops off first on a narrow terminal. |
+| **`ctx-fill: 41%`** | green (→ orange at the compact trigger ~24%, **red at the dumb-zone ceiling ~30%**) | How full the context window is. | This is the rot axis. Orange means you have crossed the **compact-dance trigger** (~0.8·Z) — start consolidating; **red means you are at the smart-zone ceiling Z and risking the dumb zone** (context rot) — do the compact dance now (commit, then compact) rather than letting it auto-compact mid-thought. Note this reds *early* (~30% of a 1M window), not near 100% — a full-but-rotting window is the danger, not a technically-full one. |
+| **`5h-lim: 30%`** | purple (→ orange ≥ 70%, **red at/above the warn threshold, default 80%**) | Fraction of your rolling 5-hour session limit used. | When it reddens you are near the session cap — ease off, checkpoint, or wrap up before you get blocked. |
+| **`resets: 2h34m`** | dim grey, **but red when its limit is at/above the warn threshold** | Fine countdown (hours + minutes) until the 5-hour window resets. Shown only if CC sends `rate_limits.five_hour.resets_at`. | A red reset says: the cap is close, and here is how long until relief. |
+| **`wk-lim: 14%`** | rosy (→ orange ≥ 70%, **red at/above the warn threshold, default 80%**) | Fraction of your weekly (7-day) limit used. | The slow-moving budget. Reddens near the weekly cap; a distant reset then means pace the rest of the week. |
+| **`resets: 3d`** | dim grey, **red when its limit is at/above the warn threshold** | Coarse countdown (m / h / d) until the weekly window resets. | When the weekly budget refreshes. |
+| **`cost: $12`** | blue | Notional API-equivalent cost of the session, in whole dollars (cents dropped to save space). | On a fixed monthly plan this is **not** a real charge — it is the least interesting number, which is why it is placed last and drops off first on a narrow terminal. |
 
 ### The gauge grading (the three limit/fill segments)
 
@@ -41,7 +41,25 @@ falls off first by design.
 
 - **healthy** — below 70%: the segment's base colour (green / purple / rosy).
 - **orange** — 70% or above: getting full; start planning.
-- **red** — 90% or above: act now (compact, ease off, or expect a limit soon).
+- **red** — act now (compact, ease off, or expect a limit soon).
+
+The **red** trigger differs by segment, because "danger" means something different for each:
+
+- **`ctx-fill`** is graded to the **compact-dance math**, not a near-full window:
+  - **orange** at the **compact trigger** ≈ 0.8·Z (default ~24%) — start consolidating toward a compact.
+  - **red** at the **smart-zone ceiling Z** (default ~30%) — you are risking the **dumb zone** (context rot);
+    do the compact dance now. It reds *early* on purpose: a context window at 30% of 1M is already rot-risky
+    long before it is technically full, so waiting for 90% would be far too late.
+  - Configure with **`--ctx-warn N`** (default 30). Orange automatically tracks 0.8·N.
+- **`5h-lim` and `wk-lim`** are graded to the **usage-limit warn threshold**:
+  - **orange** at 70%, **red** at the **warn threshold (default 80%)** — and when a limit reddens **its reset
+    countdown reddens with it**, so an approaching cap is unmistakable at a glance. This is the ambient
+    early-warning slice of the usage-limit WARNING requirement.
+  - Configure with **`--warn N`** (default 80). Applies to both limit gauges.
+
+**Putting both in the settings command string:** e.g. `"command": "tt statusline --warn 85 --ctx-warn 28"`.
+The two thresholds are independent — the usage-limit warn (a subscription-budget signal) and the ctx-fill
+dumb-zone threshold (a rot signal) mean different things and default to different values (80 vs 30).
 
 ## Turning it on and off
 
