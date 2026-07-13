@@ -39,6 +39,15 @@ You are a first-class contributor. When you build or scaffold a tool while helpi
   then submit — or ask the agent to prepare the issue + PR for you to push.
 - You're equally welcome to contribute tools you wrote yourself.
 
+## Using AI agents
+
+Using AI agents in your contribution is fine, if applied responsibly. Two rules:
+
+- **No assistant credit in commits.** Do not add `Co-Authored-By: <assistant>` trailers or "Generated with ..."
+  badges. Each commit is attributed to the human contributor who makes the change and stands behind it.
+- **Disclose in the PR.** In the pull request thread, add a short, honest note on what you used an agent for and
+  what you did yourself. Or say plainly that you used none.
+
 ## Submitting (Codeberg / Forgejo)
 1. **Fork** https://codeberg.org/bjornregnell/genscalator (Codeberg runs Forgejo; the flow is ~ GitHub's).
 2. **Branch** from `main`, add the tool under `tools/` (+ a `tools/README.md` cheat-sheet entry), commit.
@@ -53,3 +62,69 @@ You are a first-class contributor. When you build or scaffold a tool while helpi
 - [ ] Issue + PR opened (issue explains *why*; PR has the code)
 
 By contributing, you agree your contribution is licensed under the repo's [Apache-2.0](LICENSE).
+
+## Tests
+
+The test suite is **co-located with the tools** it covers, under [`tools/test/`](tools/test/): `cli.test.scala`
+(CLI-contract tests — each tool run as a subprocess, exit code + stdout asserted) and `lib.test.scala` (unit tests
+for the shared `tools/lib.scala` helpers). Run the whole toolbox plus its tests from the repo root:
+
+```
+scala-cli test tools
+```
+
+The `*.test.scala` files compile in scala-cli's **test scope**, which *extends* the toolbox's main scope — so the
+tests see the tool sources without any `//> using file` wiring, and a plain `scala-cli compile tools` still builds
+**only the tools** (the test files are excluded from the main compile). More: [`tools/README.md`](tools/README.md#tests).
+
+## Roadmap
+
+What's shipped so far, per release: [`CHANGELOG.md`](CHANGELOG.md).
+For the toolbox-specific roadmap (new/extended `tt` tools), see [`tools/README.md`](tools/README.md#roadmap).
+For general goals and requirements see the [Product Requirements Document](PRD.md)
+
+**Planned, not yet built - roughly cheapest-to-build first:**
+- **Update awareness** — an *inform-only* update skill + a read-only version-check (compare the installed
+  version against upstream `marketplace.json`) so staleness is visible. It hands the human the update
+  commands but **never self-updates the operating rules** — adopting new rules stays a human-reviewed step
+  (see [`docs/updating.md`](docs/updating.md)).
+- **One-command install** of genscalator + companions (scalex + Metals MCP) for newcomers who want
+  everything at once — as a **reviewable, version-pinned installer script you read before running**, not
+  a blind `curl … | bash` (that opaque-pipe pattern is exactly the confirmation-fatigue / RCE risk
+  genscalator argues against).
+- Native compilation.
+- Tool safety flags: `--safe-mode`, `--sandboxed`, `--audit`.
+- Capture-Checking **Safe-mode** PoC → pure tools safe by default.
+- **Cross-tool packaging:** an MCP server so the tools are first-class in Codex/opencode too. (The
+  Claude Code plugin already ships — see *Use as a Claude Code plugin* below.)
+
+## Roadmap
+
+What's shipped so far, per release: [`CHANGELOG.md`](CHANGELOG.md).
+For the toolbox-specific roadmap (new/extended `tt` tools), see [`tools/README.md`](tools/README.md#roadmap).
+For general goals and requirements see the [Product Requirements Document](PRD.md)
+
+**Planned, not yet built - roughly cheapest-to-build first:**
+- **Update awareness** — an *inform-only* update skill + a read-only version-check (compare the installed
+  version against upstream `marketplace.json`) so staleness is visible. It hands the human the update
+  commands but **never self-updates the operating rules** — adopting new rules stays a human-reviewed step
+  (see [`docs/updating.md`](docs/updating.md)).
+- **One-command install** of genscalator + companions (scalex + Metals MCP) for newcomers who want
+  everything at once — as a **reviewable, version-pinned installer script you read before running**, not
+  a blind `curl … | bash` (that opaque-pipe pattern is exactly the confirmation-fatigue / RCE risk
+  genscalator argues against).
+- Native compilation.
+- Tool safety flags: `--safe-mode`, `--sandboxed`, `--audit`.
+- Capture-Checking **Safe-mode** PoC → pure tools safe by default.
+- **Cross-tool packaging:** an MCP server so the tools are first-class in Codex/opencode too. (The
+  Claude Code plugin already ships — see *Use as a Claude Code plugin* below.)
+
+## Copyright
+
+Copyright of all code in this repo is owned by the maintainers of the genscalator repository. Any code contributor to this repo implicitly transfers copyright to genscalator maintainers by contributing. Before you contribute you should send a copyright transfer note via email to genscalator at bjornregnell.se with the subject "Copyright transfer" and body containing "I hereby transfer copyright of my contributions to genscalator to the maintainers of genscalator" and your name and contact details.
+
+## Maintainers
+
+The genscalator repository is currently maintained by:
+* [Professor Björn Regnell](https://bjornregnell.se)
+* You? If you are interested to become a maintainer, send email to genscalator at bjornregnell.se
