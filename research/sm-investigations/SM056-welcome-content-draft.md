@@ -6,9 +6,37 @@ activation, or via a `SessionStart` hook, or whether a slash command is the only
 guess plugin internals; confirm via **claude-code-guide** before wiring. Below is written to work either
 way: the same body serves as a first-run welcome and as the `/genscalator` command output.
 
-Ties: SM021 (plugin community-launch readiness), `docs/claude-plugin.md`, `docs/statusline-manual.md`.
+Ties: SM021 (plugin community-launch readiness), `docs/claude-plugin.md`, `docs/statusline-manual.md`,
+the **`gs-dwim` skill** (`skills/gs-dwim/SKILL.md` — the agent-facing implementation of the `gs` commands
+below).
 
 ---
+
+## 0. The `gs` in-session commands (the do-what-I-mean cue) — WORKS NOW
+
+The quickest way to explore genscalator is to type **`gs ...`** to the agent in chat. `gs` is a
+**do-what-I-mean** cue: the agent matches your words to the nearest command in meaning (this is an informal
+list, not a rigid syntax — `gs`-led phrasings that are merely *similar* also work), and does it in session.
+Bare **`gs`** or **`gs help`** shows this. (Implemented by the `gs-dwim` skill, so it works as soon as the
+plugin is active — no settings needed.)
+
+```
+gs help              show the welcome + this help on the gs do-what-I-mean commands
+gs                   same as `gs help`
+gs help tt           list all typed tools (tt ...) with a one-line description of each
+gs help tt <what>    detailed help on the tool nearest in meaning to <what>
+gs tt <tool>         run <tool> and show its output here in session (e.g. gs tt chrono)
+gs status            the status-line info, expanded into a table, here in session
+gs status line on    turn the status line on
+gs status line off   turn the status line off
+gs cues              list all cues (human->agent and agent->human) and what they mean
+gs cue <what>        explain the cue nearest in meaning to <what>
+gs dances            list all dances and their goals
+gs dance <what>      explain the dance nearest in meaning to <what>
+```
+
+(Note: `gs` is deliberately overloaded — a leading `gs` cue means "run a gs command"; `gs` in prose or a
+path like `gs/README` still means the project *genscalator*. Context disambiguates.)
 
 ## A. The `/genscalator` help command (on-demand, the safe/idiomatic channel)
 

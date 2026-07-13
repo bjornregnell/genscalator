@@ -149,11 +149,25 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   reconstructs), while code + proper nouns stay case-exact; symmetrically the agent writes *properly-cased*
   prose (near-zero token cost, nicer to read). Each side optimizes its own cheap axis. See research
   `002-communication-bandwidth.md`.
+- **DWIM (do-what-I-mean)** — the agent acts on the human's **intent**, not the literal tokens: it fixes
+  obvious typos and slips, fills sensible gaps, and improves in the **spirit** of the joint work rather than
+  transcribing verbatim. A **communication-bandwidth** lever (the human can stay terse and under-specify; the
+  agent reconstructs the meaning) and a **confirmation-fatigue** reducer (fewer clarify-round-trips). Named
+  after Warren Teitelman's 1970s Interlisp *DWIM* feature; the emacs / vi "do what I mean" dream, now real
+  because the agent understands intent. **Bounded by its dual — confirm on genuine ambiguity:** DWIM is NOT
+  license to guess when a wrong guess is costly; when intent is unclear or the stakes are real, ASK (the
+  `edit:` vs `clarification:` distinction, [[cue-edit-vs-clarification]]). Load-bearing in the **Live-edit
+  dance** (the human cedes the buffer *trusting* DWIM) and the **"similar to" cue** (improve BR's phrasing in
+  the joint spirit, do not transcribe it literally — [[cue-similar]]). Memories: [[live-edit-dance]],
+  [[cue-similar]], [[cue-edit-vs-clarification]]. See `research/wr-data/live-edit-dance-dwim-2026-07-12.md`.
 - **Comms shorthand (human↔agent)** — a shared vocabulary of standard chat/dev **acronyms** both roles emit
   and parse *without expansion*, a direct **communication-bandwidth** + **TE** lever: fewer tokens (and less
   human typing) carry the same intent, in both directions. Distinct from the project's *coined* terms
   (**CF**, **TE**, **Z**, **WR**, **AT**, **BHH**, **BadGoal**, **ralph loop**, **`gs`** = *genscalator* (**always
-  lower-case**, incl. paths like `gs/README`), **`bg`** = an agent-solo *background task* (runs when the AFK menu is empty + human
+  lower-case**, incl. paths like `gs/README`; **deliberately overloaded** — a *leading* `gs` cue in session
+  means "do the genscalator command I mean" ([[dwim]], the `gs-dwim` skill: `gs help`, `gs cues`, `gs tt
+  chrono`, ...), while `gs` in prose or a path still names the project; context disambiguates, and we split
+  them if it ever gets too overloaded), **`bg`** = an agent-solo *background task* (runs when the AFK menu is empty + human
   away), **`PB`** = the closed pinboard `PIN-BOARD.md` …) which name domain concepts / the project —
   this entry is generic conversational glue. Both sides may use these freely; when a token is genuinely
   ambiguous in context, expand it once. Common set:
