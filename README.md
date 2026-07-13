@@ -72,8 +72,10 @@ says which tool answers which question.
   ```
   /plugin marketplace add nguyenyou/scalex
   /plugin install scalex@scalex-marketplace
+  /reload-plugins
   ```
   For a standalone binary / other agents, see the upstream repo.
+  
 - **[Metals MCP](https://scalameta.org/metals/docs/features/mcp/)** — compiler-grade truth (inferred types,
   real diagnostics, run tests, refactor); heavier. Enable it through your editor's Metals + MCP-client
   config per the linked setup page.
