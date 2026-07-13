@@ -32,6 +32,9 @@ gs dances            list all dances and their goals
 gs dance <what>      explain the dance nearest in meaning to <what>
 gs term <what>       explain the foundations glossary term nearest in meaning to <what>
 gs new app <what> <dir>   create a complete runnable Scala web app <what> (e.g. todo-web-app) into <dir>
+gs compact notify on      enable the wake-me-up poll: a notice plus chime when a /compact finishes
+gs compact notify off     disable it (silent); this is the default
+gs compact notify         show whether the wake-me-up poll is currently on or off
 ```
 
 **Tier 2 — genscalator contributors, dogfooding mode** (working ON genscalator, or in the gs research MO).
@@ -90,6 +93,16 @@ gs test              run the tt toolbox test suite (handles the tt.tools prop) a
   it is effectful: confirm the target `<dir>` and never overwrite a non-empty directory without asking. Not a
   delegation candidate (it writes durable output) — run inline; afterwards point the user at the generated
   `README.md` to build and run. Tier 1 (any plugin user), but effectful, unlike the other Tier-1 commands.
+- **`gs compact notify on` / `off` / (bare = status)** — toggle the compaction **wake-me-up poll**: a critical
+  desktop notice (it pierces Do-Not-Disturb) plus a chime, fired the instant a `/compact` finishes, so a human
+  who wandered off is called back (foundations "Compact sleep"). It is gated on the
+  sentinel file `~/.claude/compact-notify.enabled`, read by the `Pre`/`PostCompact` hook `~/.claude/compact-wake.sh`:
+  `on` creates the sentinel, `off` removes it, bare/`status` reports whether it exists. This is a trivial,
+  reversible one-file toggle (NOT a `settings.json` edit — the hook is already wired), so treat the explicit `gs`
+  command as the user's go and just do it, then confirm the new state (SHOWN, like `gs status line`). **Default is
+  OFF**, because the notice is intrusive by design. If the hook is not installed (a plugin user who has not set it
+  up), say so and point at the setup: the `compact-wake.sh` script plus a `Pre`/`PostCompact` hook entry in
+  `~/.claude/settings.json`. Desktop-Linux only (`notify-send` + a sound player such as `canberra-gtk-play`).
 **Tier 2 (genscalator contributors / dogfooding mode) — assume the gs dev substrate; degrade gracefully if absent:**
 
 - **`gs where`** — orient: a SHORT current-state snapshot so the user (or a returning agent) re-syncs fast.
@@ -154,6 +167,7 @@ ONLY when **all three** hold — if any fails, run inline:
 | `gs help*` / `gs term` / `gs cue` / `gs dance` | no | quick lookups, small output — a sub-agent hop costs more than it saves. |
 | `gs tt <tool>` | no | the user wants the tool's output HERE; and for an effectful tool (git/forge/ssg/serv) the permission flow + outward-op discipline MUST stay in the main agent's view — never delegate an effectful run. |
 | `gs status line on/off` | **never** | a sensitive settings edit — must be inline, SHOWN to the user, with the `/hooks` handoff; delegating a settings change out of sight is the exact anti-pattern. |
+| `gs compact notify on/off` | **never** | a per-user config toggle (a sentinel file the hook reads); keep it inline and SHOWN, like `gs status line` — delegating an out-of-sight config change is the anti-pattern. |
 | `gs new app` | no | writes a whole project (effectful, durable output); the primary output is the seeded app — run inline, never delegate. |
 
 Two refinements that make the decision smarter:

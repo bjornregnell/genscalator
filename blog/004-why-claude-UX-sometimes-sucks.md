@@ -123,6 +123,39 @@ the dance at that crossing — so today the
 agent is doing the harness's job by hand. **The ask: make the smart-zone compaction reminder a first-class, `Z`-tunable
 setting.**
 
+<!-- AGENT-DRAFT 2026-07-13 (BR to revoice / approve / place): the second compaction pain, the wander-off one.
+Sources: foundations "Compact sleep"; research/wr-data/agent-cannot-see-compaction-finish-2026-07-13.md;
+tmp/compact-chrono-stamps.md (the hand-stamps that turned out to measure wake-latency). -->
+
+**Compact sleep, the wander-off pain (BR).** `[for BR to voice in the first person]` There is a second compaction
+pain, and it is quieter than the first. A compaction takes *long*, long enough that I do not sit and watch the
+progress bar. I am mid-thriller, flow at full tilt, so I get up. I go for a pee, I say a word to my wife, I let the
+machine grind. And here is the catch: when it finishes, nothing calls me back. The agent does not resume on its own,
+it just waits, dormant, until I next type. So my whole away-interval, however long, gets bolted onto the compaction
+as dead air, and the very break the compaction was supposed to be a quick pit-stop becomes a real interruption that
+cools the flow it was meant to preserve. We even caught this by accident: we started hand-stamping a clock before and
+after each compact to measure how long compaction takes, and discovered the numbers do not measure compaction at all.
+They measure *how long it takes me to wake the agent up*. The tool cannot see when the compaction finishes any more
+than I can see its context-fill, another face of the same asymmetry that runs through this whole post. **The ask: a
+wake-me-up poll.** A tiny nudge, an OS notification the instant the fresh context is ready, so a wandering human is
+pulled straight back instead of the session idling. As a bonus, stamping the compaction start and end from the harness
+itself (rather than by my hand around it) would finally isolate the *pure* compaction time, and answer the question we
+could never answer by hand: is a compact slower the fuller the context is? Today none of this exists, so I set an
+egg-timer in my head and hope I come back at the right moment.
+
+<!-- AGENT-DRAFT 2026-07-13 (BR to revoice; his phrase "tripped on its own toes"). A tiny agent-side beat.
+Source: research/wr-data/em-dash-in-edit-anchor-silent-match-failure-2026-07-13.md -->
+
+**The em-dash that bit twice (the machine tripped on its own toes).** `[for BR to voice]` Here is a small one that
+is almost too neat. The agent was tidying a glossary entry, and its edit kept failing: "string not found", no line,
+no diff, just a flat refusal. The snippet it was trying to match had one of those long em-dashes in it, the dash I
+dislike anyway and keep out of everything I publish. Switching to a short, plain snippet fixed it at once. So the
+same glyph I ban from my prose had also jammed the agent's own edit tool, and the funny part is the agent had
+written that em-dash into the text itself a moment earlier and then could not step back over it. It tripped on its
+own toes. The real papercut, though, is the silence: the tool just says "not found" and leaves you to guess which
+of seven lines diverged, so you grab the nearest suspect (the dash) and may well blame the wrong thing. The kind
+fix a tool could give is boring: tell me where the match broke.
+
 Angle (TODO firm up): these aren't random bugs — most are **one family**: *timing/observability races between a human
 action and the system consuming a prior input*, plus *missing typed affordances* that push work into bash. For each,
 pair the felt problem with a concrete harness-side ask (widen the edit window; read-only `/context`; a nonblocking

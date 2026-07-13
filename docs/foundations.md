@@ -385,12 +385,15 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   so the human's entire away-interval is bolted onto the compaction as invisible idle; **(b) broken flow** — the very
   interruption the compact dance exists to *bound* instead lands mid-stride and cools the thriller state. A direct
   consequence: the step-5 chrono stamps measure **wake-latency, not compaction** (BR: *"more a measure of how long
-  it takes until i wake you up"*). **Proposed remedy — the wake-me-up poll:** a **PostCompact hook** fires an OS
-  notification (or a push) the instant the fresh context is ready, *pulling the human straight back* instead of
-  letting the session idle; a **PreCompact hook** can pre-arm it and (per the *measure* step) also stamp the true
-  compaction start/end, isolating the pure summariser run at last. A **human-approved settings step** (hooks) —
-  propose, never self-apply. This is a **super-harness gap** the compaction asymmetry exposed: the harness knows
-  when the compact finishes and the human is away; nothing yet bridges the two. Cf. **Compact dance** (the ritual),
+  it takes until i wake you up"*). **Remedy, now BUILT 2026-07-13 with BR's approval — the wake-me-up poll:** a `Pre`/`PostCompact` hook pair
+  in `~/.claude/settings.json` calling `~/.claude/compact-wake.sh`. **PostCompact** fires a *critical* OS
+  notification (which pierces Do-Not-Disturb) plus a chime the instant the fresh context is ready, *pulling the
+  human straight back* instead of letting the session idle; the notice carries a **timestamp** so an away human sees
+  *when* it fired. **PreCompact** stamps the start, PostCompact the end (both to `~/.claude/compact-timing.log`), so
+  the delta is the pure summariser run with zero human latency in it, isolating it at last. A **human-approved settings step** (hooks) —
+  the agent prepped and tested it, BR authorized the wiring. This closes a **super-harness gap** the compaction
+  asymmetry exposed: the harness knows when the compact finishes and the human is away; until this hook, nothing
+  bridged the two. Cf. **Compact dance** (the ritual),
   **Thriller state** (the flow it interrupts).
 - **Compact trigger** — the context-fill level at which the agent should **proactively propose the compact
   dance**, rather than waiting until it is already degrading. Set at a **safety margin below the smart-zone
