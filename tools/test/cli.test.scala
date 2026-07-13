@@ -190,6 +190,19 @@ class CliSuite extends munit.FunSuite:
     assert(clue(out).contains("tt find"))
     assert(clue(out).contains("read-half"))
   }
+  test("find skips hidden entries by default; --all includes them") {
+    val d = os.temp.dir()
+    try
+      os.write(d / "visible.scala", "x")
+      os.makeDir(d / ".hidden")
+      os.write(d / ".hidden" / "buried.scala", "y")
+      os.write(d / ".dotfile.scala", "z")
+      val (_, out, _) = run("find", d.toString, "--ext", ".scala", "--count")
+      assert(clue(out).contains("1 matches"))         // only visible.scala (hidden dir + dotfile skipped)
+      val (_, outAll, _) = run("find", d.toString, "--ext", ".scala", "--all", "--count")
+      assert(clue(outAll).contains("3 matches"))       // + .hidden/buried.scala + .dotfile.scala
+    finally os.remove.all(d)
+  }
 
   // --- verify (allowlist safety) ---
   test("verify refuses a non-allowlisted executable with exit 2, never running it") {

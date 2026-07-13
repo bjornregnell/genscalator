@@ -7,7 +7,6 @@
 // makes it safe to blanket-allow where raw `find` (a general file-executor) cannot be. The guarded write-half
 // (`--prune`, confined + dry-run-by-default) is a separate, later step (SM031).
 //   scala-cli run tools/find.scala -- <root> [--name <glob>] [--ext <e>] [--type f|d] [--max-depth N] [--count]
-import scala.jdk.CollectionConverters.*
 import java.nio.file.{Files, Path, FileSystems}
 
 // Top-level, so a UNIQUE name (the toolbox compiles as one unit; a generic `Help` would collide across files).
@@ -24,9 +23,12 @@ private val FindHelp: String =
     |  find <root> --ext <e>                filter by extension suffix (e.g. .md)
     |  find <root> --type f|d               regular files (f, the default) or directories (d)
     |  find <root> --max-depth N            descend at most N levels below <root> (root = 0)
+    |  find <root> --all                    include hidden entries (default: skip dot-names)
     |  find <root> ... --count              print just the count line, not the paths
     |
     |Notes:
+    |  Hidden entries (names starting with '.', e.g. .git, .scala-build) are skipped by default —
+    |  whole subtree and all — so a repo scan doesn't drown in build caches; pass --all to include them.
     |  Symlinks are NOT followed (a symlinked dir cannot smuggle the walk outside <root>).
     |  Filters combine (AND). Output is a count line plus indented paths, sorted for determinism.
     |
@@ -40,7 +42,8 @@ private val FindHelp: String =
 @main def find(args: String*): Unit =
   if args.contains("--help") || args.contains("-h") then { println(FindHelp); sys.exit(0) }
   val countOnly = args.contains("--count")
-  val a = args.filterNot(_ == "--count").toList
+  val all = args.contains("--all")
+  val a = args.filterNot(f => f == "--count" || f == "--all").toList
   def optOf(flag: String): Option[String] =
     val i = a.indexOf(flag)
     if i >= 0 && i + 1 < a.size then Some(a(i + 1)) else None
@@ -64,17 +67,27 @@ private val FindHelp: String =
       val root = Path.of(rootStr)
       if !Files.exists(root) then { Console.err.println(s"find: no such path: $rootStr"); sys.exit(2) }
       val matcher = nameGlob.map(g => FileSystems.getDefault.getPathMatcher(s"glob:$g"))
-      val stream = maxDepth match
-        case Some(d) => Files.walk(root, d)
-        case None    => Files.walk(root)
-      try
-        val hits = stream.iterator.asScala
-          .filter(p => if typ == "d" then Files.isDirectory(p) else Files.isRegularFile(p))
-          .filter(p => ext.forall(e => p.toString.endsWith(e)))
-          .filter(p => matcher.forall(m => Option(p.getFileName).exists(m.matches)))
-          .map(_.toString)
-          .toVector
-          .sorted
-        println(s"${hits.size} matches")
-        if !countOnly then hits.foreach(p => println(s"  $p"))
-      finally stream.close()
+      def hidden(p: Path): Boolean =
+        val n = p.getFileName; n != null && n.toString.startsWith(".")
+      def matches(p: Path): Boolean =
+        ext.forall(e => p.toString.endsWith(e)) && matcher.forall(m => Option(p.getFileName).exists(m.matches))
+      val hits = scala.collection.mutable.ArrayBuffer.empty[String]
+      val depth = maxDepth.getOrElse(Int.MaxValue)
+      // walkFileTree (not walk) so hidden dirs are PRUNED as whole subtrees (skip .git/.scala-build fast),
+      // not merely filtered post-hoc. Symlinks not followed (empty option set); unreadable entries skipped.
+      Files.walkFileTree(root, java.util.Collections.emptySet[java.nio.file.FileVisitOption](), depth,
+        new java.nio.file.SimpleFileVisitor[Path] {
+          override def preVisitDirectory(dir: Path, attrs: java.nio.file.attribute.BasicFileAttributes): java.nio.file.FileVisitResult =
+            if !all && hidden(dir) && !dir.equals(root) then java.nio.file.FileVisitResult.SKIP_SUBTREE
+            else
+              if typ == "d" && matches(dir) then hits += dir.toString
+              java.nio.file.FileVisitResult.CONTINUE
+          override def visitFile(file: Path, attrs: java.nio.file.attribute.BasicFileAttributes): java.nio.file.FileVisitResult =
+            if (all || !hidden(file)) && typ == "f" && matches(file) then hits += file.toString
+            java.nio.file.FileVisitResult.CONTINUE
+          override def visitFileFailed(file: Path, exc: java.io.IOException): java.nio.file.FileVisitResult =
+            java.nio.file.FileVisitResult.CONTINUE
+        })
+      val sorted = hits.toVector.sorted
+      println(s"${sorted.size} matches")
+      if !countOnly then sorted.foreach(p => println(s"  $p"))

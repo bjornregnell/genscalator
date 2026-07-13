@@ -81,10 +81,13 @@ find <root> --name '<glob>'          # filter by filename glob                  
 find <root> --ext <e>                # filter by extension suffix
 find <root> --type f|d               # regular files (f, the default) or directories (d)
 find <root> --max-depth N            # descend at most N levels below <root>
+find <root> --all                    # include hidden entries (default: skip dot-names)
 find <root> ... --count              # just the count line, no paths
 ```
 Exposes ONLY name/ext/type/depth — no `-exec`, no arbitrary predicates, no `-delete` — so it can be blanket-allowed
-where raw `find` (a general file-executor) cannot. Symlinks are not followed. The guarded write-half (`--prune`,
+where raw `find` (a general file-executor) cannot. Hidden dot-entries (`.git`, `.scala-build`) are skipped by
+default — whole subtree and all — so a repo scan stays clean and fast; `--all` includes them. Symlinks are not
+followed. The guarded write-half (`--prune`,
 confined + dry-run-by-default) is a separate, later step (SM031). Sibling of `files` (which adds a content-regex).
 Examples:
 ```
