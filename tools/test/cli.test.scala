@@ -132,6 +132,65 @@ class CliSuite extends munit.FunSuite:
     finally os.remove.all(d)
   }
 
+  // --- find (typed safe enumeration, read-half) ---
+  private def findFixture(): os.Path =
+    val d = os.temp.dir()
+    os.write(d / "a.scala", "x")
+    os.write(d / "b.scala", "y")
+    os.write(d / "c.txt", "z")
+    os.makeDir(d / "sub")
+    os.write(d / "sub" / "deep.scala", "q")
+    d
+
+  test("find --ext + default type f: recurses, counts regular files by extension") {
+    val d = findFixture()
+    try
+      val (_, out, _) = run("find", d.toString, "--ext", ".scala", "--count")
+      assert(clue(out).contains("3 matches"))
+      assert(!clue(out).contains("a.scala"))            // --count suppresses the path list
+      val (_, out2, _) = run("find", d.toString, "--count")
+      assert(clue(out2).contains("4 matches"))          // every regular file: a, b, c.txt, sub/deep
+    finally os.remove.all(d)
+  }
+  test("find --name: filters by filename glob") {
+    val d = findFixture()
+    try
+      val (_, out, _) = run("find", d.toString, "--name", "*.scala")
+      assert(clue(out).contains("3 matches"))
+      assert(clue(out).contains("deep.scala"))
+      val (_, out2, _) = run("find", d.toString, "--name", "a.scala", "--count")
+      assert(clue(out2).contains("1 matches"))
+    finally os.remove.all(d)
+  }
+  test("find --type d: lists directories including the root") {
+    val d = findFixture()
+    try
+      val (_, out, _) = run("find", d.toString, "--type", "d", "--count")
+      assert(clue(out).contains("2 matches"))           // root + sub
+    finally os.remove.all(d)
+  }
+  test("find --max-depth: bounds the descent") {
+    val d = findFixture()
+    try
+      val (_, out, _) = run("find", d.toString, "--ext", ".scala", "--max-depth", "1", "--count")
+      assert(clue(out).contains("2 matches"))           // sub/deep.scala (depth 2) is excluded
+    finally os.remove.all(d)
+  }
+  test("find on a nonexistent root: exit 2, no such path") {
+    val d = findFixture()
+    try
+      val (code, _, err) = run("find", (d / "nope").toString)
+      assertEquals(code, 2)
+      assert(clue(err).contains("no such path"))
+    finally os.remove.all(d)
+  }
+  test("find --help: elaborate help, exit 0") {
+    val (code, out, _) = run("find", "--help")
+    assertEquals(code, 0)
+    assert(clue(out).contains("tt find"))
+    assert(clue(out).contains("read-half"))
+  }
+
   // --- verify (allowlist safety) ---
   test("verify refuses a non-allowlisted executable with exit 2, never running it") {
     // `ls` is harmless AND not in the builtin allowlist {scala-cli, tt, scalex} → must be rejected pre-exec.

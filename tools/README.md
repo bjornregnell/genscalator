@@ -74,6 +74,25 @@ tt files src .scala 'TODO'                  # source files containing TODO
 tt files src .scala --count
 ```
 
+### find — typed, safe file enumeration; the allowlistable read-half of `find` (PURE)
+```
+find <root>                          # list regular files under <root>
+find <root> --name '<glob>'          # filter by filename glob                        (find -name)
+find <root> --ext <e>                # filter by extension suffix
+find <root> --type f|d               # regular files (f, the default) or directories (d)
+find <root> --max-depth N            # descend at most N levels below <root>
+find <root> ... --count              # just the count line, no paths
+```
+Exposes ONLY name/ext/type/depth — no `-exec`, no arbitrary predicates, no `-delete` — so it can be blanket-allowed
+where raw `find` (a general file-executor) cannot. Symlinks are not followed. The guarded write-half (`--prune`,
+confined + dry-run-by-default) is a separate, later step (SM031). Sibling of `files` (which adds a content-regex).
+Examples:
+```
+tt find src --ext .scala                    # every .scala file under src
+tt find docs --name 'SM*.md'                # docs named SM*.md
+tt find . --type d --max-depth 1            # immediate sub-directories
+```
+
 ### log — build/run-log analyzer (PURE)
 ```
 log [summary|errors|warnings] <file>    # summary (default) = counts + lines + verdict

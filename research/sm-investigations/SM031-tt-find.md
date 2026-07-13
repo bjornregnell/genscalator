@@ -1,7 +1,11 @@
 # SM031 - `tt find`: a typed, safe file-find / prune leaf
 
-**Status:** INVESTIGATION - report before building (BR pin 2026-07-08, from a live
-guard specimen). No code yet.
+**Status:** READ-HALF BUILT + TESTED (2026-07-13). `tt find <root> [--name <glob>]
+[--ext <e>] [--type f|d] [--max-depth N] [--count]` ships (`tools/find.scala`, pure
+JDK, 6 CLI tests in `test/cli.test.scala`). The guarded WRITE-half (`--prune
+--confine <dir>`, dry-run by default + `--yes`) remains a later step per the
+Recommendation below. Original investigation (BR pin 2026-07-08, from a live guard
+specimen) follows.
 
 ## Why this exists (the thesis in miniature)
 Raw `find ... -delete` **cannot be prefix-allowlisted**: `find` is a general
