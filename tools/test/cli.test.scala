@@ -148,13 +148,13 @@ class CliSuite extends munit.FunSuite:
       assertEquals(code, 0)
       assert(clue(out).contains("genscalator:"))
       assert(clue(out).contains("hot-harvest"))
-      assert(!clue(out).contains("&&")) // one mode -> no separator
+      assert(!clue(out).contains(" & ")) // one mode -> no separator
     finally os.remove.all(d)
   }
   test("statusline: no --mode-line means no mode line") {
     val (code, out, _) = run("statusline", "{}")
     assertEquals(code, 0)
-    assert(!clue(out).contains("&&"))
+    assert(!clue(out).contains(" & "))
   }
 
   test("text context: prints a match with N lines of context, excludes beyond N") {
@@ -1059,6 +1059,19 @@ class CliSuite extends munit.FunSuite:
     val now = 1_000_000_000_000L
     val (_, out, _) = run("statusline", """{"context_window":{"used_percentage":35}}""", "--now-ms", now.toString, "--ctx-warn", "40")
     assert(!clue(out).contains("38;5;203mctx-fill")) // 35% < 40% raised threshold -> not red
+  }
+  test("statusline: ctx-fill past dumb-zone (75%) -> bold bright-red + dumb-zone flag") {
+    val (_, out, _) = run("statusline", """{"context_window":{"used_percentage":80}}""", "--now-ms", "1000000000000")
+    assert(clue(out).contains("1;38;5;196mctx-fill: 80% dumb-zone"))
+  }
+  test("statusline: ctx-fill past auto-compact (92%) -> bold reverse-red + auto-compact flag (supersedes dumb-zone)") {
+    val (_, out, _) = run("statusline", """{"context_window":{"used_percentage":95}}""", "--now-ms", "1000000000000")
+    assert(clue(out).contains("7;1;38;5;196mctx-fill: 95% auto-compact!"))
+    assert(!clue(out).contains("dumb-zone"))
+  }
+  test("statusline: --dumb-zone / --auto-compact thresholds are configurable") {
+    val (_, out, _) = run("statusline", """{"context_window":{"used_percentage":65}}""", "--now-ms", "1000000000000", "--dumb-zone", "60")
+    assert(clue(out).contains("ctx-fill: 65% dumb-zone"))
   }
   test("statusline: prepends a HH:MM:SS wall clock, and abbreviates the model label") {
     val (_, out, _) = run("statusline", """{"model":{"display_name":"Fable 5 (1M context)"}}""", "--now-ms", "1000000000000")

@@ -16,10 +16,13 @@
 //   rate_limits.five_hour.{used_percentage,resets_at} · rate_limits.seven_day.{used_percentage,resets_at}
 // Reads stdin by default; also accepts the JSON as a positional arg + `--now-ms N` (both for deterministic tests).
 // `--warn N` sets the usage-limit warn threshold (default 80): a 5h/wk limit at/above it turns its % AND its
-// reset countdown RED (the ambient slice of the SM022b usage-limit WARNING). `--ctx-warn N` sets the context-
-// fill dumb-zone threshold (default 30 = the smart-zone ceiling Z): ctx-fill reds at/above it and oranges at
-// the compact-dance trigger 0.8*Z. Configure in the settings command string, e.g.
-// "command": "tt statusline --warn 85 --ctx-warn 28".
+// reset countdown RED (the ambient slice of the SM022b usage-limit WARNING). Context-fill has a 3-step warn
+// ladder: `--ctx-warn N` = the smart-zone ceiling Z (default 30; ctx-fill reds at/above, oranges at 0.8*Z);
+// `--dumb-zone N` = most-likely-rotted (default 75; bold bright-red + a "dumb-zone" flag); `--auto-compact N`
+// = the harness is about to auto-compact (default 92 - a GUESS; the real trigger is UNDOCUMENTED/opaque, the
+// 90% warning is a separate alert, observed ~90-95%; bold reverse red +
+// "auto-compact!"). Configure in the settings command string, e.g.
+// "command": "tt statusline --warn 85 --ctx-warn 28 --dumb-zone 70 --auto-compact 90".
 object StatuslineTool: // NB not "Statusline" — that collides case-only with the `statusLine` @main on case-insensitive FS
   def pct(v: Double): String = s"${v.round.toInt}%"
 
@@ -41,8 +44,12 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
   /** For CONTEXT FILL: reds at ctxWarn — the smart-zone ceiling Z, i.e. the point of risking the "dumb zone"
    *  (context rot) — and oranges at the compact-dance trigger 0.8*Z. Tied to the compact-dance math, NOT the
    *  generic 90% cap: a context window well below any hard limit is already rot-risky, so it must warn early. */
-  def ctxGauge(p: Double, ctxWarn: Double): String =
-    if p >= ctxWarn then Red else if p >= 0.8 * ctxWarn then "38;5;214" else "38;5;114"
+  def ctxGauge(p: Double, ctxWarn: Double, dumbZone: Double, autoCompact: Double): String =
+    if p >= autoCompact then "7;1;38;5;196"      // near auto-compact: bold + reverse + bright red (loudest)
+    else if p >= dumbZone then "1;38;5;196"       // most likely dumb-zone: bold bright red
+    else if p >= ctxWarn then Red                 // past Z: rot-risk red
+    else if p >= 0.8 * ctxWarn then "38;5;214"    // compact-dance trigger: orange
+    else "38;5;114"                               // healthy green
 
   /** Local wall-clock HH:MM:SS from an epoch-ms (from --now-ms in tests, else System.currentTimeMillis). PURE. */
   def clock(nowMs: Long): String =
@@ -81,7 +88,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       if h <= 0 then s"${m}m" else s"${h}h${m}m"
 
   /** PURE: statusLine JSON + current time → the one-line status ("" if nothing usable / not JSON). */
-  def render(json: String, nowMs: Long, warn: Double = 80, ctxWarn: Double = 30): String =
+  def render(json: String, nowMs: Long, warn: Double = 80, ctxWarn: Double = 30, dumbZone: Double = 75, autoCompact: Double = 92): String =
     val o = try ujson.read(json).obj catch case _: Throwable => return ""
     val segs = scala.collection.mutable.ArrayBuffer[String]()
     segs += sgr("1;38;5;42", "genscalator:") // brand prefix (BR: prepend "genscalator:")
@@ -89,7 +96,8 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     o.get("model").flatMap(_.objOpt).foreach: m =>
       m.get("display_name").orElse(m.get("id")).flatMap(_.strOpt).foreach(n => segs += sgr("38;5;45", shortModel(n))) // un-bold so the bold genscalator: prefix is the only bold thing
     o.get("context_window").flatMap(_.objOpt).flatMap(_.get("used_percentage")).flatMap(_.numOpt)
-      .foreach(p => segs += sgr(ctxGauge(p, ctxWarn), s"ctx-fill: ${pct(p)}")) // green base; reds at the dumb-zone threshold (Z)
+      .foreach(p => segs += sgr(ctxGauge(p, ctxWarn, dumbZone, autoCompact),
+        s"ctx-fill: ${pct(p)}${if p >= autoCompact then " auto-compact!" else if p >= dumbZone then " dumb-zone" else ""}")) // escalates green->orange->red(Z)->dumb-zone(D)->auto-compact(A)
     val rl = o.get("rate_limits").flatMap(_.objOpt)
     rl.flatMap(_.get("five_hour")).flatMap(_.objOpt).foreach: h5 =>
       val usedP  = h5.get("used_percentage").flatMap(_.numOpt)
@@ -119,7 +127,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
   // ---------- mode line (v0.10.0): a second line labelling the joint state-of-mind ----------
   // A "mode" is a label stuck on the shared human<->agent state; MANY can be active at once. Auto-derived
   // modes come from the same status JSON this tool already reads; declared modes come from a state file (read
-  // by the @main). Each label renders REVERSE-video + bold in its own colour, joined by a plain " && "
+  // by the @main). Each label renders REVERSE-video + bold in its own colour, joined by a plain " & "
   // (non-inverted, non-bold), prefixed "genscalator:". Toggled INDEPENDENTLY of the status line above.
 
   /** Curated colours for well-known modes; an unknown label gets a stable colour by hash. */
@@ -136,12 +144,12 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     })
   /** One mode label: reverse-video (7) + bold (1) + its colour, padded to read as a chip. PURE. */
   def renderMode(label: String): String = sgr(s"7;1;${modeColor(label)}", s" $label ")
-  /** The mode line: brand prefix + active modes (each reverse+bold, own colour) joined by a plain " && ". PURE.
+  /** The mode line: brand prefix + active modes (each reverse+bold, own colour) joined by a plain " & ". PURE.
     * No active modes -> a dim placeholder, so the line is still recognisable as the (empty) mode line. */
   def renderModes(modes: Seq[String]): String =
     val brand = sgr("1;38;5;42", "genscalator:")
     if modes.isEmpty then s"$brand ${sgr("38;5;245", "clear: no active mode labels")}"
-    else s"$brand ${modes.map(renderMode).mkString(" && ")}"
+    else s"$brand ${modes.map(renderMode).mkString(" & ")}"
   private val Help: String =
     """tt statusline — format Claude Code's statusLine JSON into one compact coloured line
       |
@@ -193,7 +201,9 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     if args.contains("--help") || args.contains("-h") then { println(Help); return 0 }
     var nowMs   = System.currentTimeMillis()
     var warn    = 80.0 // usage-limit warn threshold (%); set via `--warn N` in the settings command string
-    var ctxWarn = 30.0 // context-fill dumb-zone threshold (%, the smart-zone ceiling Z); set via `--ctx-warn N`
+    var ctxWarn = 30.0 // context-fill RISK threshold (%, the smart-zone ceiling Z); set via `--ctx-warn N`
+    var dumbZone    = 75.0 // context-fill DUMB-ZONE threshold (%): most likely rotted; set via `--dumb-zone N`
+    var autoCompact = 92.0 // context-fill NEAR-AUTO-COMPACT threshold (%): harness about to compact; `--auto-compact N` (real value ~90-95%, a guess)
     var modeLine  = false // --mode-line: also emit the mode line (line 2)
     var noStatus  = false // --no-status: suppress line 1 (e.g. to show ONLY the mode line)
     var modesFile = defaultModesFile
@@ -204,14 +214,16 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       a(i) match
         case "--now-ms"     if i + 1 < a.length => nowMs     = a(i + 1).toLongOption.getOrElse(nowMs); i += 2
         case "--warn"       if i + 1 < a.length => warn      = a(i + 1).toDoubleOption.getOrElse(warn); i += 2
-        case "--ctx-warn"   if i + 1 < a.length => ctxWarn   = a(i + 1).toDoubleOption.getOrElse(ctxWarn); i += 2
+        case "--ctx-warn"     if i + 1 < a.length => ctxWarn     = a(i + 1).toDoubleOption.getOrElse(ctxWarn); i += 2
+        case "--dumb-zone"    if i + 1 < a.length => dumbZone    = a(i + 1).toDoubleOption.getOrElse(dumbZone); i += 2
+        case "--auto-compact" if i + 1 < a.length => autoCompact = a(i + 1).toDoubleOption.getOrElse(autoCompact); i += 2
         case "--modes-file" if i + 1 < a.length => modesFile = java.nio.file.Path.of(a(i + 1)); i += 2
         case "--mode-line"                      => modeLine  = true; i += 1
         case "--no-status"                      => noStatus  = true; i += 1
         case other                              => pos += other; i += 1
     val json = pos.headOption.getOrElse(scala.io.Source.stdin.mkString)
     // Each println is a SEPARATE status row (Claude Code renders multi-line statuslines).
-    if !noStatus then println(render(json, nowMs, warn, ctxWarn))
+    if !noStatus then println(render(json, nowMs, warn, ctxWarn, dumbZone, autoCompact))
     if modeLine then println(renderModes(readModes(modesFile)))
     0
 
