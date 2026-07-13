@@ -393,6 +393,31 @@ example of expressing already-built work as reqT-lang requirements for Agentic R
 * Feature: superHarnessDashboard hurts Goal: exfiltrateSecrets
 * Feature: superHarnessDashboard relatesTo Feature: contextRotMeter
 
+* Goal: noSurpriseUsageHalt has
+  * Gist: the human-agent pair never hits a session (5-hour) or weekly usage cap unobserved — an approaching limit is warned about in time to throttle, checkpoint (commit + save state), or defer heavy compute sized to the remaining budget.
+  * Why: a hard cap mid-workflow stalls work in a possibly uncommitted state and wastes the spend that led up to it; neither party watches the burn unaided (the human cannot see the meter mid-flow, the agent cannot self-read usage, a fanned-out agent swarm has no shared budget view). Origin: `research/wr-data/hit-session-limit-unobserved-2026-07-12.md`; operationalizes the session-limit and weekly-limit dances in `docs/foundations.md`.
+* Goal: noSurpriseUsageHalt helps Goal: jointHumanAgentProductivity
+* Goal: noSurpriseUsageHalt helps Goal: maximizeUsefulAutonomy
+* Goal: noSurpriseUsageHalt helps Goal: manageInferenceCost
+
+* Feature: usageLimitWarning has
+  * Gist: an estimate-and-warn gauge for the session (5-hour) and weekly usage limits — warns at a configurable threshold BEFORE the hard cap, so the pair can throttle, checkpoint, or defer a heavy fan-out instead of discovering the limit only when blocked. Its ambient slice already ships in `ttStatusline` (the reddening 5h/wk gauges); the burn-rate projection and dashboard panel are the future part.
+  * Spec: SOURCE — the Claude Code statusLine stdin JSON already carries `rate_limits.five_hour.used_percentage`, `rate_limits.seven_day.used_percentage`, and `resets_at` (the fields `ttStatusline` formats); no new telemetry, no upstream computation, all read locally on-box.
+  * Spec: WARN — when either used_percentage crosses a configurable threshold (default 80 percent, a candidate `ttConfigFile` key), surface a prominent warning marker in the `tt statusline` line and a usage panel entry in the `superHarnessDashboard`; degrade gracefully when `rate_limits` is absent (non-subscription).
+  * Spec: ESTIMATE — beyond the stateless threshold check, keep a small local on-box history of per-turn readings to estimate the burn rate and project time-to-cap against `resets_at`, so the warning can say "at this rate the session cap hits BEFORE the reset" and a planned fan-out can be sized to the remaining budget.
+  * Why: warning is cheap prevention where the miss is expensive — the 2026-07-12 session-cap hit stalled a large agent fan-out mid-run; a pre-warning would have let us checkpoint and size the burst to headroom. Measure-and-warn before the wall, not report at the wall.
+* Feature: usageLimitWarning helps Goal: noSurpriseUsageHalt
+* Feature: usageLimitWarning helps Goal: completeSuperHarness
+* Feature: usageLimitWarning helps Goal: manageInferenceCost
+* Feature: usageLimitWarning requires Feature: ttStatusline
+* Feature: usageLimitWarning relatesTo Feature: superHarnessDashboard
+* Feature: usageLimitWarning relatesTo Feature: ttConfigFile
+
+* Target: unwarnedLimitHits has
+  * Gist: count of hard usage-limit hits (session or weekly) NOT preceded by a threshold warning; the honest value is zero — every hit was warned about first.
+  * Max: 0
+* Target: unwarnedLimitHits verifies Goal: noSurpriseUsageHalt
+
 ## PAST
 
 Requirements implemented (or cancelled). Move requirements from FUTURE to PAST as they ship. The IMPLEMENTED
