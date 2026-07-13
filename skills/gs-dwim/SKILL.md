@@ -13,47 +13,24 @@ an INFORMAL spec, not a rigid grammar, so honour `gs`-led phrasings that are mer
 word "gs" inside prose it still means the project *genscalator*. Context disambiguates; if a `gs` message is
 genuinely ambiguous or the stakes are real, ask before acting ([[cue-edit-vs-clarification]]).
 
-## The commands (informal spec — do-what-I-mean, not exact-match)
+## The commands
 
-Two tiers. **Tier 1 — anyone with the plugin, in any project** (explore and drive the shipped toolbox and habits):
+The **canonical, render-ready command list lives on disk** at `docs/gs-help.txt` — terminal-style monospace,
+the single source of truth. **`gs help` reads that file and prints it verbatim** (see the how-to below); do
+not re-synthesise or reformat it into a table, and keep `docs/gs-help.txt` current whenever a command changes.
 
-```
-gs help              show the welcome + this help on the gs do-what-I-mean commands
-gs                   same as `gs help`
-gs help tt           list all typed tools (tt ...) with a one-line description of each
-gs help tt <what>    detailed help on the tool nearest in meaning to <what>
-gs tt <tool>         run <tool> and show its output here in session (e.g. gs tt chrono)
-gs status            the status-line info, expanded into a table, here in session
-gs status line on    turn the status line on
-gs status line off   turn the status line off
-gs cues              list all cues (human->agent and agent->human) and what they mean
-gs cue <what>        explain the cue nearest in meaning to <what>
-gs dances            list all dances and their goals
-gs dance <what>      explain the dance nearest in meaning to <what>
-gs term <what>       explain the foundations glossary term nearest in meaning to <what>
-gs new app <what> <dir>   create a complete runnable Scala web app <what> (e.g. todo-web-app) into <dir>
-gs compact notify on      enable the bing-bing: a notice plus chime when a compaction finishes
-gs compact notify off     disable it (silent); this is the default
-gs compact notify         show whether the bing-bing is currently on or off
-gs sound test             play a test chime to check the speakers are on
-```
-
-**Tier 2 — genscalator contributors, dogfooding mode** (working ON genscalator, or in the gs research MO).
-These assume the gs dev substrate: a pin board / resume prompt, a reqT-lang `PRD.md`, a `tools/test/` suite.
-A plain plugin user will not have these; the command should say so and fall back gracefully.
-
-```
-gs where             orient: a short current-state snapshot (pin board + resume prompt + recent git log)
-gs menu              show the safe solo-task menu (rot-ranked), for a solo/AFK handoff
-gs reqt [<file>]     parse + lint a reqT-lang file (default PRD.md); report both results
-gs test              run the tt toolbox test suite (handles the tt.tools prop) and report green/red
-```
+The file groups them as **user commands**, then under a divider the **experimental developer commands** (genscalator contributors /
+dogfooding mode, which assume the dev substrate: a pin board / resume prompt, a reqT-lang `PRD.md`, a
+`tools/test/` suite — a plain plugin user will not have these, so those commands should say so and degrade
+gracefully). The per-command behaviour is specified below.
 
 ## How to perform each
 
-- **`gs help` / bare `gs`** — print the welcome: what genscalator is, the tool families, how to turn the
-  status line on, and this `gs` command list. Source: the plugin welcome text (`docs/claude-plugin.md` +
-  `research/sm-investigations/SM056-welcome-content-draft.md`).
+- **`gs help` / bare `gs`** — **Read `docs/gs-help.txt` and print it VERBATIM inside a
+  code fence** (monospace, terminal-style). It is the single source of truth for the command list, so pull it
+  from disk rather than re-synthesise or table-ify it (feed-efficient + echt); keep it current when commands
+  change. Optionally add a one-line welcome intro above it (what genscalator is); fuller welcome content lives
+  in `research/sm-investigations/SM056-welcome-content-draft.md`.
 - **`gs help tt`** — list every `tt` tool with a one-line description. Source of truth: the `## Tools`
   section of `tools/README.md` (each `### <tool>` heading + its tagline). Present as a compact table.
 - **`gs help tt <what>`** — pick the tool **nearest in meaning** to `<what>` (e.g. "search text" → `tt
@@ -144,7 +121,9 @@ of these intents = do the sensible thing.
   get wrong): state in ONE line what you plan to do, then act — or pause for a quick confirm first if it is
   effectful or easily wrong (a settings edit, a project seed, an effectful `gs tt`).
 - **Severely ambiguous OR incomplete** (two or more equally-likely readings, or a required argument is
-  missing): ask ONE short follow-up before acting — e.g. `gs seed app` with no `<dir>` → ask where; bare
+  missing): ask ONE short follow-up before acting, phrased as a **"did you mean: ..."** offering the nearest
+  candidate readings for the user to pick from, rather than an open-ended question (faster to answer, and it
+  shows what the agent already inferred) — e.g. `gs seed app` with no `<dir>` → ask where; bare
   `gs tt` with no tool → ask which.
 
 The **stakes dial rides on top**: the more effectful or irreversible the action, the more you lean toward

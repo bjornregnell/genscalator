@@ -56,6 +56,7 @@ of truth). For the full prose on any entry, follow it back to foundations.
 | staleness flag | the agent flags a stale PB NOW / resume-prompt before trusting it. |
 | WDYT deferral | the agent holds an owed opinion for a lull rather than interrupt flow. |
 | propose the rest dance | the agent detects fatigue or over-trust and proposes `:Z`. |
+| "did you mean: ..." | on genuine ambiguity the agent offers the nearest candidate readings to pick from, instead of an open-ended question. |
 
 ---
 

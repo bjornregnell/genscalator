@@ -1,0 +1,27 @@
+genscalator (gs): do-what-I-mean commands. Lead a message with "gs" and I act on your intent,
+matched to the nearest command in meaning (not exact syntax).
+
+  gs help                  show this help on the gs do-what-I-mean commands
+  gs                       same as gs help
+  gs help tt               list all available typed tools and a one-liner of what each does
+  gs help tt <what>        show detailed help on the tool nearest in meaning to <what>
+  gs tt <tool>             run <tool> and give its output in session, e.g. gs tt chrono
+  gs status                the status line information, expanded into a table in session
+  gs status line on        turn the status line on
+  gs status line off       turn the status line off
+  gs cues                  list all cues, human -> agent and agent -> human, and what they mean
+  gs cue <what>            explain the cue nearest in meaning to <what>
+  gs dances                list all dances and what their goals are
+  gs dance <what>          explain the dance nearest in meaning to <what>
+  gs term <what>           explain the foundations glossary term nearest in meaning to <what>
+  gs new app <what> <dir>  seed a complete runnable Scala web app <what> into <dir>
+  gs compact notify on     turn the bing-bing on: a notice + chime when a compaction finishes
+  gs compact notify off    turn the bing-bing off (silent; the default)
+  gs compact notify        show whether the bing-bing is on or off
+  gs sound test            play a test chime to check the speakers are on
+
+--- genscalator developer commands (experimental):
+  gs where                 short current-state snapshot: pin board + resume prompt + recent git log
+  gs menu                  the safe solo-task menu, rot-ranked, for a solo / AFK handoff
+  gs reqt [<file>]         parse + lint a reqT-lang file (default PRD.md); report both
+  gs test                  run the tt toolbox test suite and report green / red
