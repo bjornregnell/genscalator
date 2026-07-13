@@ -20,6 +20,8 @@ list, not a rigid syntax — `gs`-led phrasings that are merely *similar* also w
 Bare **`gs`** or **`gs help`** shows this. (Implemented by the `gs-dwim` skill, so it works as soon as the
 plugin is active — no settings needed.)
 
+**Tier 1 — for anyone with the plugin** (explore and drive the shipped toolbox and habits):
+
 ```
 gs help              show the welcome + this help on the gs do-what-I-mean commands
 gs                   same as `gs help`
@@ -33,6 +35,17 @@ gs cues              list all cues (human->agent and agent->human) and what they
 gs cue <what>        explain the cue nearest in meaning to <what>
 gs dances            list all dances and their goals
 gs dance <what>      explain the dance nearest in meaning to <what>
+gs term <what>       explain the foundations glossary term nearest in meaning to <what>
+```
+
+**Tier 2 — for genscalator contributors (dogfooding mode)**, when you are working ON genscalator itself. These
+assume the dev substrate (a pin board / resume prompt, a reqT-lang `PRD.md`, a `tools/test/` suite):
+
+```
+gs where             orient: a short current-state snapshot (pin board + resume prompt + recent git log)
+gs menu              show the safe solo-task menu (rot-ranked), for a solo/AFK handoff
+gs reqt [<file>]     parse + lint a reqT-lang file (default PRD.md); report both results
+gs test              run the tt toolbox test suite and report green/red
 ```
 
 (Note: `gs` is deliberately overloaded — a leading `gs` cue means "run a gs command"; `gs` in prose or a

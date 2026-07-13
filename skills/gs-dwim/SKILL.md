@@ -1,7 +1,7 @@
 ---
 name: gs-dwim
-description: Do-What-I-Mean in-session genscalator commands cued by a leading `gs`. Trigger whenever the user's message begins with `gs ` (or is a bare `gs`) — e.g. "gs help", "gs cues", "gs cue similar", "gs dances", "gs dance compact", "gs help tt", "gs help tt search text", "gs tt chrono", "gs status", "gs status line on". Interpret the intent do-what-I-mean style (nearest-in-meaning, "or similar"), not by exact string match, and perform the matching genscalator action.
-allowed-tools: Bash(tt text *) Bash(tt files *) Bash(tt log *) Bash(tt chrono *) Bash(tt statusline *) Bash(tt parsereqt *) Bash(tt gitinfo *)
+description: Do-What-I-Mean in-session genscalator commands cued by a leading `gs`. Trigger whenever the user's message begins with `gs ` (or is a bare `gs`) — e.g. "gs help", "gs cues", "gs cue similar", "gs dances", "gs dance compact", "gs help tt", "gs help tt search text", "gs tt chrono", "gs status", "gs status line on", "gs where", "gs menu", "gs reqt", "gs term rot", "gs test". Interpret the intent do-what-I-mean style (nearest-in-meaning, "or similar"), not by exact string match, and perform the matching genscalator action.
+allowed-tools: Read Bash(tt text *) Bash(tt files *) Bash(tt log *) Bash(tt chrono *) Bash(tt statusline *) Bash(tt parsereqt *) Bash(tt gitinfo *) Bash(scala-cli test *)
 ---
 
 # `gs` — genscalator do-what-I-mean (DWIM) in-session commands
@@ -14,6 +14,8 @@ word "gs" inside prose it still means the project *genscalator*. Context disambi
 genuinely ambiguous or the stakes are real, ask before acting ([[cue-edit-vs-clarification]]).
 
 ## The commands (informal spec — do-what-I-mean, not exact-match)
+
+Two tiers. **Tier 1 — anyone with the plugin, in any project** (explore and drive the shipped toolbox and habits):
 
 ```
 gs help              show the welcome + this help on the gs do-what-I-mean commands
@@ -28,6 +30,18 @@ gs cues              list all cues (human->agent and agent->human) and what they
 gs cue <what>        explain the cue nearest in meaning to <what>
 gs dances            list all dances and their goals
 gs dance <what>      explain the dance nearest in meaning to <what>
+gs term <what>       explain the foundations glossary term nearest in meaning to <what>
+```
+
+**Tier 2 — genscalator contributors, dogfooding mode** (working ON genscalator, or in the gs research MO).
+These assume the gs dev substrate: a pin board / resume prompt, a reqT-lang `PRD.md`, a `tools/test/` suite.
+A plain plugin user will not have these; the command should say so and fall back gracefully.
+
+```
+gs where             orient: a short current-state snapshot (pin board + resume prompt + recent git log)
+gs menu              show the safe solo-task menu (rot-ranked), for a solo/AFK handoff
+gs reqt [<file>]     parse + lint a reqT-lang file (default PRD.md); report both results
+gs test              run the tt toolbox test suite (handles the tt.tools prop) and report green/red
 ```
 
 ## How to perform each
@@ -61,6 +75,29 @@ gs dance <what>      explain the dance nearest in meaning to <what>
   `docs/foundations.md` "Dances and handoffs".
 - **`gs dance <what>`** — explain the dance **nearest in meaning** to `<what>` (e.g. "running low on
   context" → the compact dance, "hand off work" → the solo/delegation dance).
+- **`gs term <what>`** — explain the foundations glossary term **nearest in meaning** to `<what>`. Broader
+  than `gs cue`/`gs dance`: covers any coined concept (rot, the dumb zone Z, substrate-grounding, ape⟷anthro,
+  echt, DWIM, ...). Source: `docs/foundations.md`. Give the definition plus a one-line "why it matters"; if two
+  terms are close, show both.
+**Tier 2 (genscalator contributors / dogfooding mode) — assume the gs dev substrate; degrade gracefully if absent:**
+
+- **`gs where`** — orient: a SHORT current-state snapshot so the user (or a returning agent) re-syncs fast.
+  Read from whatever current-state substrate the project keeps — a pin board's `## NOW` section, a
+  `tmp/resume-prompt.md`, and the recent `git log` (`tt gitinfo` / `tt log`) — and summarise: what shipped
+  recently, what is in flight, what awaits the human. Keep it to a screen; link the sources for detail.
+  **Ground it in the files, do not recall.** If the project keeps no such substrate, say so and fall back to
+  the recent git log.
+- **`gs menu`** — show the safe solo-task menu for a solo/AFK handoff, rot-ranked (safest/cheapest first).
+  Source: the pin board's stocked menu if one exists (the `## NOW` safe-vs-not-safe list); otherwise derive
+  candidate safe tasks from the current state (agent-authored, read-only, no outward ops). Re-verify each
+  item's safety against the CURRENT state before presenting ([[cue-go-afk]]).
+- **`gs reqt [<file>]`** — verify a reqT-lang file in one step: run `tt parsereqt parse <file>` then
+  `tt parsereqt lint <file>`, and report BOTH (parse errors and unknown-concept fall-throughs). Default
+  `<file>` to `PRD.md` if none is given. This is the after-every-reqT-edit check folded into one command.
+- **`gs test`** — run the genscalator toolbox test suite and report green/red. Command shape:
+  `scala-cli test <repo>/tools --java-prop tt.tools=<repo>/tools` — the `tt.tools` prop is REQUIRED whenever
+  the cwd is not the tools dir (a known gotcha); resolve `<repo>` to the genscalator checkout. Report the
+  pass/fail counts; on red, surface the first failing suite so the user knows where to look.
 
 ## The DWIM contract
 
