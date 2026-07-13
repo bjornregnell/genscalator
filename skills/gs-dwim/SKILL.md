@@ -101,8 +101,8 @@ gs test              run the tt toolbox test suite (handles the tt.tools prop) a
   reversible one-file toggle (NOT a `settings.json` edit — the hook is already wired), so treat the explicit `gs`
   command as the user's go and just do it, then confirm the new state (SHOWN, like `gs status line`). **Default is
   OFF**, because the notice is intrusive by design. If the hook is not installed (a plugin user who has not set it
-  up), say so and point at the setup: the `compact-wake.sh` script plus a `Pre`/`PostCompact` hook entry in
-  `~/.claude/settings.json`. Desktop-Linux only (`notify-send` + a sound player such as `canberra-gtk-play`).
+  up), say so and point at the setup doc `docs/compact-wake-poll.md` (the `compact-wake.sh` script plus a
+  `Pre`/`PostCompact` hook entry in `~/.claude/settings.json`). Desktop-Linux only (`notify-send` + a sound player such as `canberra-gtk-play`).
 **Tier 2 (genscalator contributors / dogfooding mode) — assume the gs dev substrate; degrade gracefully if absent:**
 
 - **`gs where`** — orient: a SHORT current-state snapshot so the user (or a returning agent) re-syncs fast.
