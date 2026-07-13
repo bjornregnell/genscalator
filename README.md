@@ -195,7 +195,8 @@ see the list. Nothing to configure - it works as soon as the plugin is installed
 **Tier 1 - for anyone with the plugin** (explore and drive the toolbox and habits):
 `gs help tt` (list the tools) · `gs help tt <what>` (help on the nearest tool) · `gs tt <tool>` (run one inline) ·
 `gs status` (explain the status line) · `gs status line on|off` (toggle it) · `gs cues` / `gs cue <what>` ·
-`gs dances` / `gs dance <what>` · `gs term <what>` (a foundations glossary term).
+`gs dances` / `gs dance <what>` · `gs term <what>` (a foundations glossary term) · `gs seed app <what> <dir>`
+(seed a runnable Scala web app).
 
 **Tier 2 - for genscalator contributors** (dogfooding mode, when you work ON genscalator itself):
 `gs where` (a current-state snapshot) · `gs menu` (the safe solo-task menu) · `gs reqt` (parse plus lint a

@@ -1,6 +1,6 @@
 ---
 name: gs-dwim
-description: Do-What-I-Mean in-session genscalator commands cued by a leading `gs`. Trigger whenever the user's message begins with `gs ` (or is a bare `gs`) — e.g. "gs help", "gs cues", "gs cue similar", "gs dances", "gs dance compact", "gs help tt", "gs help tt search text", "gs tt chrono", "gs status", "gs status line on", "gs where", "gs menu", "gs reqt", "gs term rot", "gs test". Interpret the intent do-what-I-mean style (nearest-in-meaning, "or similar"), not by exact string match, and perform the matching genscalator action.
+description: Do-What-I-Mean in-session genscalator commands cued by a leading `gs`. Trigger whenever the user's message begins with `gs ` (or is a bare `gs`) — e.g. "gs help", "gs cues", "gs cue similar", "gs dances", "gs dance compact", "gs help tt", "gs help tt search text", "gs tt chrono", "gs status", "gs status line on", "gs where", "gs menu", "gs reqt", "gs term rot", "gs test", "gs seed app todo ./my-app". Interpret the intent do-what-I-mean style (nearest-in-meaning, "or similar"), not by exact string match, and perform the matching genscalator action.
 allowed-tools: Read Bash(tt text *) Bash(tt files *) Bash(tt log *) Bash(tt chrono *) Bash(tt statusline *) Bash(tt parsereqt *) Bash(tt gitinfo *) Bash(scala-cli test *)
 ---
 
@@ -31,6 +31,7 @@ gs cue <what>        explain the cue nearest in meaning to <what>
 gs dances            list all dances and their goals
 gs dance <what>      explain the dance nearest in meaning to <what>
 gs term <what>       explain the foundations glossary term nearest in meaning to <what>
+gs seed app <what> <dir>  seed a complete runnable Scala web app <what> (e.g. todo-web-app) into <dir>
 ```
 
 **Tier 2 — genscalator contributors, dogfooding mode** (working ON genscalator, or in the gs research MO).
@@ -79,6 +80,12 @@ gs test              run the tt toolbox test suite (handles the tt.tools prop) a
   than `gs cue`/`gs dance`: covers any coined concept (rot, the dumb zone Z, substrate-grounding, ape⟷anthro,
   echt, DWIM, ...). Source: `docs/foundations.md`. Give the definition plus a one-line "why it matters"; if two
   terms are close, show both.
+- **`gs seed app <what> <dir>`** — seed a complete, runnable Scala web app. Recognise the intent and **invoke
+  the `crud-web-app-seed` skill**, passing the app kind `<what>` (e.g. "todo-web-app") and the target `<dir>`.
+  This WRITES a project (shared datamodel, JDK-only server, Scala.js/Laminar client, reqT-lang PRD, tests), so
+  it is effectful: confirm the target `<dir>` and never overwrite a non-empty directory without asking. Not a
+  delegation candidate (it writes durable output) — run inline; afterwards point the user at the generated
+  `README.md` to build and run. Tier 1 (any plugin user), but effectful, unlike the other Tier-1 commands.
 **Tier 2 (genscalator contributors / dogfooding mode) — assume the gs dev substrate; degrade gracefully if absent:**
 
 - **`gs where`** — orient: a SHORT current-state snapshot so the user (or a returning agent) re-syncs fast.
@@ -129,6 +136,7 @@ ONLY when **all three** hold — if any fails, run inline:
 | `gs help*` / `gs term` / `gs cue` / `gs dance` | no | quick lookups, small output — a sub-agent hop costs more than it saves. |
 | `gs tt <tool>` | no | the user wants the tool's output HERE; and for an effectful tool (git/forge/ssg/serv) the permission flow + outward-op discipline MUST stay in the main agent's view — never delegate an effectful run. |
 | `gs status line on/off` | **never** | a sensitive settings edit — must be inline, SHOWN to the user, with the `/hooks` handoff; delegating a settings change out of sight is the exact anti-pattern. |
+| `gs seed app` | no | writes a whole project (effectful, durable output); the primary output is the seeded app — run inline, never delegate. |
 
 Two refinements that make the decision smarter:
 - **`gs test`: a BACKGROUND job often beats a sub-agent.** When the human is present, run it in the background

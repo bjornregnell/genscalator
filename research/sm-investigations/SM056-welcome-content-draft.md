@@ -36,6 +36,7 @@ gs cue <what>        explain the cue nearest in meaning to <what>
 gs dances            list all dances and their goals
 gs dance <what>      explain the dance nearest in meaning to <what>
 gs term <what>       explain the foundations glossary term nearest in meaning to <what>
+gs seed app <what> <dir>  seed a complete runnable Scala web app <what> (e.g. todo-web-app) into <dir>
 ```
 
 **Tier 2 — for genscalator contributors (dogfooding mode)**, when you are working ON genscalator itself. These
