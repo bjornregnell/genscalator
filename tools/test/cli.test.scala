@@ -299,6 +299,67 @@ class CliSuite extends munit.FunSuite:
     finally os.remove.all(d)
   }
 
+  // --- skillcheck (SM070: expected-skill manifest from disk; warn on the silent skill outage) ---
+  private def skillsFixture(): os.Path =
+    val d = os.temp.dir()
+    os.makeDir(d / "alpha"); os.write(d / "alpha" / "SKILL.md", "# alpha\n")
+    os.makeDir(d / "beta");  os.write(d / "beta" / "SKILL.md", "# beta\n")
+    os.makeDir(d / "notaskill"); os.write(d / "notaskill" / "README.md", "no skill here\n")
+    d
+
+  test("skillcheck list mode: names the expected skills from disk, excludes dirs without SKILL.md") {
+    val d = skillsFixture()
+    try
+      val (code, out, _) = run("skillcheck", "--skills", d.toString)
+      assertEquals(code, 0)
+      assert(clue(out).contains("expected genscalator skills"))
+      assert(clue(out).contains("alpha"))
+      assert(clue(out).contains("beta"))
+      assert(!clue(out).contains("notaskill"))            // no SKILL.md → not an expected skill
+    finally os.remove.all(d)
+  }
+  test("skillcheck --active with all expected present: OK, exit 0") {
+    val d = skillsFixture()
+    try
+      val (code, out, _) = run("skillcheck", "--skills", d.toString, "--active", "alpha", "beta")
+      assertEquals(code, 0)
+      assert(clue(out).contains("OK: all 2 expected"))
+    finally os.remove.all(d)
+  }
+  test("skillcheck --active reports an unexpected active skill as info, still exit 0") {
+    val d = skillsFixture()
+    try
+      val (code, out, _) = run("skillcheck", "--skills", d.toString, "--active", "alpha", "beta", "gamma")
+      assertEquals(code, 0)
+      assert(clue(out).contains("active but not in the genscalator set"))
+      assert(clue(out).contains("gamma"))
+    finally os.remove.all(d)
+  }
+  test("skillcheck --active missing one: WARNING naming the missing skill, exit 1") {
+    val d = skillsFixture()
+    try
+      val (code, _, err) = run("skillcheck", "--skills", d.toString, "--active", "alpha")
+      assertEquals(code, 1)                               // the silent-outage signal, made loud
+      assert(clue(err).contains("NOT active"))
+      assert(clue(err).contains("beta"))
+    finally os.remove.all(d)
+  }
+  test("skillcheck --active with NONE active (the /skills said 'No skills found' case): exit 1, all missing") {
+    val d = skillsFixture()
+    try
+      val (code, _, err) = run("skillcheck", "--skills", d.toString, "--active")
+      assertEquals(code, 1)
+      assert(clue(err).contains("alpha"))
+      assert(clue(err).contains("beta"))
+    finally os.remove.all(d)
+  }
+  test("skillcheck --help: elaborate help, exit 0") {
+    val (code, out, _) = run("skillcheck", "--help")
+    assertEquals(code, 0)
+    assert(clue(out).contains("tt skillcheck"))
+    assert(clue(out).contains("phenomenology") || clue(out).contains("cannot FEEL"))
+  }
+
   // --- verify (allowlist safety) ---
   test("verify refuses a non-allowlisted executable with exit 2, never running it") {
     // `ls` is harmless AND not in the builtin allowlist {scala-cli, tt, scalex} → must be rejected pre-exec.

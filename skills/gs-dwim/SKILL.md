@@ -136,6 +136,14 @@ gracefully). The per-command behaviour is specified below.
   `scala-cli test <repo>/tools --java-prop tt.tools=<repo>/tools` — the `tt.tools` prop is REQUIRED whenever
   the cwd is not the tools dir (a known gotcha); resolve `<repo>` to the genscalator checkout. Report the
   pass/fail counts; on red, surface the first failing suite so the user knows where to look.
+- **`gs skills`** — verify the genscalator skill set is actually active, because the agent CANNOT feel a
+  missing skill (an inactive skill is indistinguishable from the inside from an active one it simply failed to
+  apply; the only signal is behavioural regression, e.g. guard-stalls). Run `tt skillcheck` to print the
+  EXPECTED set (derived from the `skills/*/SKILL.md` dirs, so it never drifts), then run `/skills` (a HARNESS
+  command — a tool cannot produce that list) and confirm every expected name is listed. For a machine-checked
+  diff, feed the active names back: `tt skillcheck --active <names /skills listed>` — exit 1 names any
+  expected-but-not-active skill = a silent skill outage to fix with a plugin install/enable or `/reload-plugins`.
+  This is the SM070 session-start self-check. Ties [[verify-skills-active-at-session-start]].
 
 ## The DWIM contract
 
