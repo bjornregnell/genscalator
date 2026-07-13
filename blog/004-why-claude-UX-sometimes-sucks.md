@@ -155,6 +155,10 @@ machine that goes 'Ping!'"* while the woman actually giving birth is politely ig
 for its own sake, a machine that pings to look busy. Ours earns its bing: it pings to fetch a wandering human back
 to the work. Same silly sound, opposite point.
 
+Here it is, caught in the act:
+
+![The bing-bing in the wild - a GNOME notification titled "genscalator:" reading "Compaction done at 2026-07-13 15:10:48 - come back to the feed", fired the instant the fresh context was ready.](figures/bing-bing-test-2026-07-13.png)
+
 <!-- AGENT-DRAFT 2026-07-13 (BR to revoice; his phrase "tripped on its own toes"). A tiny agent-side beat.
 Source: research/wr-data/em-dash-in-edit-anchor-silent-match-failure-2026-07-13.md -->
 
@@ -183,3 +187,18 @@ Pairs with the tt-toolbox DESIGN (`tools/DESIGN-single-dispatcher.md`) on the to
 > the wall-clock) → the **message-race**. A better-instrumented *agent* surface = a more capable pair. Catalogue:
 > `research/wr-data/harness-ux.md` (the agent-UX-pain class). "Sucks" for whom? Both users, differently — that is the
 > essay's other half.
+
+<!-- AGENT-DRAFT 2026-07-13 (BR to revoice / approve / place): the status + mode line as the concrete fix for the
+agent-can't-see-its-own-state asymmetry. Sources: research/wr-data/statusline-loved-in-daily-use-2026-07-13.md,
+status-plus-mode-line-prototype-2026-07-13.md, instruments-must-not-mimic-harness-disinformation-2026-07-13.md. -->
+
+**And the fix we built for it.** `[for BR to revoice]` The agent cannot read its own context-fill or its rot; the
+human cannot read the agent's queue or the wall-clock. So we externalised the state into an ambient two-line
+display, one line for each direction of the asymmetry. Line 1, the status line, shows the measured state the agent
+cannot self-read - clock, model, context-fill, the usage limits, cost - so a human can steer on a glance (BR: he
+came to love it, "just take a peek at ctx and go on when its green"). Line 2, the mode line, shows the *declared*
+joint state-of-mind as colour chips that either of us can add or remove. And it is honest by construction: when
+nothing is declared it says, plainly, "clear: no active mode labels" - it never fakes a state it does not have,
+which is the one rule an awareness instrument must never break.
+
+![The two-line ambient display. Line 1 (status) externalises the measured state the agent cannot self-read - clock, model, context-fill, limits, cost. Line 2 (mode) externalises the declared joint state-of-mind as reverse-video colour chips either party can set.](figures/status-line+mode-prototype-2026-07-13.png)
