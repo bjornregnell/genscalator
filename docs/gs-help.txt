@@ -25,6 +25,8 @@ matched to the nearest command in meaning (not exact syntax).
   gs compact notify off    turn the bing-bing off (silent; the default)
   gs compact notify        show whether the bing-bing is on or off
   gs sound test            play a test chime to check the speakers are on
+  gs allow                 set up the recommended tt allowlist for this repo (shown; you approve)
+  gs help allow            explain the recommended allowlist and its principles (no changes)
 
 --- genscalator developer commands (experimental):
   gs where                 short current-state snapshot: pin board + resume prompt + recent git log

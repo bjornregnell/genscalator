@@ -1,6 +1,6 @@
 ---
 name: gs-dwim
-description: Do-What-I-Mean in-session genscalator commands cued by a leading `gs`. Trigger whenever the user's message begins with `gs ` (or is a bare `gs`) — e.g. "gs help", "gs cues", "gs cue similar", "gs dances", "gs dance compact", "gs help tt", "gs help tt search text", "gs tt chrono", "gs status", "gs status line on", "gs where", "gs menu", "gs reqt", "gs term rot", "gs test", "gs new app todo ./my-app". Interpret the intent do-what-I-mean style (nearest-in-meaning, "or similar"), not by exact string match, and perform the matching genscalator action.
+description: Do-What-I-Mean in-session genscalator commands cued by a leading `gs`. Trigger whenever the user's message begins with `gs ` (or is a bare `gs`) — e.g. "gs help", "gs cues", "gs cue similar", "gs dances", "gs dance compact", "gs help tt", "gs help tt search text", "gs tt chrono", "gs status", "gs status line on", "gs where", "gs menu", "gs reqt", "gs term rot", "gs test", "gs allow", "gs help allow", "gs new app todo ./my-app". Interpret the intent do-what-I-mean style (nearest-in-meaning, "or similar"), not by exact string match, and perform the matching genscalator action.
 allowed-tools: Read Bash(tt text *) Bash(tt files *) Bash(tt log *) Bash(tt chrono *) Bash(tt statusline *) Bash(tt parsereqt *) Bash(tt gitinfo *) Bash(tt doc *) Bash(tt mode *) Bash(scala-cli test *)
 ---
 
@@ -103,6 +103,18 @@ gracefully). The per-command behaviour is specified below.
   `canberra-gtk-play -i complete` (fall back to `paplay /usr/share/sounds/freedesktop/stereo/complete.oga`); if
   neither player exists, say the box has no sound player installed. Effect-light (just plays a sound), Tier 1,
   never a delegation candidate (the user wants to hear it here and now).
+- **`gs allow`** — set up the recommended genscalator allowlist for the CURRENT repo so `tt` runs without a
+  prompt. Read the canonical set from `docs/allowlist.md` (`tt doc allowlist`), resolve THIS repo's absolute
+  path (`tt gitinfo`), and MERGE the block into `.claude/settings.local.json` via the `update-config` approach:
+  **add only the rules that are missing** — so it is **idempotent** (re-running is a safe no-op that reports
+  "already covered"), and it never overwrites the user's existing permissions. Default to **Tier 1** (safe
+  defaults + the deny-list); add **Tier 2** (path-scoped `git`/`rm`) only if the user asks. Also **audit**:
+  flag any existing allow rule that breaks the principles — a bare interpreter (`Bash(python3 -)`), a broad
+  unscoped verb (`Bash(git *)`, `Bash(ssh *)`) — for the user to prune, but NEVER remove anything
+  automatically. A sensitive settings edit: **inline, SHOWN, human-gated, never delegated** — same discipline
+  as `gs status line`; if a direct edit is unwanted, hand the exact block to paste. **`gs help allow`** just
+  prints `docs/allowlist.md` (`tt doc allowlist`) — no changes made.
+
 **Tier 2 (genscalator contributors / dogfooding mode) — assume the gs dev substrate; degrade gracefully if absent:**
 
 - **`gs where`** — orient: a SHORT current-state snapshot so the user (or a returning agent) re-syncs fast.
@@ -171,6 +183,7 @@ ONLY when **all three** hold — if any fails, run inline:
 | `gs status line on/off` | **never** | a sensitive settings edit — must be inline, SHOWN to the user, with the `/hooks` handoff; delegating a settings change out of sight is the exact anti-pattern. |
 | `gs compact notify on/off` | **never** | a per-user config toggle (a sentinel file the hook reads); keep it inline and SHOWN, like `gs status line` — delegating an out-of-sight config change is the anti-pattern. |
 | `gs status mode on/off` | **never** | a settings edit (the statusLine flag); inline and SHOWN, like `gs status line`. |
+| `gs allow` | **never** | a sensitive settings edit (the permission allowlist); inline, SHOWN, human-gated like `gs status line` — never grant permissions out of sight. |
 | `gs mode add/rm` | no | a quick state-file mutation the agent does inline as its MO shifts; not a big-in / small-out job. |
 | `gs new app` | no | writes a whole project (effectful, durable output); the primary output is the seeded app — run inline, never delegate. |
 
