@@ -7,9 +7,14 @@ message did the harness re-invoke the agent, which then ran its first tool call 
 until I said something that you got awakened by the harness... you cant see when the compacting process is
 finished?"
 
+**Correction (BR, same exchange).** This is NOT global invisibility. **The human CAN see compaction finish** —
+BR has a compact **progress bar** in his terminal and would have seen it complete had he been looking; he was
+away from the desk. So the boundary is **human-visible via an instrument the agent does not have.** The precise
+statement is an ASYMMETRY: human-visible (progress bar) / agent-invisible — not "invisible to everyone."
+
 ## The mechanism
 - The agent is **paused through the compact and stays paused after it completes.** There is no agent-visible
-  "compaction finished" event.
+  "compaction finished" event (though the HUMAN sees one — the progress bar).
 - The harness re-invokes the agent only when there is something to process. Empirically here that was **BR's
   message**, not the compaction-complete boundary.
 - Therefore the hand-stamped `post:` is really **"first moment the agent ran again"** = gated on the human
@@ -35,10 +40,18 @@ run** with zero human latency and zero dependence on the agent or the human bein
 instrument that can answer BR's "is compaction time proportional to fill?" question. Human-approved settings
 step (hooks) — PROPOSE to BR, do not self-apply.
 
+## Conclusion (BR)
+**We need the super-harness to close this gap.** The human already has the instrument (the progress bar); the
+super-harness should give the AGENT an equivalent — expose the compaction lifecycle boundaries to the agent
+(via PreCompact/PostCompact hooks now, or a first-class agent-readable event later), so the asymmetry collapses
+and the agent can both self-measure the compact and know its own lifecycle state without waiting on the human.
+This is the same shape as the usage/context panel (SM022/SM039): a gauge the human can see, made agent-readable.
+
 ## Ties
 Family E (the agent cannot read its own gauges / lifecycle) generalizes here to **the agent cannot observe the
-harness's own lifecycle events** — compaction start/finish are opaque to it, just like fill. The super-harness
-gap: expose (or hook) the lifecycle boundaries. Related: [[agent-lacks-felt-time-rebind-at-boundaries]] (no felt
+harness's own lifecycle events** — compaction start/finish are opaque to it, just like fill (whereas the human
+has a progress bar for the former and `/context` for the latter). The super-harness gap: expose (or hook) the
+lifecycle boundaries to the agent, per BR's conclusion above. Related: [[agent-lacks-felt-time-rebind-at-boundaries]] (no felt
 time — here, not even a felt *event*), the compact dance (foundations), and the `/context`-reaches-agent
 specimen (a slash output DOES reach the agent; a compaction-complete event does NOT — asymmetric harness
 visibility).
