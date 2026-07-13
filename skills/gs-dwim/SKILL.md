@@ -26,11 +26,13 @@ gracefully). The per-command behaviour is specified below.
 
 ## How to perform each
 
-- **`gs help` / bare `gs`** — **run `tt doc gs-help`** and let its output render. It cats
-  `docs/gs-help.txt` at native speed, so the help appears from the subprocess instead of the agent re-emitting
-  it token-by-token (the slow path). `docs/gs-help.txt` stays the single source of truth; keep it current when
-  commands change. Fallback if `tt` is unavailable: Read the file and print it verbatim in a code fence. Fuller
-  welcome content lives in `research/sm-investigations/SM056-welcome-content-draft.md`.
+- **`gs help` / bare `gs`** — **run `tt doc gs-help`** (it cats `docs/gs-help.txt`, the canonical source), **then
+  PASTE its output verbatim in a code fence.** ⚠ Many users do NOT see raw Bash tool-output, so the agent MUST
+  re-emit any surfaced output as visible text — this REVERSES the old "let the subprocess render, don't re-emit"
+  optimization (which silently fails when tool-output is hidden; observed live 2026-07-13). **This applies to
+  every gs command that shows `tt` output** (`gs help tt`, `gs tt <tool>`, `gs status`, ...): run the tool AND
+  paste the result. Keep `docs/gs-help.txt` current when commands change. Fuller welcome content:
+  `research/sm-investigations/SM056-welcome-content-draft.md`.
 - **`gs help tt`** — list every `tt` tool with a one-line description. Source of truth: the `## Tools`
   section of `tools/README.md` (each `### <tool>` heading + its tagline). Present as a compact table.
 - **`gs help tt <what>`** — pick the tool **nearest in meaning** to `<what>` (e.g. "search text" → `tt
