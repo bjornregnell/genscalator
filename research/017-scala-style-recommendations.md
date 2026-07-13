@@ -4,7 +4,7 @@ Martin Odersky, Björn Regnell, Rex Kerr
 
 January 7, 2026
 
-Lates version of this document [here at google docs](https://docs.google.com/document/d/14ZBGKNHUW4d8hDWIi5i6QquClX3_iXva-iMy5KpFU3I/edit?usp=sharing).
+Latest version of this document [here in markdown](https://codeberg.org/bjornregnell/scala-common-style/src/branch/main/scala-common-style-mirror.md).
 
 
 The question whether to use indentation or braces currently divides the Scala community. One particular problem is that it is perceived as a battle between two different and incompatible styles. But with some modest shifts in details we might be able to overcome that divide and turn it into a matter of degree. This document proposes a path towards a common Scala style that could be used as a recommendation in contexts where an agreed compromise between the braceless and bracefull styles is needed. The goal is to provide a balanced style option that both sides of the divide can appreciate. 

@@ -1,6 +1,6 @@
 # Braceful, braceless, or the common style?
 
-> **Status: drafted 2026-07-03; published 2026-07-08; deployed 2026-07-08; updated 2026-07-11.** **Author: Björn Regnell.** A Scala-syntax post that judges braces vs
+> **Status: drafted 2026-07-03; published 2026-07-08; deployed 2026-07-08; updated 2026-07-13.** **Author: Björn Regnell.** A Scala-syntax post that judges braces vs
 > significant indentation not only by human taste but by a second, newer yardstick: **what it costs a coding
 > *agent* to edit the code.**
 > **Audience:** Scala developers weighing a Scala-3 style policy; language designers and SIP folk; builders of
@@ -100,7 +100,7 @@ actually make more editing errors in braceless code, and does it get worse for b
 ## 4. The common-style proposal
 
 A concrete proposal for a middle path was written up by Martin Odersky, myself, and Rex Kerr in an
-open note, *["Towards a Common Scala Style Recommendation"](https://docs.google.com/document/d/14ZBGKNHUW4d8hDWIi5i6QquClX3_iXva-iMy5KpFU3I/edit?usp=sharing)*
+open note, *["Towards a Common Scala Style Recommendation"](https://codeberg.org/bjornregnell/scala-common-style/src/branch/main/scala-common-style-mirror.md)*
 (January 2026). Its thesis is that braceless-vs-braceful "need not be incompatible" - it is "a matter of degree,"
 like the way Scala programmers already use optional parentheses without starting a war. The pragmatic middle:
 
@@ -505,7 +505,7 @@ tool grade its own homework - you are reading the right blog. That is much of wh
 ## Further Reading
 
 - M. Odersky, B. Regnell, R. Kerr, *Towards a Common Scala Style Recommendation*, open note, January 2026.
-  <https://docs.google.com/document/d/14ZBGKNHUW4d8hDWIi5i6QquClX3_iXva-iMy5KpFU3I/edit?usp=sharing>
+  <https://codeberg.org/bjornregnell/scala-common-style/src/branch/main/scala-common-style-mirror.md>
 - genscalator, *indent-vs-braces edit-cost experiment* - design
   [`README.md`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/experiments/indent-vs-braces/README.md), results
   [`RESULTS.md`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/experiments/indent-vs-braces/RESULTS.md), raw data
