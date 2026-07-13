@@ -459,6 +459,78 @@ class CliSuite extends munit.FunSuite:
     assert(clue(out).toLowerCase.contains("report"))
   }
 
+  // --- git (safe git helper) — show: read-only file-content-at-ref extraction ---
+  /** Fixture: init a git repo in d with one commit containing name→content. Returns nothing; throws on failure. */
+  private def gitFixture(d: os.Path, name: String, content: String): Unit =
+    def g(args: String*) = os.proc("git" +: "-C" +: d.toString +: args)
+      .call(stdout = os.Pipe, stderr = os.Pipe)
+    g("init", "-q")
+    g("config", "user.email", "test@example.org")
+    g("config", "user.name", "Test Fixture")
+    os.write(d / os.SubPath(name), content, createFolders = true)
+    g("add", name)
+    g("commit", "-q", "-m", "add fixture file")
+
+  test("git show: prints the committed content at HEAD, not the working tree") {
+    val d = os.temp.dir()
+    try
+      gitFixture(d, "f.txt", "hello at ref\n")
+      os.write.over(d / "f.txt", "DIRTY working tree\n") // must NOT leak into show output
+      val (code, out, _) = run("git", "show", "--repo", d.toString, "--ref", "HEAD", "--path", "f.txt")
+      assertEquals(code, 0)
+      assertEquals(out, "hello at ref") // run() trims; exactness incl. newline is the --out test below
+    finally os.remove.all(d)
+  }
+  test("git show: --out writes the byte-exact content to the given file") {
+    val d = os.temp.dir()
+    try
+      gitFixture(d, "sub/dir/data.md", "# Title\n\nBjörn läser åäö.\n")
+      val outFile = d / "extracted.md"
+      val (code, out, _) = run("git", "show", "--repo", d.toString, "--ref", "HEAD",
+        "--path", "sub/dir/data.md", "--out", outFile.toString)
+      assertEquals(code, 0)
+      assert(clue(out).contains("wrote"))
+      assertEquals(os.read(outFile), "# Title\n\nBjörn läser åäö.\n") // byte-exact incl. trailing newline + UTF-8
+    finally os.remove.all(d)
+  }
+  test("git show: a bad ref exits non-zero with a clear error (no empty success)") {
+    val d = os.temp.dir()
+    try
+      gitFixture(d, "f.txt", "x\n")
+      val (code, out, err) = run("git", "show", "--repo", d.toString, "--ref", "nosuchref", "--path", "f.txt")
+      assert(clue(code) != 0)
+      assertEquals(out, "") // nothing on stdout — never a partial/empty success
+      assert(clue(err).contains("nosuchref"))
+    finally os.remove.all(d)
+  }
+  test("git show: a bad path exits non-zero and does not create the --out file") {
+    val d = os.temp.dir()
+    try
+      gitFixture(d, "f.txt", "x\n")
+      val outFile = d / "should-not-exist.txt"
+      val (code, _, err) = run("git", "show", "--repo", d.toString, "--ref", "HEAD",
+        "--path", "missing.txt", "--out", outFile.toString)
+      assert(clue(code) != 0)
+      assert(clue(err).contains("missing.txt"))
+      assert(!os.exists(outFile))
+    finally os.remove.all(d)
+  }
+  test("git show: missing required flags exit non-zero with guidance") {
+    val d = os.temp.dir()
+    try
+      gitFixture(d, "f.txt", "x\n")
+      val (code, _, err) = run("git", "show", "--repo", d.toString, "--ref", "HEAD") // no --path
+      assert(clue(code) != 0)
+      assert(clue(err).contains("--path"))
+    finally os.remove.all(d)
+  }
+  test("git --help mentions the show subcommand") {
+    val (code, out, _) = run("git", "--help")
+    assertEquals(code, 0)
+    assert(clue(out).contains("show"))
+    assert(clue(out).contains("--ref"))
+  }
+
   // --- guardcheck (the prosthetic habit as a tool: cmd/msg checks + the PreToolUse hook mode) ---
   test("guardcheck cmd: a clean typed command exits 0") {
     val (code, out, _) = run("guardcheck", "cmd", "tt git commit --repo /x --message-file /x/m.txt --add /x/f --push")

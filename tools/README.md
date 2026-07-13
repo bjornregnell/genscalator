@@ -279,6 +279,27 @@ tt forge releases bjornregnell/genscalator --limit 5
 tt forge release-create bjornregnell/genscalator v0.8.0 --name "v0.8.0: …" --body-file NOTES.md --prerelease
 ```
 
+### git — safe git helper: commit-from-file, ff-pull, fetch, read-only show (EFFECTFUL, non-destructive)
+```
+git commit --repo <dir> --message-file <path> [--add <pathspec>]... [--push]
+git pull   --repo <dir>                                  # fast-forward ONLY: FFs or fails loudly
+git fetch  --repo <dir>                                  # remote-tracking refs only, never the working tree
+git show   --repo <dir> --ref <ref> --path <relpath> [--out <file>]   # READ-ONLY: file content at a ref
+```
+Exposes ONLY the safe, non-destructive verbs — no reset/rebase/merge/rm/clean/`--force` — so `Bash(tt git *)`
+cannot become a data-loss vector. `commit` reads its message from a FILE, so prose with shell metacharacters
+(backticks, `$`, `!`, braces, bare `*`) never touches the command line (kills the recurring commit-message
+allowlist tripwire); `--add` stages only the listed paths (never an implicit add-all). **`show`** extracts a
+file's content at any commit-ish (HEAD, branch, tag, SHA) **byte-exact** to stdout or, with `--out`, to a file
+— the allowlist-clean replacement for redirecting raw `git show ref:path` output (the redirect plus git's
+general surface blocked allowlisting, e.g. when a PR-review sub-agent needs a file at the base ref). On a bad
+ref or path it exits non-zero with git's error — never a partial/empty success. Examples:
+```
+tt git commit --repo /abs/repo --message-file tmp/msg.txt --add src/app.scala --push
+tt git show --repo /abs/repo --ref main --path src/app.scala
+tt git show --repo /abs/repo --ref v1.2 --path README.md --out tmp/old-readme.md
+```
+
 ## Companion: scalex
 The `tt` tools are **textual** — grep/awk/cut over any file. For **Scala code structure** the companion
 is **[scalex](https://github.com/nguyenyou/scalex)**: "grep, but it understands Scala's AST." It parses
@@ -324,6 +345,7 @@ diagnostics, refactors). Full guide: [`../docs/tool-selection.md`](../docs/tool-
 - `gvdot.scala` — sequence-diagram spec → image via graphviz `dot` (effectful; needs graphviz; argv-no-shell, DOT on stdin).
 - `web.scala` — safe read-only HTTP GET (effectful: network; requests).
 - `forge.scala` — Forgejo/Gitea forge client, releases/tags + env-token create (effectful; requests+ujson+os-lib).
+- `git.scala` — safe git helper: commit-from-file, ff-only pull, fetch, read-only show (effectful; os-lib).
 - `newtool.scala` — the generator.
 - `template.scala.txt` — starter template (latest Scala header, lib include, dispatch skeleton).
 
