@@ -85,6 +85,13 @@ deliverable. Proposed command file (path to confirm against CC plugin command co
 > `"statusLine": { "type": "command", "command": "tt statusline" }` then reload with `/hooks`. Reading it:
 > `docs/statusline-manual.md`.
 >
+> **The mode line (EXPERIMENTAL, new).** An optional *second* status line showing the **declared joint
+> state-of-mind** - short labels like `token-spending` or `hot-harvest` that either you or the agent add
+> (`tt mode add <label>`) or clear (`tt mode rm <label>`). Turn it on by appending `--mode-line` to the
+> statusline command above. **Heads-up for alpha-testers: this is brand-new and experimental** - the mode
+> cues, the label vocabulary, and the add/remove operation are still settling and may change between releases.
+> Feedback very welcome.
+>
 > **Full command reference:** `tools/README.md`. **Install / allowlist / the scalex companion:**
 > `docs/claude-plugin.md`. **Needs on your machine:** `scala-cli` + a JDK (plugins can't install deps).
 
