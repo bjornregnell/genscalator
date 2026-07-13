@@ -179,8 +179,6 @@ playbooks the agent invokes by name, or by matching what you ask for:
 | `crud-web-app-seed` | seed a complete, runnable Scala web app (JDK server + Scala.js/Laminar client) into a directory you choose — see *Getting started* above |
 | `research-methods` | SE research-methods helper (case-study + experiment checklists, a validity cheat-sheet) |
 | `in-session-experiment` | design and run a small, reproducible in-session experiment |
-| `blog-assistant` | help draft and shape a blog post |
-
 The plugin also ships the operating contract [`AGENTS.md`](AGENTS.md) — the shared human↔agent **conventions** (tool
 selection, comms shorthand, the workflow "dances", the safe-by-design allowlist habit) that the agent reads as its
 modus operandi. Full glossary and cues live in [`docs/foundations.md`](docs/foundations.md).

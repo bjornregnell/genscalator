@@ -6,7 +6,7 @@ allowed-tools: Read Bash(tt files *) Bash(tt text *)
 
 # research-methods — empirical study design for the WR work
 
-> **Posture (calibrated, per the blog-assistant meta-rule).** This is a working index, not a textbook. When a checklist
+> **Posture (calibrated, not absolutist).** This is a working index, not a textbook. When a checklist
 > and good judgment conflict, follow the judgment and surface the tension. The **two source books are the authority**;
 > this skill just gets you to the right section fast and keeps our practice honest.
 
@@ -111,4 +111,4 @@ The two books use slightly different four-sets — use the right one for the str
 [`summary-case-study-research.md`](summary-case-study-research.md) · [`summary-experimentation.md`](summary-experimentation.md) ·
 `research/029-cross-model-psyche-comparison.md` (the live experiment-design case) · `research/033-learning-barrier-rqs.md` ·
 `research/METHODOLOGY.md` (WR's own method) · `research/experiments/` (worked example) · `docs/foundations.md`
-("Roles and cases", validity terms) · `skills/blog-assistant` (reporting/echt).
+("Roles and cases", validity terms).

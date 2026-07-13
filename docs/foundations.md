@@ -236,7 +236,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   betrayal** (the reader trusted the surface and got a hollow one). Operational gate: *"is this echt?"* = grounded and
   voiced, or slop / a smooth surface outrunning its grounding? **Internal vocabulary** (echt is rare in English) →
   **gloss on first use** in an outward post. (Swedish note: *äkta* also branches to *wedded / legitimate / proper*
-  [as in *proper fraction*].) See `skills/blog-assistant`, blog README "Authorship & voice", and
+  [as in *proper fraction*].) See blog README "Authorship & voice", and
   `research/027-steering-doc-design-tension.md`.
 ### Context rot and the smart zone
 - **Token efficiency (TE)** — achieving a task with fewer model tokens (input + output). A committed,

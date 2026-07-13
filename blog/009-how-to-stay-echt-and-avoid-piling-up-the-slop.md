@@ -62,5 +62,5 @@ A post about echt should itself **be echt** — grounded, not vibes. So: can we 
 - Honest guardrail: if the data won't support a claim, **cut the claim** (dogfood the rule).
 
 ## Reads / cross-links
-`docs/foundations.md` (echt / äkthet), `skills/blog-assistant`, blog README "Authorship & voice", blog 004 (the slop
+`docs/foundations.md` (echt / äkthet), blog README "Authorship & voice", blog 004 (the slop
 pains + panic writes), `research/027-steering-doc-design-tension.md`.

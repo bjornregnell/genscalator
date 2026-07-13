@@ -29,7 +29,7 @@ Skills the agent can use (ask for them by name or describe what you want):
 - **scala-style** — the common Scala style (this app is written in it).
 - **reqt-lang** — write requirements in a tiny markdown language (see `PRD.md`).
 - **tt-toolbox** / **contribute-tool** — understand and extend the `tt` tools.
-- **scala-code-review**, **research-methods**, **in-session-experiment**, **blog-assistant** — review, method, and
+- **scala-code-review**, **research-methods**, **in-session-experiment** — review, method, and
   writing helpers.
 
 A few `tt` tools you will meet: **`tt serv`** (a tiny local web preview server), **`tt ssg`** (markdown to HTML),
