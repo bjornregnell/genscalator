@@ -38,3 +38,23 @@ If the hypothesis were true, past-Z fill from *clean* work would be less alarmin
 *confused* work. But since we cannot tell the two apart from inside, we keep treating **fill as the
 conservative trigger** for the compact/consolidate dance regardless. The hypothesis refines our *understanding*
 of the fill-rot relationship; it does not license ignoring the gauge.
+
+## Open research question (BR, pin 2026-07-13): is there a CERTAINTY threshold D?
+The decouple hypothesis says fill and rot are not identical — clean volume raises fill without necessarily
+raising rot. BR's complementary research question: **is there a *very high* ctx-fill ratio above which we can
+say WITH CERTAINTY that the agent is in the "dumb-zone" (rotted)?** — i.e. does the decoupling **break down at
+the top of the window**, a saturation regime where rot becomes *mechanically inevitable* (attention/retrieval
+degradation as the context fills), regardless of how clean the content is?
+- If YES, there are **two thresholds**: **Z** (~30%, where rot RISK begins — content-dependent above it, per the
+  decouple hypothesis) and a higher **D** (where rot is CERTAIN — content-independent). Between Z and D, rot is
+  possible-but-not-certain; above D, certain.
+- The family-E measurement problem still bites: we cannot read rot directly, so "with certainty" cannot come
+  from the fill *number* alone — it would have to be established by **unmistakable behavioural collapse**
+  (reproducible Q-test failure, losing the thread) that is *universally* observed above some fill. So the honest,
+  testable form: **is there a fill fraction D above which behavioural rot is observed across essentially all
+  sessions/tasks?** — an empirical claim we can accumulate bounded evidence for (never prove absolutely).
+- If NO such universal D exists (rot always stays content-dependent, even near the ceiling), that is itself a
+  strong finding — it would mean the gauge can only ever signal RISK, never CERTAINTY, and the human's external
+  read stays irreplaceable at every fill level.
+- Ties: `research/006-smart-zone-ceiling.md` (Z), [[propose-compact-dance-at-trigger]], [[cue-do-q-test]] (the
+  fidelity probe that could detect the collapse), the compact-duration-vs-fill data, the `dumb-zone` mode.
