@@ -33,7 +33,7 @@ falls off first by design.
 | **`resets: 2h34m`** | dim grey, **but red when its limit is at/above the warn threshold** | Fine countdown (hours + minutes) until the 5-hour window resets. Shown only if CC sends `rate_limits.five_hour.resets_at`. | A red reset says: the cap is close, and here is how long until relief. |
 | **`wk-lim: 14%`** | rosy (→ orange ≥ 70%, **red at/above the warn threshold, default 80%**) | Fraction of your weekly (7-day) limit used. | The slow-moving budget. Reddens near the weekly cap; a distant reset then means pace the rest of the week. |
 | **`resets: 3d`** | dim grey, **red when its limit is at/above the warn threshold** | Coarse countdown (m / h / d) until the weekly window resets. | When the weekly budget refreshes. |
-| **`cost: $12`** | blue | Notional API-equivalent cost of the session, in whole dollars (cents dropped to save space). | On a fixed monthly plan this is **not** a real charge — it is the least interesting number, which is why it is placed last and drops off first on a narrow terminal. |
+| **`cost: $12`** | blue | Notional API-equivalent cost of this session, in whole dollars (cents dropped to save space): **what the tokens this conversation has burned would cost if billed at pay-as-you-go API rates.** It is cumulative across the session (and survives a compact), and is *not* tied to your monthly billing period. | On a fixed monthly plan this is **not** a real charge — it is a token-consumption meter, the least interesting number, which is why it is placed last and drops off first on a narrow terminal. |
 
 ### The gauge grading (the three limit/fill segments)
 
