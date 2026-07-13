@@ -35,15 +35,15 @@ suffix makes Claude Code clone the repo (where `marketplace.json` lives). You st
 installed (see Prerequisites above). Then verify with **`/skills`** (you should see `tt-toolbox`,
 `scala-style`, and the rest of the set) or type **`gs help`** in chat; if the skills do not show up yet,
 restart Claude Code and check again. For the full skill set, the recommended allowlist, the `gs` commands,
-and caveats, see [Using the Claude Code plugin](#5-using-the-claude-code-plugin) further down.
+and caveats, see [Using the Claude Code plugin](#4-using-the-claude-code-plugin) further down.
 
 **Allow the typed tools to run without a prompt.** So the agent can use `tt` without a confirmation on
 every call (the low-friction payoff), add a narrow allowlist to `.claude/settings.local.json`:
 ```
 { "permissions": { "allow": ["Bash(tt *)", "Bash(scala-cli *)"] } }
 ```
-The full recommended allowlist (safety deny-list plus per-path `git`/`rm` scoping) is in
-[5.3 Recommended Claude Code settings](#53-recommended-claude-code-settings-initial-cut).
+The full recommended allowlist (safety deny-list plus per-path `git`/`rm` scoping) is set up by `gs allow`;
+details in [`docs/claude-plugin.md`](docs/claude-plugin.md).
 
 **That's it.** Now just ask the agent in plain language, or type **`gs help`** to see what genscalator can do.
 
@@ -99,22 +99,14 @@ Hat Hacker threat model), and glossary.
 Genscalator is also a research project into agentic software engineering workflow productivity. The invention of typed tools is supported by a dog-fooding action research approach where genscalator is used in meta-level experiments and case studies on human-agent workflows. Emerging research questions and findings are reported in [`blog/`](https://bjornregnell.se/blog) and research studies are brainstormed, designed and executed in [`research/`](research/), as we go, supported by the genscalator typed tools and joint human-agent workflow under development.     
 
 
-## 5. Using the Claude Code plugin
+## 4. Using the Claude Code plugin
 
-This repo doubles as its own Claude Code plugin marketplace, so `tt` lands on your PATH automatically and
-skills teach the habit (tool selection, Scala style, tool contribution) — no manual symlink:
-```
-/plugin marketplace add https://codeberg.org/bjornregnell/genscalator.git
-/plugin install genscalator@bjornregnell
-```
-Use the **full Codeberg URL with `.git`** — the short `owner/repo` form resolves to GitHub, and the
-`.git` suffix makes Claude Code clone the repo (where `marketplace.json` lives).
-Details, the recommended allowlist, and caveats: [`docs/claude-plugin.md`](docs/claude-plugin.md).
-(You still need `scala-cli` + a JDK installed.)
+You installed the plugin in [How to install genscalator](#2-how-to-install-genscalator); here is what it gives
+you and how to drive it. Details, the recommended allowlist, and caveats: [`docs/claude-plugin.md`](docs/claude-plugin.md).
 
-### 5.1 What you get
+### 4.1 What you get
 
-Installing the plugin puts the `tt` toolbox on your PATH (see [Usage](#6-using-typed-tools-in-terminal)) and adds a set of **skills** — focused
+Installing the plugin puts the `tt` toolbox on your PATH (see [Usage](#5-using-typed-tools-directly-in-terminal)) and adds a set of **skills** — focused
 playbooks the agent invokes by name, or by matching what you ask for:
 
 | Skill | What it does |
@@ -131,7 +123,7 @@ The plugin also ships the operating contract [`AGENTS.md`](AGENTS.md) — the sh
 selection, comms shorthand, the workflow "dances", the safe-by-design allowlist habit) that the agent reads as its
 modus operandi. Full glossary and cues live in [`docs/foundations.md`](docs/foundations.md).
 
-### 5.2 The `gs` in-session commands
+### 4.2 The `gs` in-session commands
 
 Once the plugin is active you can drive genscalator by typing 
 ```
@@ -141,7 +133,7 @@ to the agent in chat.
 
 `gs` is a
 **do-what-i-mean** cue: the agent matches your words to the nearest command in meaning (an informal list, not a rigid
-syntax, so near-miss spellings and phrasings still work) and does it in the session. Just type **`gs ...`. Nothing to configure - it works as soon as the plugin is installed.
+syntax, so near-miss spellings and phrasings still work) and does it in the session.
 
 You can get help with Claude Code settings for allow/deny/ask by issuing this command and follow instructions by the agent:
 
@@ -149,22 +141,22 @@ You can get help with Claude Code settings for allow/deny/ask by issuing this co
 gs allow
 ```
 
-### 5.4 Getting started: Try seeding a working web app
+### 4.3 Getting started: Try seeding a working web app
 
 New to genscalator? The fastest way to see it work is to let the agent **seed a complete, runnable Scala web app** for
 you, then run and read it. After install of plugin and in a fresh context, ask in plain language, naming the directory you want, something similar to:
 
 > Use the crud-web-app-seed skill to create a todo web app in ./my-todo
 
-Or you can jst type this gs command in the chat:
+Or you can just type this gs command in the chat:
 ```
 gs new app todo ./my-todo
 ```
 
 The agent runs the **`crud-web-app-seed`** skill, which writes a small full-stack project into the directory you chose:
-a shared datamodel, a **JDK-only** HTTP server, and a **Scala.js + Laminar** browser client, plus a Product Requirements Documenty in `PRD.md`, and a test suite. Then follow the agent's instructions or ask when you need help. The todo app is deliberately small and commented so you can read the whole thing and adapt it to your liking together with the agent that will invoke genscalator's typed tools when it see fit.
+a shared datamodel, a **JDK-only** HTTP server, and a **Scala.js + Laminar** browser client, plus a Product Requirements Document in `PRD.md`, and a test suite. Then follow the agent's instructions or ask when you need help. The todo app is deliberately small and commented so you can read the whole thing and adapt it to your liking together with the agent that will invoke genscalator's typed tools when it sees fit.
 
-## 6. Using typed tools directly in terminal
+## 5. Using typed tools directly in terminal
 
 After following the install instructions above to get `tt` on path you can run the typed tools directly in terminal like so:
 
@@ -185,7 +177,7 @@ TODO: add and improve examples above.
 Full cheat-sheet: [`tools/README.md`](tools/README.md).
 
 
-### 6.1 Tool dependencies
+### 5.1 Tool dependencies
 
 Most `tt` tools need only **scala-cli + a JDK** — scala-cli fetches the Scala compiler and the small library set on
 first run, then caches them (no manual library install). A few tools additionally shell out to an **external program**
@@ -201,21 +193,21 @@ errors with the install hint only on the render path. (The sibling renderers `tt
 external dependency — pure JDK.)
 
 
-## 7. Licenses
+## 6. Licenses
 
 * All code in this repo is licenced under Apache-2.0 — see [`LICENSE`](LICENSE).
 * All blog posts and research topics are licenced as CC-BY 4.0.
 
-## 8. Donations
+## 7. Donations
 
 Genscalator is developed as a liberally licenced open source software project that anyone can use. If you want to support the maintenance and implementation of new features of genscalator contact genscalator@bjornregnell.se
 
-## 9. Commercial Support
+## 8. Commercial Support
 
 * For commercial support and consultancy in using genscalator to improve agentic software engineering productivity contact genscalator@bjornregnell.se
 
 
-## 10. Mirrors and digital sovereignty
+## 9. Mirrors and digital sovereignty
 
 The genscalator repo is mirrored from [Codeberg](https://codeberg.org/bjornregnell/genscalator) to [GitHub (owned by Microsoft)](https://github.com/bjornregnell/genscalator), [GitLab](https://gitlab.com/bjornregnell/genscalator) and [LTH coursegit](https://coursegit.cs.lth.se/bjorn.regnell/genscalator) in the spirit of [digital sovereignty](https://en.wikipedia.org/wiki/Digital_sovereignty), to address the debated "kill switch" potentially enabled by US laws such as:
 - [IEEPA (1977)](https://en.wikipedia.org/wiki/International_Emergency_Economic_Powers_Act)

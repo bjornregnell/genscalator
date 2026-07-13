@@ -96,28 +96,7 @@ For general goals and requirements see the [Product Requirements Document](PRD.m
 - Tool safety flags: `--safe-mode`, `--sandboxed`, `--audit`.
 - Capture-Checking **Safe-mode** PoC → pure tools safe by default.
 - **Cross-tool packaging:** an MCP server so the tools are first-class in Codex/opencode too. (The
-  Claude Code plugin already ships — see *Use as a Claude Code plugin* below.)
-
-## Roadmap
-
-What's shipped so far, per release: [`CHANGELOG.md`](CHANGELOG.md).
-For the toolbox-specific roadmap (new/extended `tt` tools), see [`tools/README.md`](tools/README.md#roadmap).
-For general goals and requirements see the [Product Requirements Document](PRD.md)
-
-**Planned, not yet built - roughly cheapest-to-build first:**
-- **Update awareness** — an *inform-only* update skill + a read-only version-check (compare the installed
-  version against upstream `marketplace.json`) so staleness is visible. It hands the human the update
-  commands but **never self-updates the operating rules** — adopting new rules stays a human-reviewed step
-  (see [`docs/updating.md`](docs/updating.md)).
-- **One-command install** of genscalator + companions (scalex + Metals MCP) for newcomers who want
-  everything at once — as a **reviewable, version-pinned installer script you read before running**, not
-  a blind `curl … | bash` (that opaque-pipe pattern is exactly the confirmation-fatigue / RCE risk
-  genscalator argues against).
-- Native compilation.
-- Tool safety flags: `--safe-mode`, `--sandboxed`, `--audit`.
-- Capture-Checking **Safe-mode** PoC → pure tools safe by default.
-- **Cross-tool packaging:** an MCP server so the tools are first-class in Codex/opencode too. (The
-  Claude Code plugin already ships — see *Use as a Claude Code plugin* below.)
+  Claude Code plugin already ships — see the *Using the Claude Code plugin* section of the README.)
 
 ## Copyright
 
