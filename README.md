@@ -2,9 +2,7 @@
 
 **Power tools for agents: smarter, safer, faster.**
 
-This repository is mirrored across several hosts for digital sovereignty; see [Mirrors and digital sovereignty](#mirrors-and-digital-sovereignty) at the bottom.
-
-## What
+## 1. What
 
 Genscalator is a toolbox + workflow for coding agents that replaces the brittle
 bash/grep/awk/python reflex with **typed, compiler-checked, reusable Scala tools**. Pick a tool, give it
@@ -14,10 +12,10 @@ narrow allowlist can trust.
 
 The tools and workflow are **language-agnostic** — use genscalator to generate and manage code in **any language**.
 When you generate **Scala**, you get extra help from the bundled Scala skills (`scala-style` for the common style,
-`scala-code-review`, `reqt-lang`) and the optional [Scala-code companions](#companions-for-scala-code-recommended)
+`scala-code-review`, `reqt-lang`) and the optional [Scala-code companions](#33-companions-for-scala-code-recommended)
 (scalex, Metals MCP).
 
-## Why
+## 2. Why
 
 Out-of-the-box agent workflows lean on approving dense bash compounds and archaic Unix tools 
 stitched together in a difficult to review blob. 
@@ -32,36 +30,59 @@ number of dangerous operations that need human approval at all.
 See [`docs/foundations.md`](docs/foundations.md) for the full goals, stakeholders (human / agent / Black
 Hat Hacker threat model), and glossary.
 
-### The bigger picture
+### 2.1 The bigger picture
 
 Genscalator is also a research project into agentic software engineering workflow productivity. The invention of typed tools is supported by a dog-fooding action research approach where genscalator is used in meta-level experiments and case studies on human-agent workflows. Emerging research questions and findings are reported in [`blog/`](https://bjornregnell.se/blog) and research studies are brainstormed, designed and executed in [`research/`](research/), as we go, supported by the genscalator typed tools and joint human-agent workflow under development.     
 
-## Install
+## 3. Install
 
 **Prerequisites:** [scala-cli](https://scala-cli.virtuslab.org/) and a JDK (to run the tools), plus `git`
 (to clone this repo).
 
 **Platforms:** Linux, macOS, and WSL (Windows Subsystem for Linux) — anywhere `bash` + `scala-cli` run. On native Windows, use WSL or Git Bash.
 
-> On **Claude Code** you can skip the manual steps below and install genscalator as a plugin — `tt` lands
-> on your PATH automatically. See [Use as a Claude Code plugin](#use-as-a-claude-code-plugin). The steps
-> here are the manual path that works with any agent.
+### 3.1 Install the genscalator Claude Code plugin
 
-**1. Clone the repo:**
+This repo doubles as its own Claude Code plugin marketplace, so `tt` lands on your PATH automatically (no
+manual symlink) and the skills come along with it. In Claude Code, run:
+```
+/plugin marketplace add https://codeberg.org/bjornregnell/genscalator.git
+/plugin install genscalator@bjornregnell
+```
+Use the **full Codeberg URL with `.git`**: the short `owner/repo` form resolves to GitHub, and the `.git`
+suffix makes Claude Code clone the repo (where `marketplace.json` lives). You still need `scala-cli` + a JDK
+installed (see Prerequisites above). Then verify with **`/skills`** (you should see `tt-toolbox`,
+`scala-style`, and the rest of the set) or type **`gs help`** in chat; if the skills do not show up yet,
+restart Claude Code and check again. For the full skill set, the recommended allowlist, the `gs` commands,
+and caveats, see [Use as a Claude Code plugin](#8-use-as-a-claude-code-plugin) further down.
+
+**Allow the typed tools to run without a prompt.** So the agent can use `tt` without a confirmation on
+every call (the low-friction payoff), add a narrow allowlist to `.claude/settings.local.json`:
+```
+{ "permissions": { "allow": ["Bash(tt *)", "Bash(scala-cli *)"] } }
+```
+The full recommended allowlist (safety deny-list plus per-path `git`/`rm` scoping) is in
+[8.3 Recommended Claude Code settings](#83-recommended-claude-code-settings-initial-cut).
+
+**That's it.** Now just ask the agent in plain language, or type **`gs help`** to see what genscalator can do.
+
+### 3.2 Manual install (any agent, only recommended if you don't use Claude Code)
+
+**A. Clone the repo:**
 ```
 git clone https://codeberg.org/bjornregnell/genscalator.git
 cd genscalator
 ```
 
-**2. Put the `tt` launcher on your PATH.** Run this *from the repo root* (so `$PWD` is your clone),
+**B. Put the `tt` launcher on your PATH.** Run this *from the repo root* (so `$PWD` is your clone),
 symlinking the launcher into a directory that's on your PATH:
 ```
 ln -s "$PWD/tools/tt" ~/.local/bin/tt    # ensure ~/.local/bin is on your PATH
 ```
-"typed tools" — one literal, allowlist-friendly command from any repo. First run of a tool compiles
-(~a couple of seconds); reruns are cached. Verify with `tt files src .scala --count`.
+The typed-tools launcher is one literal, allowlist-friendly command from any repo. First run of a tool
+compiles (a couple of seconds); reruns are cached. Verify with `tt files src .scala --count`.
 
-### Companions for Scala code (recommended)
+### 3.3 Companions for Scala code (recommended)
 
 genscalator integrates — but does **not** bundle — two upstream tools for Scala *code* intelligence (the
 `tt` tools cover text and logs). Install whichever you need; [`docs/tool-selection.md`](docs/tool-selection.md)
@@ -77,7 +98,7 @@ says which tool answers which question.
   real diagnostics, run tests, refactor); heavier. Enable it through your editor's Metals + MCP-client
   config per the linked setup page.
 
-## Usage
+## 4. Usage
 
 ```
 tt <tool> <args...>                           # from any repo (recommended)
@@ -101,7 +122,7 @@ calls, what extends, resolve imports) genscalator recommends [scalex](https://gi
 [Metals MCP](https://scalameta.org/metals/docs/features/mcp/). Which tool for which question — and the
 escalation ladder: [`docs/tool-selection.md`](docs/tool-selection.md).
 
-## Tests
+## 5. Tests
 
 The test suite is **co-located with the tools** it covers, under [`tools/test/`](tools/test/): `cli.test.scala`
 (CLI-contract tests — each tool run as a subprocess, exit code + stdout asserted) and `lib.test.scala` (unit tests
@@ -115,7 +136,7 @@ The `*.test.scala` files compile in scala-cli's **test scope**, which *extends* 
 tests see the tool sources without any `//> using file` wiring, and a plain `scala-cli compile tools` still builds
 **only the tools** (the test files are excluded from the main compile). More: [`tools/README.md`](tools/README.md#tests).
 
-## Tool dependencies
+## 6. Tool dependencies
 
 Most `tt` tools need only **scala-cli + a JDK** — scala-cli fetches the Scala compiler and the small library set on
 first run, then caches them (no manual library install). A few tools additionally shell out to an **external program**
@@ -123,14 +144,14 @@ for one job; install that only if you use the tool.
 
 | Requirement | What / version | Install | Docs |
 |------|----------------|---------|------|
-| **`tt` runner + all tools** | • **Scala 3.8.4** compiler<br>• a **JDK 21+**<br>• run via **scala-cli** (it fetches the compiler)<br>• libraries — **auto-fetched by scala-cli**, cached: `os-lib` 0.11.8 · `ujson` 4.4.3 · `requests` 0.9.3 · `munit` 1.3.3 *(tests only)* | Install **scala-cli + a JDK** — see [Install](#install); scala-cli fetches the compiler + libraries on first use. | [scala-cli](https://scala-cli.virtuslab.org/) · [Scala 3.8.4](https://www.scala-lang.org/download/) |
+| **`tt` runner + all tools** | • **Scala 3.8.4** compiler<br>• a **JDK 21+**<br>• run via **scala-cli** (it fetches the compiler)<br>• libraries — **auto-fetched by scala-cli**, cached: `os-lib` 0.11.8 · `ujson` 4.4.3 · `requests` 0.9.3 · `munit` 1.3.3 *(tests only)* | Install **scala-cli + a JDK** — see [Install](#3-install); scala-cli fetches the compiler + libraries on first use. | [scala-cli](https://scala-cli.virtuslab.org/) · [Scala 3.8.4](https://www.scala-lang.org/download/) |
 | **`tt gvdot`** *(optional)* | **graphviz** (`dot`) — lays out sequence diagrams to pdf/png/svg | `sudo apt install graphviz` (Debian/Ubuntu); `brew install graphviz` (macOS) | [graphviz.org](https://graphviz.org/) · `dot -h` · `man dot` |
 
 Tools degrade gracefully when their dependency is missing: `tt gvdot` still prints DOT source without `dot`, and
 errors with the install hint only on the render path. (The sibling renderers `tt svg` and `tt ascii` need **no**
 external dependency — pure JDK.)
 
-## Roadmap
+## 7. Roadmap
 
 What's shipped so far, per release: [`CHANGELOG.md`](CHANGELOG.md).
 For the toolbox-specific roadmap (new/extended `tt` tools), see [`tools/README.md`](tools/README.md#roadmap).
@@ -151,7 +172,7 @@ For general goals and requirements see the [Product Requirements Document](PRD.m
 - **Cross-tool packaging:** an MCP server so the tools are first-class in Codex/opencode too. (The
   Claude Code plugin already ships — see *Use as a Claude Code plugin* below.)
 
-## Use as a Claude Code plugin
+## 8. Use as a Claude Code plugin
 
 This repo doubles as its own Claude Code plugin marketplace, so `tt` lands on your PATH automatically and
 skills teach the habit (tool selection, Scala style, tool contribution) — no manual symlink:
@@ -164,9 +185,9 @@ Use the **full Codeberg URL with `.git`** — the short `owner/repo` form resolv
 Details, the recommended allowlist, and caveats: [`docs/claude-plugin.md`](docs/claude-plugin.md).
 (You still need `scala-cli` + a JDK installed.)
 
-### What you get
+### 8.1 What you get
 
-Installing the plugin puts the `tt` toolbox on your PATH (see [Usage](#usage)) and adds a set of **skills** — focused
+Installing the plugin puts the `tt` toolbox on your PATH (see [Usage](#4-usage)) and adds a set of **skills** — focused
 playbooks the agent invokes by name, or by matching what you ask for:
 
 | Skill | What it does |
@@ -183,7 +204,7 @@ The plugin also ships the operating contract [`AGENTS.md`](AGENTS.md) — the sh
 selection, comms shorthand, the workflow "dances", the safe-by-design allowlist habit) that the agent reads as its
 modus operandi. Full glossary and cues live in [`docs/foundations.md`](docs/foundations.md).
 
-### The `gs` in-session commands
+### 8.2 The `gs` in-session commands
 
 Once the plugin is active you can drive genscalator by typing **`gs ...`** to the agent in chat. `gs` is a
 **do-what-i-mean** cue: the agent matches your words to the nearest command in meaning (an informal list, not a rigid
@@ -203,7 +224,7 @@ reqT-lang file) · `gs test` (run the toolbox suite).
 Implemented by the `gs-dwim` skill. `gs` is deliberately overloaded: a leading `gs` cue means "run a gs command",
 while `gs` in prose or a path still means the project genscalator - context disambiguates.
 
-### Recommended Claude Code settings (initial cut)
+### 8.3 Recommended Claude Code settings (initial cut)
 
 To get the low-friction, safe-by-design payoff, add a **narrow** allowlist to `.claude/settings.local.json` that
 trusts the *typed tools* while keeping raw shell and destructive ops gated. Essentials:
@@ -246,10 +267,10 @@ the companion entries to your allowlist (`Bash(scalex *)`; Metals' effectful MCP
 blanket-allowed) — details in [`docs/claude-plugin.md`](docs/claude-plugin.md). Which tool for which
 question: [`docs/tool-selection.md`](docs/tool-selection.md).
 
-### Getting started: Try seeding a working web app
+### 8.4 Getting started: Try seeding a working web app
 
 New to genscalator? The fastest way to see it work is to let the agent **seed a complete, runnable Scala web app** for
-you, then run and read it. First make sure you have the **prerequisites** — [scala-cli + a JDK](#install) — and the
+you, then run and read it. First make sure you have the **prerequisites** — [scala-cli + a JDK](#3-install) — and the
 **plugin** installed (the install commands above). Then, in a fresh Claude Code session, just ask in plain language,
 naming the directory you want:
 
@@ -261,13 +282,13 @@ reqT-lang and a test suite. Then follow the generated `README.md`: `sbt client/f
 <http://localhost:8080>; run `sbt test` to see the tests (the JSON codec round-trips plus an end-to-end HTTP CRUD
 test). It is deliberately small and commented so you can read the whole thing and adapt it to your own domain.
 
-## Portability
+## 9. Portability
 
 genscalator targets *any* capable coding agent, not one vendor. The tools (scala-cli scripts + the `tt` launcher)
 are agent-agnostic; the agent-specific parts are thin harness integration (allowlist, memory, skill
 packaging). We aim to support frontier tools (Claude, Codex) and open-source agent frameworks/models.
 
-## Research
+## 10. Research
 
 genscalator is developed **as an on-going, open research project** — its tools, skills, and docs are distilled
 from real investigations. Plans and results live in [`research/`](research/), e.g. *how the `scala-style`
@@ -275,36 +296,36 @@ skill should self-consciously evolve from agent use without drifting or bloating
 deliberately kept **out of agents' daily working context** (an agent reads them only when explicitly
 investigating), so exploration never adds confirmation/context overhead to ordinary tool use.
 
-## Contributing
+## 11. Contributing
 
 Humans **and** agents are welcome — especially new general-purpose tools. If your agent builds a tool that
 turns out to be project-agnostic, it should suggest contributing it back here (issue + PR). The agent
 proposes; you as accountable human approve and submit. See [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
-## Licenses
+## 12. Licenses
 
 * All code in this repo is licenced under Apache-2.0 — see [`LICENSE`](LICENSE).
 * All blog posts and research topics are licenced as CC-BY 4.0.
 
-## Copyright
+## 13. Copyright
 
 Copyright of all code in this repo is owned by the maintainers of the genscalator repository. Any code contributor to this repo implicitly transfers copyright to genscalator maintainers by contributing. Before you contribute you should send a copyright transfer note via email to genscalator at bjornregnell.se with the subject "Copyright transfer" and body containing "I hereby transfer copyright of my contributions to genscalator to the maintainers of genscalator" and your name and contact details. 
 
-## Maintainers
+## 14. Maintainers
 
 The genscalator repository is currently maintained by:
 * [Professor Björn Regnell](https://bjornregnell.se)
 * You? If you are interested to become a maintainer, send email to genscalator at bjornregnell.se
 
-## Commercial Support
+## 15. Commercial Support
 
 * For commercial support and consultancy in using genscalator to improve agentic software engineering productivity contact genscalator@bjornregnell.se
 
-## Donations
+## 16. Donations
 
 Genscalator is developed as a liberally licenced open source software project that anyone can use. If you want to support the maintenance and implementation of new features of genscalator contact genscalator@bjornregnell.se
 
-## Mirrors and digital sovereignty
+## 17. Mirrors and digital sovereignty
 
 The genscalator repo is mirrored from [Codeberg](https://codeberg.org/bjornregnell/genscalator) to [GitHub (owned by Microsoft)](https://github.com/bjornregnell/genscalator), [GitLab](https://gitlab.com/bjornregnell/genscalator) and [LTH coursegit](https://coursegit.cs.lth.se/bjorn.regnell/genscalator) in the spirit of [digital sovereignty](https://en.wikipedia.org/wiki/Digital_sovereignty), to address the debated "kill switch" potentially enabled by US laws such as:
 - [IEEPA (1977)](https://en.wikipedia.org/wiki/International_Emergency_Economic_Powers_Act)
