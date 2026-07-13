@@ -5,47 +5,62 @@
 ## 1. What is genscalator?
 
 Genscalator is a toolbox + workflow for coding agents that replaces the brittle
-bash/grep/awk/python reflex with **typed, compiler-checked, reusable Scala tools**. Pick a tool, give it
-args. No re-deriving logic each time, no dynamic-shell surprises. The compiler catches mistakes before
-they run, and a small launcher (`tt`) makes every tool a single, statically-analyzable command that a
-narrow allowlist can trust.
+bash/grep/awk/python reflex with **typed, compiler-checked, reusable Scala tools**. 
 
-The tools and workflow are **language-agnostic** — use genscalator to generate and manage code in **any language**.
+* Your agent automatically picks a tool when needed and gives it the right
+args. No re-deriving logic each time, no dynamic-shell surprises. 
+
+* The Scala compiler catches mistakes by agents before
+they run, and a small underlying launcher (`tt`) that the agent uses makes every tool a single, statically-analyzable command that a
+narrow allowlist can trust. 
+
+* The Scala compiler's error messages, all seen and interpreted by the agent, will help the agent to recover from mistakes before going into dynamic debugging.
+
+The tools and workflow are *language-agnostic*. With genscalator you can generate and manage code in **any language**.
+
 When you generate **Scala**, you get extra help from the bundled Scala skills (`scala-style` for the common style,
 `scala-code-review`, `reqt-lang`) and the optional [Scala-code companions](#22-companions-for-scala-code-recommended)
 (scalex, Metals MCP).
 
 ## 2. How to install genscalator
 
-**Prerequisites:** [scala-cli](https://scala-cli.virtuslab.org/) and a JDK (to run the tools), plus `git`
+* **Prerequisites:** [scala-cli](https://scala-cli.virtuslab.org/install) and a JDK (to run the tools), plus `git`
 (to clone this repo).
 
-**Platforms:** Linux, macOS, and WSL (Windows Subsystem for Linux) — anywhere `bash` + `scala-cli` run. On native Windows, use WSL or Git Bash.
+* **Platforms:** Linux, macOS, and WSL (Windows Subsystem for Linux) — anywhere `bash` + `scala-cli` run. On native Windows, use WSL or Git Bash.
 
 ### 2.1 Install the genscalator Claude Code plugin
 
-This repo doubles as its own Claude Code plugin marketplace, so `tt` lands on your PATH automatically (no
-manual symlink) and the skills come along with it. In Claude Code, run:
+Make sure you have the prerequisites above. In Claude Code, run:
 ```
 /plugin marketplace add https://codeberg.org/bjornregnell/genscalator.git
 /plugin install genscalator@bjornregnell
+/reload-plugins
 ```
-Use the **full Codeberg URL with `.git`**: the short `owner/repo` form resolves to GitHub, and the `.git`
-suffix makes Claude Code clone the repo (where `marketplace.json` lives). You still need `scala-cli` + a JDK
-installed (see Prerequisites above). Then verify with **`/skills`** (you should see `tt-toolbox`,
-`scala-style`, and the rest of the set) or type **`gs help`** in chat; if the skills do not show up yet,
-restart Claude Code and check again. For the full skill set, the recommended allowlist, the `gs` commands,
-and caveats, see [Using the Claude Code plugin](#4-using-the-claude-code-plugin) further down.
+Then verify with **`/skills`** (you should see `tt-toolbox`,
+`scala-style`, and the rest of the set). If the skills do not show up yet, restart Claude Code and check again. 
 
-**Allow the typed tools to run without a prompt.** So the agent can use `tt` without a confirmation on
-every call (the low-friction payoff), add a narrow allowlist to `.claude/settings.local.json`:
+If you just type this in chat:
+```
+gs
+```
+you should see help on how to use the genscalator's *do-what-I-mean* commands.
+
+For the full skill set, the recommended allowlist, the `gs` commands, etc., see [Using the Claude Code plugin](#4-using-the-claude-code-plugin) further down.
+
+
+**Allow the typed tools to run without a prompt.** When the Claude Code harness asks for permissions you can allow according to its suggestions. 
+
+To set a more complete and precise allow-list, issue this *do-what-I-mean* command in the chat and you will get help from Claude:
+```
+gs allow
+```
+
+You can also edit the `.claude/settings.local.json` directly, for example:
 ```
 { "permissions": { "allow": ["Bash(tt *)", "Bash(scala-cli *)"] } }
 ```
-The full recommended allowlist (safety deny-list plus per-path `git`/`rm` scoping) is set up by `gs allow`;
-details in [`docs/claude-plugin.md`](docs/claude-plugin.md).
-
-**That's it.** Now just ask the agent in plain language, or type **`gs help`** to see what genscalator can do.
+to give the exact permissions you want.
 
 ### 2.2 Companions for Scala code (recommended)
 
@@ -64,6 +79,8 @@ says which tool answers which question.
   config per the linked setup page.
 
 ### 2.3 Manual install (recommended if you don't use Claude Code)
+
+> TODO. This is future work and not yet fully operational. In pre-releases we focus on Claude Code support.
 
 **A. Clone the repo:**
 ```
@@ -106,21 +123,19 @@ you and how to drive it. Details, the recommended allowlist, and caveats: [`docs
 
 ### 4.1 What you get
 
-Installing the plugin puts the `tt` toolbox on your PATH (see [Usage](#5-using-typed-tools-directly-in-terminal)) and adds a set of **skills** — focused
+Installing the plugin puts the `tt` toolbox on your PATH for the agents to use when the genscalator plugin is active (see [Usage](#5-using-typed-tools-directly-in-terminal)) and adds a set of **skills** — focused
 playbooks the agent invokes by name, or by matching what you ask for:
 
 | Skill | What it does |
 |-------|--------------|
 | `tt-toolbox` | how to use and choose the `tt` tools — the toolbox habit |
-| `contribute-tool` | scaffold, test, and contribute a new `tt` tool back upstream |
 | `scala-style` | the common Scala style (braces vs braceless — the Odersky/Regnell/Kerr recommendation) |
 | `scala-code-review` | review Scala code for correctness, style, and safety |
 | `reqt-lang` | write requirements in reqT-lang (the markdown subset this repo's [`PRD.md`](PRD.md) is written in) |
 | `crud-web-app-seed` | seed a complete, runnable Scala web app (JDK server + Scala.js/Laminar client) into a directory you choose — see *Getting started* above |
-| `research-methods` | SE research-methods helper (case-study + experiment checklists, a validity cheat-sheet) |
-| `in-session-experiment` | design and run a small, reproducible in-session experiment |
-The plugin also ships the operating contract [`AGENTS.md`](AGENTS.md) — the shared human↔agent **conventions** (tool
-selection, comms shorthand, the workflow "dances", the safe-by-design allowlist habit) that the agent reads as its
+
+The plugin also ships the operating contract [`AGENTS.md`](AGENTS.md) — the shared human-agent **conventions** (tool
+selection, shorthand, workflow "dances", safe-by-design allowlist habit, etc.) that the agent reads as its
 modus operandi. Full glossary and cues live in [`docs/foundations.md`](docs/foundations.md).
 
 ### 4.2 The `gs` in-session commands
