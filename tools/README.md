@@ -96,6 +96,23 @@ tt find docs --name 'SM*.md'                # docs named SM*.md
 tt find . --type d --max-depth 1            # immediate sub-directories
 ```
 
+### doc — print a genscalator doc verbatim (PURE, read-only)
+```
+doc <name>                # print docs/<name>(.txt|.md) to stdout, verbatim
+doc                       # list the available docs
+doc --docs <dir> <name>   # override the docs dir (config-in-args, e.g. tests)
+```
+Cats a doc under `docs/` at NATIVE speed, so a rendered command (e.g. `gs help`) becomes an instant `tt doc
+gs-help` instead of the agent re-emitting the file token-by-token. Path-safe: `<name>` is a bare filename
+resolved only under the docs dir (no `/`, no `..`); it tries `<name>`, then `<name>.txt`, then `<name>.md`. The
+docs dir is `<tools>/../docs`, located via `-Dtt.tools` (the `tt` launcher passes it) or a cwd walk-up.
+Examples:
+```
+tt doc gs-help                              # the gs command help
+tt doc statusline-manual                    # the statusline manual
+tt doc                                      # list docs
+```
+
 ### log — build/run-log analyzer (PURE)
 ```
 log [summary|errors|warnings] <file>    # summary (default) = counts + lines + verdict

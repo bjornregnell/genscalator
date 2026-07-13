@@ -27,7 +27,7 @@ tool="$1"; shift
 # clean), and append to a perf log (gitignored tmp/ by default; override with TT_PERF_LOG). Opt out: TT_TIME=0.
 start=$(date +%s%N)
 set +e
-scala-cli run "$TOOLS/$tool.scala" -- "$@"
+scala-cli run "$TOOLS/$tool.scala" --java-prop "tt.tools=$TOOLS" -- "$@"
 rc=$?
 set -e
 if [[ "${TT_TIME:-1}" != "0" ]]; then

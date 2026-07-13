@@ -62,6 +62,46 @@ class CliSuite extends munit.FunSuite:
       assert(!clue(out).contains("skip.txt"))
     finally os.remove.all(d)
   }
+  // --- doc ---
+  test("doc: prints a doc verbatim by name (tries .txt/.md)") {
+    val d = os.temp.dir()
+    try
+      os.write(d / "hello.txt", "line one\nline two\n")
+      val (code, out, _) = run("doc", "--docs", d.toString, "hello")
+      assertEquals(code, 0)
+      assertEquals(out, "line one\nline two")
+    finally os.remove.all(d)
+  }
+  test("doc: bare (no name) lists md/txt docs, skips others") {
+    val d = os.temp.dir()
+    try
+      os.write(d / "a.md", "x")
+      os.write(d / "b.txt", "y")
+      os.write(d / "skip.log", "z")
+      val (code, out, _) = run("doc", "--docs", d.toString)
+      assertEquals(code, 0)
+      assert(clue(out).contains("a.md"))
+      assert(clue(out).contains("b.txt"))
+      assert(!clue(out).contains("skip.log"))
+    finally os.remove.all(d)
+  }
+  test("doc: unknown name exits 2 with a message") {
+    val d = os.temp.dir()
+    try
+      val (code, _, err) = run("doc", "--docs", d.toString, "nope")
+      assertEquals(code, 2)
+      assert(clue(err).contains("no such doc"))
+    finally os.remove.all(d)
+  }
+  test("doc: rejects a traversal / path name") {
+    val d = os.temp.dir()
+    try
+      val (code, _, err) = run("doc", "--docs", d.toString, "../secret")
+      assertEquals(code, 2)
+      assert(clue(err).contains("invalid"))
+    finally os.remove.all(d)
+  }
+
   test("text context: prints a match with N lines of context, excludes beyond N") {
     val f = os.temp(contents = "l1\nl2\nNEEDLE\nl4\nl5\n", suffix = ".txt")
     try

@@ -1,7 +1,7 @@
 ---
 name: gs-dwim
 description: Do-What-I-Mean in-session genscalator commands cued by a leading `gs`. Trigger whenever the user's message begins with `gs ` (or is a bare `gs`) — e.g. "gs help", "gs cues", "gs cue similar", "gs dances", "gs dance compact", "gs help tt", "gs help tt search text", "gs tt chrono", "gs status", "gs status line on", "gs where", "gs menu", "gs reqt", "gs term rot", "gs test", "gs new app todo ./my-app". Interpret the intent do-what-I-mean style (nearest-in-meaning, "or similar"), not by exact string match, and perform the matching genscalator action.
-allowed-tools: Read Bash(tt text *) Bash(tt files *) Bash(tt log *) Bash(tt chrono *) Bash(tt statusline *) Bash(tt parsereqt *) Bash(tt gitinfo *) Bash(scala-cli test *)
+allowed-tools: Read Bash(tt text *) Bash(tt files *) Bash(tt log *) Bash(tt chrono *) Bash(tt statusline *) Bash(tt parsereqt *) Bash(tt gitinfo *) Bash(tt doc *) Bash(scala-cli test *)
 ---
 
 # `gs` — genscalator do-what-I-mean (DWIM) in-session commands
@@ -26,11 +26,11 @@ gracefully). The per-command behaviour is specified below.
 
 ## How to perform each
 
-- **`gs help` / bare `gs`** — **Read `docs/gs-help.txt` and print it VERBATIM inside a
-  code fence** (monospace, terminal-style). It is the single source of truth for the command list, so pull it
-  from disk rather than re-synthesise or table-ify it (feed-efficient + echt); keep it current when commands
-  change. Optionally add a one-line welcome intro above it (what genscalator is); fuller welcome content lives
-  in `research/sm-investigations/SM056-welcome-content-draft.md`.
+- **`gs help` / bare `gs`** — **run `tt doc gs-help`** and let its output render. It cats
+  `docs/gs-help.txt` at native speed, so the help appears from the subprocess instead of the agent re-emitting
+  it token-by-token (the slow path). `docs/gs-help.txt` stays the single source of truth; keep it current when
+  commands change. Fallback if `tt` is unavailable: Read the file and print it verbatim in a code fence. Fuller
+  welcome content lives in `research/sm-investigations/SM056-welcome-content-draft.md`.
 - **`gs help tt`** — list every `tt` tool with a one-line description. Source of truth: the `## Tools`
   section of `tools/README.md` (each `### <tool>` heading + its tagline). Present as a compact table.
 - **`gs help tt <what>`** — pick the tool **nearest in meaning** to `<what>` (e.g. "search text" → `tt
