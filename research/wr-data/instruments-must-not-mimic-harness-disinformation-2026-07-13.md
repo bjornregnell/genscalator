@@ -174,3 +174,23 @@ freezes ONLY in a *true* idle gap (no events between renders). So "frozen at idl
 the disinfo risk is confined to the idle gap, not active use. (2) Methodologically, the live spinner and the
 event-rendered clock **triangulate** the same timeline — two independent time sources agreeing is a mini
 reproducibility check on the harness's own timekeeping. Ties: [[joint-clock-two-party-progress-stalls-2026-07-13]].
+
+## The COST of declared-field hygiene: each mutation is an agent TURN (2026-07-13)
+BR, watching an `afk`-clear take "✻ Worked for 15s": **mode-label mutation is not free.** The `tt mode add/rm`
+command is ~0.6s, but it runs THROUGH the agent (reason + invoke the tool + respond), so each mutation costs a
+full agent **turn** (~15s wall + tokens). Consequence for the active-hygiene the taxonomy above prescribes:
+**keeping a declared field honest costs a turn per update.** So the MORE VOLATILE the field, the more turns its
+honesty costs — and `afk`/presence (the most volatile declared field) is the most expensive to keep honest by
+agent-mediated mutation (a turn per pee).
+
+**A cheaper path (and its catch).** BR could run `tt mode add/rm` in his OWN terminal (as he did the git) —
+that costs **zero agent turns**, and the mode LINE still updates (the statusline reads `gs-modes` on each
+render). But then the AGENT does not know the mode changed unless it re-reads the file — so human-terminal
+mutation is cheap for the *display* but leaves the agent's *awareness* stale. Agent-mediated mutation is
+turn-expensive but keeps the agent in the loop; human-terminal mutation is free but display-only.
+
+**The SM062 tension it sharpens:** honesty (frequent updates) vs cost (a turn each) vs agent-awareness. It
+argues the most volatile fields (`afk`, presence) may not be worth *manual* declaring at all, or want a
+cheaper-yet-agent-visible trigger — which loops back to the derived-vs-declared question we deferred. Ties: the
+presence-volatility subsection above, [[cue-we-are-racing]] (racing is also come-and-go), [[token-budget-modes]]
+(cost-awareness), SM062.
