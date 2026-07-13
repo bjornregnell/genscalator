@@ -106,3 +106,37 @@ of these intents = do the sensible thing. Prefer acting over asking when the int
 genuine ambiguity or real stakes. Keep answers scannable (tables/short lists), in session, so the user stays
 in flow. This skill is the agent-facing implementation; the human-facing description lives in the plugin
 welcome and in `docs/foundations.md` ([[dwim]]).
+
+## Running a gs command as a sub-agent job (delegation policy)
+
+Most gs commands run inline. A few are worth handing to a **sub-agent** (the Agent tool) instead. Delegate
+ONLY when **all three** hold — if any fails, run inline:
+
+1. **Big intermediate, small digest** — the command reads or produces a lot of text (many files, a long build
+   log) but the user wants only a short conclusion. The sub-agent absorbs the bulk and returns just the
+   digest, keeping it OUT of the main context window. This is the whole reason to delegate ([[delegation-dance]]).
+2. **Read-only or safely isolated** — no settings edit, no outward/effectful op, nothing that needs the main
+   agent's permission flow or the human's sight.
+3. **Independent** — the job needs no live back-and-forth with the main context to complete.
+
+| Command | Delegate? | Why |
+|---|---|---|
+| `gs test` | **yes (best)** | ~60s run, tens of KB of build noise → one line (green/red + first failing suite). Pure mechanical read-and-digest. |
+| `gs where` | **yes** | reads pin board + resume prompt + git log → a one-screen snapshot; returns the conclusion, not the file dumps. |
+| `gs menu` | **yes** | reads the menu + re-verifies each item's safety → a short ranked list; same big-in / small-out shape. |
+| `gs reqt` | marginal | only if the parse dump is huge and you want just the verdict; usually run right after an edit and wanted inline to act on. |
+| `gs cues` / `gs dances` | marginal | multi-source read but small output; usually wanted rendered here. |
+| `gs help*` / `gs term` / `gs cue` / `gs dance` | no | quick lookups, small output — a sub-agent hop costs more than it saves. |
+| `gs tt <tool>` | no | the user wants the tool's output HERE; and for an effectful tool (git/forge/ssg/serv) the permission flow + outward-op discipline MUST stay in the main agent's view — never delegate an effectful run. |
+| `gs status line on/off` | **never** | a sensitive settings edit — must be inline, SHOWN to the user, with the `/hooks` handoff; delegating a settings change out of sight is the exact anti-pattern. |
+
+Two refinements that make the decision smarter:
+- **`gs test`: a BACKGROUND job often beats a sub-agent.** When the human is present, run it in the background
+  (no agent turn spent; it notifies on completion and you read only the digest). Reserve the sub-agent form for
+  when you also want it fully isolated from the main context, or run in parallel with other work.
+- **Model + safety.** The good candidates are mechanical read-and-digest, so a **cheap model** (CF5/haiku)
+  fits — no heavy reasoning. And a delegated gs command must write **nothing durable** (no memory, no commits):
+  it reads and returns. If a gs command would need to write or commit, it is NOT a delegation candidate.
+
+Neat consequence: the delegatable commands are exactly **Tier 2** (dogfooding), and the Tier-1 user commands
+mostly want to render inline. **The dogfooding tier is also the delegation tier.**

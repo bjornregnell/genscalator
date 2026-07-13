@@ -185,6 +185,25 @@ The plugin also ships the operating contract [`AGENTS.md`](AGENTS.md) — the sh
 selection, comms shorthand, the workflow "dances", the safe-by-design allowlist habit) that the agent reads as its
 modus operandi. Full glossary and cues live in [`docs/foundations.md`](docs/foundations.md).
 
+### The `gs` in-session commands
+
+Once the plugin is active you can drive genscalator by typing **`gs ...`** to the agent in chat. `gs` is a
+**do-what-i-mean** cue: the agent matches your words to the nearest command in meaning (an informal list, not a rigid
+syntax, so near-miss spellings and phrasings still work) and does it in the session. Type **`gs`** or **`gs help`** to
+see the list. Nothing to configure - it works as soon as the plugin is installed.
+
+**Tier 1 - for anyone with the plugin** (explore and drive the toolbox and habits):
+`gs help tt` (list the tools) · `gs help tt <what>` (help on the nearest tool) · `gs tt <tool>` (run one inline) ·
+`gs status` (explain the status line) · `gs status line on|off` (toggle it) · `gs cues` / `gs cue <what>` ·
+`gs dances` / `gs dance <what>` · `gs term <what>` (a foundations glossary term).
+
+**Tier 2 - for genscalator contributors** (dogfooding mode, when you work ON genscalator itself):
+`gs where` (a current-state snapshot) · `gs menu` (the safe solo-task menu) · `gs reqt` (parse plus lint a
+reqT-lang file) · `gs test` (run the toolbox suite).
+
+Implemented by the `gs-dwim` skill. `gs` is deliberately overloaded: a leading `gs` cue means "run a gs command",
+while `gs` in prose or a path still means the project genscalator - context disambiguates.
+
 ### Recommended Claude Code settings (initial cut)
 
 To get the low-friction, safe-by-design payoff, add a **narrow** allowlist to `.claude/settings.local.json` that
