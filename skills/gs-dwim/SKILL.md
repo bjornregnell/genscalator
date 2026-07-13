@@ -97,7 +97,10 @@ gs test              run the tt toolbox test suite (handles the tt.tools prop) a
   desktop notice (it pierces Do-Not-Disturb) plus a chime, fired the instant a `/compact` finishes, so a human
   who wandered off is called back (foundations "Compact sleep"). It is gated on the
   sentinel file `~/.claude/compact-notify.enabled`, read by the `Pre`/`PostCompact` hook `~/.claude/compact-wake.sh`:
-  `on` creates the sentinel, `off` removes it, bare/`status` reports whether it exists. This is a trivial,
+  `on` creates the sentinel — and when this is an ACTIVATION (the sentinel did not already exist), also fires a
+  one-off labelled **preview** by running `compact-wake.sh demo`, so the user sees and hears exactly what they
+  opted into at the moment of consent (relay any "no notifier / no sound on this box" line it prints — a free
+  functional test). `off` removes the sentinel, bare/`status` reports whether it exists. This is a trivial,
   reversible one-file toggle (NOT a `settings.json` edit — the hook is already wired), so treat the explicit `gs`
   command as the user's go and just do it, then confirm the new state (SHOWN, like `gs status line`). **Default is
   OFF**, because the notice is intrusive by design. If the hook is not installed (a plugin user who has not set it

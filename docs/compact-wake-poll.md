@@ -45,7 +45,9 @@ the fuller the context is?".
 3. Opt in to the notification with **`gs compact notify on`** (silent by default). `gs compact notify off`
    silences it again; bare `gs compact notify` reports the state. The toggle just creates or removes the
    sentinel `~/.claude/compact-notify.enabled` that `compact-wake.sh` reads, so no settings edit happens at
-   toggle time.
+   toggle time. The **first** `on` (an activation) also fires a one-off **labelled preview** (`compact-wake.sh
+   demo`) so you immediately see and hear what you enabled, at the moment of consent; it doubles as a functional
+   test, since if this box has no notifier or sound player the preview says so.
 
 ## Requirements
 
