@@ -70,6 +70,7 @@ of truth). For the full prose on any entry, follow it back to foundations.
 | **Exit-resume dance** | exit + `claude --resume` to inherit a fresh process env / token (a warp *between* sessions). |
 | **Rest dance (`:Z`)** | conserve the human; take rot-vigilance, checkpoint, steer to a safe stop. |
 | **BRB dance** | short-break handoff; maybe do safe background work; prep for the return. |
+| **Me-go-pee dance** | short human bio-break; agent batches `short-solo`+`afk`, does short AFK-safe solo, then on return reports + `rm afk`, and `rm short-solo` when the work lands. |
 | **Solo dance** (formerly AFK) | hand off for unattended autonomous work; bare allowlist-safe commands only; work a stocked menu. |
 | **Live-edit dance** | high-flow do-what-I-mean doc editing; the agent is the sole writer, buffer-race forbidden. |
 | **Delegation dance** | the super-agent hands bounded, well-scoped work to CF5 sub-agents to cut rot. |

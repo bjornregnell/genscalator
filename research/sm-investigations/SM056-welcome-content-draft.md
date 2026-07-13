@@ -60,6 +60,8 @@ deliverable. Proposed command file (path to confirm against CC plugin command co
 
 > **genscalator** — a typed Scala 3 toolbox plus habits for safer, calmer agent work.
 >
+> **Version v0.10.0 - ready for alpha testers.**
+>
 > **Am I active?** If your status line starts with a bold green **`genscalator:`**, the plugin and status
 > line are live. (No status line yet? See "Turn on the status line" below.)
 >
@@ -94,6 +96,8 @@ deliverable. Proposed command file (path to confirm against CC plugin command co
 >
 > **Full command reference:** `tools/README.md`. **Install / allowlist / the scalex companion:**
 > `docs/claude-plugin.md`. **Needs on your machine:** `scala-cli` + a JDK (plugins can't install deps).
+>
+> **Issues + feedback welcome:** https://codeberg.org/bjornregnell/genscalator/issues
 
 ## B. The first-run WELCOME (on install / activation) — SAME body, shorter lead
 

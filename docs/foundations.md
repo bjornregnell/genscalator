@@ -317,6 +317,20 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   are how the agent *notices* before halting.
 ### Dances and handoffs
 *Human↔agent protocols — each has **≥2 interlocking steps** (≥1 human, ≥1 agent), else it's just a cue. The **compact trigger** and **consolidation point** below are the timing rules for the compact dance.*
+- **Me-go-pee dance** *(BR 2026-07-13)* — a **short, unplanned human bio-interrupt** handoff (a specialization of
+  the BRB dance). Presence is the most volatile declared state (biology preempts without notice), so the dance
+  keeps the mode line honest and the agent usefully busy across the gap.
+  - **(1) depart** *(agent, ONE turn)* — on the pee/BRB cue: `tt mode add short-solo` **and** `tt mode add afk`,
+    batched in one turn (each mutation costs a turn).
+  - **(2) work** *(agent)* — short, **AFK-safe** solo only: bare allowlist-matchable commands + agent-owned files,
+    no confirmation that could race the absent human ([[guard-against-forced-confirmations]]).
+  - **(3) return** *(human)* — the *"i am back"* cue.
+  - **(4) report + release-afk** *(agent, one turn)* — report what happened while away (the human cannot hold it,
+    [[humans-md-agent-sole-writer]]), then `tt mode rm afk`.
+  - **(5) release-solo** *(agent)* — when the started short-solo work actually **lands**, `tt mode rm short-solo`.
+  **Nuance:** `afk` clears on return but `short-solo` **persists past it** until the in-flight work is ready — the
+  mode line honestly shows "agent still finishing what it started." Related: **BRB dance**, **Solo dance**, the
+  presence-volatility + mode-mutation-cost findings.
 - **Live-edit dance** — the high-flow **do-what-I-mean doc-editing** protocol (validated on the blog 021 review,
   2026-07-12). While reviewing, the human throws review comments / new text fragments into the **chat feed** (often
   cue-less, relying on session context) and the agent applies them **live** to the file; the text co-emerges in the
