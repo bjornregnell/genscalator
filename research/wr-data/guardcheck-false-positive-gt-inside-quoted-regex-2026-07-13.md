@@ -50,6 +50,15 @@ Both are true at once: the guard did its job (flag the risky shape so the human 
 revealed its own precision gap (quote-blindness). That double-truth is the specimen's value — mirrors the
 "guard did its job and revealed its gap" pattern from the self-editable-settings finding.
 
+## Second instance, same class (2026-07-13, later): `|` + `tail` inside a quoted regex
+Running `tt text grepr <dir> md "guard.*redirect|tail.pipe|file.sink"` (searching for THIS very specimen)
+tripped: *"[MED] pipe to head/tail/wc: use the tool's --limit / --tail / --count flag instead of a pipe"*.
+The `|` (regex alternation) and the literal word `tail` are both **inside the single-quoted pattern** — no
+shell pipe, no `tail` process. Same root cause as the `>` case: the guard scans raw bytes, not the unquoted
+skeleton. Reinforces fix (a) — a quote-aware tokenizer would kill BOTH. And it happened WHILE BR was stepping
+away (AFK-adjacent), racing him again — reinforces lesson (b): the search for a metachar specimen should not
+itself contain the metachar; anchor on metachar-free terms (`redirect`, `file.sink` alone) or split.
+
 ## Follow-ups
 - Fold (a) into an SM / `tt guardcheck` refinement backlog (quote-aware metachar scanning). Not urgent; it
   is a precision improvement, and the current over-match is fail-SAFE (extra confirm, never a missed catch).
