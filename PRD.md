@@ -113,6 +113,7 @@ Learned by running snippets through the REAL parser (`tt parsereqt parse FILE`),
   * Goal: avoidConfirmationFatigue
   * Goal: avoidReviewOverload
   * Goal: contributeOpenSource
+  * Goal: dwim
 * Stakeholder: agent has
   * Goal: tokenEfficiency
   * Goal: safeActionsRunWithoutConfirmation
@@ -142,6 +143,10 @@ Learned by running snippets through the REAL parser (`tt parsereqt parse FILE`),
   * Spec: The human-agent pair produces more, and more reliable, software per unit of scarce resource (human attention, tokens, wall-clock) than either alone or than the out-of-the-box baseline. This is the down-to-earth backbone thesis.
   * Target: tokensToGreen
   * Target: brokenBuildIterations
+* Goal: dwim has
+  * Gist: the users want genscalator to "do what I mean" — express an intent in rough natural words and have the agent do the sensible nearest-in-meaning thing, instead of recalling exact syntax.
+  * Why: exact-syntax recall is a working-memory tax that breaks flow; when the agent honours rough phrasings and asks only on genuine ambiguity, the human stays in flow and confirmations stay meaningful.
+* Goal: dwim helps Goal: jointHumanAgentProductivity
 * Goal: retainUserTrust has
   * Gist: (agentHarnessProvider) users grant the agent latitude only if it is safe by DEFAULT — few but meaningful confirmations, no surprising or dangerous unprompted actions. Trust is the provider's licence to operate; one bad autonomous action spends it. Aligns with the human's avoidConfirmationFatigue and with safeGeneration.
 * Goal: maximizeUsefulAutonomy has
@@ -292,6 +297,30 @@ example of expressing already-built work as reqT-lang requirements for Agentic R
   * Gist: a skill that seeds a complete, runnable Scala web app (a shared datamodel + a JDK-only server + a Scala.js/Laminar client + a reqT-lang PRD + a test suite) into a directory of the user's choice — a concrete newcomer on-ramp.
 * Feature: crudWebAppSeed helps Goal: jointHumanAgentProductivity
 * Feature: crudWebAppSeed relatesTo Feature: reqTParser
+
+**The `gs` DWIM in-session commands** (a skill newly shipping — specified here as it lands):
+
+* Feature: dwimCommands has
+  * Gist: Do-What-I-Mean in-session commands cued by a leading `gs` — predefined cues (as in Spec) that the agent matches to the nearest command in meaning and performs, so the user gets help, status, tool runs, and cue/dance explanations without leaving the session.
+  * Spec: THE COMMANDS —
+      `gs help` shows the welcome + the help on the gs do-what-I-mean commands (a bare `gs` is the same);
+      `gs help tt` lists all typed tools (tt ...) with a one-line description of each;
+      `gs help tt <what>` gives detailed help on the tool nearest in meaning to <what>;
+      `gs tt <tool>` runs <tool> and shows its output in session (e.g. `gs tt chrono`);
+      `gs status` expands the status-line info into a table in session;
+      `gs status line on` / `gs status line off` turn the status line on / off;
+      `gs cues` lists all cues (human-to-agent and agent-to-human) and what they mean;
+      `gs cue <what>` explains the cue nearest in meaning to <what>;
+      `gs dances` lists all dances and their goals;
+      `gs dance <what>` explains the dance nearest in meaning to <what>.
+  * Spec: THE DWIM INTENTION — the command list is an INFORMAL spec, not a rigid grammar: the user should never have to remember exact syntax. A leading `gs` plus roughly one of these intents means do the sensible thing — match nearest-in-meaning ("or similar"), prefer acting over asking when the intent is clear, and ask only on genuine ambiguity or real stakes.
+  * Spec: THE `gs` DOUBLE MEANING — `gs` is deliberately overloaded: as a bare leading cue it means "run a gs DWIM command", while `gs/path` or the word "gs" inside prose still names the project genscalator. Context disambiguates; a genuinely ambiguous `gs` message is asked about, not guessed.
+  * Spec: SURFACES — the agent-facing implementation is the `gs-dwim` SKILL (`skills/gs-dwim/SKILL.md`, the authoritative command list + how to perform each); the human-facing surface is the plugin welcome text (what `gs help` prints).
+* Feature: dwimCommands helps Goal: dwim
+* Feature: dwimCommands helps Goal: jointHumanAgentProductivity
+* Feature: dwimCommands helps Goal: avoidConfirmationFatigue
+* Feature: dwimCommands helps Goal: tokenEfficiency
+* Feature: dwimCommands relatesTo Feature: ttStatusline
 
 ### Release v0.10.0 — config file, parser fall-through marker, safe-mode flags, MCP (later)
 
