@@ -1,7 +1,7 @@
 ---
 name: gs-dwim
 description: Do-What-I-Mean in-session genscalator commands cued by a leading `gs`. Trigger whenever the user's message begins with `gs ` (or is a bare `gs`) — e.g. "gs help", "gs cues", "gs cue similar", "gs dances", "gs dance compact", "gs help tt", "gs help tt search text", "gs tt chrono", "gs status", "gs status line on", "gs where", "gs menu", "gs reqt", "gs term rot", "gs test", "gs new app todo ./my-app". Interpret the intent do-what-I-mean style (nearest-in-meaning, "or similar"), not by exact string match, and perform the matching genscalator action.
-allowed-tools: Read Bash(tt text *) Bash(tt files *) Bash(tt log *) Bash(tt chrono *) Bash(tt statusline *) Bash(tt parsereqt *) Bash(tt gitinfo *) Bash(tt doc *) Bash(scala-cli test *)
+allowed-tools: Read Bash(tt text *) Bash(tt files *) Bash(tt log *) Bash(tt chrono *) Bash(tt statusline *) Bash(tt parsereqt *) Bash(tt gitinfo *) Bash(tt doc *) Bash(tt mode *) Bash(scala-cli test *)
 ---
 
 # `gs` — genscalator do-what-I-mean (DWIM) in-session commands
@@ -48,6 +48,21 @@ gracefully). The per-command behaviour is specified below.
   reload via `/hooks`. Treat the explicit `gs` command as the user's go, but SHOW the exact change you make
   (settings edits are sensitive — never do a silent one). If unsure whether to edit their settings file
   directly, hand them the snippet to paste.
+- **`gs status mode on` / `off` / (bare = status)** — toggle the **mode line** (line 2 of the statusline: the
+  declared joint state-of-mind). Same `.claude/settings.json` command the status line uses, via a flag: `on` =
+  ensure the statusLine command carries `--mode-line`; `off` = remove that flag; bare = report whether it is
+  present. (Line 1 off but mode line on = `tt statusline --no-status --mode-line`.) A sensitive settings edit:
+  SHOW the exact change, human-gated, reload via `/hooks` — same discipline as `gs status line`. The two lines
+  toggle INDEPENDENTLY so the user budgets vertical space.
+- **`gs mode` / `gs mode add <label>` / `gs mode rm <label>`** — read or MUTATE the recorded joint
+  state-of-mind (the declared modes the mode line renders). Thin front for `tt mode`: bare = `tt mode` (list),
+  `add` = `tt mode add <label>`, `rm` = `tt mode rm <label>`, `gs mode clear` = `tt mode clear`. Labels are bare
+  tokens (`token-spending`, `hot-harvest`, `high-context`, `solo`, `human-stress`, `rot-vigilance`, `racing`,
+  ...). NOT a settings edit — just the state file `~/.claude/gs-modes`, allowlisted, no confirmation. **Both
+  parties declare:** the human sets frame modes (token-spending, racing, human-stress); the **agent should
+  proactively declare its own** as the MO shifts — `tt mode add hot-harvest` when harvesting, `rot-vigilance`
+  when watching rot, `high-context` as fill rises, `solo` on an AFK handoff — and `rm` them when they end, so
+  the mode line stays a live, mutually-visible reflection of the shared state.
 - **`gs cues`** — list the cues (human→agent and agent→human) and what each means. **Source:
   `docs/gs-registry.md`** (the ready-to-grab Cues tables — read it and render; it is kept in sync with
   `docs/foundations.md` + the `cue-*` memories, which stay canonical if the registry looks stale). Present
@@ -155,6 +170,8 @@ ONLY when **all three** hold — if any fails, run inline:
 | `gs tt <tool>` | no | the user wants the tool's output HERE; and for an effectful tool (git/forge/ssg/serv) the permission flow + outward-op discipline MUST stay in the main agent's view — never delegate an effectful run. |
 | `gs status line on/off` | **never** | a sensitive settings edit — must be inline, SHOWN to the user, with the `/hooks` handoff; delegating a settings change out of sight is the exact anti-pattern. |
 | `gs compact notify on/off` | **never** | a per-user config toggle (a sentinel file the hook reads); keep it inline and SHOWN, like `gs status line` — delegating an out-of-sight config change is the anti-pattern. |
+| `gs status mode on/off` | **never** | a settings edit (the statusLine flag); inline and SHOWN, like `gs status line`. |
+| `gs mode add/rm` | no | a quick state-file mutation the agent does inline as its MO shifts; not a big-in / small-out job. |
 | `gs new app` | no | writes a whole project (effectful, durable output); the primary output is the seeded app — run inline, never delegate. |
 
 Two refinements that make the decision smarter:

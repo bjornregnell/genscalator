@@ -7,8 +7,14 @@ matched to the nearest command in meaning (not exact syntax).
   gs help tt <what>        show detailed help on the tool nearest in meaning to <what>
   gs tt <tool>             run <tool> and give its output in session, e.g. gs tt chrono
   gs status                the status line information, expanded into a table in session
-  gs status line on        turn the status line on
+  gs status line on        turn the status line (line 1) on
   gs status line off       turn the status line off
+  gs status mode on        turn the mode line on (line 2: the declared joint state-of-mind)
+  gs status mode off       turn the mode line off
+  gs status mode           show whether the mode line is on or off
+  gs mode                  list the active modes (the recorded joint state-of-mind)
+  gs mode add <label>      declare a mode: add a label to the joint state-of-mind
+  gs mode rm <label>       clear a mode: remove a label
   gs cues                  list all cues, human -> agent and agent -> human, and what they mean
   gs cue <what>            explain the cue nearest in meaning to <what>
   gs dances                list all dances and what their goals are

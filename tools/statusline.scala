@@ -116,6 +116,32 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       .foreach(c => segs += sgr("38;5;39", s"cost: $$${c.toLong}")) // whole dollars, TRUNCATED (cents are noise on a fixed monthly plan; saves horiz space; never overstates)
     segs.mkString(sep)
 
+  // ---------- mode line (v0.10.0): a second line labelling the joint state-of-mind ----------
+  // A "mode" is a label stuck on the shared human<->agent state; MANY can be active at once. Auto-derived
+  // modes come from the same status JSON this tool already reads; declared modes come from a state file (read
+  // by the @main). Each label renders REVERSE-video + bold in its own colour, joined by a plain " && "
+  // (non-inverted, non-bold), prefixed "genscalator:". Toggled INDEPENDENTLY of the status line above.
+
+  /** Curated colours for well-known modes; an unknown label gets a stable colour by hash. */
+  val knownModeColors: Map[String, String] = Map(
+    "token-spending" -> "38;5;214", "token-saving" -> "38;5;42", "high-context" -> "38;5;208",
+    "dumb-zone" -> "38;5;203", "hot-harvest" -> "38;5;215", "solo" -> "38;5;75",
+    "human-stress" -> "38;5;203", "rot-vigilance" -> "38;5;214", "racing" -> "38;5;170",
+    "limit-near" -> "38;5;203", "delegation" -> "38;5;111"
+  )
+  def modeColor(label: String): String =
+    knownModeColors.getOrElse(label, {
+      val palette = Vector("38;5;170", "38;5;114", "38;5;180", "38;5;75", "38;5;215", "38;5;150", "38;5;210", "38;5;111")
+      palette(math.floorMod(label.hashCode, palette.size))
+    })
+  /** One mode label: reverse-video (7) + bold (1) + its colour, padded to read as a chip. PURE. */
+  def renderMode(label: String): String = sgr(s"7;1;${modeColor(label)}", s" $label ")
+  /** The mode line: brand prefix + active modes (each reverse+bold, own colour) joined by a plain " && ". PURE.
+    * No active modes -> a dim placeholder, so the line is still recognisable as the (empty) mode line. */
+  def renderModes(modes: Seq[String]): String =
+    val brand = sgr("1;38;5;42", "genscalator:")
+    if modes.isEmpty then s"$brand ${sgr("38;5;245", "(no active modes)")}"
+    else s"$brand ${modes.map(renderMode).mkString(" && ")}"
   private val Help: String =
     """tt statusline — format Claude Code's statusLine JSON into one compact coloured line
       |
@@ -142,28 +168,51 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       |  --warn N            usage-limit warn threshold in % (default 80)
       |  --ctx-warn N        context-fill dumb-zone threshold Z in % (default 30)
       |  --now-ms N          fixed "now" as epoch-ms (for deterministic tests)
+      |  --mode-line         ALSO emit the mode line (line 2: the declared joint state-of-mind,
+      |                      read from the state file `tt mode` writes)
+      |  --no-status         suppress line 1 (e.g. show ONLY the mode line)
+      |  --modes-file F      the declared-modes state file (default ~/.claude/gs-modes)
       |
       |Wire it up (human-gated settings step) in .claude/settings.json:
       |  "statusLine": { "type": "command", "command": "tt statusline --warn 85 --ctx-warn 28" }
       |
       |Full reference: docs/statusline-manual.md""".stripMargin
 
+  /** Read the declared-modes state file (one label per line); empty if absent/unreadable. Kept in sync with
+    * what `tt mode` writes — it is the recorded joint state-of-mind the mode line renders. */
+  def readModes(file: java.nio.file.Path): Seq[String] =
+    try
+      if java.nio.file.Files.isRegularFile(file) then
+        String(java.nio.file.Files.readAllBytes(file), "UTF-8").linesIterator.map(_.trim).filter(_.nonEmpty).toVector.distinct
+      else Seq.empty
+    catch case _: Throwable => Seq.empty
+  def defaultModesFile: java.nio.file.Path =
+    java.nio.file.Path.of(sys.props.getOrElse("user.home", "."), ".claude", "gs-modes")
+
   def dispatch(args: List[String]): Int =
     if args.contains("--help") || args.contains("-h") then { println(Help); return 0 }
     var nowMs   = System.currentTimeMillis()
     var warn    = 80.0 // usage-limit warn threshold (%); set via `--warn N` in the settings command string
     var ctxWarn = 30.0 // context-fill dumb-zone threshold (%, the smart-zone ceiling Z); set via `--ctx-warn N`
+    var modeLine  = false // --mode-line: also emit the mode line (line 2)
+    var noStatus  = false // --no-status: suppress line 1 (e.g. to show ONLY the mode line)
+    var modesFile = defaultModesFile
     val pos = scala.collection.mutable.ArrayBuffer[String]()
     val a = args.toVector
     var i = 0
     while i < a.length do
       a(i) match
-        case "--now-ms"   if i + 1 < a.length => nowMs   = a(i + 1).toLongOption.getOrElse(nowMs); i += 2
-        case "--warn"     if i + 1 < a.length => warn    = a(i + 1).toDoubleOption.getOrElse(warn); i += 2
-        case "--ctx-warn" if i + 1 < a.length => ctxWarn = a(i + 1).toDoubleOption.getOrElse(ctxWarn); i += 2
-        case other                            => pos += other; i += 1
+        case "--now-ms"     if i + 1 < a.length => nowMs     = a(i + 1).toLongOption.getOrElse(nowMs); i += 2
+        case "--warn"       if i + 1 < a.length => warn      = a(i + 1).toDoubleOption.getOrElse(warn); i += 2
+        case "--ctx-warn"   if i + 1 < a.length => ctxWarn   = a(i + 1).toDoubleOption.getOrElse(ctxWarn); i += 2
+        case "--modes-file" if i + 1 < a.length => modesFile = java.nio.file.Path.of(a(i + 1)); i += 2
+        case "--mode-line"                      => modeLine  = true; i += 1
+        case "--no-status"                      => noStatus  = true; i += 1
+        case other                              => pos += other; i += 1
     val json = pos.headOption.getOrElse(scala.io.Source.stdin.mkString)
-    println(render(json, nowMs, warn, ctxWarn))
+    // Each println is a SEPARATE status row (Claude Code renders multi-line statuslines).
+    if !noStatus then println(render(json, nowMs, warn, ctxWarn))
+    if modeLine then println(renderModes(readModes(modesFile)))
     0
 
 @main def statusLine(args: String*): Unit = sys.exit(StatuslineTool.dispatch(args.toList))

@@ -102,6 +102,61 @@ class CliSuite extends munit.FunSuite:
     finally os.remove.all(d)
   }
 
+  // --- mode (declared joint state-of-mind) ---
+  test("mode: add (idempotent) then list shows one per line, in order") {
+    val d = os.temp.dir()
+    try
+      val f = (d / "modes").toString
+      run("mode", "--file", f, "add", "hot-harvest")
+      run("mode", "--file", f, "add", "hot-harvest") // idempotent: no duplicate
+      run("mode", "--file", f, "add", "token-spend")
+      val (code, out, _) = run("mode", "--file", f)
+      assertEquals(code, 0)
+      assertEquals(out, "hot-harvest\ntoken-spend")
+    finally os.remove.all(d)
+  }
+  test("mode: rm removes one label; clear empties") {
+    val d = os.temp.dir()
+    try
+      val f = (d / "modes").toString
+      run("mode", "--file", f, "add", "a")
+      run("mode", "--file", f, "add", "b")
+      run("mode", "--file", f, "rm", "a")
+      val (_, out1, _) = run("mode", "--file", f)
+      assertEquals(out1, "b")
+      run("mode", "--file", f, "clear")
+      val (_, out2, _) = run("mode", "--file", f)
+      assertEquals(out2, "(no active modes)")
+    finally os.remove.all(d)
+  }
+  test("mode: invalid label (spaces) exits 2") {
+    val d = os.temp.dir()
+    try
+      val (code, _, err) = run("mode", "--file", (d / "modes").toString, "add", "has space")
+      assertEquals(code, 2)
+      assert(clue(err).contains("invalid label"))
+    finally os.remove.all(d)
+  }
+
+  // --- statusline mode line ---
+  test("statusline --mode-line: renders declared modes as a second line") {
+    val d = os.temp.dir()
+    try
+      val f = (d / "modes").toString
+      run("mode", "--file", f, "add", "hot-harvest")
+      val (code, out, _) = run("statusline", "--no-status", "--mode-line", "--modes-file", f, "{}")
+      assertEquals(code, 0)
+      assert(clue(out).contains("genscalator:"))
+      assert(clue(out).contains("hot-harvest"))
+      assert(!clue(out).contains("&&")) // one mode -> no separator
+    finally os.remove.all(d)
+  }
+  test("statusline: no --mode-line means no mode line") {
+    val (code, out, _) = run("statusline", "{}")
+    assertEquals(code, 0)
+    assert(!clue(out).contains("&&"))
+  }
+
   test("text context: prints a match with N lines of context, excludes beyond N") {
     val f = os.temp(contents = "l1\nl2\nNEEDLE\nl4\nl5\n", suffix = ".txt")
     try

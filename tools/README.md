@@ -113,6 +113,20 @@ tt doc statusline-manual                    # the statusline manual
 tt doc                                      # list docs
 ```
 
+### mode — record the declared modes of the joint state-of-mind (EFFECTFUL: a small state file)
+```
+mode                    # list the active modes (one per line)
+mode add <label>        # declare <label> (add a label to the recorded state; idempotent)
+mode rm <label>         # clear <label>
+mode clear              # clear all
+mode --file <f> ...     # override the state file (default ~/.claude/gs-modes; config-in-args, for tests)
+```
+A "mode" is a label on the shared human<->agent state-of-mind; MANY can be active at once, and BOTH the human
+and the agent may add/remove them (a joint, mutually-visible channel). Declaring = adding a label to the
+recorded state. The statusline's **mode line** (`tt statusline --mode-line`) renders whatever is active here,
+each label reverse-video + bold in its own colour. Labels are bare tokens `[A-Za-z0-9._-]+`. Pairs with
+`statusline` (which reads this state and renders line 2).
+
 ### log — build/run-log analyzer (PURE)
 ```
 log [summary|errors|warnings] <file>    # summary (default) = counts + lines + verdict
