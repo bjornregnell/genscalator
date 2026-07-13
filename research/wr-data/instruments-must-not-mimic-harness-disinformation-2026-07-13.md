@@ -120,3 +120,32 @@ it)"* → *"(and how genscalator tries to fix SOME of it)"*. Same principle one 
 instrument must not overclaim state; a post must not overclaim its fixes. Echt register applied to the title,
 mirroring the disinfo constraint on the UI. Ties: [[echt-effort-especially-self-generated]],
 [[publications-match-br-register]].
+
+## The archetypal volatile declared field: human presence ("i am here")
+BR, wryly, same session: *"br said 'i am here' — BR suddenly needed to pee; that can happen..."* He had opened
+the task with *"(jointly as needed, i am here)"* and then, within seconds, went AFK. A perfect live specimen:
+**human presence is a DECLARED state (like a mode chip), and the most volatile one there is.** It can go stale
+**instantly and involuntarily** — biology (a pee), a word to a spouse, a doorbell — and the human usually
+*cannot or will not re-declare in the moment* the state changes.
+
+So within the field-type taxonomy above, presence is a declared field whose staleness is driven not by "forgot
+to update" but by a **sudden involuntary state-change**. Its half-life is **short and unpredictable** ("that
+can happen"). Consequences:
+- The agent must hold *"i am here"* **loosely** — it is a point-in-time *claim*, not a durable fact. Never
+  assume continued presence from an earlier declaration.
+- The hygiene must be **cue-driven and cheap**, because the human won't do bookkeeping mid-interrupt: `afk`
+  added on leaving, cleared on the return cue *"i am back"* ([[cue-brb]], [[cue-go-afk]]). The mode line tracks
+  the volatility **only if** those cues fire — and the gap between the bio-interrupt and the cue is an
+  irreducible staleness window.
+- This is *why* the bing-bing and the afk-mode exist at all: presence cannot be assumed, so the system is built
+  to detect departure/return rather than trust a standing "here". It is also the human side of the joint clock
+  ([[joint-clock-two-party-progress-stalls-2026-07-13]]): a bio-interrupt is an **unplanned quiescence** — the
+  human's clock stops without notice.
+- Human-factors truth, stated plainly: the human is a *body*; interrupts are involuntary and unannounced. A
+  robust collaboration is built to tolerate that, not to assume a declared "here" stays true.
+
+**→ Candidate: a "me go pee" dance (BR, 2026-07-13 — PLACEHOLDER, BR to elaborate; noted not designed).** BR:
+*"that's why we need a (me go pee)-dance ... more coming."* A protocol for the human's sudden bio-interrupt:
+graceful entry (declare `afk`, agent switches to safe-solo / prep-only), the return cue (*"i am back"* → `rm
+afk`), and the bing-bing/return-handling. The afk-mode add/rm and the bing-bing are already the pieces; the
+dance would name and formalise the whole entry→away→return loop. Deferred until BR says more.
