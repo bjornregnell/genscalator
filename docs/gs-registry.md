@@ -25,6 +25,7 @@ of truth). For the full prose on any entry, follow it back to foundations.
 | `hmmmm` / trailing mutterings | "I'm thinking"; hold, don't push, wait for the human's call. |
 | `BRB` | short break; may do safe background work, prep for the return. |
 | `we are racing` | feeds are overlapping; keep useful work going and reconcile the whole queue. |
+| `ETA-idle?` | non-interrupting "when are you free?"; give a quick ETA to idle and keep working, do not stop. |
 | `quick` / `deep` | per-turn depth dial (token spend + how much info back). |
 | `why:` | the goal behind the ask; serve the goal, may refine the literal request. |
 | `similar to` / `or similar` | don't take the definition literally; improve it in the spirit of the work. |
