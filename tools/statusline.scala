@@ -140,7 +140,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     * No active modes -> a dim placeholder, so the line is still recognisable as the (empty) mode line. */
   def renderModes(modes: Seq[String]): String =
     val brand = sgr("1;38;5;42", "genscalator:")
-    if modes.isEmpty then s"$brand ${sgr("38;5;245", "(no active modes)")}"
+    if modes.isEmpty then s"$brand ${sgr("38;5;245", "clear: no active mode labels")}"
     else s"$brand ${modes.map(renderMode).mkString(" && ")}"
   private val Help: String =
     """tt statusline — format Claude Code's statusLine JSON into one compact coloured line

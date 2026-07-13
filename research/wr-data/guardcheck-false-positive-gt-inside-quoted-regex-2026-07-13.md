@@ -59,6 +59,14 @@ skeleton. Reinforces fix (a) — a quote-aware tokenizer would kill BOTH. And it
 away (AFK-adjacent), racing him again — reinforces lesson (b): the search for a metachar specimen should not
 itself contain the metachar; anchor on metachar-free terms (`redirect`, `file.sink` alone) or split.
 
+**Third instance, same session:** a raw `grep -n "...<label>...\|...<f>..."` on `mode.scala` tripped the `>`
+detector again — the `<label>`/`<f>` placeholders each carry a literal `>`. Three trips of one class in a
+single session is a strong frequency signal for the quote-aware tokenizer (fix (a)). It also surfaced a
+deeper cause (BR's read): post-compaction the agent had regressed to raw `grep` from the standing `tt grepr`
+reflex — the tool-choice slip that PUTS metachars in shell scope in the first place. See
+[[compaction-regresses-fine-grained-reflexes-2026-07-13]] and the new [[avoid-guard-stall]] skill (the
+compaction-surviving carrier of the guard-clean reflexes).
+
 ## Follow-ups
 - Fold (a) into an SM / `tt guardcheck` refinement backlog (quote-aware metachar scanning). Not urgent; it
   is a precision improvement, and the current over-match is fail-SAFE (extra confirm, never a missed catch).

@@ -6,11 +6,11 @@
 // them — it is a joint, mutually-visible channel. Declaring a mode = adding a label to the recorded state
 // (a small state file); the statusline's mode line renders whatever is active here. This tool owns ONLY the
 // state (add/remove/list); rendering it lives in `statusline`.
-//   tt mode                 list the active modes (one per line)
-//   tt mode add <label>      declare <label> active (idempotent)
-//   tt mode rm <label>     clear <label>
-//   tt mode clear           clear all modes
-//   tt mode --file <f> ...   override the state file (default ~/.claude/gs-modes; config-in-ARGS, for tests)
+//   tt mode                   list the active modes (one per line)
+//   tt mode add <label>       declare <label> active (idempotent)
+//   tt mode rm <label>        clear <label>
+//   tt mode clear             clear all modes
+//   tt mode --file <f> ...    override the state file (default ~/.claude/gs-modes; config-in-ARGS, for tests)
 // State: one label per line in ~/.claude/gs-modes (created on first `on`, order-preserving, de-duplicated).
 // Labels are bare tokens [A-Za-z0-9._-]+ (no spaces, no paths) so they render cleanly and pass around safely.
 import java.nio.file.{Files, Path}
@@ -23,11 +23,11 @@ private val ModeHelp: String =
     |statusline's mode line renders whatever is active. This tool owns only the state.
     |
     |Usage:
-    |  mode                  list the active modes (one per line)
+    |  mode                   list the active modes (one per line)
     |  mode add <label>       declare <label> active (idempotent)
-    |  mode rm <label>      clear <label>
-    |  mode clear            clear all modes
-    |  mode --file <f> ...   override the state file (default ~/.claude/gs-modes)
+    |  mode rm <label>        clear <label>
+    |  mode clear             clear all modes
+    |  mode --file <f> ...    override the state file (default ~/.claude/gs-modes)
     |
     |Labels are bare tokens [A-Za-z0-9._-]+ (no spaces / paths). Examples of modes:
     |  token-spending  token-saving  hot-harvest  high-context  solo  human-stress  rot-vigilance  racing
