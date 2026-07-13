@@ -91,3 +91,32 @@ The mode/status/awareness instruments are the observability spine of the whole c
 status line closes: the agent cannot self-read fill/rot, the human steers from the display). If that spine
 **misinforms**, it actively misleads the steering — worse than silence. Hence *"critical to awareness to get it
 right"*, and hence SM062 (the mode add/rm/declaration model must be designed under this constraint).
+
+## Refinement from live dogfooding (2026-07-13): staleness is FIELD-TYPE-dependent
+Dogfooding the mode line live the same session surfaced a distinction that **partly resolves** the difficulty:
+
+**Two kinds of instrument field have different staleness semantics.**
+- **Measured / derived fields** (the clock, ctx-fill, cost) track a world that **moves on**. The instant the
+  world changes and the display does not, they go stale → disinfo. Fix = **refresh** (`refreshInterval`),
+  mark-stale, or honest reframing ("last tick").
+- **Declared fields** (the mode chips) hold a value that **does not change on its own**. A declared chip stays
+  **true** until someone re-declares it. It cannot go stale by the world moving — only by a human/agent
+  forgetting to update it. Fix = **active hygiene** (discipline/automation to clear/update declarations; the
+  `racing` removal-trigger is exactly this — [[cue-we-are-racing]]).
+
+**Corollary:** the disinfo RISK — and its FIX — is field-type-dependent. A frozen clock is disinfo (time moved
+under a frozen number); a persistent mode chip at idle is NOT disinfo (the declaration is still true). Measured
+→ refresh; declared → hygiene. Different failure modes, different fixes. **This taxonomy should anchor SM062.**
+
+**Live dogfood confirmations (same session).**
+- Declared-state renders promptly and correctly: BR — *"genscalator: token-spending — it appeared instantly
+  when you ate the msg. GOOD!"* The chip updates on the next tick (the same event-driven render as the clock);
+  because declared state does not drift, prompt-render + persist is exactly right for it.
+- The frozen clock, twice, live: BR — *"stuck on genscalator: 15:55:21"* and *"clock is not ticking while i
+  type this"* — the measured field going stale in real time, the taxonomy's other half, felt directly.
+
+**A parallel echt move (same session): the title-humility edit.** BR retitled blog 004 *"(and how we'd fix
+it)"* → *"(and how genscalator tries to fix SOME of it)"*. Same principle one level up: **do not overclaim.** An
+instrument must not overclaim state; a post must not overclaim its fixes. Echt register applied to the title,
+mirroring the disinfo constraint on the UI. Ties: [[echt-effort-especially-self-generated]],
+[[publications-match-br-register]].
