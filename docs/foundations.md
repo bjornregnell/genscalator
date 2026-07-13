@@ -79,7 +79,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 
 **Groups:** [Roles and cases](#roles-and-cases) · [Channel: bandwidth and confirmation fatigue](#channel-bandwidth-and-confirmation-fatigue) · [Echt and honest writing](#echt-and-honest-writing) · [Context rot and the smart zone](#context-rot-and-the-smart-zone) · [Dances and handoffs](#dances-and-handoffs) · [Memory, habits and substrate](#memory-habits-and-substrate) · [Autonomy and safety](#autonomy-and-safety)
 
-**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · Agentic requirements engineering (agentic RE) · Agentic software engineering (agentic SE) · AT · Authority anchor · Ballgame · BR · BRB dance · Cold start · Comms shorthand · Communication bandwidth · Compact dance · Compact trigger · Confabulation · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context dance · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · Delegation dance · echt / äkthet · echt-mimicry · Edit dance · Edit vs clarification cues · Extrinsic-volatile plasticity · Go afk cue · Go dance · Go dial ((go)/go/GO) · gs (genscalator) · Guard stall · Habit · Hardening dance · Harvest-hot-context mode · Hot context · Index rot · Live-edit dance · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Post-warp dissection · Prosthetic habit · P-word / plan-mode modal · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Swedish-marker cue (|sv) · Thriller state · Token acceleration · Token efficiency (TE) · Token-usage dance · Token velocity · Warp · WR · Why cue
+**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · Agentic requirements engineering (agentic RE) · Agentic software engineering (agentic SE) · AT · Authority anchor · Ballgame · BR · BRB dance · Cold start · Comms shorthand · Communication bandwidth · Compact dance · Compact sleep · Compact trigger · Confabulation · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context dance · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · Delegation dance · echt / äkthet · echt-mimicry · Edit dance · Edit vs clarification cues · Extrinsic-volatile plasticity · Go afk cue · Go dance · Go dial ((go)/go/GO) · gs (genscalator) · Guard stall · Habit · Hardening dance · Harvest-hot-context mode · Hot context · Index rot · Live-edit dance · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Post-warp dissection · Prosthetic habit · P-word / plan-mode modal · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Swedish-marker cue (|sv) · Thriller state · Token acceleration · Token efficiency (TE) · Token-usage dance · Token velocity · Warp · WR · Why cue
 
 ### Roles and cases
 *BR and the agent are the **roles** (stakeholders, above). **WR** is the research program; **AT** and **SSG** are its **cases / units of analysis** — the object-level projects during which workflow data is collected. (Terminology per* Case Study Research in Software Engineering: Guidelines and Examples*, Runeson, Höst, Rainer & Regnell, Wiley 2012, §3.2.3 "Cases and Units of Analyses" — of which BR is a co-author.)*
@@ -377,6 +377,21 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   by reading the resume note; the pasted prompt is a *convenience*, the durable artifacts the *guarantee*. A
   **human↔agent** protocol (steps 1–2 agent, 3–4 human), the cousin of a **ralph loop**'s checkpoint+compact
   but human-triggered at a chat boundary. Initiate at the **compact trigger** (next).
+- **Compact sleep** — the **UX pain** a compaction inflicts on a humming session (named by BR 2026-07-13). A
+  compact takes *long* (tens of seconds up, plausibly scaling with fill), so the human — mid **thriller state**,
+  flow at full tilt — wanders off while it runs (a pee, a word with a partner). Two costs then stack: **(a) dead
+  time** — the agent stays **dormant after the compaction completes** and only re-wakes when the human next types
+  ([[agent-lacks-felt-time-rebind-at-boundaries]]; `research/wr-data/agent-cannot-see-compaction-finish-2026-07-13.md`),
+  so the human's entire away-interval is bolted onto the compaction as invisible idle; **(b) broken flow** — the very
+  interruption the compact dance exists to *bound* instead lands mid-stride and cools the thriller state. A direct
+  consequence: the step-5 chrono stamps measure **wake-latency, not compaction** (BR: *"more a measure of how long
+  it takes until i wake you up"*). **Proposed remedy — the wake-me-up poll:** a **PostCompact hook** fires an OS
+  notification (or a push) the instant the fresh context is ready, *pulling the human straight back* instead of
+  letting the session idle; a **PreCompact hook** can pre-arm it and (per the *measure* step) also stamp the true
+  compaction start/end, isolating the pure summariser run at last. A **human-approved settings step** (hooks) —
+  propose, never self-apply. This is a **super-harness gap** the compaction asymmetry exposed: the harness knows
+  when the compact finishes and the human is away; nothing yet bridges the two. Cf. **Compact dance** (the ritual),
+  **Thriller state** (the flow it interrupts).
 - **Compact trigger** — the context-fill level at which the agent should **proactively propose the compact
   dance**, rather than waiting until it is already degrading. Set at a **safety margin below the smart-zone
   ceiling**: **fill ≥ 0.8·Z** (with Z≈0.3, ≈24% of a 1M window). The 0.8 margin exists because the *dance
