@@ -32,9 +32,10 @@ gs dances            list all dances and their goals
 gs dance <what>      explain the dance nearest in meaning to <what>
 gs term <what>       explain the foundations glossary term nearest in meaning to <what>
 gs new app <what> <dir>   create a complete runnable Scala web app <what> (e.g. todo-web-app) into <dir>
-gs compact notify on      enable the wake-me-up poll: a notice plus chime when a /compact finishes
+gs compact notify on      enable the bing-bing: a notice plus chime when a compaction finishes
 gs compact notify off     disable it (silent); this is the default
-gs compact notify         show whether the wake-me-up poll is currently on or off
+gs compact notify         show whether the bing-bing is currently on or off
+gs sound test             play a test chime to check the speakers are on
 ```
 
 **Tier 2 — genscalator contributors, dogfooding mode** (working ON genscalator, or in the gs research MO).
@@ -93,7 +94,7 @@ gs test              run the tt toolbox test suite (handles the tt.tools prop) a
   it is effectful: confirm the target `<dir>` and never overwrite a non-empty directory without asking. Not a
   delegation candidate (it writes durable output) — run inline; afterwards point the user at the generated
   `README.md` to build and run. Tier 1 (any plugin user), but effectful, unlike the other Tier-1 commands.
-- **`gs compact notify on` / `off` / (bare = status)** — toggle the compaction **wake-me-up poll**: a critical
+- **`gs compact notify on` / `off` / (bare = status)** — toggle the compaction **bing-bing**: a critical
   desktop notice (it pierces Do-Not-Disturb) plus a chime, fired the instant a `/compact` finishes, so a human
   who wandered off is called back (foundations "Compact sleep"). It is gated on the
   sentinel file `~/.claude/compact-notify.enabled`, read by the `Pre`/`PostCompact` hook `~/.claude/compact-wake.sh`:
@@ -104,8 +105,12 @@ gs test              run the tt toolbox test suite (handles the tt.tools prop) a
   reversible one-file toggle (NOT a `settings.json` edit — the hook is already wired), so treat the explicit `gs`
   command as the user's go and just do it, then confirm the new state (SHOWN, like `gs status line`). **Default is
   OFF**, because the notice is intrusive by design. If the hook is not installed (a plugin user who has not set it
-  up), say so and point at the setup doc `docs/compact-wake-poll.md` (the `compact-wake.sh` script plus a
+  up), say so and point at the setup doc `docs/compact-bing-bing.md` (the `compact-wake.sh` script plus a
   `Pre`/`PostCompact` hook entry in `~/.claude/settings.json`). Desktop-Linux only (`notify-send` + a sound player such as `canberra-gtk-play`).
+- **`gs sound test`** — play a single test chime so the user can confirm their speakers / audio are on. Run
+  `canberra-gtk-play -i complete` (fall back to `paplay /usr/share/sounds/freedesktop/stereo/complete.oga`); if
+  neither player exists, say the box has no sound player installed. Effect-light (just plays a sound), Tier 1,
+  never a delegation candidate (the user wants to hear it here and now).
 **Tier 2 (genscalator contributors / dogfooding mode) — assume the gs dev substrate; degrade gracefully if absent:**
 
 - **`gs where`** — orient: a SHORT current-state snapshot so the user (or a returning agent) re-syncs fast.

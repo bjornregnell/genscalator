@@ -1,4 +1,4 @@
-# The compaction wake-me-up poll (the Compact sleep remedy)
+# The compaction bing-bing (the Compact sleep remedy)
 
 A tiny personal hook that fixes **Compact sleep** (see `foundations.md`): a `/compact` takes long, so
 mid-flow the human wanders off, and nothing calls them back because the agent stays dormant after the
@@ -13,7 +13,8 @@ A `Pre`/`PostCompact` hook pair calling `compact-wake.sh`:
 - **PreCompact** stamps the compaction **start** to `~/.claude/compact-timing.log`.
 - **PostCompact** stamps the **end**, and (only when opted in) fires a **critical desktop notification**
   (which pierces Do-Not-Disturb) plus a **chime**, the instant the fresh context is ready, so a wandered-off
-  human is called straight back. The notice carries a timestamp so an away human sees when it fired.
+  human is called straight back. The notice is titled `genscalator:` (mimicking the statusline brand) and carries a timestamp so an away
+  human sees when it fired.
 
 Because PRE and POST are stamped by the harness itself (not by a human around the compact), their delta is
 the **pure summariser run** with zero human latency in it. That is the clean measurement the by-hand
@@ -60,9 +61,19 @@ The notice is intrusive by design (a critical popup that bypasses Do-Not-Disturb
 exactly right for a wake-me-up, and exactly wrong to impose on someone who did not ask for it. So the noisy
 half is gated on the sentinel; the silent timing log always runs.
 
-## Open question (for BR)
+## Plugin packaging (resolved 2026-07-13, from a claude-code-guide check)
 
-Promote this to a **genscalator-shipped plugin hook** (auto-available when the plugin is enabled, still
-sentinel-gated and off by default), or keep it as this documented personal install? Shipping it auto-wires
-a compaction hook for every plugin user, which is a UX and consent call, not just a packaging one. Parked
-here until decided.
+**Decision: do NOT ship this as a plugin-declared hook.** Per current Claude Code behaviour, a plugin's
+declared hooks fire even when the plugin is *disabled* (a known bug), so a "dormant until opt-in" plugin
+hook cannot be relied on — that would break the opt-in / consent guarantee outright.
+
+Instead, use the **opt-in-on-first-`on`** pattern: the plugin ships `compact-wake.sh`, and **`gs compact
+notify on`** does the wiring, on the user's explicit command — it Edits the `Pre`/`PostCompact` hooks into
+the user's own `~/.claude/settings.json`, points them at the script, creates the sentinel, and fires the
+preview. Nothing runs until that first `on`.
+
+Mechanics confirmed by the check:
+- Hooks written to `settings.json` take effect **live** — no `/hooks` reload or restart needed.
+- Do **not** rely on `${CLAUDE_PLUGIN_ROOT}` inside the hook command (currently injected unreliably);
+  copy the script to `~/.claude/compact-wake.sh` (or use a fixed absolute path) so the hook command is robust.
+- The `manual` + `auto` matcher pair is correct (or a single `manual|auto`); omitting the matcher matches all.

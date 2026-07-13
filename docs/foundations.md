@@ -385,7 +385,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   so the human's entire away-interval is bolted onto the compaction as invisible idle; **(b) broken flow** — the very
   interruption the compact dance exists to *bound* instead lands mid-stride and cools the thriller state. A direct
   consequence: the step-5 chrono stamps measure **wake-latency, not compaction** (BR: *"more a measure of how long
-  it takes until i wake you up"*). **Remedy, now BUILT 2026-07-13 with BR's approval — the wake-me-up poll:** a `Pre`/`PostCompact` hook pair
+  it takes until i wake you up"*). **Remedy, now BUILT 2026-07-13 with BR's approval — the bing-bing:** a `Pre`/`PostCompact` hook pair
   in `~/.claude/settings.json` calling `~/.claude/compact-wake.sh`. **PostCompact** fires a *critical* OS
   notification (which pierces Do-Not-Disturb) plus a chime the instant the fresh context is ready, *pulling the
   human straight back* instead of letting the session idle; the notice carries a **timestamp** so an away human sees

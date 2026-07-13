@@ -96,7 +96,7 @@ of truth). For the full prose on any entry, follow it back to foundations.
 | **Z** (smart-zone ceiling) | the usable working-context ratio (~30%); brake as fill nears Z, not 100%. |
 | **Context rot** | progressive reasoning degradation as the window fills with accumulated history. |
 | **Context usage / fill** | the fraction of the window occupied (quantity axis); the agent can't reliably self-read it. |
-| **Compact sleep** | the wander-off UX pain: a long `/compact` lets the human leave, and the agent stays dormant after it finishes until the human next types; remedy = the wake-me-up poll (`gs compact notify on`). |
+| **Compact sleep** | the wander-off UX pain: a long `/compact` lets the human leave, and the agent stays dormant after it finishes until the human next types; remedy = the bing-bing (`gs compact notify on`). |
 | **Hot context** | the relevant material is already resident + the cache is warm; do related work now. |
 | **Harvest-hot-context mode** | rapidly pin the session's insights while context is still hot, before a warp cools them. |
 | **Token velocity / acceleration** | dS/dt and d²S/dt²: the burn rate and whether it is speeding up (the introspective alarm). |

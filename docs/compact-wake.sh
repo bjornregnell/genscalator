@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Compaction wake-me-up poll + pure-duration timing.
+# Compaction bing-bing + pure-duration timing.
 # Called by the PreCompact ("pre") and PostCompact ("post") hooks in ~/.claude/settings.json,
 # and by `gs compact notify on` ("demo") to preview the notice on first activation.
 # Closes the "Compact sleep" UX gap (genscalator foundations): a long compaction lets the human
@@ -19,7 +19,7 @@ ts="$(date '+%Y-%m-%d %H:%M:%S')"
 fire_notice() {
   local body="$1"
   if command -v notify-send >/dev/null 2>&1; then
-    notify-send -u critical "Claude Code" "$body" 2>/dev/null || true
+    notify-send -u critical "genscalator:" "$body" 2>/dev/null || true
   else
     echo "wake-me-up: no notify-send on this box (no desktop notification will appear)"
   fi

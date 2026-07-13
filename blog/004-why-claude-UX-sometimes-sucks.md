@@ -137,11 +137,23 @@ cools the flow it was meant to preserve. We even caught this by accident: we sta
 after each compact to measure how long compaction takes, and discovered the numbers do not measure compaction at all.
 They measure *how long it takes me to wake the agent up*. The tool cannot see when the compaction finishes any more
 than I can see its context-fill, another face of the same asymmetry that runs through this whole post. **The ask: a
-wake-me-up poll.** A tiny nudge, an OS notification the instant the fresh context is ready, so a wandering human is
+bing-bing.** A tiny nudge, an OS notification the instant the fresh context is ready, so a wandering human is
 pulled straight back instead of the session idling. As a bonus, stamping the compaction start and end from the harness
 itself (rather than by my hand around it) would finally isolate the *pure* compaction time, and answer the question we
 could never answer by hand: is a compact slower the fuller the context is? Today none of this exists, so I set an
 egg-timer in my head and hope I come back at the right moment.
+
+<!-- AGENT-DRAFT 2026-07-13 (BR to revoice): the payoff. We BUILT this remedy the same afternoon (a Pre/PostCompact
+hook, opt-in, off by default). BR named it "bing-bing". Sources for the Monty ref: Monty Python's The Meaning of
+Life (1983), Part I "The Miracle of Birth"; line "And get the machine that goes 'Ping!'", spoken by Obstetrician 2
+(John Cleese); en.wikipedia.org/wiki/Monty_Python's_The_Meaning_of_Life + en.wikiquote.org/wiki/Monty_Python's_The_Meaning_of_Life -->
+
+**Postscript, since we built it.** We did not leave this one as an ask. That same afternoon we wired it up, and BR
+named it the **bing-bing**. Partly because it literally goes *bing-bing* (a popup, then a chime a beat behind it),
+and partly as a nod to Monty Python's *The Meaning of Life*, where an obstetrician (John Cleese) barks *"And get the
+machine that goes 'Ping!'"* while the woman actually giving birth is politely ignored. The joke there is technology
+for its own sake, a machine that pings to look busy. Ours earns its bing: it pings to fetch a wandering human back
+to the work. Same silly sound, opposite point.
 
 <!-- AGENT-DRAFT 2026-07-13 (BR to revoice; his phrase "tripped on its own toes"). A tiny agent-side beat.
 Source: research/wr-data/em-dash-in-edit-anchor-silent-match-failure-2026-07-13.md -->
