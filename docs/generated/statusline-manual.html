@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The tt statusline bar — how to read it, act on it, and turn it on or off</title>
+<style>body{max-width:44rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif;line-height:1.6}
+pre{overflow-x:auto;background:#f4f4f4;padding:1rem;border-radius:6px}code{font-family:ui-monospace,monospace}
+table{border-collapse:collapse}th,td{border:1px solid #ccc;padding:.3rem .6rem}img{max-width:100%}
+sup.fn-ref{font-size:.75em;line-height:0}.footnotes{font-size:.9em;margin-top:2rem}.footnotes li{margin:.3rem 0}.fn-back{text-decoration:none;margin-left:.25rem}
+.post-byline{font-style:italic;font-size:.92em;color:#666}</style>
+</head><body>
+<h1>The <code>tt statusline</code> bar — how to read it, act on it, and turn it on or off</h1>
+<blockquote>
+<p>A one-line, always-visible gauge of your Claude Code session: what model you are on, how full the context window is, how close you are to your usage limits, and the running cost. It replaces the <code>/cost</code> paste-dance with a live readout, and its leading <code>genscalator:</code> label doubles as proof that the genscalator plugin plus statusline are actually wired up and live.</p>
+</blockquote>
+<p>Claude Code pipes a small JSON object to the configured <code>statusLine</code> command on each conversation event (not on a wall-clock timer, and throttled). <code>tt statusline</code> reads that JSON and prints one compact, colour-coded line. Every segment is independently guarded: a field the JSON does not carry simply omits its segment, so the bar degrades gracefully across CC versions and subscription tiers and never crashes your prompt.</p>
+<h2 id="what-a-full-line-looks-like">What a full line looks like</h2>
+<pre><code>genscalator:  14:23:07  O4.8 (1M ctx)  ctx-fill: 41%  5h-lim: 30%  wk-lim: 14% resets: 3d  cost: $12</code></pre>
+<p>Segments are separated by two spaces, in a fixed left-to-right order. If the line is wider than your terminal, CC truncates it at the right edge (it does not wrap), so the least-important segment — cost — falls off first by design.</p>
+<h2 id="reading-each-segment-and-what-to-do-about-it">Reading each segment, and what to do about it</h2>
+<table>
+<thead>
+<tr><th>Segment</th><th>Colour</th><th>Means</th><th>What to do</th></tr>
+</thead>
+<tbody>
+<tr><td><strong><code>genscalator:</code></strong></td><td>bold green</td><td>The plugin plus statusline are active. If this prefix is <strong>absent</strong>, genscalator is not wired up.</td><td>Nothing — it is your at-a-glance "am I live?" indicator.</td></tr>
+<tr><td><strong><code>14:23:07</code></strong></td><td>light grey</td><td>Local wall clock, HH:MM:SS. <strong>It freezes while the agent is working and ticks again when control returns to you.</strong></td><td>Use the freeze/tick as a turn signal: ticking clock = your move in the ballgame; frozen = the agent has the ball.</td></tr>
+<tr><td><strong><code>O4.8 (1M ctx)</code></strong></td><td>cyan</td><td>The model, abbreviated (<code>Opus 4.8</code> → <code>O4.8</code>, <code>Sonnet</code> → <code>S</code>, <code>Fable</code> → <code>F</code>, <code>Haiku</code> → <code>H</code>) and its context window.</td><td>Confirm you are on the model you intend.</td></tr>
+<tr><td><strong><code>ctx-fill: 41%</code></strong></td><td>green (→ orange at the compact trigger ~24%, <strong>red at the dumb-zone ceiling ~30%</strong>)</td><td>How full the context window is.</td><td>This is the rot axis. Orange means you have crossed the <strong>compact-dance trigger</strong> (~0.8·Z) — start consolidating; <strong>red means you are at the smart-zone ceiling Z and risking the dumb zone</strong> (context rot) — do the compact dance now (commit, then compact) rather than letting it auto-compact mid-thought. Note this reds <em>early</em> (~30% of a 1M window), not near 100% — a full-but-rotting window is the danger, not a technically-full one.</td></tr>
+<tr><td><strong><code>5h-lim: 30%</code></strong></td><td>purple (→ orange ≥ 70%, <strong>red at/above the warn threshold, default 80%</strong>)</td><td>Fraction of your rolling 5-hour session limit used.</td><td>When it reddens you are near the session cap — ease off, checkpoint, or wrap up before you get blocked.</td></tr>
+<tr><td><strong><code>resets: 2h34m</code></strong></td><td>dim grey, <strong>but red when its limit is at/above the warn threshold</strong></td><td>Fine countdown (hours + minutes) until the 5-hour window resets. Shown only if CC sends <code>rate_limits.five_hour.resets_at</code>.</td><td>A red reset says: the cap is close, and here is how long until relief.</td></tr>
+<tr><td><strong><code>wk-lim: 14%</code></strong></td><td>rosy (→ orange ≥ 70%, <strong>red at/above the warn threshold, default 80%</strong>)</td><td>Fraction of your weekly (7-day) limit used.</td><td>The slow-moving budget. Reddens near the weekly cap; a distant reset then means pace the rest of the week.</td></tr>
+<tr><td><strong><code>resets: 3d</code></strong></td><td>dim grey, <strong>red when its limit is at/above the warn threshold</strong></td><td>Coarse countdown (m / h / d) until the weekly window resets.</td><td>When the weekly budget refreshes.</td></tr>
+<tr><td><strong><code>cost: $12</code></strong></td><td>blue</td><td>Notional API-equivalent cost of this session, in whole dollars (cents dropped to save space): <strong>what the tokens this conversation has burned would cost if billed at pay-as-you-go API rates.</strong> It is cumulative across the session (and survives a compact), and is <em>not</em> tied to your monthly billing period.</td><td>On a fixed monthly plan this is <strong>not</strong> a real charge — it is a token-consumption meter, the least interesting number, which is why it is placed last and drops off first on a narrow terminal.</td></tr>
+</tbody>
+</table>
+<h3 id="the-gauge-grading-the-three-limitfill-segments">The gauge grading (the three limit/fill segments)</h3>
+<p><code>ctx-fill</code>, <code>5h-lim</code>, and <code>wk-lim</code> each start in their own healthy hue and escalate:</p>
+<ul>
+<li><strong>healthy</strong> — below 70%: the segment's base colour (green / purple / rosy).</li>
+<li><strong>orange</strong> — 70% or above: getting full; start planning.</li>
+<li><strong>red</strong> — act now (compact, ease off, or expect a limit soon).</li>
+</ul>
+<p>The <strong>red</strong> trigger differs by segment, because "danger" means something different for each:</p>
+<ul>
+<li><strong><code>ctx-fill</code></strong> is graded to the <strong>compact-dance math</strong>, not a near-full window:</li>
+<li><strong>orange</strong> at the <strong>compact trigger</strong> ≈ 0.8·Z (default ~24%) — start consolidating toward a compact.</li>
+<li><strong>red</strong> at the <strong>smart-zone ceiling Z</strong> (default ~30%) — you are risking the <strong>dumb zone</strong> (context rot); do the compact dance now. It reds <em>early</em> on purpose: a context window at 30% of 1M is already rot-risky long before it is technically full, so waiting for 90% would be far too late.</li>
+<li>Configure with <strong><code>--ctx-warn N</code></strong> (default 30). Orange automatically tracks 0.8·N.</li>
+<li><strong><code>5h-lim</code> and <code>wk-lim</code></strong> are graded to the <strong>usage-limit warn threshold</strong>:</li>
+<li><strong>orange</strong> at 70%, <strong>red</strong> at the <strong>warn threshold (default 80%)</strong> — and when a limit reddens <strong>its reset countdown reddens with it</strong>, so an approaching cap is unmistakable at a glance. This is the ambient early-warning slice of the usage-limit WARNING requirement.</li>
+<li>Configure with <strong><code>--warn N</code></strong> (default 80). Applies to both limit gauges.</li>
+</ul>
+<p><strong>Putting both in the settings command string:</strong> e.g. <code>"command": "tt statusline --warn 85 --ctx-warn 28"</code>. The two thresholds are independent — the usage-limit warn (a subscription-budget signal) and the ctx-fill dumb-zone threshold (a rot signal) mean different things and default to different values (80 vs 30).</p>
+<h2 id="turning-it-on-and-off">Turning it on and off</h2>
+<p><strong>On</strong> — add one line to <code>.claude/settings.json</code> (top level; merge alongside your existing keys, do not replace the file):</p>
+<pre><code class="language-json">"statusLine": { "type": "command", "command": "tt statusline" }</code></pre>
+<p>Then reload with <code>/hooks</code> (or restart the session). The bar appears at the bottom of your prompt.</p>
+<p><strong>Off</strong> — remove that <code>"statusLine"</code> key from <code>.claude/settings.json</code> and reload with <code>/hooks</code> (or restart). There is no runtime toggle; presence of the key is the switch.</p>
+<h2 id="when-a-segment-is-missing">When a segment is missing</h2>
+<p>Nothing is wrong — the tool only prints a segment when its field is present in the JSON CC sent:</p>
+<ul>
+<li>The <code>rate_limits.*</code> segments (<code>5h-lim</code>, <code>wk-lim</code>, their <code>resets:</code> countdowns) are a Claude Pro/Max feature; on other tiers they simply do not appear.</li>
+<li>A completely empty or non-JSON stdin prints a <strong>blank line</strong> (exit 0) — it will never break your prompt.</li>
+<li>The leading clock is only added once the JSON parses, so a blank line really is blank (no stray clock).</li>
+</ul>
+<h2 id="where-this-lives">Where this lives</h2>
+<p>The tool is <code>tools/statusline.scala</code> (<code>tt statusline</code>). It reads stdin by default, and for deterministic tests also accepts the JSON as a positional argument plus <code>--now-ms N</code> to pin the clock. See the toolbox test suite for the exact fields consumed and the rendering assertions.</p>
+
+</body></html>

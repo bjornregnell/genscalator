@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tool selection — pick the right tool for the question</title>
+<style>body{max-width:44rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif;line-height:1.6}
+pre{overflow-x:auto;background:#f4f4f4;padding:1rem;border-radius:6px}code{font-family:ui-monospace,monospace}
+table{border-collapse:collapse}th,td{border:1px solid #ccc;padding:.3rem .6rem}img{max-width:100%}
+sup.fn-ref{font-size:.75em;line-height:0}.footnotes{font-size:.9em;margin-top:2rem}.footnotes li{margin:.3rem 0}.fn-back{text-decoration:none;margin-left:.25rem}
+.post-byline{font-style:italic;font-size:.92em;color:#666}</style>
+</head><body>
+<h1>Tool selection — pick the right tool for the question</h1>
+<blockquote>
+<p>Which tool answers a given question best — so the agent reaches for the precise one first, instead of defaulting to grep and following up three times. Right tool → more precise answer, fewer follow-up calls, fewer approval prompts.</p>
+</blockquote>
+<p>The reflex to fix: <em>"search anything"</em> → <code>grep</code>. Grep is a line/byte matcher; it does not know what a symbol <em>is</em>. For Scala <strong>code structure</strong> there is a tool that does — use it, and the answer comes back right the first time.</p>
+<h2 id="the-guide">The guide</h2>
+<table>
+<thead>
+<tr><th>The question is about…</th><th>Reach for</th><th>Why</th></tr>
+</thead>
+<tbody>
+<tr><td>plain text, logs, config, non-Scala files — "is this string anywhere?"</td><td><strong><code>tt text</code> / <code>tt files</code></strong> (or a one-off <code>grep</code> for a single literal)</td><td>typed, no shell scaffolding, one allowlisted command</td></tr>
+<tr><td><strong>Scala <em>structure</strong></em> — where is this defined, who calls it, what extends it, show me the body, resolve this import</td><td><strong><code>scalex</code></strong></td><td>symbol-aware, fast, structured output — see below</td></tr>
+<tr><td><strong>compiler-grade truth or any mutation</strong> — inferred types, real compile errors, run tests, refactor (Scalafix), format, dependency / build queries</td><td><strong>Metals MCP</strong></td><td>runs the presentation compiler + build server; reach here when scalex's source-level view isn't enough — see below</td></tr>
+<tr><td>reading a file</td><td>the editor's <strong>file-read tool</strong></td><td>never <code>cat</code>/<code>head</code>/<code>tail</code></td></tr>
+<tr><td>executing effectful or untrusted code</td><td>a capability-constrained Scala scratch tool / OS sandbox</td><td>never raw bash</td></tr>
+</tbody>
+</table>
+<h2 id="why-scalex-for-scala-code">Why <code>scalex</code> for Scala code</h2>
+<p><code>grep</code> finds the <em>string</em> <code>process</code>; <code>scalex</code> finds the <em>method</em> <code>process</code> — its definition, its callers, its overrides, the type it lives on. "Grep, but it understands Scala's AST." It parses with Scalameta and caches per git OID, so there is no build server to wait on (~2–5 s cold index, <strong>&lt;400 ms</strong> warm). That precision is exactly what cuts follow-up calls: one <code>refs Foo.bar --count</code> replaces a grep, a manual filter of false hits, and a second grep to categorize them.</p>
+<p>Core commands: <code>explain &lt;Sym&gt;</code> (definition + scaladoc + members + impls), <code>def</code>, <code>refs &lt;Sym&gt; --count</code> (categorized impact), <code>hierarchy &lt;Sym&gt;</code>, <code>imports &lt;Sym&gt;</code> (resolves wildcard <code>import pkg.*</code>), <code>body &lt;method&gt; --in &lt;Type&gt;</code>, <code>batch</code> (several queries, one index load). Filters: <code>--kind / --path / --no-tests / --exact / --max-output</code>.</p>
+<p><code>scalex</code> is a separate upstream project (a GraalVM-native CLI + its own Claude Code plugin), <strong>recommended and integrated by genscalator, not bundled</strong>. Install and command reference: <a href="../tools/README.html#companion-scalex"><code>tools/README.md</code></a> → <em>Companion: scalex</em>. Upstream: https://github.com/nguyenyou/scalex.</p>
+<h2 id="why-metals-mcp-and-where-it-differs-from-scalex">Why Metals MCP — and where it differs from scalex</h2>
+<p>scalex is source-level (AST + name resolution), <strong>read-only</strong>, sub-second. Metals MCP runs the <strong>presentation compiler + build server</strong>, which buys a tier scalex structurally cannot reach:</p>
+<ul>
+<li><strong>Compiler-grade truth</strong> — <code>compile-file</code> / <code>compile-module</code> / <code>compile-full</code> give <em>real diagnostics</em>; <code>inspect</code> / <code>get-docs</code> / <code>get-usages</code> resolve <em>through the compiler</em> (inferred types, implicits, cross-module), so fewer false hits than AST matching on tricky code.</li>
+<li><strong>Run code</strong> — <code>test</code> (whole suites or a single method).</li>
+<li><strong>Mutate / refactor</strong> — <code>generate-scalafix-rule</code>, <code>run-scalafix-rule</code>, <code>format-file</code>.</li>
+<li><strong>Build &amp; deps</strong> — <code>import-build</code>, <code>list-modules</code>, <code>find-dep</code> (Coursier).</li>
+</ul>
+<p>The cost: it needs a <strong>build import + compile + indexing</strong> before it can answer, so it's heavier and slower to first response than scalex. The overlap (<code>glob-search</code>, <code>get-usages</code>, <code>get-source</code>, <code>inspect</code>) is exactly where scalex wins on speed — so prefer scalex there and escalate to Metals only when you need what the compiler knows.</p>
+<p>Metals exposes its tools over an <strong>MCP server (HTTP / stdio)</strong>, <em>not</em> a bash command — so it's governed by your MCP tool permissions, not the <code>tt</code> "one bare command" allowlist. (It's also a concrete instance of the cross-tool MCP path on the genscalator roadmap.) Setup: https://scalameta.org/metals/docs/features/mcp/.</p>
+<h3 id="safety-split-matters-for-the-threat-model">Safety split (matters for the threat model)</h3>
+<p>Not all Metals tools are the same safety class — grant them accordingly:</p>
+<ul>
+<li><strong>Read-only</strong> (<code>glob-search</code>, <code>typed-glob-search</code>, <code>inspect</code>, <code>get-docs</code>, <code>get-usages</code>, <code>get-source</code>, <code>list-modules</code>, <code>find-dep</code>, <code>compile-*</code>) — low-stakes; safe to allow broadly.</li>
+<li><strong>Effectful / mutating</strong> (<code>test</code>, <code>run-scalafix-rule</code>, <code>generate-scalafix-rule</code>, <code>format-file</code>, <code>import-build</code>) — these <strong>execute code or change files</strong>. <code>generate-scalafix-rule</code> in particular is an arbitrary-code surface. Treat them like the effectful-driver tool class: <strong>do not blanket always-allow</strong>; approve per-use or per-narrow-scope. (See <a href="foundations.html"><code>foundations.md</code></a> — BHH BadGoals.)</li>
+</ul>
+<h2 id="escalation-ladder-the-rule">Escalation ladder (the rule)</h2>
+<ol>
+<li><strong>text / logs / non-Scala</strong> → <code>tt text</code> / <code>tt files</code> (or a one-off <code>grep</code>).</li>
+<li><strong>Scala <em>structure</em>, read-only</strong> → <code>scalex</code> — the default for code navigation. No build server, &lt;400 ms warm.</li>
+<li><strong>compiler-grade truth or any mutation</strong> → <strong>Metals MCP</strong> — inferred types, real diagnostics, run tests, refactor, format, dep/build queries. Heavier (build import + compile + index), so reach here only when step 2 genuinely can't answer.</li>
+</ol>
+<p><strong>Tie-break:</strong> <em>read &amp; fast → scalex; needs the compiler, or changes something → Metals.</em> Reach down the ladder only when the cheaper tool above genuinely can't answer the question.</p>
+
+</body></html>

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>genscalator recommended allowlist</title>
+<style>body{max-width:44rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif;line-height:1.6}
+pre{overflow-x:auto;background:#f4f4f4;padding:1rem;border-radius:6px}code{font-family:ui-monospace,monospace}
+table{border-collapse:collapse}th,td{border:1px solid #ccc;padding:.3rem .6rem}img{max-width:100%}
+sup.fn-ref{font-size:.75em;line-height:0}.footnotes{font-size:.9em;margin-top:2rem}.footnotes li{margin:.3rem 0}.fn-back{text-decoration:none;margin-left:.25rem}
+.post-byline{font-style:italic;font-size:.92em;color:#666}</style>
+</head><body>
+<h1>genscalator recommended allowlist</h1>
+<p>The safe-by-design payoff (typed tools run without a confirmation prompt each time) only lands if your Claude Code permissions let the <code>tt</code> tools run silently while keeping raw shell and destructive ops gated. This doc is the single source of truth for the recommended <code>.claude/settings.local.json</code> permissions.</p>
+<ul>
+<li><code>gs help allow</code> prints this doc (no changes made).</li>
+<li><code>gs allow</code> applies it to the CURRENT repo: it fills in this repo's absolute path for the scoped rules, MERGES the block into <code>.claude/settings.local.json</code> (it adds to your existing permissions, it does not overwrite them), SHOWS you the exact change, and you approve it before it applies. It is never done silently.</li>
+</ul>
+<h2 id="the-two-tiers">The two tiers</h2>
+<p>Pick the tier you want; <code>gs allow</code> defaults to Tier 1 and adds Tier 2 only if you ask for it.</p>
+<p><strong>Tier 1 — safe defaults (recommended for everyone).</strong> The typed tools run silently; the unsafe raw equivalents (<code>grep -rnE</code>, pipe-chains) still prompt.</p>
+<pre><code>{
+  "permissions": {
+    "allow": [
+      "Bash(tt *)",
+      "Bash(scala-cli *)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(git push --force *)",
+      "Bash(git reset --hard *)"
+    ]
+  }
+}</code></pre>
+<p>Add <code>"Bash(scalex *)"</code> to <code>allow</code> if you use the scalex companion.</p>
+<p><strong>Tier 2 — autonomous (opt in consciously).</strong> Adds path-scoped <code>git</code> and scratch-<code>rm</code> for THIS repo, so the agent can commit and clean its own <code>tmp/</code> without prompting. <code>gs allow</code> fills in the absolute path for you.</p>
+<pre><code>      "Bash(git -C /ABSOLUTE/PATH/TO/YOUR/REPO *)",
+      "Bash(rm -f /ABSOLUTE/PATH/TO/YOUR/REPO/tmp/*)"</code></pre>
+<h2 id="principles-why-the-block-looks-like-this">Principles (why the block looks like this)</h2>
+<ol>
+<li><strong>Allow the typed tools, not raw shell.</strong> <code>Bash(tt *)</code> + <code>Bash(scala-cli *)</code> make the safe, statically-analyzable tools silent; the unsafe raw equivalents still prompt.</li>
+<li><strong>Scope by absolute path, never broad verbs.</strong> <code>Bash(git -C /abs/repo *)</code> per repo, never <code>Bash(git *)</code>; <code>Bash(rm -f /abs/repo/tmp/*)</code> for gitignored scratch, never <code>Bash(rm *)</code>. Path-scoping keeps the blast radius legible.</li>
+<li><strong>Keep destructive and catastrophic gated.</strong> <code>push --force</code>, <code>reset --hard</code>, <code>rm -rf</code> stay denied even when you want low friction, so a low-friction setup still cannot foot-gun.</li>
+<li><strong>Config in args, not env.</strong> Nothing here relies on ambient environment variables; the allowlist is auditable precisely because the commands are literal.</li>
+<li><strong>Grow the allowlist deliberately, and record why.</strong> Each "do not ask again" you grant is a trust-boundary decision worth capturing.</li>
+</ol>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>This doc is the source of truth; the README "Recommended Claude Code settings" section points here (do not duplicate the block in two places that can drift).</li>
+<li>Full background and open questions: <code>research/018-recommended-plugin-settings.md</code>.</li>
+</ul>
+
+</body></html>

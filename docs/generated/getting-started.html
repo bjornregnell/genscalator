@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Getting started</title>
+<style>body{max-width:44rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif;line-height:1.6}
+pre{overflow-x:auto;background:#f4f4f4;padding:1rem;border-radius:6px}code{font-family:ui-monospace,monospace}
+table{border-collapse:collapse}th,td{border:1px solid #ccc;padding:.3rem .6rem}img{max-width:100%}
+sup.fn-ref{font-size:.75em;line-height:0}.footnotes{font-size:.9em;margin-top:2rem}.footnotes li{margin:.3rem 0}.fn-back{text-decoration:none;margin-left:.25rem}
+.post-byline{font-style:italic;font-size:.92em;color:#666}</style>
+</head><body>
+<h1>Getting started</h1>
+<p><a href="index.html">← Back to the manual home</a></p>
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li><a href="https://scala-cli.virtuslab.org/install">scala-cli</a> and a JDK (to run the tools)</li>
+<li><code>git</code> (to clone the repo and for the safe <code>tt git</code> helper)</li>
+<li><strong>Platforms:</strong> Linux, macOS, and WSL — anywhere <code>bash</code> and <code>scala-cli</code> run. On native Windows, use WSL or Git Bash.</li>
+</ul>
+<h2 id="1-install-the-claude-code-plugin">1. Install the Claude Code plugin</h2>
+<p>In Claude Code, run:</p>
+<pre><code>/plugin marketplace add https://codeberg.org/bjornregnell/genscalator.git
+/plugin install genscalator@bjornregnell
+/reload-plugins</code></pre>
+<p>Then verify with <strong><code>/skills</code></strong> — you should see <code>tt-toolbox</code>, <code>scala-style</code>, and the rest of the set. If they do not show up yet, restart Claude Code and check again.</p>
+<p>An active skill is <em>lazy</em>: it loads when its trigger fires, not necessarily at the first turn. To confirm the set is present at any time, run:</p>
+<pre><code>gs skills</code></pre>
+<p>which lists the expected skills (derived from the plugin on disk) so you can reconcile them against <code>/skills</code>.</p>
+<h2 id="2-say-hello-to-the-do-what-i-mean-commands">2. Say hello to the do-what-I-mean commands</h2>
+<p>Type this in chat:</p>
+<pre><code>gs</code></pre>
+<p>You will get help on the <code>gs</code> commands. A leading <code>gs</code> plus <em>roughly</em> one of the listed intents is enough — the agent matches the nearest command in meaning. A few to try:</p>
+<ul>
+<li><code>gs help tt</code> — list the typed tools and what each does</li>
+<li><code>gs status</code> — the status-line information, expanded into a table</li>
+<li><code>gs cues</code> — the cues, human to agent and agent to human, and what they mean</li>
+<li><code>gs where</code> — a short current-state snapshot (pin board, resume prompt, recent git log)</li>
+</ul>
+<h2 id="3-let-the-typed-tools-run-without-a-prompt">3. Let the typed tools run without a prompt</h2>
+<p>When the harness asks for permission, you can allow according to its suggestions. For a more complete and precise allowlist, run:</p>
+<pre><code>gs allow</code></pre>
+<p>and the agent will set up the recommended two-tier allowlist for the current repo (shown to you; you approve). See <strong><a href="allowlist.html">The recommended allowlist</a></strong> for the tiers, the deny-list, and the principles. You can also edit <code>.claude/settings.local.json</code> directly, for example:</p>
+<pre><code>{ "permissions": { "allow": ["Bash(tt *)", "Bash(scala-cli *)"] } }</code></pre>
+<h2 id="4-generate-something">4. Generate something</h2>
+<p>Seed a complete, runnable Scala web app into a directory of your choice:</p>
+<pre><code>gs new app todo ./my-app</code></pre>
+<p>Then drive it, extend it, and preview it with <code>tt serv</code>. From here, the rest of the manual home page points at the concepts, the tool selection guide, and the status line.</p>
+<p><a href="index.html">← Back to the manual home</a></p>
+
+</body></html>

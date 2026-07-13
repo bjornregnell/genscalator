@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>genscalator manual</title>
+<style>body{max-width:44rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif;line-height:1.6}
+pre{overflow-x:auto;background:#f4f4f4;padding:1rem;border-radius:6px}code{font-family:ui-monospace,monospace}
+table{border-collapse:collapse}th,td{border:1px solid #ccc;padding:.3rem .6rem}img{max-width:100%}
+sup.fn-ref{font-size:.75em;line-height:0}.footnotes{font-size:.9em;margin-top:2rem}.footnotes li{margin:.3rem 0}.fn-back{text-decoration:none;margin-left:.25rem}
+.post-byline{font-style:italic;font-size:.92em;color:#666}</style>
+</head><body>
+<h1>genscalator manual</h1>
+<p><strong>Power tools for agents: smarter, safer, faster.</strong></p>
+<p>Genscalator is a toolbox and workflow for coding agents that replaces the brittle <code>bash</code>/<code>grep</code>/<code>awk</code>/<code>python</code> reflex with <strong>typed, compiler-checked, reusable Scala tools</strong>. Your agent picks the right tool and gives it the right arguments; the Scala compiler catches mistakes before they run; and a tiny launcher (<code>tt</code>) makes every tool a single, statically-analyzable command that a narrow permission allowlist can trust.</p>
+<p>The tools and workflow are <em>language-agnostic</em> — you can generate and manage code in <strong>any language</strong>. When you generate <strong>Scala</strong>, the bundled Scala skills (<code>scala-style</code>, <code>scala-code-review</code>, <code>reqt-lang</code>) add extra help.</p>
+<blockquote>
+<p>This manual is generated from markdown with genscalator's own <code>tt ssg</code>, and previewed with <code>tt serv</code> — a small dogfood of the toolbox documenting itself. Regenerate it with the command at the foot of this page.</p>
+</blockquote>
+<h2 id="start-here">Start here</h2>
+<ul>
+<li><strong><a href="getting-started.html">Getting started</a></strong> — install the plugin, verify the skills, run your first <code>gs</code> command, set up the allowlist.</li>
+</ul>
+<h2 id="the-two-surfaces">The two surfaces</h2>
+<p>Genscalator gives the agent (and you) two ways in:</p>
+<ol>
+<li><strong>Typed <code>tt</code> tools</strong> in the terminal — <code>tt text</code>, <code>tt files</code>, <code>tt ssg</code>, <code>tt statusline</code>, and the rest. One bare command each, so a permission allowlist can trust them by shape.</li>
+<li><strong><code>gs</code> do-what-I-mean commands</strong> in Claude Code chat — lead a message with <code>gs</code> and the agent acts on your intent, matched to the nearest command in meaning (not exact syntax). Try <code>gs help</code>.</li>
+</ol>
+<h2 id="reference">Reference</h2>
+<ul>
+<li><strong><a href="foundations.html">Concepts and glossary</a></strong> — the canonical definitions: the cues, the dances, the modes, and the ideas behind the workflow (confirmation fatigue, safe-by-design, do-what-I-mean).</li>
+<li><strong><a href="tool-selection.html">Which tool answers which question</a></strong> — pick the right tool for a task.</li>
+<li><strong><a href="allowlist.html">The recommended allowlist</a></strong> — the two-tier permission set, the deny-list, and the principles; set it up in one repo with <code>gs allow</code>.</li>
+<li><strong><a href="statusline-manual.html">The status line and mode line</a></strong> — the live <code>model · $ · ctx% · wk%</code> gauge and the declared joint state-of-mind.</li>
+</ul>
+<h2 id="verify-your-setup">Verify your setup</h2>
+<p>The agent cannot <em>feel</em> a missing skill, so check explicitly:</p>
+<pre><code>gs skills          # or: tt skillcheck</code></pre>
+<p>lists the skills that should be active; run <code>/skills</code> and confirm each is listed.</p>
+<h2 id="regenerate-this-manual">Regenerate this manual</h2>
+<p>From the genscalator repo root:</p>
+<pre><code>tt ssg --out docs/generated docs/manual-src/index.md docs/manual-src/getting-started.md \
+  docs/foundations.md docs/tool-selection.md docs/allowlist.md docs/statusline-manual.md
+tt serv docs/generated      # then open the printed URL</code></pre>
+
+</body></html>
