@@ -125,7 +125,24 @@
       "WebFetch(domain:buku.io)",
       "WebFetch(domain:r.jina.ai)",
       "Bash(/home/bjornr/git/berg/bjornregnell/genscalator/tools/tt text *)",
-      "Bash(claude --version)"
+      "Bash(claude --version)",
+      "WebFetch(domain:support.claude.com)",
+      "WebFetch(domain:claude.com)",
+      "WebFetch(domain:fuelgauge.pro)",
+      "WebFetch(domain:tao-hpu.medium.com)",
+      "WebFetch(domain:dotty.epfl.ch)",
+      "Bash(curl -s https://code.claude.com/docs/en/commands.md)",
+      "WebFetch(domain:blog.pierre-ricadat.com)",
+      "WebFetch(domain:help.one.com)",
+      "WebFetch(domain:www.congress.gov)",
+      "WebFetch(domain:uscode.house.gov)",
+      "WebFetch(domain:www.svt.se)",
+      "Bash(git ls-remote *)",
+      "Bash(/home/bjornr/git/berg/bjornregnell/genscalator/bin/tt gitinfo *)",
+      "WebFetch(domain:chatgpt.com)",
+      "Bash(/home/bjornr/git/berg/bjornregnell/muntabot-synch-introprog/genscalator/bin/tt text *)",
+      "Bash(/home/bjornr/git/berg/bjornregnell/genscalator/tt text *)",
+      "WebFetch(domain:blog.vincentqiao.com)"
     ],
     "deny": [
       "Bash(git rm *)",
@@ -141,6 +158,12 @@
     ],
     "ask": [
       "Bash(tt forge release-create *)"
+    ]
+  },
+  "statusLine": { "type": "command", "command": "tt statusline --mode-line" },
+  "hooks": {
+    "PreToolUse": [
+      { "matcher": "Bash", "hooks": [ { "type": "command", "command": "tt guardcheck hook" } ] }
     ]
   }
 }
