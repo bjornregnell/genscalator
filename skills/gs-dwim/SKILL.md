@@ -1,6 +1,6 @@
 ---
 name: gs-dwim
-description: Do-What-I-Mean in-session genscalator commands cued by a leading `gs`. Trigger whenever the user's message begins with `gs ` (or is a bare `gs`) — e.g. "gs help", "gs cues", "gs cue similar", "gs dances", "gs dance compact", "gs help tt", "gs help tt search text", "gs tt chrono", "gs status", "gs status line on", "gs where", "gs menu", "gs reqt", "gs term rot", "gs test", "gs seed app todo ./my-app". Interpret the intent do-what-I-mean style (nearest-in-meaning, "or similar"), not by exact string match, and perform the matching genscalator action.
+description: Do-What-I-Mean in-session genscalator commands cued by a leading `gs`. Trigger whenever the user's message begins with `gs ` (or is a bare `gs`) — e.g. "gs help", "gs cues", "gs cue similar", "gs dances", "gs dance compact", "gs help tt", "gs help tt search text", "gs tt chrono", "gs status", "gs status line on", "gs where", "gs menu", "gs reqt", "gs term rot", "gs test", "gs new app todo ./my-app". Interpret the intent do-what-I-mean style (nearest-in-meaning, "or similar"), not by exact string match, and perform the matching genscalator action.
 allowed-tools: Read Bash(tt text *) Bash(tt files *) Bash(tt log *) Bash(tt chrono *) Bash(tt statusline *) Bash(tt parsereqt *) Bash(tt gitinfo *) Bash(scala-cli test *)
 ---
 
@@ -31,7 +31,7 @@ gs cue <what>        explain the cue nearest in meaning to <what>
 gs dances            list all dances and their goals
 gs dance <what>      explain the dance nearest in meaning to <what>
 gs term <what>       explain the foundations glossary term nearest in meaning to <what>
-gs seed app <what> <dir>  seed a complete runnable Scala web app <what> (e.g. todo-web-app) into <dir>
+gs new app <what> <dir>   create a complete runnable Scala web app <what> (e.g. todo-web-app) into <dir>
 ```
 
 **Tier 2 — genscalator contributors, dogfooding mode** (working ON genscalator, or in the gs research MO).
@@ -80,7 +80,9 @@ gs test              run the tt toolbox test suite (handles the tt.tools prop) a
   than `gs cue`/`gs dance`: covers any coined concept (rot, the dumb zone Z, substrate-grounding, ape⟷anthro,
   echt, DWIM, ...). Source: `docs/foundations.md`. Give the definition plus a one-line "why it matters"; if two
   terms are close, show both.
-- **`gs seed app <what> <dir>`** — seed a complete, runnable Scala web app. Recognise the intent and **invoke
+- **`gs new app <what> <dir>`** — create a complete, runnable Scala web app (`gs seed app` / `gs make app` /
+  `gs create app` are do-what-I-mean synonyms — "seed" is the internal skill name, "new" is the user-facing
+  verb). Recognise the intent and **invoke
   the `crud-web-app-seed` skill**, passing the app kind `<what>` (e.g. "todo-web-app") and the target `<dir>`.
   This WRITES a project (shared datamodel, JDK-only server, Scala.js/Laminar client, reqT-lang PRD, tests), so
   it is effectful: confirm the target `<dir>` and never overwrite a non-empty directory without asking. Not a
@@ -109,8 +111,22 @@ gs test              run the tt toolbox test suite (handles the tt.tools prop) a
 ## The DWIM contract
 
 The whole point is that the user should not have to remember exact syntax. A leading `gs` plus *roughly* one
-of these intents = do the sensible thing. Prefer acting over asking when the intent is clear; ask only on
-genuine ambiguity or real stakes. Keep answers scannable (tables/short lists), in session, so the user stays
+of these intents = do the sensible thing.
+
+**Match the response to your CONFIDENCE about what they mean — do-what-I-mean, not narrate-what-I-mean:**
+
+- **Certain** (one obvious reading): just DO it. No preamble, no "I'll now...", no confirmation question —
+  silent execution keeps the user in flow (the whole point). Speak only to hand back a result worth seeing.
+- **Not straightforward** (you can guess but aren't fully sure, or the action is mildly effectful / easy to
+  get wrong): state in ONE line what you plan to do, then act — or pause for a quick confirm first if it is
+  effectful or easily wrong (a settings edit, a project seed, an effectful `gs tt`).
+- **Severely ambiguous OR incomplete** (two or more equally-likely readings, or a required argument is
+  missing): ask ONE short follow-up before acting — e.g. `gs seed app` with no `<dir>` → ask where; bare
+  `gs tt` with no tool → ask which.
+
+The **stakes dial rides on top**: the more effectful or irreversible the action, the more you lean toward
+announce-or-confirm even when fairly sure; a pure read (`gs help`/`term`/`status`/`cues`) almost never needs a
+question. Keep answers scannable (tables/short lists), in session, so the user stays
 in flow. This skill is the agent-facing implementation; the human-facing description lives in the plugin
 welcome and in `docs/foundations.md` ([[dwim]]).
 
@@ -136,7 +152,7 @@ ONLY when **all three** hold — if any fails, run inline:
 | `gs help*` / `gs term` / `gs cue` / `gs dance` | no | quick lookups, small output — a sub-agent hop costs more than it saves. |
 | `gs tt <tool>` | no | the user wants the tool's output HERE; and for an effectful tool (git/forge/ssg/serv) the permission flow + outward-op discipline MUST stay in the main agent's view — never delegate an effectful run. |
 | `gs status line on/off` | **never** | a sensitive settings edit — must be inline, SHOWN to the user, with the `/hooks` handoff; delegating a settings change out of sight is the exact anti-pattern. |
-| `gs seed app` | no | writes a whole project (effectful, durable output); the primary output is the seeded app — run inline, never delegate. |
+| `gs new app` | no | writes a whole project (effectful, durable output); the primary output is the seeded app — run inline, never delegate. |
 
 Two refinements that make the decision smarter:
 - **`gs test`: a BACKGROUND job often beats a sub-agent.** When the human is present, run it in the background
