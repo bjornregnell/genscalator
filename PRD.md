@@ -248,9 +248,16 @@ example of expressing already-built work as reqT-lang requirements for Agentic R
 * Feature: ttWrStamp helps Goal: jointHumanAgentProductivity
 
 * Feature: ttStatusline has
-  * Gist: format the Claude Code statusLine stdin JSON into one compact line (model, cost, context %, rate limits, reset), degrading gracefully per field; it ends the `/cost` + `/usage` human-paste step of the token-usage dance.
+  * Gist: format the Claude Code statusLine stdin JSON into one compact, colour-coded line (a bold brand prefix + wall clock + model + context-fill + session/weekly usage + cost), degrading gracefully per field; it ends the `/cost` + `/usage` human-paste step of the token-usage dance and doubles as a live "is genscalator active?" indicator.
+  * Spec: every segment is INDEPENDENTLY GUARDED — a field absent from the JSON omits only its own segment, so the tool degrades across CC versions and subscription tiers (rate limits are Pro/Max only) and never crashes the prompt; a bad or empty stdin prints an empty line at exit 0.
+  * Spec: the context-fill gauge is graded to the COMPACT-DANCE math, not a near-full window — red at the smart-zone ceiling Z (default 30 percent, the point of risking the dumb zone of context rot), orange at the compact-dance trigger (0.8 of Z); a lightweight ambient rot signal and a precursor to the contextRotMeter.
+  * Spec: the session (5-hour) and weekly usage gauges turn red — BOTH the percentage AND its reset countdown — at a configurable warn threshold (default 80 percent); this is the ambient early-warning slice of the usage-limit WARNING (estimate-and-warn before the cap, not report after the block).
+  * Spec: thresholds are set in the settings command string as ARGS (`--warn N`, `--ctx-warn N`), not env, following the configInArgsNotEnv principle; cost renders as whole truncated dollars and is placed last so right-edge truncation drops the least-interesting segment first.
 * Feature: ttStatusline helps Goal: jointHumanAgentProductivity
 * Feature: ttStatusline helps Goal: tokenEfficiency
+* Feature: ttStatusline helps Goal: manageInferenceCost
+* Feature: ttStatusline relatesTo Feature: configInArgsNotEnv
+* Feature: ttStatusline relatesTo Feature: contextRotMeter
 
 * Feature: ttHarden has
   * Gist: a Layer-1 deterministic secret scanner (repo/egress) — signature regexes + a Shannon-entropy gate + sensitive-filename detection — with REDACTED output (never prints a secret); it surfaces candidates for semantic (Layer-2) triage.
