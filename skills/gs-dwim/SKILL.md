@@ -144,6 +144,12 @@ gracefully). The per-command behaviour is specified below.
   diff, feed the active names back: `tt skillcheck --active <names /skills listed>` — exit 1 names any
   expected-but-not-active skill = a silent skill outage to fix with a plugin install/enable or `/reload-plugins`.
   This is the SM070 session-start self-check. Ties [[verify-skills-active-at-session-start]].
+- **`gs prd [show | summarize | find <what>]`** — read + navigate the PRD without re-emitting it
+  token-by-token. `tt prd show` cats `PRD.md`; `tt prd summarize` prints a one-screen, structurally-extracted
+  gist summary of the `## FUTURE` roadmap (each release's Feature/Goal Gists, one line each — NOT
+  LLM-generated); `tt prd find <what>` case-insensitively finds where a term appears, tagged with its nearest
+  heading. Default the verb to `summarize` if the user just says `gs prd` and clearly wants an overview;
+  otherwise pass their intent through. Complements `gs reqt` (which parses + lints the reqT-lang). SM065.
 
 ## The DWIM contract
 

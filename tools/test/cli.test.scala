@@ -360,6 +360,97 @@ class CliSuite extends munit.FunSuite:
     assert(clue(out).contains("phenomenology") || clue(out).contains("cannot FEEL"))
   }
 
+  // --- prd (SM065: read + navigate PRD.md; structural FUTURE summary, no LLM) ---
+  private def prdFixture(): os.Path =
+    val d = os.temp.dir()
+    val f = d / "PRD.md"
+    os.write(f,
+      """|# PRD
+         |
+         |## FUTURE
+         |
+         |### Release v1.0.0 — first
+         |
+         |* Feature: fooTool has
+         |  * Gist: does the foo thing
+         |  * Spec: some detail about foo
+         |* Feature: fooTool helps Goal: bar
+         |
+         |* Goal: someGoal has
+         |  * Gist: the goal gist
+         |
+         |### Release v2.0.0 — later
+         |
+         |* Feature: bazTool has
+         |  * Gist: does baz
+         |
+         |## PAST
+         |
+         |### IMPLEMENTED
+         |* Feature: oldTool has
+         |  * Gist: shipped already
+         |""".stripMargin)
+    f
+
+  test("prd summarize: extracts FUTURE Feature/Goal gists by release, excludes PAST") {
+    val f = prdFixture()
+    try
+      val (code, out, _) = run("prd", "--prd", f.toString, "summarize")
+      assertEquals(code, 0)
+      assert(clue(out).contains("fooTool — does the foo thing"))
+      assert(clue(out).contains("someGoal — the goal gist"))
+      assert(clue(out).contains("bazTool — does baz"))
+      assert(clue(out).contains("### Release v1.0.0 — first"))
+      assert(clue(out).contains("### Release v2.0.0 — later"))
+      assert(!clue(out).contains("oldTool"))               // PAST is excluded
+      assert(!clue(out).contains("some detail about foo"))  // Spec lines are not gists
+    finally os.remove.all(f / os.up)
+  }
+  test("prd find: case-insensitive line match tagged with the nearest heading") {
+    val f = prdFixture()
+    try
+      val (code, out, _) = run("prd", "--prd", f.toString, "find", "BAZ")
+      assertEquals(code, 0)
+      assert(clue(out).contains("does baz"))
+      assert(clue(out).contains("Release v2.0.0"))          // heading context
+    finally os.remove.all(f / os.up)
+  }
+  test("prd find: no match exits 1") {
+    val f = prdFixture()
+    try
+      val (code, out, _) = run("prd", "--prd", f.toString, "find", "zzznotthere")
+      assertEquals(code, 1)
+      assert(clue(out).contains("no line matches"))
+    finally os.remove.all(f / os.up)
+  }
+  test("prd show: prints the whole PRD verbatim") {
+    val f = prdFixture()
+    try
+      val (code, out, _) = run("prd", "--prd", f.toString, "show")
+      assertEquals(code, 0)
+      assert(clue(out).contains("## FUTURE"))
+      assert(clue(out).contains("## PAST"))
+      assert(clue(out).contains("shipped already"))
+    finally os.remove.all(f / os.up)
+  }
+  test("prd: unknown verb and bare invocation error with exit 2") {
+    val f = prdFixture()
+    try
+      val (c1, _, e1) = run("prd", "--prd", f.toString, "wat")
+      assertEquals(c1, 2)
+      assert(clue(e1).contains("unknown verb"))
+      val (c2, _, e2) = run("prd", "--prd", f.toString)
+      assertEquals(c2, 2)
+      assert(clue(e2).contains("usage"))
+    finally os.remove.all(f / os.up)
+  }
+  test("prd --help: elaborate help, exit 0") {
+    val (code, out, _) = run("prd", "--help")
+    assertEquals(code, 0)
+    assert(clue(out).contains("tt prd"))
+    assert(clue(out).contains("never LLM-generated"))
+  }
+
   // --- verify (allowlist safety) ---
   test("verify refuses a non-allowlisted executable with exit 2, never running it") {
     // `ls` is harmless AND not in the builtin allowlist {scala-cli, tt, scalex} → must be rejected pre-exec.

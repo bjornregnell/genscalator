@@ -34,3 +34,4 @@ matched to the nearest command in meaning (not exact syntax).
   gs reqt [<file>]         parse + lint a reqT-lang file (default PRD.md); report both
   gs test                  run the tt toolbox test suite and report green / red
   gs skills                verify the genscalator skill set is active (expected-from-disk vs /skills; catches a silent skill outage)
+  gs prd [show|summarize|find <what>]   read + navigate PRD.md: whole file, a FUTURE-roadmap gist summary, or find a term
