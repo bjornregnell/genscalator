@@ -67,19 +67,21 @@ gs test              run the tt toolbox test suite (handles the tt.tools prop) a
   reload via `/hooks`. Treat the explicit `gs` command as the user's go, but SHOW the exact change you make
   (settings edits are sensitive — never do a silent one). If unsure whether to edit their settings file
   directly, hand them the snippet to paste.
-- **`gs cues`** — list the cues (human→agent and agent→human) and what each means. Sources: the cue entries
-  in `docs/foundations.md` and the `cue-*` memories. Present grouped by direction.
+- **`gs cues`** — list the cues (human→agent and agent→human) and what each means. **Source:
+  `docs/gs-registry.md`** (the ready-to-grab Cues tables — read it and render; it is kept in sync with
+  `docs/foundations.md` + the `cue-*` memories, which stay canonical if the registry looks stale). Present
+  grouped by direction.
 - **`gs cue <what>`** — explain the cue **nearest in meaning** to `<what>` (e.g. "tired" → `:Z`, "go away
   for a bit" → `BRB`/`hang on`, "do what I mean" → this).
 - **`gs dances`** — list the dances (compact, rest/`:Z`, delegation, live-edit, solo/AFK, token-usage,
-  session-limit, weekly-limit, context, hardening, ...) and each one's goal. Source:
-  `docs/foundations.md` "Dances and handoffs".
+  session-limit, weekly-limit, context, hardening, ...) and each one's goal. **Source:
+  `docs/gs-registry.md`** (the Dances table; regenerate from `docs/foundations.md` "Dances and handoffs" if stale).
 - **`gs dance <what>`** — explain the dance **nearest in meaning** to `<what>` (e.g. "running low on
   context" → the compact dance, "hand off work" → the solo/delegation dance).
 - **`gs term <what>`** — explain the foundations glossary term **nearest in meaning** to `<what>`. Broader
   than `gs cue`/`gs dance`: covers any coined concept (rot, the dumb zone Z, substrate-grounding, ape⟷anthro,
-  echt, DWIM, ...). Source: `docs/foundations.md`. Give the definition plus a one-line "why it matters"; if two
-  terms are close, show both.
+  echt, DWIM, ...). **Source: `docs/gs-registry.md`** (the Terms table; canonical prose in
+  `docs/foundations.md`). Give the definition plus a one-line "why it matters"; if two terms are close, show both.
 - **`gs new app <what> <dir>`** — create a complete, runnable Scala web app (`gs seed app` / `gs make app` /
   `gs create app` are do-what-I-mean synonyms — "seed" is the internal skill name, "new" is the user-facing
   verb). Recognise the intent and **invoke
