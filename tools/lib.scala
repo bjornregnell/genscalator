@@ -17,6 +17,25 @@ object Lib:
   def readUtf8(path: String): String =
     String(java.nio.file.Files.readAllBytes(java.nio.file.Path.of(path)), "UTF-8")
 
+  // --- JSON ---
+  /** Encode a string as a JSON string literal, quotes included, per RFC 8259. Pure, dependency-free.
+    * Escapes the mandatory set (" \ and the C0 controls via \b \f \n \r \t or \uXXXX); passes other
+    * characters (incl. UTF-8 åäö) through unchanged. Use to emit valid JSON from Scala tools without jq
+    * (e.g. hook additionalContext) — in-process, so hot-path callers pay no external-process cost. */
+  def jsonStr(s: String): String =
+    val sb = StringBuilder("\"")
+    s.foreach:
+      case '"'  => sb ++= "\\\""
+      case '\\' => sb ++= "\\\\"
+      case '\b' => sb ++= "\\b"
+      case '\f' => sb ++= "\\f"
+      case '\n' => sb ++= "\\n"
+      case '\r' => sb ++= "\\r"
+      case '\t' => sb ++= "\\t"
+      case c if c < 0x20 => sb ++= f"\\u${c.toInt}%04x"
+      case c    => sb += c
+    (sb += '"').toString
+
   // --- pure formatting/aggregation ---
   /** Frequency map → sorted bar histogram (descending), top N. */
   def histogram(counts: Map[String, Int], top: Int = 40): String =
