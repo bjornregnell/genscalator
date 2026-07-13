@@ -1,4 +1,4 @@
-# 004 — Why Claude's UX sometimes sucks (and how we'd fix it)
+# 004 — Why Claude's UX sometimes sucks (and how genscalator tries to fix some of it)
 
 **Status: STUB.** TODO: mine WR data for UX problems.
 
