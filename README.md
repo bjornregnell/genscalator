@@ -224,8 +224,5 @@ Genscalator is developed as a liberally licenced open source software project th
 
 ## 9. Mirrors and digital sovereignty
 
-The genscalator repo is mirrored from [Codeberg](https://codeberg.org/bjornregnell/genscalator) to [GitHub (owned by Microsoft)](https://github.com/bjornregnell/genscalator), [GitLab](https://gitlab.com/bjornregnell/genscalator) and [LTH coursegit](https://coursegit.cs.lth.se/bjorn.regnell/genscalator) in the spirit of [digital sovereignty](https://en.wikipedia.org/wiki/Digital_sovereignty), to address the debated "kill switch" potentially enabled by US laws such as:
-- [IEEPA (1977)](https://en.wikipedia.org/wiki/International_Emergency_Economic_Powers_Act)
-- [CLOUD Act (2018)](https://en.wikipedia.org/wiki/CLOUD_Act)
-- [FISA Section 702](https://en.wikipedia.org/wiki/FISA_of_1978_Amendments_Act_of_2008)
+The genscalator repo is mirrored from [Codeberg](https://codeberg.org/bjornregnell/genscalator) to [GitHub (owned by Microsoft)](https://github.com/bjornregnell/genscalator), [GitLab](https://gitlab.com/bjornregnell/genscalator) and [LTH coursegit](https://coursegit.cs.lth.se/bjorn.regnell/genscalator) in the spirit of [digital sovereignty](https://en.wikipedia.org/wiki/Digital_sovereignty). Se also [here](https://codeberg.org/bjornregnell/digital-sovereignty).
 
