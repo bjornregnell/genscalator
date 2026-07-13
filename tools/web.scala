@@ -19,6 +19,30 @@ import scala.util.{Try, Success, Failure}
 object Web {
   private val DefaultMaxBytes = 5_000_000
 
+  private val Help: String =
+    """tt web — safe, read-only HTTP fetch (the audited `curl` replacement)
+      |
+      |Fetches a URL with GET and prints the response body to stdout. It can ONLY fetch-and-print:
+      |no POST/PUT/upload, NO credential/cookie headers ever, and the printed body is size-capped —
+      |so it cannot exfiltrate secrets or pipe code to a shell the way a bare `curl` could. The
+      |residual risk is only SSRF-read of internal hosts — lock that down with --host.
+      |
+      |Usage:
+      |  web get <url> [flags]      fetch <url> (http/https only) and print the body to stdout
+      |
+      |Flags:
+      |  --host H         restrict fetching to host H; repeatable for several hosts
+      |                   (default: any host — GET-only + no-credentials already caps the risk)
+      |  --max-bytes N    truncate the printed body at N bytes (default 5000000 = 5 MB)
+      |  --status         also print the HTTP status + content-type to stderr
+      |
+      |Examples:
+      |  tt web get https://codeberg.org/api/v1/repos/o/r/tags --status
+      |  tt web get https://example.org/big.json --max-bytes 20000
+      |  tt web get https://codeberg.org/x --host codeberg.org    # refuse any other host
+      |
+      |Full reference: tools/README.md""".stripMargin
+
   private def webUsage(): Nothing =
     System.err.println(
       "web: usage: web get <url> [--host <host>]... [--max-bytes N] [--status]\n" +
@@ -29,6 +53,7 @@ object Web {
   private final case class WebOpts(url: Option[String], hosts: Vector[String], maxBytes: Int, status: Boolean)
 
   def dispatch(args: String*): Unit =
+    if args.contains("--help") || args.contains("-h") then { println(Help); sys.exit(0) }
     args.toList match
       case "get" :: rest => webGet(rest)
       case _             => webUsage()

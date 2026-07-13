@@ -127,6 +127,30 @@ object MdFmt:
         case x :: t                       => loop(t, x :: pos, w, wr)
     loop(args, Nil, DefaultWidth, false)
 
+  private val Help: String =
+    """tt md-fmt — markdown-aware line reflow to a target width (pure by default)
+      |
+      |Re-wraps prose, list items, and blockquotes to a target column width while PRESERVING
+      |markdown structure: headings, code fences, tables, --- rules, blank lines, blockquote
+      |prefixes, list markers, and the author's continuation indent. Never breaks inside
+      |`inline code` or [links](url). Idempotent. A content-preservation guard REFUSES any
+      |result (and any --write) that would change the text beyond whitespace and quote
+      |markers — so it can only re-flow, never re-word.
+      |
+      |Usage:
+      |  md-fmt <file>                  reflow to stdout at the default width (80)
+      |
+      |Flags:
+      |  --line-width N                 target N columns (default 80)
+      |  --write                        rewrite the file in place (content-guarded); without
+      |                                 it the tool only prints — writing is the one effect
+      |
+      |Examples:
+      |  tt md-fmt notes/plan.md --line-width 82           # print reflowed at 82 cols
+      |  tt md-fmt notes/plan.md --line-width 82 --write   # ... and rewrite the file in place
+      |
+      |Full reference: tools/README.md""".stripMargin
+
   private val Usage =
     """md-fmt — markdown-aware line reflow (pure by default)
       |  md-fmt <file>                 reflow to stdout at the default width (80)
@@ -134,6 +158,7 @@ object MdFmt:
       |  md-fmt <file> --write         rewrite the file in place (content-guarded)""".stripMargin
 
   def dispatch(args: String*): Unit =
+    if args.contains("--help") || args.contains("-h") then { println(Help); sys.exit(0) }
     parseArgs(args.toList) match
       case Left(err) => System.err.println(s"md-fmt: $err"); System.err.println(Usage); sys.exit(2)
       case Right(Opts(file :: Nil, w, write)) =>

@@ -112,6 +112,37 @@ object Ascii:
   private def isSeqMode(m: String): Boolean =
     val s = m.toLowerCase; s == "sequence" || s == "seq" || s == "--sequence-diagram" || s == "-s"
 
+  private val Help: String =
+    """tt ascii — sequence-diagram spec → good-looking monospace / box-drawing art
+      |
+      |The plaintext sibling of `tt svg`: reads the SAME spec (shared grammar) and renders a
+      |diagram for terminals, PR/commit comments, and plaintext reports. Pure: reads the spec,
+      |computes text, prints it (or writes a file when out is given).
+      |
+      |Usage:
+      |  ascii sequence <in.txt>                  render the spec, art to stdout
+      |  ascii sequence <in.txt> <out.txt>        ... write the art to <out.txt> instead
+      |  ascii --sequence-diagram <in.txt> [out]  alias for `sequence` (also: seq, -s)
+      |
+      |Flags:
+      |  --pure    strict 7-bit ASCII glyphs (| - + > <) for contexts that cannot render Unicode.
+      |            Default: Unicode box-drawing glyphs (│ ─ ┌ ┐ └ ┘ ┬ ┴ ┼ ▶ ◀) for looks.
+      |
+      |Spec (one statement per line; blank lines and # / // comments are ignored):
+      |  title: <text>                    optional diagram title, centred at the top
+      |  actor <Id> [as <label>]          declare a lifeline (also: participant); label may be "quoted"
+      |  <A> -> <B>: <message>            solid arrow (a call / synchronous message)
+      |  <A> --> <B>: <message>           dashed reply — renders as a gapped line + open head
+      |  note over <A>[, <B>]: <text>     a note box spanning one or two lifelines
+      |Undeclared lifelines are auto-created in first-seen order; A -> A draws a small self-loop.
+      |
+      |Examples:
+      |  tt ascii sequence flow.txt                       # print to the terminal
+      |  tt ascii sequence flow.txt flow.txt.art --pure   # write a strict-ASCII file
+      |
+      |Siblings reading the SAME spec: tt svg (theme-aware SVG), tt gvdot (graphviz image).
+      |Full reference: tools/README.md""".stripMargin
+
   private def usage(): Unit =
     println(
       """usage: ascii sequence <in.txt> [out.txt] [--pure]   render a sequence-diagram spec to monospace art (no out → stdout)
@@ -121,6 +152,7 @@ object Ascii:
         |spec lines:  title: <t> | actor <Id> [as <label>] | <A> -> <B>: <msg> | <A> --> <B>: <msg> | note over <A>[,<B>]: <t>""".stripMargin)
 
   def dispatch(args: List[String]): Unit =
+    if args.contains("--help") || args.contains("-h") then { println(Help); sys.exit(0) }
     args match
       case mode :: tail if isSeqMode(mode) =>
         val (flags, pos) = tail.partition(_.startsWith("--"))

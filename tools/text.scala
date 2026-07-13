@@ -17,7 +17,37 @@ private def warnGrepBre(pat: String): Unit =
       s"text: warning — pattern has grep-BRE escape(s) ${hits.mkString(" ")} — this tool uses Java regex (ERE), where " +
       "`\\|` is a LITERAL pipe (matches nothing), not alternation. Use `|` (and unescaped `( { + ?`).")
 
+// Top-level, so a UNIQUE name (the toolbox compiles as one unit; a generic `Help` would collide across files).
+private val TextHelp: String =
+  """tt text — typed grep/awk/cut/uniq replacement (pure)
+    |
+    |Searches, counts, and slices plain-text files with Java regex. Reach for it instead of
+    |grep/awk/cut/sort|uniq: one compiler-checked tool, no pipes, no shell surprises.
+    |
+    |Usage:
+    |  text count <file> <regex>            count regex matches                    (grep -c)
+    |  text match <file> <regex>            print matching lines, numbered         (grep -n)
+    |  text context <file> <regex> [N]      matches with N context lines, default 2  (grep -C N)
+    |  text freq <file> <regex>             histogram of the match, or of capture group 1
+    |                                       if the pattern has one       (sort|uniq -c|sort -rn)
+    |  text grepr <dir> <ext[,ext2,...]> <regex> [--count]
+    |                                       recursive search -> file:line:match  (grep -r --include)
+    |                                       pass an ABSOLUTE dir; --count prints just the total
+    |  text cols <file> <sep> <i...>        extract 1-based fields, tab-joined     (cut/awk)
+    |
+    |Notes:
+    |  Patterns are Java regex (ERE): alternation is a bare |, and ( { + ? are special unescaped.
+    |  grep-BRE escapes like \| are read LITERALLY (match nothing); the tool warns when it sees one.
+    |
+    |Examples:
+    |  tt text count build.log '^! '                      # count LaTeX errors in a build log
+    |  tt text freq run.log '\[fallback\] ([a-z][^,]*)'   # histogram of capture group 1
+    |  tt text grepr /abs/src .scala,.java 'TODO'         # recursive TODO hunt, two extensions
+    |
+    |Full reference: tools/README.md""".stripMargin
+
 @main def text(args: String*): Unit =
+  if args.contains("--help") || args.contains("-h") then { println(TextHelp); sys.exit(0) }
   args.toList match
     case "count" :: file :: pat :: Nil => // grep -c
       warnGrepBre(pat)

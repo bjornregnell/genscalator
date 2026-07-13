@@ -39,7 +39,36 @@ object Chrono {
       if digits.isEmpty then 0L else digits.toLong * 1000
     else (min * 60 + sec) * 1000
 
+  private val Help: String =
+    """tt chrono — a stopwatch for timing work spans
+      |
+      |Times a human-agent-human round (or any manual span). The running start is held in an
+      |ephemeral state file; each completed span is appended to a TSV log (chrono-log.tsv).
+      |
+      |Usage:
+      |  chrono start [label]            record a start time (label = optional free text)
+      |  chrono stop [--think <dur>]     report elapsed since the last start + append it to the log
+      |  chrono now                      print the current timestamp
+      |  chrono fmt <ms>                 format a millisecond duration (debug/test util)
+      |  chrono think <dur>              parse a think-duration to ms (debug/test util)
+      |  chrono report                   summarise the log: rounds, mean/median, think/human split
+      |
+      |Flags:
+      |  --think <dur>                   (stop only) also record the relayed agent think-time —
+      |                                  "30s", "1m18s", "1m", or bare seconds "90" — and print
+      |                                  the round = think + human split
+      |
+      |Examples:
+      |  tt chrono start review-round    # start timing, labelled "review-round"
+      |  tt chrono stop --think 45s      # stop: log the span + record 45s of agent think-time
+      |  tt chrono report                # rounds so far: mean/median round + think/human means
+      |
+      |Full reference: tools/README.md""".stripMargin
+
   def dispatch(args: String*): Unit =
+    if args.contains("--help") || args.contains("-h") then
+      println(Help)
+      sys.exit(0)
     val now = System.currentTimeMillis()
     args.toList match
       case "start" :: rest =>

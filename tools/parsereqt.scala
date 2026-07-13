@@ -41,7 +41,32 @@ object ParseReqt {
         case _ => Vector.empty
     walk(m.elems).toList
 
+  private val Help: String =
+    """tt parsereqt — parse / lint reqT-lang requirements models (e.g. this repo's PRD.md)
+      |
+      |Parses a Markdown file written in reqT-lang into a structured requirements model, or lints it
+      |for silent fall-throughs where a mistyped concept or a misplaced relation is kept as plain Text.
+      |
+      |Usage:
+      |  parsereqt parse FILE            parse FILE and print the structured model + a summary line
+      |  parsereqt lint FILE             flag bullets that silently fell through to a Text attribute:
+      |                                  (1) a Capitalized 'Word:' that is not a known reqT concept
+      |                                      (a typo like 'Feautre:' or an un-mapped term like
+      |                                      'BadGoal:')
+      |                                  (2) a lowercase relation keyword written as a bullet under
+      |                                      a 'has' block ('requires: ...') — the relation is LOST;
+      |                                      write it as a top-level 'ENT requires ENT' clause
+      |
+      |Examples:
+      |  tt parsereqt parse PRD.md       # print the parsed model, then 'N top-level elems in PRD.md'
+      |  tt parsereqt lint PRD.md        # list fall-throughs (real Swedish? typo? un-mapped term?)
+      |
+      |Full reference: tools/README.md""".stripMargin
+
   def dispatch(args: String*): Unit =
+    if args.contains("--help") || args.contains("-h") then
+      println(Help)
+      sys.exit(0)
     args.toList match
       case "parse" :: path :: _ =>
         val m = MarkdownParser.parseModel(readFile(path))

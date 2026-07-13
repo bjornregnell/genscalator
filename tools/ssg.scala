@@ -371,6 +371,47 @@ object Ssg:
       }
     finally stream.close()
 
+  private val Help: String =
+    """tt ssg — hand-rolled markdown → static HTML site generator
+      |
+      |Renders the GitHub-flavored-markdown subset we actually use to self-contained HTML pages:
+      |headings, emphasis, inline code, links, autolinks, images, fenced code (with Scala
+      |highlighting), GFM tables, flat lists, blockquotes, and footnotes. One parser, two
+      |renderers: it consumes the same MdParse front-end that `tt md-fmt` reflows through.
+      |Preview the generated site with `tt serv`.
+      |
+      |Usage:
+      |  ssg <src> <out-dir> [--template <file>]      <src> = one .md file OR a dir (every
+      |                                               non-underscore .md in it is rendered)
+      |  ssg --out <out-dir> <file.md>... [--template <file>]
+      |                                               render a chosen SET of files in one pass
+      |  ssg --status <s[,s]> --out <dir> <blog-dir>  render posts whose CURRENT status is in the
+      |                                               set (+ index.md always), one pass
+      |  ssg --status-update <from>:<to> [--date <d>] <dir|files>
+      |                                               append a status transition to matching
+      |                                               posts (bookkeeping only — no render)
+      |
+      |Flags:
+      |  --template F     HTML template with {{TITLE}} + {{CONTENT}} + optional {{TOC}} slots.
+      |                   Default: <srcdir>/_template.html if present, else a minimal builtin.
+      |  --out D          output dir for the set/status modes (created if missing)
+      |  --status s[,s]   comma-separated status set to select (e.g. published,deployed)
+      |  --status-update FROM:TO   append `; TO <date>` to posts whose current status is FROM
+      |  --date d         the date for --status-update (default: today)
+      |
+      |Each <name>.md becomes <out-dir>/<name>.html. Only the figures/ files the rendered pages
+      |actually reference are copied to <out-dir>/figures, and stale ones are pruned — the output
+      |never carries unrelated posts' assets. Set modes (--out / --status) also prune .html pages
+      |that fell out of the set, so the out-dir holds exactly the rendered set.
+      |
+      |Examples:
+      |  tt ssg blog/002-scala-style.md tmp/site              # one post → tmp/site/<name>.html
+      |  tt ssg blog tmp/site                                 # a whole dir of posts
+      |  tt ssg --status published,deployed --out site blog   # the publishable set, one pass
+      |  tt serv tmp/site                                     # then preview at the printed URL
+      |
+      |Full reference: tools/README.md""".stripMargin
+
   private val Usage =
     """ssg — hand-rolled markdown -> static HTML site generator
       |  ssg <src> <out-dir> [--template <file>]                 # src = a .md file OR a dir of .md files
@@ -380,6 +421,7 @@ object Ssg:
       |    <out-dir> created if missing; only figures referenced by the rendered pages are copied""".stripMargin
 
   def dispatch(args: String*): Unit =
+    if args.contains("--help") || args.contains("-h") then { println(Help); sys.exit(0) }
     val a = args.toVector
     def optVal(name: String): Option[String] =
       val i = a.indexOf(name); if i >= 0 && i + 1 < a.length then Some(a(i + 1)) else None

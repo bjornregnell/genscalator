@@ -86,6 +86,39 @@ object Gvdot:
       "gvdot: graphviz 'dot' not found on PATH. Install it, e.g.:  sudo apt install graphviz\n" +
       "       (docs: https://graphviz.org/  |  flags: dot -h  |  manual: man dot)")
 
+  private val Help: String =
+    """tt gvdot — sequence-diagram spec → image via graphviz `dot`
+      |
+      |The graphviz sibling of `tt svg` / `tt ascii`: reads the SAME spec, generates DOT source
+      |and shells out to `dot` for an auto-layouted image. With no out file it just prints the
+      |generated DOT source — that path needs no graphviz at all (inspect, test, or pipe it).
+      |
+      |Usage:
+      |  gvdot sequence <in.txt>                        print the generated DOT source to stdout
+      |  gvdot sequence <in.txt> <out.pdf|.png|.svg>    render the image via graphviz `dot`
+      |  gvdot --sequence-diagram <in.txt> [out.…]      alias for `sequence` (also: seq, -s);
+      |                                                 output format is inferred from the out
+      |                                                 extension (pdf, png, svg, ps; default pdf)
+      |
+      |Needs graphviz on PATH for the render path — if missing it errors (exit 3) with an install
+      |hint: sudo apt install graphviz. Safety: `dot` runs as argv with NO shell and the DOT is
+      |fed on stdin, so spec text cannot inject a command.
+      |
+      |Spec (one statement per line; # / // comments; shared with svg/ascii via seqspec.scala):
+      |  title: <text>                    optional diagram title
+      |  actor <Id> [as <label>]          declare a lifeline (also: participant)
+      |  <A> -> <B>: <message>            solid arrow (a call / synchronous message)
+      |  <A> --> <B>: <message>           dashed arrow (a return / reply / async)
+      |  note over <A>[, <B>]: <text>     a note box parked at that step
+      |
+      |Examples:
+      |  tt gvdot sequence flow.txt flow.pdf     # PDF via graphviz
+      |  tt gvdot sequence flow.txt flow.png     # PNG — format from the out extension
+      |  tt gvdot sequence flow.txt              # just the DOT source (no graphviz needed)
+      |
+      |Graphviz docs: https://graphviz.org/  ·  dot -h  ·  man dot
+      |Full reference: tools/README.md""".stripMargin
+
   private def usage(): Unit =
     println(
       """usage: gvdot sequence <in.txt> [out.pdf|.png|.svg]   render a spec via graphviz `dot` (no out → prints DOT source)
@@ -95,6 +128,7 @@ object Gvdot:
         |spec lines:  title: <t> | actor <Id> [as <label>] | <A> -> <B>: <msg> | <A> --> <B>: <msg> | note over <A>[,<B>]: <t>""".stripMargin)
 
   def dispatch(args: List[String]): Unit =
+    if args.contains("--help") || args.contains("-h") then { println(Help); sys.exit(0) }
     args match
       case mode :: in :: rest if mode.toLowerCase == "sequence" || mode.toLowerCase == "--sequence-diagram" || mode == "-s" || mode.toLowerCase == "seq" =>
         val dot = toDot(parse(os.read(os.Path(in, os.pwd))))

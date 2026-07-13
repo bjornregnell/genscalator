@@ -26,7 +26,27 @@ def stripHtml(html: String): String =
     .replace("&hellip;", "…").replaceAll("&#\\d+;", "")
   decoded.replaceAll("[ \\t]+", " ").replaceAll(" *\\n *", "\n").replaceAll("\\n{3,}", "\n\n").trim
 
+// Top-level, so a UNIQUE name (the toolbox compiles as one unit; a generic `Help` would collide across files).
+private val HtmltextHelp: String =
+  """tt htmltext — strip a saved HTML page to readable text (pure)
+    |
+    |Turns an HTML file (e.g. a browser "Save Page As" dump) into plain readable text: drops
+    |head/script/style/noscript/svg, turns block tags into newlines, removes the remaining
+    |tags, decodes common entities, and collapses whitespace. Handy for reading a saved page
+    |(journal guidelines, docs) without the JS/CSS bloat.
+    |
+    |Usage:
+    |  htmltext <in.html>                   print the extracted text to stdout
+    |  htmltext <in.html> <out.file>        write the text to <out.file> (reports chars written)
+    |
+    |Examples:
+    |  tt htmltext saved-page.html                  # read the page in the terminal
+    |  tt htmltext guidelines.html guidelines.txt   # keep a plain-text copy
+    |
+    |Full reference: tools/README.md""".stripMargin
+
 @main def htmltext(args: String*): Unit =
+  if args.contains("--help") || args.contains("-h") then { println(HtmltextHelp); sys.exit(0) }
   args.toList match
     case in :: rest =>
       val html = Files.readString(Path.of(in))

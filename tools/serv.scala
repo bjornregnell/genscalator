@@ -88,6 +88,30 @@ object Serv:
     server.start()
     server
 
+  private val Help: String =
+    """tt serv — local static-file preview server (loopback only, zero-dep)
+      |
+      |Serves a directory at http://127.0.0.1:<port>/ until Ctrl-C — the audited replacement for
+      |`python3 -m http.server` when previewing a generated site (e.g. `tt ssg` output) before
+      |deploy. Zero external deps: it uses the JDK's built-in HTTP server.
+      |
+      |Usage:
+      |  serv <dir> [--port N]      serve <dir> at http://127.0.0.1:N/  (Ctrl-C to stop)
+      |
+      |Flags:
+      |  --port N       port to listen on, 1..65535 (default 8000)
+      |  --localhost    accepted and ignored — the bind is ALWAYS loopback anyway
+      |
+      |Safety: always binds 127.0.0.1 (never 0.0.0.0 — nothing is exposed off the box). GET and
+      |HEAD only. A directory serves its index.html. A path-traversal guard keeps every served
+      |path under <dir>: `..`, encoded `..`, and a leading `/` cannot escape (they get 403).
+      |
+      |Examples:
+      |  tt serv site                     # serve ./site at http://127.0.0.1:8000/
+      |  tt serv tmp/site --port 8137     # pick a port, then open the printed URL
+      |
+      |Full reference: tools/README.md""".stripMargin
+
   private val Usage =
     """serv — local static-file preview server (loopback only, zero-dep)
       |  serv <dir> [--port N]      serve <dir> at http://127.0.0.1:N/  (default N=8000)""".stripMargin
@@ -108,6 +132,7 @@ object Serv:
     loop(args, None, DefaultPort)
 
   def dispatch(args: String*): Unit =
+    if args.contains("--help") || args.contains("-h") then { println(Help); sys.exit(0) }
     parseArgs(args.toList) match
       case Left(err) => System.err.println(s"serv: $err"); System.err.println(Usage); sys.exit(2)
       case Right((dir, port)) =>

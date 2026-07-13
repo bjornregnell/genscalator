@@ -19,6 +19,34 @@ import scala.util.Try
 object Git {
   private def fail(msg: String): Nothing = { System.err.println(s"git: $msg"); sys.exit(2) }
 
+  private val Help: String =
+    """tt git — safe git write helper for agents (commit message from a FILE)
+      |
+      |Exposes ONLY the safe, non-destructive git verbs: add/commit/push, fast-forward-only
+      |pull, and fetch. The commit message is read from a file, so prose containing shell
+      |metacharacters (backticks, $, !, braces, bare *) never touches the command line.
+      |
+      |Usage:
+      |  git commit --repo <dir> --message-file <path> [--add <pathspec>]... [--push]
+      |  git pull  --repo <dir>          fast-forward only: either FFs or fails loudly
+      |  git fetch --repo <dir>          update remote-tracking refs (never the working tree)
+      |Flags (commit):
+      |  --repo <dir>                    the git repository to operate on (required)
+      |  --message-file <path>           file holding the commit message (required, non-empty)
+      |  --add <pathspec>                stage this path before committing (repeatable);
+      |                                  nothing is staged implicitly — never `git add -A`
+      |  --push                          push after a successful commit (plain `git push`)
+      |
+      |Not on the tool, by design: reset, rebase, merge, --force, rm, clean — the
+      |destructive/interactive verbs stay off entirely, so allowlisting `tt git` is safe.
+      |
+      |Examples:
+      |  tt git commit --repo /abs/repo --message-file tmp/msg.txt --add src/app.scala --push
+      |  tt git pull --repo /abs/repo    # fast-forward to upstream, or fail (no merge commit)
+      |  tt git fetch --repo /abs/repo   # refresh remote-tracking refs only
+      |
+      |Full reference: tools/README.md""".stripMargin
+
   private def usage(): Nothing =
     System.err.println(
       """git: usage:
@@ -35,6 +63,7 @@ object Git {
       case scala.util.Failure(e)   => (255, e.getMessage)
 
   def dispatch(args: String*): Unit =
+    if args.contains("--help") || args.contains("-h") then { println(Help); sys.exit(0) }
     args.toList match
       case "commit" :: rest => commit(rest)
       case "pull"   :: rest => pull(rest)

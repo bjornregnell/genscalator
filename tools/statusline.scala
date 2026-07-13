@@ -116,7 +116,40 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       .foreach(c => segs += sgr("38;5;39", s"cost: $$${c.toLong}")) // whole dollars, TRUNCATED (cents are noise on a fixed monthly plan; saves horiz space; never overstates)
     segs.mkString(sep)
 
+  private val Help: String =
+    """tt statusline — format Claude Code's statusLine JSON into one compact coloured line
+      |
+      |Claude Code pipes a JSON object to the configured statusLine command's stdin each
+      |turn; this tool reads it and prints one ANSI-coloured line. Every segment is
+      |independently guarded: a field absent from the JSON simply omits its segment, and a
+      |bad/empty stdin prints an empty line (exit 0) — it never crashes the prompt.
+      |
+      |Segments (left to right):
+      |  genscalator:        brand prefix
+      |  HH:MM:SS            local wall clock
+      |  O4.8 (1M ctx)       abbreviated model name (Opus/Sonnet/Fable/Haiku -> O/S/F/H)
+      |  ctx-fill: N%        context-window fill; orange at the compact-dance trigger
+      |                      (0.8*Z), red at Z = the dumb-zone threshold (--ctx-warn)
+      |  5h-lim / wk-lim     usage limits (Claude Pro/Max only) + reset countdown; both
+      |                      the % and its countdown turn RED at/above --warn
+      |  cost: $N            total cost in whole dollars, last (least interesting on a
+      |                      fixed monthly plan)
+      |
+      |Usage:
+      |  statusline [flags]             read the JSON from stdin (how Claude Code calls it)
+      |  statusline '<json>' [flags]    JSON as a positional arg (for deterministic tests)
+      |Flags:
+      |  --warn N            usage-limit warn threshold in % (default 80)
+      |  --ctx-warn N        context-fill dumb-zone threshold Z in % (default 30)
+      |  --now-ms N          fixed "now" as epoch-ms (for deterministic tests)
+      |
+      |Wire it up (human-gated settings step) in .claude/settings.json:
+      |  "statusLine": { "type": "command", "command": "tt statusline --warn 85 --ctx-warn 28" }
+      |
+      |Full reference: docs/statusline-manual.md""".stripMargin
+
   def dispatch(args: List[String]): Int =
+    if args.contains("--help") || args.contains("-h") then { println(Help); return 0 }
     var nowMs   = System.currentTimeMillis()
     var warn    = 80.0 // usage-limit warn threshold (%); set via `--warn N` in the settings command string
     var ctxWarn = 30.0 // context-fill dumb-zone threshold (%, the smart-zone ceiling Z); set via `--ctx-warn N`

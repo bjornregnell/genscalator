@@ -38,6 +38,45 @@ object Forge {
       "  BASE defaults to https://codeberg.org; release-create/edit read the token from env CODEBERG_TOKEN or FORGE_TOKEN (never a flag)."
   )
 
+  private val Help: String =
+    """tt forge — Forgejo/Gitea forge client (default: Codeberg)
+      |
+      |Talks to a forge's REST API without hand-curling it: list releases and tags
+      |(no auth needed on public repos), verify a token, and create or edit releases.
+      |The token is read ONLY from human-set env vars — never from a flag.
+      |
+      |Usage:
+      |  forge whoami   [--url BASE]                             verify auth: print the token's
+      |                                                          login (never the token itself)
+      |  forge releases <owner>/<repo> [--url BASE] [--limit N]  list releases (READ, no auth)
+      |  forge tags     <owner>/<repo> [--url BASE] [--limit N]  list tags     (READ, no auth)
+      |  forge release-create <owner>/<repo> <tag> [--name S] [--body S | --body-file F]
+      |                       [--prerelease] [--draft] [--target COMMITISH] [--url BASE]
+      |  forge release-edit   <owner>/<repo> <tag> [--name S] [--body S | --body-file F]
+      |                       [--prerelease] [--draft] [--url BASE]
+      |                       (PATCH an existing release; sends ONLY the provided fields)
+      |Flags:
+      |  --url BASE        forge base URL (default https://codeberg.org)
+      |  --limit N         max items for releases/tags (default 50)
+      |  --name S          release title (default: the tag)
+      |  --body S          release notes inline; --body-file F reads them from a file
+      |  --prerelease      mark as prerelease
+      |  --draft           mark as draft
+      |  --target C        commitish the new tag points at (release-create only)
+      |
+      |Token: whoami and release-create/edit read the token from env
+      |GENSCALATOR_CODEBERG_TOKEN, then CODEBERG_TOKEN, then FORGE_TOKEN — never a flag,
+      |and it is only ever sent to a trusted host (codeberg.org; the human may extend
+      |the set via env TT_FORGE_HOSTS). Effectful verbs print an [audit] line first.
+      |
+      |Examples:
+      |  tt forge releases bjornregnell/genscalator --limit 5    # latest 5 releases
+      |  tt forge tags bjornregnell/genscalator                  # tag list with short SHAs
+      |  tt forge release-create bjornregnell/genscalator v0.9.0 --name "v0.9.0: title" \
+      |           --body-file NOTES.md --prerelease
+      |
+      |Full reference: tools/README.md""".stripMargin
+
   // Token comes ONLY from a FIXED set of human-set env-var names — never a flag, and never an agent-nameable
   // var (an agent-chosen var name + an agent-chosen --url would let it POST an arbitrary secret to an
   // arbitrary host = exfiltration). Fixed names keep the authorization a human boundary.
@@ -62,6 +101,7 @@ object Forge {
   private def apiBase(url: String): String = url.stripSuffix("/") + "/api/v1"
 
   def dispatch(args: String*): Unit =
+    if args.contains("--help") || args.contains("-h") then { println(Help); sys.exit(0) }
     args.toList match
       case "whoami" :: rest         => whoami(rest)
       case "releases" :: rest       => listReleases(rest)

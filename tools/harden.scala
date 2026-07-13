@@ -101,6 +101,40 @@ object Harden:
       byName ++ byContent
     }
 
+  private val Help: String =
+    """tt harden — Layer-1 deterministic secret scanner (candidates for Layer-2 triage)
+      |
+      |Scans files for likely secrets before content leaves the machine. Deliberately noisy:
+      |Layer 1 (this tool) SURFACES candidates; Layer 2 (an agent or human) triages them.
+      |Output is REDACTED (first 4 chars + length) so the report itself never leaks a secret.
+      |
+      |Usage:
+      |  harden repo   <dir>           scan git-TRACKED text files (respects .gitignore;
+      |                                falls back to a plain walk if <dir> is not a repo)
+      |  harden egress <dir>           scan ALL files under <dir> — a payload destined to
+      |                                LEAVE (a ZIP-staging dir, a deploy bundle); the
+      |                                higher-value half: a secret fine at rest leaks on egress
+      |Flags:
+      |  --entropy <bits>              min Shannon bits/char for entropy-gated hits (default 3.6)
+      |
+      |Detects:
+      |  1. sensitive FILENAMES        .netrc, id_rsa/id_ed25519, *.pem/*.key/*.p12/*.pfx,
+      |                                .npmrc, .pypirc
+      |  2. known-prefix signatures    PEM private key, AWS AKIA, GitHub gh*_/github_pat_,
+      |                                Google AIza, Slack xox*
+      |  3. entropy-gated              openai sk-..., and generic `key = value` assignments
+      |                                whose VALUE clears the entropy gate
+      |Bare high-entropy blobs are deliberately NOT flagged (git hashes / base64 / UUIDs would
+      |drown the signal). Expect false positives — that is by design; Layer 2 triages.
+      |
+      |Exit codes: 0 clean, 1 candidate(s) found, 2 usage/error.
+      |
+      |Examples:
+      |  tt harden repo /abs/myrepo                    # pre-push scan of tracked files
+      |  tt harden egress /abs/staging --entropy 4.0   # stricter gate on an outgoing bundle
+      |
+      |Full reference: tools/README.md""".stripMargin
+
   def usage(): Unit =
     println("""harden - Layer-1 deterministic secret scanner (candidates for Layer-2 triage)
       |  tt harden repo   <dir>            scan git-tracked files (respects .gitignore; falls back to a walk)
@@ -109,6 +143,7 @@ object Harden:
       |exit: 0 clean, 1 candidate(s) found, 2 usage/error. Output is REDACTED. Expect FPs (Layer 2 triages).""".stripMargin)
 
   def dispatch(args: List[String]): Int =
+    if args.contains("--help") || args.contains("-h") then { println(Help); return 0 }
     var ent = 3.6
     val pos = scala.collection.mutable.ArrayBuffer[String]()
     val a = args.toVector

@@ -66,6 +66,38 @@ object Log {
         case other :: t => go(t, pos :+ other, es, ws, nd, cap)
     go(args, Vector.empty, Vector.empty, Vector.empty, false, 50)
 
+  private val Help: String =
+    """tt log — build/run-log analyzer (pure)
+      |
+      |Counts and shows errors and warnings in a log file, with a one-line verdict. Curated
+      |default markers cover compiler/build output, test runners and CI, runtime leveled logs
+      |(plain, logfmt, JSON), Python tracebacks, Go panics, npm, and LaTeX — targeted so tally
+      |lines like "0 errors" or "no warnings" don't false-positive. Extend or replace them per log.
+      |
+      |Usage:
+      |  log <file>                     summary (default): counts + lines + verdict
+      |  log summary <file>             same, explicit
+      |  log errors <file>              only the error bucket
+      |  log warnings <file>            only the warning bucket
+      |
+      |Flags:
+      |  --error <regex>                add an error pattern (repeatable)
+      |  --warn <regex>                 add a warning pattern (repeatable)
+      |  --no-defaults                  use ONLY the supplied patterns (skip the curated markers)
+      |  --cap <n>                      max lines shown per bucket (default 50)
+      |
+      |Notes:
+      |  Each pattern compiles separately, so an inline (?i) in one cannot leak into the others.
+      |  The file is read as Latin-1 (some logs, e.g. LaTeX, are not valid UTF-8).
+      |
+      |Examples:
+      |  tt log build.log                                # curated defaults — the 90% case
+      |  tt log errors run.log --cap 200                 # just errors, show more lines
+      |  tt log app.log --error 'MYAPP-FATAL'            # defaults plus my app's own marker
+      |  tt log weird.log --no-defaults --error 'BOOM:'  # only my pattern
+      |
+      |Full reference: tools/README.md""".stripMargin
+
   private def usage(): Unit =
     println("""log — analyze a build/run log (pure)
       |  log [summary|errors|warnings] <file>   summary = counts + lines + verdict (default)
@@ -77,6 +109,7 @@ object Log {
       |targeted so "0 errors"/"no warnings" tallies don't false-positive.""".stripMargin)
 
   def dispatch(args: String*): Unit =
+    if args.contains("--help") || args.contains("-h") then { println(Help); sys.exit(0) }
     parse(args.toList) match
       case Left(msg) =>
         System.err.println(s"log: $msg")

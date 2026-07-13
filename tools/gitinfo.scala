@@ -20,6 +20,26 @@ object GitInfo {
       case scala.util.Success(res) => (res.exitCode, (res.out.text() + res.err.text()).trim)
       case scala.util.Failure(e)   => (255, e.getMessage)
 
+  private val Help: String =
+    """tt gitinfo — read-only git repo overview (branch, state, sync, recent log)
+      |
+      |Prints one screen of repo status: current branch and HEAD, clean/dirty count,
+      |ahead/behind vs upstream, and the 5 most recent commits. Strictly NON-MUTATING —
+      |only read-only git subcommands run (rev-parse/status/rev-list/log/ls-remote),
+      |so it is always safe to run, anywhere.
+      |
+      |Usage:
+      |  gitinfo <repo>                    overview of the repo at <repo>
+      |  gitinfo <repo> --remote <name>    also compare local HEAD against that remote's
+      |                                    HEAD (via ls-remote): prints IN SYNC or DIVERGED
+      |
+      |Examples:
+      |  tt gitinfo /abs/myrepo                   # branch, state, upstream sync, recent commits
+      |  tt gitinfo /abs/myrepo --remote origin   # + local-vs-origin HEAD verdict
+      |
+      |Companion: `tt git` owns the safe WRITE subset (commit/push/pull/fetch).
+      |Full reference: tools/README.md""".stripMargin
+
   private def parse(args: List[String]): (String, Option[String]) =
     args match
       case repo :: "--remote" :: name :: Nil => (repo, Some(name))
@@ -27,6 +47,7 @@ object GitInfo {
       case _ => fail("usage: tt gitinfo <repo> [--remote <name>]")
 
   def dispatch(args: String*): Unit =
+    if args.contains("--help") || args.contains("-h") then { println(Help); sys.exit(0) }
     val (repoStr, remote) = parse(args.toList)
     val repo = os.Path(repoStr, os.pwd)
     if !os.exists(repo / ".git") && run(repo, "rev-parse", "--git-dir")._1 != 0 then fail(s"not a git repo: $repo")

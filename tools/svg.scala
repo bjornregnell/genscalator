@@ -163,6 +163,42 @@ object Svg:
   private def transparentOf(flags: List[String]): Boolean =
     flags.map(_.toLowerCase).exists(x => x == "--transparent" || x == "--transparent-bg" || x == "--no-bg")
 
+  private val Help: String =
+    """tt svg — textual sequence-diagram spec → self-contained, theme-aware SVG
+      |
+      |Renders a tiny PlantUML/mermaid-flavoured sequence-diagram spec to ONE self-contained SVG
+      |(inline <style>, no external refs) — embed it straight into a blog page, artifact, or report.
+      |Pure: reads the spec text, computes the SVG, prints it (or writes a file when out is given).
+      |
+      |Usage:
+      |  svg sequence <in.txt>                    render the spec, SVG to stdout
+      |  svg sequence <in.txt> <out.svg>          ... write the SVG to <out.svg> instead
+      |  svg --sequence-diagram <in.txt> [out]    alias for `sequence` (also: seq, -s)
+      |
+      |Flags:
+      |  --light | --dark    fixed, tailored palette — predictable when the host page/PDF theme
+      |                      may differ from the OS setting. Default: auto — adapts to the viewer
+      |                      via prefers-color-scheme.
+      |  --transparent       drop the background (aka --no-bg). Default: an OPAQUE theme-coloured
+      |                      background (transparent SVG backgrounds often render badly in
+      |                      Markdown/GitHub).
+      |
+      |Spec (one statement per line; blank lines and # / // comments are ignored):
+      |  title: <text>                    optional diagram title, centred at the top
+      |  actor <Id> [as <label>]          declare a lifeline (also: participant); label may be "quoted"
+      |  <A> -> <B>: <message>            solid arrow, filled head (a call / synchronous message)
+      |  <A> --> <B>: <message>           dashed arrow, open head (a return / reply / async)
+      |  note over <A>[, <B>]: <text>     a note box spanning one or two lifelines
+      |Undeclared lifelines are auto-created in first-seen order; A -> A draws a self-message loop.
+      |
+      |Examples:
+      |  tt svg sequence flow.txt                          # print the SVG to stdout
+      |  tt svg sequence flow.txt flow.svg                 # write flow.svg (auto light/dark theme)
+      |  tt svg sequence flow.txt flow-dark.svg --dark     # fixed dark palette for a dark host page
+      |
+      |Siblings reading the SAME spec: tt ascii (monospace art), tt gvdot (graphviz image).
+      |Full reference: tools/README.md""".stripMargin
+
   private def usage(): Unit =
     println(
       """usage: svg sequence <in.txt> [out.svg] [--light|--dark] [--transparent]   spec → SVG (no out → stdout)
@@ -175,6 +211,7 @@ object Svg:
         |spec lines:  title: <t> | actor <Id> [as <label>] | <A> -> <B>: <msg> | <A> --> <B>: <msg> | note over <A>[,<B>]: <t>""".stripMargin)
 
   def dispatch(args: List[String]): Unit =
+    if args.contains("--help") || args.contains("-h") then { println(Help); sys.exit(0) }
     args match
       case mode :: tail if isSeqMode(mode) =>
         val (flags, pos) = tail.partition(_.startsWith("--"))

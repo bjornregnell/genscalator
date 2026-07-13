@@ -102,8 +102,41 @@ object Wr:
       |    (drops tool_result / meta / slash-command wrappers - prefer this for retrofits); --limit caps rows (default 50).
       |exit: 0 hits, 1 no matches, 2 usage/error""".stripMargin)
 
+  private val Help: String =
+    """tt wr — Workflow-Research utilities (tooling for the WR corpus itself)
+      |
+      |Retrofits the REAL date-time of an utterance or event from the Claude Code session .jsonl
+      |transcripts, so a fluent quote recorded in a note can be dated to the second. READ-ONLY —
+      |it never writes; it replaces the 2-step grep+Read retrofit that pulled whole 16 KB
+      |transcript lines into context.
+      |
+      |Usage:
+      |  wr stamp <project-dir> <regex> [flags]
+      |      scan every *.jsonl in <project-dir> for lines matching <regex> (a JAVA regex,
+      |      ERE-style — not grep BRE) and print, sorted earliest-first, one row per match:
+      |      <timestamp>  [<type>]  <session8>:<line>  <snippet>
+      |
+      |Flags:
+      |  --user             keep only type=="user" entries. NB Claude Code records TOOL RESULTS as
+      |                     type=="user" too, so this coarse filter still admits tool_result echoes
+      |  --human            keep only genuinely human-typed prose (drops tool_result echoes, meta
+      |                     chrome, slash-command wrappers) — PREFER this for retrofits, where the
+      |                     rule is: take the EARLIEST genuine-human hit
+      |  --limit N          cap printed rows (default 50)
+      |
+      |Exit: 0 hits, 1 no matches, 2 usage/error.
+      |
+      |Examples:
+      |  tt wr stamp /abs/proj-dir "the compact dance" --human    # when did the human FIRST say it?
+      |  tt wr stamp /abs/proj-dir "guardcheck hook" --limit 10   # first 10 mentions, any entry type
+      |
+      |Full reference: tools/README.md (and the header comment in tools/wr.scala)""".stripMargin
+
   def dispatch(args: List[String]): Int =
-    args match
+    if args.contains("--help") || args.contains("-h") then
+      println(Help)
+      0
+    else args match
       case "stamp" :: rest =>
         var mode = Mode.All
         var limit = 50

@@ -43,11 +43,48 @@ object Verify {
 
   private def basename(s: String): String = s.split('/').filter(_.nonEmpty).lastOption.getOrElse(s)
 
+  private val Help: String =
+    """tt verify — run-and-verify driver: run an allowed command, check its output, print PASS/FAIL
+      |
+      |Runs ONE allowed executable directly as argv (no shell — ; | && $() and globs are inert
+      |literal args), captures exit/stdout/stderr, checks them against your expectations, and prints
+      |an audit line (argv, exit, ms) plus a PASS/FAIL verdict. Replaces the
+      |'cd && ... > log 2>&1; echo $?' bundle with one allowlistable call.
+      |
+      |Usage:
+      |  verify [checks] -- <cmd> <args...>   everything after the FIRST -- is the command to run
+      |                                       (a --help/-h AFTER the -- belongs to that command,
+      |                                       not to verify)
+      |
+      |Checks (combinable; ALL must pass; default: --exit 0):
+      |  --exit N                        expected exit code (default 0)
+      |  --out <substr>                  stdout must contain this substring (repeatable)
+      |  --out-re <regex>                stdout must match this regex (repeatable)
+      |  --err <substr>                  stderr must contain this substring (repeatable)
+      |  --err-re <regex>                stderr must match this regex (repeatable)
+      |
+      |Allowed executables: scala-cli, tt, scalex — plus any listed in the HUMAN-set env var
+      |TT_VERIFY_ALLOW (comma-separated, e.g. export TT_VERIFY_ALLOW=git,make). There is
+      |deliberately NO flag to widen this: a flag would be agent-authored, not human approval.
+      |
+      |Exit: 0 all checks pass, 1 a check failed, 2 usage / disallowed executable / spawn error.
+      |
+      |Examples:
+      |  tt verify -- tt files /abs/src .scala --count
+      |  tt verify --exit 0 --out 8 -- scala-cli run tools/text.scala -- grepr /abs .scala x --count
+      |  tt verify --exit 2 --out usage -- tt chrono bogus    # assert the failure mode too
+      |
+      |Full reference: tools/README.md""".stripMargin
+
   def dispatch(args: String*): Unit =
     // split "[checks] -- <cmd...>" at the FIRST "--"
     val (checkArgs, cmd) = args.toList.span(_ != "--") match
       case (before, _ :: rest) => (before, rest) // "--" present → drop it
       case (before, Nil)       => (before, Nil)  // no "--"
+    // help ONLY when asked among verify's OWN args (before the --); after the -- it belongs to <cmd>
+    if checkArgs.contains("--help") || checkArgs.contains("-h") then
+      println(Help)
+      sys.exit(0)
     if cmd.isEmpty then
       System.err.println("verify: usage: verify [checks] -- <cmd> <args...>   (checks: --exit N | --out S | --out-re R | --err S | --err-re R)")
       sys.exit(2)

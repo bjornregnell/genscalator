@@ -827,6 +827,29 @@ class CliSuite extends munit.FunSuite:
     assert(clue(out).contains("F5 (1M ctx)")) // Fable 5 (1M context) -> F5 (1M ctx)
   }
 
+  // --- --help across tools (elaborate, human-friendly per-tool help; 2026-07-13) ---
+  test("--help prints elaborate help (tagline + Full reference), exits 0, across tools + insertion shapes") {
+    // one per batch + each structurally-distinct insertion: block sys.exit (chrono), stdin-precedence
+    // (statusline), the `--` caveat (verify), seqspec dep (svg), top-level Help val (text), return 0
+    // (harden), expression-style dispatch (wr), quoted-arg-safe contains (guardcheck).
+    val tools = List("chrono", "statusline", "verify", "svg", "text", "harden", "wr", "guardcheck")
+    for tool <- tools do
+      val (code, out, _) = run(tool, "--help")
+      assertEquals(code, 0, s"$tool --help should exit 0")
+      assert(out.contains(s"tt $tool —"), s"$tool --help missing tagline; got:\n$out")
+      assert(out.contains("Full reference:"), s"$tool --help missing 'Full reference:'; got:\n$out")
+  }
+  test("statusline --help does not block on stdin (help check precedes the stdin read)") {
+    val (code, out, _) = run("statusline", "--help") // no stdin provided; must not hang
+    assertEquals(code, 0)
+    assert(out.contains("statusLine"), clue(out))
+  }
+  test("-h short form also prints help and exits 0") {
+    val (code, out, _) = run("chrono", "-h")
+    assertEquals(code, 0)
+    assert(out.contains("tt chrono —"), clue(out))
+  }
+
   // --- harden (Layer-1 deterministic secret scanner; SM042) ---
   test("harden egress: flags AWS key + high-entropy assignment + PEM + sensitive filename; gates placeholders; redacts") {
     val d = os.temp.dir()

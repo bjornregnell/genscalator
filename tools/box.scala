@@ -26,6 +26,35 @@ object Box {
   private val QuickMs = 60_000L   // df / list / gpu
   private val PullMs  = 3_600_000L // one model pull ceiling (1h)
 
+  private val Help: String =
+    """tt box — safe, host-pinned remote ops for a known compute box (default bjornyx.local)
+      |
+      |Runs a FIXED set of read/pull operations over ssh with NO shell passthrough: host and
+      |model names are validated against strict patterns, so nothing the caller supplies can
+      |inject remote shell. Use it to check the box's ollama models, disk, and GPU, or to
+      |pull a model guarded by a free-disk floor.
+      |
+      |Usage:
+      |  box models        [--host H]                     ollama inventory (name/size/modified)
+      |  box df            [--host H]                     disk usage on / (human-readable)
+      |  box gpu           [--host H]                     nvidia-smi utilization + memory (csv)
+      |  box freegb        [--host H]                     just the free-GB integer on / (scripting)
+      |  box pull <model>  [--host H] [--min-free-gb N]   ollama pull; REFUSED if free disk < N
+      |Flags:
+      |  --host H                        target host (default bjornyx.local)
+      |  --min-free-gb N                 free-disk floor for pull in GB (default 50);
+      |                                  pull refuses to start below it
+      |
+      |ssh runs with BatchMode (never hangs on a password prompt); quick ops time out after
+      |60 s, a pull after 1 h.
+      |
+      |Examples:
+      |  tt box models                          # what models does the box have?
+      |  tt box gpu                             # is the GPU busy right now?
+      |  tt box pull qwen2.5-coder:1.5b         # pull, guarded by the 50G free-disk floor
+      |
+      |Full reference: tools/README.md""".stripMargin
+
   private def usage(): Nothing =
     System.err.println(
       """box: usage:
@@ -63,6 +92,7 @@ object Box {
     cols(3).stripSuffix("G").toIntOption.getOrElse(fail(s"df: cannot parse avail '${cols(3)}'"))
 
   def dispatch(args: String*): Unit =
+    if args.contains("--help") || args.contains("-h") then { println(Help); sys.exit(0) }
     args.toList match
       case "models" :: rest =>
         val (host, _) = parseHost(rest)

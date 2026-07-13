@@ -44,7 +44,31 @@ object Typo {
       else "complex"
     else "complex"
 
+  private val Help: String =
+    """tt typo — keyboard-aware typo classifier (Swedish QWERTY; pure)
+      |
+      |Classifies a typed-vs-intended word pair as one edit type, using letter adjacency on the
+      |Swedish QWERTY layout. Feeds the human-fatigue gauge: adjacency-heavy typos hint at motor
+      |tiredness, transpositions/drops at timing, far substitutions at a real wrong word.
+      |
+      |Usage:
+      |  typo adjacent <a> <b>                are two single chars keyboard-neighbors? prints yes/no
+      |  typo classify <typed> <intended>     classify: match / adjacency / substitution-far /
+      |                                       transposition / deletion / insertion / complex
+      |
+      |Notes:
+      |  v1 models the three Swedish letter rows (qwertyuiopå / asdfghjklöä / zxcvbnm); numbers
+      |  and punctuation are omitted. Adjacency includes diagonals and is case-insensitive.
+      |
+      |Examples:
+      |  tt typo adjacent a s                 # yes — neighbors on the home row
+      |  tt typo classify hejsna hejsan       # transposition (two adjacent chars swapped)
+      |  tt typo classify teat test           # adjacency (a sits next to s on the keyboard)
+      |
+      |Full reference: tools/README.md""".stripMargin
+
   def dispatch(args: String*): Unit =
+    if args.contains("--help") || args.contains("-h") then { println(Help); sys.exit(0) }
     args.toList match
       case "adjacent" :: a :: b :: Nil if a.length == 1 && b.length == 1 =>
         println(if adjacent(a(0), b(0)) then "yes" else "no")

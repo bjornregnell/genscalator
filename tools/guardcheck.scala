@@ -131,7 +131,39 @@ object Guardcheck {
       |  tt guardcheck hook [<json>]            PreToolUse hook: reads tool-call JSON on stdin (or as an arg), emits a permission-decision JSON
       |exit: cmd/msg -> 0 clean, 1 finding(s), 2 usage; hook -> 0""".stripMargin)
 
+  private val Help: String =
+    """tt guardcheck — flag shell / commit-message patterns that trip the guard or are banned reflexes
+      |
+      |Checks a proposed shell command or commit message BEFORE it is submitted, and prints the safe
+      |rewrite for each finding — a prosthetic habit: the safe form is reached by structure, not by
+      |recalling a rule at the instant of action.
+      |
+      |Usage:
+      |  guardcheck cmd "<shell command>"     check a command: && / ; chains, cd+compound, $( ) and
+      |                                       backtick substitution, /dev/stdin, heredocs, pipes to
+      |                                       head/tail/wc, raw recursive grep, output redirects
+      |  guardcheck msg "<commit message>"    check a commit message: line-leading #, =word
+      |                                       (zsh equals-expansion), angle-bracket globs like <->
+      |  guardcheck hook [<json>]             Claude Code PreToolUse hook: reads the tool-call JSON
+      |                                       on stdin (or as an arg, for testing) and emits a
+      |                                       permission-decision JSON (deny on any HIGH finding,
+      |                                       ask on MED-only, silent when clean)
+      |
+      |Exit codes:
+      |  cmd/msg: 0 clean, 1 finding(s), 2 usage
+      |  hook:    always 0 (it signals via the emitted JSON)
+      |
+      |Examples:
+      |  tt guardcheck cmd "cd repo && git add -A"    # flags the && chain and the cd+compound
+      |  tt guardcheck cmd "git log | head -5"        # suggests the tool's --limit flag instead
+      |  tt guardcheck msg "fix #42 in parser"        # clean — the # is not line-leading
+      |
+      |Full reference: tools/README.md""".stripMargin
+
   def dispatch(args: String*): Unit =
+    if args.contains("--help") || args.contains("-h") then
+      println(Help)
+      sys.exit(0)
     args.toList match
       case "cmd" :: rest if rest.nonEmpty => sys.exit(report("cmd", rest.mkString(" "), cmdChecks))
       case "msg" :: rest if rest.nonEmpty => sys.exit(report("msg", rest.mkString(" "), msgChecks))
