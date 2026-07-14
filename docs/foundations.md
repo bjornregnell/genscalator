@@ -200,6 +200,13 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   screen-lead, then layer depth below the fold ([[educate-lead-with-one-screen]]). Relatives: the one-liner request
   under the *Fyi dance*, *Token efficiency*, *Communication bandwidth*. **Cues, not dances** — a single human signal the
   agent obeys, with no interlocking answering step (per the dance bar). Memory: [[cue-quick-deep]]. (BR 2026-07-06.)
+- **Trailing-colon HOLD cue (a message ending in `:`)** — when the human's message **ends with a colon**, they are
+  probably **not done typing** (a premature enter; `alt+enter` for a newline is less intuitive than plain enter),
+  so the colon usually introduces a directive or list that got sent early. **Agent behaviour:** HOLD for the
+  continuation — a minimal ack, no barrelling ahead on the incomplete directive (a trailing colon is **not** a
+  `go`). A sibling of the other HOLD signals (*hang on*, *hmmmm*, *I rest*); the trigger is a colon at the very END
+  of the message (a mid-message colon in an otherwise complete instruction is fine). Memory:
+  [[cue-trailing-colon-hold]]. (BR 2026-07-14.)
 - **Edit vs clarification cues (`edit:` / `clarification:`)** — two human message-correction cues, prepended when
   amending a just-sent message, distinguished by the human's **own risk assessment**. **`edit:`** = a low-stakes
   **fix** of a typo or a word (e.g. "edit: common" repairing "commin"); mechanical, and the original was not really
