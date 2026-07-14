@@ -103,7 +103,7 @@ salience.
 **Framing — a lens, not a proven isomorphism (flagged as analogy).** Treat a skill as *a lossy code for a
 behaviour policy, decoded by a specific model*. Then "how do we size the skill set?" becomes a rate–distortion
 problem: **minimise the context tokens spent (rate) subject to keeping the agent's behavioural deviation
-(distortion) acceptable** — or dually, minimise distortion under a fixed context budget. The mapping:
+(drift) acceptable** — or dually, minimise drift under a fixed context budget. The mapping:
 
 | Rate–distortion term | Skill-world meaning |
 |---|---|
@@ -122,33 +122,33 @@ of its rate–distortion curve.
 1. **The prior is free side-information — code only the residual.** The base model already follows much of π\*.
    Guidance need only encode the *residual* between the prior's default and π\* (an override). A skill that
    restates a default the model already follows spends rate to encode ~zero information. So the effective source
-   is **π\* minus the prior** — the override residual. Rate should track the *override-distance* δ (how often the
+   is **π\* minus the prior** — the override residual. Rate should track the **gap** (override-distance, formerly δ — how often the
    base model errs without the skill), estimable by **ablation** (run without the skill, count regressions). This
    is the formal version of P2.
 2. **Rate is scheduled, not fixed — it is expected rate under a firing distribution.** A lazy skill costs its
    full text only when it fires: expected rate = listing_cost + P(fire) × load_cost. Laziness is a rate-reduction
-   move — it makes the big cost *conditional*. But under-firing raises distortion (the cold-start summoning gap).
+   move — it makes the big cost *conditional*. But under-firing raises drift (the cold-start summoning gap).
    So *when* you pay rate (proactive at turn zero vs lazy on trigger) is a second, orthogonal knob trading rate
-   against distortion via P(fire). This is the formal home for "activation ≠ salience".
-3. **Distortion is non-stationary — position- and history-dependent.** The same code yields different distortion
+   against drift via P(fire). This is the formal home for "activation ≠ salience".
+3. **Drift is non-stationary — position- and history-dependent.** The same code yields different drift
    by where it sits: dormant at turn zero (high), freshly loaded (low), deep in a long or compacted context
    (rising again — reflex regression / rot). Classic rate–distortion assumes a fixed decoder; here the decoder's
    fidelity depends on salience and recency. This is where "cold-start regression" and "compaction regresses
-   reflexes" live, and it motivates **re-injection** (re-hydration) as active distortion control.
+   reflexes" live, and it motivates **re-injection** (re-hydration) as active drift control.
 4. **Codes share a finite channel — rates are coupled, not additive-free.** Because the window is finite and
-   shared, spending rate on skill A can push skill B out of salience, *raising B's distortion*. The aggregate is
-   NOT a sum of independent codes: **one skill's rate is another skill's distortion.** This is the formal
+   shared, spending rate on skill A can push skill B out of salience, *raising B's drift*. The aggregate is
+   NOT a sum of independent codes: **one skill's rate is another skill's drift.** This is the formal
    statement of "a bloated skill set taxes the window", and it is why the aggregate curve has a knee (P3) — past
-   it, added active skills buy ~no distortion reduction and can *increase* total distortion by crowding.
+   it, added active skills buy ~no drift reduction and can *increase* total drift by crowding.
 
 ### The lever taxonomy (what the lens licenses you to do, per behaviour)
 
 - (i) **Shrink the source** — encode only the override residual; never spend rate restating the prior.
-- (ii) **Compress the code** — a digest instead of full text; accept a little distortion for much less rate.
-- (iii) **Schedule the rate** — proactive turn-zero injection for guardrails (kill the summoning-gap distortion)
+- (ii) **Compress the code** — a digest instead of full text; accept a little drift for much less rate.
+- (iii) **Schedule the rate** — proactive turn-zero injection for guardrails (kill the summoning-gap drift)
   vs lazy firing for situational task skills (low expected rate).
-- (iv) **Refresh against decay** — re-inject to fight position-dependent distortion (post-compaction re-hydration).
-- (v) **Constrain instead of code** — a hook/guard that makes the wrong behaviour *impossible* clamps distortion
+- (iv) **Refresh against decay** — re-inject to fight position-dependent drift (post-compaction re-hydration).
+- (v) **Constrain instead of code** — a hook/guard that makes the wrong behaviour *impossible* clamps drift
   to ~0 by construction. This is not a point on the curve at all: it *modifies the channel* rather than informing
   the decoder. **Inform vs constrain** is the deepest distinction the lens surfaces, and it is exactly why
   "structure over willpower" wins — a `guardcheck` hook takes a behaviour OFF the rate–distortion curve, paying
@@ -156,23 +156,25 @@ of its rate–distortion curve.
 
 ### The quantities it defines (all buildable from transcripts + `tt guardcheck` + ablation)
 
-- **override-distance** δ(behaviour) = base-model error rate WITHOUT the skill (measured by ablation);
+*(renamed 2026-07-14: gap = override-distance, formerly δ; drift = behavioural distortion, formerly D)*
+
+- **gap**(behaviour) = base-model error rate WITHOUT the skill (measured by ablation);
 - **code rate** r(artifact) = listing + expected-load tokens;
-- **behavioural distortion** D = error rate per opportunity WITH the code, bucketed by context position;
-- **value-per-token = Δδ ⁄ r** — the ranking function §C asked for, now defined: rank behaviours × representations
-  by distortion-reduction per token, fund the top of the list, leave the tail lazy or unencoded.
+- **drift** = error rate per opportunity WITH the code, bucketed by context position;
+- **value-per-token = Δgap ⁄ r** — the ranking function §C asked for, now defined: rank behaviours × representations
+  by drift-reduction per token, fund the top of the list, leave the tail lazy or unencoded.
 
 ### The empirical object
 
 For ONE behaviour, sweep representations {nothing → memory line → digest → full skill → hook} and plot achieved
-distortion vs rate → its rate–distortion curve; the **knee** is the recommended representation. For the whole
-SET, sweep active-set size and plot aggregate distortion vs aggregate rate → the knee is the recommended set size
+drift vs rate → its rate–distortion curve; the **knee** is the recommended representation. For the whole
+SET, sweep active-set size and plot aggregate drift vs aggregate rate → the knee is the recommended set size
 (P3), and the crowding coupling (wrinkle 4) predicts the up-tick past it.
 
 ### Honest caveats (where the analogy strains)
 
-The decoder is stochastic and non-stationary, so there is no clean fixed R(D); the distortion measure is
-behavioural and only partly formalisable (which deviations count, and how weighted?); δ and D are model-specific,
+The decoder is stochastic and non-stationary, so there is no clean fixed R(D); the drift measure is
+behavioural and only partly formalisable (which deviations count, and how weighted?); gap and drift are model-specific,
 so every curve is indexed by model. The lens earns its keep by making the *questions and quantities* crisp and
 measurable — not as a theorem to invoke.
 
@@ -182,7 +184,7 @@ measurable — not as a theorem to invoke.
   regressions than merely having the skill active. *Test:* A/B the SessionStart digest vs plain active-skill,
   count guard trips in the first N tool calls.
 - **P2 (override value is what counts).** A skill's behavioural effect is proportional to how far its guidance
-  departs from the base prior, not to its length or detail. *Test:* correlate override-distance with measured
+  departs from the base prior, not to its length or detail. *Test:* correlate gap with measured
   behaviour change.
 - **P3 (economy has a knee).** Beyond some number/size of active skills, added coverage costs more context than
   the override value it returns. *Test:* vary skill-set size, measure task quality vs context tax.
@@ -190,12 +192,12 @@ measurable — not as a theorem to invoke.
   guardrail core vs reactive task skills) beats a uniform policy. *Test:* compare regression + context cost
   across the two regimes.
 - **P5 (constrain beats inform where the behaviour is clampable).** For a behaviour that can be structurally
-  blocked (brittle bash, Claude-credit), a hook/guard achieves lower session distortion at lower context rate
+  blocked (brittle bash, Claude-credit), a hook/guard achieves lower session drift at lower context rate
   than ANY informing code (skill/digest/memory). *Test:* compare guard-trip / leak rate AND context cost, hook
   vs skill-only, for a clampable behaviour. (The rate–distortion statement of "structure over willpower".)
 - **P6 (rate crowding — codes share the channel).** Adding active skills past the aggregate knee raises the
-  distortion of SOME behaviours by crowding them out of salience, even though each added skill lowers its own.
-  *Test:* track per-behaviour distortion as the active set grows; look for the up-tick predicted by wrinkle 4.
+  drift of SOME behaviours by crowding them out of salience, even though each added skill lowers its own.
+  *Test:* track per-behaviour drift as the active set grows; look for the up-tick predicted by wrinkle 4.
 
 ## 5. How to study this (method)
 

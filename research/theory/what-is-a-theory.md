@@ -13,7 +13,7 @@ A **theory** is a set of related **constructs** plus **propositions** stating re
 model of one case, and not a bare taxonomy (though constructs + a taxonomy are ingredients).
 
 Its parts:
-- **constructs** — the concepts (e.g. *override-distance*, *salience*, *firing*);
+- **constructs** — the concepts (e.g. *gap*, *salience*, *firing*);
 - **propositions** — claimed relationships among constructs, ideally **causal**;
 - **scope / boundary conditions** — where it applies and where it does not;
 - **operationalization** — the bridge to observables, so it can be measured and tested.
@@ -96,9 +96,9 @@ brittle in context**. Hold both.
 A quick self-audit of `agent-skill-theory.md` against §5:
 
 - **Falsifiable?** In intent, yes — P1–P6 are stated to be breakable. Good.
-- **Validatable?** This is the crux. It hinges on whether **override-distance δ** and **behavioural distortion
-  D** are operationalizable and measurable by real studies (ablation, `tt guardcheck` trip-counts, transcript
-  metrics). If δ and D are measurable → a scientific theory-in-progress. If not → honestly a **lens / metaphor**
+- **Validatable?** This is the crux. It hinges on whether **gap** and **drift** are operationalizable and
+  measurable by real studies (ablation, `tt guardcheck` trip-counts, transcript
+  metrics). If gap and drift are measurable → a scientific theory-in-progress. If not → honestly a **lens / metaphor**
   (which the draft already flags).
 - **Explanatory?** Yes — the *override-vs-prior* mechanism explains the specimens. **Predictive?** Partially —
   P1–P6 make novel predictions.
@@ -110,7 +110,7 @@ A quick self-audit of `agent-skill-theory.md` against §5:
   for clampable behaviours) that improve the agent — and applying them is also how we test them.
 
 **Honest status of the agent-skill theory:** a well-formed **lens** with falsifiable propositions, pending the
-operationalization of δ and D to graduate into an empirically validated theory. Naming that gap is itself the
+operationalization of gap and drift to graduate into an empirically validated theory. Naming that gap is itself the
 §5 discipline in action.
 
 ## Housekeeping / ties

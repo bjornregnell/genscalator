@@ -14,7 +14,7 @@ Research in Software Engineering*. All book content is paraphrased + page-cited;
 ## 0. The crux this answers
 
 `what-is-a-theory.md` §6 states the make-or-break: the skill theory graduates from *lens* to *validatable
-theory* iff **override-distance δ** and **behavioural distortion D** are operationalizable and testable by real
+theory* iff **gap** and **drift** are operationalizable and testable by real
 studies. This note argues they are, and specifies how.
 
 ## 1. Experiment or case study? — TWO distinct studies, not one blurred one
@@ -25,7 +25,7 @@ manipulation *plus random assignment of subjects to treatments*; the in-session 
 ablation) but **no random assignment of anything**, forfeits control for realism, and must adapt to whatever
 work arrives — a **flexible design**. So it is honestly an **embedded single-case study with quasi-experimental
 contrasts** ([CS] Sect. 8.5.2's "controlled case study" is the citable precedent), whose deliverable is *the
-theory itself* (constructs δ/D, propositions, scope). This is theory-BUILDING (inductive).
+theory itself* (constructs gap/drift, propositions, scope). This is theory-BUILDING (inductive).
 
 The controlled **experiment** ([EX], §§2–5 below) is a SEPARATE, more-controlled harness — a fixed design with
 randomized treatment order over a task pool (the indent-braces-style rig) — that TESTS a proposition the case
@@ -59,19 +59,19 @@ promote it from the in-session case study to the experiment. §§2–5 develop t
   behave, Wilcoxon or sign test otherwise (Sect. 11.3, Table 11.3); a dichotomous tripped/not outcome makes the
   sign test a binomial test on pair signs (Sect. 11.3.10).
 
-## 3. Operationalizing δ and D, and their construct validity ([EX] Sect. 9.7–9.8.3)
+## 3. Operationalizing gap and drift, and their construct validity ([EX] Sect. 9.7–9.8.3)
 
-δ-by-ablation is essentially a **control condition** (behaviour with the skill removed) and D-by-guard-trips the
+Gap-by-ablation is essentially a **control condition** (behaviour with the skill removed) and drift-by-guard-trips the
 effect measure — structurally sound, but [EX] flags specific construct-validity threats we must pre-empt:
 
 - **Inadequate pre-operational explication** (the biggest): "opportunity" and "regression" must be defined
   *mechanically and pre-registered* — which tool-call patterns count as an opportunity to regress? Fuzzy
   definitions void the construct.
-- **Mono-operation / mono-method bias:** one skill, one task type, one context position underrepresents δ and D;
+- **Mono-operation / mono-method bias:** one skill, one task type, one context position underrepresents gap and drift;
   estimate each across several skills/tasks, and triangulate the hook-log trip count against an independent
   transcript audit (don't let one measure stand alone).
 - **Confounding levels of a construct:** testing one digest wording measures *that level*, not "salience" in
-  general; likewise δ is a rate at a given prompt/context level, not a fixed property.
+  general; likewise gap is a rate at a given prompt/context level, not a fixed property.
 - **Restricted generalizability across constructs:** the digest costs context and may degrade task quality —
   measure the **context tax alongside** the trip rate (this is exactly what couples P1 to P3).
 - Prefer **objective** measures (Sect. 3.4): a hook-log trip count is objective/repeatable; a human-judged
@@ -101,7 +101,7 @@ testing, internal > construct > conclusion > external. We do both, so **internal
   expectancy. Agent translation: **blind the run** — keep hypotheses/treatment assignment OUT of the
   subject-session context, score via mechanical hook logs + pre-registered rules, and have a separate
   session/subagent (or the human) adjudicate.
-- **Conclusion** — non-independent trials violate test assumptions (Sect. 9.8.1); testing P1/P3/P5 (+ D bucketed)
+- **Conclusion** — non-independent trials violate test assumptions (Sect. 9.8.1); testing P1/P3/P5 (+ drift bucketed)
   on overlapping data is *fishing* → adjust α family-wise (family error 1−(1−α)^k; three tests at .05 ≈ .14) and
   fix all hypotheses before analysis. Standardize/script the treatment (reliability of implementation).
 - **External** — one subject / repo / model snapshot: selection×, setting×, and history×treatment all bite.
@@ -120,10 +120,10 @@ testing, internal > construct > conclusion > external. We do both, so **internal
   Wilcoxon / sign (safer for counts/skew); chi-square across context-position buckets. Small samples can't detect
   non-normality, so lean non-parametric when N is small.
 - **Power** is a *design-time* decision (Sect. 9.2/9.4) — pilot to estimate per-opportunity trip-rate variance,
-  then size trials for the expected δ-vs-D gap; low power is the common SE-experiment failure (Dybå et al.). A
+  then size trials for the expected gap-vs-drift difference; low power is the common SE-experiment failure (Dybå et al.). A
   one-sided H1 buys power cheaply. Small effects need many fresh sessions.
 - **Report effect sizes** ([EX] calls them particularly important, Sect. 3.4.1) — a significant but tiny
-  distortion reduction may not be worth the context tax (again P3). Null ≠ H0 true; significance ≠ importance.
+  drift reduction may not be worth the context tax (again P3). Null ≠ H0 true; significance ≠ importance.
 
 ## 6. The in-session case study, designed per [CS]
 
@@ -139,7 +139,7 @@ improves its own practice while studying it), which [CS] admits under the same g
 
 **Design components** ([CS] Table 3.1, Sect. 3.2): objective = exploratory→explanatory + improving (theory
 generation is a first-class rationale here, p. 30). **Case** = this agent-configuration (model + harness +
-substrate) doing real work; **embedded units of analysis** = individual skills, each with its own δ and D
+substrate) doing real work; **embedded units of analysis** = individual skills, each with its own gap and drift
 (sessions / opportunity-events as sub-units) — Yin's holistic-vs-embedded, Example 3.5. [CS] *excludes* toy
 programs from case-study status (p. 26) — the methodological vindication of "real work as the vehicle" over
 synthetic benchmarks. RQs in how/why form, refined as the study proceeds (objective held fixed, or it becomes a
@@ -168,7 +168,7 @@ knows it is measured may behave differently — a real threat to log.
 **Operator=subject** is [CS]'s *prolonged involvement* risk (Sect. 5.5) at its maximum, so the counterweights
 carry the whole load: **triangulation** (commits vs tests vs guard-trips vs transcript = independent traces of
 the same event; a second rater — the human or a separate agent instance — independently codes the transcript for
-the observer-triangulation [CS] says single-agent studies otherwise lack); a **chain of evidence** (every δ and D
+the observer-triangulation [CS] says single-agent studies otherwise lack); a **chain of evidence** (every gap and drift
 value traceable to specific commits + transcript spans — load-bearing precisely because self-sense is
 disqualified); a **case-study database**; **peer debriefing / member checking** (inverted: the human reviews the
 agent's analysis); and **timing** — counting rules and ablation procedure fixed BEFORE the session, never
@@ -178,8 +178,8 @@ reconstructed after (validity can't be attained retrospectively, Sect. 3.2.13).
 sampled; a case study yields no statistical significance, p. 16) — no prevalence claims across agents/models.
 **Analytical** generalization is the vehicle: results extend to cases sharing the theory's stated scope
 conditions (model family, harness, injection mechanism, substrate style), supported by a rich context
-description. Growth is by **replication logic**, not sampling: **literal** replication (a second high-δ skill
-predicted to show the same distortion pattern) and **theoretical** replication (a near-zero-δ skill predicted to
+description. Growth is by **replication logic**, not sampling: **literal** replication (a second high-gap skill
+predicted to show the same drift pattern) and **theoretical** replication (a near-zero-gap skill predicted to
 show none) — each surviving prediction strengthens the theory with no population ever sampled. Keep
 hypothesis-generation and hypothesis-confirmation in *different* units (derive a proposition from skill A's
 sessions, test it on skill B; Sect. 5.2.3).
