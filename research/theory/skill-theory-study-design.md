@@ -4,8 +4,9 @@
 `agent-skill-theory.md` (§5) and the *validatability crux* of `what-is-a-theory.md` (§6) from skill-index
 references into a concrete, cited study design. Grounded via two CF5 book-expert consultants that read BR's own
 methods books directly: **[EX]** = Wohlin, Runeson, Höst, Ohlsson, Regnell & Wesslén, *Experimentation in
-Software Engineering*, **3rd ed., Springer 2024** (the closed-repo PDF is mislabelled "second-ed"; the copyright
-line and the new Ch. 2/Ch. 5 confirm 3rd ed.), and **[CS]** = Runeson, Höst, Rainer & Regnell, *Case Study
+Software Engineering*, **2nd ed. (Springer, 2024)**, DOI 10.1007/978-3-662-69306-3 (page
+citations are to that edition's PDF; an earlier draft mis-inferred "3rd ed." from the 2024 copyright line — the
+2nd edition is itself a 2024 book, per BR the co-author and genscalator's own `skills/research-methods` citation), and **[CS]** = Runeson, Höst, Rainer & Regnell, *Case Study
 Research in Software Engineering*. All book content is paraphrased + page-cited; no verbatim reproduction
 ([[books-dir-closed-repo-copyrighted-refs]], [[br-se-methods-coauthor-coi]]). Model producing this draft: Opus
 4.8 (1M). Ties SM069, SM077, SM081 (the consultant-fleet method that produced it).
