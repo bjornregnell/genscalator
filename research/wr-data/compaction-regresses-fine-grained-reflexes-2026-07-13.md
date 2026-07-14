@@ -45,3 +45,21 @@ not where it depends on the agent spontaneously recalling a memory file.
 - Candidate SM: a post-compact "reflex re-hydration" step — the agent re-reads its own high-frequency
   operating memories (grepr, commit flow, guard-clean idioms) as a deliberate first action, not relying on
   the summary to have carried them. Cheap insurance against exactly this regression class.
+
+## Second specimen — the checklist was NOT sufficient even when it CARRIED the reflex (2026-07-14 22:5x)
+Post-compact resume (fresh window), the agent read `tmp/resume-prompt.md` — whose anti-regression checklist
+line 5 explicitly lists `ls | head` as a ⛔ pattern — and *on its second working tool call* still appended
+`| head -50` to a `tt files` command. The guardcheck hook caught it ([MED] pipe-to-head). BR reported it live
+from inside the guard-stall (`ig:`) as WR data.
+- **Why this sharpens the finding:** the 2026-07-13 specimen regressed on a reflex ABSENT from the checklist,
+  and the fix was "add the line." This specimen regressed on a reflex PRESENT on the checklist, freshly read.
+  So checklist-carriage is necessary but **not sufficient** — a base-model "just peek at the top" reflex fires
+  below the salience level a read-once checklist provides. The checklist is a *reference*, not a *reflex*; only
+  the **guard hook** operated at reflex speed and actually stopped it.
+- **The value:** this is the structure-over-willpower thesis proving itself twice over. The willpower layer
+  (checklist I authored + just read) failed; the structural layer (the automatic PreToolUse guard) held. It
+  argues for the guard hook as the load-bearing backstop, NOT the checklist — and for the SM103-adjacent idea
+  of a `tt` native "peek first N" so the reflex has a guard-clean landing spot instead of only a ⛔.
+- The pipe was also pointless: `tt files` had already printed the full 14-file list in the prior (unpiped)
+  call; the piped re-run added nothing. So: regression under low stakes / near-zero payoff — the classic
+  autopilot signature.

@@ -803,3 +803,23 @@ human's eyes, not the agent's stream. Naming "**agent UX**" makes them a first-c
 the agent the meta the human gets — queue depth, fill, elapsed — *losslessly*). Coupled-system corollary: a
 better-instrumented **agent** surface = a more capable pair. Reframes the whole input-channel-metadata-loss thread as
 *agent UX*, its human-side twin as *human UX*.
+
+## Notification hook FIRES before the approval modal paints — audio leads the picture (2026-07-14, BR)
+
+BR, from inside a guard-stall (`ig:`): "bing-bing sounded and note 'needs your approval' BUT it was way BEFORE the
+actual guard-stall modal; that's strange." The Notification hook (empty-matcher `""`, wired this session) ran and the
+desktop toast + `canberra-gtk-play` fired **noticeably before** the visual approval dialog rendered in the TUI.
+- **Mechanism (the non-strange explanation):** the harness emits the **Notification event the moment it decides it
+  needs human input** — that decision (a PreToolUse guard verdict = "confirm") is upstream of, and precedes, the TUI
+  *painting* the modal. So the hook fires on the *decision*, the modal appears on the *render*; a real gap sits between
+  them. Audio leads the picture. (It is NOT the hook firing spuriously — the two are the same event observed at two
+  latencies.)
+- **This is the FEATURE, not a bug.** The whole point of the bing-bing is to pull an AFK human back *before* they'd
+  notice the screen. A notification that fires only *after* the modal paints would be strictly worse — you'd already be
+  looking. Leading the modal is exactly the wake-latency win we wanted (it partly offsets the ~2s canberra lag, SM098).
+- **Small UX cost:** for a *present* human it reads as "why did it beep, nothing's there yet?" — a brief
+  audio→visual desync. Acceptable; the AFK benefit dominates. Worth a one-line note in the eventual hook docs so it
+  isn't re-flagged as a bug.
+- **Threads:** [[bing-bing-naming-and-good-mood-2026-07-13]], the empty-matcher wiring (this session), the ~2s
+  canberra latency (SM098 → the pre-warm idea in SM105's `approval-wake` draft — this observation says the *decision*
+  timestamp, not the render, is the true deadline the pre-warm races against).
