@@ -67,6 +67,7 @@ salience.
   regressions occur inside it?
 
 ### C. Context economy (the reason skills are lazy)
+*Developed formally in "The rate–distortion view of skill economy" below — this is the section's centre of gravity.*
 - Skills are lazy BECAUSE eagerly loading all of them would blow the context budget. So: what is the marginal
   context cost of a skill (its listing entry + its full text on load), and what is its marginal override value?
 - Is there an optimal number/size of skills for a given window budget? A "load the tiny guardrail core, keep the
@@ -97,6 +98,84 @@ salience.
 - Authoring, testing, decay: how is a skill validated (does it actually flip the default in practice, not just
   in theory)? How do we notice a skill that has gone stale or is silently never firing?
 
+## The rate–distortion view of skill economy (developed 2026-07-14)
+
+**Framing — a lens, not a proven isomorphism (flagged as analogy).** Treat a skill as *a lossy code for a
+behaviour policy, decoded by a specific model*. Then "how do we size the skill set?" becomes a rate–distortion
+problem: **minimise the context tokens spent (rate) subject to keeping the agent's behavioural deviation
+(distortion) acceptable** — or dually, minimise distortion under a fixed context budget. The mapping:
+
+| Rate–distortion term | Skill-world meaning |
+|---|---|
+| Source | the target behaviour policy π\* — the default-flips we want (tt-over-bash, braces-on-long-scope, no-Claude-credit, …) |
+| Code / representation | the guidance artifact: full `SKILL.md`, a digest, a memory line, a hook injection |
+| Rate | context tokens the code occupies (listing-entry cost + text cost when loaded) |
+| Decoder | the model, reading code + prior + context and emitting behaviour (lossy, stochastic, model-specific) |
+| Distortion | behavioural deviation from π\* — guard trips / wrong-tool / missed default-flips per opportunity |
+| Channel | the finite, shared context window |
+
+The design objective becomes explicit and measurable: for each behaviour, pick the representation on the **knee**
+of its rate–distortion curve.
+
+### Four ways agent-skills are NON-classical rate–distortion (the interesting part)
+
+1. **The prior is free side-information — code only the residual.** The base model already follows much of π\*.
+   Guidance need only encode the *residual* between the prior's default and π\* (an override). A skill that
+   restates a default the model already follows spends rate to encode ~zero information. So the effective source
+   is **π\* minus the prior** — the override residual. Rate should track the *override-distance* δ (how often the
+   base model errs without the skill), estimable by **ablation** (run without the skill, count regressions). This
+   is the formal version of P2.
+2. **Rate is scheduled, not fixed — it is expected rate under a firing distribution.** A lazy skill costs its
+   full text only when it fires: expected rate = listing_cost + P(fire) × load_cost. Laziness is a rate-reduction
+   move — it makes the big cost *conditional*. But under-firing raises distortion (the cold-start summoning gap).
+   So *when* you pay rate (proactive at turn zero vs lazy on trigger) is a second, orthogonal knob trading rate
+   against distortion via P(fire). This is the formal home for "activation ≠ salience".
+3. **Distortion is non-stationary — position- and history-dependent.** The same code yields different distortion
+   by where it sits: dormant at turn zero (high), freshly loaded (low), deep in a long or compacted context
+   (rising again — reflex regression / rot). Classic rate–distortion assumes a fixed decoder; here the decoder's
+   fidelity depends on salience and recency. This is where "cold-start regression" and "compaction regresses
+   reflexes" live, and it motivates **re-injection** (re-hydration) as active distortion control.
+4. **Codes share a finite channel — rates are coupled, not additive-free.** Because the window is finite and
+   shared, spending rate on skill A can push skill B out of salience, *raising B's distortion*. The aggregate is
+   NOT a sum of independent codes: **one skill's rate is another skill's distortion.** This is the formal
+   statement of "a bloated skill set taxes the window", and it is why the aggregate curve has a knee (P3) — past
+   it, added active skills buy ~no distortion reduction and can *increase* total distortion by crowding.
+
+### The lever taxonomy (what the lens licenses you to do, per behaviour)
+
+- (i) **Shrink the source** — encode only the override residual; never spend rate restating the prior.
+- (ii) **Compress the code** — a digest instead of full text; accept a little distortion for much less rate.
+- (iii) **Schedule the rate** — proactive turn-zero injection for guardrails (kill the summoning-gap distortion)
+  vs lazy firing for situational task skills (low expected rate).
+- (iv) **Refresh against decay** — re-inject to fight position-dependent distortion (post-compaction re-hydration).
+- (v) **Constrain instead of code** — a hook/guard that makes the wrong behaviour *impossible* clamps distortion
+  to ~0 by construction. This is not a point on the curve at all: it *modifies the channel* rather than informing
+  the decoder. **Inform vs constrain** is the deepest distinction the lens surfaces, and it is exactly why
+  "structure over willpower" wins — a `guardcheck` hook takes a behaviour OFF the rate–distortion curve, paying
+  in occasional false-positive denials rather than in context tokens.
+
+### The quantities it defines (all buildable from transcripts + `tt guardcheck` + ablation)
+
+- **override-distance** δ(behaviour) = base-model error rate WITHOUT the skill (measured by ablation);
+- **code rate** r(artifact) = listing + expected-load tokens;
+- **behavioural distortion** D = error rate per opportunity WITH the code, bucketed by context position;
+- **value-per-token = Δδ ⁄ r** — the ranking function §C asked for, now defined: rank behaviours × representations
+  by distortion-reduction per token, fund the top of the list, leave the tail lazy or unencoded.
+
+### The empirical object
+
+For ONE behaviour, sweep representations {nothing → memory line → digest → full skill → hook} and plot achieved
+distortion vs rate → its rate–distortion curve; the **knee** is the recommended representation. For the whole
+SET, sweep active-set size and plot aggregate distortion vs aggregate rate → the knee is the recommended set size
+(P3), and the crowding coupling (wrinkle 4) predicts the up-tick past it.
+
+### Honest caveats (where the analogy strains)
+
+The decoder is stochastic and non-stationary, so there is no clean fixed R(D); the distortion measure is
+behavioural and only partly formalisable (which deviations count, and how weighted?); δ and D are model-specific,
+so every curve is indexed by model. The lens earns its keep by making the *questions and quantities* crisp and
+measurable — not as a theorem to invoke.
+
 ## 4. Candidate propositions (sharp, falsifiable — to test, not assert)
 
 - **P1 (salience beats activation).** Injecting a guardrail digest at turn zero eliminates more cold-start
@@ -110,6 +189,13 @@ salience.
 - **P4 (guardrails want proactive firing, tasks want lazy).** Splitting skills by firing mode (proactive
   guardrail core vs reactive task skills) beats a uniform policy. *Test:* compare regression + context cost
   across the two regimes.
+- **P5 (constrain beats inform where the behaviour is clampable).** For a behaviour that can be structurally
+  blocked (brittle bash, Claude-credit), a hook/guard achieves lower session distortion at lower context rate
+  than ANY informing code (skill/digest/memory). *Test:* compare guard-trip / leak rate AND context cost, hook
+  vs skill-only, for a clampable behaviour. (The rate–distortion statement of "structure over willpower".)
+- **P6 (rate crowding — codes share the channel).** Adding active skills past the aggregate knee raises the
+  distortion of SOME behaviours by crowding them out of salience, even though each added skill lowers its own.
+  *Test:* track per-behaviour distortion as the active set grows; look for the up-tick predicted by wrinkle 4.
 
 ## 5. How to study this (method)
 
