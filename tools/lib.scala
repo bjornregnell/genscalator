@@ -17,6 +17,17 @@ object Lib:
   def readUtf8(path: String): String =
     String(java.nio.file.Files.readAllBytes(java.nio.file.Path.of(path)), "UTF-8")
 
+  // --- toolbox location ---
+  /** Locate the tools dir (cwd-independent): the -Dtt.tools property the `tt` launcher passes, else walk up
+    * from the cwd for a `tools/tt`. The ONE shared definition — doc / prd / skillcheck / skillgrants all use
+    * this (previously each had an identical top-level copy, which collided at a whole-`tools` compile). */
+  def toolsDir(): Option[java.nio.file.Path] =
+    import java.nio.file.{Files, Path}
+    sys.props.get("tt.tools").map(Path.of(_)).filter(d => Files.exists(d.resolve("tt")))
+      .orElse:
+        Iterator.iterate(Path.of("").toAbsolutePath)(p => p.getParent).takeWhile(_ != null).take(8)
+          .find(d => Files.exists(d.resolve("tools").resolve("tt"))).map(_.resolve("tools"))
+
   // --- JSON ---
   /** Encode a string as a JSON string literal, quotes included, per RFC 8259. Pure, dependency-free.
     * Escapes the mandatory set (" \ and the C0 controls via \b \f \n \r \t or \uXXXX); passes other

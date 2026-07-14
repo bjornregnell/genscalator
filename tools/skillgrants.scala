@@ -1,5 +1,6 @@
 //> using scala 3.8.4
 //> using jvm 21
+//> using file lib.scala
 
 // skillgrants — print what a skill GRANTS: its `allowed-tools:` frontmatter, made legible for INFORMED CONSENT
 // (SM100). When the harness loads a skill it silently widens the auto-approved tool set by that skill's
@@ -15,12 +16,13 @@
 // so "grants nothing" is a visible, checkable state rather than an absence you have to infer. Ties SM100/SM103.
 import java.nio.file.{Files, Path}
 import scala.jdk.CollectionConverters.*
+import agenttools.Lib
 
 type SkillName = String
 type Grant     = String // one allowed-tools entry, e.g. "Read" or "Bash(scala-cli run *)"
 
 // @main name is descriptive + globally unique (the toolbox compiles as one unit); helpers live in the object
-// so nothing (toolsDir, splitGrants, …) collides with skillcheck.scala / doc.scala at a whole-toolbox compile.
+// so nothing (splitGrants, skillDirs, …) collides at a whole-toolbox compile; toolsDir is shared via Lib.
 @main def printSkillGrants(args: String*): Unit = Skillgrants.dispatch(args)
 
 object Skillgrants:
@@ -38,14 +40,6 @@ object Skillgrants:
       |A skill with no allowed-tools grants nothing beyond session defaults — reported explicitly, not skipped.
       |
       |Full reference: tools/README.md""".stripMargin
-
-  /** Locate the tools dir (cwd-independent): the -Dtt.tools property the `tt` launcher passes, else walk up
-    * from the cwd for a `tools/tt`. Mirrors skillcheck.scala + doc.scala. */
-  def toolsDir(): Option[Path] =
-    sys.props.get("tt.tools").map(Path.of(_)).filter(d => Files.exists(d.resolve("tt")))
-      .orElse:
-        Iterator.iterate(Path.of("").toAbsolutePath)(p => p.getParent).takeWhile(_ != null).take(8)
-          .find(d => Files.exists(d.resolve("tools").resolve("tt"))).map(_.resolve("tools"))
 
   /** Skills = subdirs of skillsDir that directly contain a SKILL.md, sorted by name. */
   def skillDirs(skillsDir: Path): Vector[SkillName] =
@@ -100,7 +94,7 @@ object Skillgrants:
     val consumed = if skillsIdx >= 0 then Set(skillsIdx, skillsIdx + 1) else Set.empty[Int]
     val skillsDir: Path =
       (if skillsIdx >= 0 && skillsIdx + 1 < a.size then Some(Path.of(a(skillsIdx + 1))) else None)
-        .orElse(toolsDir().map(_.getParent.resolve("skills")))
+        .orElse(Lib.toolsDir().map(_.getParent.resolve("skills")))
         .getOrElse:
           Console.err.println("skillgrants: cannot locate skills/ (pass --skills <dir>, or set -Dtt.tools=<dir>)")
           sys.exit(2)

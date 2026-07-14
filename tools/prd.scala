@@ -1,5 +1,6 @@
 //> using scala 3.8.4
 //> using jvm 21
+//> using file lib.scala
 
 // prd — read + navigate the genscalator PRD.md (PURE, read-only). Complements `tt parsereqt` (which
 // parses + lints the reqT-lang); this one is for a human/agent who wants to SEE what the PRD says without
@@ -13,6 +14,7 @@
 // `* Feature|Goal: <id> has` with its nested `* Gist:` line under the current `### Release` header; find is a
 // deterministic case-insensitive line scan tagged with the nearest heading. No LLM, feed-efficient. Ties SM065.
 import java.nio.file.{Files, Path}
+import agenttools.Lib
 
 private val PrdHelp: String =
   """tt prd — read + navigate the genscalator PRD.md (pure, read-only)
@@ -31,14 +33,6 @@ private val PrdHelp: String =
     |  tt prd find allowlist       # every PRD line mentioning allowlist, with its heading
     |
     |Full reference: tools/README.md""".stripMargin
-
-/** Locate the tools dir (cwd-independent): the -Dtt.tools property the `tt` launcher passes, else walk up
-  * from the cwd for a `tools/tt`. Mirrors doc.scala. */
-private def toolsDir(): Option[Path] =
-  sys.props.get("tt.tools").map(Path.of(_)).filter(d => Files.exists(d.resolve("tt")))
-    .orElse:
-      Iterator.iterate(Path.of("").toAbsolutePath)(p => p.getParent).takeWhile(_ != null).take(8)
-        .find(d => Files.exists(d.resolve("tools").resolve("tt"))).map(_.resolve("tools"))
 
 /** The FUTURE block: lines from `## FUTURE` up to (not including) the next top-level `## ` heading. */
 private def futureBlock(lines: Vector[String]): Vector[String] =
@@ -80,7 +74,7 @@ private def headingAt(lines: Vector[String], i: Int): String =
   val consumed = if prdIdx >= 0 then Set(prdIdx, prdIdx + 1) else Set.empty[Int]
   val prdPath: Path =
     (if prdIdx >= 0 && prdIdx + 1 < a.size then Some(Path.of(a(prdIdx + 1))) else None)
-      .orElse(toolsDir().map(_.getParent.resolve("PRD.md")))
+      .orElse(Lib.toolsDir().map(_.getParent.resolve("PRD.md")))
       .getOrElse:
         Console.err.println("prd: cannot locate PRD.md (pass --prd <file>, or set -Dtt.tools=<dir>)")
         sys.exit(2)

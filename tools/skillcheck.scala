@@ -1,5 +1,6 @@
 //> using scala 3.8.4
 //> using jvm 21
+//> using file lib.scala
 
 // skillcheck — verify the genscalator SKILL SET is present, and catch the "silent skill outage" where a skill
 // exists on disk but the harness never activated it (the plugin was not installed/enabled, or a fresh window
@@ -18,6 +19,7 @@
 // as `--active ...` to get a machine-checked diff. Ties SM070.
 import java.nio.file.{Files, Path}
 import scala.jdk.CollectionConverters.*
+import agenttools.Lib
 
 private val SkillcheckHelp: String =
   """tt skillcheck — verify the genscalator skill set is present (pure, read-only)
@@ -40,14 +42,6 @@ private val SkillcheckHelp: String =
     |
     |Full reference: tools/README.md""".stripMargin
 
-/** Locate the tools dir (cwd-independent): the -Dtt.tools property the `tt` launcher passes, else walk up
-  * from the cwd for a `tools/tt`. Mirrors doc.scala + the test suite. */
-private def toolsDir(): Option[Path] =
-  sys.props.get("tt.tools").map(Path.of(_)).filter(d => Files.exists(d.resolve("tt")))
-    .orElse:
-      Iterator.iterate(Path.of("").toAbsolutePath)(p => p.getParent).takeWhile(_ != null).take(8)
-        .find(d => Files.exists(d.resolve("tools").resolve("tt"))).map(_.resolve("tools"))
-
 /** The expected skills = subdirs of skillsDir that directly contain a SKILL.md, sorted by name. */
 private def expectedSkills(skillsDir: Path): Vector[String] =
   if !Files.isDirectory(skillsDir) then Vector.empty
@@ -66,7 +60,7 @@ private def expectedSkills(skillsDir: Path): Vector[String] =
   val consumed = if skillsIdx >= 0 then Set(skillsIdx, skillsIdx + 1) else Set.empty[Int]
   val skillsDir: Path =
     (if skillsIdx >= 0 && skillsIdx + 1 < a.size then Some(Path.of(a(skillsIdx + 1))) else None)
-      .orElse(toolsDir().map(_.getParent.resolve("skills")))
+      .orElse(Lib.toolsDir().map(_.getParent.resolve("skills")))
       .getOrElse:
         Console.err.println("skillcheck: cannot locate skills/ (pass --skills <dir>, or set -Dtt.tools=<dir>)")
         sys.exit(2)
