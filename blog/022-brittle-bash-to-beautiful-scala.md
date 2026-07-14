@@ -43,6 +43,16 @@ The Scala rewrite is a clearly-marked effectful driver, and it leans on the JDK:
 
 Agent-assisted engineering on a real, small task is neither magic nor useless. It is a collaboration in which the agent's speed and breadth meet the human's knowledge of WHY. The agent can propose the tidy version, translate bash sorcery into a typed Scala driver, and compile-check it in seconds. It will also, confidently, "improve" away knowledge it cannot see, so the human stays the load-bearing reviewer. It is the genscalator posture in miniature: direct style, JDK first, effects in a clearly-marked driver, and structure (a typed call, a compile check) chosen over folklore (a signal you have to remember and a PID you have to kill).
 
+## The sharper point: robustness is only safe if the owner can review it
+
+**[scaffold, BR to revoice; this is BR's own correction and it is the real lesson.]** The author was not an unwilling victim of over-engineering. He shares the values: he liked what the agent was doing, it was "good sorcery" in that it was managing the brittleness, and he agreed to all the bulk to make the script safer. His words for what went wrong:
+
+> "I agreed to all the bulkyness to make it safer but I lost my reviewability in that process because I don't know bash very well."
+
+That is the crux. The added robustness made the script safer AND less reviewable by its owner, so he had to *trust* the forty lines of bash rather than verify them. Robustness you cannot read is robustness you cannot check.
+
+Which is why the rewrite mattered beyond taste. Scala is a language the author reads, so the same robustness, moved into Scala, became *verifiable* by him again: a typed call he can follow, a compile that either passes or does not. The medium decided whether the owner verifies or trusts. Bulky bash he does not know forces trust; typed Scala he does know restores verification. So the design rule is not "keep it simple" (he wanted the safety), it is "keep it reviewable BY THE OWNER", and if added robustness outruns their literacy in one medium, move it to a medium they can read rather than pile more into one they cannot.
+
 ## [figure: the before / after, the brittle bash one-liner beside the Scala `destroyForcibly` call]
 
 ## Further Reading
