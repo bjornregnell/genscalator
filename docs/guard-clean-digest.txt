@@ -1,0 +1,22 @@
+guard-clean reflexes (gs warm) — re-hydrate these at cold start so the FIRST bash calls do
+not regress to base-model brittle bash. An active skill is LAZY: dormant until its trigger
+fires, so at turn zero these reflexes are NOT salient unless you load them. Load them.
+
+SEARCH / FILES   (never raw find / grep / ls | head / 2>/dev/null)
+  tt files <DIR> <ext> [regex]              find files (dir first)
+  tt text grepr <ABS-DIR> <ext> <regex>     recursive grep (dir first, metachar-free pattern)
+  tt text match <file> <regex>              grep a single file
+
+SHELL HYGIENE
+  ONE bare allowlist-matchable command per call  — no  cd && … , no  ;-chains , no compounds
+  run_in_background                              — never  | head / | tail / | wc , never  > file
+  keep shell metachars  ( | > < ` && ; )  OUT of quoted search patterns
+  Write tool for files                           — never a  > redirect
+
+GIT
+  tt git commit --repo <dir> --message-file <path> --add <p> [--add …] --push
+  write the message file FIRST (sequential) ; no shell-glob metachars in commit PROSE ;
+  no Claude-credit trailers .    Never  cd repo && git …
+
+WHY: structure over willpower. The reflex regresses across a compaction / clear ; re-read
+this digest (gs warm) or read skills/avoid-guard-stall + skills/tt-toolbox when unsure.

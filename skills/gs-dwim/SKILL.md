@@ -1,6 +1,6 @@
 ---
 name: gs-dwim
-description: Do-What-I-Mean in-session genscalator commands cued by a leading `gs`. Trigger whenever the user's message begins with `gs ` (or is a bare `gs`) — e.g. "gs help", "gs cues", "gs cue similar", "gs dances", "gs dance compact", "gs help tt", "gs help tt search text", "gs tt chrono", "gs status", "gs status line on", "gs where", "gs menu", "gs reqt", "gs term rot", "gs test", "gs allow", "gs help allow", "gs new app todo ./my-app". Interpret the intent do-what-I-mean style (nearest-in-meaning, "or similar"), not by exact string match, and perform the matching genscalator action.
+description: Do-What-I-Mean in-session genscalator commands cued by a leading `gs`. Trigger whenever the user's message begins with `gs ` (or is a bare `gs`) — e.g. "gs help", "gs cues", "gs cue similar", "gs dances", "gs dance compact", "gs help tt", "gs help tt search text", "gs tt chrono", "gs status", "gs status line on", "gs where", "gs menu", "gs reqt", "gs term rot", "gs test", "gs allow", "gs help allow", "gs warm", "gs init", "gs new app todo ./my-app". Interpret the intent do-what-I-mean style (nearest-in-meaning, "or similar"), not by exact string match, and perform the matching genscalator action.
 allowed-tools: Read Bash(tt text *) Bash(tt files *) Bash(tt log *) Bash(tt chrono *) Bash(tt statusline *) Bash(tt parsereqt *) Bash(tt gitinfo *) Bash(tt doc *) Bash(tt mode *) Bash(scala-cli test *)
 ---
 
@@ -116,6 +116,25 @@ gracefully). The per-command behaviour is specified below.
   automatically. A sensitive settings edit: **inline, SHOWN, human-gated, never delegated** — same discipline
   as `gs status line`; if a direct edit is unwanted, hand the exact block to paste. **`gs help allow`** just
   prints `docs/allowlist.md` (`tt doc allowlist`) — no changes made.
+- **`gs warm`** — re-hydrate the guard-clean reflexes into working context at cold start, so the FIRST bash
+  calls do NOT regress to base-model brittle bash. **Run `tt doc guard-clean-digest` and PASTE its output** (the
+  ~20-line reflex digest), and treat it as a directive to yourself: the reflexes are now salient — apply them.
+  WHY it exists: an active skill is LAZY (dormant until its trigger fires), so at turn zero `avoid-guard-stall`'s
+  reflexes are active-but-NOT-salient and the summoning-gap regressions happen (the 2026-07-13 cold-start guard
+  trips; SM077). `gs warm` is the AGENT half of the fix — on demand, a small load (the tiny guardrail core, not
+  all 10 skills; eagerly loading everything fights the very context-economy that makes skills lazy). The
+  DETERMINISTIC sibling is a SessionStart hook injecting the same digest at turn zero (BR's hand — see `gs init`).
+  For heavier work, follow up by Reading the full `skills/avoid-guard-stall/SKILL.md` + `skills/tt-toolbox/SKILL.md`.
+  Distinct from `gs skills`, which DETECTS whether skills are active; `gs warm` LOADS the reflexes (detect vs load).
+- **`gs init`** — one-time PROJECT onboarding for a fresh genscalator checkout: wire the things a new project
+  needs, each a SENSITIVE settings step SHOWN and human-gated (never silent, never delegated — same discipline as
+  `gs allow`). Walk the user through, in order, skipping any already done (idempotent, report the skip): (1)
+  **`gs allow`** — merge the recommended `tt` allowlist into `.claude/settings.local.json`; (2) **`gs status line
+  on`** (and optionally `gs status mode on`) — add the statusline command to `.claude/settings.json`; (3) the
+  **SessionStart hook** that injects `guard-clean-digest` at turn zero (the deterministic cold-start fix), plus
+  optionally the compact bing-bing hook — point at the setup docs, as the hook wiring is BR's hand. This RESOLVES
+  the "gs init vs gs warm" question (SM077): `gs init` = per-PROJECT one-time setup (settings, human-gated); `gs
+  warm` = per-SESSION reflex re-hydration (small, on-demand, agent-run). Never delegated (sensitive settings).
 
 **Tier 2 (genscalator contributors / dogfooding mode) — assume the gs dev substrate; degrade gracefully if absent:**
 

@@ -27,6 +27,8 @@ matched to the nearest command in meaning (not exact syntax).
   gs sound test            play a test chime to check the speakers are on
   gs allow                 set up the recommended tt allowlist for this repo (shown; you approve)
   gs help allow            explain the recommended allowlist and its principles (no changes)
+  gs warm                  re-hydrate the guard-clean reflexes into context (cold-start guardrail)
+  gs init                  one-time project onboarding: allowlist + status line + SessionStart hook (shown)
 
 --- genscalator developer commands (experimental):
   gs where                 short current-state snapshot: pin board + resume prompt + recent git log
