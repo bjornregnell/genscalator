@@ -54,15 +54,23 @@ Bench harness: `bench.scala` (JVM) — `ProcessBuilder(exe).redirectOutput(DISCA
 timed with nanoTime, 3 warmups + N timed runs, prints min/median/mean/max ms. Run:
 `scala-cli run bench.scala -- 300 <exe> ...`.
 
-## Results (final five-way, 300 runs each, ms)
+## Results (seven-way; SN rows 300 runs, JVM/GraalVM rows 200 runs; ms)
 
-| launcher                          | min   | median | mean  | max   | binary size        |
-|-----------------------------------|-------|--------|-------|-------|--------------------|
-| C (`noop-c`)                      | 0.653 | 0.773  | 0.856 | 1.948 | 15.8 KiB (15776 B) |
-| bash (`noop.sh`)                  | 1.476 | 1.686  | 1.780 | 4.015 | 125 B              |
-| SN release-fast + Immix           | 1.584 | 1.914  | 2.013 | 4.363 | 1.67 MiB (1752672) |
-| SN release-fast + **none GC**     | 1.565 | 1.715  | 1.815 | 3.516 | 1.64 MiB (1720328) |
-| SN release-size + none GC         | 1.574 | 1.827  | 1.915 | 4.159 | 1.64 MiB (1724024) |
+| launcher                          | min    | median  | mean    | max     | binary size                    |
+|-----------------------------------|--------|---------|---------|---------|--------------------------------|
+| C (`noop-c`)                      | 0.664  | 0.758   | 0.783   | 1.455   | 15.8 KiB (15776 B)             |
+| bash (`noop.sh`)                  | 1.445  | 1.587   | 1.693   | 2.765   | 125 B                          |
+| SN release-fast + **none GC**     | 1.579  | 1.851   | 1.947   | 4.288   | 1.64 MiB (1720328 B)           |
+| SN release-fast + Immix           | 1.584  | 1.914   | 2.013   | 4.363   | 1.67 MiB (1752672 B)           |
+| SN release-size + none GC         | 1.574  | 1.827   | 1.915   | 4.159   | 1.64 MiB (1724024 B)           |
+| **GraalVM native-image**          | 2.469  | 3.049   | 3.205   | 7.164   | **12.25 MiB** (12848896 B)     |
+| **JVM (bootstrap launcher)**      | 103.3  | 130.7   | 131.6   | 174.4   | 230 KiB (235764 B) + needs JVM |
+
+A packaged JVM bootstrap measures **JVM program startup** (~131 ms). A real `tt` call is ~500 ms because
+`scala-cli run` adds a build-check/resolution layer *on top* of this JVM startup — so two separate costs stack
+in daily use (packaging to a bootstrap removes the scala-cli layer; native removes the JVM startup too).
+GraalVM native-image was confirmed a **genuine** native image (built `--no-fallback`; not a JVM-launcher
+fallback). GraalVM CE 17, Serial GC; SN 0.5.12, release-fast, Immix/None GC.
 
 ## Findings
 1. **C is fastest — ~2.2× bash — but by only ~0.9 ms** (0.77 vs 1.69 ms median). BR's "C faster" confirmed:
@@ -81,6 +89,21 @@ timed with nanoTime, 3 warmups + N timed runs, prints min/median/mean/max ms. Ru
 4. **The whole launcher spread is ~1.2 ms.** Against the measured wake latency (≈2 s baseline, ≈4 s, ≈30 s
    screen-locked), the launcher language is **3–4 orders of magnitude below the bottleneck.** Launcher choice
    is noise.
+
+## Findings — the `tt`-tool target axis (JVM vs native)
+The JVM and GraalVM rows answer a *different* question than the launcher one: not "which launcher for a hook"
+but "which compilation target for a `tt` tool that pays startup on every call."
+5. **The JVM cliff: ~131 ms program startup vs ~1–3 ms for every native option — a ~70–86× gap.** THIS is the
+   tax that motivates native-compiling hot, short-lived `tt` tools. And it stacks: a real `tt` call is ~500 ms
+   because `scala-cli run` adds its own build-check layer *above* the 131 ms JVM boot. Native-compiling removes
+   both.
+6. **Scala Native beats GraalVM native-image — on BOTH startup and size.** SN 1.85 ms / 1.64 MiB vs GraalVM
+   3.05 ms / **12.25 MiB**. This is counterintuitive (GraalVM native-image is often assumed the gold standard),
+   but for a lean, fast-starting CLI, **SN is the better native target.** GraalVM native-image's real advantage
+   is *keeping JVM-ecosystem Java deps* (which SN cannot use), not being leanest or fastest to start. So the
+   target choice is not "native vs JVM" but a three-way: JVM (deps + throughput, slow start) / SN (leanest
+   start, no Java deps) / GraalVM native-image (fast-ish start + keeps Java deps, but fat). Feeds the new
+   `scala-platform` skill.
 
 ## Design conclusion (empirical, replaces the asserted version in SM105)
 **Keep `approval-wake` as the 3-line bash.** Not because bash is fast — it is 2× slower than C — but because

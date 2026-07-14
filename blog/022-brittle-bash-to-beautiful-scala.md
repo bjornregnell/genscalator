@@ -82,6 +82,16 @@ undefined behaviour, manual everything) is real. The genuine variable is safety 
 a red herring wherever it lands below the true bottleneck. Same lesson as the bash-to-Scala rewrite, one axis
 over: reach for the lean, brittle tool only where its leanness actually shows up in the answer.
 
+**One question over.** The same benchmark, extended, answers something bigger than "which launcher": *how do
+you run any Scala tool fast?* Put a no-op on the plain JVM and startup jumps to about **130 ms**, the tax every
+JVM-based command-line tool pays on every single call (and our toolbox tools pay roughly 500 ms, because the
+runner adds its own layer on top). Two native routes erase it: Scala Native at about **1.9 ms** and GraalVM
+native-image at about **3 ms**. And a genuine surprise: Scala Native beats GraalVM native-image on *both*
+startup and binary size (1.64 MiB versus 12.25 MiB), even though GraalVM native-image is usually assumed the
+gold standard. That target-selection thread (JVM versus Scala Native versus GraalVM) is its own companion post, *The startup
+cliff* (025), and it is exactly where the millisecond *does* start to matter: a tool invoked a thousand times
+pays its startup a thousand times.
+
 ## [figure: bar chart of the five median startup times (C, bash, SN x3) with the seconds-scale audio-wake latency drawn to scale beside them, so the ~1 ms launcher spread visibly vanishes]
 
 ## [figure: the before / after, the brittle bash one-liner beside the Scala `destroyForcibly` call]
