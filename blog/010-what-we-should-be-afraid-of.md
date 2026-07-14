@@ -6,6 +6,7 @@
 > **Audience:** anyone who has asked, or been asked, "is AI dangerous?" — students, journalists, friends at parties,
 > the person next to you on the train; also developers and policy-minded readers.
 > Sources: TODO (see the in-text markers).
+> **See also:** the personal-scale sibling, [the injection window](024-the-injection-window.md), the AI danger at your own desk when you cannot review what an agent produced. (Link direction to be decided at publishing-strategy time; kept both ways for now so we do not forget it.)
 
 I am a software engineering professor and, now and then, and increasingly often, I get variations of the question
 "Is AI dangerous?" — from my software engineering students, from friends at parties, from journalists who want to pin
