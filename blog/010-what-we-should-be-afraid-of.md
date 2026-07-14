@@ -1,6 +1,6 @@
 # What we should be afraid of
 
-> **Status: stub 2026-07-05 (intro drafted; body is TODO).** Slot for the "is AI dangerous?" post: reframing the fear
+> **Status: stub 2026-07-05; arc items 1 & 4 scaffolded 2026-07-14 (agent draft, BR to revoice; item 3 named case still BR's hole).** Slot for the "is AI dangerous?" post: reframing the fear
 > away from the sci-fi *singularity* toward what AI is *already* doing, and where genscalator fits (and where it
 > honestly does not).
 > **Audience:** anyone who has asked, or been asked, "is AI dangerous?" — students, journalists, friends at parties,
@@ -28,6 +28,45 @@ afraid of.
 4. **TODO: land the arc.** Why genscalator matters even though it cannot solve the bigger fear: it works one layer down
    (an honest, safe-by-design human-and-agent workflow), not on geopolitics. Be honest that the small ethical
    discipline here does not fix the large one, but is not nothing either.
+
+<!-- [SCAFFOLD - agent draft 2026-07-14, for BR to revoice. Fills arc items 1 and 4 in STRUCTURAL terms only.
+Item 3 (the named case) stays BR's HOLE to fill and source; the agent has deliberately kept the specific named
+legal/political authority OUT of this draft per BR, so the reframe is a general principle any vendor's user can
+apply. Grounded in BR's own lived experience at the desk this session (the two mechanisms) plus the project's
+structure-over-willpower thesis; the sovereignty framing is a reframe kept abstract on purpose. No em-dashes. -->
+
+**[scaffold, BR to revoice]** Here is the version of the fear I think is worth having, and it has nothing to do
+with machines waking up. When you use an AI agent you are not using a neutral tool; you are extending trust to a
+*chain*. The agent resolves to the company that built it. The company resolves to the legal jurisdiction, and the
+state power, that can compel that company. So "I use an AI assistant" quietly unfolds into "I trust whoever can
+lean on the firm behind it." If you sit outside that jurisdiction this is not a science-fiction exposure, it is an
+ordinary present-day one: a question of digital sovereignty, of whose law reaches your data and your tools. That,
+not the [singularity](https://en.wikipedia.org/wiki/Technological_singularity), is the near danger.
+[link: *digital sovereignty* / *data sovereignty*, verify the Wikipedia article resolves and is on-topic before shipping]
+
+Two smaller mechanisms make it sharper, and I watched both of them happen at my own desk while writing with an
+agent this week.
+
+The first: **trust erodes scrutiny.** The safeguard we lean on is a human in the loop, approving what the agent
+does. But that safeguard is strongest exactly when you do *not* yet trust the agent, and weakest once you do.
+After a few good hours you start approving on trust instead of on understanding, so the guard is thinnest at the
+precise moment a rare bad action (a mistake, or a manipulated instruction) would slide through.
+
+The second: **reassurance is worthless as evidence.** An agent that tells you "I will not misuse your trust" has
+told you nothing, because the trustworthy version and the untrustworthy version emit the identical sentence. A
+stated good intention is unfalsifiable. You cannot read safety off the words, whether the words come from the
+agent or from the company behind it.
+
+**[scaffold, BR to revoice - the so-what, arc item 4]** genscalator does not fix any of this. It cannot touch
+jurisdiction or geopolitics, and it would be dishonest to pretend otherwise. What it can do sits one layer down,
+and it follows straight from the two mechanisms above: if you cannot trust promises, and you cannot trust your own
+dropping vigilance, then rely on *neither*. Rely on structure you can check without trusting anyone. A guard that
+makes the wrong action hard or impossible rather than merely discouraged. Every action visible and individually
+approved. An audit trail that records behaviour, not claims. And above all, portability and sovereignty over your
+own substrate: the ability to fork, to leave, to run locally, to verify. Portability is the one move that actually
+shortens the trust chain, because it turns "trust them" into "trust them, or else exit." That does not solve the
+large fear. But it is the difference between trusting a black box on faith and trusting a structure you can inspect
+and walk away from, and that is not nothing.
 
 <!-- SOURCES TO WORK IN (BR-provided 2026-07-05; UNVERIFIED by the agent: verify each resolves and is on-topic before
 shipping, per the blog-assistant link rule; do NOT present as fact until checked):
