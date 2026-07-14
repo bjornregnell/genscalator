@@ -53,7 +53,52 @@ That is the crux. The added robustness made the script safer AND less reviewable
 
 Which is why the rewrite mattered beyond taste. Scala is a language the author reads, so the same robustness, moved into Scala, became *verifiable* by him again: a typed call he can follow, a compile that either passes or does not. The medium decided whether the owner verifies or trusts. Bulky bash he does not know forces trust; typed Scala he does know restores verification. So the design rule is not "keep it simple" (he wanted the safety), it is "keep it reviewable BY THE OWNER", and if added robustness outruns their literacy in one medium, move it to a medium they can read rather than pile more into one they cannot.
 
+## "But isn't the fast one better?" We measured
+
+**[scaffold, BR to revoice; grounded in `research/wr-data/approval-wake-launcher-startup-bench-2026-07-14.md`.]**
+The natural objection to "rewrite it in Scala" is speed: bash is interpreted, so surely a compiled language wins,
+and for a latency-critical hook we should reach for C, or for Scala Native compiled straight to a binary via
+LLVM. BR raised exactly this about the approval-wake notifier: "bash is still interpreted so C should be faster,
+no? and Scala Native compiled to a binary with LLVM would be almost as lean and mean." So instead of arguing, we ran a
+quick **prestudy**: no-op launchers in bash, C, and Scala Native (in several garbage-collector and optimization
+configurations), 300 timed startups each. A no-op wall-clock benchmark, enough to settle the launcher question,
+not a rigorous profiling study (see Future Work).
+
+The medians: **C 0.77 ms, bash 1.69 ms, Scala Native 1.7 to 1.9 ms.** So:
+- C is genuinely fastest, about 2x bash. But the whole spread is roughly **one millisecond.**
+- Scala Native never beats bash-tier and never approaches C. It has a fixed floor from its runtime init (about
+  1.7 ms, and a 1.64 MiB binary for a program that does nothing), and neither turning the garbage collector off
+  nor switching optimization mode moves it much. "Lean and mean" turns out to be about *compute*, not *startup*.
+- The bottleneck this hook actually fights, the audio subsystem waking up, is measured in **seconds.** The
+  launcher language sits three to four orders of magnitude below it. The millisecond C saves is invisible.
+
+BR's summary, arrived at live as the numbers landed:
+
+> "we can never beat C ... C is brittle ... Scala is good"
+
+That is the fit-to-task rule in three lines. You cannot beat C on raw startup, and here you never need to,
+because the speed you would win is *unspendable* while the brittleness you would inherit (memory-unsafety,
+undefined behaviour, manual everything) is real. The genuine variable is safety versus brittleness; raw speed is
+a red herring wherever it lands below the true bottleneck. Same lesson as the bash-to-Scala rewrite, one axis
+over: reach for the lean, brittle tool only where its leanness actually shows up in the answer.
+
+## [figure: bar chart of the five median startup times (C, bash, SN x3) with the seconds-scale audio-wake latency drawn to scale beside them, so the ~1 ms launcher spread visibly vanishes]
+
 ## [figure: the before / after, the brittle bash one-liner beside the Scala `destroyForcibly` call]
+
+## Future Work
+
+**[scaffold, BR to revoice.]** The performance beat above is a *prestudy* on a no-op, and it earned its keep
+cheaply, but a rigorous version is deliberately out of scope for this post:
+- **Profile, do not infer.** Flamegraphs and `perf`/`strace` of the startup path would attribute Scala
+  Native's fixed floor to specific init cost, instead of reasoning it from the gap to C.
+- **Benchmark the real job, not an empty `main`.** A launcher that actually resolves a device and plays a
+  sound is the fair test of "lean and mean"; a no-op flatters no one.
+- **The real latency lever.** Linking libcanberra in-process (C, or Scala Native FFI) to kill the
+  `canberra-gtk-play` fork+exec is the only thing that could move *wake* latency. But the screen-lock /
+  PulseAudio sink-resume cost should be measured first; if that dominates, the launcher is moot.
+- **Honest aside:** the prestudy already burned three native-compile runs to compare a program that does
+  nothing. The thorough study is a bigger ordeal, which is exactly why it is future work and not this post.
 
 ## Further Reading
 

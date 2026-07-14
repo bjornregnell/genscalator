@@ -823,3 +823,44 @@ desktop toast + `canberra-gtk-play` fired **noticeably before** the visual appro
 - **Threads:** [[bing-bing-naming-and-good-mood-2026-07-13]], the empty-matcher wiring (this session), the ~2s
   canberra latency (SM098 → the pre-warm idea in SM105's `approval-wake` draft — this observation says the *decision*
   timestamp, not the render, is the true deadline the pre-warm races against).
+
+### Addendum — the lag is VARIABLE and hit ~30s under agent CPU load (2026-07-14, BR)
+Same session, minutes later: BR reports the bing-bing lag was "like 30s now" — an order of magnitude worse than
+the ~2s baseline.
+
+**Leading hypothesis (BR, live): GNOME screen lock.** BR: "when I unlocked I saw the guard-stall and THEN 30s
+later the bing; the only difference from prev I can think of is the screen lock." The discriminating detail: the
+**visual modal was already rendered on unlock — only the AUDIO lagged ~30s.** That points squarely at the audio
+path being stalled by the locked / just-unlocked session, not at a launcher or a general slowdown (which would
+also delay, or not spare, the already-painted modal). Plausible mechanism: on lock GNOME lets PulseAudio
+**suspend the sink** (suspend-on-idle); the first `canberra-gtk-play` after unlock must **resume a cold sink**,
+and/or the notification daemon **holds events behind the lock/DND queue** and flushes them post-unlock with a lag.
+This is the more parsimonious theory (one controlled difference: the lock) and it **still confirms the core
+point** — the delay is in the audio subsystem, so a C / ScalaNative launcher rewrite cannot fix it.
+
+**Secondary hypothesis (agent, weaker): CPU contention.** Right then the agent was also running a `scala-cli`
+whole-`tools` compile (CPU-heavy, cold compiler), which could starve the `canberra-gtk-play` / `notify-send`
+subprocesses. If it *were* the cause it would be a genuinely bad **coupling**: the notifier fires precisely when
+the agent needs the human (an approval blocking its build/test loop), and that blocked-on-compile moment is when
+the agent's CPU load is highest — the wake signal slowest exactly when it matters most. But BR's controlled
+observation (only the lock changed; only audio lagged) makes lock-state the better bet.
+
+**Discriminating test (cheap, three conditions):** fire a bing (a) screen unlocked + box idle → expect ~2s
+baseline; (b) screen locked, then unlock → does the ~30s reappear? (isolates lock/sink-resume); (c) unlocked but
+mid-heavy-compile → does lag grow? (isolates contention). One run each cleanly separates the two theories.
+
+**First corroborating datapoint (2026-07-14, BR):** with the screen **unlocked** (and the box under light
+agent load), a subsequent bing lagged only **~4s** — near the ~2s baseline, an order of magnitude below the
+locked ~30s. That is condition (a) landing exactly where the lock theory predicts, and it fails to reproduce
+under mere light load — early evidence *for* lock/sink-resume and *against* generic CPU contention. Not yet the
+controlled (b)/(c) runs, but it moves the lock theory from plausible to leading. The audio-leads-
+the-modal head-start (above) is what's keeping this usable at all; without it a 30s-lagged post-modal beep would
+be near useless.
+- **Design implications for SM105's `approval-wake`:** (a) keep it **dirt cheap and non-blocking** — no JVM/
+  scala-cli in the hot path (this is the concrete reason approval-wake stays bash, not `.sc`, per SM105); (b)
+  consider **pre-warming** the audio (a tiny silent play at session start to page in canberra + the sound cache)
+  so the first real bing isn't a cold-start; (c) `notify-send && canberra` chains the toast *before* the sound —
+  if `notify-send` blocks under load the sound waits behind it; running them **independently** (or sound first)
+  removes that serialization; (d) the deeper fix is upstream: the wake path should not compete with the agent's
+  own worker for CPU. Needs one more clean measurement (bing with the box idle vs mid-compile) to confirm
+  contention as the cause vs a canberra cold-cache — logged as a hypothesis, not yet a confirmed mechanism.
