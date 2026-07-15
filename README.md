@@ -123,13 +123,13 @@ number of dangerous operations that need human approval at all.
 See [`docs/foundations.md`](docs/foundations.md) for the full goals, stakeholders (human / agent / Black
 Hat Hacker threat model), and glossary.
 
-### 3.1 Why workflows, why not just typed tools?
+### 3.2 Why workflows, why not just typed tools?
 
-In the genscalator research project we have discovered (perhaps plausible when you think of it) that an escalatioon of the joint human-agent productivity in agentic software enginering relies on *mutaual awarnes* of each others state-of-mind plus a set of workflow "atoms", in genscalator called "cues "and "dances". Their aim is help to make communiction efficinet and unambiguous. Dances serves as micro-workflows that can be composed into biger macro-workflows for each unique human-agent pair to create and build-on.
+In the genscalator research project we have discovered (perhaps plausible when you think of it) that an escalation of the joint human-agent productivity in agentic software engineering relies on *mutual awareness* of each other's state-of-mind plus a set of workflow "atoms", in genscalator called "cues" and "dances". Their aim is to help make communication efficient and unambiguous. Dances serve as micro-workflows that can be composed into bigger macro-workflows for each unique human-agent pair to create and build on.
 
-> Workflows are **opt-in**: You dicide when to adopt available cues and dances and how to compose them. Genscalator makes them available to agents in their hot context and to the fingertips the human at the keyboard. 
+> Workflows are **opt-in**: you decide when to adopt available cues and dances and how to compose them. Genscalator makes them available to agents in their hot context and to the fingertips of the human at the keyboard. 
 
-### 3.1 The bigger picture
+### 3.3 The bigger picture
 
 Genscalator is also a research project into agentic software engineering workflow productivity. The invention of typed tools is supported by a dog-fooding action research approach where genscalator is used in meta-level experiments and case studies on human-agent workflows. Emerging research questions and findings are reported in [`blog/`](https://bjornregnell.se/blog) and research studies are brainstormed, designed and executed in [`research/`](research/), as we go, supported by the genscalator typed tools and joint human-agent workflow under development.     
 
@@ -150,7 +150,7 @@ playbooks the agent invokes by name, or by matching what you ask for:
 | `scala-style` | the common Scala style (braces vs braceless — the Odersky/Regnell/Kerr recommendation) |
 | `scala-code-review` | review Scala code for correctness, style, and safety |
 | `reqt-lang` | write requirements in reqT-lang (the markdown subset this repo's [`PRD.md`](PRD.md) is written in) |
-| `crud-web-app-seed` | seed a complete, runnable Scala web app (JDK server + Scala.js/Laminar client) into a directory you choose — see *Getting started* above |
+| `crud-web-app-seed` | seed a complete, runnable Scala web app (JDK server + Scala.js/Laminar client) into a directory you choose — see *Getting started* below |
 
 The plugin also ships the operating contract [`AGENTS.md`](AGENTS.md) — the shared human-agent **conventions** (tool
 selection, shorthand, workflow "dances", safe-by-design allowlist habit, etc.) that the agent reads as its
