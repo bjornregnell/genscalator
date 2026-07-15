@@ -1145,7 +1145,7 @@ class CliSuite extends munit.FunSuite:
     val (code, out, _) = run("statusline", json, "--now-ms", now.toString)
     assertEquals(code, 0)
     assert(clue(out).contains("genscalator:")) // brand prefix
-    assert(clue(out).contains("O4.8")) // model label abbreviated: Opus 4.8 -> O4.8
+    assert(clue(out).contains("o4.8")) // model label compacted: Opus 4.8 -> o4.8 (lower-case o, no ctx here)
     assert(clue(out).contains("cost: $12")) // whole dollars, no cents (12.34 -> 12)
     assert(!clue(out).contains("cost: $12.34")) // cents dropped
     assert(clue(out).contains("ctx-fill: 41%"))
@@ -1228,7 +1228,60 @@ class CliSuite extends munit.FunSuite:
   test("statusline: prepends a HH:MM:SS wall clock, and abbreviates the model label") {
     val (_, out, _) = run("statusline", """{"model":{"display_name":"Fable 5 (1M context)"}}""", "--now-ms", "1000000000000")
     assert("""\d\d:\d\d:\d\d""".r.findFirstIn(out).isDefined, clue(out)) // a HH:MM:SS clock is present
-    assert(clue(out).contains("F5 (1M ctx)")) // Fable 5 (1M context) -> F5 (1M ctx)
+    assert(clue(out).contains("f5/1M")) // Fable 5 (1M context) -> f5/1M (compact SM117 form)
+  }
+
+  // --- SM117 status-line gauges: pure helpers + transcript parsing + tok/tired? segments ---
+  test("statusline SM117 pure helpers: shortModel / formatTokens / tokGauge") {
+    import StatuslineTool.*
+    assertEquals(shortModel("Opus 4.8 (1M context)"), "o4.8/1M")
+    assertEquals(shortModel("Fable 5"), "f5")
+    assertEquals(shortModel("Sonnet 5"), "s5")
+    assertEquals(shortModel("Haiku 4.5"), "h4.5")
+    assertEquals(formatTokens(5008654L), "5.0M")
+    assertEquals(formatTokens(178118L), "178k")
+    assertEquals(formatTokens(950L), "950")
+    assertEquals(formatTokens(1_000_000L), "1.0M")
+    assertEquals(tokGauge(1_000_000L, 3_000_000L, 6_000_000L), "38;5;42")  // green base
+    assertEquals(tokGauge(4_000_000L, 3_000_000L, 6_000_000L), "38;5;214") // orange past warn
+    assertEquals(tokGauge(7_000_000L, 3_000_000L, 6_000_000L), Red)        // red past danger
+  }
+
+  test("statusline SM117 TranscriptStats.of: sums output_tokens (excl sidechain), human string-content chars") {
+    val lines = List(
+      """{"type":"assistant","isSidechain":false,"message":{"usage":{"output_tokens":100}}}""",
+      """{"type":"assistant","isSidechain":true,"message":{"usage":{"output_tokens":50}}}""",  // sidechain: excluded
+      """{"type":"user","message":{"role":"user","content":"hello"}}""",                        // 5 human chars
+      """{"type":"user","message":{"role":"user","content":[{"type":"tool_result","content":"x"}]}}""", // tool result: excluded
+      """{bad json""",                                                                          // skipped
+      """{"type":"system","message":{}}"""
+    )
+    val s = StatuslineTool.TranscriptStats.of(lines)
+    assertEquals(s.agentTokens, 100L) // 50 sidechain excluded
+    assertEquals(s.humanChars, 5L)    // "hello"; the array-content (tool-result) user excluded
+  }
+
+  test("statusline SM117: tok segment appears when transcript_path is present") {
+    val tmp = java.nio.file.Files.createTempFile("tt-transcript", ".jsonl")
+    java.nio.file.Files.writeString(tmp,
+      """{"type":"assistant","isSidechain":false,"message":{"usage":{"output_tokens":1500000}}}""" + "\n")
+    val json = s"""{"context_window":{"used_percentage":20},"transcript_path":"${tmp.toString}"}"""
+    val (code, out, _) = run("statusline", json, "--now-ms", "1000000000000")
+    assertEquals(code, 0)
+    assert(clue(out).contains("tok: 1.5M"))
+    java.nio.file.Files.deleteIfExists(tmp)
+  }
+
+  test("statusline SM117: tired? nudge is OPT-IN (off by default, on past --tired-chars)") {
+    val tmp = java.nio.file.Files.createTempFile("tt-transcript2", ".jsonl")
+    java.nio.file.Files.writeString(tmp,
+      """{"type":"user","message":{"content":"aaaaaaaaaa"}}""" + "\n") // 10 human chars
+    val json = s"""{"transcript_path":"${tmp.toString}"}"""
+    val (_, off, _) = run("statusline", json, "--now-ms", "1000000000000")
+    assert(!clue(off).contains("tired?")) // off without a threshold
+    val (_, on, _) = run("statusline", json, "--now-ms", "1000000000000", "--tired-chars", "5")
+    assert(clue(on).contains("tired?")) // 10 >= 5 -> gentle nudge
+    java.nio.file.Files.deleteIfExists(tmp)
   }
 
   // --- --help across tools (elaborate, human-friendly per-tool help; 2026-07-13) ---

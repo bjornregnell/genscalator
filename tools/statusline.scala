@@ -51,19 +51,62 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     else if p >= 0.8 * ctxWarn then "38;5;214"    // compact-dance trigger: orange
     else "38;5;114"                               // healthy green
 
+  /** Compact human-readable token count (SM117): 5008654 -> "5.0M", 178118 -> "178k", 950 -> "950". PURE. */
+  def formatTokens(n: Long): String =
+    if n >= 1_000_000 then f"${n / 1e6}%.1fM"
+    else if n >= 1_000 then s"${n / 1000}k"
+    else n.toString
+  /** Colour for the cumulative-token rot gauge: green base, orange past `warn`, red past `danger`. The agent's
+    * processing-volume rot signal (tokens, not #msg or wall-clock). Thresholds are GUESSES, configurable. PURE. */
+  def tokGauge(t: Long, warn: Long, danger: Long): String =
+    if t >= danger then Red else if t >= warn then "38;5;214" else "38;5;42"
+
+  /** Cumulative session stats parsed from the Claude Code transcript JSONL (SM117). PURE + guarded: a line that
+    * fails to parse or lacks the expected shape is skipped, never throws. Field paths verified against a live
+    * transcript 2026-07-15 (see research note / probe):
+    *   agentTokens = sum of assistant `message.usage.output_tokens`, EXCLUDING sub-agent sidechains
+    *                 (`isSidechain:true`) so the gauge reflects THIS conversation's processing volume.
+    *   humanChars  = sum of the LENGTH of user `message.content` when it is a plain STRING — a genuine typed
+    *                 prompt; tool-result user records carry an array and are (correctly) excluded. */
+  object TranscriptStats:
+    def of(lines: IterableOnce[String]): (agentTokens: Long, humanChars: Long) =
+      var tok = 0L
+      var chars = 0L
+      lines.iterator.foreach: line =>
+        try
+          val o = ujson.read(line).obj
+          o.get("type").flatMap(_.strOpt) match
+            case Some("assistant") if !o.get("isSidechain").flatMap(_.boolOpt).getOrElse(false) =>
+              o.get("message").flatMap(_.objOpt).flatMap(_.get("usage")).flatMap(_.objOpt)
+                .flatMap(_.get("output_tokens")).flatMap(_.numOpt).foreach(n => tok += n.toLong)
+            case Some("user") =>
+              o.get("message").flatMap(_.objOpt).flatMap(_.get("content")).flatMap(_.strOpt)
+                .foreach(s => chars += s.length)
+            case _ =>
+        catch case _: Throwable => () // skip unparseable / unexpected lines — never crash the prompt
+      (tok, chars)
+
   /** Local wall-clock HH:MM:SS from an epoch-ms (from --now-ms in tests, else System.currentTimeMillis). PURE. */
   def clock(nowMs: Long): String =
     java.time.Instant.ofEpochMilli(nowMs).atZone(java.time.ZoneId.systemDefault())
       .toLocalTime.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"))
 
-  /** Abbreviate the model label: "Opus 4.8 (1M context)" -> "O4.8 (1M ctx)"; "Fable 5" -> "F5"; etc. PURE. */
+  /** Compact model tag (SM117): "Opus 4.8 (1M context)" -> "o4.8/1M"; "Fable 5" -> "f5"; "Sonnet 5" -> "s5";
+    * "Haiku 4.5" -> "h4.5". The family initial is LOWER-CASE so "o" does not read as a zero (BR). The context
+    * window (e.g. "1M") becomes a "/1M" suffix; absent → just the letter+version. Falls back to the first char
+    * for an unrecognised family (e.g. a bare model id). PURE. */
   def shortModel(name: String): String =
-    name
-      .replaceFirst("^Opus ",   "O")
-      .replaceFirst("^Sonnet ", "S")
-      .replaceFirst("^Fable ",  "F")
-      .replaceFirst("^Haiku ",  "H")
-      .replace("context", "ctx")
+    val fam = name.toLowerCase
+    val letter =
+      if      fam.contains("opus")   then "o"
+      else if fam.contains("sonnet") then "s"
+      else if fam.contains("fable")  then "f"
+      else if fam.contains("haiku")  then "h"
+      else name.trim.headOption.map(_.toLower.toString).getOrElse("?")
+    val ver = raw"(\d+(?:\.\d+)?)".r.findFirstIn(name).getOrElse("")
+    val ctx = raw"\((\d+[MmKk])\b".r.findFirstMatchIn(name).map(_.group(1).toUpperCase)
+    if ver.isEmpty then name.trim // no version to compact (e.g. a bare id like "haiku") — keep it recognisable
+    else ctx.map(c => s"$letter$ver/$c").getOrElse(s"$letter$ver")
 
   /** Relative "time until reset" from an epoch that may be in SECONDS or MILLISECONDS (auto-detected). PURE. */
   def relReset(resetsAt: Long, nowMs: Long): String =
@@ -88,7 +131,9 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       if h <= 0 then s"${m}m" else s"${h}h${m}m"
 
   /** PURE: statusLine JSON + current time → the one-line status ("" if nothing usable / not JSON). */
-  def render(json: String, nowMs: Long, warn: Double = 80, ctxWarn: Double = 30, dumbZone: Double = 75, autoCompact: Double = 92): String =
+  def render(json: String, nowMs: Long, warn: Double = 80, ctxWarn: Double = 30, dumbZone: Double = 75, autoCompact: Double = 92,
+             tokens: Option[Long] = None, humanChars: Option[Long] = None,
+             tokWarn: Long = 3_000_000L, tokDanger: Long = 6_000_000L, tiredChars: Option[Long] = None): String =
     val o = try ujson.read(json).obj catch case _: Throwable => return ""
     val segs = scala.collection.mutable.ArrayBuffer[String]()
     segs += sgr("1;38;5;42", "genscalator:") // brand prefix (BR: prepend "genscalator:")
@@ -98,6 +143,8 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     o.get("context_window").flatMap(_.objOpt).flatMap(_.get("used_percentage")).flatMap(_.numOpt)
       .foreach(p => segs += sgr(ctxGauge(p, ctxWarn, dumbZone, autoCompact),
         s"ctx-fill: ${pct(p)}${if p >= autoCompact then " auto-compact!" else if p >= dumbZone then " dumb-zone" else ""}")) // escalates green->orange->red(Z)->dumb-zone(D)->auto-compact(A)
+    // cumulative agent-token rot gauge (SM117): the reliable processing-volume signal, DISPLAYED
+    tokens.foreach(t => segs += sgr(tokGauge(t, tokWarn, tokDanger), s"tok: ${formatTokens(t)}"))
     val rl = o.get("rate_limits").flatMap(_.objOpt)
     rl.flatMap(_.get("five_hour")).flatMap(_.objOpt).foreach: h5 =>
       val usedP  = h5.get("used_percentage").flatMap(_.numOpt)
@@ -122,6 +169,13 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     // cost LAST (least interesting on a fixed monthly plan) + blue, un-graded (no threshold meaning here)
     o.get("cost").flatMap(_.objOpt).flatMap(_.get("total_cost_usd")).flatMap(_.numOpt)
       .foreach(c => segs += sgr("38;5;39", s"cost: $$${c.toLong}")) // whole dollars, TRUNCATED (cents are noise on a fixed monthly plan; saves horiz space; never overstates)
+    // human-fatigue NUDGE (SM117): the human's char-count is an INTERNAL gauge (showing the raw number can itself
+    // stress — BR); only a gentle `tired?` surfaces, and ONLY when a threshold is explicitly set (opt-in, default
+    // off). Calm lavender, NEVER red — a nudge, not an alarm. The `?` marks it INFERRED (the agent cannot know the
+    // human is tired). NB this display does NOT engage any mode — auto-mode-engagement is JOINT co-design (SM116/SM118).
+    (humanChars, tiredChars) match
+      case (Some(c), Some(thr)) if c >= thr => segs += sgr("38;5;147", "tired?")
+      case _                                =>
     segs.mkString(sep)
 
   // ---------- mode line (v0.10.0): a second line labelling the joint state-of-mind ----------
@@ -207,6 +261,10 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     var modeLine  = false // --mode-line: also emit the mode line (line 2)
     var noStatus  = false // --no-status: suppress line 1 (e.g. to show ONLY the mode line)
     var modesFile = defaultModesFile
+    var tokWarn    = 3_000_000L // token rot-gauge orange threshold (GUESS, configurable via --tok-warn)
+    var tokDanger  = 6_000_000L // token rot-gauge red threshold (GUESS, configurable via --tok-danger)
+    var tiredChars: Option[Long] = None // human-char `tired?` nudge threshold; None = OFF (opt-in via --tired-chars)
+    var noTok      = false // --no-tok: skip the transcript read entirely (no tok gauge)
     val pos = scala.collection.mutable.ArrayBuffer[String]()
     val a = args.toVector
     var i = 0
@@ -218,12 +276,34 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
         case "--dumb-zone"    if i + 1 < a.length => dumbZone    = a(i + 1).toDoubleOption.getOrElse(dumbZone); i += 2
         case "--auto-compact" if i + 1 < a.length => autoCompact = a(i + 1).toDoubleOption.getOrElse(autoCompact); i += 2
         case "--modes-file" if i + 1 < a.length => modesFile = java.nio.file.Path.of(a(i + 1)); i += 2
+        case "--tok-warn"    if i + 1 < a.length => tokWarn    = a(i + 1).toLongOption.getOrElse(tokWarn); i += 2
+        case "--tok-danger"  if i + 1 < a.length => tokDanger  = a(i + 1).toLongOption.getOrElse(tokDanger); i += 2
+        case "--tired-chars" if i + 1 < a.length => tiredChars = a(i + 1).toLongOption; i += 2
+        case "--no-tok"                         => noTok     = true; i += 1
         case "--mode-line"                      => modeLine  = true; i += 1
         case "--no-status"                      => noStatus  = true; i += 1
         case other                              => pos += other; i += 1
     val json = pos.headOption.getOrElse(scala.io.Source.stdin.mkString)
+    // Transcript-derived cumulative stats (SM117): the statusline JSON carries `transcript_path`; parse the JSONL
+    // for the agent-token rot gauge (+ the internal human-char fatigue gauge feeding `tired?`). Fully guarded — any
+    // failure yields no gauge, never a broken prompt. Reads the transcript on EACH render; --no-tok opts out.
+    // PERF: on a large transcript this file read/parse is the tool's dominant cost — a cache/incremental read and
+    // the SM112 native build are the follow-ups; --no-tok is the escape hatch meanwhile.
+    val stats: Option[(agentTokens: Long, humanChars: Long)] =
+      if noTok then None
+      else
+        try
+          ujson.read(json).obj.get("transcript_path").flatMap(_.strOpt)
+            .map(java.nio.file.Path.of(_))
+            .filter(java.nio.file.Files.isRegularFile(_))
+            .map: p =>
+              val src = scala.io.Source.fromFile(p.toFile, "UTF-8")
+              try TranscriptStats.of(src.getLines()) finally src.close()
+        catch case _: Throwable => None
     // Each println is a SEPARATE status row (Claude Code renders multi-line statuslines).
-    if !noStatus then println(render(json, nowMs, warn, ctxWarn, dumbZone, autoCompact))
+    if !noStatus then println(render(json, nowMs, warn, ctxWarn, dumbZone, autoCompact,
+      tokens = stats.map(_.agentTokens), humanChars = stats.map(_.humanChars),
+      tokWarn = tokWarn, tokDanger = tokDanger, tiredChars = tiredChars))
     if modeLine then println(renderModes(readModes(modesFile)))
     0
 
