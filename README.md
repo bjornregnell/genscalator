@@ -152,7 +152,7 @@ playbooks the agent invokes by name, or by matching what you ask for:
 | Skill | What it does |
 |-------|--------------|
 | `tt-toolbox` | how to use and choose the `tt` tools — the toolbox habit |
-| `scala-style` | a genscalator-tailored and opinionated Scala style |
+| `scala-style` | a genscalator-tailored guide on Scala generation in direct, [common style](https://codeberg.org/bjornregnell/scala-common-style) |
 | `scala-code-review` | review Scala code for correctness, style, and safety |
 | `reqt-lang` | write markdown requirements in reqT-lang, meta-examples in [`PRD.md`](PRD.md) |
 | `crud-web-app-seed` | seed a complete, runnable web app into a directory you choose — see *Getting started* below |

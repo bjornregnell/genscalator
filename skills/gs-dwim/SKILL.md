@@ -209,6 +209,38 @@ question. Keep answers scannable (tables/short lists), in session, so the user s
 in flow. This skill is the agent-facing implementation; the human-facing description lives in the plugin
 welcome and in `docs/foundations.md` ([[dwim]]).
 
+## Synonym crib — accept all, teach one
+
+**The principle (SM113):** the human should never have to remember exact syntax. `docs/gs-help.txt` teaches **one
+canonical plain form** per command (the form a user learns and a lint can suggest); the DWIM layer **absorbs the
+rest**. This crib is the agent-facing companion to that file: it names the canonical form and lists phrasings that
+land on the same intent, so a *near-miss* still steers right. It is **illustrative, not exhaustive** — match by
+*meaning* (the DWIM contract above), do not treat this as a closed grammar. Entries marked ✔live were exercised in a
+real session; the rest are in the same spirit — accept anything that clearly means the same thing.
+
+| Intent | Canonical (teach this) | Accepted phrasings that steer (accept these) |
+|---|---|---|
+| add a mode | `gs mode add <label>` | `gs mode +afk`, `mode += afk` ✔live (Scala-idiom, BR's taste), `add afk mode`, `set afk`, `modes.add(solo, afk)` ✔live |
+| clear a mode | `gs mode rm <label>` | `gs mode -afk`, `mode -= afk` ✔live, `drop afk`, `clear afk`, `unset afk mode` |
+| list modes | `gs mode` | `gs modes`, `what modes are on`, `show state of mind` |
+| this help | `gs help` | bare `gs`, `gs ?`, `gs commands`, `what can gs do` |
+| tool help | `gs help tt <what>` | `gs tt help <what>`, `how do I search text` → `tt text`, `make a diagram` → `tt svg`/`ascii` |
+| run a tool | `gs tt <tool>` | `gs run <tool>`, `gs <tool>` when unambiguous |
+| status legend | `gs status` | `gs statusline`, `explain the status line`, `what does ctx-fill mean` |
+| status line on/off | `gs status line on`/`off` | `turn the status line on`, `show/hide line 1`, `gs statusline on` |
+| mode line on/off | `gs status mode on`/`off` | `show line 2`, `turn the mode line on`, `gs modeline on` |
+| seed an app | `gs new app <what> <dir>` | `gs seed app`, `gs make app`, `gs create app` ("seed" = the internal skill verb, "new" = user-facing) |
+| compact bing-bing | `gs compact notify on`/`off` | `bing-bing on`, `notify me on compact`, `chime when compaction done` |
+| re-hydrate reflexes | `gs warm` | `warm up`, `rehydrate`, `load the guard reflexes`, `wake the reflexes` |
+| update check | `gs update` | `am I up to date`, `is there a newer genscalator`, `check for updates` |
+| orient (dev) | `gs where` | `where are we`, `catch me up`, `what's the state` |
+| solo menu (dev) | `gs menu` | `safe solo menu`, `what can I run solo`, `afk menu` |
+
+**Candidate lint (future, SM113):** flag a `gs`-led phrasing that lands *near* a command but not *on* the canonical
+form, and echo back the canonical ("did you mean `gs mode add afk`?") — teaching one form while still acting. This
+is the `accept all, teach one` loop closed: DWIM does the accepting, the lint does the teaching. Keep this crib in
+sync with `docs/gs-help.txt` whenever a command or its idiomatic synonyms change.
+
 ## Running a gs command as a sub-agent job (delegation policy)
 
 Most gs commands run inline. A few are worth handing to a **sub-agent** (the Agent tool) instead. Delegate
