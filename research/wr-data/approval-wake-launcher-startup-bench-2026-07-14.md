@@ -59,7 +59,7 @@ timed with nanoTime, 3 warmups + N timed runs, prints min/median/mean/max ms. Ru
 | launcher                          | min    | median  | mean    | max     | binary size                    |
 |-----------------------------------|--------|---------|---------|---------|--------------------------------|
 | C (`noop-c`)                      | 0.647  | 0.735   | 0.764   | 1.470   | 15.8 KiB (15776 B)             |
-| **Rust** (`rustc -O`)             | 0.835  | 1.037   | 1.122   | 3.141   | 12.6 MiB unstripped (strips small) |
+| **Rust** (`rustc -O -C strip=symbols`) | 0.835 | 1.037 | 1.122 | 3.141 | **362 KiB stripped** (12.6 MiB unstripped) |
 | **Go** (`go build`)               | 0.918  | 1.040   | 1.115   | 2.073   | 1.31 MiB (1376609 B)           |
 | bash (`noop.sh`)                  | 1.445  | 1.587   | 1.693   | 2.765   | 125 B                          |
 | SN release-fast + **none GC**     | 1.579  | 1.851   | 1.947   | 4.288   | 1.64 MiB (1720328 B)           |
@@ -114,8 +114,9 @@ the *runtime's* fixed init cost does.
 
 **Go + Rust finding (added 2026-07-15, both predictions confirmed):**
 - **Rust ≈ C** (1.04 vs 0.74 ms median), so you can have near-metal startup AND memory safety — the direct
-  rebuttal to "C is brittle." (Its 12.6 MiB binary is *unstripped*; `strip` / `-C strip=symbols` cuts it to a
-  few hundred KB. Do not read it as "Rust is fat.")
+  rebuttal to "C is brittle." (Measured 2026-07-15: `-C strip=symbols` cuts its binary from 12.6 MiB to **362
+  KiB** with startup **unchanged** at ~0.9 ms — stripping removes symbols, not code. So Rust is LEAN too, leaner
+  than Go/SN/GraalVM, second only to C among the compiled targets. The unstripped 12.6 MiB was misleading.)
 - **Go starts ~C-fast (1.04 ms) DESPITE having a garbage collector, and beats Scala Native (1.83 ms) by ~1.8×**
   — even though *both* are compiled-with-GC and their binaries are a similar size (Go 1.31 MiB vs SN 1.64 MiB).
   This isolates the cause of SN's floor: it is **not** "having a GC" and **not** "being compiled-with-GC" — Go

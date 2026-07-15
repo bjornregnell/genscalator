@@ -39,7 +39,7 @@ Median startup of a no-op, on one Linux box:
 | target                     | median startup | binary size          | needs a runtime? |
 |----------------------------|----------------|----------------------|------------------|
 | C                          | ~0.74 ms       | 15.8 KiB             | no               |
-| Rust                       | ~1.04 ms       | ~12.6 MiB (unstripped) | no             |
+| Rust                       | ~1.04 ms       | 362 KiB stripped / 12.6 MiB unstripped | no |
 | Go                         | ~1.04 ms       | 1.31 MiB             | no               |
 | bash                       | ~1.59 ms       | 125 B (a script)     | bash             |
 | Scala Native (no-GC)       | ~1.85 ms       | 1.64 MiB             | no               |
@@ -79,8 +79,9 @@ the choice is not "which is faster" but "do you need the Java ecosystem":
 garbage collector*, and it beats Scala Native's ~1.8 ms by almost 2x, even though both are compiled languages
 with a GC and similarly-sized binaries (Go 1.3 MiB, Scala Native 1.6 MiB). So Scala Native's floor is not "the
 GC" and not "being a compiled GC language" (Go disproves both); it is Scala Native's *own* runtime and standard
-library bootstrap. And Rust lands right beside Go (~1 ms), giving C-class startup *with* memory safety: the
-answer to this post's "C is brittle" aside. You can have the metal without the fragility.
+library bootstrap. And Rust lands right beside Go (~1 ms) in a lean 362 KiB binary (once stripped, versus a
+misleading 12.6 MiB unstripped), giving C-class startup *with* memory safety: the answer to
+this post's "C is brittle" aside. You can have the metal without the fragility.
 
 ## The other axis: compile time
 
