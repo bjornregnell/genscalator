@@ -1,6 +1,6 @@
 //> using scala 3.8.4
 //> using jvm 21
-//> using dep com.lihaoyi::ujson:4.4.3
+//> using file minijson.scala
 
 // statusline — format the Claude Code `statusLine` stdin JSON into ONE compact line (SM039).
 // Claude Code pipes a JSON object to the configured statusLine command's stdin each turn; this reads it and prints:
@@ -74,13 +74,13 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       var chars = 0L
       lines.iterator.foreach: line =>
         try
-          val o = ujson.read(line).obj
-          o.get("type").flatMap(_.strOpt) match
-            case Some("assistant") if !o.get("isSidechain").flatMap(_.boolOpt).getOrElse(false) =>
-              o.get("message").flatMap(_.objOpt).flatMap(_.get("usage")).flatMap(_.objOpt)
-                .flatMap(_.get("output_tokens")).flatMap(_.numOpt).foreach(n => tok += n.toLong)
+          val o = MiniJson.parse(line).flatMap(_.obj).get // .get throws on malformed -> caught below -> line skipped
+          o.get("type").flatMap(_.str) match
+            case Some("assistant") if !o.get("isSidechain").flatMap(_.bool).getOrElse(false) =>
+              o.get("message").flatMap(_.obj).flatMap(_.get("usage")).flatMap(_.obj)
+                .flatMap(_.get("output_tokens")).flatMap(_.num).foreach(n => tok += n.toLong)
             case Some("user") =>
-              o.get("message").flatMap(_.objOpt).flatMap(_.get("content")).flatMap(_.strOpt)
+              o.get("message").flatMap(_.obj).flatMap(_.get("content")).flatMap(_.str)
                 .foreach(s => chars += s.length)
             case _ =>
         catch case _: Throwable => () // skip unparseable / unexpected lines — never crash the prompt
@@ -134,40 +134,42 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
   def render(json: String, nowMs: Long, warn: Double = 80, ctxWarn: Double = 30, dumbZone: Double = 75, autoCompact: Double = 92,
              tokens: Option[Long] = None, humanChars: Option[Long] = None,
              tokWarn: Long = 3_000_000L, tokDanger: Long = 6_000_000L, tiredChars: Option[Long] = None): String =
-    val o = try ujson.read(json).obj catch case _: Throwable => return ""
+    val o = MiniJson.parse(json).flatMap(_.obj) match
+      case Some(m) => m
+      case None    => return "" // nothing usable / not an object → empty line, exit 0 (never crash the prompt)
     val segs = scala.collection.mutable.ArrayBuffer[String]()
     segs += sgr("1;38;5;42", "genscalator:") // brand prefix (BR: prepend "genscalator:")
     segs += sgr("38;5;250", clock(nowMs)) // leading wall clock (light grey)
-    o.get("model").flatMap(_.objOpt).foreach: m =>
-      m.get("display_name").orElse(m.get("id")).flatMap(_.strOpt).foreach(n => segs += sgr("38;5;45", shortModel(n))) // un-bold so the bold genscalator: prefix is the only bold thing
-    o.get("context_window").flatMap(_.objOpt).flatMap(_.get("used_percentage")).flatMap(_.numOpt)
+    o.get("model").flatMap(_.obj).foreach: m =>
+      m.get("display_name").orElse(m.get("id")).flatMap(_.str).foreach(n => segs += sgr("38;5;45", shortModel(n))) // un-bold so the bold genscalator: prefix is the only bold thing
+    o.get("context_window").flatMap(_.obj).flatMap(_.get("used_percentage")).flatMap(_.num)
       .foreach(p => segs += sgr(ctxGauge(p, ctxWarn, dumbZone, autoCompact),
         s"ctx-fill: ${pct(p)}${if p >= autoCompact then " auto-compact!" else if p >= dumbZone then " dumb-zone" else ""}")) // escalates green->orange->red(Z)->dumb-zone(D)->auto-compact(A)
     // cumulative agent-token rot gauge (SM117): the reliable processing-volume signal, DISPLAYED
     tokens.foreach(t => segs += sgr(tokGauge(t, tokWarn, tokDanger), s"tok: ${formatTokens(t)}"))
-    val rl = o.get("rate_limits").flatMap(_.objOpt)
-    rl.flatMap(_.get("five_hour")).flatMap(_.objOpt).foreach: h5 =>
-      val usedP  = h5.get("used_percentage").flatMap(_.numOpt)
+    val rl = o.get("rate_limits").flatMap(_.obj)
+    rl.flatMap(_.get("five_hour")).flatMap(_.obj).foreach: h5 =>
+      val usedP  = h5.get("used_percentage").flatMap(_.num)
       val warned = usedP.exists(_ >= warn) // at/above the warn threshold: colour BOTH the % and its reset red
       val used   = usedP.map(p => sgr(limGauge(p, warn, "38;5;176"), s"5h-lim: ${pct(p)}"))
-      val reset  = h5.get("resets_at").flatMap(_.numOpt).map(r => sgr(if warned then Red else "38;5;245", s"resets: ${relResetFine(r.toLong, nowMs)}"))
+      val reset  = h5.get("resets_at").flatMap(_.num).map(r => sgr(if warned then Red else "38;5;245", s"resets: ${relResetFine(r.toLong, nowMs)}"))
       (used, reset) match
         case (Some(u), Some(r)) => segs += s"$u $r"
         case (Some(u), None)    => segs += u
         case (None, Some(r))    => segs += sgr("38;5;245", "5h-lim ") + r
         case _                  =>
-    rl.flatMap(_.get("seven_day")).flatMap(_.objOpt).foreach: w =>
-      val usedP  = w.get("used_percentage").flatMap(_.numOpt)
+    rl.flatMap(_.get("seven_day")).flatMap(_.obj).foreach: w =>
+      val usedP  = w.get("used_percentage").flatMap(_.num)
       val warned = usedP.exists(_ >= warn) // at/above the warn threshold: colour BOTH the % and its reset red
       val used   = usedP.map(p => sgr(limGauge(p, warn, "38;5;174"), s"wk-lim: ${pct(p)}")) // rosy-red base
-      val reset  = w.get("resets_at").flatMap(_.numOpt).map(r => sgr(if warned then Red else "38;5;245", s"resets: ${relReset(r.toLong, nowMs)}"))
+      val reset  = w.get("resets_at").flatMap(_.num).map(r => sgr(if warned then Red else "38;5;245", s"resets: ${relReset(r.toLong, nowMs)}"))
       (used, reset) match
         case (Some(u), Some(r)) => segs += s"$u $r"
         case (Some(u), None)    => segs += u
         case (None, Some(r))    => segs += sgr("38;5;245", "wk-lim ") + r
         case _                  =>
     // cost LAST (least interesting on a fixed monthly plan) + blue, un-graded (no threshold meaning here)
-    o.get("cost").flatMap(_.objOpt).flatMap(_.get("total_cost_usd")).flatMap(_.numOpt)
+    o.get("cost").flatMap(_.obj).flatMap(_.get("total_cost_usd")).flatMap(_.num)
       .foreach(c => segs += sgr("38;5;39", s"cost: $$${c.toLong}")) // whole dollars, TRUNCATED (cents are noise on a fixed monthly plan; saves horiz space; never overstates)
     // human-fatigue NUDGE (SM117): the human's char-count is an INTERNAL gauge (showing the raw number can itself
     // stress — BR); only a gentle `tired?` surfaces, and ONLY when a threshold is explicitly set (opt-in, default
@@ -293,7 +295,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       if noTok then None
       else
         try
-          ujson.read(json).obj.get("transcript_path").flatMap(_.strOpt)
+          MiniJson.parse(json).flatMap(_.obj).flatMap(_.get("transcript_path")).flatMap(_.str)
             .map(java.nio.file.Path.of(_))
             .filter(java.nio.file.Files.isRegularFile(_))
             .map: p =>
