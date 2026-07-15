@@ -5,6 +5,12 @@ tool for this?"* when `curl -sIL http://genscalator.ai` required approval.
 **Threads:** the PRD `ttWeb` feature ("safe read-only HTTP … replacing the dual-use curl reflex"),
 [[use-tt-grepr-not-raw-grep]] (the same typed-replacement pattern), [[never-allowlist-interpreters]].
 
+**STATUS: `--trace` IMPLEMENTED 2026-07-15.** `tt web get <url> --trace` follows redirects HEAD-only and prints
+each hop's status + Location (hop-capped at 10, stops before an off-`--host` redirect), reproducing `curl -sIL`
+— verified against curl on genscalator.ai, and it runs WITHOUT a guard-stall (allowlistable `Bash(tt web *)`).
+The `--head` (single request, headers-only, `curl -sI`) mode remains a possible future addition; `--trace` with
+one hop already covers most of it.
+
 ## The gap
 Verifying a domain redirect (genscalator.ai → bjornregnell.se/genscalator) needs the HTTP **status codes**,
 **Location headers**, and the **redirect chain** — i.e. `curl -sI` (headers only) and `curl -sIL` (follow +
