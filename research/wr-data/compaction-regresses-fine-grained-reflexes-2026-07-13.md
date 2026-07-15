@@ -80,3 +80,41 @@ full). BR flagged the second live: *"where is your real head :) regression after
   *mandatory and explicit* in the resume-prompt — a deliberate "run `gs warm`, re-read guard-clean idioms" step as
   ACTION ZERO before any tool call, since three specimens show the fresh window cannot be trusted to carry the
   fine-grained reflexes on its own.
+
+### The visibility asymmetry BR spotted (deny vs ask) — 2026-07-15
+BR, live: *"STRANGE: you talk about 3 slips but I only got ONE guard modal on the head clobbery... that's
+interesting."* The reconciliation is itself a finding. **Observed (ground truth):** the `cd … && git …` compound
+came back to the *agent* as a **flat error** (`[HIGH] && command chain` / `[HIGH] cd + compound`) with **no
+confirmation modal to BR**; the `… | head` pipe raised the **[MED] "requires confirmation" modal BR actually saw**.
+So the agent experienced ~2-3 guard interventions in the first calls, but BR saw only **one**.
+- **Likely mechanism (INFERRED, not yet verified — hook-config check deferred to BR-present, dropped mid-run for
+  AFK-safety):** the guard hook has two tiers — **HIGH → deny** (blocks the agent, returns an error, no human
+  prompt) vs **MED → ask** (surfaces a confirmation modal). If so, HIGH slips are invisible to the human by design.
+- **Why it matters (the value):** the human's **modal count UNDERCOUNTS the agent's slip count**, because the most
+  severe patterns are auto-denied silently. This bears directly on the *shared-vigilance* picture
+  ([[joint-rot-vigilance-recovery-kit]]): BR literally cannot police the HIGH slips he never sees — the deny tier is
+  a pure agent↔hook loop. Good news for safety (worst patterns hard-blocked without needing a human), but it means
+  the WR-data record, not the human's memory of modals, is the true count of post-compact regressions. **Candidate
+  (BR-present):** verify the deny/ask tiering in the guardcheck hook config, and consider whether the agent should
+  *self-report* HIGH denies to the human (else they vanish from the joint record).
+
+### Slip taxonomy — which base-model reflexes reassert post-compact (BR: "WR data on the slip categories")
+Across the three specimens (07-13 / 07-14 / 07-15), the post-compact slips are not random — they cluster into a
+small, stable set of **base-model shell idioms**, each with a known guard tier and a known correct `tt` replacement.
+Naming the categories makes the re-hydration list *targetable* (a resume-prompt / `gs warm` can drill exactly these):
+
+| # | category | observed slips | guard tier | correct genscalator idiom |
+|---|----------|----------------|------------|---------------------------|
+| A | **command chaining** | `cd repo && git …`, `a && b`, `a ; b` | HIGH → deny | ONE bare command per call; `git -C <abs>`; `tt git …` |
+| B | **output peeking** | `\| head`, `\| tail`, `\| wc` | MED → ask | the tool's own `--limit` / `--tail` / `--count` |
+| C | **stream suppression** | `2>/dev/null`, `2>&1` | MED → ask | let the tool self-report (to a file, then Read); tolerate benign stderr |
+| D | **legacy-tool reach** | raw `grep` / `find` / `ls` | (varies) | `tt text grepr` / `tt files` / `tt text match` |
+| E | **metachar-in-arg** | shell glob/redirect chars inside a regex/pattern | HIGH (guardcheck) | metachar-free patterns; anchor on plain substrings |
+
+**Reading of the taxonomy:** every category is a case of *a general-purpose Unix reflex reasserting over a
+learned narrow tool* — the same root as the tool-choice regression (grepr vs grep), generalized. A/E trip the HIGH
+(deny) tier → invisible to BR (the asymmetry above); B/C trip MED (ask) → BR sees the modal. So the categories BR
+*observes* (B/C) are a biased sample of the categories that actually *fire* (A-E) — another reason the WR-data
+record, not modal-memory, is the true tally. This session alone hit **A** (cd-chain + `&&` + `;`), **B** (`| head`),
+and **C** (`2>/dev/null` + `2>&1`) in the first ~5 calls. The taxonomy is the concrete payload for the ACTION-ZERO
+re-hydration candidate: re-surface *these five categories by name* post-compact, not a vague "be guard-clean."
