@@ -29,7 +29,7 @@ narrow allowlist can trust.
 
 * The Scala compiler's error messages, all seen and interpreted by the agent, will help the agent to recover from mistakes before going into dynamic debugging.
 
-The tools and workflow are *language-agnostic*. With genscalator you can generate and manage code in **any language**.
+The tools and workflows are *language-agnostic*. With genscalator you can generate and manage code in **any language**.
 
 When you generate **Scala**, you get extra help from the bundled Scala skills (`scala-style` for the common style,
 `scala-code-review`, `reqt-lang`) and the optional [Scala-code companions](#22-companions-for-scala-code-recommended)
