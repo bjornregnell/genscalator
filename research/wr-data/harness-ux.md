@@ -929,3 +929,32 @@ advice for BR's own hook, not a critique of Anthropic. The **cause-genericity** 
 "needs you" without naming the trigger (idle / approval / error), so better copy would label the cause — exactly the
 SM115 `notifications` enum (per-kind, cause-labelled toggles). (That sub-point was itself partly an over-inference:
 the agent first over-called the note "just a timestamp, no reason" from partial data before BR supplied the content.)
+
+### BR's confession — it was a DOUBLE confabulation, and the "keep the ball-game" rule (2026-07-15)
+BR, after the correction: *"i did actually first think that agent was right and i thought maybe this comes from the
+hooks somehow or some json blobs or something. so it is ALSO human confabulation!!! very interesting."* This
+re-shapes the specimen — it is NOT "agent confabulates, human (who knows) corrects." It is a **double confabulation**:
+- **The agent's confident claim ANCHORED the human.** BR first BELIEVED "Anthropic authored it" — the agent's
+  confident surface pulled the human into the same wrong belief. The human-mirror-of-agent-confabulation point (this
+  note, §"near-irresistible pull to anthropomorphise": *"Human-side mirror of the agent's confabulation caveat, and
+  they COMPOUND"*) went **LIVE and compounded**: agent confabulated → human accepted + reinforced → both wrong,
+  mutually.
+- **The human's challenge came from DOUBT, not KNOWLEDGE.** BR did NOT know it was his own SM088 hook; he had a
+  competing HUNCH ("maybe hooks / json blobs?"), itself an uncertain guess. Neither party knew the provenance; both
+  confabulated. This refines the "human-as-external-corrector" mechanism: **the human corrected not by knowing the
+  answer but by injecting DOUBT that triggered a check against ground truth** — human-as-DOUBT-injector, not
+  human-as-oracle.
+- **The FILE was the only non-confabulating party.** Two minds both held a wrong-but-plausible belief; the truth
+  lived only in `settings.json` — the external reference frame. Exactly the contextRotMeter-L1 principle (anchor on a
+  file that does not rot, not on beliefs): when both parties' memory/belief is unreliable, only the read source
+  adjudicates. The corrective act was "doubt → read the source", not "the human knew."
+
+**The methodological rule BR drew from it — KEEP THE BALL-GAME (2026-07-15):** *"keep all the misconceptions and their
+nuances that emerged along the way of conversation so the ball-game is not lost!"* The research value is in the
+**whole trajectory** — the wrong beliefs, the challenges, the sub-nuances, the corrections — NOT just the corrected
+endpoint. Deleting a misconception once it is fixed **loses the ball-game** (the process data that IS the study of
+confabulation / echt / joint cognition). So this note deliberately PRESERVES rather than overwrites: the original
+false "vendor-manufactured, ships to every user by default, systemic dark-pattern, blog-beat" claim and its
+elaborations (the "affective hook / retention nudge" angle, the ironic-anthro tie) are kept ABOVE as
+retracted-but-recorded specimens, with the correction layered on top. **Standing rule for all WR corrections: retract
+by ANNOTATING, never by erasing** — the wrong path and its nuances are the data.
