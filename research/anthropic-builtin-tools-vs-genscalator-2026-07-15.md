@@ -193,3 +193,13 @@ Glob/Grep. That is fine; those were never the moat.
   removal model + sovereignty is safer on the trust-critical layer. They compose.**
 - *Will more make genscalator redundant?* **Only on the layer it shouldn't defend. The moats — sovereignty,
   safe-narrow wrappers, domain tools, and the method — are orthogonal to Anthropic's roadmap.**
+
+## The durable principle (WR data, BR 2026-07-15): sovereignty of *capability*, not just data
+BR flagged the one-liner from the `tt update` work: **"we own our update-awareness because the platform won't give
+it to us."** That is this note's thesis lifted from *data* to *function*. genscalator already mirrors its repo
+across forges for **data** sovereignty; the same stance now covers **capability**: where the harness under-serves —
+no plugin-author update-check / notify API, no skill versioning or load-time staleness check, no external-dependency
+install — genscalator supplies the missing function itself, through **git + typed tools + the human as actuator**.
+Three faces of the one pattern, all shipped or pinned this session: `tt update` / `gs update` (update-awareness),
+SM112 `gs native` (provisioning), SM115 `gs` settings (configuration). The harness gives primitives; genscalator
+owns the capabilities the primitives don't cover. (Blog 026 pull-quote.)
