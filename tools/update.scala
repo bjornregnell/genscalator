@@ -26,11 +26,22 @@ object Update:
       |    /reload-plugins
       |  (Third-party marketplaces do not auto-update by default, so this is a manual step.)""".stripMargin
 
-  private def git(repo: os.Path, args: String*): (Int, String) =
+  private def git(repo: os.Path, args: String*): (Int, String) = gitTimed(repo, 120_000, args*)
+
+  private def gitTimed(repo: os.Path, timeoutMs: Long, args: String*): (Int, String) =
     Try(os.proc(("git" +: "-C" +: repo.toString +: args)).call(
-      check = false, stdout = os.Pipe, stderr = os.Pipe, timeout = 120_000)) match
+      check = false, stdout = os.Pipe, stderr = os.Pipe, timeout = timeoutMs)) match
       case scala.util.Success(res) => (res.exitCode, (res.out.text() + res.err.text()).trim)
       case scala.util.Failure(e)   => (255, e.getMessage)
+
+  // Throttle stamp: a user-level cache file holding the epoch-millis of the last completed check, so a
+  // `gs warm` call (`tt update --brief --throttle 24`) only actually fetches once per window.
+  private def stampPath: os.Path =
+    os.Path(System.getProperty("user.home")) / ".cache" / "genscalator" / "last-update-check"
+
+  private def readStamp(): Option[Long] = Try(os.read(stampPath).trim.toLong).toOption
+
+  private def writeStamp(nowMs: Long): Unit = Try(os.write.over(stampPath, nowMs.toString, createFolders = true))
 
   /** Parse `git rev-list --left-right --count HEAD...@{u}` ("<ahead>\t<behind>") into (ahead, behind).
     * Pure, so it is unit-tested; defaults to (0, 0) on any unexpected shape. */
@@ -47,9 +58,17 @@ object Update:
 
   def dispatch(args: List[String]): Unit =
     if args.contains("--help") || args.contains("-h") then { println(Help); sys.exit(0) }
-    val brief = args.contains("--brief")
-    // In --brief mode, only an actionable "you are behind" notice is printed; everything else stays silent,
-    // so `gs warm` can call this without nagging when up to date, offline, or not a git checkout.
+    // --throttle <hours>: only actually check once per window (stamp-file gated); implies --brief and a short
+    // fetch timeout, so `gs warm` gains update-awareness without ever hanging or nagging.
+    val throttleHours: Option[Double] =
+      val i = args.indexOf("--throttle")
+      if i >= 0 && i + 1 < args.size then args(i + 1).toDoubleOption else None
+    throttleHours.foreach: hours =>
+      val now = System.currentTimeMillis
+      if readStamp().exists(ts => now - ts < (hours * 3600 * 1000).toLong) then sys.exit(0) // fresh: silent skip
+      else writeStamp(now)                                                                  // stale: open a new window
+    val brief = args.contains("--brief") || throttleHours.isDefined
+    // In --brief mode, only an actionable "you are behind" notice is printed; everything else stays silent.
     def say(s: String): Unit = if !brief then println(s)
 
     val repo = resolveRepo(args).getOrElse:
@@ -67,8 +86,10 @@ object Update:
     val version = git(repo, "describe", "--tags", "--always", "--dirty")._2
     if version.nonEmpty then say(s"  installed: $version")
 
-    // Fetch remote-tracking refs (read-only; never the working tree).
-    val (fc, fout) = git(repo, "fetch", "--quiet")
+    // Fetch remote-tracking refs (read-only; never the working tree). Short timeout under --throttle so a
+    // throttled `gs warm` call never hangs on a slow network.
+    val fetchTimeout = if throttleHours.isDefined then 8_000L else 120_000L
+    val (fc, fout) = gitTimed(repo, fetchTimeout, "fetch", "--quiet")
     if fc != 0 then
       say(s"  could not fetch the remote (offline?): ${fout.take(200)}")
       say(ManualSteps)
@@ -106,10 +127,12 @@ object Update:
       |authors get no update API — so git is the mechanism and the human is the actuator.
       |
       |Usage:
-      |  tt update [--repo <dir>] [--brief]
-      |  --repo <dir>   the genscalator repo to check (default: self-locate via the tools dir)
-      |  --brief        print ONLY an actionable "newer release available" notice; silent otherwise
-      |                 (for `gs warm` to call behind a throttle, so warm gains update-awareness quietly)
+      |  tt update [--repo <dir>] [--brief] [--throttle <hours>]
+      |  --repo <dir>        the genscalator repo to check (default: self-locate via the tools dir)
+      |  --brief             print ONLY an actionable "newer release available" notice; silent otherwise
+      |  --throttle <hours>  only actually check once per <hours> window (stamp-file gated); implies --brief
+      |                      and a short fetch timeout — for `gs warm` to call so warm gains update-awareness
+      |                      without hanging or nagging
       |
       |Exit is 0 in all normal cases (an informational check). Degrades gracefully when offline, when
       |there is no upstream branch, or when genscalator is not a git checkout.""".stripMargin

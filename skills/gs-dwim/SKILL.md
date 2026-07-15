@@ -126,6 +126,12 @@ gracefully). The per-command behaviour is specified below.
   DETERMINISTIC sibling is a SessionStart hook injecting the same digest at turn zero (BR's hand — see `gs init`).
   For heavier work, follow up by Reading the full `skills/avoid-guard-stall/SKILL.md` + `skills/tt-toolbox/SKILL.md`.
   Distinct from `gs skills`, which DETECTS whether skills are active; `gs warm` LOADS the reflexes (detect vs load).
+  **Then, as a best-effort courtesy, run `tt update --brief --throttle 24`** — a throttled (once per ~day, stamp-file
+  gated) update check that is SILENT unless a newer genscalator release is available and never hangs (short fetch
+  timeout, offline swallowed). So a cold start also surfaces "a newer genscalator is available" without nagging. If
+  it prints a newer-release notice, RELAY it to the user; otherwise say nothing about the update check. (This is the
+  sovereignty-of-capability move: a third-party marketplace does not auto-update and skills carry no version-check on
+  load, so `gs warm` becomes genscalator's own update-awareness surface — see `gs update` / `tt update`.)
 - **`gs init`** — one-time PROJECT onboarding for a fresh genscalator checkout: wire the things a new project
   needs, each a SENSITIVE settings step SHOWN and human-gated (never silent, never delegated — same discipline as
   `gs allow`). Walk the user through, in order, skipping any already done (idempotent, report the skip): (1)
