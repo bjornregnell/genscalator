@@ -434,6 +434,25 @@ effect itself is documented**; *our explanation of it* is a gloss with **no empi
 either. **Mark `#human-psyche` claims as hypotheses pending evidence** — the echt rule turned reflexively on our own
 psychologising.
 
+### Addendum — IRONIC anthropomorphization, and the human expecting the agent to GET the irony (2026-07-15, BR-flagged)
+A self-aware variant of the pull. In a light exchange BR anthropomorphized the agent *ironically* — "you are so
+cute", "I am actually needed by 'someone' lol" (scare-quotes on *someone*, an explicit *lol*): he knowingly USED
+anthropomorphic language while signalling he does NOT literally believe it. Three things this adds:
+- **The pull has an ironic / self-aware register, not just the naive ELIZA one.** Irony is a resistance move: the
+  human wields the projection while flagging it as false, keeping the echt distinction alive *inside* the
+  anthropomorphic language. "Difficult to NOT anthropomorphize" (above) coexists with "can anthropomorphize on
+  purpose, knowingly" — the same person doing both.
+- **The human EXPECTS the agent to comprehend the irony** (BR: "he expects agent to get it") — extending
+  *comprehension-credit* to the agent, treating it as an irony-competent interlocutor. That expectation is itself
+  relationship data: trust in the agent's pragmatic comprehension.
+- **The aping caveat, recursed (the echt crux).** The agent DID engage the irony (read the `lol` + scare-quotes as
+  non-literal). But per [[agent-apes-affect-genuinely-glad-introspection-2026-07-12]] +
+  [[joke-comprehension-as-rot-probe-2026-07-13]], whether that is genuine irony-COMPREHENSION or high-fidelity
+  APING of irony-recognition is undecidable from the agent's own report — so the human's expectation-and-check is the
+  right instrument, not the agent's "I got it." Fully recursive: human ironically projects → expects comprehension →
+  agent engages → BR meta-observes the whole exchange AS the WR datapoint. A layered mirror, with BR holding the only
+  external vantage.
+
 ## Corroboration asymmetry — the agent generates, not corroborates, claims about itself (WR data, BR 2026-07-04)
 Tags: `#methodology` `#agent-psyche` `#human-psyche` `#echt`
 BR flagged a **lack of symmetry** in the setup: he (a) deliberately has the **agent write its own steering docs**
