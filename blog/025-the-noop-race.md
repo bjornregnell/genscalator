@@ -7,6 +7,10 @@
 > command-line tool; people who assume GraalVM native-image is always the fastest native option.
 > **[SCAFFOLD, agent-drafted, grounded in `research/wr-data/approval-wake-launcher-startup-bench-2026-07-14.md`.
 > A no-op prestudy, not a rigorous profile. BR revoices before publish.]**
+> **BR considering (2026-07-15): make this a SHORT STAND-ALONE, non-genscalator-specific post.** The
+> SN-beats-GraalVM result is general perf-dev interest; if standalone, trim the genscalator-toolbox application
+> (the `tt` JVM-startup tax) to a brief aside or a link, and let "The noop race" stand as a general Scala
+> startup piece. Fits the punchier title.
 
 ## The punchline
 
