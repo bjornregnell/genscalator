@@ -2,6 +2,8 @@
 
 **Power tools for agents: smarter, safer, faster.**
 
+TODO: add status line image
+
 ## 1. What is genscalator?
 
 Genscalator is a toolbox + workflow for coding agents that replaces the brittle
