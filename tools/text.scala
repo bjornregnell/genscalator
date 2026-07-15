@@ -31,20 +31,45 @@ private val TextHelp: String =
     |  text freq <file> <regex>             histogram of the match, or of capture group 1
     |                                       if the pattern has one       (sort|uniq -c|sort -rn)
     |  text grepr <dir> <ext[,ext2,...]> <regex> [--count]
+    |  text grepr <dir> <ext[,ext2,...]> --any <p1> <p2> ... [--count]
     |                                       recursive search -> file:line:match  (grep -r --include)
-    |                                       pass an ABSOLUTE dir; --count prints just the total
+    |                                       pass an ABSOLUTE dir; --count prints just the total.
+    |                                       --any: match a line if ANY pattern matches (OR), metachar-free
+    |                                       (no regex |); see Notes for why that avoids a guard stall.
     |  text cols <file> <sep> <i...>        extract 1-based fields, tab-joined     (cut/awk)
     |
     |Notes:
     |  Patterns are Java regex (ERE): alternation is a bare |, and ( { + ? are special unescaped.
     |  grep-BRE escapes like \| are read LITERALLY (match nothing); the tool warns when it sees one.
+    |  --any ORs several patterns WITHOUT typing a regex | : prefer it over 'TODO|FIXME', because a quoted
+    |  | (or > ; ) trips the safety guardcheck (not quote-aware) into a needless confirmation stall. It is a
+    |  typed flag: unambiguous, no metachar. (Full rationale + design in tools/README.md.)
     |
     |Examples:
     |  tt text count build.log '^! '                      # count LaTeX errors in a build log
     |  tt text freq run.log '\[fallback\] ([a-z][^,]*)'   # histogram of capture group 1
     |  tt text grepr /abs/src .scala,.java 'TODO'         # recursive TODO hunt, two extensions
+    |  tt text grepr /abs/src .scala --any TODO FIXME XXX # OR three patterns, no regex | (no guard stall)
     |
     |Full reference: tools/README.md""".stripMargin
+
+/** Pure helpers for the text tool, in an object so the co-located munit tests can call them directly
+  * (test scope extends the main scope) and so the names don't pollute the toolbox-wide top-level scope. */
+object TextTool:
+  /** grepr pattern selection from the args AFTER `<dir> <ext>`.
+    *  - `--any p1 p2 …`  -> every following pattern (matched as a logical OR): the metachar-free way to OR
+    *    patterns, so the agent never types a regex `|` (which the not-yet-quote-aware guardcheck would read
+    *    as a shell pipe and false-trip into a confirmation stall — SM114).
+    *  - otherwise         -> the first positional arg is the single `<regex>` (back-compat).
+    * `--count` is a flag, never a pattern. */
+  def selectGreprPatterns(rest: List[String]): Vector[String] =
+    val afterAny = rest.dropWhile(_ != "--any")
+    if afterAny.nonEmpty then afterAny.tail.filterNot(_ == "--count").toVector
+    else rest.filterNot(_ == "--count").take(1).toVector
+
+  /** A line matches if ANY of the patterns matches (logical OR over Java regexes). */
+  def anyMatch(pats: Vector[scala.util.matching.Regex], line: String): Boolean =
+    pats.exists(_.findFirstIn(line).isDefined)
 
 @main def text(args: String*): Unit =
   if args.contains("--help") || args.contains("-h") then { println(TextHelp); sys.exit(0) }
@@ -80,9 +105,16 @@ private val TextHelp: String =
         .toVector.groupMapReduce(identity)(_ => 1)(_ + _)
       println(Lib.histogram(counts))
 
-    case "grepr" :: dir :: ext :: pat :: rest => // grep -r: recurse <dir>, files ending <ext1[,ext2,…]>; --count = just the number
-      warnGrepBre(pat)
-      val re = pat.r; val countOnly = rest.contains("--count")
+    case "grepr" :: dir :: ext :: rest if rest.nonEmpty => // grep -r: recurse <dir>, files ending <ext1[,ext2,…]>; --count = just the number
+      val countOnly = rest.contains("--count")
+      // Patterns: a single positional <regex>, or `--any p1 p2 …` = match a line if ANY pattern matches (OR).
+      // --any is the metachar-free way to OR patterns (see TextTool.selectGreprPatterns / SM114).
+      val pats = TextTool.selectGreprPatterns(rest)
+      if pats.isEmpty then
+        System.err.println("grepr: no pattern — give a <regex>, or `--any pat1 pat2 …` to OR several without a regex |")
+        sys.exit(2)
+      pats.foreach(warnGrepBre)
+      val res = pats.map(_.r)
       val exts = ext.split(",").iterator.map(_.trim).filter(_.nonEmpty).toVector // multi-ext: ".scala,.java"
       val path = java.nio.file.Path.of(dir)
       if exts.isEmpty then
@@ -100,7 +132,7 @@ private val TextHelp: String =
         for p <- stream.iterator.asScala
             if java.nio.file.Files.isRegularFile(p) && exts.exists(p.toString.endsWith)
         do
-          for (line, i) <- Lib.readUtf8(p.toString).linesIterator.zipWithIndex if re.findFirstIn(line).isDefined do
+          for (line, i) <- Lib.readUtf8(p.toString).linesIterator.zipWithIndex if TextTool.anyMatch(res, line) do
             n += 1
             if !countOnly then println(s"$p:${i + 1}: ${line.trim.take(140)}")
         if countOnly then println(n)
