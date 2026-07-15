@@ -1,16 +1,18 @@
 # The noop race: when a Scala tool should leave the JVM
 
-> **Status: SCAFFOLD 2026-07-14 (agent-drafted from a live benchmarking session; BR to revoice before publish).**
+> **Status: SCAFFOLD** (agent-drafted 2026-07-14 from a live benchmarking session; grounded in
+> `research/wr-data/approval-wake-launcher-startup-bench-2026-07-14.md`; a no-op prestudy, not a rigorous
+> profile; BR revoices before publish).
 > A data-driven look at Scala startup time across the JVM, Scala Native, and GraalVM native-image, with one
 > counterintuitive result for performance-minded developers.
 > **Audience:** performance-minded Scala and JVM developers; anyone choosing a compilation target for a
 > command-line tool; people who assume GraalVM native-image is always the fastest native option.
-> **[SCAFFOLD, agent-drafted, grounded in `research/wr-data/approval-wake-launcher-startup-bench-2026-07-14.md`.
-> A no-op prestudy, not a rigorous profile. BR revoices before publish.]**
-> **BR considering (2026-07-15): make this a SHORT STAND-ALONE, non-genscalator-specific post.** The
-> SN-beats-GraalVM result is general perf-dev interest; if standalone, trim the genscalator-toolbox application
-> (the `tt` JVM-startup tax) to a brief aside or a link, and let "The noop race" stand as a general Scala
-> startup piece. Fits the punchier title.
+
+<!-- Working note (not for readers): BR considering (2026-07-15) making this a SHORT STAND-ALONE,
+non-genscalator-specific post. The SN-beats-GraalVM result is general perf-dev interest; if standalone, trim the
+genscalator-toolbox application (the tt JVM-startup tax) to a brief aside or a link, and let "The noop race" stand
+as a general Scala startup piece. Fits the punchier title. -->
+
 
 ## The punchline
 
@@ -29,10 +31,16 @@ up. So the question arose: for the hot, frequently-invoked tools, should we comp
 the JVM startup entirely? And if so, which native route?
 
 We ran a quick prestudy: a no-op program (a `main` that does nothing and exits) built ten ways, and timed 200
-to 300 startups of each. A no-op isolates pure startup, with no real work to confound it. It is a prestudy, not
+to 300 startups of each. A no-op isolates pure startup, with no real work to get in the way. It is a prestudy, not
 a rigorous profile (that would want flamegraphs and real workloads; see the end).
 
 ## The numbers
+
+![Horizontal bar chart of no-op startup time by target on a log scale: C 0.74 ms, Zig 0.80 ms, Rust and Go 1.04 ms, bash 1.59 ms, Scala Native 1.85 ms, GraalVM native-image 3.05 ms, python3 11.6 ms, Node 26 ms, Scala on the JVM 142 ms. Native targets are green, scripted/interpreted amber, the JVM red.](figures/noop-startup-2026-07-15.svg)
+
+*No-op startup medians on a log scale. The three colour bands are the three regimes the findings below pull
+apart: compiled-native (green, about 1 to 3 ms), scripted or interpreted (amber, about 2 to 26 ms), and the JVM
+(red, about 142 ms) standing alone at the far right.*
 
 Median startup of a no-op, on one Linux box:
 
@@ -163,13 +171,13 @@ sudo apt install build-essential
 # Python 3
 sudo apt install python3
 
-# Node.js (JavaScript) — distro version may lag; for a specific major use NodeSource or nvm
+# Node.js (JavaScript): distro version may lag; for a specific major use NodeSource or nvm
 sudo apt install nodejs
 
 # Go
 sudo apt install golang-go
 
-# Rust — for the newest toolchain use rustup (rustup.rs), a curl-to-shell installer
+# Rust: for the newest toolchain use rustup (rustup.rs), a curl-to-shell installer
 sudo apt install rustc cargo
 
 # Java (the JVM)

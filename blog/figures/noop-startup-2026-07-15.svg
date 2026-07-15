@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 478" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+  <rect x="0" y="0" width="760" height="478" fill="#ffffff"/>
+  <text x="24" y="34" font-size="20" font-weight="700" fill="#1a1a1a">No-op startup time, by target</text>
+  <text x="24" y="56" font-size="13" fill="#666">median of 200-300 runs, one Linux box; x-axis is log scale (ms)</text>
+  <line x1="238.0" y1="74" x2="238.0" y2="430" stroke="#e0e0e0" stroke-width="1"/>
+  <text x="238.0" y="446" font-size="12" fill="#999" text-anchor="middle">1 ms</text>
+  <line x1="444.0" y1="74" x2="444.0" y2="430" stroke="#e0e0e0" stroke-width="1"/>
+  <text x="444.0" y="446" font-size="12" fill="#999" text-anchor="middle">10 ms</text>
+  <line x1="650.0" y1="74" x2="650.0" y2="430" stroke="#e0e0e0" stroke-width="1"/>
+  <text x="650.0" y="446" font-size="12" fill="#999" text-anchor="middle">100 ms</text>
+  <text x="164.0" y="99" font-size="13" fill="#1a1a1a" text-anchor="end">C</text>
+  <rect x="176.0" y="84" width="35.1" height="20" rx="2" fill="#2e7d32"/>
+  <text x="219.1" y="99" font-size="12" fill="#333">0.74 ms</text>
+  <text x="164.0" y="133" font-size="13" fill="#1a1a1a" text-anchor="end">Zig</text>
+  <rect x="176.0" y="118" width="42.0" height="20" rx="2" fill="#2e7d32"/>
+  <text x="226.0" y="133" font-size="12" fill="#333">0.80 ms</text>
+  <text x="164.0" y="167" font-size="13" fill="#1a1a1a" text-anchor="end">Rust</text>
+  <rect x="176.0" y="152" width="65.5" height="20" rx="2" fill="#2e7d32"/>
+  <text x="249.5" y="167" font-size="12" fill="#333">1.04 ms</text>
+  <text x="164.0" y="201" font-size="13" fill="#1a1a1a" text-anchor="end">Go</text>
+  <rect x="176.0" y="186" width="65.5" height="20" rx="2" fill="#2e7d32"/>
+  <text x="249.5" y="201" font-size="12" fill="#333">1.04 ms</text>
+  <text x="164.0" y="235" font-size="13" fill="#1a1a1a" text-anchor="end">bash</text>
+  <rect x="176.0" y="220" width="103.5" height="20" rx="2" fill="#f9a825"/>
+  <text x="287.5" y="235" font-size="12" fill="#333">1.59 ms</text>
+  <text x="164.0" y="269" font-size="13" fill="#1a1a1a" text-anchor="end">Scala Native</text>
+  <rect x="176.0" y="254" width="117.0" height="20" rx="2" fill="#2e7d32"/>
+  <text x="301.0" y="269" font-size="12" fill="#333">1.85 ms (no-GC)</text>
+  <text x="164.0" y="303" font-size="13" fill="#1a1a1a" text-anchor="end">GraalVM native-image</text>
+  <rect x="176.0" y="288" width="161.8" height="20" rx="2" fill="#2e7d32"/>
+  <text x="345.8" y="303" font-size="12" fill="#333">3.05 ms</text>
+  <text x="164.0" y="337" font-size="13" fill="#1a1a1a" text-anchor="end">python3</text>
+  <rect x="176.0" y="322" width="281.3" height="20" rx="2" fill="#f9a825"/>
+  <text x="465.3" y="337" font-size="12" fill="#333">11.6 ms</text>
+  <text x="164.0" y="371" font-size="13" fill="#1a1a1a" text-anchor="end">Node</text>
+  <rect x="176.0" y="356" width="353.5" height="20" rx="2" fill="#f9a825"/>
+  <text x="537.5" y="371" font-size="12" fill="#333">26 ms</text>
+  <text x="164.0" y="405" font-size="13" fill="#1a1a1a" text-anchor="end">Scala / JVM</text>
+  <rect x="176.0" y="390" width="505.4" height="20" rx="2" fill="#c62828"/>
+  <text x="689.4" y="405" font-size="12" fill="#333">142 ms</text>
+  <rect x="24.0" y="448" width="12" height="12" rx="2" fill="#2e7d32"/>
+  <text x="42.0" y="458" font-size="12" fill="#444">Native (no VM)</text>
+  <rect x="170.8" y="448" width="12" height="12" rx="2" fill="#f9a825"/>
+  <text x="188.8" y="458" font-size="12" fill="#444">Scripted / interpreted</text>
+  <rect x="375.2" y="448" width="12" height="12" rx="2" fill="#c62828"/>
+  <text x="393.2" y="458" font-size="12" fill="#444">JVM</text>
+</svg>
