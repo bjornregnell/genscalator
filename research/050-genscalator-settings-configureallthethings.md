@@ -105,15 +105,27 @@ Two payoffs from one enum:
    it fired is worse than useless. A kind-labelled notice reads "genscalator: compaction done" / "genscalator:
    approval needed", not a bare "Claude Code needs you". (This dovetails with `genscalator-notifications-branded-colon`.)
 
-### ⚠ Feasibility flag — UNVERIFIED (must check before building)
+### ✅ Feasibility — RESOLVED: the hook DOES distinguish the kind
 
-The enum's value depends on a fact I have **not** verified and must not assume: **does the Claude Code Notification
-hook actually pass enough context to distinguish the kinds?** The hook fires on "notification" events, but whether
-its stdin JSON labels *which* kind (approval vs idle vs error) is unknown to me here. Verify like the statusline
-schema was verified — a `claude-code-guide` check of the Notification hook payload — BEFORE committing to
-per-kind gating. Fallback if the hook can't distinguish: genscalator still controls the kinds *it* fires itself
-(compact-done, minion-done, its own idle notice), which is most of the list; only harness-originated kinds would be
-un-gatable. Either way the enum is the right shape; the feasibility check only bounds how many kinds are honour-able.
+The gating question — *does the Notification hook pass enough context to distinguish the kinds?* — is answered
+**yes**. Per a `claude-code-guide` check against the hooks reference (`code.claude.com/docs/en/hooks.md`,
+2026-07-15), the Notification hook's stdin JSON carries a top-level **`notification_type`** field (alongside the
+common `session_id` / `transcript_path` / `cwd` / `hook_event_name`, plus `message` / `title` / `details`), with
+**8 documented values**:
+
+`permission_prompt` (blocked on a tool approval) · `idle_prompt` (turn ended, awaiting input) · `auth_success` ·
+`elicitation_dialog` / `elicitation_complete` / `elicitation_response` (MCP forms) · `agent_needs_input` /
+`agent_completed` (background-session events).
+
+So a hook can branch on `notification_type` — the per-kind enum is directly implementable against harness-originated
+kinds too, not just genscalator's own. Our enum maps cleanly onto the harness set (`ApprovalNeeded` ⇐
+`permission_prompt`, `Idle` ⇐ `idle_prompt`, `MinionDone` ⇐ `agent_completed`, ...) plus genscalator-internal kinds
+(`CompactDone`) the harness has no event for.
+
+> ⚠ **Echt caveat:** this is a sub-agent doc-fetch finding, not a fact I confirmed against a live hook payload.
+> It is materially more reliable than recall (it cites the doc), but before building the enum, confirm the exact
+> field name + value set against a real Notification-hook invocation (the same discipline the statusline schema got).
+> (This session's confabulation saga is why the caveat stays.)
 
 ## 7. The editor — a DWIM `gs config` / `gs set X Y`
 
