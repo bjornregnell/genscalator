@@ -65,12 +65,48 @@ timed with nanoTime, 3 warmups + N timed runs, prints min/median/mean/max ms. Ru
 | SN release-size + none GC         | 1.574  | 1.827   | 1.915   | 4.159   | 1.64 MiB (1724024 B)           |
 | **GraalVM native-image**          | 2.469  | 3.049   | 3.205   | 7.164   | **12.25 MiB** (12848896 B)     |
 | **JVM (bootstrap launcher)**      | 103.3  | 130.7   | 131.6   | 174.4   | 230 KiB (235764 B) + needs JVM |
+| **python3 3.12 (interpreted)**    | 9.795  | 11.610  | 12.297  | 30.188  | source only, needs python3     |
+| **node 22 / JavaScript (interp)** | 20.544 | 26.253  | 26.986  | 42.269  | source only, needs node        |
+
+(python3/node added 2026-07-15; interpreted no-ops run via shebang-less `python3 noop.py` / `node noop.js`,
+same harness. TypeScript is not a distinct runtime point — it compiles to JS and runs on node, so its startup ≡
+node's; its distinguishing cost is compile time (`tsc`). Go, Rust, Bun, Deno not installed on this box —
+candidates for BR to add: Go and Rust would test the "compiled-with-GC starts C-fast" (Go) and "C-fast AND
+memory-safe" (Rust) questions.)
 
 A packaged JVM bootstrap measures **JVM program startup** (~131 ms). A real `tt` call is ~500 ms because
 `scala-cli run` adds a build-check/resolution layer *on top* of this JVM startup — so two separate costs stack
 in daily use (packaging to a bootstrap removes the scala-cli layer; native removes the JVM startup too).
 GraalVM native-image was confirmed a **genuine** native image (built `--no-fallback`; not a JVM-launcher
 fallback). GraalVM CE 17, Serial GC; SN 0.5.12, release-fast, Immix/None GC.
+
+## Compile / build time (the other axis, added 2026-07-15)
+Startup is only half the developer-experience story; build time is the other half (the edit-compile-run loop).
+
+| target | build time | notes |
+|---|---|---|
+| bash | 0 | interpreted, no build |
+| python3 | 0 | interpreted (negligible bytecode) |
+| node / JavaScript | 0 | JIT, no separate build |
+| C (`gcc -O2`) | **~0.05 s** | measured (52 ms) |
+| JVM Scala (`scala-cli package`, bootstrap) | ~12 s | cold; incremental is faster |
+| Scala Native (`release-fast`, cached) | ~23 s | ~28 s first time incl. artifact fetch |
+| GraalVM native-image | ~40–50 s | native-image step alone ~37 s |
+
+**The two-axis tradeoff (the sharpened fit-to-task lesson).** Plotting startup vs build time, four regimes:
+- **Fast-both:** C (0.05 s build, 0.8 ms start) — ideal, but brittle (the post's whole point).
+- **Zero build, moderate start:** bash / python3 / node — instant edit-run loop, startup 1.7–26 ms.
+- **Slow build, fast start:** Scala Native (23 s → 1.8 ms), GraalVM (40 s → 3.2 ms) — you pay a **20–40 s build**
+  for near-native startup. Good for ship-once-run-many; **bad for a tool you rebuild often**, because the build
+  cost dominates the dev loop. So native-compiling a `tt` tool only pays for a **stable, hot, frequently-INVOKED
+  (not frequently-rebuilt)** tool — a sharper conclusion than startup alone gave.
+- **Medium build, slow start:** JVM Scala (12 s → 142 ms) — worst on startup, but no native-compile step and JIT
+  throughput after warmup.
+
+**Bonus finding:** the interpreters BEAT the JVM on startup — python3 ~12 ms and node ~26 ms vs the JVM's
+~142 ms — despite the JVM being "compiled." The JVM's runtime-load + bytecode-verify + JIT-machinery startup
+tax exceeds a scripting interpreter's cold start by 5–12×. "Compiled vs interpreted" does not predict startup;
+the *runtime's* fixed init cost does.
 
 ## Findings
 1. **C is fastest — ~2.2× bash — but by only ~0.9 ms** (0.77 vs 1.69 ms median). BR's "C faster" confirmed:

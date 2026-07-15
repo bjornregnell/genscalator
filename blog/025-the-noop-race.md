@@ -42,7 +42,9 @@ Median startup of a no-op, on one Linux box:
 | bash                       | ~1.59 ms       | 125 B (a script)     | bash             |
 | Scala Native (no-GC)       | ~1.85 ms       | 1.64 MiB             | no               |
 | GraalVM native-image       | ~3.05 ms       | 12.25 MiB            | no               |
-| Scala on the JVM           | ~131 ms        | 230 KiB launcher     | a JVM            |
+| python3 (interpreted)      | ~11.6 ms       | source only          | python3          |
+| Node / JavaScript          | ~26 ms         | source only          | node             |
+| Scala on the JVM           | ~142 ms        | 230 KiB launcher     | a JVM            |
 
 (Scala Native was built `release-fast` with the garbage collector set to `none`, which its own documentation
 recommends for short-running command-line programs that allocate a bounded amount and exit. GraalVM
@@ -70,6 +72,33 @@ the choice is not "which is faster" but "do you need the Java ecosystem":
 - **Fast-ish start but you must keep a Java dependency:** GraalVM native-image (and accept the fatter binary).
 - **Rare or long-running calls, or you want peak warmed-up throughput:** just stay on the JVM. Native's win is
   startup, not steady-state compute (there is no just-in-time compiler in a native image).
+
+## The other axis: compile time
+
+Startup is only half the developer-experience story. The other half is how long you wait to *get* the binary
+(the edit-compile-run loop):
+
+| language | build time | startup |
+|---|---|---|
+| bash / python3 / Node | none | 1.7 / 11.6 / 26 ms |
+| C | ~0.05 s | 0.8 ms |
+| Scala on the JVM | ~12 s | ~142 ms |
+| Scala Native | ~23 s | ~1.8 ms |
+| GraalVM native-image | ~40 s | ~3 ms |
+
+Now the tradeoff is visible on two axes, and four regimes fall out:
+- **Fast-both:** C (fast build, fast start), the ideal if you can live with its brittleness.
+- **Zero build, moderate start:** the interpreters and bash, an instant loop with startup in the tens of ms.
+- **Slow build, fast start:** Scala Native and GraalVM native-image. You pay a *20 to 40 second build* for a
+  near-native startup: wonderful for something you ship once and run a million times, painful for a tool you
+  rebuild every few minutes, where the build cost (not the runtime) dominates your day.
+- **Medium build, slow start:** the JVM, worst on startup but with no native-compile step and a JIT that pays
+  back on long-running throughput.
+
+And one more thing worth staring at: **the interpreters beat the JVM on startup.** python3 (~12 ms) and Node
+(~26 ms) start an order of magnitude faster than Scala on the JVM (~142 ms), even though the JVM is "compiled"
+and they are not. "Compiled versus interpreted" does not predict startup; the runtime's fixed initialization
+cost does, and the JVM's is large.
 
 ## The so-what: fit-to-task, with a number on it
 
