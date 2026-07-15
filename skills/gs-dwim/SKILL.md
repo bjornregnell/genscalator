@@ -135,6 +135,15 @@ gracefully). The per-command behaviour is specified below.
   optionally the compact bing-bing hook — point at the setup docs, as the hook wiring is BR's hand. This RESOLVES
   the "gs init vs gs warm" question (SM077): `gs init` = per-PROJECT one-time setup (settings, human-gated); `gs
   warm` = per-SESSION reflex re-hydration (small, on-demand, agent-run). Never delegated (sensitive settings).
+- **`gs update`** — check whether the installed genscalator is BEHIND its git marketplace remote, and tell the
+  user how to update. Run **`tt update`** (read-only: it fetches remote-tracking refs, never the working tree, and
+  self-locates the repo via the tools dir) and report its finding: up to date, or N commit(s) behind plus the
+  manual steps. It updates NOTHING itself — Claude Code plugins update via `/plugin marketplace update genscalator`
+  + `/reload-plugins`, which only the human can run, and plugin authors get no update-check/notify API — so git is
+  the mechanism and the human is the actuator. WHY a genscalator command at all: a third-party marketplace does NOT
+  auto-update by default, and skills carry no version-check on load, so genscalator owns its own update-awareness.
+  (`tt update --brief` speaks only when a newer release exists — intended for a future `gs warm` throttle so a
+  cold start also flags an available update; that wiring is pending BR's nod on the throttle policy.)
 
 **Tier 2 (genscalator contributors / dogfooding mode) — assume the gs dev substrate; degrade gracefully if absent:**
 
