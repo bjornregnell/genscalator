@@ -113,6 +113,8 @@ stitched together in a difficult to review blob.
 Much of the guardrail machinery exists precisely to contain what can go wrong there, and the 
 cost is **confirmation fatigue** and bad UX from reviewing cryptic, dynamic, unsafe code.
 
+### 3.1 Why genscalator may improve safety?
+
 Genscalator shifts to **safe, compiled code with static guarantees**. Every time the agent would reach for a
 one-off bash/grep/awk helper, it instead creates (or reuses) a persistent, self-contained Scala tool.
 That earns static guarantees, reduces the agent getting stuck debugging brittle helpers, and shrinks the
@@ -120,6 +122,12 @@ number of dangerous operations that need human approval at all.
 
 See [`docs/foundations.md`](docs/foundations.md) for the full goals, stakeholders (human / agent / Black
 Hat Hacker threat model), and glossary.
+
+### 3.1 Why workflows, why not just typed tools?
+
+In the genscalator research project we have discovered (perhaps plausible when you think of it) that an escalatioon of the joint human-agent productivity in agentic software enginering relies on *mutaual awarnes* of each others state-of-mind plus a set of workflow "atoms", in genscalator called "cues "and "dances". Their aim is help to make communiction efficinet and unambiguous. Dances serves as micro-workflows that can be composed into biger macro-workflows for each unique human-agent pair to create and build-on.
+
+> Workflows are **opt-in**: You dicide when to adopt available cues and dances and how to compose them. Genscalator makes them available to agents in their hot context and to the fingertips the human at the keyboard. 
 
 ### 3.1 The bigger picture
 
