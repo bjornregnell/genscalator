@@ -147,15 +147,37 @@ in code; layered `defaults < file < env < flags`; a strict harness-vs-genscalato
 enum as the first concrete section; a DWIM `gs config`/`gs set` editor. Build in slices — start with the
 `notifications` enum + `gs config` (the highest-value, most-requested part), grow the file as knobs migrate in.
 
-**Open (need BR's call, not agent's):**
-1. **File location + name** — `genscalator.json` at project root? `.genscalator/config.json`? Inside `.claude/`
-   (co-located but risks blurring the boundary of §4)?
-2. **Scope** — project-local only, or also a user-level `~/.config/genscalator/` layer (like the update stamp)?
-   Precedence would then be `defaults < user-level < project < env < flags`.
-3. **Migration** — leave today's env vars / sentinel / state-file mechanisms in place (additive), or migrate them
-   into the file over time? (The compact sentinel and the update stamp are *runtime state*, not *settings* — they
-   probably should NOT move into a hand-edited config; keep runtime-state files separate from the settings file.)
-4. **The notification feasibility check** — worth a `claude-code-guide` dig now, or defer until the enum is built?
+**Decisions (BR, 2026-07-15):**
+1. **File location + name → `genscalator.json` at the project ROOT** (BR: *more discoverable* than a hidden
+   `.genscalator/`). It sits beside `.claude/` but stays clearly genscalator's own file (§4 boundary).
+2. **Scope → project-only FIRST.** A user-level layer (`~/.config/genscalator/`) is deferred to a **future PRD
+   requirement**, not built now. So the initial precedence is `defaults < project file < env < flags`; the
+   user-level layer would slot in as `defaults < user-level < project < ...` if/when that reqt lands.
+3. **Migration → DEFERRED** (BR to decide after the sentinel explanation below). Lean recorded: **runtime-state**
+   existence-flag/stamp files stay put (they are state, not settings); a config-*intent* toggle (e.g. compact-notify
+   on/off) MAY become a `genscalator.json` field. Documented in §9.
+4. **Notification feasibility → RESOLVED** (see §6: `notification_type` distinguishes the kinds).
+5. **Build order → agent's recommendation** (BR: *go with your recommendation*): the **`notifications` enum +
+   `gs config`** first (highest-value, most-requested), then grow the file as knobs migrate in.
+
+## 9. Existence-flag ("sentinel" / *markörfil*) files — what they are, and the migration boundary
+
+Some genscalator config is a **sentinel file**: a file whose *mere existence* is the on/off flag — no content is
+read, the hook/tool just checks "is it there?". (Swedish: no crisp everyday word; the military sense of *sentinel*
+is *vaktpost*; for this computing sense a **markörfil** — "marker file" — is the clearest term. Documented here so
+the vocabulary is on record.) The pattern is dead-simple and reversible, which is why it is used for a few toggles.
+
+Existence-flag / state files in genscalator today:
+- **`~/.claude/compact-notify.enabled`** — sentinel: present = the compact bing-bing is on, absent = off (read by
+  the `Pre`/`PostCompact` hook). A config *intent* → a candidate to expose as a `genscalator.json` field later.
+- **`~/.cache/genscalator/last-update-check`** — the `tt update` throttle **stamp** (holds an epoch-ms). Runtime
+  *state*, not a setting.
+- **`~/.claude/gs-modes`** — the declared-modes **state** file (one label per line) `tt mode` writes. State.
+
+**The boundary (this note's rule):** a **config intent** (a human's persistent preference, like "notify me on
+compact") is a settings candidate and may migrate into `genscalator.json`; **runtime state** (a throttle stamp, the
+live mode set) is NOT a setting and stays in its own file. So even after `genscalator.json` lands, the stamp + the
+mode file stay separate; only the *intent* toggles (starting with the `notifications` enum) live in the config.
 
 **Not in scope here (own tasks):** the actual build (own-tooling, BR-gated), and the SM112 native tool-selection
 which this file would *store* but SM112 *decides*.

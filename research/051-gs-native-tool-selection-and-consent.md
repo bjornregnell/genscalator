@@ -110,13 +110,23 @@ the native binary if it exists, else falls back** to `scala-cli run tools/<tool>
 binary when present. Leave the process-spawning tools (git/update/verify) on the JVM initially (marginal win, SN
 process-API risk); revisit with GraalVM only if their startup proves felt. Do **not** compile the long tail.
 
-**Open (BR's call / needs verification, not agent's to assume):**
-1. **Verify** ujson-SN (and os-lib-SN) resolution before relying on it — or commit to the statusline de-dep instead.
-2. **Scope of the first build** — just statusline, or the whole hot core, in slice one?
-3. **Cache path + launcher dispatch** — is `~/.cache/genscalator/native/` the right home, and is newer-than-source
-   the right staleness rule?
-4. **CI / portability** — do we build natives in CI (which OS/arch matrix?), or is `gs native` purely a local,
-   user-run provisioning step? (The toolchain is a real CI cost — skill §constraints.)
+**Decisions (BR, 2026-07-15):**
+1. **statusline de-dep → DONE** (`0a0af0e`): dropped ujson for the hand-rolled `MiniJson` reader, so statusline is
+   now pure-JDK — the clean SN candidate this note argued for. (BR: *handroll if easy and skip ujson; good to drop
+   deps if cruft.*) The ujson-SN resolution question is thereby moot for statusline; it only remains for any OTHER
+   tool we later try to SN-compile that keeps a lihaoyi dep.
+2. **Target selection → a DERIVED default, not a hand-maintained table** (BR: *go with your recommendation to make it
+   a derived default for when to Graal or not*). `gs native` **derives** each tool's preferred target from facts
+   already in the source, so the mapping can never drift from reality:
+   - **pure JDK** (no `//> using dep`) → **Scala Native** candidate;
+   - **spawns processes** (`os.proc` / a shelled binary) → **GraalVM** or stay JVM (SN's process-API is weak);
+   - **network dep** (`requests`) or rare/long-running → **stay JVM**.
+   The one dimension NOT in the source is **hotness** (invocation frequency), so that stays a small **curated**
+   list (statusline, text/files/find, mode). Formula: `derive(deps) × curate(hotness) → default target`, then
+   **verify** SN-resolution at build and let `genscalator.json`'s `native:` section **override**. The `§2` table is
+   the *worked output* of this derivation, not a separate source of truth to maintain.
+3. **First build scope, cache path + staleness, CI/portability** — still open, for the build task (own-tooling,
+   BR-gated). Lean: statusline first; `~/.cache/genscalator/native/`; prefer the binary only when newer than source.
 
 **Not in scope here:** the actual build + the staleness-dispatch in the launcher (own-tooling, BR-gated), and a
 rigorous startup profile (future work in the wr-data prestudy note).
