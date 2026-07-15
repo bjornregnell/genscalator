@@ -1,4 +1,4 @@
-# The startup cliff: when a Scala tool should leave the JVM
+# The noop race: when a Scala tool should leave the JVM
 
 > **Status: SCAFFOLD 2026-07-14 (agent-drafted from a live benchmarking session; BR to revoice before publish).**
 > A data-driven look at Scala startup time across the JVM, Scala Native, and GraalVM native-image, with one
