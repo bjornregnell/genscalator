@@ -2,7 +2,9 @@
 
 **Power tools for agents: smarter, safer, faster.**
 
-TODO: add status line image
+<p align="center">
+  <img src="blog/figures/status-line+mode-2026-07-15.png" alt="genscalator's status line and mode line in Claude Code: brand, clock, model, context-fill, usage limits and cost; plus the declared modes (token-spending, rot-vigilance, afk, solo)" width="800">
+</p>
 
 ## 1. What is genscalator?
 
