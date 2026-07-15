@@ -322,6 +322,17 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   the *derivative* of spend does not seem to be a named/studied line). The bridge between *context rot* and
   *token-budget-awareness* (`research/007-token-budget-awareness.md`): rot raises velocity; velocity/acceleration
   are how the agent *notices* before halting.
+- **Introspection line** — the **first** line of the genscalator status line (`tt statusline`): the ambient
+  **data-and-metrics** display the pair reads at a glance — brand, wall clock, model, context-fill (the
+  smart-zone / rot gauge), session + weekly usage limits, and cost. Named for surfacing the agent's
+  *introspective* signals (fill, burn, cost) as a persistent instrument rather than an on-demand `/cost` +
+  `/usage` paste. Cf. *Mode line* (the second line), *Context usage / fill*, *Token velocity / acceleration*.
+- **Mode line** — the **second** line of the genscalator status line: the current **declared joint human-agent
+  modes** (e.g. token-spending, rot-vigilance, afk, solo, fleet) — the pair's shared state-of-mind, *declared not
+  guessed*, so a lit mode carries information. Under the emerging **`?`-mode grammar** a trailing `?` marks a mode
+  *inferred from a measurable proxy* (uncertain — e.g. `tired?`, `afk?`) vs a confirmed one; confirmation is
+  asymmetric (the human self-confirms their own state, the agent needs external evidence). See the echt-mode-grammar
+  work (SM116–118). Cf. *Introspection line* (the first line), *Harvest-hot-context mode*, the *Dances* below.
 ### Dances and handoffs
 *Human↔agent protocols — each has **≥2 interlocking steps** (≥1 human, ≥1 agent), else it's just a cue. The **compact trigger** and **consolidation point** below are the timing rules for the compact dance.*
 - **Me-go-pee dance** *(BR 2026-07-13)* — a **short, unplanned human bio-interrupt** handoff (a specialization of
