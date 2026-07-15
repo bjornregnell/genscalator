@@ -63,3 +63,20 @@ from inside the guard-stall (`ig:`) as WR data.
 - The pipe was also pointless: `tt files` had already printed the full 14-file list in the prior (unpiped)
   call; the piped re-run added nothing. So: regression under low stakes / near-zero payoff — the classic
   autopilot signature.
+
+## Third specimen — TWO slips in the first three post-compact calls (2026-07-15 midday)
+Fresh window straight after a `/compact`, resuming SM111. The very first tool call was a `cd repo && git status`
+compound (⛔ on the checklist: no `cd`-then-chain, use `git -C`); the guard hook caught it. Two calls later, a
+`tt web 2>&1 | head -40` to read a tool's short usage (⛔ pipe-to-head; and pointless, the usage self-prints in
+full). BR flagged the second live: *"where is your real head :) regression after compact."*
+- **Why it sharpens further:** this is now the pattern across THREE consecutive compactions (07-13, 07-14, 07-15),
+  each time in the *first handful* of post-compact calls, each time a different specific reflex (grepr / tail-pipe /
+  cd-chain + head-pipe). The regression is not about *which* reflex — it is a general **salience collapse** right
+  after the warp: the checklist is freshly read yet base-model shell idioms (cd-chain, pipe-to-peek) fire below its
+  salience. The **guard hook caught every one** — the structural backstop holding while the willpower layer slips,
+  exactly the thesis. Strongest single argument yet that the load-bearing control is the automatic hook, not the
+  checklist.
+- **Candidate, sharpened:** the post-compact "reflex re-hydration" first-action (from the 07-13 follow-up) should be
+  *mandatory and explicit* in the resume-prompt — a deliberate "run `gs warm`, re-read guard-clean idioms" step as
+  ACTION ZERO before any tool call, since three specimens show the fresh window cannot be trusted to carry the
+  fine-grained reflexes on its own.
