@@ -19,7 +19,7 @@ forums, empirical investigations, the inevitable syntax bikeshedding, and the se
 in the making.
 
 
-It is indeed a priviledge to be part of the Scala SIP commitee and I have learned so much over the years from all members of the committe including experienced practitioners, compiler engineers, commutity represenatives and, of course Martin himself.
+It is indeed a privilege to be part of the Scala SIP committee and I have learned so much over the years from all members of the committee including experienced practitioners, compiler engineers, community representatives and, of course, Martin himself.
 
 <!-- TODO (BR): examples of what we have decided and why, by mining the (closed) SIP protocols. Try to make it
      personal: how I remembered the process, and how our discussions shaped the final language design. -->
