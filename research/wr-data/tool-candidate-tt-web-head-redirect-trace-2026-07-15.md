@@ -8,10 +8,13 @@ tool for this?"* when `curl -sIL http://genscalator.ai` required approval.
 ## The gap
 Verifying a domain redirect (genscalator.ai → bjornregnell.se/genscalator) needs the HTTP **status codes**,
 **Location headers**, and the **redirect chain** — i.e. `curl -sI` (headers only) and `curl -sIL` (follow +
-headers). `tt web` exists but does a **GET of the body** (size-capped, no creds); it does NOT expose status
-codes, response headers, or the hop chain. So the only way to answer "is it 301 or 302, and where does each hop
-point?" was raw `curl -sIL`, which is dual-use and correctly guard-stalled. The typed tool the PRD promises
-(`ttWeb` replacing the curl reflex) does not yet cover this HEAD/trace use case.
+headers). What `tt web` **already** covers (verified 2026-07-15): `tt web get <url> --status` follows redirects
+and prints the **final** status + content-type (`tt web get http://www.genscalator.ai --status` → `200 OK
+text/html` plus the landed page) — enough to answer "does it work and where does it land". What it does NOT
+expose is the **intermediate redirect chain**: each hop's status code (301 vs 302) and `Location` header. So to
+answer "was the redirect *permanent*, and via which hops?" the only option was raw `curl -sIL`, which is
+dual-use and correctly guard-stalled. The `ttWeb` gap is thus narrower than first written: not "no status", but
+"no per-hop trace / no headers-only mode".
 
 ## The candidate
 Extend `tt web` (or a sibling verb) with:
