@@ -502,6 +502,11 @@ and the session pin board. The through-line is a new general goal, sovereigntyOf
 * Feature: gsSettings requires Feature: ttConfigFile
 * Feature: gsSettings helps Goal: dwim
 
+* Feature: userLevelSettings has
+  * Gist: (SM115, deferred 2026-07-15 — future work; project-only settings ship first) a user-level settings layer under ~/.config/genscalator/ beneath the project genscalator.json, so a preference can be set once and apply across all projects.
+  * Spec: precedence becomes defaults then user-level then project then env then flags; runtime-state files (the update-check stamp, the mode file) stay separate and do NOT move into either settings layer.
+* Feature: userLevelSettings relatesTo Feature: gsSettings
+
 * Feature: dwimSynonymDocs has
   * Gist: (pinned SM113) document the gs do-what-i-mean synonym space — the canonical plain form per command plus the accepted synonyms that steer even when the phrasing is not spot-on — so the human never has to remember exact syntax.
 * Feature: dwimSynonymDocs helps Goal: dwim
