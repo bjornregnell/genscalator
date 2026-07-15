@@ -86,10 +86,14 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
         catch case _: Throwable => () // skip unparseable / unexpected lines — never crash the prompt
       (tok, chars)
 
-  /** Local wall-clock HH:MM:SS from an epoch-ms (from --now-ms in tests, else System.currentTimeMillis). PURE. */
+  /** Local wall-clock HH:MM:SS from an epoch-ms (from --now-ms in tests, else System.currentTimeMillis). PURE.
+    * Hand-rolled WITHOUT java.time — Scala Native 0.5.12 has not ported java.time (research/052), and this is the
+    * one function that blocked statusline from compiling native. Uses java.util.TimeZone for the local, DST-aware
+    * offset, then pure arithmetic; `floorMod` guards a pre-epoch nowMs. */
   def clock(nowMs: Long): String =
-    java.time.Instant.ofEpochMilli(nowMs).atZone(java.time.ZoneId.systemDefault())
-      .toLocalTime.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"))
+    val offsetMs = java.util.TimeZone.getDefault.getOffset(nowMs) // local offset incl. DST; no java.time
+    val secOfDay = math.floorMod((nowMs + offsetMs) / 1000L, 86400L)
+    f"${secOfDay / 3600}%02d:${(secOfDay % 3600) / 60}%02d:${secOfDay % 60}%02d"
 
   /** Compact model tag (SM117): "Opus 4.8 (1M context)" -> "o4.8/1M"; "Fable 5" -> "f5"; "Sonnet 5" -> "s5";
     * "Haiku 4.5" -> "h4.5". The family initial is LOWER-CASE so "o" does not read as a zero (BR). The context
