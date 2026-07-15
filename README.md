@@ -17,7 +17,7 @@ What do we mean with
 
 ## 1. What is genscalator?
 
-Genscalator is a toolbox + workflow for coding agents that replaces the brittle
+Genscalator is a toolbox + workflow elements for coding agents that replaces the brittle
 bash/grep/awk/python reflex with **typed, compiler-checked, reusable Scala tools**. 
 
 * Your agent automatically picks a tool when needed and gives it the right
