@@ -4,7 +4,7 @@
 
 // statusline — format the Claude Code `statusLine` stdin JSON into ONE compact line (SM039).
 // Claude Code pipes a JSON object to the configured statusLine command's stdin each turn; this reads it and prints:
-//   genscalator:  14:23:07  O4.8 (1M ctx)  ctx-fill: 41%  5h-lim: 30%  wk-lim: 14% resets: 3d  cost: $12
+//   genscalator  14:23:07  o4.8/1M  ctx-fill 41%  5h-lim 30%  wk-lim 14% reset 3d  cost $12
 //   (leading HH:MM:SS wall clock; ANSI-coloured segments; two-space separators; ctx is a FILL gauge, 5h/wk LIMITs)
 // Every segment is INDEPENDENTLY GUARDED: a field absent from the JSON simply omits its segment, so the tool
 // degrades gracefully across CC versions / subscription tiers (rate_limits are Claude Pro/Max only) and NEVER
@@ -27,7 +27,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
   def pct(v: Double): String = s"${v.round.toInt}%"
 
   // --- ANSI colour (SM039 polish). Each SEGMENT is wrapped as a WHOLE so its plain text stays a substring
-  // (the tests match on `contains("ctx-fill: 41%")` etc.), and a bad/empty stdin still yields "" with no codes.
+  // (the tests match on `contains("ctx-fill 41%")` etc.), and a bad/empty stdin still yields "" with no codes.
   // 256-colour; on a terminal without 256-colour support the sequences degrade to plain text.
   val ESC: Char = 27.toChar // the ANSI escape byte (0x1B); explicit to avoid any \u-escape ambiguity
   def sgr(code: String, s: String): String = s"${ESC}[${code}m${s}${ESC}[0m"
@@ -138,21 +138,21 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       case Some(m) => m
       case None    => return "" // nothing usable / not an object → empty line, exit 0 (never crash the prompt)
     val segs = scala.collection.mutable.ArrayBuffer[String]()
-    segs += sgr("1;38;5;42", "genscalator:") // brand prefix (BR: prepend "genscalator:")
+    segs += sgr("1;38;5;42", "genscalator") // brand prefix (BR: prepend "genscalator")
     segs += sgr("38;5;250", clock(nowMs)) // leading wall clock (light grey)
     o.get("model").flatMap(_.obj).foreach: m =>
-      m.get("display_name").orElse(m.get("id")).flatMap(_.str).foreach(n => segs += sgr("38;5;45", shortModel(n))) // un-bold so the bold genscalator: prefix is the only bold thing
+      m.get("display_name").orElse(m.get("id")).flatMap(_.str).foreach(n => segs += sgr("38;5;45", shortModel(n))) // un-bold so the bold genscalator prefix is the only bold thing
     o.get("context_window").flatMap(_.obj).flatMap(_.get("used_percentage")).flatMap(_.num)
       .foreach(p => segs += sgr(ctxGauge(p, ctxWarn, dumbZone, autoCompact),
-        s"ctx-fill: ${pct(p)}${if p >= autoCompact then " auto-compact!" else if p >= dumbZone then " dumb-zone" else ""}")) // escalates green->orange->red(Z)->dumb-zone(D)->auto-compact(A)
+        s"ctx-fill ${pct(p)}${if p >= autoCompact then " auto-compact!" else if p >= dumbZone then " dumb-zone" else ""}")) // escalates green->orange->red(Z)->dumb-zone(D)->auto-compact(A)
     // cumulative agent-token rot gauge (SM117): the reliable processing-volume signal, DISPLAYED
-    tokens.foreach(t => segs += sgr(tokGauge(t, tokWarn, tokDanger), s"tok: ${formatTokens(t)}"))
+    tokens.foreach(t => segs += sgr(tokGauge(t, tokWarn, tokDanger), s"tok ${formatTokens(t)}"))
     val rl = o.get("rate_limits").flatMap(_.obj)
     rl.flatMap(_.get("five_hour")).flatMap(_.obj).foreach: h5 =>
       val usedP  = h5.get("used_percentage").flatMap(_.num)
       val warned = usedP.exists(_ >= warn) // at/above the warn threshold: colour BOTH the % and its reset red
-      val used   = usedP.map(p => sgr(limGauge(p, warn, "38;5;176"), s"5h-lim: ${pct(p)}"))
-      val reset  = h5.get("resets_at").flatMap(_.num).map(r => sgr(if warned then Red else "38;5;245", s"resets: ${relResetFine(r.toLong, nowMs)}"))
+      val used   = usedP.map(p => sgr(limGauge(p, warn, "38;5;176"), s"5h-lim ${pct(p)}"))
+      val reset  = h5.get("resets_at").flatMap(_.num).map(r => sgr(if warned then Red else "38;5;245", s"reset ${relResetFine(r.toLong, nowMs)}"))
       (used, reset) match
         case (Some(u), Some(r)) => segs += s"$u $r"
         case (Some(u), None)    => segs += u
@@ -161,8 +161,8 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     rl.flatMap(_.get("seven_day")).flatMap(_.obj).foreach: w =>
       val usedP  = w.get("used_percentage").flatMap(_.num)
       val warned = usedP.exists(_ >= warn) // at/above the warn threshold: colour BOTH the % and its reset red
-      val used   = usedP.map(p => sgr(limGauge(p, warn, "38;5;174"), s"wk-lim: ${pct(p)}")) // rosy-red base
-      val reset  = w.get("resets_at").flatMap(_.num).map(r => sgr(if warned then Red else "38;5;245", s"resets: ${relReset(r.toLong, nowMs)}"))
+      val used   = usedP.map(p => sgr(limGauge(p, warn, "38;5;174"), s"wk-lim ${pct(p)}")) // rosy-red base
+      val reset  = w.get("resets_at").flatMap(_.num).map(r => sgr(if warned then Red else "38;5;245", s"reset ${relReset(r.toLong, nowMs)}"))
       (used, reset) match
         case (Some(u), Some(r)) => segs += s"$u $r"
         case (Some(u), None)    => segs += u
@@ -170,7 +170,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
         case _                  =>
     // cost LAST (least interesting on a fixed monthly plan) + blue, un-graded (no threshold meaning here)
     o.get("cost").flatMap(_.obj).flatMap(_.get("total_cost_usd")).flatMap(_.num)
-      .foreach(c => segs += sgr("38;5;39", s"cost: $$${c.toLong}")) // whole dollars, TRUNCATED (cents are noise on a fixed monthly plan; saves horiz space; never overstates)
+      .foreach(c => segs += sgr("38;5;39", s"cost $$${c.toLong}")) // whole dollars, TRUNCATED (cents are noise on a fixed monthly plan; saves horiz space; never overstates)
     // human-fatigue NUDGE (SM117): the human's char-count is an INTERNAL gauge (showing the raw number can itself
     // stress — BR); only a gentle `tired?` surfaces, and ONLY when a threshold is explicitly set (opt-in, default
     // off). Calm lavender, NEVER red — a nudge, not an alarm. The `?` marks it INFERRED (the agent cannot know the
@@ -184,7 +184,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
   // A "mode" is a label stuck on the shared human<->agent state; MANY can be active at once. Auto-derived
   // modes come from the same status JSON this tool already reads; declared modes come from a state file (read
   // by the @main). Each label renders REVERSE-video + bold in its own colour, joined by a plain " & "
-  // (non-inverted, non-bold), prefixed "genscalator:". Toggled INDEPENDENTLY of the status line above.
+  // (non-inverted, non-bold), prefixed "genscalator". Toggled INDEPENDENTLY of the status line above.
 
   /** Curated colours for well-known modes; an unknown label gets a stable colour by hash. */
   val knownModeColors: Map[String, String] = Map(
@@ -203,7 +203,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
   /** The mode line: brand prefix + active modes (each reverse+bold, own colour) joined by a plain " & ". PURE.
     * No active modes -> a dim placeholder, so the line is still recognisable as the (empty) mode line. */
   def renderModes(modes: Seq[String]): String =
-    val brand = sgr("1;38;5;42", "genscalator:")
+    val brand = sgr("1;38;5;42", "gs mode set") // line-2 prefix: NOT "genscalator" again (redundant with line 1); doubles as the DWIM verb
     if modes.isEmpty then s"$brand ${sgr("38;5;245", "clear: no active mode labels")}"
     else s"$brand ${modes.map(renderMode).mkString(" & ")}"
   private val Help: String =
@@ -215,14 +215,14 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       |bad/empty stdin prints an empty line (exit 0) — it never crashes the prompt.
       |
       |Segments (left to right):
-      |  genscalator:        brand prefix
+      |  genscalator         brand prefix
       |  HH:MM:SS            local wall clock
-      |  O4.8 (1M ctx)       abbreviated model name (Opus/Sonnet/Fable/Haiku -> O/S/F/H)
-      |  ctx-fill: N%        context-window fill; orange at the compact-dance trigger
+      |  o4.8/1M             abbreviated model (Opus/Sonnet/Fable/Haiku -> o/s/f/h, /ctx suffix)
+      |  ctx-fill N%         context-window fill; orange at the compact-dance trigger
       |                      (0.8*Z), red at Z = the dumb-zone threshold (--ctx-warn)
       |  5h-lim / wk-lim     usage limits (Claude Pro/Max only) + reset countdown; both
       |                      the % and its countdown turn RED at/above --warn
-      |  cost: $N            total cost in whole dollars, last (least interesting on a
+      |  cost $N             total cost in whole dollars, last (least interesting on a
       |                      fixed monthly plan)
       |
       |Usage:

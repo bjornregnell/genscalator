@@ -146,7 +146,7 @@ class CliSuite extends munit.FunSuite:
       run("mode", "--file", f, "add", "hot-harvest")
       val (code, out, _) = run("statusline", "--no-status", "--mode-line", "--modes-file", f, "{}")
       assertEquals(code, 0)
-      assert(clue(out).contains("genscalator:"))
+      assert(clue(out).contains("gs mode set"))
       assert(clue(out).contains("hot-harvest"))
       assert(!clue(out).contains(" & ")) // one mode -> no separator
     finally os.remove.all(d)
@@ -1144,20 +1144,20 @@ class CliSuite extends munit.FunSuite:
       s""""seven_day":{"used_percentage":14,"resets_at":$resetsSec}}}"""
     val (code, out, _) = run("statusline", json, "--now-ms", now.toString)
     assertEquals(code, 0)
-    assert(clue(out).contains("genscalator:")) // brand prefix
+    assert(clue(out).contains("genscalator")) // brand prefix
     assert(clue(out).contains("o4.8")) // model label compacted: Opus 4.8 -> o4.8 (lower-case o, no ctx here)
-    assert(clue(out).contains("cost: $12")) // whole dollars, no cents (12.34 -> 12)
-    assert(!clue(out).contains("cost: $12.34")) // cents dropped
-    assert(clue(out).contains("ctx-fill: 41%"))
-    assert(clue(out).contains("5h-lim: 30%"))
-    assert(clue(out).contains("wk-lim: 14%"))
-    assert(clue(out).contains("resets: 3d"))
+    assert(clue(out).contains("cost $12")) // whole dollars, no cents (12.34 -> 12)
+    assert(!clue(out).contains("cost $12.34")) // cents dropped
+    assert(clue(out).contains("ctx-fill 41%"))
+    assert(clue(out).contains("5h-lim 30%"))
+    assert(clue(out).contains("wk-lim 14%"))
+    assert(clue(out).contains("reset 3d"))
   }
   test("statusline: missing rate_limits degrades gracefully (shows what's present, no crash)") {
     val (code, out, _) = run("statusline", """{"model":{"id":"haiku"},"cost":{"total_cost_usd":0.5}}""")
     assertEquals(code, 0)
     assert(clue(out).contains("haiku"))
-    assert(clue(out).contains("cost: $0")) // 0.50 truncates to whole dollars -> $0
+    assert(clue(out).contains("cost $0")) // 0.50 truncates to whole dollars -> $0
     assert(!clue(out).contains("wk")) // no rate_limits → no weekly segment
   }
   test("statusline: empty/invalid JSON prints an empty line at exit 0 (never breaks the prompt)") {
@@ -1170,41 +1170,41 @@ class CliSuite extends munit.FunSuite:
     val resetsMs = now + 2 * 86400_000L // 2 days later, already in MS (> 1e12)
     val json = s"""{"rate_limits":{"seven_day":{"used_percentage":50,"resets_at":$resetsMs}}}"""
     val (_, out, _) = run("statusline", json, "--now-ms", now.toString)
-    assert(clue(out).contains("wk-lim: 50%"))
-    assert(clue(out).contains("resets: 2d"))
+    assert(clue(out).contains("wk-lim 50%"))
+    assert(clue(out).contains("reset 2d"))
   }
   test("statusline: five_hour resets_at renders a fine h/m countdown") {
     val now = 1_000_000_000_000L
     val resetSec = now / 1000L + (2 * 3600 + 34 * 60) // 2h34m later, in SECONDS
     val json = s"""{"rate_limits":{"five_hour":{"used_percentage":68,"resets_at":$resetSec}}}"""
     val (_, out, _) = run("statusline", json, "--now-ms", now.toString)
-    assert(clue(out).contains("5h-lim: 68%"))
-    assert(clue(out).contains("resets: 2h34m"))
+    assert(clue(out).contains("5h-lim 68%"))
+    assert(clue(out).contains("reset 2h34m"))
   }
   test("statusline: a usage limit at/above the warn threshold turns BOTH its % and its reset red") {
     val now = 1_000_000_000_000L
     val resetSec = now / 1000L + 3600 // 1h later
     val json = s"""{"rate_limits":{"five_hour":{"used_percentage":85,"resets_at":$resetSec}}}"""
     val (_, out, _) = run("statusline", json, "--now-ms", now.toString)
-    assert(clue(out).contains("38;5;203m5h-lim: 85%")) // the % is red (>= 80% default warn)
-    assert(clue(out).contains("38;5;203mresets:"))     // and its reset countdown reddens with it
+    assert(clue(out).contains("38;5;203m5h-lim 85%")) // the % is red (>= 80% default warn)
+    assert(clue(out).contains("38;5;203mreset"))     // and its reset countdown reddens with it
   }
   test("statusline: --warn makes the threshold configurable (85% stays non-red under --warn 90)") {
     val now = 1_000_000_000_000L
     val resetSec = now / 1000L + 3600
     val json = s"""{"rate_limits":{"five_hour":{"used_percentage":85,"resets_at":$resetSec}}}"""
     val (_, out, _) = run("statusline", json, "--now-ms", now.toString, "--warn", "90")
-    assert(clue(out).contains("38;5;245mresets:"))  // reset stays dim grey (85% is below the raised 90% threshold)
-    assert(!clue(out).contains("38;5;203mresets:")) // and is not red
+    assert(clue(out).contains("38;5;245mreset"))  // reset stays dim grey (85% is below the raised 90% threshold)
+    assert(!clue(out).contains("38;5;203mreset")) // and is not red
   }
   test("statusline: ctx-fill reds at the dumb-zone threshold (Z, default 30%), oranges at 0.8*Z, green below") {
     val now = 1_000_000_000_000L
     val (_, outHi, _)  = run("statusline", """{"context_window":{"used_percentage":35}}""", "--now-ms", now.toString)
-    assert(clue(outHi).contains("38;5;203mctx-fill: 35%"))  // 35% >= 30% (Z) -> red (dumb-zone risk)
+    assert(clue(outHi).contains("38;5;203mctx-fill 35%"))  // 35% >= 30% (Z) -> red (dumb-zone risk)
     val (_, outMid, _) = run("statusline", """{"context_window":{"used_percentage":26}}""", "--now-ms", now.toString)
-    assert(clue(outMid).contains("38;5;214mctx-fill: 26%")) // 26% >= 24% (0.8*Z compact trigger) -> orange
+    assert(clue(outMid).contains("38;5;214mctx-fill 26%")) // 26% >= 24% (0.8*Z compact trigger) -> orange
     val (_, outLo, _)  = run("statusline", """{"context_window":{"used_percentage":15}}""", "--now-ms", now.toString)
-    assert(clue(outLo).contains("38;5;114mctx-fill: 15%"))  // 15% -> healthy green (well inside the smart zone)
+    assert(clue(outLo).contains("38;5;114mctx-fill 15%"))  // 15% -> healthy green (well inside the smart zone)
     assert(!clue(outLo).contains("38;5;203mctx-fill"))      // and not red at 90%-style thresholds
   }
   test("statusline: --ctx-warn makes the dumb-zone threshold configurable (35% non-red under --ctx-warn 40)") {
@@ -1214,16 +1214,16 @@ class CliSuite extends munit.FunSuite:
   }
   test("statusline: ctx-fill past dumb-zone (75%) -> bold bright-red + dumb-zone flag") {
     val (_, out, _) = run("statusline", """{"context_window":{"used_percentage":80}}""", "--now-ms", "1000000000000")
-    assert(clue(out).contains("1;38;5;196mctx-fill: 80% dumb-zone"))
+    assert(clue(out).contains("1;38;5;196mctx-fill 80% dumb-zone"))
   }
   test("statusline: ctx-fill past auto-compact (92%) -> bold reverse-red + auto-compact flag (supersedes dumb-zone)") {
     val (_, out, _) = run("statusline", """{"context_window":{"used_percentage":95}}""", "--now-ms", "1000000000000")
-    assert(clue(out).contains("7;1;38;5;196mctx-fill: 95% auto-compact!"))
+    assert(clue(out).contains("7;1;38;5;196mctx-fill 95% auto-compact!"))
     assert(!clue(out).contains("dumb-zone"))
   }
   test("statusline: --dumb-zone / --auto-compact thresholds are configurable") {
     val (_, out, _) = run("statusline", """{"context_window":{"used_percentage":65}}""", "--now-ms", "1000000000000", "--dumb-zone", "60")
-    assert(clue(out).contains("ctx-fill: 65% dumb-zone"))
+    assert(clue(out).contains("ctx-fill 65% dumb-zone"))
   }
   test("statusline: prepends a HH:MM:SS wall clock, and abbreviates the model label") {
     val (_, out, _) = run("statusline", """{"model":{"display_name":"Fable 5 (1M context)"}}""", "--now-ms", "1000000000000")
@@ -1268,7 +1268,7 @@ class CliSuite extends munit.FunSuite:
     val json = s"""{"context_window":{"used_percentage":20},"transcript_path":"${tmp.toString}"}"""
     val (code, out, _) = run("statusline", json, "--now-ms", "1000000000000")
     assertEquals(code, 0)
-    assert(clue(out).contains("tok: 1.5M"))
+    assert(clue(out).contains("tok 1.5M"))
     java.nio.file.Files.deleteIfExists(tmp)
   }
 
