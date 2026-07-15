@@ -58,7 +58,9 @@ timed with nanoTime, 3 warmups + N timed runs, prints min/median/mean/max ms. Ru
 
 | launcher                          | min    | median  | mean    | max     | binary size                    |
 |-----------------------------------|--------|---------|---------|---------|--------------------------------|
-| C (`noop-c`)                      | 0.664  | 0.758   | 0.783   | 1.455   | 15.8 KiB (15776 B)             |
+| C (`noop-c`)                      | 0.647  | 0.735   | 0.764   | 1.470   | 15.8 KiB (15776 B)             |
+| **Rust** (`rustc -O`)             | 0.835  | 1.037   | 1.122   | 3.141   | 12.6 MiB unstripped (strips small) |
+| **Go** (`go build`)               | 0.918  | 1.040   | 1.115   | 2.073   | 1.31 MiB (1376609 B)           |
 | bash (`noop.sh`)                  | 1.445  | 1.587   | 1.693   | 2.765   | 125 B                          |
 | SN release-fast + **none GC**     | 1.579  | 1.851   | 1.947   | 4.288   | 1.64 MiB (1720328 B)           |
 | SN release-fast + Immix           | 1.584  | 1.914   | 2.013   | 4.363   | 1.67 MiB (1752672 B)           |
@@ -89,6 +91,8 @@ Startup is only half the developer-experience story; build time is the other hal
 | python3 | 0 | interpreted (negligible bytecode) |
 | node / JavaScript | 0 | JIT, no separate build |
 | C (`gcc -O2`) | **~0.05 s** | measured (52 ms) |
+| Go (`go build`) | **~0.04 s warm** | measured (36 ms); 2.2 s cold (one-time stdlib build), then cached |
+| Rust (`rustc -O`) | **~0.2 s** | measured (205 ms) |
 | JVM Scala (`scala-cli package`, bootstrap) | ~12 s | cold; incremental is faster |
 | Scala Native (`release-fast`, cached) | ~23 s | ~28 s first time incl. artifact fetch |
 | GraalVM native-image | ~40–50 s | native-image step alone ~37 s |
@@ -107,6 +111,19 @@ Startup is only half the developer-experience story; build time is the other hal
 ~142 ms — despite the JVM being "compiled." The JVM's runtime-load + bytecode-verify + JIT-machinery startup
 tax exceeds a scripting interpreter's cold start by 5–12×. "Compiled vs interpreted" does not predict startup;
 the *runtime's* fixed init cost does.
+
+**Go + Rust finding (added 2026-07-15, both predictions confirmed):**
+- **Rust ≈ C** (1.04 vs 0.74 ms median), so you can have near-metal startup AND memory safety — the direct
+  rebuttal to "C is brittle." (Its 12.6 MiB binary is *unstripped*; `strip` / `-C strip=symbols` cuts it to a
+  few hundred KB. Do not read it as "Rust is fat.")
+- **Go starts ~C-fast (1.04 ms) DESPITE having a garbage collector, and beats Scala Native (1.83 ms) by ~1.8×**
+  — even though *both* are compiled-with-GC and their binaries are a similar size (Go 1.31 MiB vs SN 1.64 MiB).
+  This isolates the cause of SN's floor: it is **not** "having a GC" and **not** "being compiled-with-GC" — Go
+  disproves both. SN's ~1.8 ms floor is **Scala Native's own runtime/stdlib bootstrap**, specifically. Go's
+  runtime bootstraps in ~1 ms; SN's does not.
+- **Go is the "fast-both" champion:** ~36 ms warm build AND ~1 ms startup — the language's whole selling point,
+  now measured here. Rust is fast-both too (0.2 s build, 1 ms start) with the added memory-safety. So the
+  fast-both regime is populated by C (fastest, brittle), Rust (safe), and Go (safe + fastest build).
 
 ## Findings
 1. **C is fastest — ~2.2× bash — but by only ~0.9 ms** (0.77 vs 1.69 ms median). BR's "C faster" confirmed:
