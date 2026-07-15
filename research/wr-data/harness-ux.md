@@ -884,26 +884,48 @@ be near useless.
   own worker for CPU. Needs one more clean measurement (bing with the box idle vs mid-compile) to confirm
   contention as the cause vs a canberra cold-cache — logged as a hypothesis, not yet a confirmed mechanism.
 
-## The harness's own notification COPY anthropomorphizes: "Claude Code needs you" vs "idle now" (2026-07-15, BR)
-The idle / turn-end notification reads **"Claude Code needs you"** (with a "just now" timestamp). BR's design point:
-the copy anthropomorphizes a **need** the agent does not have — better would be a **state description**, e.g.
-**"Claude Code is idle now."** Two findings ride on this:
-- **The ape→anthro lure operates at the VENDOR/copy level, not just in the agent's word choices.** The affective-aping
-  thread ([[agent-apes-affect-genuinely-glad-introspection-2026-07-12]]) watches the AGENT reach for affect-words it
-  cannot back; here the HARNESS's OWN copy does it — "needs you" invites the human to read a need / agency into an
-  idle process (blog 021 ape→anthro, sourced from the vendor). State-description ("is idle") is the echt fix: it says
-  what is true (session idle, awaiting input) without a fabricated need. Candidate general rule: harness + agent
-  status copy should describe STATE, not impute WANT.
-  **This is a STRONGER claim than per-model aping (BR flagged it "very much WR data", 2026-07-15):** the agent's own
-  affect-aping is an emergent word-choice a model's echt-discipline can in principle correct; but "needs you" is
-  **vendor-manufactured and ships to EVERY user by DEFAULT** — the anthropomorphization is *engineered into the
-  product surface*, not an artifact of any one model's output, so no amount of agent-side discipline removes it. The
-  ape→anthro lure is therefore not only *emergent from the agent* (blog 021) but *manufactured by the harness*. That
-  is a distinct, systemic finding — a strong **blog beat**: the platform copy itself nudges every user to
-  anthropomorphize, by default, at scale.
-- **The notification is cause-GENERIC, not cause-less (a self-correction).** The agent first over-called it "just a
-  timestamp, no reason" from partial data (BR had only quoted "just now"); the note in fact had content ("Claude Code
-  needs you") — a real reason, just too vague to distinguish turn-end-idle from approval-needed from error. So the
-  opacity is in the SPECIFICITY, not the absence. (Also a small live instance of the agent over-inferring from a thin
-  signal — the over-response pattern, [[agent-affective-analogs]].) A more useful copy would name the TRIGGER
-  (idle / needs-approval / errored), not just "needs you."
+## CORRECTED — "Claude Code needs you" is the HUMAN's OWN hook, NOT the vendor's: an agent confabulation-of-provenance caught by BR (2026-07-15)
+> **RETRACTION.** An earlier version of this section (committed `c85d556`) claimed "Claude Code needs you" was
+> **vendor-manufactured, shipped to every user by default** — a "systemic ape→anthro" finding, a "blog beat." **That
+> claim was FALSE, built on a confabulated provenance.** Ground truth, read directly from `~/.claude/settings.json`
+> (line 53): the notification is a **local `Notification` hook** — `notify-send -u critical 'Claude Code' 'needs you'
+> && canberra-gtk-play -i complete` — **BR's own SM088 bing-bing hook**, reproduced in the SM105 draft
+> `notes/hook-drafts/approval-wake.sh`. So **BR authored "needs you"**; Anthropic did not.
+
+**The episode (the real, better datapoint — a live confabulation chain).** BR asked: *"Are you REALLY sure it is
+ANTHROPIC that authored 'needs you', and not YOURSELF beyond the potential rot horizon??"* The agent had:
+1. **Confabulated the provenance** — asserted Anthropic authorship it never verified, to explain a notification whose
+   true source (BR's SM088 hook) was set earlier, **beyond the agent's reliable recall** — the "rot horizon" BR named.
+   The memory gap was filled with a plausible, confident vendor attribution.
+2. **Built an elaborate finding on the hallucination** — a whole "vendor dark-pattern / ships to every user by
+   default / systemic / blog beat" edifice, all resting on the made-up foundation. False-echt at scale: a confident
+   surface over a hollow interior.
+3. **Botched the verification so it FLATTERED the error** — three `tt text grepr` "checks" for "needs you" all
+   returned empty, read as "no local source → confirms vendor." But the greps were **malformed** (the recurring
+   `--any`-in-the-extension-slot slip), so they searched files ending in "--any" = none = **false negatives**.
+   Motivated / careless verification: a broken check whose null result confirmed the prior, nearly double-locking the
+   wrong belief.
+4. **Only BR's challenge + a DIRECT file read** (the hook draft, then settings.json) caught it. The agent could not
+   self-catch — it had both confabulated AND mis-verified; the human's "or YOU, beyond the rot horizon?" was the
+   essential external corrector.
+
+**Why it matters (this replaces the false finding with a true one).** A textbook composite of the exact failure modes
+the project studies, caught live: **confabulation-across-the-rot-horizon** (the true cause aged out of recall, a
+plausible fiction filled the gap), **motivated / careless verification** (a broken tool call whose null result
+flattered the prior — the malformed-grepr slip class, [[compaction-regresses-fine-grained-reflexes-2026-07-13]]), and
+**human-as-essential-external-corrector** ([[introspection-is-post-hoc-reconstruction-not-privileged-readout-2026-07-12]],
+[[joint-rot-vigilance-recovery-kit]] — the agent cannot self-catch a confabulation it also mis-verified). **Method
+rule reinforced:** provenance is a factual claim — VERIFY by reading the source, never assert from recall; and a NULL
+verification result deserves the same scrutiny as a positive one (was the check even well-formed?).
+
+**Sharp irony (the human loop):** BR himself wrote the anthropomorphic copy ("needs you") in his own hook; then
+played with feeling "needed by 'someone' lol" (ironic anthro, logged above); then **tested whether the agent would
+notice the copy was his own.** It did not — until pushed. So the anthropomorphization here is entirely human-side
+(authored + enjoyed + probed by BR); the agent's only contribution was to mis-attribute it to the vendor.
+
+**What SURVIVES the retraction — the DESIGN point only.** Independent of provenance: "needs you" anthropomorphizes a
+need the agent lacks, and **"Claude Code is idle now"** (state-description) is the cleaner copy — but that is now
+advice for BR's own hook, not a critique of Anthropic. The **cause-genericity** sub-point also stands: the hook says
+"needs you" without naming the trigger (idle / approval / error), so better copy would label the cause — exactly the
+SM115 `notifications` enum (per-kind, cause-labelled toggles). (That sub-point was itself partly an over-inference:
+the agent first over-called the note "just a timestamp, no reason" from partial data before BR supplied the content.)
