@@ -32,16 +32,27 @@ text count <file> <regex>            # grep -c   : count matches
 text match <file> <regex>            # grep -n   : print matching lines, numbered
 text context <file> <regex> [N]      # grep -C N : matching lines with N lines of context (default 2)
 text freq  <file> <regex>            # sort|uniq -c|sort -rn : histogram of match (or capture group 1)
-text grepr <dir> <ext[,ext2…]> <regex>  # grep -r --include : recursive search → file:line:match
+text grepr <dir> <ext[,ext2…]> <regex>        # grep -r --include : recursive search → file:line:match
+text grepr <dir> <ext[,ext2…]> --any p1 p2…   # OR-match: a line matching ANY pattern (metachar-free alternation)
 text cols  <file> <sep> <i...>       # cut/awk   : extract 1-based fields, tab-joined
 ```
 `grepr` takes a comma-separated extension list (`.scala,.java`) and prints a friendly one-line error
 (+ exit 2) on a missing/relative dir instead of a stack trace — pass an absolute dir.
+
+**`grepr … --any p1 p2 …`** matches a line when ANY of the patterns match — an OR *without* the regex `|`. Put
+`--any` **after** the extension list; every argument after it is treated as an OR-alternative. Two reasons for a
+flag rather than a `p1|p2` alternation: (1) a `|` inside a quoted regex still false-trips the (not-quote-aware)
+command/commit guard as if it were a shell pipe, raising a needless approval stall — `--any` sidesteps the
+metacharacter entirely; (2) a *typed flag* beats an in-string keyword (`OR`) or a `;;` separator, because `;` is
+itself a guard metachar (same stall) and a keyword bakes a mini-DSL into the pattern that also collides with
+searching for the literal word. It fixes **alternation** only; the general cure (a quote-aware guard so any
+metachar inside a quoted arg stops false-tripping) is a separate, hook-side hardening task.
 Examples:
 ```
 tt text count build.log '^! '
 tt text freq  run.log  '\[fallback\] ([a-z][^,]*)'
 tt text grepr src .scala,.java 'TODO'
+tt text grepr src .scala,.md --any TODO FIXME XXX   # lines matching any of the three (no | needed)
 ```
 
 ### md-fmt — markdown-aware line reflow to a target width (PURE by default; `--write` is the one guarded effect)
@@ -331,6 +342,28 @@ tt git show --repo /abs/repo --ref main --path src/app.scala
 tt git show --repo /abs/repo --ref v1.2 --path README.md --out tmp/old-readme.md
 ```
 
+### update — check whether genscalator is BEHIND its marketplace remote, and SUGGEST the manual update steps (EFFECTFUL: git fetch; read-only)
+```
+update [--repo <dir>] [--brief] [--throttle <hours>]
+   --repo <dir>        the genscalator repo to check     (default: self-locate via the tools dir)
+   --brief             print ONLY an actionable "newer release available" notice; silent otherwise
+   --throttle <hours>  actually fetch at most once per <hours> window (stamp-file gated); implies --brief
+```
+genscalator's **own update-awareness**, because the platform gives none: a third-party Claude Code marketplace does
+**not** auto-update, there is no per-plugin update command, and plugin authors get no update-check API. But
+genscalator *is* a git checkout, so git is the mechanism — `update` **fetches remote-tracking refs (read-only, never
+the working tree)**, compares your installed version against the remote, and, if you are behind, prints the incoming
+commits plus the steps **you** run (`/plugin marketplace update genscalator` then `/reload-plugins` — the harness
+commands a tool cannot drive). It changes nothing itself; the human is the actuator. Exits 0 in all normal cases and
+degrades gracefully when offline, when the branch has no upstream, or when genscalator is not a git checkout.
+`--throttle` is what **`gs warm`** calls (`tt update --brief --throttle 24`), so warm gains update-awareness without
+ever hanging or nagging. Examples:
+```
+tt update                       # full report: installed version, ahead/behind, and what to do
+tt update --brief               # speak only if a newer release is available
+tt update --brief --throttle 24 # gs warm's call: check at most once a day, silent unless behind
+```
+
 ## Companion: scalex
 The `tt` tools are **textual** — grep/awk/cut over any file. For **Scala code structure** the companion
 is **[scalex](https://github.com/nguyenyou/scalex)**: "grep, but it understands Scala's AST." It parses
@@ -377,6 +410,7 @@ diagnostics, refactors). Full guide: [`../docs/tool-selection.md`](../docs/tool-
 - `web.scala` — safe read-only HTTP GET (effectful: network; requests).
 - `forge.scala` — Forgejo/Gitea forge client, releases/tags + env-token create (effectful; requests+ujson+os-lib).
 - `git.scala` — safe git helper: commit-from-file, ff-only pull, fetch, read-only show (effectful; os-lib).
+- `update.scala` — update-awareness: is genscalator behind its marketplace remote? (effectful: git fetch; read-only; os-lib).
 - `newtool.scala` — the generator.
 - `template.scala.txt` — starter template (latest Scala header, lib include, dispatch skeleton).
 
