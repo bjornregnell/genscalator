@@ -143,14 +143,10 @@ gospel. Full method and raw numbers are in the linked research note.
 
 ## Further Reading
 
-[TODO, verify each link resolves and is on-topic before shipping, per the blog link rule:]
-- Scala Native, Garbage Collector settings (the None GC recommendation for short-running CLIs):
-  https://scala-native.org/en/stable/user/runtime.html
-- Scala Native build modes (release-fast, release-size, release-full):
-  https://scala-native.org/en/stable/user/sbt.html
-- scala-cli, packaging as GraalVM native images:
-  https://scala-cli.virtuslab.org/docs/cookbooks/package/native-images/
-- GraalVM native-image reference (fallback images, reflection configuration)
+- [Scala Native: garbage-collector settings](https://scala-native.org/en/stable/user/runtime.html) (the `none` GC recommendation for short-running command-line programs).
+- [Scala Native: build modes](https://scala-native.org/en/stable/user/sbt.html) (`release-fast`, `release-size`, `release-full`).
+- [scala-cli: packaging GraalVM native images](https://scala-cli.virtuslab.org/docs/cookbooks/package/native-images/) (how the `--native-image` packaging used here works).
+- [GraalVM native-image reference manual](https://www.graalvm.org/latest/reference-manual/native-image/) (fallback images and reflection configuration).
 - The genscalator research note grounding this post (internal): `research/wr-data/approval-wake-launcher-startup-bench-2026-07-14.md`
 
 ## Appendix: installing the languages on Ubuntu
