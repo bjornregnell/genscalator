@@ -447,6 +447,91 @@ example of expressing already-built work as reqT-lang requirements for Agentic R
   * Max: 0
 * Target: unwarnedLimitHits verifies Goal: noSurpriseUsageHalt
 
+### Session 2026-07-15 — update-awareness, native provisioning, settings, and the echt mode grammar
+
+A dated block reflecting one session's work: Features SHIPPED (marked) and Features PINNED as coming (SMnnn).
+Grounded in `research/anthropic-builtin-tools-vs-genscalator-2026-07-15.md`, the `research/wr-data/` rot/mode notes,
+and the session pin board. The through-line is a new general goal, sovereigntyOfCapability.
+
+* Goal: sovereigntyOfCapability has
+  * Gist: genscalator owns the capabilities the agent harness under-serves — update-awareness, native provisioning, configuration — extending digital-sovereignty from DATA (the repo mirrors) to FUNCTION.
+  * Why: the harness gives primitives, not every capability; where it under-serves (no plugin-author update or notify API, no skill versioning or load-time staleness check, no external-dependency install) genscalator supplies the missing function via git plus typed tools plus the human as actuator. "We own our update-awareness because the platform won't give it to us."
+* Goal: sovereigntyOfCapability helps Goal: jointHumanAgentProductivity
+* Goal: sovereigntyOfCapability helps Goal: contributeOpenSource
+
+* Feature: ttUpdate has
+  * Gist: (SHIPPED 2026-07-15) a git-based check of whether the installed genscalator is behind its marketplace remote — a read-only fetch of remote-tracking refs, never the working tree — that SUGGESTS the manual update steps, since only the human can run the /plugin commands a tool cannot.
+  * Spec: self-locates the repo via the tools dir (or a --repo override), reports the installed version and the ahead/behind count vs upstream, and degrades gracefully when offline, when there is no upstream, or when genscalator is not a git checkout; a --brief mode speaks only when a newer release is available so gs warm can call it behind a throttle.
+* Feature: ttUpdate helps Goal: sovereigntyOfCapability
+* Feature: ttUpdate helps Goal: jointHumanAgentProductivity
+
+* Feature: gsUpdate has
+  * Gist: (SHIPPED 2026-07-15) the gs DWIM command that runs ttUpdate and reports the finding — genscalator owns its update-awareness because a third-party marketplace does not auto-update by default and skills carry no version-check on load.
+* Feature: gsUpdate requires Feature: ttUpdate
+* Feature: gsUpdate helps Goal: sovereigntyOfCapability
+* Feature: gsUpdate relatesTo Feature: dwimCommands
+
+* Feature: greprAnyFlag has
+  * Gist: (SHIPPED 2026-07-15) tt text grepr --any p1 p2 p3 matches a line if ANY pattern matches — the metachar-free way to OR patterns, so the agent never types a regex pipe in the argument.
+  * Spec: a quoted regex pipe (or a greater-than or a semicolon) false-trips the not-yet-quote-aware guardcheck into a needless confirmation stall; --any is a typed flag, chosen over an in-string OR keyword (which collides with a literal search) or a doubled semicolon (the semicolon is itself a guard metacharacter); the pure pattern-selection logic is unit-tested.
+* Feature: greprAnyFlag helps Goal: tokenEfficiency
+* Feature: greprAnyFlag helps Goal: safeGeneration
+* Feature: greprAnyFlag relatesTo Feature: greprRegexLint
+
+* Feature: quoteAwareGuardcheck has
+  * Gist: (pinned) make the guardcheck quote-aware so a shell metacharacter INSIDE a quoted argument stops false-tripping the confirmation guard — the general root-cause fix that greprAnyFlag only sidesteps for the alternation case.
+  * Spec: a hook-side change and therefore security-sensitive and human-approved; parse shell quoting so a pipe or redirect inside a single-quoted regex is not read as a shell operator.
+* Feature: quoteAwareGuardcheck helps Goal: avoidConfirmationFatigue
+* Feature: quoteAwareGuardcheck relatesTo Feature: greprAnyFlag
+
+* Feature: ttWebTrace has
+  * Gist: (SHIPPED 2026-07-15) tt web get --trace inspects an HTTP redirect chain with read-only HEAD requests, hop-capped and allowlist-bounded — the safe replacement for the curl -sIL reflex.
+* Feature: ttWebTrace helps Goal: safeGeneration
+* Feature: ttWebTrace relatesTo Feature: ttWeb
+
+* Feature: gsNative has
+  * Gist: (pinned SM112) a gs DWIM command that detects the user's toolchain, installs with consent only the missing native prerequisites, then native-compiles the tt tools that benefit — Scala Native for hot dependency-light tools, GraalVM native-image when a JDK or Java dependency must come along.
+  * Spec: keeps the lean scala-cli plus JDK prerequisite intact and never forces gcc or clang on everyone; the target choice follows the noop-race findings (blog 025) — hot and dependency-light goes to Scala Native, hot and needs-a-Java-dep goes to GraalVM native-image, rare or long-running stays on the JVM; the native binaries coexist with the JVM launcher, which dispatches to a native build when one is present.
+* Feature: gsNative helps Goal: sovereigntyOfCapability
+* Feature: gsNative helps Goal: tokenEfficiency
+* Feature: gsNative helps Goal: jointHumanAgentProductivity
+
+* Feature: gsSettings has
+  * Gist: (pinned SM115) a genscalator settings story — one discovered gs config file for the many tweakable knobs (statusline thresholds and colours, mode labels, allowlist preferences, grepr defaults, notification branding, native-compile tool selection) with a DWIM gs config editor.
+  * Spec: the north star is configureAllTheThings — expose every meaningful knob with sane defaults so the file stays OPTIONAL; keep a clean boundary versus the Claude Code settings.local.json (harness permissions and hooks stay there, genscalator-specific knobs here) with precedence defaults then settings-file then env then flags; extends ttConfigFile.
+* Feature: gsSettings requires Feature: ttConfigFile
+* Feature: gsSettings helps Goal: dwim
+
+* Feature: dwimSynonymDocs has
+  * Gist: (pinned SM113) document the gs do-what-i-mean synonym space — the canonical plain form per command plus the accepted synonyms that steer even when the phrasing is not spot-on — so the human never has to remember exact syntax.
+* Feature: dwimSynonymDocs helps Goal: dwim
+* Feature: dwimSynonymDocs relatesTo Feature: dwimCommands
+
+* Goal: echtModeAwareness has
+  * Gist: (pinned SM116 SM117 SM118) the joint mode line reflects REAL, measurable, correctly-attributed state instead of always-on wallpaper, so that a lit mode actually carries information.
+  * Why: a mode that is never off carries no information (the same failure as a stale afk or solo declaration left standing); the fix is measurable-proxy triggers plus an honest inferred-versus-confirmed distinction.
+* Goal: echtModeAwareness helps Goal: jointHumanAgentProductivity
+* Goal: echtModeAwareness relatesTo Goal: retainUserTrust
+
+* Feature: rotFatigueGauges has
+  * Gist: (pinned SM117) status-line gauges for the two parties' state — an AGENT rot gauge (cumulative tokens summed from the session transcript, shown as tok) and an INTERNAL human fatigue gauge (cumulative chars typed) that feeds a tired nudge but is NOT displayed, because showing the human their own count stresses them.
+  * Spec: feasibility confirmed — the Claude Code statusline stdin JSON provides a transcript_path, so tt statusline can parse the JSONL for cumulative tokens and human char-count; agent rot tracks processing VOLUME (tokens are the reliable measure, message-count a cheap proxy, wall-clock noisy); a display asymmetry shows the agent gauge and hides the human's own; plus a compact model display such as lower-case o4.8 slash 1M.
+* Feature: rotFatigueGauges helps Goal: echtModeAwareness
+* Feature: rotFatigueGauges relatesTo Feature: ttStatusline
+* Feature: rotFatigueGauges relatesTo Feature: contextRotMeter
+* Feature: rotFatigueGauges relatesTo Feature: superHarnessDashboard
+
+* Feature: inferredConfirmedModeGrammar has
+  * Gist: (pinned SM118) every mode can carry a trailing question-mark meaning INFERRED from a measurable proxy crossing a configurable threshold, while no question-mark means CONFIRMED — the question-mark is an honesty marker, since a proxy is never certainty.
+  * Spec: confirmation is ASYMMETRIC — the human is the authority on their own interior so a cue like the tired-cue clears the inferred tired mode to a confirmed one, but the agent must NOT self-clear its own inferred dumb-zone mode (introspection is unreliable) and clears only via external evidence; an inferred afk mode is read from silence and does NOT grant AFK-strict autonomy (only a declared afk does), so the question-mark also gates behaviour; the measurable human proxies are char-count, sent-text typos, off-topic-count and message cadence, because keystroke dynamics are invisible to the agent.
+* Feature: inferredConfirmedModeGrammar helps Goal: echtModeAwareness
+* Feature: inferredConfirmedModeGrammar requires Feature: rotFatigueGauges
+
+* Feature: rotVigilanceThreshold has
+  * Gist: (pinned SM116) rot-vigilance engages past a token threshold rather than being always-on — a concrete measurable trigger and the agent-side instance of the inferred-versus-confirmed grammar.
+* Feature: rotVigilanceThreshold helps Goal: echtModeAwareness
+* Feature: rotVigilanceThreshold requires Feature: inferredConfirmedModeGrammar
+
 ## PAST
 
 Requirements implemented (or cancelled). Move requirements from FUTURE to PAST as they ship. The IMPLEMENTED
