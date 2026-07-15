@@ -35,6 +35,15 @@ what was declared, not a guess) is what lets it go stale (a declaration nobody r
   when a "hands-off" mode (show-off) is declared.** (This very session hit both halves: the agent left afk/solo
   stale for hours = should-have-fixed; then BR deliberately re-posed afk/solo for a daytime re-shoot = must-not-
   touch. The "show-off" mode cleanly disambiguates the two.)
+- **Existence vs active-use (the `fleet` case, 2026-07-15):** BR asked "harness says gang of 4 — so we have a
+  fleet?" The harness "← N agents" indicator counts sub-agents **spawned + still resumable** this session
+  (today's build + digest minions), NOT sub-agents **actively working**. So the indicator (existence) can
+  diverge from a `fleet` **mode** (active use): 4 exist, 0 running. Echt rule: `fleet` mode reflects *active
+  fan-out*, not a standing dormant gang — flip it on when a minion is actually working, off when idle, even
+  though the count stays 4. A mode is about what the pair is *doing*, not what merely *exists*. (Honesty note:
+  the `statusline-manual` doc documents only line 1 — the "manual mode on ← 4 agents" line 3 is the newer
+  mode-line prototype, undocumented — so the "counts spawned-but-dormant agents" reading is a working inference;
+  BR confirmed the upshot: no active fleet. Candidate: document line 2/3 in the statusline manual.)
 - **Point-in-time capture caveat:** a status-line screenshot freezes the modes at snapshot time — fine as a
   demo (the README figure's `afk & solo` were true at 02:25 during the solo run), but a reminder that the line
   is a live, maintenance-requiring surface, not a static fact.
