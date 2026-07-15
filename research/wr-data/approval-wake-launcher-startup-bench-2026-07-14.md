@@ -59,6 +59,7 @@ timed with nanoTime, 3 warmups + N timed runs, prints min/median/mean/max ms. Ru
 | launcher                          | min    | median  | mean    | max     | binary size                    |
 |-----------------------------------|--------|---------|---------|---------|--------------------------------|
 | C (`noop-c`)                      | 0.647  | 0.735   | 0.764   | 1.470   | 15.8 KiB (15776 B)             |
+| **Zig** (`-O ReleaseFast`)        | 0.644  | 0.802   | 0.878   | 2.076   | 949 KiB (971248 B)             |
 | **Rust** (`rustc -O -C strip=symbols`) | 0.835 | 1.037 | 1.122 | 3.141 | **362 KiB stripped** (12.6 MiB unstripped) |
 | **Go** (`go build`)               | 0.918  | 1.040   | 1.115   | 2.073   | 1.31 MiB (1376609 B)           |
 | bash (`noop.sh`)                  | 1.445  | 1.587   | 1.693   | 2.765   | 125 B                          |
@@ -91,6 +92,7 @@ Startup is only half the developer-experience story; build time is the other hal
 | python3 | 0 | interpreted (negligible bytecode) |
 | node / JavaScript | 0 | JIT, no separate build |
 | C (`gcc -O2`) | **~0.05 s** | measured (52 ms) |
+| Zig (`-O ReleaseFast`) | **~0.3 s warm** | measured (296 ms); 4.6 s cold (one-time std build), then cached |
 | Go (`go build`) | **~0.04 s warm** | measured (36 ms); 2.2 s cold (one-time stdlib build), then cached |
 | Rust (`rustc -O`) | **~0.2 s** | measured (205 ms) |
 | JVM Scala (`scala-cli package`, bootstrap) | ~12 s | cold; incremental is faster |
@@ -123,8 +125,15 @@ the *runtime's* fixed init cost does.
   disproves both. SN's ~1.8 ms floor is **Scala Native's own runtime/stdlib bootstrap**, specifically. Go's
   runtime bootstraps in ~1 ms; SN's does not.
 - **Go is the "fast-both" champion:** ~36 ms warm build AND ~1 ms startup — the language's whole selling point,
-  now measured here. Rust is fast-both too (0.2 s build, 1 ms start) with the added memory-safety. So the
-  fast-both regime is populated by C (fastest, brittle), Rust (safe), and Go (safe + fastest build).
+  now measured here. Rust is fast-both too (0.2 s build, 1 ms start) with the added memory-safety.
+- **Zig ties C on startup** (~0.80 ms, this run's median identical to C's, edging Rust and Go), with a
+  manual-memory model — a C-competitor that removes C's footguns (no hidden control flow / allocations, defer
+  cleanup) without a GC or a borrow checker. A **third** answer to "C is brittle", distinct from Rust
+  (borrow-checked) and Go (GC'd): C-level startup and C-level manual control, but legible. Binary 949 KiB
+  (ReleaseFast, static; ReleaseSmall would shrink it).
+- So the **fast-both** regime is populated by **C** (fastest, brittle), **Zig** (C-fast, manual but legible),
+  **Rust** (safe via borrow checker), and **Go** (GC'd, safe, fastest build). Four compiled languages, all
+  ~1 ms startup and sub-second builds; they differ on the *safety-and-control* axis, not on speed.
 
 ## Findings
 1. **C is fastest — ~2.2× bash — but by only ~0.9 ms** (0.77 vs 1.69 ms median). BR's "C faster" confirmed:

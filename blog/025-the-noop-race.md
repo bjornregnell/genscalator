@@ -28,7 +28,7 @@ up: those calls take roughly half a second each, most of which is not the work, 
 up. So the question arose: for the hot, frequently-invoked tools, should we compile to a native binary and skip
 the JVM startup entirely? And if so, which native route?
 
-We ran a quick prestudy: a no-op program (a `main` that does nothing and exits) built five ways, and timed 200
+We ran a quick prestudy: a no-op program (a `main` that does nothing and exits) built ten ways, and timed 200
 to 300 startups of each. A no-op isolates pure startup, with no real work to confound it. It is a prestudy, not
 a rigorous profile (that would want flamegraphs and real workloads; see the end).
 
@@ -39,6 +39,7 @@ Median startup of a no-op, on one Linux box:
 | target                     | median startup | binary size          | needs a runtime? |
 |----------------------------|----------------|----------------------|------------------|
 | C                          | ~0.74 ms       | 15.8 KiB             | no               |
+| Zig                        | ~0.80 ms       | 949 KiB              | no               |
 | Rust                       | ~1.04 ms       | 362 KiB stripped / 12.6 MiB unstripped | no |
 | Go                         | ~1.04 ms       | 1.31 MiB             | no               |
 | bash                       | ~1.59 ms       | 125 B (a script)     | bash             |
@@ -92,6 +93,7 @@ Startup is only half the developer-experience story. The other half is how long 
 |---|---|---|
 | bash / python3 / Node | none | 1.7 / 11.6 / 26 ms |
 | C | ~0.05 s | 0.8 ms |
+| Zig | ~0.3 s (warm) | ~0.8 ms |
 | Go | ~0.04 s (warm) | ~1.0 ms |
 | Rust | ~0.2 s | ~1.0 ms |
 | Scala on the JVM | ~12 s | ~142 ms |
@@ -99,9 +101,10 @@ Startup is only half the developer-experience story. The other half is how long 
 | GraalVM native-image | ~40 s | ~3 ms |
 
 Now the tradeoff is visible on two axes, and four regimes fall out:
-- **Fast-both:** C, Rust, and Go (fast build, ~1 ms start). C is the ideal if you can live with its
-  brittleness; Rust gives the same speed with memory safety; Go adds the fastest build of all (a 36 ms warm
-  rebuild).
+- **Fast-both:** C, Zig, Rust, and Go (fast build, ~1 ms start). C is the ideal if you can live with its
+  brittleness; Zig matches C's startup with manual memory but fewer footguns; Rust gives the same speed with
+  memory safety; Go adds the fastest build of all (a 36 ms warm rebuild). Four compiled languages tied on speed,
+  differing on the safety-and-control axis.
 - **Zero build, moderate start:** the interpreters and bash, an instant loop with startup in the tens of ms.
 - **Slow build, fast start:** Scala Native and GraalVM native-image. You pay a *20 to 40 second build* for a
   near-native startup: wonderful for something you ship once and run a million times, painful for a tool you
@@ -171,6 +174,9 @@ sudo apt install rustc cargo
 
 # Java (the JVM)
 sudo apt install openjdk-21-jdk
+
+# Zig (not in apt; Zig is pre-1.0, so the snap uses the beta channel, or grab a tarball from ziglang.org)
+sudo snap install zig --classic --beta
 ```
 
 **Scala, Scala Native, and GraalVM native-image** all run through one tool, **scala-cli**:
@@ -190,7 +196,8 @@ The exact builds used in this post:
 ```bash
 gcc -O2 noop.c -o noop-c
 go build -o noop-go noop.go
-rustc -O noop.rs -o noop-rs
+rustc -O -C strip=symbols noop.rs -o noop-rs        # strip for a lean binary (362 KiB vs 12.6 MiB)
+zig build-exe -O ReleaseFast noop.zig -femit-bin=noop-zig
 scala-cli --power package noop-native.scala -o noop-native -f                             # Scala Native
 scala-cli --power package --native-image noop-jvm.scala -o noop-graal -f --graalvm-args --no-fallback
 scala-cli --power package noop-jvm.scala -o noop-jvm -f                                    # JVM bootstrap
