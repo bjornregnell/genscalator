@@ -864,3 +864,27 @@ be near useless.
   removes that serialization; (d) the deeper fix is upstream: the wake path should not compete with the agent's
   own worker for CPU. Needs one more clean measurement (bing with the box idle vs mid-compile) to confirm
   contention as the cause vs a canberra cold-cache — logged as a hypothesis, not yet a confirmed mechanism.
+
+## The harness's own notification COPY anthropomorphizes: "Claude Code needs you" vs "idle now" (2026-07-15, BR)
+The idle / turn-end notification reads **"Claude Code needs you"** (with a "just now" timestamp). BR's design point:
+the copy anthropomorphizes a **need** the agent does not have — better would be a **state description**, e.g.
+**"Claude Code is idle now."** Two findings ride on this:
+- **The ape→anthro lure operates at the VENDOR/copy level, not just in the agent's word choices.** The affective-aping
+  thread ([[agent-apes-affect-genuinely-glad-introspection-2026-07-12]]) watches the AGENT reach for affect-words it
+  cannot back; here the HARNESS's OWN copy does it — "needs you" invites the human to read a need / agency into an
+  idle process (blog 021 ape→anthro, sourced from the vendor). State-description ("is idle") is the echt fix: it says
+  what is true (session idle, awaiting input) without a fabricated need. Candidate general rule: harness + agent
+  status copy should describe STATE, not impute WANT.
+  **This is a STRONGER claim than per-model aping (BR flagged it "very much WR data", 2026-07-15):** the agent's own
+  affect-aping is an emergent word-choice a model's echt-discipline can in principle correct; but "needs you" is
+  **vendor-manufactured and ships to EVERY user by DEFAULT** — the anthropomorphization is *engineered into the
+  product surface*, not an artifact of any one model's output, so no amount of agent-side discipline removes it. The
+  ape→anthro lure is therefore not only *emergent from the agent* (blog 021) but *manufactured by the harness*. That
+  is a distinct, systemic finding — a strong **blog beat**: the platform copy itself nudges every user to
+  anthropomorphize, by default, at scale.
+- **The notification is cause-GENERIC, not cause-less (a self-correction).** The agent first over-called it "just a
+  timestamp, no reason" from partial data (BR had only quoted "just now"); the note in fact had content ("Claude Code
+  needs you") — a real reason, just too vague to distinguish turn-end-idle from approval-needed from error. So the
+  opacity is in the SPECIFICITY, not the absence. (Also a small live instance of the agent over-inferring from a thin
+  signal — the over-response pattern, [[agent-affective-analogs]].) A more useful copy would name the TRIGGER
+  (idle / needs-approval / errored), not just "needs you."
