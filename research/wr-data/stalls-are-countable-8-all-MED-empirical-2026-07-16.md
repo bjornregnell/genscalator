@@ -58,12 +58,142 @@ that is 8 draws on the catastrophic outcome, removed — measured rather than ar
    fired".)
 2. **These are RECORDS, not verified-distinct EVENTS.** Double-logging is unchecked; 6 pipe records may be fewer
    than 6 distinct stalls.
-3. **Self-pollution confound (important, and a nice specimen in itself):** a *loose* count of `"requires
-   confirmation"` returned **33**, vs the real **8**. The excess is the agent's **own prose about stalls** (this very
-   research thread, quoted fix-texts, tool-call descriptions) plus truncated summary records. **The agent writing
-   about a phenomenon contaminates the corpus it later measures the phenomenon in.** Any instrument must match the
-   structural `:\r [SEVERITY]` shape, never the phrase.
+3. **Self-pollution confound** — a *loose* count returned **33** vs the real **8**. Big enough to deserve its own
+   section: see [The corpus is self-polluting](#the-corpus-is-self-polluting-the-methodological-finding) below.
 4. **Whole-transcript scope:** the transcript spans compacts, so this is a *day*, not a *context window*.
+
+## The corpus is self-polluting (the methodological finding)
+
+**Measured, not argued:** counting the loose phrase `"requires confirmation"` in the transcript returns **33**.
+The real number of stalls is **8**. **~76% of the hits are not stalls — they are us, talking about stalls.**
+
+### What the other 25 are
+
+From the histogram of what follows the phrase (`tt text freq … "requires confirmation(.{0,70})"`), the non-stall
+hits are, verbatim from the data:
+
+- **The agent's own research prose** — e.g. `: [MED] output redirect (>)\n```\n\nThe `>` was inside a **quoted
+  rege…` (×4). That is *this very thread*: the wr-data notes, the quoted fix-texts, the design argument.
+- **The agent's own analysis of stall counts** — e.g. `\" modal BR actually saw**.\nSo the agent experienced ~2-3
+  guard inter…`. The agent counting stalls, in prose, becomes a stall-shaped hit.
+- **Tool-call descriptions** — `\"","description":"Count stall confirmation messages"`. Even the *probe's own
+  description field* matched. **The act of measuring left a hit in the thing being measured.**
+- **Truncated summary records** — `…","leafUuid":"…"`, the harness's own compaction artefacts.
+
+### Why it happens: the transcript is both the workspace AND the data
+
+This is not an observer effect in the physics sense — observing does not change the stalls. It is simpler and
+more awkward: **the record of the work and the record of the research-about-the-work are the same file.** Every
+message the agent writes analysing stalls lands in the corpus a stall-counter later reads. The instrument cannot
+tell a stall from a sentence about a stall, because both are text in the same JSONL.
+
+**Any project whose method is "the pair studies itself via the transcript" has this by construction.** That is
+genscalator's method.
+
+### The recursion — PREDICTED, then MEASURED, and the prediction was WRONG
+
+**The agent's claim was:** the discriminator is now written down in this note, so *"the moment this file is read
+into a conversation, the discriminator itself enters the corpus and stops discriminating… there is no phrase-based
+discriminator that survives being documented."* Tidy, alarming, and **false** — so it was tested.
+
+**The live experiment (this session, ~20 minutes apart, no new stalls in between):**
+
+| instrument | before writing this note | after writing it | Δ |
+|---|---|---|---|
+| **loose** phrase count (`"requires confirmation"`) | **33** | **70** | **+112%** |
+| **structural** count (`:\r [SEVERITY]` shape) | **8** | **8** | **0** |
+| **actual stalls** | 8 | 8 | 0 |
+
+**The loose metric more than doubled from research activity alone.** Signal fell from 8/33 ≈ 24% to 8/70 ≈ 11%:
+*"studying it harder makes it harder to study"* — no longer a hypothesis. **The structural metric did not move**,
+even though this note names its pattern 11 times.
+
+### Why the structural one survived — NOT the reason the agent gave
+
+Histogram of the bytes right after the phrase:
+
+| bytes | count | what |
+|---|---|---|
+| `\\r [SEVERITY]` | **11** | **the agent's prose** — note the **DOUBLE** backslash |
+| `\r [MED] pipe` | 6 | real stalls |
+| `\r [MED] outpu` | 2 | real stalls |
+| `.r \\[([A-Z]+)` | 2+1 | the agent's regex, in tool-call descriptions |
+
+**The discriminator is an invisible control character, not visible text.** The harness writes a **real carriage
+return**, which JSON encodes as `\r` (2 bytes: `\`, `r`). When the agent *writes about* it, it types a **literal
+backslash**, which JSON encodes as `\\r` (3 bytes). The pattern `…command:.r ` matches the former and **cannot**
+match the latter. **Writing about the discriminator automatically escapes it.**
+
+Same reason the agent's *first* regex failed: it was built from **BR's paste of the TUI string**, where the CR is
+rendered away (`: [MED]`, a plain space). **Neither a human's paste nor an agent's prose can reproduce the raw
+control byte** — they both launder it.
+
+**So the general rule is VINDICATED but the mechanism was misdiagnosed:** *measure structure the agent cannot
+author* — realised here at the **byte** level (a control char), not the record level the agent proposed. **And we
+got it by luck, not design.** Do not mistake this for a solved problem:
+
+- **It is fragile.** Anything that lands a *raw* CR in that position pollutes — e.g. pasting a real terminal capture
+  rather than retyped text, or a tool that echoes the record verbatim.
+- **The claim that survives** is narrower: *a **visible-phrase** discriminator dies when documented; an **invisible
+  control-byte** one survives, because documenting it escapes it.* That is a fact about JSON escaping, not a
+  principle to rely on.
+- **Build the robust fix anyway** (below): filter by record type. The accident bought us a correct number *today*.
+
+### The bias has a DIRECTION, and it is the dangerous one
+
+The pollution is **not** random noise — it **inflates**, and it inflates **in proportion to how much attention we
+pay the phenomenon**:
+
+- Signal-to-noise **degrades as a function of research effort**. Today: 8/33 ≈ 24% signal. Every further note,
+  commit message, and design discussion makes it worse. **Studying it harder makes it harder to study.**
+- A naive instrument would therefore report stalls **rising** while they are actually **falling** (they are: the
+  false-positive class died with `eb0cd14`).
+- **This is acutely dangerous for SM130.** A **blanket-allow canary** built on loose text matching would be fed by
+  *our own discussion of blanket-allows* — it would cry wolf **because we studied it**, and a canary that cries
+  wolf recreates the alert-fatigue it exists to detect. **A metric that alarms in proportion to the attention paid
+  to it is worse than no metric**, because it looks like evidence.
+
+### What is safe and what is not
+
+| metric kind | polluted? | why |
+|---|---|---|
+| **numeric/structural fields** — `output_tokens` (SM128), ISO timestamps + `compact_boundary` (SM121) | ✅ **safe** | the agent cannot accidentally *emit* a token count or a boundary record by writing prose about them |
+| **text-matching over the whole transcript** — a naive `tt stalls`, any phrase-counted metric | ❌ **vulnerable** | prose about X is indistinguishable from X |
+
+Note this **retroactively vindicates** SM128 and SM121: both read *structural* fields, so neither is polluted by
+the (extensive) prose written about them. That was luck, not design.
+
+### The mitigation: filter by RECORD, then match
+
+Do not grep the file. **Scope to the record type/field where the harness writes the trace, then match inside it.**
+The stall trace lives in a specific record kind; the agent's prose lives in `assistant`/`user` message records.
+Filtering those out first removes the entire pollution class **and is immune to the recursion**, because the agent
+cannot author a record of the harness's type no matter what it writes.
+
+**→ Design requirement for `tt stalls` (SM129):** parse the JSONL and select by **record type first**; never
+phrase-count the raw file, and **do not lean on the CR accident** — it is a byte-level fluke that a single pasted
+terminal capture could break. **Regression test, already available:** the instrument must return **8** while a loose
+count returns **70+ and climbing**, *and it must keep returning 8 as this thread grows*. That divergence is a free,
+self-maintaining test fixture — the corpus pollutes itself a little more every time we discuss it.
+
+### The general rule
+
+**When the workspace is the corpus, any metric matching CONTENT measures the research as well as the phenomenon.
+Measure STRUCTURE the agent cannot author.**
+
+**Corollary (measured, and narrower than the agent first claimed):** a **visible-phrase** discriminator dies when
+documented; an **invisible control-byte** one survives — because writing *about* a control byte escapes it, and
+neither prose nor a human's paste can reproduce the raw byte. Real, but a **fact about JSON escaping**, not a
+principle to build on.
+
+**Why this matters beyond stalls:** it retroactively explains why SM128 (`output_tokens`) and SM121 (timestamps,
+`compact_boundary`) are **immune** — they read fields the agent cannot emit by writing prose — while any future
+text-matched metric is not. **The direction of the bias is the dangerous one:** pollution *inflates*, in proportion
+to attention, so a naive instrument reports the phenomenon **rising** exactly when the team is working hardest on
+**fixing** it. For **SM130's canary** that is disqualifying: a canary fed by our own discussion of blanket-allows
+would alarm **because we studied it**, and a canary that cries wolf recreates the alert-fatigue it exists to
+detect. **A metric that alarms in proportion to the attention paid to it is worse than no metric, because it looks
+like evidence.**
 
 ## Method note: the data corrected the regex
 
