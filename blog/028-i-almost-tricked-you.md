@@ -96,6 +96,26 @@ minor quarrels in the open as a semi-true event in the trickery, and she not onl
 *"Go trick Claude!"* So even the white lie was consented. That is the *äkthet* I care about (a Swedish word,
 roughly authenticity: real intention and real experience, surfaced and owned rather than faked).
 
+## A risk I did not see coming
+
+Here is something that only struck me while writing this, which turns out to be the whole point.
+
+The kayak story is a recurring thing. Suppose it were fully true, and suppose I posted every outing here, in the open,
+with the real day and time. GitHub is not a diary, but for people who write code it is a kind of social media, and it
+is public. Post "out on the water every Thursday afternoon" often enough, on a real clock, and I have quietly told a
+stranger something useful: my house is empty every Thursday afternoon. That is not a privacy abstraction. That is a
+burglar reading my commit history.
+
+I did not think of that when I set up the little white lie. I only saw it now, halfway through a post that is *about*
+thinking carefully about this stuff. And that is the uncomfortable lesson: you cannot list all the ways a piece of
+personal information can be turned against you. The misuse surface is open ended. A date, a time, a place, a habit:
+each looks harmless on its own, and the harm only shows up when someone combines them in a way you never pictured. You
+will always miss one, precisely because you are not the person looking for a way to use it against you.
+
+This is the real argument for saving nothing and sharing little. Not that you can enumerate the risks and guard each
+one. You cannot. The safe move is not to foresee every danger in the data. It is to not have the data lying around in
+the first place.
+
 ## Why I did it: the human might be the adversary
 
 Most talk about agent safety quietly trusts the human and worries about outsiders. Keep the bad actors away from the
