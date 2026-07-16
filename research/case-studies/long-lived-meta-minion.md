@@ -550,6 +550,21 @@ Every deviation from this protocol, every refinement of an RQ or the push trigge
   design-science literature; (b) I treated *improving* as an objective we chose — Table 2.1 makes improving /
   qualitative / flexible **definitional** for the strategy. Both were plausible and both were wrong: a specimen of
   **summary-depth fluency reading as grounding**.*
+- *2026-07-17 00:4x — 🔴 **THREAT TO THIS STUDY'S CORE PREMISE, found by accident while pinning an unrelated
+  finding to SM085.** **SM085(a) (BR's own pin, 2026-07-14) defines "minion" as the CHAT-STEERABLE sub-agent —
+  *"aspirational until resume is reliable"* — citing SM081's LIVE result: **fable resumed 0/2**, claude-code-guide
+  2/2.* **Our minion is FABLE and its entire design is LONG-LIVED**, i.e. it depends on `SendMessage` resume — the
+  exact capability measured **0/2 for fable**. **Push 1 proves nothing about this** (a fresh spawn is not a resume).
+  ⇒ **§5's "one long-lived minion, not a fresh Agent per push" may be unbuildable on fable**, T2 (kill/restart) may
+  be **moot**, and P4d/§7's `PATTERN` slot — *the minion's only unique value* — **dies with it**, since a
+  non-resumable minion is a fresh spawn every time and cannot see across turns.
+  ⚠️ **The way this was found is itself the datum: BR and the agent designed a long-lived fable minion for ~90
+  minutes with a 3-day-old pin on BR's own board saying that is the flaky configuration.** **THIRD
+  *carried-not-armed* specimen tonight**, after SM015 (which had already answered two of RQ4's sub-questions) and
+  [[agent-blind-to-input-channel-and-timing]] (broken twice). **The substrate held the answer all three times.**
+  **TEST ON PUSH 2** — the first resume is the experiment. **If it fails, §5 needs RE-DECIDING, not re-wording**
+  (candidate: claude-code-guide resumed 2/2, but it is harness-domain-scoped; or accept fresh-spawn minions and
+  give up `PATTERN`, i.e. **fall back to PARTITION, which RQ4 already says buys coverage but never confidence**).*
 - *2026-07-17 00:35 — ⭐ **THE MINION IS SPAWNED. The intervention has begun; this protocol stops being
   hypothetical.** `general-purpose` + **CF5/fable**, background, briefed **BY POINTER** (told to Read
   `meta-minion-brief.md` rather than handed a pasted copy) — **the file-brief design's first payoff**: re-sendable,
