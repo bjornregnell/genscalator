@@ -164,6 +164,9 @@
   "hooks": {
     "PreToolUse": [
       { "matcher": "Bash", "hooks": [ { "type": "command", "command": "tt guardcheck hook" } ] }
+    ],
+    "SessionStart": [
+      { "hooks": [ { "type": "command", "command": "tt hangover hook --threshold-sec 10" } ] }
     ]
   }
 }
