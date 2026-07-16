@@ -71,9 +71,18 @@ object Guardcheck {
       "raw grep with -A/-B/-C context flags is not allowlisted -> guard stall (the banned reflex)",
       "use tt text context <file> <regex> <n>, or tt text grepr <abs-dir> <ext> <regex>",
       has(raw"\bgrep\s+-\S*[ABC]")),
+    // Two DIFFERENT causes fire this one check, so the fix must name both. The guard scans raw bytes, not the
+    // unquoted skeleton, so a `>` inside a QUOTED PATTERN arg (tt text grepr ... "^//> using file") trips it with
+    // no redirect present — twice in 3 days. Naming only the redirect fix taught nothing in that case and the
+    // agent bounced off it; a fix that does not apply is worse than silence. See the wr-data note
+    // prohibition-does-not-arm-the-reflex-use-a-hex-escape-2026-07-16.
     Check("MED", "output redirect (>)",
-      "a > redirect (esp. combined with cd) trips the path-resolution guard",
-      "give the tool a file-sink flag; do not redirect around it", has(raw"[^0-9]>\s*\S")),
+      "a > redirect (esp. combined with cd) trips the path-resolution guard — and a > inside a QUOTED pattern/string arg fires this same check, since the guard scans raw bytes",
+      "if it IS a redirect: use the tool's file-sink flag or run_in_background; never redirect around it. " +
+        "If the > sits inside a quoted regex arg: write it as the Java-regex hex escape \\x3E — same match, no > in the command " +
+        "(also \\x7C pipe, \\x3C <, \\x26 &, \\x3B ;, \\x60 backtick). Do NOT hex-escape a regex metachar you meant AS a metachar: " +
+        "\\x28 is a LITERAL paren, ( is a group.",
+      has(raw"[^0-9]>\s*\S")),
   )
 
   // ---- message checks (a commit message going to git commit -m) ----

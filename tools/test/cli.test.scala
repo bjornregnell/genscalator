@@ -800,6 +800,18 @@ class CliSuite extends munit.FunSuite:
     assertEquals(run("guardcheck", "cmd", "grep -B2 foo file")._1, 1)
     assertEquals(run("guardcheck", "cmd", "grep -C3 foo file")._1, 1)
   }
+  // PURE (no subprocess): TWO different causes fire the one `>` check — a real redirect, and a `>` inside a quoted
+  // pattern arg (the guard scans raw bytes, not the unquoted skeleton). Pin that the fix text teaches the hex
+  // escape for the second cause: it fired twice in 3 days, and a fix naming only redirects did not apply, so the
+  // agent bounced off it. See wr-data prohibition-does-not-arm-the-reflex-use-a-hex-escape-2026-07-16.
+  test("guardcheck: the > check fires on a quoted pattern arg, and its fix teaches the hex escape") {
+    val redirect = Guardcheck.cmdChecks.find(_.name == "output redirect (>)").get
+    val quotedPattern = """tt text grepr /home/x scala "^//> using file""""
+    assert(clue(redirect.hit(quotedPattern)))                     // fires with NO redirect present
+    assert(clue(redirect.hit("scala-cli compile tools > out.txt"))) // still fires on the real thing
+    assert(clue(redirect.fix).contains("\\x3E"))                  // teaches the escape
+    assert(clue(redirect.fix).contains("\\x28"))                  // warns: do not escape a metachar you meant
+  }
   test("guardcheck hook: HIGH finding → deny decision JSON") {
     val json = """{"tool_name":"Bash","tool_input":{"command":"tt git commit --message-file /dev/stdin"}}"""
     val (code, out, _) = run("guardcheck", "hook", json)
