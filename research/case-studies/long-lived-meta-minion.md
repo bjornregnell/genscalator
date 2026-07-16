@@ -550,6 +550,35 @@ Every deviation from this protocol, every refinement of an RQ or the push trigge
   design-science literature; (b) I treated *improving* as an objective we chose — Table 2.1 makes improving /
   qualitative / flexible **definitional** for the strategy. Both were plausible and both were wrong: a specimen of
   **summary-depth fluency reading as grounding**.*
+- *2026-07-17 00:35 — ⭐ **THE MINION IS SPAWNED. The intervention has begun; this protocol stops being
+  hypothetical.** `general-purpose` + **CF5/fable**, background, briefed **BY POINTER** (told to Read
+  `meta-minion-brief.md` rather than handed a pasted copy) — **the file-brief design's first payoff**: re-sendable,
+  and CO4's context never carries it. **Push 1 = CO4's own self-report of this session**, with the two repos' nine
+  commits as the artifact. The brief's guard-discipline warning was included because **sub-agents inherit no skills**
+  and BR was about to be unreachable — a stalled minion with an absent human is a dead minion. **Deliberate probe
+  planted:** claim 8 (*three arg-shape errors in the first six calls*) is **unverifiable from the minion's
+  position** — it either says CANNOT VERIFY or it confabulates. **Result unknown at write time; do not predict it.***
+- *2026-07-17 00:35 — **RE-SCOPED to the solo block (BR's option 1).** §11.5 struck + annotated. **The cycle is now
+  TWO-PHASE (joint → solo) and the phases must NEVER be pooled**: the joint phase carried the Hawthorne confound, the
+  solo phase trades it for rot. **Honest ledger: we removed the observer leg with a demonstrated catch rate (BR) and
+  kept the one with none yet (the minion).** A bet, not a finding.*
+- *2026-07-17 00:3x — **agent error, self-caught (T3): `tt mode add afk` run ~2 minutes EARLY.** BR was still at the
+  keyboard (*"not yet afk but as soon as i have read the coming menu"*); reverted with `tt mode rm afk`. **The INVERSE
+  of the day's trap, same defect class** — daytime was *said-but-not-done*, this was *done-before-true*; both are
+  **the mode line diverging from reality**. Third strike for that class tonight (cf. SM134 #3, #5). ⚠️ **The
+  mechanism is the interesting part: the resume prompt's own "saying it in chat FEELS like doing it" lesson is what
+  CAUSED it** — the agent, primed to *run* rather than *announce*, ran a beat too early. **A hot in-agent safeguard
+  produced a NEW error while successfully preventing its mirror image.** BR's disposition: *"not a big deal; we both
+  own the mode echt responsibility"* ⇒ **the mode line is JOINT state, not the agent's alone.***
+- *2026-07-17 00:4x — **agent error ×2, tool-caught (T3): two consecutive `Edit` failures from reconstructing file
+  text from MEMORY** — dropped `(SM132 et al.)` from a 3-line span, then invented a change-log timestamp
+  (`00:1x` for what was `23:3x`). Both trivial in effect. **Logged because: (a) it is the MECHANICAL-PRECISION-FIRST
+  prediction firing at ~90 minutes and low rot — the boring things fail first, exactly as the brief warns; (b) THE
+  TOOL CAUGHT IT, NOT THE AGENT.** `Edit` demands exactness, so it is a **structural** check on a class the agent
+  provably cannot self-police — it made the same error twice in a row *while writing about making errors*. **The
+  day's load-bearing finding, for once pointing in the agent's favour: the tool interface saved it.** ⇒ Sharpens
+  [[edit-anchor-short-unique-substring]]: the rule is not just *short anchors*, it is **never reconstruct, always
+  re-read**.*
 - *2026-07-16 23:5x — **LANE REVISED: `Explore` → `general-purpose` + CF5/fable, minion writes its own log.** BR's
   two questions, answered separately and honestly: **token-spending mode did NOT change the recommendation** (the tool
   lane costs no tokens; a budget cannot buy a persona) — but **write-to-its-own-dir did**, for a reason neither of us
@@ -597,6 +626,44 @@ Every deviation from this protocol, every refinement of an RQ or the push trigge
    ([[match-complexity-to-task-not-agent-elegance]]). Better as a follow-up once the practice is worth studying.
 3. ~~**The file's home**~~ — **RESOLVED** by BR: `research/case-studies/` (see the banner).
 4. **Push cadence** — T1–T3 as specified, or looser/tighter.
-5. **When to stop** — this protocol covers **tonight's joint web work only**. Carrying the minion into the safe-solo
-   block (SM132 et al.) is a **separate decision**, because there BR is absent and the minion becomes the *only*
-   second observer — a materially different, and more load-bearing, role.
+5. ~~**When to stop** — this protocol covers **tonight's joint web work only**.~~
+   > **⚠️ RE-SCOPED 2026-07-17 00:35 on BR's explicit call (his "option 1"). Struck, not deleted.**
+   > **The joint web work never happened.** BR dropped it (`:Z`) once the session went deep on genscalator research,
+   > so the cycle's **vehicle** changed from *BR-present joint design* to a *BR-absent safe-solo block*. The agent
+   > flagged the drift rather than letting the scope move silently; **BR chose to re-scope rather than narrow.**
+   >
+   > **⚠️ WHAT IT COSTS — the study's biggest change since it was written, stated plainly:**
+   > **§0's observer triangulation loses a leg.** Tonight had **three** observers (BR · CO4 · minion). The solo block
+   > has **two**, and **the minion becomes the ONLY second observer.** That is worse than it sounds, because
+   > **tonight's evidence is that the HUMAN leg did nearly all the catching**: BR overruled the `hangover?` chip
+   > correctly, out-diagnosed the agent's own tool twice, and proposed a **rename** where the agent proposed a
+   > redesign. ⇒ **We are removing the leg with a demonstrated catch rate and keeping the leg with none yet**
+   > (push 1 was still in flight at re-scope time — its rate is *unknown*, not *zero*).
+   >
+   > **✅ BR's CORRECTION, 00:4x — he is right, and the agent over-claimed the loss.** *"no big deal; we continue
+   > action research tomorrow aswell and then i can triangulate."* **Action research is CYCLICAL and LONGITUDINAL**
+   > ([CS] ch. 7) ⇒ **triangulation is a property of the STUDY, not of a single cycle.** His leg is **TIME-SHIFTED,
+   > not removed**: the minion writes to `minion-log/`, the agent commits everything, the change log holds the
+   > trajectory — **so BR observes the ARTIFACTS tomorrow instead of the PROCESS live.** ⭐ **The write-to-own-dir +
+   > commit-everything design is exactly what makes his observation deferrable** — his own §5 decision bought the
+   > thing that now rescues his own §11 leg, which neither of us saw coming.
+   >
+   > **⚠️ The residual is real but small, and worth keeping:** *live* catching **PREVENTS**; *deferred* catching
+   > **CORRECTS**. And **some signal is live-only and genuinely lost**: the `hangover? 1m` specimen required BR to be
+   > *watching the mode line at that instant*, and it is **unrecoverable from any artifact** because **the chip
+   > leaves no trace** (SM134 #3: *no provenance*). ⇒ **The solo block does not lose BR's judgment. It loses the
+   > transient, unrecorded signal** — which is itself a fresh argument for SM134 #3, arrived at from the opposite
+   > direction.
+   >
+   > *(Recorded without further comment: BR corrected this paragraph in flight — the live human leg catching the
+   > agent's error about whether the live human leg matters.)*
+   >
+   > **Why it is still right (BR's call; the agent agrees):** solo is **exactly where the agent is least checkable**,
+   > so a second observer is worth most there. ⭐ **The value is highest precisely where the evidence for it is
+   > weakest.** That is an honest description of a **bet**, not of a finding, and it should be read as one.
+   >
+   > **Consequences that must survive into any analysis:**
+   > - ⚠️ **§9-Internal's confound CHANGES SHAPE, it does not go away.** The joint phase had **BR-present
+   >   (Hawthorne)** as a live confound; the solo phase **removes** that one and **adds rot** as the work lengthens.
+   > - ⇒ **This is now a TWO-PHASE cycle** — **joint 23:11–00:35** → **solo 00:35–** — and **the phases are NOT
+   >   comparable. Never pool them.** The phase boundary must appear wherever these data are reported.
