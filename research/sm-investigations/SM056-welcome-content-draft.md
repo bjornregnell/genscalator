@@ -88,8 +88,9 @@ deliverable. Proposed command file (path to confirm against CC plugin command co
 > `docs/statusline-manual.md`.
 >
 > **The mode line (EXPERIMENTAL, new).** An optional *second* status line showing the **declared joint
-> state-of-mind** - short labels like `token-spending` or `hot-harvest` that either you or the agent add
-> (`tt mode add <label>`) or clear (`tt mode rm <label>`). Turn it on by appending `--mode-line` to the
+> state-of-mind** - short labels like `tok-spend` or `hot-harvest` that either you or the agent add
+> (`tt mode add <label>`, or the bare shorthand `+tok-spend`) or clear (`tt mode rm <label>`, or `-tok-spend`).
+> Turn it on by appending `--mode-line` to the
 > statusline command above. **Heads-up for alpha-testers: this is brand-new and experimental** - the mode
 > cues, the label vocabulary, and the add/remove operation are still settling and may change between releases.
 > Feedback very welcome.

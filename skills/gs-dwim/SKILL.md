@@ -1,6 +1,6 @@
 ---
 name: gs-dwim
-description: Do-What-I-Mean in-session genscalator commands cued by a leading `gs`. Trigger whenever the user's message begins with `gs ` (or is a bare `gs`) — e.g. "gs help", "gs cues", "gs cue similar", "gs dances", "gs dance compact", "gs help tt", "gs help tt search text", "gs tt chrono", "gs status", "gs status line on", "gs where", "gs menu", "gs reqt", "gs term rot", "gs test", "gs allow", "gs help allow", "gs warm", "gs init", "gs new app todo ./my-app". Interpret the intent do-what-I-mean style (nearest-in-meaning, "or similar"), not by exact string match, and perform the matching genscalator action.
+description: Do-What-I-Mean in-session genscalator commands cued by a leading `gs`. Trigger whenever the user's message begins with `gs ` (or is a bare `gs`) — e.g. "gs help", "gs cues", "gs cue similar", "gs dances", "gs dance compact", "gs help tt", "gs help tt search text", "gs tt chrono", "gs status", "gs status line on", "gs where", "gs menu", "gs reqt", "gs term rot", "gs test", "gs allow", "gs help allow", "gs warm", "gs init", "gs new app todo ./my-app". ALSO trigger on a bare mode-toggle cue led by `+` or `-` on a mode label with NO `gs` prefix — e.g. "+afk", "-solo", "-afk -solo", "+dumb-zone?" — and run the matching `tt mode add|rm`. Interpret the intent do-what-I-mean style (nearest-in-meaning, "or similar"), not by exact string match, and perform the matching genscalator action.
 allowed-tools: Read Bash(tt text *) Bash(tt files *) Bash(tt log *) Bash(tt chrono *) Bash(tt statusline *) Bash(tt parsereqt *) Bash(tt gitinfo *) Bash(tt doc *) Bash(tt mode *) Bash(scala-cli test *)
 ---
 
@@ -65,6 +65,29 @@ gracefully). The per-command behaviour is specified below.
   proactively declare its own** as the MO shifts — `tt mode add hot-harvest` when harvesting, `rot-vigil`
   when watching rot, `high-context` as fill rises, `solo` on an AFK handoff — and `rm` them when they end, so
   the mode line stays a live, mutually-visible reflection of the shared state.
+
+### The bare `+`/`-` mode shorthand — a non-`gs`-led cue (SM120)
+
+The shortest way to change a mode is a **bare message led by `+` or `-`** on a mode label, with **no `gs`
+prefix**: `+afk` adds, `-afk` removes. This is the easiest human cue for the joint state-of-mind and is proven
+live (BR typed `+afk +solo`, `-afk -solo`, `+dumb-zone?`). Recognise it and run the matching `tt mode add|rm
+<label>` — same effect as `gs mode add|rm`, without the ceremony.
+
+- **`+<label>`** → `tt mode add <label>`   ·   **`-<label>`** → `tt mode rm <label>`.
+- **Composes left to right:** `+afk +solo` adds both; `-afk -solo` removes both; mixed `+solo -afk` is fine.
+  Run one `tt mode` call per label, in order.
+- **The `?` suffix (SM118)** marks an **inferred / member-check** mode — `+dumb-zone?` = "I hypothesise the
+  agent may be in dumb-zone", a nudge to confirm or deny, not an assertion. NB `tt mode` does not yet accept
+  `?` in a label (SM118 covers that tool support), so for now treat a `?`-mode as a **conversational
+  hypothesis** to acknowledge; persist only the confirmed (no-`?`) form once agreed, never pass `?` to the tool.
+- **Only for a genuine mode label** (afk, solo, tok-spend, rot-vigil, hot-harvest, high-context, racing,
+  human-stress, delegation, …). A leading `+`/`-` on a non-mode word is NOT this cue — do not force it; fall
+  back to the DWIM contract (ask if genuinely ambiguous, e.g. `+1` or `-v` is not a mode toggle).
+- **No confirmation** — the mode file is allowlisted, non-sensitive state (`~/.claude/gs-modes`), exactly like
+  `gs mode`. Just do it, then let the mode line (or a one-line ack) reflect the new state.
+
+This is the no-prefix sibling of the `gs mode +afk` synonym in the crib below: the crib absorbs the `gs`-led
+variants, this absorbs the bare ones.
 - **`gs cues`** — list the cues (human→agent and agent→human) and what each means. **Source:
   `docs/gs-registry.md`** (the ready-to-grab Cues tables — read it and render; it is kept in sync with
   `docs/foundations.md` + the `cue-*` memories, which stay canonical if the registry looks stale). Present
