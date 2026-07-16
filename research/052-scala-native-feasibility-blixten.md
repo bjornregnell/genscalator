@@ -55,3 +55,20 @@ methods that reference them. So `gs native` can parse it and act, rather than ju
 **Next (BR-gated):** port `statusline.clock()` off `java.time` (posix or arithmetic behind a seam), re-compile to
 confirm the full hot tool goes native, then wire the launcher's stateless per-call dispatch (051 §7). Artifacts of
 this probe live in the session scratchpad, not the repo.
+
+## Follow-up (overnight 2026-07-16): clock ported, and statusline PROVEN native
+
+- Ported `statusline.clock()` off `java.time` to pure-arithmetic formatting + a `java.util.TimeZone.getOffset`
+  local-offset lookup (JVM-identical output, full suite green; commit `a56ff43`). The native retry then failed on
+  just **2 symbols — `java.util.TimeZone` (`getDefault` + the type), also unported in SN 0.5.12** — down from the 8
+  `java.time` symbols. So the formatting ports; only the **tz-offset lookup** is platform-blocked.
+- **Decisive probe:** with a *UTC* clock (no `TimeZone` at all), the **entire statusline compiles, links, AND runs
+  native** — verified output `genscalator  01:46:40  ctx-fill 41%  cost $12`, full ANSI colours, MiniJson parsing +
+  the gauges all working. **So the tz-offset is the LAST blocker — there is no second hidden gap** (the
+  `CharsetProvider → NoProviders` line is info, not an error). The UTC change was a temporary probe, reverted +
+  verified (local `03:46:40` restored, `git status` clean).
+- **Conclusion:** statusline is **exactly one platform-seam away** from a native hot-path tool. The seam is small and
+  well-defined — the local-offset lookup behind a thin `def localOffsetMs(nowMs): Int`: `TimeZone.getOffset` on the
+  JVM, POSIX `localtime` (`scala.scalanative.posix.time`) on SN. Everything else (parsing, gauges, colours,
+  formatting) is already portable. Building the seam (scala-cli platform-conditional compilation) is the bounded
+  remaining task — better done attended.
