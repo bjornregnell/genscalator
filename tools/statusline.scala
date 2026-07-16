@@ -373,10 +373,14 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     var tiredChars: Option[Long] = None // human-char `tired?` nudge threshold; None = OFF (opt-in via --tired-chars)
     var noTok      = false // --no-tok: skip the transcript read entirely (no tok gauge)
     var rotOnly    = false // --rot-only: show rot? but DROP the secondary tot gauge (also auto-dropped if narrow)
-    // SM121 hangover? chip thresholds (seconds). Defaults: show past 10s (BR's data-capture setting — a prototype
-    // dial, deliberately noisy to learn the real gap distribution); orange past 5min; BLINK past 1h. A compact is
-    // ~140s MEASURED (compact-timing.log, 7 pairs: 124-162s), so it lands in the calm band by design.
-    var hangoverSec    = 10L
+    // SM121 hangover? chip thresholds (seconds). Orange past 5min; BLINK past 1h. A compact is ~140s MEASURED
+    // (compact-timing.log, 7 pairs: 124-162s), so it lands in the calm band by design.
+    // WHY 60s and not the hook's 10s — the two surfaces have DIFFERENT noise profiles, measured 2026-07-16:
+    // the HOOK fires once per SessionStart (10s is free there, and is BR's data-capture dial), but this CHIP
+    // re-renders EVERY turn, and normal work (think + a tool call) routinely exceeds 10s — an 18s gap was just a
+    // command running. So 10s sits BELOW the working noise floor and the chip never clears. 60s is the first
+    // value above it. Still a first cut: tune from the gap distribution the hook is now collecting.
+    var hangoverSec    = 60L
     var hangoverWarn   = 300L
     var hangoverDanger = 3600L
     val pos = scala.collection.mutable.ArrayBuffer[String]()
