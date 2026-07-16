@@ -67,24 +67,31 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     *   agentTokens = sum of assistant `message.usage.output_tokens`, EXCLUDING sub-agent sidechains
     *                 (`isSidechain:true`) so the gauge reflects THIS conversation's processing volume.
     *   humanChars  = sum of the LENGTH of user `message.content` when it is a plain STRING — a genuine typed
-    *                 prompt; tool-result user records carry an array and are (correctly) excluded. */
+    *                 prompt; tool-result user records carry an array and are (correctly) excluded.
+    *   sinceWarpTokens = like agentTokens but RESET at each {type:system, subtype:compact_boundary} marker
+    *                 (SM128) — output tokens since the last warp (compact/clear) = the current-window rot? signal. */
   object TranscriptStats:
-    def of(lines: IterableOnce[String]): (agentTokens: Long, humanChars: Long) =
+    def of(lines: IterableOnce[String]): (agentTokens: Long, humanChars: Long, sinceWarpTokens: Long) =
       var tok = 0L
       var chars = 0L
+      var sinceWarp = 0L // SM128: agent output tokens since the last warp (compact_boundary) = the rot? signal
       lines.iterator.foreach: line =>
         try
           val o = MiniJson.parse(line).flatMap(_.obj).get // .get throws on malformed -> caught below -> line skipped
           o.get("type").flatMap(_.str) match
             case Some("assistant") if !o.get("isSidechain").flatMap(_.bool).getOrElse(false) =>
               o.get("message").flatMap(_.obj).flatMap(_.get("usage")).flatMap(_.obj)
-                .flatMap(_.get("output_tokens")).flatMap(_.num).foreach(n => tok += n.toLong)
+                .flatMap(_.get("output_tokens")).flatMap(_.num).foreach: n =>
+                  tok += n.toLong
+                  sinceWarp += n.toLong
             case Some("user") =>
               o.get("message").flatMap(_.obj).flatMap(_.get("content")).flatMap(_.str)
                 .foreach(s => chars += s.length)
+            case Some("system") if o.get("subtype").flatMap(_.str).contains("compact_boundary") =>
+              sinceWarp = 0L // a warp (compact) resets the current-window rot count (SM128)
             case _ =>
         catch case _: Throwable => () // skip unparseable / unexpected lines — never crash the prompt
-      (tok, chars)
+      (tok, chars, sinceWarp)
 
   /** Local wall-clock HH:MM:SS from an epoch-ms (from --now-ms in tests, else System.currentTimeMillis). PURE.
     * Hand-rolled WITHOUT java.time — Scala Native 0.5.12 has not ported java.time (research/052), and this is the
@@ -136,8 +143,8 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
 
   /** PURE: statusLine JSON + current time → the one-line status ("" if nothing usable / not JSON). */
   def render(json: String, nowMs: Long, warn: Double = 80, ctxWarn: Double = 30, dumbZone: Double = 75, autoCompact: Double = 92,
-             tokens: Option[Long] = None, humanChars: Option[Long] = None,
-             tokWarn: Long = 3_000_000L, tokDanger: Long = 6_000_000L, tiredChars: Option[Long] = None): String =
+             rotTokens: Option[Long] = None, totTokens: Option[Long] = None, showTot: Boolean = true, humanChars: Option[Long] = None,
+             tokWarn: Long = 200_000L, tokDanger: Long = 500_000L, tiredChars: Option[Long] = None): String =
     val o = MiniJson.parse(json).flatMap(_.obj) match
       case Some(m) => m
       case None    => return "" // nothing usable / not an object → empty line, exit 0 (never crash the prompt)
@@ -149,8 +156,11 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     o.get("context_window").flatMap(_.obj).flatMap(_.get("used_percentage")).flatMap(_.num)
       .foreach(p => segs += sgr(ctxGauge(p, ctxWarn, dumbZone, autoCompact),
         s"ctx-fill ${pct(p)}${if p >= autoCompact then " auto-compact!" else if p >= dumbZone then " dumb-zone" else ""}")) // escalates green->orange->red(Z)->dumb-zone(D)->auto-compact(A)
-    // cumulative agent-token rot gauge (SM117): the reliable processing-volume signal, DISPLAYED
-    tokens.foreach(t => segs += sgr(tokGauge(t, tokWarn, tokDanger), s"tok ${formatTokens(t)}"))
+    // rot?/tot token gauges (SM128): rot? = tokens since the last warp (compact/clear) = the CURRENT-window rot
+    // signal, COLOURED by threshold; the `?` marks it an inferred proxy (SM118). tot = cumulative lifetime tokens,
+    // dim (context only, no threshold meaning), and DROPPED on a narrow terminal (showTot). rot? is the star.
+    rotTokens.foreach(r => segs += sgr(tokGauge(r, tokWarn, tokDanger), s"rot? ${formatTokens(r)}"))
+    if showTot then totTokens.foreach(t => segs += sgr("38;5;245", s"tot ${formatTokens(t)}"))
     val rl = o.get("rate_limits").flatMap(_.obj)
     rl.flatMap(_.get("five_hour")).flatMap(_.obj).foreach: h5 =>
       val usedP  = h5.get("used_percentage").flatMap(_.num)
@@ -243,6 +253,10 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       |  o4.8/1M             abbreviated model (Opus/Sonnet/Fable/Haiku -> o/s/f/h, /ctx suffix)
       |  ctx-fill N%         context-window fill; orange at the compact-dance trigger
       |                      (0.8*Z), red at Z = the dumb-zone threshold (--ctx-warn)
+      |  rot? N / tot N      rot? = agent tokens SINCE the last warp (compact/clear) = current-window rot,
+      |                      coloured by threshold (the `?` marks it an inferred proxy); tot = cumulative
+      |                      lifetime tokens (dim; dropped if the terminal is narrow or --rot-only). Both from
+      |                      the transcript; --no-tok skips the read entirely.
       |  5h-lim / wk-lim     usage limits (Claude Pro/Max only) + reset countdown; both
       |                      the % and its countdown turn RED at/above --warn
       |  cost $N             total cost in whole dollars, last (least interesting on a
@@ -286,10 +300,11 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     var modeLine  = false // --mode-line: also emit the mode line (line 2)
     var noStatus  = false // --no-status: suppress line 1 (e.g. to show ONLY the mode line)
     var modesFile = defaultModesFile
-    var tokWarn    = 3_000_000L // token rot-gauge orange threshold (GUESS, configurable via --tok-warn)
-    var tokDanger  = 6_000_000L // token rot-gauge red threshold (GUESS, configurable via --tok-danger)
+    var tokWarn    = 200_000L // rot? (since-warp) orange threshold (GUESS for one window, configurable via --tok-warn)
+    var tokDanger  = 500_000L // rot? (since-warp) red threshold (GUESS for one window, configurable via --tok-danger)
     var tiredChars: Option[Long] = None // human-char `tired?` nudge threshold; None = OFF (opt-in via --tired-chars)
     var noTok      = false // --no-tok: skip the transcript read entirely (no tok gauge)
+    var rotOnly    = false // --rot-only: show rot? but DROP the secondary tot gauge (also auto-dropped if narrow)
     val pos = scala.collection.mutable.ArrayBuffer[String]()
     val a = args.toVector
     var i = 0
@@ -305,16 +320,21 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
         case "--tok-danger"  if i + 1 < a.length => tokDanger  = a(i + 1).toLongOption.getOrElse(tokDanger); i += 2
         case "--tired-chars" if i + 1 < a.length => tiredChars = a(i + 1).toLongOption; i += 2
         case "--no-tok"                         => noTok     = true; i += 1
+        case "--rot-only"                       => rotOnly   = true; i += 1
         case "--mode-line"                      => modeLine  = true; i += 1
         case "--no-status"                      => noStatus  = true; i += 1
         case other                              => pos += other; i += 1
+    // SM128: drop the secondary `tot` gauge on a narrow terminal. Claude Code sets $COLUMNS before running the
+    // statusline (there is NO width field in the JSON — claude-code-guide 2026-07-16); --rot-only forces tot off.
+    val cols = Option(System.getenv("COLUMNS")).flatMap(_.toIntOption)
+    val showTot = !rotOnly && cols.forall(_ >= 90)
     val json = pos.headOption.getOrElse(scala.io.Source.stdin.mkString)
     // Transcript-derived cumulative stats (SM117): the statusline JSON carries `transcript_path`; parse the JSONL
     // for the agent-token rot gauge (+ the internal human-char fatigue gauge feeding `tired?`). Fully guarded — any
     // failure yields no gauge, never a broken prompt. Reads the transcript on EACH render; --no-tok opts out.
     // PERF: on a large transcript this file read/parse is the tool's dominant cost — a cache/incremental read and
     // the SM112 native build are the follow-ups; --no-tok is the escape hatch meanwhile.
-    val stats: Option[(agentTokens: Long, humanChars: Long)] =
+    val stats: Option[(agentTokens: Long, humanChars: Long, sinceWarpTokens: Long)] =
       if noTok then None
       else
         try
@@ -327,8 +347,8 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
         catch case _: Throwable => None
     // Each println is a SEPARATE status row (Claude Code renders multi-line statuslines).
     if !noStatus then println(render(json, nowMs, warn, ctxWarn, dumbZone, autoCompact,
-      tokens = stats.map(_.agentTokens), humanChars = stats.map(_.humanChars),
-      tokWarn = tokWarn, tokDanger = tokDanger, tiredChars = tiredChars))
+      rotTokens = stats.map(_.sinceWarpTokens), totTokens = stats.map(_.agentTokens), showTot = showTot,
+      humanChars = stats.map(_.humanChars), tokWarn = tokWarn, tokDanger = tokDanger, tiredChars = tiredChars))
     if modeLine then println(renderModes(readModes(modesFile)))
     0
 

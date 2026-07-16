@@ -1260,28 +1260,44 @@ class CliSuite extends munit.FunSuite:
                  Seq("dumb-zone", "dumb-zone?"))
   }
 
-  test("statusline SM117 TranscriptStats.of: sums output_tokens (excl sidechain), human string-content chars") {
+  test("statusline SM128 TranscriptStats.of: agentTokens (excl sidechain), humanChars, sinceWarpTokens (reset at compact_boundary)") {
     val lines = List(
       """{"type":"assistant","isSidechain":false,"message":{"usage":{"output_tokens":100}}}""",
       """{"type":"assistant","isSidechain":true,"message":{"usage":{"output_tokens":50}}}""",  // sidechain: excluded
       """{"type":"user","message":{"role":"user","content":"hello"}}""",                        // 5 human chars
       """{"type":"user","message":{"role":"user","content":[{"type":"tool_result","content":"x"}]}}""", // tool result: excluded
+      """{"type":"system","subtype":"compact_boundary"}""",                                     // WARP: resets sinceWarp
+      """{"type":"assistant","isSidechain":false,"message":{"usage":{"output_tokens":30}}}""",  // after the warp
       """{bad json""",                                                                          // skipped
       """{"type":"system","message":{}}"""
     )
     val s = StatuslineTool.TranscriptStats.of(lines)
-    assertEquals(s.agentTokens, 100L) // 50 sidechain excluded
-    assertEquals(s.humanChars, 5L)    // "hello"; the array-content (tool-result) user excluded
+    assertEquals(s.agentTokens, 130L)    // 100 + 30 (50 sidechain excluded); cumulative ACROSS the warp
+    assertEquals(s.humanChars, 5L)       // "hello"; the array-content (tool-result) user excluded
+    assertEquals(s.sinceWarpTokens, 30L) // only the 30 after the last compact_boundary
   }
 
-  test("statusline SM117: tok segment appears when transcript_path is present") {
+  test("statusline SM128 render: rot?/tot gauges + showTot toggle (pure, no COLUMNS dependency)") {
+    import StatuslineTool.*
+    val withTot = render("{}", 1000000000000L, rotTokens = Some(400000L), totTokens = Some(6500000L), showTot = true)
+    assert(clue(withTot).contains("rot? 400k"))
+    assert(clue(withTot).contains("tot 6.5M"))
+    val noTot = render("{}", 1000000000000L, rotTokens = Some(400000L), totTokens = Some(6500000L), showTot = false)
+    assert(clue(noTot).contains("rot? 400k"))
+    assert(!clue(noTot).contains("tot"))          // tot dropped when showTot=false
+  }
+
+  test("statusline SM128: rot? segment appears from the transcript; --rot-only drops tot") {
     val tmp = java.nio.file.Files.createTempFile("tt-transcript", ".jsonl")
     java.nio.file.Files.writeString(tmp,
       """{"type":"assistant","isSidechain":false,"message":{"usage":{"output_tokens":1500000}}}""" + "\n")
     val json = s"""{"context_window":{"used_percentage":20},"transcript_path":"${tmp.toString}"}"""
     val (code, out, _) = run("statusline", json, "--now-ms", "1000000000000")
     assertEquals(code, 0)
-    assert(clue(out).contains("tok 1.5M"))
+    assert(clue(out).contains("rot? 1.5M")) // since-warp == cumulative here (no compact_boundary in this transcript)
+    val (_, rotOnly, _) = run("statusline", json, "--now-ms", "1000000000000", "--rot-only")
+    assert(clue(rotOnly).contains("rot? 1.5M"))
+    assert(!clue(rotOnly).contains("tot"))
     java.nio.file.Files.deleteIfExists(tmp)
   }
 
