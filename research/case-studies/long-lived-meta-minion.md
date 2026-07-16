@@ -365,6 +365,70 @@ I benefit rhetorically if it works. Named, not neutralised.
 - **External.** n=1 session, one model pair (CO4 super / CF5 minion), one human, one codebase. Generalises
   **analytically** to the delegation-dance theory, **never** statistically. A finding here is a hypothesis for the
   next session, not a result about agents.
+### ⚠️ T1 — THE INSTRUMENT ROTS TOO (BR, 2026-07-16; construct + reliability)
+
+*"the meta-minion might get rotten... can you compact its context? can you inspect its context fill?"*
+
+**The threat, stated at full strength: a rotted meta-minion is WORSE THAN NO MINION.** Rot makes an agent *more*
+confident and *less* grounded — which is the exact failure it was hired to catch. It would then **launder slop with
+the authority of an independent observer**, and both BR and CO4 would be *more* inclined to believe it, not less,
+because it is the designated check. **A silently rotted instrument does not merely stop measuring; it starts
+fabricating with our trust attached.** Nothing in the design currently detects this.
+
+**Checked against the harness, not assumed:**
+- **Compact it? NO.** There is **no exposed verb**. Compaction is session-level; a sub-agent has no compact
+  interface. `SendMessage` / `TaskStop` / `TaskOutput` are the whole surface. **This threat cannot be managed the way
+  CO4 manages its own context.**
+- **Inspect its fill? Not directly — but YES, indirectly and STRUCTURALLY, which is better.** `TaskOutput`'s own docs
+  state a sub-agent's `.output` is *"a symlink to the full subagent conversation transcript (JSONL)"*. **The minion's
+  transcript is a FILE ON DISK.** CO4 must never *read* it (it would overflow the very context under study), but it
+  can **measure** it — bytes, lines, turns — without ingesting it. **That is a rot proxy from OUTSIDE the minion,
+  which beats any self-report** (self-reported rot is exactly the faculty rot destroys).
+- **The machinery already exists:** the statusline parses transcript JSONL for `rot?` / `tot` (SM117); `tt stalls`
+  (SM129) reads transcripts too. **This is not a new capability, it is a new caller.**
+
+**Mitigations (staged, cheapest first — to be worked as we go, not solved here):**
+1. **Behavioural, free, available now:** `minion-log/` makes degradation **visible as a trend** — fewer artifact
+   citations, more echo, more slop, across comparable pushes. **The study's own method, turned on the instrument.**
+2. **Measured:** a `tt` reader over the minion's transcript → turns/bytes → a rot number. **Tool candidate; clears
+   the §0.1 guard** (specimen: BR's question + the absence of any inspection API).
+3. **Canary / known-answer probe:** periodically push a **planted, known divergence** and check the minion catches
+   it. Borrowed from SM132's known-answer test case (`4fcb884`). **Rot detection that never asks the instrument how
+   it feels.**
+
+### ⚠️ T2 — KILLING THE MINION BURNS HOT CONTEXT (BR, 2026-07-16; internal + reliability)
+
+*"if we want to kill and restart the minion we might lose important smartness in hot context; what can we do about
+it?"*
+
+**T2 is the direct antagonist of T1, and that is the whole difficulty.** T1 says *restart it, the rot is poisoning
+the instrument*; T2 says *don't, the accumulated cross-push pattern knowledge is the only thing it has that CO4
+doesn't* (§7's `PATTERN` slot **is** that knowledge). **There is no free answer** — this is the compact dance one
+level down, and *"restart when rotted"* and *"never restart, you lose the good part"* are both correct.
+
+**Checked:** `SendMessage`'s docs state *"names keep working after an agent completes (**a send resumes it from its
+transcript**)."* So a killed minion is **not** annihilated — it resumes from transcript.
+
+> **⚠️ But resuming from a transcript is EXACTLY "carried, not hot".** It is, precisely, CO4's own situation in this
+> very session. **So T2 is not a new problem — it is this study's own thesis, recursing one level down.** The restart
+> cost is **real and irreducible**; the only question is its size.
+
+**What we can do (quick take, to be worked as we go):**
+1. **Externalize, same as ours.** `minion-log/` **is the minion's resume prompt**. Its `PATTERN` entries are the hot
+   knowledge, written down. A restarted minion re-briefed from brief + log starts *carried* rather than *empty*.
+2. ⭐ **The log's QUALITY is the DIAL that trades T1 against T2.** Better log ⇒ cheaper restart ⇒ we can afford to
+   kill the rot. **That is the actionable form of the tension** and it makes §8's write contract load-bearing for a
+   second, unforeseen reason.
+3. **Restart cost is measurable, not guessable:** kill after a known finding, restart, re-push the same content —
+   does the restarted minion still catch it? **A direct measurement of what the transcript failed to carry.**
+
+> **★ Unexpected methodological gain — the best thing in this section.** The **CO4 exit-clear is n=1 and expensive**:
+> BR can only warp the main agent once, and has deliberately deferred it ([[model-warp-co4-to-cf5-later]]). **The
+> minion can be killed and restarted cheaply and repeatedly.** So *"carried ≠ armed"* — currently resting on **one**
+> session's testimony — becomes **replicable** on the sub-agent. **The instrument's own worst threat is also the
+> study's only route to a second data point.** T1 and T2 stop being pure liabilities the moment they are read that
+> way.
+
 - **Reliability.** Would another researcher, or another agent, reach the same conclusions from this record? Only if
   the protocol + the change log + the raw pushes survive. Hence §10 and the append-only discipline
   ([[raw-data-append-only]]). **The single biggest reliability threat is that the agent is grading its own
