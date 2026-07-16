@@ -45,3 +45,24 @@ re-arm slower**, and the gap is a measurable safety window. The mitigation is ch
 cost of missing it is a rubber-stamped regression — the exact human-rotted axis of the threat model. *(Candidate
 memory if it recurs: post-compact = high-risk mechanical-regression window; human shepherds the first turns, agent
 re-arms before the first bash call.)*
+
+## Corroboration + escalation: NOT only post-compact, and a declared MODE does not arm the reflex (2026-07-16, later same session)
+
+Deep in a long, high-context **AFK-solo** window (NOT post-compact), the agent regressed to `| tail` **again**
+(`scala-cli compile … | tail -25`). BR flagged it from inside the guard stall (`ig: WR data`). Three sharpenings:
+1. **Not post-compact-specific.** The mechanical bash-regression also recurs under **deep-session rot / high
+   context**, not just at the cold-start boundary. Common cause: the base-model pipe habit resurfaces whenever the
+   project reflex is not *hot* — whether context is **cold** (post-compact) or **degraded** (long session).
+2. **A declared vigilance MODE is not an armed reflex.** `+rot-vigil` was ACTIVE (BR had just set it; the agent had
+   *just said* "mechanical-precision vigilant, commit each unit"). The pipe fired anyway. **Naming/believing the
+   vigilance does not prevent the motor slip** — the reflex is motor-level, not belief-level. This sharpens the
+   "carried ≠ armed" point: even a HOT, just-declared intention to be vigilant does not arm the *specific* reflex;
+   only **structural avoidance** (never construct the pipe at all) or the **guard backstop** stops it.
+3. **AFK makes a self-created stall costly.** Because BR was AFK, the `| tail` guard became a **forced confirmation
+   he had to shepherd** — the exact forced-confirmation hazard. Under AFK the agent must be *extra* pipe-averse
+   (bare command + let large output persist + read it with the file tools), because a stall it creates cannot be
+   cheaply cleared. Ties [[guard-against-forced-confirmations]], [[cue-guard-stall]].
+
+Fix reaffirmed (structural, not willpower): **NEVER build a pipe.** Run bare; large output persists to a file; read
+its tail with `tt text match` / Read. Candidate to fold into [[rot-vigil-guard-mechanical-precision-first]] at the
+MEMORY.md compaction.
