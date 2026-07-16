@@ -59,6 +59,40 @@ false-positive `deny` hard-blocks a correct command with no override. So precisi
 For genuine exceptions: **ask in a sentence, not a modal.** A modal invites a reflexive yes; a written request
 invites a thought. Same information, none of the fatigue mechanism.
 
+### 2.3 Stall accounting: the budget is MEASURABLE (probed 2026-07-16)
+
+You cannot manage a budget you cannot count. We assumed stalls would only be *estimable* (via a `tool_use` →
+`tool_result` time gap, confounded by slow commands). **Wrong — they leave a distinctive, greppable trace:**
+
+```
+requires confirmation for this command:\r [SEVERITY] <check name>: <fix text>
+```
+
+**Result for the whole 2026-07-16 session** (one transcript, spanning a compact):
+
+| stalls | cause | severity | status |
+|---|---|---|---|
+| **6** | `pipe to head/tail/wc` | MED | **true positive** — the agent's pipe reflex |
+| **2** | `output redirect (>)` | MED | **FALSE positive** — a `>` in a quoted arg (§3.2) |
+| **8** | **total — every one a MED** | | |
+
+**What this validates:** the 2 false positives are already dead (`eb0cd14`). The 6 true positives would, under
+MED→`deny` (§2.2), have been handed to the **agent** ("use `--limit`"), who retries correctly. **Together they take
+the human's 8 stalls to ZERO — eight removed chances to blanket-allow.** The budget argument is now arithmetic, not
+rhetoric.
+
+**Honest caveats (do not over-read this):**
+- **"All 8 are MED" is partly BY CONSTRUCTION, not evidence.** HIGH findings `deny` rather than `ask`, so they emit
+  no "requires confirmation" message and **cannot appear in this search**. The claim the data supports is narrower:
+  *every stall the human experienced was a MED.*
+- These are **records**, not verified-distinct **events** (double-logging unchecked).
+- **Confound:** the same phrase also appears in the agent's own prose *about* stalls and in truncated summary
+  records. A real instrument must match the `:\r [SEVERITY]` shape, not the loose phrase (a loose count returned 33).
+
+**→ Instrument wanted (SM129): `tt stalls <transcript>`** — count + histogram by cause + severity. It makes the
+budget observable, and it is the prerequisite for the **blanket-allow canary** (SM130), which needs to watch
+approval *patterns* over time.
+
 ## 3. Guard design rules (each one bought with a mistake)
 
 ### 3.1 guardcheck may TIGHTEN, never LOOSEN — it must never emit `allow`
@@ -130,9 +164,8 @@ This stub covers the **guard** and the **stall budget**. Missing, and the substa
 
 - The **blanket-allow canary** (SM130): detecting that the human has started rubber-stamping — the threat model's
   actual failure mode. Term is BR-approved and, *if it works*, belongs in `docs/foundations.md`.
-- **Stall accounting**: can we even *count* stalls? Probably estimable, not countable (a `deny` leaves a trace; an
-  ask-then-approved may leave only a `tool_use`→`tool_result` time gap, confounded by slow commands). Ties the
-  blackout/hangover work. **A real stall specimen exists in the 2026-07-16 transcript — probe it, do not theorise.**
+- ~~**Stall accounting**: can we even *count* stalls?~~ **✅ PROBED 2026-07-16 — they are COUNTABLE, see §2.3.**
+  Remaining: build the `tt stalls` instrument; verify records are 1:1 with events.
 - The **discriminating criterion** (harm × whose-autonomy × third-party impact) — the hard central question, seeded
   in the theory note: hold an un-overridable floor without becoming paternalistic or lurable.
 - **Deployment surface**: the standing deploy permission and its guardrails, `~/.netrc`, what the hosted surface
