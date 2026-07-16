@@ -37,3 +37,25 @@ the **friction-calibration** question the whole project keeps meeting (guard sta
 here the worry is *too little* friction on prompt-firing). A candidate principle: **match the firing-friction to
 the stakes of what the prompt can do** — trivial/idempotent prompts fire freely; a prompt that could trigger an
 effectful or irreversible action earns a beat. (Not acted on; BR's call, and it is largely a harness-UX matter.)
+
+## Corroborating specimen (same session): a WRONG guess that was also a LUCKY strike
+
+While BR asked what "preprompt" means, the harness's autopreprompt suggested **`add podcast stubb "PC-003-..."`** —
+a **bad guess** on intent (BR was asking a *definitional* question, not queuing another stub; it over-fit the
+PC-000 / PC-001 / PC-002 pattern). BR: *"aha; bad guess!"* Then, crucially: *"but the bad guess was a lucky strike
+cause it triggered my imagination"* — the wrong suggestion **sparked a real idea**, and BR promptly created an
+actual PC-003 (a blacksmith tool-bootstrapping interview).
+
+Two things this adds (keep-the-ball-game, both framings held):
+1. **Hazard sharpened.** The first specimen fired something redundant-but-harmless; this shows the suggestion can be
+   **wrong about intent**. Easy-to-fire × wrong-guess is strictly worse than easy-to-fire × redundant: had BR tabbed
+   it, it would have injected an unwanted instruction the agent might then act on. The only things that stopped the
+   bad guess becoming a bad action were the friction of BR **reading** it and the agent **flagging** it rather than
+   auto-acting. Friction-to-stakes, again.
+2. **Serendipity upside.** A *wrong* guess is not purely a cost — it can be a **creativity trigger**. The
+   autopreprompt's mis-prediction worked like a random prompt / oblique-strategy card and produced genuine value (a
+   new episode). So the design question is richer than "minimise misfires": a system that only ever suggests the
+   *expected* next move forgoes this serendipity, and some **productive wrongness** may be a feature. The likely
+   reconciliation mirrors the friction principle: let **low-stakes** suggestions run a bit wild (cheap to ignore,
+   occasionally sparks), gate **high-stakes** ones. A small instance of a recurring project theme: **noise /
+   wrongness as a source of value, not only risk.**
