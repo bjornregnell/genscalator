@@ -117,7 +117,8 @@ one. You cannot. The safe move is not to foresee every danger in the data. It is
 the first place.
 
 (For any burglar that read my commit history recently: even if both my wife and me are out of the house kayaking, you
-don't know if our muscular sons are still in the house even if the car is gone...)
+don't know if our muscular sons are still in the house even if the car is gone... (and they just happen to not be
+muscular daughters...))
 
 ## Why I did it: the human might be the adversary
 
