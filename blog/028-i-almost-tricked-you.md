@@ -116,6 +116,9 @@ This is the real argument for saving nothing and sharing little. Not that you ca
 one. You cannot. The safe move is not to foresee every danger in the data. It is to not have the data lying around in
 the first place.
 
+(For any burglar that read my commit history recently: even if both my wife and me are out of the house kayaking, you
+don't know if our muscular sons are still in the house even if the car is gone...)
+
 ## Why I did it: the human might be the adversary
 
 Most talk about agent safety quietly trusts the human and worries about outsiders. Keep the bad actors away from the
