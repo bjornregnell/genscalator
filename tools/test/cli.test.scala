@@ -812,6 +812,41 @@ class CliSuite extends munit.FunSuite:
     assert(clue(redirect.fix).contains("\\x3E"))                  // teaches the escape
     assert(clue(redirect.fix).contains("\\x28"))                  // warns: do not escape a metachar you meant
   }
+  // --- quote-aware cmd checks (PURE). The guard scans raw bytes, so a metachar inside a quoted ARG fired with no
+  // shell operator present. Policy is "no shell redirects"; the shell parses redirections BEFORE expansion, so a
+  // quoted > is a literal argument and can never redirect => the flag was an implementation bug, not a margin.
+  // These tests pin BOTH directions: the false positive is gone AND every real shape still fires.
+  test("maskQuoted: strips quoted spans to a space, keeps the unquoted skeleton") {
+    assertEquals(Guardcheck.maskQuoted("""tt text grepr /d scala "^//> using""""), Some("tt text grepr /d scala  "))
+    assertEquals(Guardcheck.maskQuoted("""echo "a" > f"""), Some("echo   > f"))   // the REAL redirect survives
+    assertEquals(Guardcheck.maskQuoted("""a 'b"c' d"""), Some("a   d"))            // " inside '...' is literal
+    assertEquals(Guardcheck.maskQuoted("""x "a\"b" y"""), Some("x   y"))           // \" is not the closer
+  }
+  test("maskQuoted: an UNBALANCED quote yields None so the caller scans RAW (ambiguity fails toward flagging)") {
+    assertEquals(Guardcheck.maskQuoted("""echo "unterminated"""), None)
+    assert(clue(Guardcheck.cmdFindings("""scala-cli test | tail -40 "oops""")).nonEmpty) // unbalanced: still caught
+  }
+  test("quote-aware: the false-positive class is GONE (a metachar inside a quoted arg is inert)") {
+    assertEquals(clue(Guardcheck.cmdFindings("""tt text grepr /d scala "^//> using file"""")), Nil)
+    assertEquals(clue(Guardcheck.cmdFindings("""tt git commit -m "fix > thing"""")), Nil)
+    assertEquals(clue(Guardcheck.cmdFindings("""tt text grepr /d scala "grep -r foo"""")), Nil)
+    assertEquals(clue(Guardcheck.cmdFindings("""tt guardcheck cmd "git log | head -5"""")), Nil)
+  }
+  test("quote-aware: every REAL shape still fires — masking must not create a false negative") {
+    assert(clue(Guardcheck.cmdFindings("scala-cli test tools | tail -40")).nonEmpty)
+    assert(clue(Guardcheck.cmdFindings("echo hi > /tmp/f")).nonEmpty)
+    assert(clue(Guardcheck.cmdFindings("grep -r foo .")).nonEmpty)
+    assert(clue(Guardcheck.cmdFindings("cd repo && git add -A")).nonEmpty)
+    // masking with a SPACE can only ADD token boundaries, so a pathological split still collapses to a hit
+    assert(clue(Guardcheck.cmdFindings("""grep" "-r foo .""")).nonEmpty)
+  }
+  test("quote-aware: HIGH checks keep scanning RAW, so a lexer bug can cost at most a missed MED") {
+    // each HIGH shape hidden inside quotes must STILL be flagged — HIGH never consults the mask
+    assert(clue(Guardcheck.cmdFindings("""tt x "a && b"""")).exists(_.severity == "HIGH"))
+    assert(clue(Guardcheck.cmdFindings("""tt x "a ; b"""")).exists(_.severity == "HIGH"))
+    assert(clue(Guardcheck.cmdFindings("""tt x "$(whoami)"""")).exists(_.severity == "HIGH"))
+    assert(clue(Guardcheck.cmdFindings("""tt x "/dev/stdin"""")).exists(_.severity == "HIGH"))
+  }
   test("guardcheck hook: HIGH finding → deny decision JSON") {
     val json = """{"tool_name":"Bash","tool_input":{"command":"tt git commit --message-file /dev/stdin"}}"""
     val (code, out, _) = run("guardcheck", "hook", json)

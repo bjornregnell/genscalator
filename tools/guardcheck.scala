@@ -100,8 +100,54 @@ object Guardcheck {
       has(raw"<->|<\d+-\d+>")),
   )
 
-  def report(mode: String, text: String, checks: List[Check]): Int =
-    val findings = checks.flatMap(_.find(text))
+  /** Replace every QUOTED span (the quotes included) with a single space, leaving the command's unquoted
+    * SKELETON — the only part the shell can interpret as an operator. None when quoting is UNBALANCED. PURE.
+    *
+    * WHY: the guard scans raw bytes, so a `>` inside a quoted ARG (`tt text grepr d s "^//> using file"`) fired
+    * the redirect check with no redirect present. That is an IMPLEMENTATION BUG, not a conservative margin: the
+    * policy is "no shell redirects", and the shell parses redirections at parse time BEFORE expansion, so a
+    * quoted `>` is passed through as a literal argument and can never redirect. Fixing it is a correctness fix.
+    * It also grants NO new authority — a clean command emits nothing and defers to the user's own permission
+    * rules, exactly as today (see the ⛔ never-emit-allow rule on decideFromJson).
+    *
+    * Shell quoting handled: '...' is wholly literal (no escapes); "..." honours a backslash escape; a backslash
+    * OUTSIDE quotes escapes the next char.
+    *
+    * MASK WITH A SPACE, never deletion — deliberate, and the property that makes this safe: replacing a span can
+    * only ADD token boundaries, never join text across one. So a pathological `grep" "-r` collapses to `grep -r`
+    * and is STILL flagged. Every error this can make points toward a false POSITIVE.
+    *
+    * UNBALANCED -> None -> the caller scans the RAW string (today's behaviour): ambiguity fails toward flagging.
+    *
+    * HONEST LIMIT: for a DELIBERATELY CRAFTED command, quoting a shape hides it from the MED checks. Accepted,
+    * and bounded on purpose — only MED checks consult the mask; HIGH keeps scanning raw bytes (see cmdFindings).
+    * guardcheck exists to catch the agent's own REFLEXES, not to withstand a crafted attack. */
+  def maskQuoted(cmd: String): Option[String] =
+    val sb = StringBuilder()
+    var i = 0
+    while i < cmd.length do
+      val c = cmd(i)
+      if c == '\\' && i + 1 < cmd.length then
+        sb.append(c).append(cmd(i + 1)); i += 2            // an escaped char outside quotes: pass both through
+      else if c == '\'' || c == '"' then
+        var j = i + 1
+        var closed = false
+        while j < cmd.length && !closed do
+          if c == '"' && cmd(j) == '\\' && j + 1 < cmd.length then j += 2   // \" inside "..." is not the closer
+          else if cmd(j) == c then { closed = true; j += 1 }
+          else j += 1
+        if !closed then return None                        // unterminated quote -> ambiguous -> RAW scan
+        sb.append(' '); i = j
+      else { sb.append(c); i += 1 }
+    Some(sb.toString)
+
+  /** The cmd checks, quote-aware: HIGH scans the RAW command, MED scans the masked skeleton. The asymmetry
+    * BOUNDS THE BLAST RADIUS — a maskQuoted bug can cost at most a missed MED, never a missed HIGH. PURE. */
+  def cmdFindings(command: String): List[Finding] =
+    val masked = maskQuoted(command).getOrElse(command)   // unbalanced quotes -> fail safe: scan the raw string
+    cmdChecks.flatMap(c => c.find(if c.severity == "HIGH" then command else masked))
+
+  def report(mode: String, findings: List[Finding]): Int =
     if findings.isEmpty then
       println(s"guardcheck [$mode]: clean — no guard-trip / reflex patterns found")
       0
@@ -131,7 +177,7 @@ object Guardcheck {
       catch case _: Throwable => ""
     if command.isEmpty then ""
     else
-      val findings = cmdChecks.flatMap(_.find(command))
+      val findings = cmdFindings(command)   // quote-aware: HIGH raw, MED masked — same fn as `tt guardcheck cmd`
       if findings.isEmpty then ""
       else
         val decision = if findings.exists(_.severity == "HIGH") then "deny" else "ask"
@@ -184,8 +230,10 @@ object Guardcheck {
       println(Help)
       sys.exit(0)
     args.toList match
-      case "cmd" :: rest if rest.nonEmpty => sys.exit(report("cmd", rest.mkString(" "), cmdChecks))
-      case "msg" :: rest if rest.nonEmpty => sys.exit(report("msg", rest.mkString(" "), msgChecks))
+      case "cmd" :: rest if rest.nonEmpty => sys.exit(report("cmd", cmdFindings(rest.mkString(" "))))
+      // msg is a COMMIT MESSAGE, not a shell command — no quote-masking: its checks are about zsh/glob
+      // expansion of the message text itself, where quotes carry no shell-skeleton meaning.
+      case "msg" :: rest if rest.nonEmpty => sys.exit(report("msg", msgChecks.flatMap(_.find(rest.mkString(" ")))))
       case "hook" :: rest =>
         val json = if rest.nonEmpty then rest.mkString(" ") else scala.io.Source.stdin.mkString
         val out = decideFromJson(json)
