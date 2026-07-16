@@ -214,6 +214,15 @@ Times a human-agent-human round (or any span); `stop --think 30s` also records t
 the `round = think + human` split; spans append to `chrono-log.tsv`; `report` summarizes. (The agent can't
 perceive its own think-time — this plus a human relay reconstruct a full round.)
 
+### hangover — detect a just-ended agent blackout by the resume-gap (PURE read; the clock supplies `now`)
+```
+hangover <transcript.jsonl> [--now-ms N] [--threshold-sec N]
+```
+On resume, compares NOW to the last conversational record's timestamp and flags a gap that dwarfs execution
+time: the "hangover" of a blackout the agent cannot perceive from inside (guard stall / long idle / compact /
+box crash). Detects THAT you were out, not the cause; a `compact_boundary` among the recent records names it a
+compact. SM121 core — the surface wiring (statusline segment / warm hook / `gs warm`) is deliberately separate.
+
 ### parsereqt — parse reqT model text (PURE)
 ```
 parsereqt <file>                     # parse reqT model text into a structured form
