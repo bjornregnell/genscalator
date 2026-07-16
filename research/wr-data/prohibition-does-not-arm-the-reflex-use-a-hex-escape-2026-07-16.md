@@ -151,6 +151,59 @@ caught all three, cheaply, by asking what the claim assumed. This is the concret
 not as ethics garnish, but because the agent's blind spot is **structurally invisible to the agent** and cheap for
 the human to see. Ties [[echt-effort-especially-self-generated]] and the confabulation caveat.
 
+## The auto-rewrite hook: BR's design, and the demonstrated reason to drop half of it
+
+BR proposed a **PreToolUse auto-fixer**: before a Bash/tt call, if a risky char sits in a *safe string* (an arg to
+`tt`), rewrite it to a hex escape so no stall happens; if the agent reached for real *"bash clobbery"*, let it
+through to the guard and stall — *"because it is regression any way and better stall to try to fix the
+confirmation-fatigue bad behaviour."* Narrowed further: *"your hook only need to check if the bash command starts
+with `tt ` and then you only replace everything with hex escapes if they are in quoted strings. That seem doable and
+fast and easy, no?"*
+
+**The second half is exactly right** and is precisely what a quote-aware guard does: true positives must still
+stall, or the confirmation means nothing.
+
+**The first half must be dropped, for two reasons — one logical, one demonstrated.**
+
+**1. Logical: at the moment you can rewrite, you no longer need to.** Deciding "this char is inside a quoted
+string" *is* the whole question. Once the hook knows that, it has already proven the char is not a shell operator,
+so it can simply emit `allow`. The rewrite is a mutation performed *after* the answer is already in hand — strictly
+more machinery, strictly more risk, zero added information. And there is nothing to fix: `tt text grepr <dir> scala
+"^//\x3E using file"`-with-a-literal-bracket was **always a correct, safe command**; the shell passes the char
+through as an argument. The escape never fixed the command, it only ever appeased a buggy guard.
+
+**2. Demonstrated: the rewrite is only correct if the consumer is a REGEX engine — and `tt` itself contains the
+counterexample.** Scoping to `tt ` does not save it, because tt tools do not share arg semantics. Live specimen:
+
+```
+$ tt guardcheck cmd "git log \x7C head -5"
+guardcheck [cmd]: clean — no guard-trip / reflex patterns found
+```
+
+`git log | head -5` is a **real pipe** — it is guardcheck's own flagged example in its own help text. But
+`tt guardcheck cmd` takes a **literal** string, so the hex-escaped form contains no pipe and guardcheck reports
+**clean**. Therefore an auto-fixer rewriting quoted args of `tt ` commands would turn
+`tt guardcheck cmd "git log | head -5"` into the escaped form and **blind the guard-checker to the very pattern it
+exists to detect**.
+
+That is the sharpest possible statement of the hazard: **the convenience layer wrapped around the safety tool
+disables the safety tool.** Any literal-arg consumer has this bug; `guardcheck` merely makes it vivid.
+
+**Conclusion: BR's idea minus the rewrite IS the quote-aware guard.** Quoted literal → `allow` (no stall, and the
+plain char just works — *nothing to remember*). Real clobbery → stall. Same behaviour BR wanted, less code, no new
+failure mode, and it dissolves the "how do we make the agent not forget the escape?" problem entirely.
+
+### Capability facts (checked, not assumed — claude-code-guide, 2026-07-16)
+
+A PreToolUse hook **can** rewrite tool input: `hookSpecificOutput.updatedInput` (e.g. `{"command": "..."}`),
+documented. **The agent's "silent rewrite is a transparency problem" objection was WRONG and is retracted** — the
+docs state the rewritten input is shown to **both** Claude and the user. (A 4th overclaim, but the first one the
+agent caught *itself*, by checking instead of asserting.) Other PreToolUse fields worth knowing:
+`permissionDecision` (allow/deny/ask/defer), `permissionDecisionReason`, **`additionalContext`** (inject a note
+*without* stalling), `permissionRulesToApply` (auto-approve future matching calls). `additionalContext` gives a
+third response beyond allow/stall — *allow AND teach* — not needed for a correctly-identified false positive
+(nothing to teach; the command is fine), but a real option elsewhere.
+
 ## The uncomfortable finding worth keeping
 
 The agent gave a **confident, evidence-cited safety assessment** ("zero stalls in ten calls") that was wrong on the
