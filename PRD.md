@@ -537,6 +537,18 @@ and the session pin board. The through-line is a new general goal, sovereigntyOf
 * Feature: rotVigilanceThreshold helps Goal: echtModeAwareness
 * Feature: rotVigilanceThreshold requires Feature: inferredConfirmedModeGrammar
 
+* Goal: humanWellbeing has
+  * Gist: (pinned SM124) the human stays healthy and sustainable — not too tired, not too sucked into agentic SE; the joint work protects the human's mental health and real-life balance.
+  * Why: a rotted or over-engaged human makes worse and riskier decisions (the human-rotted axis of the BHH threat model), and the pair's productivity is bounded by the human's sustainability, not just the agent's.
+* Goal: humanWellbeing helps Goal: jointHumanAgentProductivity
+* Goal: humanWellbeing relatesTo Goal: retainUserTrust
+
+* Feature: agentHelpHumanNotForget has
+  * Gist: (pinned SM124) the agent proactively helps the human remember AND step away — timers, reminders and break-nudges (for example a kayak-prep reminder set via the scheduler), complementing the tired nudge.
+  * Spec: the aid works at REQUEST time, not only at fire time — the act of asking the agent to remind you already helps you not forget, because externalising the intention is itself a memory aid, so the value lands even before the reminder fires.
+* Feature: agentHelpHumanNotForget helps Goal: humanWellbeing
+* Feature: agentHelpHumanNotForget relatesTo Feature: rotFatigueGauges
+
 ## PAST
 
 Requirements implemented (or cancelled). Move requirements from FUTURE to PAST as they ship. The IMPLEMENTED
