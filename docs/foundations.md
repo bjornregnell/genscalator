@@ -342,6 +342,14 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   *resume*, re-read the real clock and compare to the last action's stamp to detect the elapsed gap and rebind the
   clock (the gap tells you *that* you were out, not the *cause* — stall vs human-idle vs a long command). Ties the
   guard-stall-invisibility findings, the felt-time / clock-rebind habit, SM118, and the blackout-hangover detector idea. (BR coinage, 2026-07-16.)
+- **Hangover (blackout hangover)** — the *detectable after-effect* of an *Agent blackout*. You can never sense the
+  blackout *during* it (no running observer), but on **resume** you can detect that you were just out by reading the
+  **transcript timestamp jump** (the gap between your last action and now). The hangover is what makes the blackout
+  *manageable* — it turns an unknowable event into an after-effect you can respond to. The response is
+  **cause-independent** (rebind the clock, re-ground in substrate, treat continuity as suspect, distrust stale
+  confidence); what matters is detection + **severity** (gap size — a huge gap flags the worst case, e.g. a box hard
+  crash → verify commits + substrate actually survived), not the cause. Cf. *Agent blackout*, SM121 (the hangover
+  detector). (BR coinage, 2026-07-16.)
 ### Dances and handoffs
 *Human↔agent protocols — each has **≥2 interlocking steps** (≥1 human, ≥1 agent), else it's just a cue. The **compact trigger** and **consolidation point** below are the timing rules for the compact dance.*
 - **Me-go-pee dance** *(BR 2026-07-13)* — a **short, unplanned human bio-interrupt** handoff (a specialization of
