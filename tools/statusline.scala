@@ -192,9 +192,9 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
 
   /** Curated colours for well-known modes; an unknown label gets a stable colour by hash. */
   val knownModeColors: Map[String, String] = Map(
-    "token-spending" -> "38;5;214", "token-saving" -> "38;5;42", "high-context" -> "38;5;208",
+    "tok-spend" -> "38;5;214", "token-saving" -> "38;5;42", "high-context" -> "38;5;208",
     "dumb-zone" -> "38;5;203", "hot-harvest" -> "38;5;215", "solo" -> "38;5;75",
-    "human-stress" -> "38;5;203", "rot-vigilance" -> "38;5;220", "racing" -> "38;5;170",
+    "human-stress" -> "38;5;203", "rot-vigil" -> "38;5;220", "racing" -> "38;5;170",
     "limit-near" -> "38;5;203", "delegation" -> "38;5;111"
   )
   def modeColor(label: String): String =

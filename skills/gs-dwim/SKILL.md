@@ -59,10 +59,10 @@ gracefully). The per-command behaviour is specified below.
 - **`gs mode` / `gs mode add <label>` / `gs mode rm <label>`** — read or MUTATE the recorded joint
   state-of-mind (the declared modes the mode line renders). Thin front for `tt mode`: bare = `tt mode` (list),
   `add` = `tt mode add <label>`, `rm` = `tt mode rm <label>`, `gs mode clear` = `tt mode clear`. Labels are bare
-  tokens (`token-spending`, `hot-harvest`, `high-context`, `solo`, `human-stress`, `rot-vigilance`, `racing`,
+  tokens (`tok-spend`, `hot-harvest`, `high-context`, `solo`, `human-stress`, `rot-vigil`, `racing`,
   ...). NOT a settings edit — just the state file `~/.claude/gs-modes`, allowlisted, no confirmation. **Both
-  parties declare:** the human sets frame modes (token-spending, racing, human-stress); the **agent should
-  proactively declare its own** as the MO shifts — `tt mode add hot-harvest` when harvesting, `rot-vigilance`
+  parties declare:** the human sets frame modes (tok-spend, racing, human-stress); the **agent should
+  proactively declare its own** as the MO shifts — `tt mode add hot-harvest` when harvesting, `rot-vigil`
   when watching rot, `high-context` as fill rises, `solo` on an AFK handoff — and `rm` them when they end, so
   the mode line stays a live, mutually-visible reflection of the shared state.
 - **`gs cues`** — list the cues (human→agent and agent→human) and what each means. **Source:

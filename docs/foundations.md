@@ -328,7 +328,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   *introspective* signals (fill, burn, cost) as a persistent instrument rather than an on-demand `/cost` +
   `/usage` paste. Cf. *Mode line* (the second line), *Context usage / fill*, *Token velocity / acceleration*.
 - **Mode line** — the **second** line of the genscalator status line: the current **declared joint human-agent
-  modes** (e.g. token-spending, rot-vigilance, afk, solo, fleet) — the pair's shared state-of-mind, *declared not
+  modes** (e.g. tok-spend, rot-vigil, afk, solo, fleet) — the pair's shared state-of-mind, *declared not
   guessed*, so a lit mode carries information. Under the emerging **`?`-mode grammar** a trailing `?` marks a mode
   *inferred from a measurable proxy* (uncertain — e.g. `tired?`, `afk?`) vs a confirmed one; confirmation is
   asymmetric (the human self-confirms their own state, the agent needs external evidence). See the echt-mode-grammar
