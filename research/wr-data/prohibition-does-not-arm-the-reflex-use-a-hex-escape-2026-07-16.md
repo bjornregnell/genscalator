@@ -189,6 +189,19 @@ exists to detect**.
 That is the sharpest possible statement of the hazard: **the convenience layer wrapped around the safety tool
 disables the safety tool.** Any literal-arg consumer has this bug; `guardcheck` merely makes it vivid.
 
+> **⚠️ RETRACTION (same session, BR): "blind the guard-checker" is OVERSTATED.** BR: *"is that valid git log
+> syntax? will it not just error out?"* — and the push-back is right. **Correct size of this specimen:**
+> `tt guardcheck cmd` only *analyses a string*, so nothing errors — it silently returns a **wrong verdict**.
+> That is a **CORRECTNESS hazard, not a security bypass**: a real shell pipe lives **outside** quotes, and the
+> proposed rewriter only touched **quoted spans**, so a real `git log | head -5` would still hit the guard and
+> still stall. **Nothing gets smuggled into execution.** The demo is real; the framing was inflated.
+> What survives (and is enough): the rewrite is only correct when the consumer is a **regex engine**, and the
+> hook cannot know which `tt` args are regex vs literal. The *decisive* argument never needed this demo anyway —
+> **when you can rewrite, you already know, so just don't flag** (see the Conclusion below).
+> *(Annotated, not erased — [[keep-the-ball-game-retract-by-annotating]]. The commit that shipped this section,
+> `4fcb884`, permanently carries the overstated subject line. That is fine: a commit is HISTORY, an accurate
+> record of what was believed then, and is never amended. The correction belongs HERE, in the mutable home.)*
+
 **Conclusion: BR's idea minus the rewrite IS the quote-aware guard.** Quoted literal → `allow` (no stall, and the
 plain char just works — *nothing to remember*). Real clobbery → stall. Same behaviour BR wanted, less code, no new
 failure mode, and it dissolves the "how do we make the agent not forget the escape?" problem entirely.

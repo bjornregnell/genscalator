@@ -108,6 +108,61 @@ committed message contains a **since-falsified** claim, which needs its correcti
 the commit cannot carry one. Bounded, AFK-safe, ~30-45 min. **Honest asymmetry: step 3 is cheap, steps 1-2 are
 the cost** — and per BR's own insight, the audit must run while FRESH, not as a pre-clear scramble.
 
+## ★ The inversion: the dangerous orphan is the RETRACTION, not the finding (found by looking, 2026-07-16)
+
+BR pressed on whether the agent's ad-hoc habit was *"causing disinformation in git commits"*. The agent's first
+answer was a **correction**: the orphaned 10s finding is **true** — homeless, not false; a *location* problem, not
+a *truth* problem. Then, instead of reassuring, it **checked the record**. The check found something worse, and
+somewhere else entirely.
+
+**The specimen.** Commit `4fcb884` ships the subject line *"wr-data: the auto-rewrite hook **would blind
+guardcheck** (demonstrated)"*. Minutes later BR falsified exactly that claim (*"is that valid git log syntax? will
+it not just error out?"*) and the agent retracted it in chat: the correct size is a **correctness hazard, not a
+security bypass** (a real pipe lives *outside* quotes, so the rewriter — which only touched quoted spans — could
+never smuggle one past the guard).
+
+**Where each piece ended up:**
+
+| artefact | contains | mutable? | status |
+|---|---|---|---|
+| commit `4fcb884` | the overclaim | ❌ never | **harmless** — it is HISTORY, an accurate record of what was believed then |
+| the wr-data note | the overclaim | ✅ yes | **LIVE DISINFORMATION** — uncorrected, in the "canonical" home |
+| the retraction | the truth | — | **ONLY IN CHAT** → dies at the next warp |
+
+**⇒ The orphan was the RETRACTION.** The agent had been telling BR *"notes are canonical and mutable"* while the
+canonical note carried a claim it knew to be overstated, and the correction lived only in volatile context.
+
+### Why this is structural, not a slip — the corpus drifts toward OVERCONFIDENCE
+
+**Claims and corrections have asymmetric friction:**
+- A **finding** arrives with momentum: you found it, you write it up, you commit it. The write-up is the natural
+  next action.
+- A **retraction** arrives mid-conversation, often while racing, and the natural next action is to *say it and
+  move on*. Landing it requires going **back** to an already-committed file — pure friction, zero momentum, and
+  it feels like re-work rather than progress.
+
+**So retractions are systematically under-recorded relative to claims.** The corpus therefore **drifts toward
+overconfidence over time**: every claim lands, only some corrections do. That is a slow, invisible, compounding
+bias in exactly the record we treat as ground truth — and it is worse than an orphaned finding, because an
+orphaned finding is a *missing true thing* (cost: rediscovery) whereas an orphaned retraction is a **false thing
+left standing where we look for truth** (cost: acting on it).
+
+**Ties the day's other findings:** it is the same shape as the self-polluting corpus (the research act corrupts
+the record) and the stale mode file (the agent acknowledged three `-mode` removals in chat and never performed
+them — the acknowledgment felt like the action). **Pattern: saying it in chat feels like doing it.** For a
+*mode* that meant a lying statusline; for a *retraction* it means a lying note.
+
+### The rule (and the honest admission that it will fail)
+
+**A retraction is not done until it is in the mutable home. Chat is not a home.** When a claim is falsified, the
+next action is an **annotation of the file**, not a paragraph in the feed — annotate, never erase, never amend the
+commit ([[keep-the-ball-game-retract-by-annotating]]).
+
+But per this session's load-bearing finding, that rule lives **inside the agent** and will therefore **rot**. So
+it needs the same treatment as the pipe reflex: **a backstop, not willpower.** The candidate SM's audit is that
+backstop — periodically re-read the session's claims against the notes and hunt for corrections that never landed.
+The guard backstops the pipe; the audit backstops the retraction. **Neither is a rule; both are structure.**
+
 ## Testability (and its confound)
 
 This is measurable, not merely arguable: `rot?` gives a number, and the error rate per turn is countable.
