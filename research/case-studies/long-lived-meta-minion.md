@@ -185,6 +185,104 @@ Propositions, not hypotheses. Not statistically tested; they exist so the outcom
   - **P3:** partially. The minion survives *my* rot but has none of my grounding, so it is strongest at
     **consistency** (does the report match the artifact?) and weakest at **significance** (does this matter?).
 
+### RQ4 (BR, 2026-07-16/17) — is there good use for MORE THAN ONE meta-minion?
+
+> *"can we have good use of more than one meta-minion? sub-Qs: is it useful if they compete on the same broad
+> instructions? is it useful if some minions have more focused work? is it useful if minions via super-agent can
+> exchange information?"*
+
+> **⚠️ FIRST, A FINDING ABOUT THE QUESTION ITSELF.** Our substrate **already answers sub-Q2 and most of sub-Q3** —
+> `research/sm-investigations/SM015-en-masse-subagents.md` (shipped `88e9f2b`), [[cue-use-fleet]], and
+> `wr-data/super-sub-agent-chat-request-response-not-ambient-2026-07-14.md`. **Neither BR nor CO4 had it hot; CO4
+> found it only by grepping before answering.** That is *"carried ≠ armed"* firing on **both** members of the
+> pairing simultaneously, unprompted, in the middle of a study *about* that claim. **The knowledge was externalized
+> and inert until deliberately retrieved** — externalized ≠ effective (§0.3). Logged as data, not as a complaint:
+> the *human* leg of the pairing is in scope (§0.2), and so is the agent's.
+
+**Prior answers (do NOT re-derive):**
+- **sub-Q2 — focused minions: ALREADY OUR PRACTICE.** SM015: *"Fan-out finders: N agents each sweep a **declared
+  slice** of a codebase/corpus"*, per [[cue-use-fleet]] (*declared-focus slices*).
+- **sub-Q3 — exchange: PARTLY ANSWERED, and the prior answer is a warning.** *"Treat the fleet as a **DIGEST pump,
+  not a chat partner**. This is the honest capability and the desirable one."* Plus SM015: *"Sub-agents **WRITE
+  results to files**, returning only a short pointer + summary — never thousands of tokens."*
+- **sub-Q1 — competing broad minions: a NEGATIVE already on record.** SM015 notes interactive/creative work *"doesn't
+  decompose; a fleet returns N confident divergent [answers]"*. **Counter-specimen (positive):**
+  `wr-data/adversarial-subagent-catches-bugs-selftest-missed-2026-07-10.md` — an adversarial break *"caught what
+  neither did alone — coupled-system capability at the agent-fleet level."* ⇒ **redundancy pays for ADVERSARIAL
+  breaking, not for opinion-gathering.**
+
+**Propositions (new; what prior work does NOT yet say):**
+
+- **P4a — N identical minions are ONE observer sampled N times, not N observers.** [CS] §2.3.3 **observer
+  triangulation** presumes observers who differ. Same model (CF5) + same brief ⇒ **correlated errors**: they agree
+  *for the same wrong reasons*. **Their agreement is near-worthless as corroboration and actively dangerous, because
+  it FEELS like corroboration** — it is pseudoreplication at the observer level, the same error the indent-vs-braces
+  study guards against when it fixes the unit of replication at the model. *(Ties `047-PLAN.md` §"Reflexivity",
+  which already names "no observer triangulation" as the solo-researcher validity headline — the minion is the fix,
+  and cloning it is not more fix.)*
+- **P4b — the model is FIXED at CF5, so the BRIEF is the only available lever for observer independence.**
+  Foundations: *the brief is the only behavioural channel*. Therefore **brief-diversity IS observer-diversity**, and
+  **focused minions strictly dominate competing identical ones** — not because focus is tidier, but because it is the
+  only thing that makes their errors uncorrelated. **This is the answer to sub-Q1 and sub-Q2 together.**
+- **P4c — exchange VIA THE SUPER-AGENT is harmful; exchange via the LOG is not.** If CO4 routes A's findings to B,
+  **CO4 chooses what B sees** — reinstating the sampling-frame bias §6 names and undoing exactly the independence
+  §5's write-to-own-dir just bought. **Worse, it anchors B on A** ⇒ their agreement becomes an artefact of read
+  order. If they must share, share **through `minion-log/`** (already SM015's prescription), and **independent round
+  first, exchange second** (the Delphi shape). ⇒ **sub-Q3's honest answer: not via the super-agent. Via the
+  substrate.**
+- **P4d — fan-out is paid in the SUPER-AGENT's CONTEXT, not in tokens.** Every reply lands in CO4's window, so **N
+  minions accelerate the rot of the agent they exist to measure** — *the rot-detector causes rot.* Tokens are cheap
+  in `tok-spend`; **CO4's context is the binding currency** (foundations, Delegation dance: under spending-mode *"rot
+  is the binding currency, not tokens"*). **SM015 already prescribes the fix** (write to files, return a short
+  pointer), which is why §5's log design is what makes multiple minions affordable **at all**. Untested here.
+- **P4e — the box is a real ceiling, and it is not the harness.** SM015: *"on blixten the binding constraint is local
+  RAM, not the harness"*; `047-fresh-restart-fidelity.md` measured **~14 worker processes persisting after a
+  5-subagent fleet**. Our minions are **text-only** (read + write markdown, no JVM), so they are at the cheap end —
+  but *long-lived × several* is a **standing** footprint, not a transient one. [[blixten-box-flaky]].
+
+#### BR's sharpening: *"this is thus also a collaboration versus competition question"* — and it exposes a THIRD regime
+
+**He is right that it is the underlying axis, and the axis turns out to be a false binary.** Reading the propositions
+through it: **collaboration destroys independence** (P4c — exchange anchors), **competition preserves independence**
+but only pays adversarially (P4a). Both are about **overlapping** minions. **But the option SM015 already
+prescribes — declared-focus slices — is NEITHER.** Three regimes, not two:
+
+| regime | brief | overlap | exchange | what it buys | what it CANNOT buy |
+|---|---|---|---|---|---|
+| **Compete** | same | full | none | **confidence** (independent votes) | coverage (all look at the same thing) |
+| **Collaborate** | any | any | yes | **depth** (each builds on the other) | **independence — it is destroyed on contact** |
+| **Partition** ⭐ | *different focus* | none | none | **coverage** (more ground swept) | **confidence — no two minions ever check the same claim** |
+
+⭐ **THE DISTINCTION THAT MATTERS: partition buys COVERAGE, competition buys CONFIDENCE. They answer different
+questions, and neither substitutes for the other.**
+- **Worried about MISSING things** (RQ1: *what does CO4 not catch?*) ⇒ **partition**. This is the study's primary
+  question, which is why *declared-focus slices* is the right default and why "more minions, same brief" was never
+  the useful version.
+- **Worried about BELIEVING WRONG things** (a specific finding's verdict) ⇒ **compete**, adversarially: several
+  minions told to **refute one named claim**. Not *"look for problems"* — that is opinion-gathering, and SM015
+  already records that it returns *N confident divergent answers*.
+
+**So collaboration is not the opposite of competition here — it is the thing that silently converts competition into
+neither.** Two minions that exchange stop being two observers **without any visible sign**: their agreement rises,
+which *reads* as corroboration and *is* anchoring. **That is the trap in the collaboration arm**, and it is a
+specimen of this study's general shape (a thing that feels like evidence and is not).
+
+**Sequencing dissolves the tension:** **compete first (independent, no exchange), collaborate second (share via
+`minion-log/`, never via CO4)** — the **Delphi** shape. Independent round preserves the signal; the exchange round
+mines it.
+> **📌 UNVERIFIED LEAD, flagged not asserted:** the group-creativity literature (nominal-group vs interacting-group
+> studies) reportedly finds **individuals working separately, then pooling, out-produce interacting groups** —
+> anchoring / conformity / production-blocking. If that holds it is direct external support for *partition-first,
+> exchange-second*. **CO4 has NOT verified this and it is cited from memory** — the exact move this session forbids
+> ([[echt-effort-especially-self-generated]]). **BR is a research-methods author and will know instantly whether it
+> is real.** Do not build on it until checked.
+
+**Quick verdict (BR asked for a quick take; this is it, and it is falsifiable):** **yes to several minions, no to
+cloning one.** Give each a **different declared focus** (that is the only independence lever we have), let them
+**exchange only through the log**, and **watch CO4's context, not the token bill**, for the cost. **Redundancy only
+earns its keep adversarially** — several minions told to *refute the same specific claim* is a different and better
+use than several minions told to *look for problems*.
+
 **Fully acceptable null, reported as prominently as any positive:** the minion produces only echo and slop, adds
 nothing BR or I did not already have, and costs tokens and flow. **That is a real result** and it closes a live
 question about a technique we already reach for reflexively.
