@@ -44,8 +44,21 @@ Java dependency forces your hand, not for raw leanness.
    - **JDK-light and no Java deps** → **Scala Native.** Leanest startup (~1.7 ms, a ~300× win over JVM), and
      short-lived CLI is SN's own documented sweet spot (use **`nativeGc none`** — a no-freeing GC is ideal when
      the process allocates a bounded amount and exits; the OS reclaims on death).
-   - **Needs Java deps, or reflection-heavy libs** → **GraalVM native-image.** It AOT-compiles JVM bytecode, so
-     the ecosystem comes along — at the cost of reflection configuration and a heavier build.
+   - **Blocked only by a SMALL `java.*` gap (not a real dependency)?** → **hand-roll the gap and KEEP Scala
+     Native.** Do not escalate to Graal for a missing stdlib corner. `java.time` is the canonical case: SN
+     0.5.12 has not ported it (`research/052`), yet an ISO-8601→epoch-ms conversion or a local wall clock is a
+     small, bounded, testable slice — the hand-roll sweet spot (`scala-style` §1). **Worked examples:**
+     `tools/statusline.scala`'s `clock` and `isoToEpochMs`; both exist *purely* to keep the hot native target
+     compiling. **Test the hand-roll against the JDK as an independent oracle** (the test runs on the JVM and
+     may use `java.time` freely — only the *tool* is constrained). **Cost to weigh honestly:** you own that
+     code forever, so hand-roll only what is genuinely small; a fiddly/decades-deep domain (a full date-time
+     library, a TZ database, crypto) is NOT this branch — that is the next one.
+   - **Needs Java deps, reflection-heavy libs, or a JDK gap too big/risky to hand-roll** → **GraalVM
+     native-image.** It AOT-compiles JVM bytecode, so the ecosystem comes along — at the cost of reflection
+     configuration and a heavier build. **This is the right escape hatch when startup matters but the JDK gap
+     is not worth owning**: ~3.05 ms startup (still ~165× better than the JVM) and full `java.*`, paid for in
+     binary size (~12.25 MiB vs SN's ~1.64) and build time. Reach for it because a dependency *forces* it —
+     never for leanness (SN wins that outright, see the table above).
 3. **Throughput-bound, long-running compute?** Prefer the **JVM** (the JIT wins after warmup) or SN
    `release-full`. Native's advantage is *startup*, not steady-state compute.
 4. **Trivial, latency-insensitive, fire-and-forget** (a hook that just execs something)? **Do not compile at
@@ -56,6 +69,11 @@ Java dependency forces your hand, not for raw leanness.
 - **Scala Native cannot use Java dependencies.** Libraries must be published *for Scala Native*; `java.*`
   support is partial. Check every dep before committing. JDK-heavy code (`java.nio` tree walks, `ProcessBuilder`
   drivers) may not port unchanged.
+  - **The gap bites LATE, which is what makes it expensive.** A `java.time` call compiles fine, passes every
+    JVM test, and only breaks at the *native build* — far from the line that caused it. So the check belongs at
+    **write** time, per file, in `scala-style` §1: *is this file a native target? then is this API ported?* The
+    constraint is **per-file, not global** — `tools/statusline.scala` must avoid `java.time`; `tools/hangover.scala`
+    (a JVM-only hook) uses it correctly. Duplicating a small helper across that boundary is deliberate, not sloppy.
 - **GraalVM's fallback-image trap.** If native-image hits reflection it can silently emit a *fallback image*
   that is really just a JVM launcher — a fake "native" binary with JVM startup. **Always build with
   `--no-fallback`** so it errors instead of lying, and add reflection config where needed.

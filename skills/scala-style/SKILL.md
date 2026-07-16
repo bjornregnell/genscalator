@@ -70,6 +70,24 @@ black-and-white.
   the dependency right where it bites. Keep genuinely repo-wide imports at the top.
 - Latest **stable** Scala (re-check per project). Reach first for the **JDK + the `tt` toolbox** — they
   cover most needs.
+- **⚠️ Tier-1 caveat: a JDK API can silently cost you Scala Native.** SN has **not** ported all of `java.*`
+  (notably **`java.time`**, as of SN 0.5.12 — see `research/052`). Reaching for the JDK is still right by
+  default, but **if the file is (or may become) a native target, check the API first**: an innocuous
+  `java.time.Instant.parse` will compile and pass every JVM test, then break the native build — a cost paid
+  far from the line that caused it. **If the gap is small, bounded and paired-test-verifiable, HAND-ROLL it**
+  (this is tier-2 of the cascade, reached for a *platform* reason rather than a dependency one) and leave a
+  one-line *why* at the function, or the next reader will "simplify" it back to the JDK call.
+  - **Worked examples (both in `tools/statusline.scala`, the hot native target):** `clock` (local wall-clock
+    without `java.time`) and `isoToEpochMs` (ISO-8601 → epoch-ms via days-from-civil). Note `HangoverTool`
+    uses `java.time` for the *same* job and is *correct* to — it is a JVM-only hook. **The constraint is
+    per-file, not global**, so the duplication is deliberate (§5) and the *why* is recorded at both.
+  - **Test a hand-rolled JDK replacement against the JDK as an INDEPENDENT oracle** (`assertEquals(mine(x),
+    java.time.…(x))` across the nasty cases — leap years, century rules, epoch). The test may use the JDK
+    freely; only the *tool* is constrained.
+  - **If it is NOT easy to hand-roll** (fiddly, decades-deep, or a Java dep you cannot drop), do **not**
+    contort the code: that is a **TARGET** decision, not a style one → **`scala-platform`**, which weighs
+    JVM vs Scala Native vs **GraalVM native-image** (Graal keeps Java deps and still starts fast — the right
+    escape hatch when startup matters but the JDK gap is too big to hand-roll).
 - **Wrap raw JDK APIs in a thin Scala abstraction** (e.g. `LibJVM.scala`) rather than calling
   `java.nio`/`java.net`/`Executors` directly all over the tools. A one-screen wrapper that exposes a Scala
   idiom (named results, `Using` for resources, our own naming) buys three things: one place to refactor, the
