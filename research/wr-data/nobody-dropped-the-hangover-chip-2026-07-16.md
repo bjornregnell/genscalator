@@ -22,7 +22,25 @@ i.e. **maximally easy to just comply with.**
    - `hangoverChip` (:287) — *"The `hangover?` chip — a **DERIVED** mode for the MODE LINE. None when there is
      nothing to say."*
    - (:294) — *"a derived chip **never enters the state file**"*. And `?` is not a legal mode-label char: `tt mode`
-     accepts `[A-Za-z0-9._-]+`, so **`tt mode rm hangover?` would be rejected outright.**
+     accepts `[A-Za-z0-9._-]+`, so ~~**`tt mode rm hangover?` would be rejected outright.**~~
+     > **⛔ RETRACTED 2026-07-17 00:5x — FALSE, and caught by the meta-minion on its FIRST PUSH.** Annotated, not
+     > erased ([[keep-the-ball-game-retract-by-annotating]]).
+     > **What is true:** `tools/mode.scala:59` defines `valid()`, but it is called **ONLY in the `add` branch**
+     > (:69-72). The **`rm` branch (:75-76) is bare** — `write(read().filterNot(_ == label))`, **no validation**. ⇒
+     > **`tt mode rm hangover?` would be SILENTLY ACCEPTED, exit 0, a no-op.** Not rejected. Not even a warning.
+     > **The `?`-is-not-a-legal-label premise is TRUE** (the source comment at `statusline.scala:294` says so, and
+     > `valid()` confirms it) — **the INFERENCE from it was false.** Legality gates `add`; `rm` never asks.
+     > **⚠️ WHY THIS ONE STINGS, and it is the whole reason it is preserved in place:** it was asserted **inside the
+     > document whose thesis is *"checked, not recalled"* and *"VERIFY BY READING THE SOURCE — do not assert from
+     > memory."*** The agent read `statusline.scala` at the source and, for `mode.scala`, **read only `tt mode
+     > --help`** — then generalised a documented label rule across the whole tool. **Selectively rigorous, and
+     > unaware of it.** ⇒ the failure is not *"forgot to check"*; it is **checking one code path and believing you
+     > checked the tool.** A sharper, nastier variant of *fluency-mistaken-for-grounding* than the note's own §
+     > "near-miss" describes — **the agent had already caught itself twice tonight and still shipped this.**
+     > **The note's CONCLUSION survives untouched by a different route** (a derived chip never enters the state file,
+     > so `rm` removes nothing regardless) — **which is exactly why nobody would have found it.** A false mechanism
+     > propping up a true conclusion is invisible to anyone checking only the conclusion. **That is the specific
+     > thing a second observer buys.**
    - (:307) — *"derived FIRST: transient + urgent, and **it decays on its own**"*
    - (:123) the gap is `now − last timestamped transcript record`; the chip's show-threshold is **60s** (:383).
 3. **So it decayed, exactly as designed.** Once joint work started, the gap fell below 60s and `hangoverChip`
