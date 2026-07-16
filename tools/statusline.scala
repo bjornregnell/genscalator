@@ -204,12 +204,31 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     })
   /** One mode label: reverse-video (7) + bold (1) + its colour, padded to read as a chip. PURE. */
   def renderMode(label: String): String = sgr(s"7;1;${modeColor(label)}", s" $label ")
+  /** SM119: a STABLE render order so a given SET of active modes always renders the same regardless of the
+    * +/- add/remove history (the state file records insertion order, which reshuffles the line on every toggle).
+    * First-cut canonical priority, grouped by frame; tune freely — it is only a DISPLAY order, no behaviour
+    * depends on it. Any label not listed sorts alphabetically AFTER the known ones, so unknown modes stay stable
+    * too. A `?`-suffixed inferred mode (SM118) sorts with its confirmed base, just after it. */
+  val modeOrder: Vector[String] = Vector(
+    "afk", "solo", "delegation", "racing",   // session frame (who/how we are working)
+    "human-stress", "tired",                 // human state
+    "rot-vigil", "dumb-zone",                // agent vigilance
+    "high-context", "limit-near",            // context / limits
+    "tok-spend", "token-saving",             // token budget
+    "hot-harvest"                            // task
+  )
+  /** Order `modes` by `modeOrder` (known first, in that order), then alphabetically for the rest. PURE. */
+  def sortModes(modes: Seq[String]): Seq[String] =
+    val rank = modeOrder.zipWithIndex.toMap
+    modes.sortBy: label =>
+      val base = label.stripSuffix("?")                 // ?-inferred sorts with its confirmed base (SM118)
+      (rank.getOrElse(base, Int.MaxValue), base, label) // known-by-rank, else alphabetical; plain before ?
   /** The mode line: brand prefix + active modes (each reverse+bold, own colour) joined by a plain " & ". PURE.
     * No active modes -> a dim placeholder, so the line is still recognisable as the (empty) mode line. */
   def renderModes(modes: Seq[String]): String =
     val brand = sgr("1;38;5;42", "gs mode set") // line-2 prefix: NOT "genscalator" again (redundant with line 1); doubles as the DWIM verb
     if modes.isEmpty then s"$brand ${sgr("38;5;245", "clear: no active mode labels")}"
-    else s"$brand ${modes.map(renderMode).mkString(" & ")}"
+    else s"$brand ${sortModes(modes).map(renderMode).mkString(" & ")}"
   private val Help: String =
     """tt statusline — format Claude Code's statusLine JSON into one compact coloured line
       |

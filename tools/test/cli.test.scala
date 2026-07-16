@@ -1247,6 +1247,19 @@ class CliSuite extends munit.FunSuite:
     assertEquals(tokGauge(7_000_000L, 3_000_000L, 6_000_000L), Red)        // red past danger
   }
 
+  test("statusline SM119 sortModes: stable canonical order regardless of +/- add/remove history") {
+    import StatuslineTool.*
+    // same SET, different insertion orders -> identical render order (the whole point of SM119)
+    val a = sortModes(Seq("solo", "afk", "rot-vigil"))
+    val b = sortModes(Seq("rot-vigil", "afk", "solo"))
+    assertEquals(a, b)
+    assertEquals(a, Seq("afk", "solo", "rot-vigil"))                       // session frame first, agent-vigilance after
+    assertEquals(sortModes(Seq("zzz", "tok-spend", "aaa")),               // unknowns sort alphabetically AFTER known
+                 Seq("tok-spend", "aaa", "zzz"))
+    assertEquals(sortModes(Seq("dumb-zone?", "dumb-zone")),               // ?-inferred sorts just after its base (SM118)
+                 Seq("dumb-zone", "dumb-zone?"))
+  }
+
   test("statusline SM117 TranscriptStats.of: sums output_tokens (excl sidechain), human string-content chars") {
     val lines = List(
       """{"type":"assistant","isSidechain":false,"message":{"usage":{"output_tokens":100}}}""",
