@@ -217,11 +217,18 @@ perceive its own think-time — this plus a human relay reconstruct a full round
 ### hangover — detect a just-ended agent blackout by the resume-gap (PURE read; the clock supplies `now`)
 ```
 hangover <transcript.jsonl> [--now-ms N] [--threshold-sec N]
+hangover hook [<json>]               # Claude Code SessionStart hook: stdin JSON -> a hangover line named by `source`
 ```
 On resume, compares NOW to the last conversational record's timestamp and flags a gap that dwarfs execution
 time: the "hangover" of a blackout the agent cannot perceive from inside (guard stall / long idle / compact /
 box crash). Detects THAT you were out, not the cause; a `compact_boundary` among the recent records names it a
-compact. SM121 core — the surface wiring (statusline segment / warm hook / `gs warm`) is deliberately separate.
+compact.
+
+`hook` is the SM121 surface (BR's decision): wired as a **SessionStart** hook it fires on all four boundaries
+and gets a `source` (`startup`/`resume`/`clear`/`compact`) that NAMES the seam a bare gap cannot tell apart.
+Silent unless there is a hangover (its output is injected into context on every session start), fail-soft and
+always exit 0 (a session start must never break on this). Wiring: `docs/hangover-hook.md` (human-gated).
+Still uncovered: a mid-session stall or idle, which fires no SessionStart.
 
 ### parsereqt — parse reqT model text (PURE)
 ```

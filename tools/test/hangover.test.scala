@@ -58,3 +58,25 @@ class HangoverSuite extends munit.FunSuite:
     assert(clue(hangover).contains("1h 0m"))
     assert(clue(report(one, ms(t1) + 60_000L, 900L)).startsWith("no hangover:"))
     assertEquals(report(Seq.empty, 1000L, 900L), "hangover: no timestamped records to compare (nothing to say)")
+
+  // --- the SessionStart hook surface (SM121 option (b)): `source` names the seam a bare gap cannot ---
+
+  test("causeOf: each SessionStart source names the seam; unknown/absent falls back to the honest gap wording"):
+    assert(clue(causeOf(Some("resume"))).contains("resumed"))
+    assert(clue(causeOf(Some("compact"))).contains("compact"))
+    assert(clue(causeOf(Some("clear"))).contains("cleared"))
+    assert(clue(causeOf(Some("startup"))).contains("fresh session"))
+    assert(clue(causeOf(None)).contains("cause unknown"))
+    assert(clue(causeOf(Some("something-new"))).contains("cause unknown")) // a future CC source must not crash
+
+  test("hookReport: a hangover line is named by source"):
+    val one = Seq(s"""{"timestamp":"$t1"}""")
+    val out = hookReport(Some("resume"), one, ms(t1) + 41_865_000L, 900L)
+    assert(clue(out).startsWith("hangover:"))
+    assert(clue(out).contains("11h 37m"))
+    assert(clue(out).contains("resumed"))
+
+  test("hookReport: SILENT when under threshold or when there are no records (it costs context to speak)"):
+    val one = Seq(s"""{"timestamp":"$t1"}""")
+    assertEquals(hookReport(Some("resume"), one, ms(t1) + 60_000L, 900L), "")
+    assertEquals(hookReport(Some("startup"), Seq.empty, 1000L, 900L), "")   // fresh transcript: nothing to say
