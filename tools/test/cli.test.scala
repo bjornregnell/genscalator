@@ -846,12 +846,21 @@ class CliSuite extends munit.FunSuite:
     assertEquals(s.lastStampMs, StatuslineTool.isoToEpochMs("2026-07-16T10:00:12.000Z").get)
     assertEquals(s.agentTokens, 30L)
   }
-  test("render: the hangover? chip appears only past the threshold, and is absent during normal work") {
-    val json = """{"model":{"display_name":"Opus"}}"""
-    val now = 1_000_000_000L
-    assert(!clue(StatuslineTool.render(json, now, gapSec = Some(3L), hangoverSec = 10L)).contains("hangover?")) // working
-    assert(clue(StatuslineTool.render(json, now, gapSec = Some(42L), hangoverSec = 10L)).contains("hangover? 42s"))
-    assert(clue(StatuslineTool.render(json, now, gapSec = None, hangoverSec = 10L)).contains("hangover?") == false)
+  test("hangoverChip: silent during normal work, shows past the threshold (self-clearing, no decay rule)") {
+    assertEquals(StatuslineTool.hangoverChip(3L, 10L, 300L, 3600L), None)  // working: gap collapses every message
+    assert(clue(StatuslineTool.hangoverChip(42L, 10L, 300L, 3600L).get).contains("hangover? 42s"))
+    assert(clue(StatuslineTool.hangoverChip(41865L, 10L, 300L, 3600L).get).contains("hangover? 11h"))
+  }
+  test("renderModes: a derived chip LEADS the declared modes, and shows even with no declared modes") {
+    val chip = StatuslineTool.hangoverChip(42L, 10L, 300L, 3600L).toSeq
+    val line = StatuslineTool.renderModes(Seq("solo", "afk"), chip)
+    assert(clue(line).contains("hangover? 42s"))
+    assert(clue(line).indexOf("hangover?") < clue(line).indexOf("afk"))   // derived leads: it is the alarm
+    assert(clue(StatuslineTool.renderModes(Nil, chip)).contains("hangover? 42s")) // not the empty placeholder
+    assert(clue(StatuslineTool.renderModes(Nil, Nil)).contains("no active mode labels"))
+  }
+  test("render: the hangover? chip is NOT on the status line (it is a mode, not a resource gauge)") {
+    assert(!clue(StatuslineTool.render("""{"model":{"display_name":"Opus"}}""", 1_000_000_000L)).contains("hangover"))
   }
 
   // --- quote-aware cmd checks (PURE). The guard scans raw bytes, so a metachar inside a quoted ARG fired with no

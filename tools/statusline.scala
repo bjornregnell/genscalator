@@ -193,8 +193,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
   /** PURE: statusLine JSON + current time → the one-line status ("" if nothing usable / not JSON). */
   def render(json: String, nowMs: Long, warn: Double = 80, ctxWarn: Double = 30, dumbZone: Double = 75, autoCompact: Double = 92,
              rotTokens: Option[Long] = None, totTokens: Option[Long] = None, showTot: Boolean = true, humanChars: Option[Long] = None,
-             tokWarn: Long = 200_000L, tokDanger: Long = 500_000L, tiredChars: Option[Long] = None,
-             gapSec: Option[Long] = None, hangoverSec: Long = 10L, hangoverWarn: Long = 300L, hangoverDanger: Long = 3600L): String =
+             tokWarn: Long = 200_000L, tokDanger: Long = 500_000L, tiredChars: Option[Long] = None): String =
     val o = MiniJson.parse(json).flatMap(_.obj) match
       case Some(m) => m
       case None    => return "" // nothing usable / not an object → empty line, exit 0 (never crash the prompt)
@@ -210,13 +209,8 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     // signal, COLOURED by threshold; the `?` marks it an inferred proxy (SM118). tot = cumulative lifetime tokens,
     // dim (context only, no threshold meaning), and DROPPED on a narrow terminal (showTot). rot? is the star.
     rotTokens.foreach(r => segs += sgr(tokGauge(r, tokWarn, tokDanger), s"rot? ${formatTokens(r)}"))
-    // hangover? chip (SM121 surface v1): now - the last timestamped record = the gap the agent CANNOT perceive from
-    // inside (no observer runs during a blackout). Shown ONLY past `hangoverSec`, so it is absent during normal work
-    // (where the gap is ~seconds) and appears exactly when BR returns — then self-clears on his first message, which
-    // writes a fresh record. No decay rule needed, no mode state: it is derived, like rot?. The `?` is the SM118
-    // honesty marker — the GAP is measured fact, but "the agent is cold" is the inferred hypothesis.
-    gapSec.filter(_ >= hangoverSec).foreach: g =>
-      segs += sgr(hangoverGauge(g, hangoverWarn, hangoverDanger), s" hangover? ${formatGapShort(g)} ")
+    // NB the `hangover?` chip is NOT here — it lives on the MODE LINE (see hangoverChip): it is a MODE, not a
+    // resource gauge, it renders as a chip, and the mode line has the horizontal room. (BR, 2026-07-16.)
     if showTot then totTokens.foreach(t => segs += sgr("38;5;245", s"tot ${formatTokens(t)}"))
     val rl = o.get("rate_limits").flatMap(_.obj)
     rl.flatMap(_.get("five_hour")).flatMap(_.obj).foreach: h5 =>
@@ -290,12 +284,29 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     modes.sortBy: label =>
       val base = label.stripSuffix("?")                 // ?-inferred sorts with its confirmed base (SM118)
       (rank.getOrElse(base, Int.MaxValue), base, label) // known-by-rank, else alphabetical; plain before ?
-  /** The mode line: brand prefix + active modes (each reverse+bold, own colour) joined by a plain " & ". PURE.
-    * No active modes -> a dim placeholder, so the line is still recognisable as the (empty) mode line. */
-  def renderModes(modes: Seq[String]): String =
+  /** The `hangover?` chip — a DERIVED mode for the MODE LINE. None when there is nothing to say.
+    *
+    * WHY the mode line and not the status row (BR, 2026-07-16): *"hangover IS a mode even if it has a number to
+    * it"*, and *"we usually have more horiz space on the mode line"*. It also already renders AS a chip, and chips
+    * live here. The mode line's own contract already carries the concept — "auto-derived modes come from the same
+    * status JSON this tool already reads" — so a **derived** mode (from the transcript) beside **declared** ones
+    * (from the state file) is the design, not an exception. That also sidesteps SM118's blocker: `?` is not yet a
+    * legal mode-LABEL char, but a derived chip never enters the state file, so nothing needs to parse it.
+    *
+    * Shown only past `showSec`: absent during normal work, appears when the human returns, and **self-clears** on
+    * their first message (a fresh record collapses the gap) — no decay rule, no state to reset. PURE. */
+  def hangoverChip(gapSec: Long, showSec: Long, warn: Long, danger: Long): Option[String] =
+    Option.when(gapSec >= showSec)(
+      sgr(hangoverGauge(gapSec, warn, danger), s" hangover? ${formatGapShort(gapSec)} "))
+
+  /** The mode line: brand prefix + DERIVED chips (pre-rendered, transient — they lead, being the alarm) + active
+    * declared modes (each reverse+bold, own colour), joined by a plain " & ". PURE.
+    * Nothing active -> a dim placeholder, so the line is still recognisable as the (empty) mode line. */
+  def renderModes(modes: Seq[String], derived: Seq[String] = Nil): String =
     val brand = sgr("1;38;5;42", "gs mode set") // line-2 prefix: NOT "genscalator" again (redundant with line 1); doubles as the DWIM verb
-    if modes.isEmpty then s"$brand ${sgr("38;5;245", "clear: no active mode labels")}"
-    else s"$brand ${sortModes(modes).map(renderMode).mkString(" & ")}"
+    val chips = derived ++ sortModes(modes).map(renderMode) // derived FIRST: transient + urgent, and it decays on its own
+    if chips.isEmpty then s"$brand ${sgr("38;5;245", "clear: no active mode labels")}"
+    else s"$brand ${chips.mkString(" & ")}"
   private val Help: String =
     """tt statusline — format Claude Code's statusLine JSON into one compact coloured line
       |
@@ -418,9 +429,10 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     // Each println is a SEPARATE status row (Claude Code renders multi-line statuslines).
     if !noStatus then println(render(json, nowMs, warn, ctxWarn, dumbZone, autoCompact,
       rotTokens = stats.map(_.sinceWarpTokens), totTokens = stats.map(_.agentTokens), showTot = showTot,
-      humanChars = stats.map(_.humanChars), tokWarn = tokWarn, tokDanger = tokDanger, tiredChars = tiredChars,
-      gapSec = gapSec, hangoverSec = hangoverSec, hangoverWarn = hangoverWarn, hangoverDanger = hangoverDanger))
-    if modeLine then println(renderModes(readModes(modesFile)))
+      humanChars = stats.map(_.humanChars), tokWarn = tokWarn, tokDanger = tokDanger, tiredChars = tiredChars))
+    // SM121: the hangover? DERIVED mode rides the mode line (see hangoverChip for why it is not a status segment).
+    val derivedChips = gapSec.flatMap(g => hangoverChip(g, hangoverSec, hangoverWarn, hangoverDanger)).toSeq
+    if modeLine then println(renderModes(readModes(modesFile), derivedChips))
     0
 
 @main def statusLine(args: String*): Unit = sys.exit(StatuslineTool.dispatch(args.toList))
