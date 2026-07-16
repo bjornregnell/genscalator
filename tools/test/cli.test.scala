@@ -812,6 +812,48 @@ class CliSuite extends munit.FunSuite:
     assert(clue(redirect.fix).contains("\\x3E"))                  // teaches the escape
     assert(clue(redirect.fix).contains("\\x28"))                  // warns: do not escape a metachar you meant
   }
+  // --- SM121 hangover? chip (PURE) ---
+  // isoToEpochMs is hand-rolled WITHOUT java.time (Scala Native has not ported it; statusline is the native target),
+  // so it is checked against java.time.Instant as an INDEPENDENT oracle — the one place a date bug would hide.
+  test("isoToEpochMs: matches java.time across leap years, century rules and epoch") {
+    for iso <- Seq("2026-07-16T11:07:58.421Z", "1970-01-01T00:00:00.000Z", "2024-02-29T23:59:59.999Z",
+                   "2000-02-29T12:00:00.000Z", "1999-12-31T23:59:59.000Z", "2100-03-01T00:00:00.000Z") do
+      assertEquals(clue(StatuslineTool.isoToEpochMs(iso)), Some(java.time.Instant.parse(iso).toEpochMilli), clue(iso))
+    assertEquals(StatuslineTool.isoToEpochMs("not a date"), None)
+    assertEquals(StatuslineTool.isoToEpochMs(""), None)
+  }
+  test("formatGapShort: largest unit only") {
+    assertEquals(StatuslineTool.formatGapShort(41865L), "11h")
+    assertEquals(StatuslineTool.formatGapShort(303L), "5m")
+    assertEquals(StatuslineTool.formatGapShort(42L), "42s")
+  }
+  test("hangoverGauge: blink is the TOP GATE ONLY — a compact-sized gap stays calm") {
+    // a compact is ~140s (MEASURED: compact-timing.log, 124-162s) => must NOT blink, or the alarm is spent.
+    // NB assert on the LEADING attr: blink is a leading "5;", and "5;" also occurs INSIDE a 256-colour code
+    // (38;5;42) — a `contains("5;")` here is a false failure (it was, first run).
+    assert(!clue(StatuslineTool.hangoverGauge(140L, 300L, 3600L)).startsWith("5"))
+    assert(!clue(StatuslineTool.hangoverGauge(299L, 300L, 3600L)).startsWith("5"))
+    assertEquals(StatuslineTool.hangoverGauge(300L, 300L, 3600L), "7;1;38;5;214")   // orange: a real break
+    assert(clue(StatuslineTool.hangoverGauge(3600L, 300L, 3600L)).startsWith("5;7;1;")) // blink+inverse: long blackout
+  }
+  test("TranscriptStats: tracks the last timestamp for the hangover gap") {
+    val lines = Seq(
+      """{"type":"user","timestamp":"2026-07-16T10:00:00.000Z","message":{"content":"hi"}}""",
+      """{"type":"queue-operation"}""",                                   // no timestamp -> ignored, not a crash
+      """{"type":"assistant","timestamp":"2026-07-16T10:00:12.000Z","message":{"usage":{"output_tokens":30}}}"""
+    )
+    val s = StatuslineTool.TranscriptStats.of(lines)
+    assertEquals(s.lastStampMs, StatuslineTool.isoToEpochMs("2026-07-16T10:00:12.000Z").get)
+    assertEquals(s.agentTokens, 30L)
+  }
+  test("render: the hangover? chip appears only past the threshold, and is absent during normal work") {
+    val json = """{"model":{"display_name":"Opus"}}"""
+    val now = 1_000_000_000L
+    assert(!clue(StatuslineTool.render(json, now, gapSec = Some(3L), hangoverSec = 10L)).contains("hangover?")) // working
+    assert(clue(StatuslineTool.render(json, now, gapSec = Some(42L), hangoverSec = 10L)).contains("hangover? 42s"))
+    assert(clue(StatuslineTool.render(json, now, gapSec = None, hangoverSec = 10L)).contains("hangover?") == false)
+  }
+
   // --- quote-aware cmd checks (PURE). The guard scans raw bytes, so a metachar inside a quoted ARG fired with no
   // shell operator present. Policy is "no shell redirects"; the shell parses redirections BEFORE expansion, so a
   // quoted > is a literal argument and can never redirect => the flag was an implementation bug, not a margin.

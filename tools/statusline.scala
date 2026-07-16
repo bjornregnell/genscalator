@@ -51,6 +51,51 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     else if p >= 0.8 * ctxWarn then "38;5;214"    // compact-dance trigger: orange
     else "38;5;114"                               // healthy green
 
+  /** ISO-8601 UTC ("2026-07-16T11:07:58.421Z") -> epoch-ms. None if unparseable. PURE.
+    *
+    * HAND-ROLLED WITHOUT java.time, ON PURPOSE — same reason as `clock` below: Scala Native 0.5.12 has not ported
+    * java.time (research/052), and statusline is the hot native target. `HangoverTool.parseInstantMs` does the same
+    * job with `java.time.Instant.parse`, which is fine there (a JVM-only hook) but would re-break native HERE.
+    * DELIBERATE DUPLICATION (scala-style §5): the two copies differ by the constraint that motivates them; the DRY
+    * move is a shared transcript reader, already noted as debt in hangover.scala.
+    * Days-from-civil is the standard Hinnant algorithm (era arithmetic; correct across leap years/centuries). */
+  def isoToEpochMs(iso: String): Option[Long] =
+    def daysFromCivil(y: Int, m: Int, d: Int): Long =
+      val yy  = if m <= 2 then y - 1 else y
+      val era = (if yy >= 0 then yy else yy - 399) / 400
+      val yoe = yy - era * 400                                     // [0, 399]
+      val doy = (153 * (if m > 2 then m - 3 else m + 9) + 2) / 5 + d - 1
+      val doe = yoe.toLong * 365 + yoe / 4 - yoe / 100 + doy       // [0, 146096]
+      era.toLong * 146097L + doe - 719468L                         // shift epoch from 0000-03-01 to 1970-01-01
+    scala.util.Try {
+      val y  = iso.substring(0, 4).toInt
+      val mo = iso.substring(5, 7).toInt
+      val d  = iso.substring(8, 10).toInt
+      val h  = iso.substring(11, 13).toInt
+      val mi = iso.substring(14, 16).toInt
+      val s  = iso.substring(17, 19).toInt
+      val ms = if iso.length >= 23 && iso.charAt(19) == '.' then iso.substring(20, 23).toInt else 0
+      daysFromCivil(y, mo, d) * 86_400_000L + h * 3_600_000L + mi * 60_000L + s * 1000L + ms
+    }.toOption
+
+  /** Seconds -> a compact gap for the chip: "11h", "5m", "42s". PURE. */
+  def formatGapShort(sec: Long): String =
+    if sec >= 3600 then s"${sec / 3600}h" else if sec >= 60 then s"${sec / 60}m" else s"${sec}s"
+
+  /** Colour + attrs for the `hangover?` chip, graded by gap size. Chips are inverse+bold (`7;1`) like mode chips,
+    * so INVERSE is the chip baseline and the GAUGE grades the COLOUR (BR: "a colorful inverted hangover? 42s").
+    *
+    * BLINK (`5`) is reserved for the TOP GATE ONLY, and that restraint is the design (BR co-design 2026-07-16):
+    * **an alarm is a budget, exactly like a stall (SM129)** — the loudest attribute a terminal has is spent the
+    * moment it fires routinely, because the human stops seeing it. A compact-sized gap (~140s, measured) is the
+    * COMMON case and must stay calm; blink is for "you were out for hours, every reflex is cold" — it keeps its
+    * shock precisely because it almost never fires. Audience note: the statusline is for the HUMAN (the agent
+    * never sees it), so this chip is SM127's human half — "the agent is cold, shepherd the next few turns". PURE. */
+  def hangoverGauge(gapSec: Long, warn: Long, danger: Long): String =
+    if gapSec >= danger then s"5;7;1;$Red"        // BLINK + inverse red: a long blackout, everything is cold
+    else if gapSec >= warn then "7;1;38;5;214"    // inverse orange: a real break
+    else "7;1;38;5;42"                            // inverse green: compact-sized; you already knew
+
   /** Compact human-readable token count (SM117): 5008654 -> "5.0M", 178118 -> "178k", 950 -> "950". PURE. */
   def formatTokens(n: Long): String =
     if n >= 1_000_000 then f"${n / 1e6}%.1fM"
@@ -71,13 +116,17 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     *   sinceWarpTokens = like agentTokens but RESET at each {type:system, subtype:compact_boundary} marker
     *                 (SM128) — output tokens since the last warp (compact/clear) = the current-window rot? signal. */
   object TranscriptStats:
-    def of(lines: IterableOnce[String]): (agentTokens: Long, humanChars: Long, sinceWarpTokens: Long) =
+    def of(lines: IterableOnce[String]): (agentTokens: Long, humanChars: Long, sinceWarpTokens: Long, lastStampMs: Long) =
       var tok = 0L
       var chars = 0L
       var sinceWarp = 0L // SM128: agent output tokens since the last warp (compact_boundary) = the rot? signal
+      var lastStamp = 0L // SM121: epoch-ms of the LAST timestamped record -> now - this = the hangover gap
       lines.iterator.foreach: line =>
         try
           val o = MiniJson.parse(line).flatMap(_.obj).get // .get throws on malformed -> caught below -> line skipped
+          // SM121: any record carrying a timestamp advances the "last activity" mark (same single scan — no second
+          // pass, no second file read; the parse is already paid for here).
+          o.get("timestamp").flatMap(_.str).flatMap(isoToEpochMs).foreach(ms => if ms > lastStamp then lastStamp = ms)
           o.get("type").flatMap(_.str) match
             case Some("assistant") if !o.get("isSidechain").flatMap(_.bool).getOrElse(false) =>
               o.get("message").flatMap(_.obj).flatMap(_.get("usage")).flatMap(_.obj)
@@ -91,7 +140,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
               sinceWarp = 0L // a warp (compact) resets the current-window rot count (SM128)
             case _ =>
         catch case _: Throwable => () // skip unparseable / unexpected lines — never crash the prompt
-      (tok, chars, sinceWarp)
+      (tok, chars, sinceWarp, lastStamp)
 
   /** Local wall-clock HH:MM:SS from an epoch-ms (from --now-ms in tests, else System.currentTimeMillis). PURE.
     * Hand-rolled WITHOUT java.time — Scala Native 0.5.12 has not ported java.time (research/052), and this is the
@@ -144,7 +193,8 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
   /** PURE: statusLine JSON + current time → the one-line status ("" if nothing usable / not JSON). */
   def render(json: String, nowMs: Long, warn: Double = 80, ctxWarn: Double = 30, dumbZone: Double = 75, autoCompact: Double = 92,
              rotTokens: Option[Long] = None, totTokens: Option[Long] = None, showTot: Boolean = true, humanChars: Option[Long] = None,
-             tokWarn: Long = 200_000L, tokDanger: Long = 500_000L, tiredChars: Option[Long] = None): String =
+             tokWarn: Long = 200_000L, tokDanger: Long = 500_000L, tiredChars: Option[Long] = None,
+             gapSec: Option[Long] = None, hangoverSec: Long = 10L, hangoverWarn: Long = 300L, hangoverDanger: Long = 3600L): String =
     val o = MiniJson.parse(json).flatMap(_.obj) match
       case Some(m) => m
       case None    => return "" // nothing usable / not an object → empty line, exit 0 (never crash the prompt)
@@ -160,6 +210,13 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     // signal, COLOURED by threshold; the `?` marks it an inferred proxy (SM118). tot = cumulative lifetime tokens,
     // dim (context only, no threshold meaning), and DROPPED on a narrow terminal (showTot). rot? is the star.
     rotTokens.foreach(r => segs += sgr(tokGauge(r, tokWarn, tokDanger), s"rot? ${formatTokens(r)}"))
+    // hangover? chip (SM121 surface v1): now - the last timestamped record = the gap the agent CANNOT perceive from
+    // inside (no observer runs during a blackout). Shown ONLY past `hangoverSec`, so it is absent during normal work
+    // (where the gap is ~seconds) and appears exactly when BR returns — then self-clears on his first message, which
+    // writes a fresh record. No decay rule needed, no mode state: it is derived, like rot?. The `?` is the SM118
+    // honesty marker — the GAP is measured fact, but "the agent is cold" is the inferred hypothesis.
+    gapSec.filter(_ >= hangoverSec).foreach: g =>
+      segs += sgr(hangoverGauge(g, hangoverWarn, hangoverDanger), s" hangover? ${formatGapShort(g)} ")
     if showTot then totTokens.foreach(t => segs += sgr("38;5;245", s"tot ${formatTokens(t)}"))
     val rl = o.get("rate_limits").flatMap(_.obj)
     rl.flatMap(_.get("five_hour")).flatMap(_.obj).foreach: h5 =>
@@ -305,6 +362,12 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     var tiredChars: Option[Long] = None // human-char `tired?` nudge threshold; None = OFF (opt-in via --tired-chars)
     var noTok      = false // --no-tok: skip the transcript read entirely (no tok gauge)
     var rotOnly    = false // --rot-only: show rot? but DROP the secondary tot gauge (also auto-dropped if narrow)
+    // SM121 hangover? chip thresholds (seconds). Defaults: show past 10s (BR's data-capture setting — a prototype
+    // dial, deliberately noisy to learn the real gap distribution); orange past 5min; BLINK past 1h. A compact is
+    // ~140s MEASURED (compact-timing.log, 7 pairs: 124-162s), so it lands in the calm band by design.
+    var hangoverSec    = 10L
+    var hangoverWarn   = 300L
+    var hangoverDanger = 3600L
     val pos = scala.collection.mutable.ArrayBuffer[String]()
     val a = args.toVector
     var i = 0
@@ -321,6 +384,9 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
         case "--tired-chars" if i + 1 < a.length => tiredChars = a(i + 1).toLongOption; i += 2
         case "--no-tok"                         => noTok     = true; i += 1
         case "--rot-only"                       => rotOnly   = true; i += 1
+        case "--hangover-sec"    if i + 1 < a.length => hangoverSec    = a(i + 1).toLongOption.getOrElse(hangoverSec); i += 2
+        case "--hangover-warn"   if i + 1 < a.length => hangoverWarn   = a(i + 1).toLongOption.getOrElse(hangoverWarn); i += 2
+        case "--hangover-danger" if i + 1 < a.length => hangoverDanger = a(i + 1).toLongOption.getOrElse(hangoverDanger); i += 2
         case "--mode-line"                      => modeLine  = true; i += 1
         case "--no-status"                      => noStatus  = true; i += 1
         case other                              => pos += other; i += 1
@@ -334,7 +400,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     // failure yields no gauge, never a broken prompt. Reads the transcript on EACH render; --no-tok opts out.
     // PERF: on a large transcript this file read/parse is the tool's dominant cost — a cache/incremental read and
     // the SM112 native build are the follow-ups; --no-tok is the escape hatch meanwhile.
-    val stats: Option[(agentTokens: Long, humanChars: Long, sinceWarpTokens: Long)] =
+    val stats: Option[(agentTokens: Long, humanChars: Long, sinceWarpTokens: Long, lastStampMs: Long)] =
       if noTok then None
       else
         try
@@ -345,10 +411,15 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
               val src = scala.io.Source.fromFile(p.toFile, "UTF-8")
               try TranscriptStats.of(src.getLines()) finally src.close()
         catch case _: Throwable => None
+    // SM121: gap = now - the last timestamped record. Only a POSITIVE gap from a real record counts (lastStampMs 0
+    // = no timestamped records = a fresh transcript = nothing to say).
+    val gapSec: Option[Long] =
+      stats.map(_.lastStampMs).filter(_ > 0L).map(ms => math.max(0L, (nowMs - ms) / 1000L))
     // Each println is a SEPARATE status row (Claude Code renders multi-line statuslines).
     if !noStatus then println(render(json, nowMs, warn, ctxWarn, dumbZone, autoCompact,
       rotTokens = stats.map(_.sinceWarpTokens), totTokens = stats.map(_.agentTokens), showTot = showTot,
-      humanChars = stats.map(_.humanChars), tokWarn = tokWarn, tokDanger = tokDanger, tiredChars = tiredChars))
+      humanChars = stats.map(_.humanChars), tokWarn = tokWarn, tokDanger = tokDanger, tiredChars = tiredChars,
+      gapSec = gapSec, hangoverSec = hangoverSec, hangoverWarn = hangoverWarn, hangoverDanger = hangoverDanger))
     if modeLine then println(renderModes(readModes(modesFile)))
     0
 
