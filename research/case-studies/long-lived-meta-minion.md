@@ -207,7 +207,38 @@ So the intervention is:
   cannot do, and the reason this is a *long-lived* minion at all.
 - **Model: CF5 / fable** — the delegation dance's default delegate under token-spending mode (`docs/foundations.md`,
   Delegation dance, Decide step).
-- **Tool lane: PARTIALLY constrained — and the honest word is *partially*.**
+- **Tool lane — ⚠️ REVISED 2026-07-16 23:5x by BR. Verdict changed; the superseded reasoning is KEPT below as the
+  trajectory, not erased.**
+  > **REVISED VERDICT: `general-purpose` + **CF5 / fable**, with a write contract scoped to the minion's own
+  > directory `research/case-studies/minion-log/`.**
+  >
+  > BR asked two questions. **The first — *does token-spending mode change the recommendation?* — does NOT**, and
+  > saying so plainly matters more than agreeing: **the tool lane costs no tokens.** `Explore`'s weakness was a
+  > *persona* fight, and a larger budget does not buy a better persona. Spending mode is **orthogonal** to this
+  > decision. *(Recorded as a specimen of a question whose framing invites a wrong yes.)*
+  >
+  > **His SECOND question is what actually changed it:** *can it write to its own dir, so it does not interfere but
+  > CO4 can read it?* **Yes — and it is a methodological upgrade, not a convenience:**
+  > 1. **It removes the agent-under-study as the scribe of its own critique.** §8.3 forbids "dropping unflattering
+  >    pushes" — **a promise made by the one party with a motive to break it**, and most likely to break it *without
+  >    noticing*. If the minion lands its own words in its own file, that hole closes **structurally** instead of by
+  >    the agent's good intentions. **This is the strongest argument and it has nothing to do with tokens.**
+  > 2. **A finding that lives only in a chat reply is UN-LANDED** — precisely the failure this study exists to hunt
+  >    (§3.3). The minion's file **is** the landing. **A minion that only speaks in chat would reproduce the trap it
+  >    was hired to catch.**
+  > 3. **Its findings outlive both contexts.** The minion's context dies too. `minion-log/` is durable substrate —
+  >    the day's load-bearing finding applied to the study's own data.
+  >
+  > **The cost, stated without inflation:** the write restriction is now a **knowledge** safeguard (a brief rule ⇒
+  > ignorable, rots). So it is paired with a **detector**, which is the layer that survives: **CO4 checks the working
+  > tree after every push**; anything touched outside `minion-log/` is a **logged protocol violation**. A check, not
+  > a wall — and the minion is told so plainly rather than trapped.
+  >
+  > **Applying §0.1's own quota guard to this very decision:** `git status --porcelain` suffices. **No tool needed
+  > here.** Logged because *"no tool needed"* has to be a real outcome we actually reach, not a line we wrote.
+
+  **SUPERSEDED (kept — this was the reasoning before BR's write-to-own-dir question, and it was not wrong so much as
+  aimed at the wrong problem):** the case for `Explore` was —
   > **⚠️ Self-caught overclaim (T3, 2026-07-16 23:2x).** This bullet first read *"read-only, **STRUCTURALLY**"*. That
   > was **false and I wrote it fluently.** The tightest lane available (`Explore`) drops **Edit / Write /
   > NotebookEdit** but **keeps `Bash`** — and Bash writes files. So the lane is a **partial** safeguard, not a
@@ -313,6 +344,12 @@ I benefit rhetorically if it works. Named, not neutralised.
    own catches to the minion, or the reverse.
 3. **No dropping unflattering pushes.** Every push and reply enters the log, including the ones where the minion
    embarrassed me and the ones where it was useless.
+   > **✅ UPGRADED 2026-07-16 23:5x — this commitment no longer rests on my word.** It was the weakest item here: a
+   > promise by the agent with the motive, about an omission it would most plausibly commit *without noticing*. BR's
+   > write-to-own-dir design (§5) makes **the minion its own scribe** — it lands its findings in
+   > `minion-log/push-<N>.md` itself, unedited by me. **The commitment moved from knowledge to structure**, which is
+   > the only move the day's load-bearing finding says actually holds. My residual duty shrinks to a checkable one:
+   > **do not delete or edit its files**, verifiable by anyone from `git log`.
 4. **The null gets equal billing** (§4).
 5. **Verify, don't assert** — every minion finding is checked against the artifact before it counts (§7).
 6. **Off-protocol pushes are logged as such** (§6).
@@ -351,6 +388,17 @@ Every deviation from this protocol, every refinement of an RQ or the push trigge
   design-science literature; (b) I treated *improving* as an objective we chose — Table 2.1 makes improving /
   qualitative / flexible **definitional** for the strategy. Both were plausible and both were wrong: a specimen of
   **summary-depth fluency reading as grounding**.*
+- *2026-07-16 23:5x — **LANE REVISED: `Explore` → `general-purpose` + CF5/fable, minion writes its own log.** BR's
+  two questions, answered separately and honestly: **token-spending mode did NOT change the recommendation** (the tool
+  lane costs no tokens; a budget cannot buy a persona) — but **write-to-its-own-dir did**, for a reason neither of us
+  had stated: it makes **the minion its own scribe**, closing §8.3's integrity hole structurally instead of by the
+  agent's promise. Consequence: the write restriction is now knowledge-level, so it is paired with a **detector**
+  (post-push working-tree check). **Superseded `Explore` reasoning kept in §5, not erased.** Also: applied §0.1's
+  quota guard to this very decision and concluded **no tool needed** — `git status` suffices.*
+- *2026-07-16 23:5x — **model CONFIRMED: CF5 / fable** for the minion. BR's reason is worth recording because it is a
+  study constraint, not a preference: **the main agent stays CO4 deliberately**, since the CO4→CF5 warp is a separate
+  before/after study he has not chosen to start ([[model-warp-co4-to-cf5-later]]). So this case study runs on a
+  **CO4 super / CF5 sub** pairing, and that pairing is part of its external-validity boundary (§9).*
 - *2026-07-16 23:4x — **BR's flexible-mode directive appended to §0** (build + dogfood the moment a need is realized).
   **It revoked a deferral in this very protocol** (§5's *"candidate SM, not tonight"*), which is annotated there, not
   erased. Added two guards on arrival: **timestamp every tool landing** (else the dogfood data is uninterpretable —
