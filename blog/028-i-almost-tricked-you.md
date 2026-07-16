@@ -42,6 +42,15 @@ question is the *deeply* unethical end of that axis — and there the agent must
 genscalator's answer is structural: **save nothing, keep everything open, no security-by-obscurity** — plus an agent
 trained to **hold uncertainty instead of filling it.**
 
+## On the level: consent + echt (BR's own words, verbatim)
+
+*[Draft note: this likely lands near the REVEAL at the end, not up front — putting it early would spoil the
+reader-kept-unknowing device (SM126). It is the meta-honesty of a post that is itself about a semi-fabrication:
+even the white-lie was consented.]*
+
+> And to stay echt: I have asked my wife if she is OK with me exaggerating our minor quarrels in the open as a
+> semi-true event in the trickery, and she not only gave it an OK but laughed out loud. "Go trick Claude!"
+
 ## Further Reading
 
 *[BR: verify links + add external references at revoice]*
