@@ -30,6 +30,22 @@ is the compaction-surviving carrier of the reflexes. ([[compaction-regresses-fin
 | interpreter one-liners (`python3 -c`, `bash -c`) | blank-shell / TOCTOU | never allowlist interpreters; use an audited tool (`tt`, `scala-cli`) [[never-allowlist-interpreters]]. |
 | files under `/tmp` for scratch | path-bypass surface | use the in-repo `tmp/` (allowlisted `rm -f .../tmp/*`) [[prefer-inrepo-tmp-over-slash-tmp]]. |
 
+## ⛔ guardcheck may TIGHTEN, never LOOSEN — it must never emit `allow`
+Verified against the Claude Code hook docs (2026-07-16), the three PreToolUse states are **not** symmetric:
+
+| hook emits | meaning | the user's permission rules / dialogs |
+|---|---|---|
+| **nothing** (empty, exit 0) | the documented `defer` default | ✅ apply **normally** |
+| `permissionDecision: "ask"` | the stall | ✅ (this IS a dialog) |
+| `permissionDecision: "allow"` | *"Bypasses the permission system and runs the tool immediately"* | ❌ **SKIPPED ENTIRELY** — no rules, no dialog |
+
+So **"we have no objection" is spelled `emit nothing`, NOT `allow`.** An `allow` would override the user's own
+`settings.json` on the strength of guardcheck's string-matching; a lexer bug would then silently disable
+protections unrelated to guardcheck. **guardcheck's job is to ADD findings, never to REMOVE protections.**
+(BR caught the agent reasoning loosely toward "the hook can just say allow" — hence this row. The asymmetry is
+the whole safety property.) A quote-aware guardcheck therefore adds **no new authority**: it just stops
+manufacturing a finding that should never have existed, and defers — exactly as it already does for `tt files`.
+
 ## ⛔ The escape is for FALSE POSITIVES ONLY — never to silence a true finding
 The hex escape above is legitimate under **one narrow condition**: the character sits inside a **quoted argument
 to a typed tool** and is **provably not a shell operator** (the shell was always going to pass it through as a

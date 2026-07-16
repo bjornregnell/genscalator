@@ -113,8 +113,18 @@ object Guardcheck {
         println(s"      fix: ${f.fix}")
       1
 
-  /** PURE: given the raw PreToolUse stdin JSON, return the hook decision JSON (empty string = allow / clean).
-    * Extracts `.tool_input.command`, runs the SAME cmdChecks; any HIGH -> deny, else MED-only -> ask. */
+  /** PURE: given the raw PreToolUse stdin JSON, return the hook decision JSON (empty string = stay silent).
+    * Extracts `.tool_input.command`, runs the SAME cmdChecks; any HIGH -> deny, else MED-only -> ask.
+    *
+    * ⛔ NEVER EMIT `permissionDecision: "allow"` — NOT EVEN FOR A COMMAND WE ARE SURE IS CLEAN.
+    * Per the Claude Code hook docs (verified 2026-07-16): `"allow"` *"Bypasses the permission system and runs
+    * the tool immediately"* — *"without checking the permission rules or triggering permission dialogs"*. So an
+    * `allow` here would override the USER'S OWN settings.json permissions on the strength of THIS tool's string
+    * matching. A bug would then not merely miss a finding, it would silently disable protections that have
+    * nothing to do with guardcheck. This tool's job is to ADD findings, never to REMOVE protections.
+    * Staying silent (empty string) = the documented `"defer"` default = the user's normal permission flow
+    * applies untouched. That is the ONLY correct "we have no objection" signal. (BR caught the agent reasoning
+    * loosely toward an `allow` here; the asymmetry is the point — we may tighten, never loosen.) */
   def decideFromJson(stdinJson: String): String =
     val command =
       try ujson.read(stdinJson).obj.get("tool_input").flatMap(_.obj.get("command")).map(_.str).getOrElse("")
