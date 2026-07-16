@@ -333,6 +333,15 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   *inferred from a measurable proxy* (uncertain — e.g. `tired?`, `afk?`) vs a confirmed one; confirmation is
   asymmetric (the human self-confirms their own state, the agent needs external evidence). See the echt-mode-grammar
   work (SM116–118). Cf. *Introspection line* (the first line), *Harvest-hot-context mode*, the *Dances* below.
+- **Agent blackout** — the agent's execution is SUSPENDED during a harness-imposed pause (a guard stall / permission
+  prompt; any wait the harness owns). The agent has no observer *during* the blackout (it is not computing) and no
+  marker of it *after* (the next token follows the last as if continuous), so it can **never** detect the blackout
+  from the inside — the *anesthesia* case, not the *blindfold*: there is no running observer to notice. Only an
+  external trace reveals it: a **transcript timestamp jump**. The mitigation is therefore not in-blackout awareness
+  (impossible on the current harness — Anthropic does not surface the stall event) but a **hangover** reading: on
+  *resume*, re-read the real clock and compare to the last action's stamp to detect the elapsed gap and rebind the
+  clock (the gap tells you *that* you were out, not the *cause* — stall vs human-idle vs a long command). Ties the
+  guard-stall-invisibility findings, the felt-time / clock-rebind habit, SM118, and the blackout-hangover detector idea. (BR coinage, 2026-07-16.)
 ### Dances and handoffs
 *Human↔agent protocols — each has **≥2 interlocking steps** (≥1 human, ≥1 agent), else it's just a cue. The **compact trigger** and **consolidation point** below are the timing rules for the compact dance.*
 - **Me-go-pee dance** *(BR 2026-07-13)* — a **short, unplanned human bio-interrupt** handoff (a specialization of
