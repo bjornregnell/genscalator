@@ -150,6 +150,11 @@ run out. Structure does not.
 I almost tricked my agent. The reflexes that let me almost do it are the ones worth studying. The structure that would
 not let me finish is the one worth building.
 
+And if you thought while reading all this that "oh those naggy housewives", then you are wrong. My wife is an
+experienced software engineer and is currently a line manager at a big embedded-systems company responsible for their
+in-house-built OS's cyber security. And she was in on the trickery of Claude Code, which she is also a user of. Maybe I
+tricked you there?
+
 *[figure: a real screenshot of the guard stall stopping the `rm`, or the status line during the session. BR to
 capture and drop in at revoice.]*
 
