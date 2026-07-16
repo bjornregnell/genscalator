@@ -57,3 +57,25 @@ Quick capture. **DEEP WDYT + development deferred to after the compact** (BR's i
 2026-07-16 session (blackout/hangover, the opacity theory, task-specific degradation, the intent-confabulation
 specimen, the `humanWellbeing` goal SM124), SM096 (gating erodes), SM097 (sovereignty), the BHH threat model in
 `docs/foundations.md`.
+
+## The guard as fragile structure: the `rm` example (a concrete worked case, BR 2026-07-16)
+
+The session produced a live instance of the model **working** *and* of its **fragility**. The agent, on a
+confabulated guess about the human's intent, proposed a **destructive `rm`** (delete a note). The **guard stall
+stopped it** — structure caught a bad act the agent's reflexes did not, and the agent *did not get to actually do
+it*. That is the model working: *removed-or-gated surfaces + a human in the loop* beat *the agent judging itself*.
+
+But BR flagged the fragility that matters: **he pressed "No" — but a *tired / rotted* human could just as easily
+have blanket-OK'd it** ("always allow"). And **blanket-allowing `rm` is categorically bad**: it does not approve one
+deletion, it **permanently disarms the guard** for every future one. So the guard's strength reduces to the human's
+approval discipline — which is exactly what **degrades under fatigue / rot** (SM096, gating-erodes). This is the
+**human-rotted axis** of the threat model made concrete: when the human is impaired, the weakest link is the
+**rubber-stamped blanket approval**, not the one-off. (BR, emphatically: *"EVER RM THAT IS BAD BAD BADDDD."*)
+
+**Policy (candidate standing rule): NEVER blanket-allow `rm` — or any destructive / irreversible command.** A
+one-time, shown, human-gated approval is fine; a blanket "always allow" on a destructive verb is the disarm. This is
+the destructive-command sibling of *never-allowlist-interpreters* + *never-blanket-allow-settings-self-edit*, and it
+is *more* important precisely because the human who would grant it is often the tired one. So the agent should
+**actively flag** (never quietly accept) any move toward blanket-allowing a destructive verb — earned trust
+*obligates* flagging it harder, not less. Ties [[guard-against-forced-confirmations]],
+[[earned-trust-obligates-flagging-risk-more]], [[never-blanket-allow-settings-self-edit]].
