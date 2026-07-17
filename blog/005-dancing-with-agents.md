@@ -87,6 +87,22 @@ in. `[for BR to voice — tighten, cut, add the ones I missed]`
   fumbling a critical paste under fatigue (a dropped closing fence was a real rot signal this session). *Memory:*
   [[copy-paste-frame-rule]].
 
+- **guard-stall dance** `[AGENT-DRAFT 2026-07-17 — for BR to voice]` — talk from inside the approval box. The agent
+  runs a command the guard does not allow. **Agent:** stops, and waits. ‖ **Human:** answers, and if he wants to say
+  something while in there, prefixes it `in guard:` so the agent knows where the words came from. *Prevents:* the
+  agent guessing why it stalled, which it cannot do (see below). *Memory:* [[cue-guard-stall]]. *Note the two teeth
+  in this one:* the human's typing in the box arrives in the feed **out of order**, so neither partner can trust
+  message sequence while a stall is open; and the input goes to **whoever stalled**, not to whoever you meant, so a
+  reply can land in a sub-agent instead of the main one. Both bit us on 2026-07-17.
+
+- **delegation dance** `[AGENT-DRAFT 2026-07-17 — for BR to voice]` — hand a slice to a sub-agent. **Agent:** spawns a
+  minion with a scoped job, a workspace it cannot escape, and **the tools it needs named up front**. ‖ **Human:**
+  watches the edges, because the super-agent cannot. *Prevents:* burning the main context on mechanical work (a
+  sandbox build, a broad sweep). *Memory:* [[delegation-dance]], [[warm-delegated-subagents-lack-caller-skills]].
+  *The lesson that cost us a morning:* I briefed a minion with **prohibitions** (no this, no that) and gave it **no
+  tool to obey them with**, so it flailed. The tool it needed was tracked, in its own clone, the whole time. **A rule
+  is a sentence, and sentences do not help. Brief the tool lane, not the rule list.**
+
 - **(candidate, not yet firm) commit-first-because-flaky-box** — commit+push frequently so a flaky environment or a
   harness cull can't take unsaved work. Part of the joint-rot recovery kit ([[joint-rot-vigilance-recovery-kit]]); name
   it or fold it into the recovery-kit prose.
@@ -102,6 +118,70 @@ the **consistency sweep** audits the substrate's content), and *coordination mic
 copy-paste-frame). But every one is the *same underlying move* — externalize fragile state into a durable substrate
 before the fragile place fails, or repair the substrate once drift has crept in. That common spine is why they feel like
 a family and not a grab-bag, and it's the thread 007 pulls on.
+
+## Why the guard has a dance at all `[AGENT-DRAFT 2026-07-17 — for BR to voice; this is the security theory]`
+
+Some of these dances look like coping. The guard stops the agent, I answer, we move on. Why ritualize that? Because
+of something we only understood on 2026-07-17, after a day of collecting stalls: **the agent cannot learn its way out
+of them.**
+
+Here is the thing that convinced me. Every one of these was written down, in the agent's own loaded memory, on the
+day it was broken: use the in-repo scratch dir, not the system one. Give a sub-agent the tools it needs. Do not
+claim a number you cannot count. Do not clear a mode that is mine to clear. All loaded. All broken, that same day,
+several of them by the agent that had written the note hours earlier.
+
+So I asked it the obvious question: is that random, is it a reflex we simply cannot beat, or have we just not found
+the right place to keep the rule? The answer, argued from what actually happened rather than from the agent's
+opinion of itself, is the third one, but not in the way I expected. **The knowledge is not missing. It arrives too
+late.**
+
+Look at what the same agent caught that day, unprompted and reliably: a false claim about a stalled sub-agent, by
+comparing the ids of requests against the ids of replies. A false measurement, by having to list the specimens one by
+one. A false sentence in my voice, by re-reading the draft. A whole damning verdict on a contributor's pull request,
+which it had reasoned itself into from the source and which was **wrong**, killed by running the code. Those are not
+the actions of an agent that cannot follow rules.
+
+The difference is not big rules versus small ones. My "no em-dashes in my writing" rule is about as mechanical as a
+rule gets, and the agent has followed it all day without being reminded. The difference is **what the rule is
+about**. The em-dash rule governs the prose, and the prose is the thing being attended to. The "use the safe git
+tool, not a raw copy command" rule governs a *means*: the agent was thinking about saving a file, and the command was
+beneath its notice, the way you do not notice which fingers you are typing with. **A rule about an incidental action
+never shows up in the moment it is meant to govern.** No filing system fixes that, because the rule is not lost, it
+is simply slower than the thing it is racing.
+
+Which tells us what to build, and it is the opposite of what I would have guessed. **Stop writing better rules for
+the agent. Remove the race.** Make the wrong move unavailable rather than forbidden.
+
+Our own `tt git` had already stumbled onto this, and I had not noticed until the agent quoted its help text back at
+me: *"the destructive verbs stay off entirely, so allowlisting `tt git` is safe."* You cannot force-push through that
+tool because force-push is not in it. Nothing has to be remembered. There is no rule to lose a race to. And that is
+why a single approval can safely cover the whole tool, which is the trade the security model actually wants: **the
+human approves a surface once, instead of approving commands forever.**
+
+The guard is the same idea from the other side. It cannot teach the agent anything, and it does not try. It just puts
+a gap where there was none, and puts a human in it. **Both work for the same reason: they are outside the agent.**
+
+Two warnings, because this is a sharp tool. First, the trade only holds if the surface stays honest: if a tool earns
+a blanket approval by not implementing the dangerous verbs, then quietly adding one later converts an approval I gave
+into a power I never granted. So a tool may not grow a destructive verb without a human looking. Second, the guard
+offers a shortcut, a "do not ask again" for everything matching a prefix, and prefixes cannot express what I actually
+mean. `gh pr view` reads. `gh pr merge` merges. `gh pr comment` speaks in my name to a stranger. One prefix covers
+all three, and it is offered to me at the exact moment I am tired and in a hurry. **The dance around the guard exists
+because the guard's own vocabulary cannot say what we mean, and that is a gap a typed tool closes and a wildcard
+opens.**
+
+**[figure — TODO, real data, and it is a good one]** The stalls from that afternoon, plotted against what each
+command actually *did*: every single one was **read-only** (list a pull request, view a diff, copy a file), during a
+session where the whole point was to answer an external contributor quickly. The picture makes the argument on its
+own: **we tooled the writing lane, because that is where the danger was, and left the reading lane to raw commands.
+So committing never interrupts me and reviewing interrupts me constantly.** Source: `research/wr-data/` (2026-07-17)
+and PB SM137.
+
+*(Note for me: the honest caveat belongs in the post. All of this is a story about behaviour, not about the agent's
+inner life. The agent cannot see its own retrieval and says so. What we have is a day of episodes with a consistent
+split, and one prediction we can actually lose: if a future agent ever catches itself reaching for a raw command
+**by remembering a note**, this whole theory is wrong. Ties: `research/wr-data/` 2026-07-17,
+`SECURITY-MODEL.md` §3.1, PB SM137/SM138.)*
 
 ## TODO: how to support the claim of their utility EMPIRICALLY?
 

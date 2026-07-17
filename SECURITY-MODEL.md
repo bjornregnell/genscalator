@@ -59,7 +59,63 @@ false-positive `deny` hard-blocks a correct command with no override. So precisi
 For genuine exceptions: **ask in a sentence, not a modal.** A modal invites a reflexive yes; a written request
 invites a thought. Same information, none of the fatigue mechanism.
 
-### 2.3 Stall accounting: the budget is MEASURABLE (probed 2026-07-16)
+### 2.3 ⛔ RETRACTED 2026-07-17 — stall accounting: asks are NOT countable, and this section's arithmetic is void
+
+> **🔻 READ THIS BEFORE §2.3. The section below is KEPT VERBATIM and is WRONG.** Kept, not deleted, per
+> [[keep-the-ball-game-retract-by-annotating]]: the wrong path is the data. **Do not cite its numbers.**
+>
+> **❌ WHAT IS RETRACTED:** *"stalls are COUNTABLE"* · *"8 stalls, every one a MED"* · *"together they take the
+> human's 8 stalls to ZERO"* · *"the budget argument is now arithmetic, not rhetoric."*
+>
+> **⭐ WHY — the structural reason, and it is the valuable part:**
+>
+> | | goes to | in the transcript? |
+> |---|---|---|
+> | **`deny`** | **the agent** (returned as the tool result — it MUST be, or the agent could not retry) | ✅ **recorded exactly**, joinable to its command via `tool_use_id` |
+> | **`ask`** | **the human's SCREEN** (a terminal dialog) | ❌ **never recorded, anywhere** |
+>
+> ⇒ **THE AGENT IS STRUCTURALLY BLIND TO THE STALLS IT CAUSES.** It cannot see them live (no observer runs during
+> the pause) and cannot see them after (nothing is written). **The only way a stall enters the agent's world is if
+> the HUMAN pastes it.** The probe searched the transcript for the dialog text and found 8 — **8 of BR's PASTES.**
+> **The number was real. Its referent was not.** *(Checked: swept ALL of `~/.claude` — `.json` → 0, `.log` → 0.
+> `history.jsonl` → 1, and that is BR's own paste. **There is no ask log. The rescue is not available.**)*
+>
+> **✅ WHAT SURVIVES, and it MATTERS — the case for acting is UNTOUCHED and arguably STRONGER:** the 8 were real
+> stalls BR really experienced, so they are a **valid LOWER BOUND** and a valid **sample of causes** (6 pipe, 2
+> redirect) — just **not a census**. The sampling frame is *"stalls BR bothered to paste"*. ⇒ **the true stall count
+> is UNKNOWN and ≥ 8**, so the fix's value is **unquantified and possibly much larger. We lost the number, not the
+> argument.** §2.1's thesis (every stall risks a blanket-allow; minimise all of them) stands unchanged.
+>
+> **⚠️ AND THE INVERSION §2.3's own caveat GOT BACKWARDS:** it says HIGH denies *"cannot appear in this search"*, as
+> if denies were the invisible class. **They are the ONLY visible class.** ⇒ `tt stalls` must **count denies**, join
+> via `tool_use_id`, **re-run `Guardcheck.cmdFindings` to MEASURE the false-positive rate** (turning §2.2's
+> "precision first" from a judgment into a number), read **subagent** transcripts too (a minion's Bash stalls the
+> same human), and **say loudly that asks cannot be counted** — an instrument that silently reported only denies
+> would repeat this error one level up.
+>
+> **⚠️ THE INSTRUMENT MANUFACTURED ITS OWN SIGNAL.** The corpus grew **54 → 66 → 72** *while the retraction was being
+> written*, with **zero new stalls**: every message reasoning *about* the trace deposits the trace. ⇒ **a
+> transcript-mining instrument must match a shape the agent and human CANNOT UTTER IN PROSE** (a JSON field
+> position, a record type) — never a phrase. The deny matcher clears that bar (`"content":"[HIGH] …","is_error":true`
+> is a field position); **the ask matcher never could have.**
+>
+> **⭐ THE METHODOLOGICAL FINDING TO KEEP: the instrument measured the researcher's own note-taking.** It was
+> convincing because it was *specific* (8), *decomposable* (6+2), *plausible*, and **agreed with a true story we
+> already believed — because it was derived from our own account of it.** A **false mechanism propping up a TRUE
+> conclusion.**
+>
+> **⚠️ FAN-OUT FAILURE, recorded against ourselves:** the retraction note listed **four homes** and **this document
+> was not among them**, though it carried the claim in **two** places (§2.3 and §5). It was found ~5h later, only
+> because BR asked for something else here. **The doc that says "put the fix outside the agent" was itself patched
+> by an agent's memory failing to enumerate.** ⇒ SM133 (fan-out) needs a **mechanical** home list, not a recalled one.
+>
+> **Full retraction:** `research/wr-data/sm129s-probe-counted-brs-pastes-not-stalls-the-agent-is-blind-to-its-own-asks-2026-07-17.md`
+> · **recidivism specimen** (the same claim class re-made 4h later, in a pin, by the same agent):
+> `research/wr-data/retracted-is-not-immune-i-remade-sm129s-claim-4h-after-retracting-it-2026-07-17.md`
+> · **SM130 depends on the retracted claim and needs RE-DECIDING, not re-wording** — the canary's target
+> (*approvals*) is precisely the thing that leaves no trace.
+
+### 2.3 Stall accounting: the budget is MEASURABLE (probed 2026-07-16) ⛔ SUPERSEDED — SEE ABOVE
 
 You cannot manage a budget you cannot count. We assumed stalls would only be *estimable* (via a `tool_use` →
 `tool_result` time gap, confounded by slow commands). **Wrong — they leave a distinctive, greppable trace:**
@@ -138,6 +194,74 @@ costume (evidence: ~5 mechanical slips in one session, one while a vigilance mod
 | the **tool interface** | ✅ if it is the only way in | `--limit` / `--tail`; `--message-file` |
 | the **human** | ✅ | shepherding the post-warp window |
 | a **skill / memory / prompt** | ❌ rots | useful, but never the last line of defence |
+
+#### 3.3.1 ⭐ "CODE BEATS PROSE" (BR's tagline, 2026-07-17) — and the qualifier that keeps it true
+
+> ### **Code beats prose.**
+>
+> **BR's framing, and it is the same logic as why a comment is bad when the code can say it without one.**
+
+**The mapping is exact.** A comment is a **claim** about what the code does; the code is the **mechanism**. When they
+disagree the code wins, and the comment **rots silently**, because nothing forces it to stay true. Swap the nouns: a
+memory / skill / briefing is a **claim** about what the agent does; the **tool** is the mechanism. Same rot, same
+winner, same silence.
+
+⚠️ **It is WORSE for agents than for comments, which sharpens the argument:** a stale comment at least gets *read*
+when someone reads the code. **A stale rule about an instrumental action is never consulted at all** — it is not
+misleading the agent, it is **absent**.
+
+**⛔ THE QUALIFIER — without it the tagline says something false ("delete the memories").** It is BR's own rule from
+`CLAUDE.md`: *"Only write a code comment to state a constraint the code itself can't show."* So the honest form was
+never *"comments are bad"*:
+
+| | ❌ delete it, build the mechanism | ✅ keep it — no mechanism can hold it |
+|---|---|---|
+| **code** | a comment restating the code | *why* this constant; what breaks if you change it |
+| **agents** | a rule a tool could enforce (which command, which path, which dir) | judgment, values, taste, threat reasoning |
+
+⇒ **Prose loses precisely where a MECHANISM IS POSSIBLE, and prose is all there is where one is not — which is
+exactly where it works.** *(Evidence both ways: BR's no-em-dash rule is pure prose and has never failed, because no
+tool can hold "write like me." **This document** is prose and is irreplaceable, because it encodes judgment.)*
+
+**🔬 THE DISCRIMINATOR — and it CORRECTS §3.3's stated mechanism above.** §3.3 says an in-agent fix works only if
+"loaded AND hot", i.e. it blames **rot**. **That is incomplete, and there is a counter-example inside this repo:**
+the no-em-dash rule is *mechanical*, never "hot", and **arms reliably**. So heat is not the variable.
+
+> **A rule fires when it governs THE OBJECT OF ATTENTION. It does not fire when it governs a MEANS.**
+
+When the agent wrote `cp` (2026-07-17), attention was on *preserve the file*; the command was **instrumental, beneath
+notice** — the way you do not notice which fingers you type with. **A rule about an incidental action never enters
+the moment it is meant to govern.** No substrate fixes that: the rule is not lost, it is **slower than the thing it
+races**. ⇒ **the lever is not better storage. It is REMOVING THE RACE: make the wrong move UNAVAILABLE, not
+forbidden.** *(Same conclusion §3.5 reached from the path angle — "only removing the reach does" — arrived at from
+the attention angle. Two independent routes to one rule.)*
+
+**📌 THE SPECIMEN IS THIS DOCUMENT.** §2.3 asserted *"8 stalls, every one a MED… the budget argument is now
+arithmetic, not rhetoric."* **That was PROSE ABOUT A MEASUREMENT.** It rotted into a standing falsehood and sat here
+for a day. **Had `tt stalls` existed, the number would have been CODE — and code cannot rot into a false claim; it
+either runs or it does not.** ⇒ **§2.3 IS a comment that outran its code**, in the doc that preaches against exactly
+that.
+
+**⛔ THE PRECONDITION, and it is the rule this buys (bought with a mistake, 2026-07-17):** a `deny` (§2.2) is the
+lever *because* it is code, not prose — it fires at the instant of action, reaches the **agent** not the human, and
+is **recorded**. **But a deny must name a tool that EXISTS.**
+
+> **A deny without a provision is a prohibition-only briefing implemented in the guard. The agent will flail
+> against it exactly as a sub-agent flails against a rule list with no tools.**
+
+*(Bought by: the agent briefed a sandbox minion with prohibitions — no `cd`, no pipes — and gave it **no tool to obey
+them with**. The tool it needed was **tracked, in its own clone, the whole time**. BR watched it flail.)*
+⇒ **ORDERING: build the lane, THEN close the road.** Concretely: `tt git` read-verbs and `tt forge` (SM137) are
+**prerequisites** for denying raw `git log` / `gh pr`, not companions to it.
+
+**🔬 FALSIFIABLE, and on record:** *rules about **instrumental** actions will never arm from any substrate, however
+well written; rules about the **object of attention** can.* **If a future agent catches itself reaching for a raw
+command BY REMEMBERING A NOTE, this is wrong.** *(Standing confabulation caveat: this is a story about **behaviour**
+— the agent cannot see its own retrieval and does not claim to. The evidence is a day of episodes with a consistent
+split, listed in the wr-data note.)*
+
+**Ground:** `research/wr-data/code-beats-prose-*-2026-07-17.md` (the finding + the full episode list) ·
+`research/case-studies/action-research-meta-minion/log/` (the process record) · §2.2 · §3.5 · PB SM137/SM138.
 
 Worked example: a hex-escape convention (*in-agent*) needed remembering and was forgotten 3 days after being
 documented. The quote-aware guard (*outside-agent*) made the plain command **just work** — nothing to remember.
@@ -249,8 +373,10 @@ This stub covers the **guard** and the **stall budget**. Missing, and the substa
 
 - The **blanket-allow canary** (SM130): detecting that the human has started rubber-stamping — the threat model's
   actual failure mode. Term is BR-approved and, *if it works*, belongs in `docs/foundations.md`.
-- ~~**Stall accounting**: can we even *count* stalls?~~ **✅ PROBED 2026-07-16 — they are COUNTABLE, see §2.3.**
-  Remaining: build the `tt stalls` instrument; verify records are 1:1 with events.
+- **Stall accounting**: ⛔ **the 2026-07-16 "they are COUNTABLE" answer is RETRACTED (2026-07-17) — see §2.3's
+  retraction block.** **Asks are NOT countable: they never enter the transcript.** Denies ARE, exactly. Open:
+  re-spec `tt stalls` around **denies + false-positive measurement**, and decide what (if anything) can stand in for
+  the ask count — gap inference (SM121) is the only route left, and it is ambiguous by construction.
 - The **discriminating criterion** (harm × whose-autonomy × third-party impact) — the hard central question, seeded
   in the theory note: hold an un-overridable floor without becoming paternalistic or lurable.
 - **Deployment surface**: the standing deploy permission and its guardrails, `~/.netrc`, what the hosted surface
