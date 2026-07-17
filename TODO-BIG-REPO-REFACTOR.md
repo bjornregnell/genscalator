@@ -54,6 +54,8 @@ The near-term, low-risk step, and DISTINCT from the outsourcing above (which is 
 
 **Who/when:** the `git mv` + link fixes are safe-solo mechanical work; the deploy re-verification is BR-present (deployblog touches the live site). So: greenlight -> agent does the mechanical part -> verify the deploy together.
 
+**Sequencing (BR 2026-07-17): do this migration BEFORE the `genscalator.ai/blog` URL/deploy work.** That work configures where the blog renders FROM and deploys TO; if the blog is still at `blog/` when it lands, a later `media/` move would re-touch `deployblog` + the URL config a second time. Move the source layout once, then build the URL story on the final layout.
+
 ### Reason 2: insource issues as first class git citizen
 
 For sovereignty reasons we mirror genscalator from codeberg to e.g. github and gitlab. But any current [forge](https://en.wikipedia.org/wiki/Forge_(software)) has its own issue-workflow story and api.
