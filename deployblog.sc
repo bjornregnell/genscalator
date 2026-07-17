@@ -39,13 +39,13 @@
 //   LOW-LEVEL FLOW (mirror a pre-rendered dir as-is):
 //     tt ssg --status published,deployed --out tmp/site blog   # render the deploy set yourself
 //     scala-cli run deployblog.sc -- --dry-run                 # ALWAYS dry-run first to confirm the target path
-//     scala-cli run deployblog.sc                              # defaults: tmp/site -> webroots/www/blog (additive)
-//     scala-cli run deployblog.sc -- tmp/site webroots/www/blog --delete   # exact mirror (removes stale remote files)
+//     scala-cli run deployblog.sc                              # defaults: tmp/site -> webroots/www/genscalator/blog (additive)
+//     scala-cli run deployblog.sc -- tmp/site webroots/www/genscalator/blog --delete   # exact mirror (removes stale remote files)
 //
 // REMOTE PATH NOTE
 //   On SFTP login you land in your one.com account home. bjornregnell.se's public web
 //   root is `webroots/www/` (it holds the live index.html), so the blog goes to
-//   `webroots/www/blog` (the default below). The --dry-run output shows exactly where
+//   `webroots/www/genscalator/blog` (the default below; SM140 moved it under genscalator/). The --dry-run output shows exactly where
 //   files would go -- check it once before the first real deploy.
 //
 // SECURITY NOTE
@@ -103,7 +103,7 @@ val positional =
   b.toList
 val flags      = args.filter(_.startsWith("--")).toSet
 val localDir   = positional.lift(0).getOrElse("tmp/site")
-val remoteDir  = positional.lift(1).getOrElse("webroots/www/blog")
+val remoteDir  = positional.lift(1).getOrElse("webroots/www/genscalator/blog") // SM140: canonical web home (blog moved under genscalator/)
 val blogDir    = "blog"                               // source posts dir (relative to cwd = the genscalator root)
 val doDelete   = flags.contains("--delete")
 val dryRun     = flags.contains("--dry-run")

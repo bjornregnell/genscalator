@@ -1,0 +1,31 @@
+# Legacy blog redirect  (SM140)
+# =============================================================================
+# UPLOAD THIS as:  webroots/www/blog/.htaccess   on bjornregnell.se (one.com, Apache)
+#   (it must be named exactly ".htaccess" on the server; this repo copy keeps a
+#    descriptive name so it is visible + tracked.)
+#
+# WHY: the blog's canonical home moved to /genscalator/blog/. This 301-redirects
+# every old /blog/<path> to /genscalator/blog/<path>, so live external links
+# (Reddit / Scala forums pointing at blog 000 and 002) keep working, while /blog/
+# receives no new posts. The target tree is a verbatim copy, so the path-for-path
+# mapping resolves — verified 2026-07-17: /genscalator/blog/000-why-genscalator.html
+# is live, and /research/ etc. are not served on the site (so no link regresses).
+#
+# 301 = PERMANENT: search engines and link previews will adopt the new canonical
+# URL. The old duplicate files under /blog/ can stay (the redirect fires before a
+# file is served) or be deleted later.
+#
+# Uses mod_rewrite if present, else falls back to mod_alias (RedirectMatch), so it
+# works whichever module one.com has enabled.
+# =============================================================================
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # $1 = the path AFTER /blog/ (this file lives in /blog/, so the match is relative)
+  RewriteRule ^(.*)$ /genscalator/blog/$1 [R=301,L]
+</IfModule>
+
+<IfModule !mod_rewrite.c>
+  # mod_alias fallback: match the full URL-path
+  RedirectMatch 301 ^/blog/(.*)$ /genscalator/blog/$1
+</IfModule>
