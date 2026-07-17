@@ -34,11 +34,17 @@ The current ide is to:
 * issue syntax:
   - the title in th #-level heading is a readable version of the file name. 
   - after the title there is a preamble in block quotes > that declares the status of the issue, labels it has, and summarizes it very briefly (TODO: create status model and a type-of-issue labeling scheme and preamble syntax)
+    - status source-of-truth rule (co-design 2026-07-17): the `open/` vs `closed/` DIR is the single source of truth for open-vs-closed. The preamble status field carries only FINER states (triage, in-progress, blocked, wontfix, ...) so the dir and the preamble can never disagree on the basic open/closed fact.
   - issues have these ##-level headings:
     * "## Description"  mandatory
     * "## How to reproduce it"  optional
     * "## Discussion" an append-log of discussion items
       - "### Comment by userhandle at date-time-stamp"
+
+### Open decisions (TODO — from co-design 2026-07-17)
+
+* **Participation vs sovereignty (TODO decide later).** Insourced issues raise the bar for OUTSIDE bug-filers: a drive-by contributor won't clone, hand-author an ID-named markdown file, and open a PR just to report a bug. One option that keeps both: **keep the forge issue tracker ENABLED as an "outsider inbox"** for drive-by reports, and transcribe accepted ones into in-repo canonical issues (the git-tracked files stay the source of truth). Decide later whether to do this, or to accept the higher bar as a quality filter.
+* **TODO investigate git-bug** (issues stored in git objects, with github/gitlab bridges) for lessons on the hard parts (distributed IDs, forge bridging) — but **insourced markdown-in-dirs is probably what we want instead of it**: more transparent and greppable, and it fits the genscalator ethos, whereas git-bug's storage is opaque.
 
 
 
