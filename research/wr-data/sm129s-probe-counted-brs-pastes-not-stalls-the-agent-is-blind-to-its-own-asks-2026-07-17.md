@@ -118,16 +118,44 @@ transcript alone undercounts.** (Live right now: the fable meta-minion is runnin
 
 ## Honest limits
 
-- ⛔ **UNCHECKED: whether the harness logs asks anywhere OUTSIDE the transcript** (a separate log under
-  `~/.claude/`). If it does, asks become countable again and this note's "not countable" narrows to "not countable
-  *from the transcript*". **Not asserted either way — this is the obvious next probe, and it could partly rescue
-  SM129.**
+- ✅ **CHECKED 2026-07-17 11:40 (was flagged UNCHECKED in this note's first version, `2e1fcc5`): the harness does NOT
+  log asks anywhere outside the transcript.** Swept **all** of `~/.claude` for the phrase: **`.json` → 0** and
+  **`.log` → 0**, everywhere. `sessions/1038239.json` → 0. `backups/`, `paste-cache/`, `file-history/` → 0.
+  **`history.jsonl` → 1, and it is BR's own PASTE** (that file is his *prompt history*, so it stores the dialog he
+  typed, not a record the harness made). ⇒ **the rescue is not available: there is no ask log.** *(Recorded because
+  the first version promised this probe and it would have been easy to leave promised.)*
 - The `deny` recording is confirmed by **n=2** in one session (yesterday's `cd &&…| tail`, and today's false
   positive). The mechanism (the agent must be told) makes it general, but the JSON shape is the **harness's**, not
   ours, so it can change on any upgrade — the same fragility that makes `requires confirmation` a bad thing to
   match.
 - **`"interrupted by user"` × 5** in the fixture is a *different* signal (BR pressing ESC), not a permission
   dialog. Not investigated.
+
+## 📈 The corpus GREW 33% while this note was being written — measured, not argued
+
+The same command (`tt text grepr <projects> .jsonl 'requires confirmation for this command' --count`), run three
+times during **one** investigation:
+
+| when | matches | what happened in between |
+|---|---|---|
+| **~10:50** | **54** | — |
+| **~11:38** | **66** | the agent investigated the trace and drafted this note |
+| **~11:41** | **72** | the agent wrote three more messages about the trace |
+
+**+18 in under an hour. ZERO new stalls occurred.** (Today's only guard events were 2 *denies*, which do not use
+this phrase.) The carrier independently recorded the same effect yesterday: *"33 → 70 after we merely wrote about
+stalls."*
+
+⭐ **This is not the observer effect. The observer is not disturbing the signal — the observer is MANUFACTURING it.**
+Every message reasoning *about* the trace deposits the trace into the corpus that the instrument reads. **The
+instrument's reading is a function of how much the instrument has been discussed.**
+
+⚠️ **And the reflexive kick: THIS NOTE is now the largest single contributor to the pollution it retracts.** The
+retraction is self-defeating as evidence — a future probe will find *these* words. ⇒ **Any transcript-mining
+instrument must match a shape the AGENT AND HUMAN CANNOT UTTER IN PROSE** (a JSON field position, a record type),
+never a phrase, because *writing the analysis is itself an act of data entry*. The deny matcher meets this bar
+(`"content":"[HIGH] …","is_error":true` is a JSON field, and prose cannot land in a field position); **the ask
+matcher never could have, even if asks were recorded.**
 
 ## ⭐ The methodological finding (this is the one to keep)
 
