@@ -170,6 +170,15 @@ all three, and it is offered to me at the exact moment I am tired and in a hurry
 because the guard's own vocabulary cannot say what we mean, and that is a gap a typed tool closes and a wildcard
 opens.**
 
+And once you see it, you notice we have been living with the purest example of it for years without calling it a
+guard at all. **The compiler is a deny.** It fires at the moment of action, it hands its reason to whoever wrote the
+code rather than to some tired reviewer, it names the fix, and nothing has to be remembered for it to work. A lie in
+prose compiles and sits there being false for years. A lie in a type does not compile, so it never gets to exist.
+That is the same trade the guard makes and the same trade a typed tool makes, which is why our toolbox is Scala and
+not a pile of shell scripts, and why an agent knocking out a quick interpreted one-liner should be stopped rather
+than admired for its speed. Bash and generated-on-the-fly Python have all of code's power and none of code's
+checking. **They are prose that executes.** (That thread has its own post: 022.)
+
 **[figure — TODO, real data, and it is a good one]** The stalls from that afternoon, plotted against what each
 command actually *did*: every single one was **read-only** (list a pull request, view a diff, copy a file), during a
 session where the whole point was to answer an external contributor quickly. The picture makes the argument on its

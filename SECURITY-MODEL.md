@@ -254,6 +254,36 @@ them with**. The tool it needed was **tracked, in its own clone, the whole time*
 ⇒ **ORDERING: build the lane, THEN close the road.** Concretely: `tt git` read-verbs and `tt forge` (SM137) are
 **prerequisites** for denying raw `git log` / `gh pr`, not companions to it.
 
+**⭐ BR'S TWIST (2026-07-17) — THE COMPILER IS THE PUREST `deny` WE HAVE, and it has been running all along:**
+
+> *"if it doesn't compile it is false code that never cost us those runtime bugs the compiler caught for us (compare
+> it to the alternative: brittle bash or agent on-the-fly generated do-whatever-at-runtime-python)"* — **BR, verbatim.**
+
+> ### **A lie in prose compiles. A lie in typed code does not.**
+
+**This is not an analogy — a compile error IS a deny, by every criterion in §2.2:** it fires at the instant of
+action, it hands its **reason** to the **agent** (not to the human's screen), it **names the fix**, it is
+**recorded**, and **nothing has to be remembered for it to work**. ⇒ **the compiler is `code beats prose`
+enforced by a machine, and it costs the human's attention budget ZERO.**
+
+**⇒ THE RANKING THAT MATTERS — and note it is not "code vs prose", it is WHEN THE FALSEHOOD IS CAUGHT:**
+
+| medium | when is a falsehood caught? | costs the human? |
+|---|---|---|
+| **prose** (comment, memory, skill, briefing) | **never.** It ships and is false for years. | only when it misleads |
+| **unchecked code** (brittle bash, agent-generated runtime Python) | **at runtime, maybe, in front of a user** | ⚠️ **worst of both** |
+| **typed, compiled code** (`tt`, Scala) | **before it exists** | **zero** |
+
+⚠️ **The middle row is the trap, and it explains an existing rule.** Bash and on-the-fly Python have **all of code's
+power and none of code's checking** ⇒ **they are PROSE THAT EXECUTES.** ⭐ **This gives §4's
+[[never-allowlist-interpreters]] a SECOND, INDEPENDENT justification**: the standing reason is *an interpreter is a
+blank shell* (authority); the new one is *an interpreter is prose that runs* (verification). **Two unrelated
+arguments landing on one rule is the strongest form of support this document can offer.**
+⇒ **And it re-justifies the toolbox itself: `tt` being typed Scala rather than shell is THE SAME DESIGN DECISION as
+the deny lever, not a taste preference.** *(Worked specimen: `blog/022` — an agent "elegantly" refactored a
+`kill -9` into `timeout 3`, silently destroying the SIGKILL knowledge the ugly line encoded. `destroyForcibly()`
+cannot quietly mean SIGTERM. **The knowledge moved from the human's head into the build.**)*
+
 **🔬 FALSIFIABLE, and on record:** *rules about **instrumental** actions will never arm from any substrate, however
 well written; rules about the **object of attention** can.* **If a future agent catches itself reaching for a raw
 command BY REMEMBERING A NOTE, this is wrong.** *(Standing confabulation caveat: this is a story about **behaviour**

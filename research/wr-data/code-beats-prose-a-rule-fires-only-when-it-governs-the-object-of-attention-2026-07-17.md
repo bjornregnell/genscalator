@@ -118,6 +118,49 @@ a companion.
 ⚠️ **And the deny is expensive when wrong** — 2 false-positive denies in 15 min on read-only commands, **with no
 override**. So **measure the false-positive rate first** (SM129 re-spec) before adding any.
 
+## ⭐ BR's twist — the compiler is the purest `deny`, and it reveals the ranking is about TIMING
+
+**BR, verbatim (2026-07-17), typos corrected at his instruction:**
+
+> *"if it doesn't compile it is false code that never cost us those runtime bugs the compiler caught for us (compare
+> it to the alternative: brittle bash or agent on-the-fly generated do-whatever-at-runtime-python)"*
+
+> ### **A lie in prose compiles. A lie in typed code does not.**
+
+**⭐ A compile error IS a deny — by every criterion, not by analogy:** fires at the instant of action · hands its
+reason to the **author**, not to a tired reviewer · **names the fix** · is **recorded** · **nothing must be
+remembered**. ⇒ **the compiler is this note's thesis enforced by a machine, at zero cost to the human's attention
+budget.** *(It has been running all along; we never called it a guard.)*
+
+**⇒ AND IT CORRECTS THIS NOTE'S OWN FRAMING.** The axis is **not** *code vs prose*. It is **WHEN IS THE FALSEHOOD
+CAUGHT** — code just happens to be the medium where "early" is available:
+
+| medium | when is a falsehood caught? |
+|---|---|
+| **prose** (comment, memory, skill, briefing) | **never** — it ships and stays false for years |
+| **unchecked code** (brittle bash, agent-generated runtime Python) | **at runtime, maybe, in front of a user** |
+| **typed, compiled code** | **before it exists** |
+
+⚠️ **The middle row is the one to fear, and it is what an agent reaches for.** Bash and on-the-fly Python have **all
+of code's power and none of code's checking** ⇒ **prose that executes.** They are attractive for **exactly the same
+reason a comment is**: fast to write, and **nothing argues back**.
+
+⭐ **This hands [[never-allowlist-interpreters]] a SECOND, INDEPENDENT justification.** Standing reason: *an
+interpreter is a blank shell* (an **authority** argument). New reason: *an interpreter is prose that runs* (a
+**verification** argument). **Two unrelated routes to one rule** — the same convergence as §3.5-vs-attention.
+
+**⇒ It also re-justifies the toolbox:** `tt` being typed Scala rather than a shell pile is **the same design
+decision as the deny lever**, not a taste preference. *(Specimen: `blog/022` — an agent "elegantly" refactored
+`kill -9` into `timeout 3`, silently deleting the SIGKILL knowledge the ugly line encoded, and reintroducing the
+exact bug it existed to prevent. **`destroyForcibly()` cannot quietly mean SIGTERM.** The knowledge moved from the
+human's head into the build.)*
+
+⚠️ **Honest limit on the twist:** it holds for what a **type system can express**. A compiler rejects `false code`,
+not `wrong code` — it will happily compile a well-typed function that computes the wrong thing. ⇒ **the compiler
+raises the floor; it does not reach the judgment row of the qualifier table.** The `Städa toaletter` bug found the
+same day is exactly this: **it compiles perfectly and is wrong**, and `--verify-examples` (a compile gate) is blind
+to it *by construction*.
+
 ## 🔬 The prediction, on record
 
 > **Rules about INSTRUMENTAL actions will never arm from any substrate, however well written. Rules about the

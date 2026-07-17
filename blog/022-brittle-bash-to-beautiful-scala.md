@@ -53,6 +53,58 @@ That is the crux. The added robustness made the script safer AND less reviewable
 
 Which is why the rewrite mattered beyond taste. Scala is a language the author reads, so the same robustness, moved into Scala, became *verifiable* by him again: a typed call he can follow, a compile that either passes or does not. The medium decided whether the owner verifies or trusts. Bulky bash he does not know forces trust; typed Scala he does know restores verification. So the design rule is not "keep it simple" (he wanted the safety), it is "keep it reviewable BY THE OWNER", and if added robustness outruns their literacy in one medium, move it to a medium they can read rather than pile more into one they cannot.
 
+## The compiler is the reviewer that never gets tired: a lie in prose compiles
+
+**[scaffold, BR to revoice. This is BR's own twist, added 2026-07-17, and it is the thing that finishes the
+argument the rest of the post only circles.]**
+
+> "if it doesn't compile it is false code that never cost us those runtime bugs the compiler caught for us
+> (compare it to the alternative: brittle bash or agent on-the-fly generated do-whatever-at-runtime-python)"
+>
+> (BR's verbatim, 2026-07-17.)
+
+The section above says the medium decides whether the owner verifies or trusts. That is true, and it is only half
+the story, because it puts the whole burden on the owner. The other half is that the typed medium comes with a
+reviewer of its own, one that reads every line, every time, and never gets bored or tired or generous.
+
+Think about what a comment costs when it is wrong. Nothing. It compiles. It ships. It sits there being false for
+years, and the only thing that ever catches it is a human who happens to read it and happens to care. Now think
+about what a *type* costs when it is wrong. It does not compile. You cannot ship it. The falsehood is rejected
+before it exists.
+
+**That is the whole point, and it generalises past comments.** A lie in prose compiles. A lie in typed code does
+not. Anything you can move from the first category into the second stops being something you have to remember and
+starts being something you cannot get wrong.
+
+Which reframes what the `destroyForcibly()` rewrite actually bought. It was not elegance, and it was not even
+mainly readability. The bash version encoded the SIGKILL knowledge in *folklore*: a `-9` you had to know, a `$!`
+you had to juggle, and nothing anywhere that would object if you got it wrong. The agent proved that by getting it
+wrong, confidently, in a refactor that looked better. The Scala version encodes the same knowledge in a *typed JDK
+call that either exists or does not*. There is no version of `destroyForcibly()` that quietly means SIGTERM. The
+knowledge moved from something the author had to hold in his head into something the build holds for him.
+
+**Now compare the two alternatives in BR's twist, because they fail in the same way for the same reason.**
+
+Brittle bash is not prose, but it behaves like it. There is no build step, so nothing is ever checked. An unset
+variable becomes an empty string and the empty string becomes an argument and the argument deletes something. The
+first time bash tells you the code is false is at runtime, in production, in front of a user, if it tells you at
+all. And an agent generating throwaway Python at runtime is the same thing with better syntax: code that has never
+been checked by anything, written by something that cannot remember writing it, running immediately. **Both are
+prose that executes.** They have all of code's power and none of code's checking, which is the worst possible
+trade, and they are attractive for exactly the same reason a comment is attractive: they are fast to write and
+nothing argues back.
+
+So the rule the whole post has been groping toward is not "Scala is nicer than bash". It is: **prefer the medium
+that rejects your falsehoods for you.** That is why our toolbox is typed Scala instead of a shell-script pile, and
+it is why an agent that reaches for a quick interpreted one-liner should be stopped, not admired for its speed. We
+already had a security rule that says never allowlist an interpreter, on the grounds that an interpreter is a blank
+shell. **BR's twist gives that rule a second, independent reason: an interpreter is prose that runs.** When two
+different arguments land on the same rule, the rule is probably right.
+
+**[figure: the same trade drawn as three rows, prose / unchecked code / typed code, against one column, "when does a
+falsehood get caught?" with the answers being "never", "at runtime, maybe", "before it exists". Real data optional;
+this one is a concept diagram and earns its place.]**
+
 ## "But isn't the fast one better?" We measured
 
 **[scaffold, BR to revoice; grounded in `research/wr-data/approval-wake-launcher-startup-bench-2026-07-14.md`.]**
