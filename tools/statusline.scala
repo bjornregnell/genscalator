@@ -82,19 +82,16 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
   def formatGapShort(sec: Long): String =
     if sec >= 3600 then s"${sec / 3600}h" else if sec >= 60 then s"${sec / 60}m" else s"${sec}s"
 
-  /** Colour + attrs for the `hangover?` chip, graded by gap size. Chips are inverse+bold (`7;1`) like mode chips,
-    * so INVERSE is the chip baseline and the GAUGE grades the COLOUR (BR: "a colorful inverted hangover? 42s").
-    *
-    * BLINK (`5`) is reserved for the TOP GATE ONLY, and that restraint is the design (BR co-design 2026-07-16):
-    * **an alarm is a budget, exactly like a stall (SM129)** — the loudest attribute a terminal has is spent the
-    * moment it fires routinely, because the human stops seeing it. A compact-sized gap (~140s, measured) is the
-    * COMMON case and must stay calm; blink is for "you were out for hours, every reflex is cold" — it keeps its
-    * shock precisely because it almost never fires. Audience note: the statusline is for the HUMAN (the agent
-    * never sees it), so this chip is SM127's human half — "the agent is cold, shepherd the next few turns". PURE. */
-  def hangoverGauge(gapSec: Long, warn: Long, danger: Long): String =
-    if gapSec >= danger then s"5;7;1;$Red"        // BLINK + inverse red: a long blackout, everything is cold
-    else if gapSec >= warn then "7;1;38;5;214"    // inverse orange: a real break
-    else "7;1;38;5;42"                            // inverse green: compact-sized; you already knew
+  // RETIRED 2026-07-17: `hangoverGauge` + `hangoverChip` are GONE, with their thresholds and their blink gate.
+  // Not a refactor — the construct was wrong. The chip fused a MEASUREMENT (the transcript gap) with an INFERENCE
+  // (the agent is cold), so it rendered the HUMAN's 1-minute thinking pause as the AGENT's state, twice in 90
+  // minutes (wr-data: nobody-dropped-the-hangover-chip / hangover-chip-fires-on-the-humans-thinking-pause).
+  // BR's fix SPLITS them, and each half loses its `?`:
+  //   * the MEASUREMENT -> `idle` on LINE 1 (see render): counted, no threshold, no colour, subject = the FEED.
+  //   * the INFERENCE   -> `hangover` on LINE 2: a DECLARED mode, owned by whoever declares it.
+  // The graded-blink restraint the gauge encoded (an alarm is a budget, SM129) is not lost — it is MOOT: a readout
+  // never alarms, so it can never cry wolf. Thresholds existed only to guess a hangover; nothing guesses now.
+  // The whole 10s-vs-60s noise-floor calibration question dies with them. History: `git log tools/statusline.scala`.
 
   /** Compact human-readable token count (SM117): 5008654 -> "5.0M", 178118 -> "178k", 950 -> "950". PURE. */
   def formatTokens(n: Long): String =
@@ -193,13 +190,34 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
   /** PURE: statusLine JSON + current time → the one-line status ("" if nothing usable / not JSON). */
   def render(json: String, nowMs: Long, warn: Double = 80, ctxWarn: Double = 30, dumbZone: Double = 75, autoCompact: Double = 92,
              rotTokens: Option[Long] = None, totTokens: Option[Long] = None, showTot: Boolean = true, humanChars: Option[Long] = None,
-             tokWarn: Long = 200_000L, tokDanger: Long = 500_000L, tiredChars: Option[Long] = None): String =
+             tokWarn: Long = 200_000L, tokDanger: Long = 500_000L, tiredChars: Option[Long] = None,
+             idleSec: Option[Long] = None): String =
     val o = MiniJson.parse(json).flatMap(_.obj) match
       case Some(m) => m
       case None    => return "" // nothing usable / not an object → empty line, exit 0 (never crash the prompt)
     val segs = scala.collection.mutable.ArrayBuffer[String]()
     segs += sgr("1;38;5;42", "genscalator") // brand prefix (BR: prepend "genscalator")
     segs += sgr("38;5;250", clock(nowMs)) // leading wall clock (light grey)
+    // `idle` — feed inactivity, riding just after the clock (BR, 2026-07-17). LINE-1 CONTRACT: this row is for what
+    // a MECHANISM MEASURES; line 2 is for what someone DECLARES. So the SURFACE encodes the provenance and no
+    // provenance field is needed — the line IS the field.
+    //
+    // NO `?`, deliberately: the `?` marks an INFERRED PROXY (see rot? below). This is COUNTED — `now - the last
+    // timestamped transcript record` — both terms exactly known, no inference. `tot` is counted and carries no `?`;
+    // so does this. (BR asked whether it could be measured reliably. It can; the `?` was dropped on that basis.)
+    //
+    // NO thresholds, NO grading, NO alarm — dim, like `tot`. It is a READOUT, not a gauge, and that restraint is
+    // what makes it honest: it replaces `hangover?`, which fused a MEASUREMENT (the gap) with an INFERENCE (the
+    // agent is cold) and so misattributed the HUMAN's thinking pause as the AGENT's state (wr-data 2026-07-17).
+    // The inference now lives on line 2 as a DECLARED `hangover` mode, owned by whoever declares it.
+    //
+    // Subject: `idle` describes the FEED, not a person — which is why it cannot misattribute. Nobody is idle; the
+    // feed is.
+    //
+    // HONEST LIMIT, recorded at the code: a running command writes NO transcript record, so agent-busy time counts
+    // as idle (the measured 18s specimen). The feed IS quiet, the pair is not. Tolerable ONLY because there is no
+    // threshold and no colour: a readout may say "nothing has landed for 18s"; an alarm may not.
+    idleSec.foreach(s => segs += sgr("38;5;245", s"idle ${formatGapShort(s)}"))
     o.get("model").flatMap(_.obj).foreach: m =>
       m.get("display_name").orElse(m.get("id")).flatMap(_.str).foreach(n => segs += sgr("38;5;45", shortModel(n))) // un-bold so the bold genscalator prefix is the only bold thing
     o.get("context_window").flatMap(_.obj).flatMap(_.get("used_percentage")).flatMap(_.num)
@@ -209,8 +227,6 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     // signal, COLOURED by threshold; the `?` marks it an inferred proxy (SM118). tot = cumulative lifetime tokens,
     // dim (context only, no threshold meaning), and DROPPED on a narrow terminal (showTot). rot? is the star.
     rotTokens.foreach(r => segs += sgr(tokGauge(r, tokWarn, tokDanger), s"rot? ${formatTokens(r)}"))
-    // NB the `hangover?` chip is NOT here — it lives on the MODE LINE (see hangoverChip): it is a MODE, not a
-    // resource gauge, it renders as a chip, and the mode line has the horizontal room. (BR, 2026-07-16.)
     if showTot then totTokens.foreach(t => segs += sgr("38;5;245", s"tot ${formatTokens(t)}"))
     val rl = o.get("rate_limits").flatMap(_.obj)
     rl.flatMap(_.get("five_hour")).flatMap(_.obj).foreach: h5 =>
@@ -256,7 +272,11 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     "tok-spend" -> "38;5;214", "token-saving" -> "38;5;42", "high-context" -> "38;5;208",
     "dumb-zone" -> "38;5;203", "hot-harvest" -> "38;5;215", "solo" -> "38;5;75",
     "human-stress" -> "38;5;203", "rot-vigil" -> "38;5;220", "racing" -> "38;5;170",
-    "limit-near" -> "38;5;203", "delegation" -> "38;5;111"
+    "limit-near" -> "38;5;203", "delegation" -> "38;5;111",
+    // `hangover` (BR 2026-07-17): DECLARED, never derived — the agent is still warming after a warp/compact and is
+    // reading itself hot. Orange echoes the retired chip's "a real break" band, but nothing grades it now: it is
+    // on/off because a person judged it, not a number that crossed a line.
+    "hangover" -> "38;5;209"
   )
   def modeColor(label: String): String =
     knownModeColors.getOrElse(label, {
@@ -273,7 +293,8 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
   val modeOrder: Vector[String] = Vector(
     "afk", "solo", "delegation", "racing",   // session frame (who/how we are working)
     "human-stress", "tired",                 // human state
-    "rot-vigil", "dumb-zone",                // agent vigilance
+    "hangover", "rot-vigil", "dumb-zone",    // agent state + vigilance (hangover LEADS: it is the transient one,
+                                             //   and it is the one that most changes how the next few turns go)
     "high-context", "limit-near",            // context / limits
     "tok-spend", "token-saving",             // token budget
     "hot-harvest"                            // task
@@ -284,27 +305,25 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     modes.sortBy: label =>
       val base = label.stripSuffix("?")                 // ?-inferred sorts with its confirmed base (SM118)
       (rank.getOrElse(base, Int.MaxValue), base, label) // known-by-rank, else alphabetical; plain before ?
-  /** The `hangover?` chip — a DERIVED mode for the MODE LINE. None when there is nothing to say.
+  /** The mode line: brand prefix + the active DECLARED modes (each reverse+bold, own colour), joined by " & ". PURE.
+    * Nothing active -> a dim placeholder, so the line is still recognisable as the (empty) mode line.
     *
-    * WHY the mode line and not the status row (BR, 2026-07-16): *"hangover IS a mode even if it has a number to
-    * it"*, and *"we usually have more horiz space on the mode line"*. It also already renders AS a chip, and chips
-    * live here. The mode line's own contract already carries the concept — "auto-derived modes come from the same
-    * status JSON this tool already reads" — so a **derived** mode (from the transcript) beside **declared** ones
-    * (from the state file) is the design, not an exception. That also sidesteps SM118's blocker: `?` is not yet a
-    * legal mode-LABEL char, but a derived chip never enters the state file, so nothing needs to parse it.
+    * LINE-2 CONTRACT (BR, 2026-07-17): **everything here was DECLARED by someone** — the agent, the human (`+afk`),
+    * or a negotiated `discuss-mode-dance`. Measured things belong on line 1. The split is what makes the SURFACE
+    * encode the provenance: on line 1 a mechanism measured it; here, someone said it. No provenance field needed.
     *
-    * Shown only past `showSec`: absent during normal work, appears when the human returns, and **self-clears** on
-    * their first message (a fresh record collapses the gap) — no decay rule, no state to reset. PURE. */
-  def hangoverChip(gapSec: Long, showSec: Long, warn: Long, danger: Long): Option[String] =
-    Option.when(gapSec >= showSec)(
-      sgr(hangoverGauge(gapSec, warn, danger), s" hangover? ${formatGapShort(gapSec)} "))
-
-  /** The mode line: brand prefix + DERIVED chips (pre-rendered, transient — they lead, being the alarm) + active
-    * declared modes (each reverse+bold, own colour), joined by a plain " & ". PURE.
-    * Nothing active -> a dim placeholder, so the line is still recognisable as the (empty) mode line. */
-  def renderModes(modes: Seq[String], derived: Seq[String] = Nil): String =
+    * NOTE THE SIGNATURE: there is deliberately NO `derived` parameter. It had one (SM121's `hangover?` chip rode
+    * here), and dropping it makes the declared-only contract STRUCTURAL rather than documentary — you cannot put a
+    * derived thing on line 2 because there is nowhere to put it. A comment saying "declared only" would rot; an
+    * absent parameter cannot. (The day's load-bearing finding, applied to this function.)
+    *
+    * `hangover` still exists — as a DECLARED mode, no `?`, owned by whoever declares it. A `?` marks an inferred
+    * proxy; a declaration is not a proxy, it is a judgment with an owner. BR usually declares it, because the agent
+    * is the unreliable narrator of its own warmth: the rule is that the declarer is whoever can OBSERVE the state,
+    * which is sometimes the other party. */
+  def renderModes(modes: Seq[String]): String =
     val brand = sgr("1;38;5;42", "gs mode set") // line-2 prefix: NOT "genscalator" again (redundant with line 1); doubles as the DWIM verb
-    val chips = derived ++ sortModes(modes).map(renderMode) // derived FIRST: transient + urgent, and it decays on its own
+    val chips = sortModes(modes).map(renderMode)
     if chips.isEmpty then s"$brand ${sgr("38;5;245", "clear: no active mode labels")}"
     else s"$brand ${chips.mkString(" & ")}"
   private val Help: String =
@@ -318,6 +337,11 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       |Segments (left to right):
       |  genscalator         brand prefix
       |  HH:MM:SS            local wall clock
+      |  idle Ns             feed inactivity: now - the last timestamped transcript record. NO `?`:
+      |                      this is COUNTED, not inferred (cf. rot?, which is a proxy and keeps its
+      |                      `?`). No threshold, no colour, never hidden — a READOUT, not a gauge.
+      |                      Its subject is the FEED, not a person, so it cannot misattribute. NB a
+      |                      running command writes no record, so agent-busy time counts as idle.
       |  o4.8/1M             abbreviated model (Opus/Sonnet/Fable/Haiku -> o/s/f/h, /ctx suffix)
       |  ctx-fill N%         context-window fill; orange at the compact-dance trigger
       |                      (0.8*Z), red at Z = the dumb-zone threshold (--ctx-warn)
@@ -373,16 +397,18 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     var tiredChars: Option[Long] = None // human-char `tired?` nudge threshold; None = OFF (opt-in via --tired-chars)
     var noTok      = false // --no-tok: skip the transcript read entirely (no tok gauge)
     var rotOnly    = false // --rot-only: show rot? but DROP the secondary tot gauge (also auto-dropped if narrow)
-    // SM121 hangover? chip thresholds (seconds). Orange past 5min; BLINK past 1h. A compact is ~140s MEASURED
-    // (compact-timing.log, 7 pairs: 124-162s), so it lands in the calm band by design.
-    // WHY 60s and not the hook's 10s — the two surfaces have DIFFERENT noise profiles, measured 2026-07-16:
-    // the HOOK fires once per SessionStart (10s is free there, and is BR's data-capture dial), but this CHIP
-    // re-renders EVERY turn, and normal work (think + a tool call) routinely exceeds 10s — an 18s gap was just a
-    // command running. So 10s sits BELOW the working noise floor and the chip never clears. 60s is the first
-    // value above it. Still a first cut: tune from the gap distribution the hook is now collecting.
-    var hangoverSec    = 60L
-    var hangoverWarn   = 300L
-    var hangoverDanger = 3600L
+    // RETIRED 2026-07-17 with the chip: hangoverSec/Warn/Danger (60s/5min/1h) + their --hangover-* flags. `idle`
+    // has NO threshold, so there is nothing left to tune. Safe to drop: the live config is `tt statusline
+    // --mode-line` and never passed them (checked, not assumed).
+    //
+    // PRESERVING WHAT THE DELETED COMMENT HELD, because it was a real finding and this was its home: the pair's
+    // WORKING NOISE FLOOR is ~60s, not 10s — "an 18s gap was just a command running", so a 10s gate never clears;
+    // a compact is ~140s MEASURED (compact-timing.log, 7 pairs: 124-162s). SM132's audit established that this
+    // comment was that finding's ENGINEERING home and that it had no RESEARCH home. It has one now:
+    // research/wr-data/hangover-chip-fires-on-the-humans-thinking-pause-2026-07-17.md (§ the TWO noise floors —
+    // the 60s calibration only ever sampled gaps the AGENT makes, never the human's 1-3min thinking pauses, which
+    // is why the chip fired on BR composing a message). The rationale dies with its constant; the measurement does
+    // not.
     val pos = scala.collection.mutable.ArrayBuffer[String]()
     val a = args.toVector
     var i = 0
@@ -399,9 +425,6 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
         case "--tired-chars" if i + 1 < a.length => tiredChars = a(i + 1).toLongOption; i += 2
         case "--no-tok"                         => noTok     = true; i += 1
         case "--rot-only"                       => rotOnly   = true; i += 1
-        case "--hangover-sec"    if i + 1 < a.length => hangoverSec    = a(i + 1).toLongOption.getOrElse(hangoverSec); i += 2
-        case "--hangover-warn"   if i + 1 < a.length => hangoverWarn   = a(i + 1).toLongOption.getOrElse(hangoverWarn); i += 2
-        case "--hangover-danger" if i + 1 < a.length => hangoverDanger = a(i + 1).toLongOption.getOrElse(hangoverDanger); i += 2
         case "--mode-line"                      => modeLine  = true; i += 1
         case "--no-status"                      => noStatus  = true; i += 1
         case other                              => pos += other; i += 1
@@ -433,10 +456,11 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     // Each println is a SEPARATE status row (Claude Code renders multi-line statuslines).
     if !noStatus then println(render(json, nowMs, warn, ctxWarn, dumbZone, autoCompact,
       rotTokens = stats.map(_.sinceWarpTokens), totTokens = stats.map(_.agentTokens), showTot = showTot,
-      humanChars = stats.map(_.humanChars), tokWarn = tokWarn, tokDanger = tokDanger, tiredChars = tiredChars))
-    // SM121: the hangover? DERIVED mode rides the mode line (see hangoverChip for why it is not a status segment).
-    val derivedChips = gapSec.flatMap(g => hangoverChip(g, hangoverSec, hangoverWarn, hangoverDanger)).toSeq
-    if modeLine then println(renderModes(readModes(modesFile), derivedChips))
+      humanChars = stats.map(_.humanChars), tokWarn = tokWarn, tokDanger = tokDanger, tiredChars = tiredChars,
+      idleSec = gapSec))
+    // LINE 2 is DECLARED-ONLY (BR 2026-07-17): the gap now rides line 1 as `idle`, and there is no derived-chip
+    // argument left to pass — see renderModes.
+    if modeLine then println(renderModes(readModes(modesFile)))
     0
 
 @main def statusLine(args: String*): Unit = sys.exit(StatuslineTool.dispatch(args.toList))

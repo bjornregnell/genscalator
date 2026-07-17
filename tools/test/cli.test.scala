@@ -827,16 +827,7 @@ class CliSuite extends munit.FunSuite:
     assertEquals(StatuslineTool.formatGapShort(303L), "5m")
     assertEquals(StatuslineTool.formatGapShort(42L), "42s")
   }
-  test("hangoverGauge: blink is the TOP GATE ONLY — a compact-sized gap stays calm") {
-    // a compact is ~140s (MEASURED: compact-timing.log, 124-162s) => must NOT blink, or the alarm is spent.
-    // NB assert on the LEADING attr: blink is a leading "5;", and "5;" also occurs INSIDE a 256-colour code
-    // (38;5;42) — a `contains("5;")` here is a false failure (it was, first run).
-    assert(!clue(StatuslineTool.hangoverGauge(140L, 300L, 3600L)).startsWith("5"))
-    assert(!clue(StatuslineTool.hangoverGauge(299L, 300L, 3600L)).startsWith("5"))
-    assertEquals(StatuslineTool.hangoverGauge(300L, 300L, 3600L), "7;1;38;5;214")   // orange: a real break
-    assert(clue(StatuslineTool.hangoverGauge(3600L, 300L, 3600L)).startsWith("5;7;1;")) // blink+inverse: long blackout
-  }
-  test("TranscriptStats: tracks the last timestamp for the hangover gap") {
+  test("TranscriptStats: tracks the last timestamp for the idle gap") {
     val lines = Seq(
       """{"type":"user","timestamp":"2026-07-16T10:00:00.000Z","message":{"content":"hi"}}""",
       """{"type":"queue-operation"}""",                                   // no timestamp -> ignored, not a crash
@@ -846,21 +837,34 @@ class CliSuite extends munit.FunSuite:
     assertEquals(s.lastStampMs, StatuslineTool.isoToEpochMs("2026-07-16T10:00:12.000Z").get)
     assertEquals(s.agentTokens, 30L)
   }
-  test("hangoverChip: silent during normal work, shows past the threshold (self-clearing, no decay rule)") {
-    assertEquals(StatuslineTool.hangoverChip(3L, 10L, 300L, 3600L), None)  // working: gap collapses every message
-    assert(clue(StatuslineTool.hangoverChip(42L, 10L, 300L, 3600L).get).contains("hangover? 42s"))
-    assert(clue(StatuslineTool.hangoverChip(41865L, 10L, 300L, 3600L).get).contains("hangover? 11h"))
+  // --- the two-line contract (BR 2026-07-17). LINE 1 = MEASURED by a mechanism; LINE 2 = DECLARED by someone.
+  // The split makes the SURFACE encode the provenance, which is why these tests pin WHICH LINE a thing lands on,
+  // not just its text. `idle` replaces the retired `hangover?` chip, which fused a measurement with an inference
+  // and so rendered the HUMAN's thinking pause as the AGENT's state.
+  test("render: `idle` rides LINE 1 — counted, NO `?`, no threshold, and it names the FEED not a person") {
+    val line = StatuslineTool.render("""{"model":{"display_name":"Opus"}}""", 1_000_000_000L, idleSec = Some(42L))
+    assert(clue(line).contains("idle 42s"))
+    assert(!clue(line).contains("idle?"))      // `?` marks an INFERRED PROXY (cf. rot?); this is COUNTED, like tot
+    assert(!clue(line).contains("hangover"))   // the inference moved to line 2 as a DECLARED mode
   }
-  test("renderModes: a derived chip LEADS the declared modes, and shows even with no declared modes") {
-    val chip = StatuslineTool.hangoverChip(42L, 10L, 300L, 3600L).toSeq
-    val line = StatuslineTool.renderModes(Seq("solo", "afk"), chip)
-    assert(clue(line).contains("hangover? 42s"))
-    assert(clue(line).indexOf("hangover?") < clue(line).indexOf("afk"))   // derived leads: it is the alarm
-    assert(clue(StatuslineTool.renderModes(Nil, chip)).contains("hangover? 42s")) // not the empty placeholder
-    assert(clue(StatuslineTool.renderModes(Nil, Nil)).contains("no active mode labels"))
+  test("render: `idle` shows at ALL sizes — no threshold, because nothing is being guessed") {
+    // the retired chip was SILENT below 60s, which is what let it pose as a judgment. A readout never hides.
+    assert(clue(StatuslineTool.render("""{}""", 1_000_000_000L, idleSec = Some(0L))).contains("idle 0s"))
+    assert(clue(StatuslineTool.render("""{}""", 1_000_000_000L, idleSec = Some(3L))).contains("idle 3s"))
+    assert(clue(StatuslineTool.render("""{}""", 1_000_000_000L, idleSec = Some(41865L))).contains("idle 11h"))
+    // absent only when there is genuinely nothing to measure (a fresh transcript, no timestamped record)
+    assert(!clue(StatuslineTool.render("""{}""", 1_000_000_000L, idleSec = None)).contains("idle"))
   }
-  test("render: the hangover? chip is NOT on the status line (it is a mode, not a resource gauge)") {
-    assert(!clue(StatuslineTool.render("""{"model":{"display_name":"Opus"}}""", 1_000_000_000L)).contains("hangover"))
+  test("render: `idle` sits just after the clock, before the model (BR's layout)") {
+    val line = StatuslineTool.render("""{"model":{"display_name":"Opus"}}""", 1_000_000_000L, idleSec = Some(42L))
+    assert(clue(line).indexOf("idle") < clue(line).indexOf("Opus"))
+  }
+  test("renderModes: `hangover` is a DECLARED mode — no `?`, and it leads the agent-state group") {
+    val line = StatuslineTool.renderModes(Seq("solo", "rot-vigil", "hangover"))
+    assert(clue(line).contains(" hangover "))                             // a chip like any other declared mode
+    assert(!clue(line).contains("hangover?"))                             // declared = a judgment with an OWNER, not a proxy
+    assert(clue(line).indexOf("hangover") < clue(line).indexOf("rot-vigil"))
+    assert(clue(StatuslineTool.renderModes(Nil)).contains("no active mode labels"))
   }
 
   // --- quote-aware cmd checks (PURE). The guard scans raw bytes, so a metachar inside a quoted ARG fired with no
