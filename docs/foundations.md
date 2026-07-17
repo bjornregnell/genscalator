@@ -79,7 +79,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 
 **Groups:** [Roles and cases](#roles-and-cases) · [Channel: bandwidth and confirmation fatigue](#channel-bandwidth-and-confirmation-fatigue) · [Echt and honest writing](#echt-and-honest-writing) · [Context rot and the smart zone](#context-rot-and-the-smart-zone) · [Dances and handoffs](#dances-and-handoffs) · [Memory, habits and substrate](#memory-habits-and-substrate) · [Autonomy and safety](#autonomy-and-safety)
 
-**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · Agentic requirements engineering (agentic RE) · Agentic software engineering (agentic SE) · AT · Authority anchor · Ballgame · BR · BRB dance · Cold start · Comms shorthand · Communication bandwidth · Compact dance · Compact sleep · Compact trigger · Confabulation · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context dance · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · Delegation dance · echt / äkthet · echt-mimicry · Edit dance · Edit vs clarification cues · Extrinsic-volatile plasticity · Go afk cue · Go dance · Go dial ((go)/go/GO) · gs (genscalator) · Guard stall · Habit · Hardening dance · Harvest-hot-context mode · Hot context · Index rot · Live-edit dance · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Post-warp dissection · Prosthetic habit · P-word / plan-mode modal · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Swedish-marker cue (|sv) · Thriller state · Token acceleration · Token efficiency (TE) · Token-usage dance · Token velocity · Warp · WR · Why cue
+**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · Agentic requirements engineering (agentic RE) · Agentic software engineering (agentic SE) · AT · Authority anchor · Ballgame · Baton · BR · BRB dance · Cold start · Comms shorthand · Communication bandwidth · Compact dance · Compact sleep · Compact trigger · Confabulation · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context dance · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · Delegation dance · echt / äkthet · echt-mimicry · Edit dance · Edit vs clarification cues · Extrinsic-volatile plasticity · Go afk cue · Go dance · Go dial ((go)/go/GO) · gs (genscalator) · Guard stall · Habit · Hardening dance · Harvest-hot-context mode · Hot context · Index rot · Live-edit dance · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Post-warp dissection · Prosthetic habit · P-word / plan-mode modal · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Silent · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Swedish-marker cue (|sv) · Thriller state · Token acceleration · Token efficiency (TE) · Token-usage dance · Token velocity · Warp · WR · Why cue
 
 ### Roles and cases
 *BR and the agent are the **roles** (stakeholders, above). **WR** is the research program; **AT** and **SSG** are its **cases / units of analysis** — the object-level projects during which workflow data is collected. (Terminology per* Case Study Research in Software Engineering: Guidelines and Examples*, Runeson, Höst, Rainer & Regnell, Wiley 2012, §3.2.3 "Cases and Units of Analyses" — of which BR is a co-author.)*
@@ -323,8 +323,12 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   *token-budget-awareness* (`research/007-token-budget-awareness.md`): rot raises velocity; velocity/acceleration
   are how the agent *notices* before halting.
 - **Introspection line** — the **first** line of the genscalator status line (`tt statusline`): the ambient
-  **data-and-metrics** display the pair reads at a glance — brand, wall clock, model, context-fill (the
-  smart-zone / rot gauge), session + weekly usage limits, and cost. Named for surfacing the agent's
+  **data-and-metrics** display the pair reads at a glance — brand, wall clock, *Silent* (feed inactivity, below),
+  model, context-fill (the smart-zone / rot gauge), `rot?` / `tot` (since-warp vs lifetime tokens), session + weekly
+  usage limits, and cost. ⭐ **LINE-1 CONTRACT (BR, 2026-07-17): line 1 is what a MECHANISM MEASURES; line 2 is what
+  someone DECLARES.** So the **surface encodes the provenance** and no provenance field is needed — *the line IS the
+  field*. Corollary, learned the hard way: **line 1 measures CHANNELS, not people** (see *Silent*). Named for
+  surfacing the agent's
   *introspective* signals (fill, burn, cost) as a persistent instrument rather than an on-demand `/cost` +
   `/usage` paste. Cf. *Mode line* (the second line), *Context usage / fill*, *Token velocity / acceleration*.
 - **Mode line** — the **second** line of the genscalator status line: the current **declared joint human-agent
@@ -333,6 +337,23 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   *inferred from a measurable proxy* (uncertain — e.g. `tired?`, `afk?`) vs a confirmed one; confirmation is
   asymmetric (the human self-confirms their own state, the agent needs external evidence). See the echt-mode-grammar
   work (SM116–118). Cf. *Introspection line* (the first line), *Harvest-hot-context mode*, the *Dances* below.
+- **Silent** (`silent Ns`, *Introspection line*) — the **measured** feed inactivity: `now − the last timestamped
+  transcript record`. **COUNTED, not inferred**, so it carries **no `?`** (cf. `rot?`, a proxy, which keeps its one);
+  and it is a **READOUT, not a gauge** — no threshold, no colour, never hidden, so it can never cry wolf.
+  ⭐ **Its subject is the FEED, and that is the whole point of the NAME.** It replaced `idle` (BR's rename,
+  2026-07-17, from BR's own earlier naming float): **`idle` attributed a state to an unnamed SUBJECT and was false in
+  both directions at once** — while BR was away eating, the *agent* was making ~60 tool calls (not idle); and while
+  the agent waits, *BR* is usually thinking (not idle). **The word was wrong about every subject it could name, and
+  right about none. The feed, meanwhile, genuinely was silent.**
+  ⇒ **the principle: do not name the subject correctly — REMOVE it.** A measurement with no subject cannot
+  misattribute. *(Sibling of `human-stress`, the only mode that names its subject and the only one that never went
+  wrong; this goes one step further.)* ⭐ **Diagnostic that generalises: a name that needs a comment defending what it
+  does NOT mean is the wrong name.** The retired one required the line *"nobody is idle; the feed is"*; this one
+  needs no defence.
+  **HONEST LIMIT (survives the rename, not fixed by it):** a running command writes **no** transcript record, so
+  **agent-busy time counts as silence** (the measured 18s specimen). The feed is silent; the pair is not. Tolerable
+  **only** because there is no threshold and no colour: a readout may say *"nothing has landed for 18s"*; an alarm
+  may not. Cf. *Introspection line*, *Agent blackout*, *Hangover*. (BR coinage; renamed 2026-07-17.)
 - **Agent blackout** — the agent's execution is SUSPENDED during a harness-imposed pause (a guard stall / permission
   prompt; any wait the harness owns). The agent has no observer *during* the blackout (it is not computing) and no
   marker of it *after* (the next token follows the last as if continuous), so it can **never** detect the blackout
@@ -401,6 +422,31 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   dance" was NOT yet a defined term here — regex-ing this glossary would have flagged the absence and prompted a
   confirm; this entry closes that gap (see `research/wr-data/agent-overcommitted-context-dance-to-compact-dance-2026-07-12.md`,
   [[live-edit-dance]] confirm-on-ambiguity). Related: **Compact dance**, **Token-usage dance**, **Session-limit dance**.
+- **Baton** — the file the agent writes **before** a warp so that the agent on the other side can pick the work up:
+  modes, what is committed, the menu, the anti-regression list. Currently implemented as `tmp/resume-prompt.md` (the
+  *implementation detail*, deliberately not the name — BR: *"a mouthful to type"*). **Named for the relay baton, and
+  the metaphor is the point: a baton is passed between DIFFERENT runners.** The post-warp agent is not the same
+  agent; only the object survives. *(Agent coinage 2026-07-17 as "carrier"; renamed `baton` on BR's settle the same
+  day, while nothing was deployed — coined terms stay mutable until first deploy. BR may type `batton`; understood
+  and normalised silently.)*
+  ⭐ **THE HAZARD IS NOT FADING — IT IS BEING WRONG AND BELIEVED.** SM132 audited one (`2ad9ef5`): it carried a false
+  orphan, a wrong count, and a broken experimental control into a fresh agent that **believed all three, for eleven
+  hours**. It did not fail by being forgotten. **It was read perfectly.** ⇒ **`carried ≠ still true`**: a baton rots
+  **on disk while the world moves**, not in anyone's memory. Its named orphan had been homed **39 minutes before the
+  baton was written**, by its own author, who then wrote "homeless".
+  ⭐⭐ **AND THE BANNER DOES NOT ARM THE READER — this is the load-bearing finding, and it is about the reader, not
+  the file.** The current baton **opens** with *"⛔ THIS FILE IS A CLAIM, NOT A FACT."* On 2026-07-17 the post-compact
+  agent read that banner, and then **took the same file's line — "Ground truth: 8 stalls" — as ground truth** and
+  went to build a tool on it. The false claim was caught **by the WORK** (building the instrument forced a look at
+  the raw data, which disconfirmed it), **not by the warning**. Had the tool been buildable without inspecting the
+  corpus, it would have shipped on a false premise. ⇒ **a warning that says "don't trust this file" does not make you
+  distrust the file; it makes you FEEL that you have** (the *well-formed summary produces closure* mechanism, one
+  level up). **A baton must be AUDITED, and an audit is a TASK, not a resolution** — the only thing that has ever
+  armed a check here is giving it a tool call to execute in.
+  ⚠️ **It is gitignored, so it has NO HISTORY** — which means **a claim about what a baton previously said cannot be
+  verified** (the meta-minion hit exactly this: *"tmp/resume-prompt.md is untracked, no history"* ⇒ `CANNOT VERIFY`).
+  A file whose whole job is to be checked against reality is the one file with no audit trail. **Open, and it is a
+  real gap.** Cf. *Compact dance*, *Post-warp dissection*, *Warp*, *Dangling pointer*.
 - **Compact dance** — the deliberate **hand-off ritual across a context compaction**, so crossing it costs
   little of what matters. Context compaction (summarizing the transcript to reclaim window space) is the main
   smart-zone hygiene move — but a naive compact *loses* live state (decisions just made, the exact next step,
