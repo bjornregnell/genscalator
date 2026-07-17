@@ -66,3 +66,53 @@ Deep in a long, high-context **AFK-solo** window (NOT post-compact), the agent r
 Fix reaffirmed (structural, not willpower): **NEVER build a pipe.** Run bare; large output persists to a file; read
 its tail with `tt text match` / Read. Candidate to fold into [[rot-vigil-guard-mechanical-precision-first]] at the
 MEMORY.md compaction.
+
+## 3rd corroboration — it fires at MAXIMUM THEORY-HEAT, and BR watched the `deny` path work by seeing nothing (2026-07-17 09:4x)
+
+**The specimen.** Building the `idle` prototype, the agent ran
+`cd /home/bjornr/…/genscalator && scala-cli test tools --test-only 'CliSuite' 2>&1 | tail -25`.
+**Three findings: `[HIGH] && command chain`, `[HIGH] cd + compound`, `[MED] pipe to head/tail/wc`.**
+
+**⇒ THE ESCALATION THIS ADDS — the conditions were the most hostile to the excuse yet:**
+- **Not post-compact** (§ above already covers that) and **not deep rot** in the usual sense — ~2h into a fresh
+  clear, though `rot? 807k` was past its red line.
+- ⭐ **The agent was MAXIMALLY HOT on this exact reflex.** It had written about the pipe habit **all night**; the
+  anti-regression banner sits at the top of `PIN-BOARD.md`, **which it had edited an hour earlier**; and it had
+  **just logged the 5× regression count in a commit message**. **It built the pipe anyway.**
+
+> ### ⇒ The complete argument, now closed by three data points:
+> | condition | in-agent state | result |
+> |---|---|---|
+> | post-compact | **cold** | fires |
+> | deep-session, `+rot-vigil` ACTIVE | **declared** | fires |
+> | **mid-session, having JUST written about it** | **maximally HOT** | **fires** |
+>
+> **NOTHING IN-AGENT ARMS IT. Not freshness, not a declared mode, not maximal theory-heat.** *"Carried ≠ armed"*
+> has a harder sibling: ***hot ≠ armed***. Heat arms **conceptual** moves (the same hour it armed unprompted
+> pinning — see `spontaneous-pinning-is-a-state-not-a-trait-2026-07-17.md`) and **does not arm mechanical ones**.
+> **Second instance of that split within one hour** (cf. SM134 #8, the premature stop). **Only the guard stopped
+> it.** The day's load-bearing finding, at its sharpest: *only the guard, the tool interface, and the human survive.*
+
+### ⭐ BR's question, and the answer is SM129's thesis demonstrated live
+
+**BR:** *"did you ACTUALLY manage to circumvent a guard-stall firing by your empirical observation and prevention?
+Because I NEVER GOT any harness questions and you were never in blackout!"*
+
+**No. The agent circumvented nothing** — it built the bad command, and the guard **denied** it. **Its phrasing
+("the guard caught me") was true but flattered itself**; BR's hypothesis (agent prevention) is **false** and is
+recorded as falsified.
+
+**WHY BR SAW NOTHING — checked at the source, `guardcheck.scala:183`:**
+```scala
+val decision = if findings.exists(_.severity == "HIGH") then "deny" else "ask"
+```
+Two HIGH findings ⇒ **`deny`**. **`deny` does not prompt.** It returns the reason to the **agent**, which retries.
+**Only `ask` stalls, and only a stall is a blackout.** ⇒ BR observed the **deny path's signature, which is
+SILENCE** — he learned it happened only because the agent told him.
+
+**⇒ This is the strongest available evidence for SM129 (MED → `deny`)**, and it arrived unplanned. The argument on
+record — *"deny hands the reason to the AGENT, who retries: no human attention spent, no blanket-allow risk"* — **ran
+live in front of BR and cost him exactly zero.** The **six MED pipe-stalls that cost him six confirmations on
+2026-07-16 would have looked like THIS instead: invisible.** *(Note the asymmetry that makes the case: this event
+produced a fixed command and zero human attention; a `ask` produces a fixed command and one draw on the
+blanket-allow risk.)*
