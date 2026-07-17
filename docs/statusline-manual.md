@@ -14,7 +14,7 @@ your prompt.
 ## What a full line looks like
 
 ```
-genscalator:  14:23:07  O4.8 (1M ctx)  ctx-fill: 41%  5h-lim: 30%  wk-lim: 14% resets: 3d  cost: $12
+genscalator:  14:23:07  O4.8 (1M ctx)  ctx-fill: 41%  lim/reset 5h 30%/4h17m  wk 14%/3d  cost: $12
 ```
 
 Segments are separated by two spaces, in a fixed left-to-right order. If the line is wider than your
@@ -29,15 +29,14 @@ falls off first by design.
 | **`14:23:07`** | light grey | Local wall clock, HH:MM:SS. **It freezes while the agent is working and ticks again when control returns to you.** | Use the freeze/tick as a turn signal: ticking clock = your move in the ballgame; frozen = the agent has the ball. |
 | **`O4.8 (1M ctx)`** | cyan | The model, abbreviated (`Opus 4.8` → `O4.8`, `Sonnet` → `S`, `Fable` → `F`, `Haiku` → `H`) and its context window. | Confirm you are on the model you intend. |
 | **`ctx-fill: 41%`** | green (→ orange at the compact trigger ~24%, **red at the dumb-zone ceiling ~30%**) | How full the context window is. | This is the rot axis. Orange means you have crossed the **compact-dance trigger** (~0.8·Z) — start consolidating; **red means you are at the smart-zone ceiling Z and risking the dumb zone** (context rot) — do the compact dance now (commit, then compact) rather than letting it auto-compact mid-thought. Note this reds *early* (~30% of a 1M window), not near 100% — a full-but-rotting window is the danger, not a technically-full one. |
-| **`5h-lim: 30%`** | purple (→ orange ≥ 70%, **red at/above the warn threshold, default 80%**) | Fraction of your rolling 5-hour session limit used. | When it reddens you are near the session cap — ease off, checkpoint, or wrap up before you get blocked. |
-| **`resets: 2h34m`** | dim grey, **but red when its limit is at/above the warn threshold** | Fine countdown (hours + minutes) until the 5-hour window resets. Shown only if CC sends `rate_limits.five_hour.resets_at`. | A red reset says: the cap is close, and here is how long until relief. |
-| **`wk-lim: 14%`** | rosy (→ orange ≥ 70%, **red at/above the warn threshold, default 80%**) | Fraction of your weekly (7-day) limit used. | The slow-moving budget. Reddens near the weekly cap; a distant reset then means pace the rest of the week. |
-| **`resets: 3d`** | dim grey, **red when its limit is at/above the warn threshold** | Coarse countdown (m / h / d) until the weekly window resets. | When the weekly budget refreshes. |
+| **`lim/reset`** | dim grey | Shared legend for the two usage-limit clusters that follow. **Its slash mirrors the value slash** — `lim/reset` ⟷ `5h 30%/4h17m` reads *left of slash = limit % used, right = time until reset*. Shown only when at least one limit is present. | Nothing — it is the column header telling you how to read the `%/reset` pairs. |
+| **`5h 30%/4h17m`** | purple (→ orange ≥ 70%, **red at/above the warn threshold, default 80%**); the **whole cluster** — the % and its reset — shares the one hue | Your rolling 5-hour session limit: **% used** `/` **fine countdown** (h+m) to reset. The reset half shows only if CC sends `rate_limits.five_hour.resets_at`; with no %, just the window + reset show, ungraded. | When it reddens you are near the session cap — ease off, checkpoint, or wrap up. The reset reddens **with** its limit (same cluster colour), so cap-and-relief read as one unmistakable block. |
+| **`wk 14%/3d`** | rosy (→ orange ≥ 70%, **red at/above the warn threshold**); whole cluster shares the hue | Your weekly (7-day) limit: **% used** `/` **coarse countdown** (m/h/d) to reset. | The slow-moving budget. Reddens near the weekly cap; a distant reset then means pace the rest of the week. |
 | **`cost: $12`** | blue | Notional API-equivalent cost of this session, in whole dollars (cents dropped to save space): **what the tokens this conversation has burned would cost if billed at pay-as-you-go API rates.** It is cumulative across the session (and survives a compact), and is *not* tied to your monthly billing period. | On a fixed monthly plan this is **not** a real charge — it is a token-consumption meter, the least interesting number, which is why it is placed last and drops off first on a narrow terminal. |
 
 ### The gauge grading (the three limit/fill segments)
 
-`ctx-fill`, `5h-lim`, and `wk-lim` each start in their own healthy hue and escalate:
+`ctx-fill` and the two limit clusters (`5h`, `wk`) each start in their own healthy hue and escalate:
 
 - **healthy** — below 70%: the segment's base colour (green / purple / rosy).
 - **orange** — 70% or above: getting full; start planning.
@@ -51,7 +50,7 @@ The **red** trigger differs by segment, because "danger" means something differe
     do the compact dance now. It reds *early* on purpose: a context window at 30% of 1M is already rot-risky
     long before it is technically full, so waiting for 90% would be far too late.
   - Configure with **`--ctx-warn N`** (default 30). Orange automatically tracks 0.8·N.
-- **`5h-lim` and `wk-lim`** are graded to the **usage-limit warn threshold**:
+- **The `5h` and `wk` clusters** are graded to the **usage-limit warn threshold**:
   - **orange** at 70%, **red** at the **warn threshold (default 80%)** — and when a limit reddens **its reset
     countdown reddens with it**, so an approaching cap is unmistakable at a glance. This is the ambient
     early-warning slice of the usage-limit WARNING requirement.
@@ -88,7 +87,7 @@ restart). There is no runtime toggle; presence of the key is the switch.
 
 Nothing is wrong — the tool only prints a segment when its field is present in the JSON CC sent:
 
-- The `rate_limits.*` segments (`5h-lim`, `wk-lim`, their `resets:` countdowns) are a Claude Pro/Max
+- The `rate_limits.*` clusters (`5h`, `wk`, with their `%/reset` pairs under the `lim/reset` legend) are a Claude Pro/Max
   feature; on other tiers they simply do not appear.
 - A completely empty or non-JSON stdin prints a **blank line** (exit 0) — it will never break your prompt.
 - The leading clock is only added once the JSON parses, so a blank line really is blank (no stray clock).

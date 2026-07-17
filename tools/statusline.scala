@@ -241,26 +241,31 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     rotTokens.foreach(r => segs += sgr(tokGauge(r, tokWarn, tokDanger), s"rot?↑${formatTokens(r)}"))
     if showTot then totTokens.foreach(t => segs += sgr("38;5;245", s"tot↑${formatTokens(t)}"))
     val rl = o.get("rate_limits").flatMap(_.obj)
-    rl.flatMap(_.get("five_hour")).flatMap(_.obj).foreach: h5 =>
-      val usedP  = h5.get("used_percentage").flatMap(_.num)
-      val warned = usedP.exists(_ >= warn) // at/above the warn threshold: colour BOTH the % and its reset red
-      val used   = usedP.map(p => sgr(limGauge(p, warn, "38;5;176"), s"5h-lim ${pct(p)}"))
-      val reset  = h5.get("resets_at").flatMap(_.num).map(r => sgr(if warned then Red else "38;5;245", s"reset ${relResetFine(r.toLong, nowMs)}"))
-      (used, reset) match
-        case (Some(u), Some(r)) => segs += s"$u $r"
-        case (Some(u), None)    => segs += u
-        case (None, Some(r))    => segs += sgr("38;5;245", "5h-lim ") + r
-        case _                  =>
-    rl.flatMap(_.get("seven_day")).flatMap(_.obj).foreach: w =>
-      val usedP  = w.get("used_percentage").flatMap(_.num)
-      val warned = usedP.exists(_ >= warn) // at/above the warn threshold: colour BOTH the % and its reset red
-      val used   = usedP.map(p => sgr(limGauge(p, warn, "38;5;174"), s"wk-lim ${pct(p)}")) // rosy-red base
-      val reset  = w.get("resets_at").flatMap(_.num).map(r => sgr(if warned then Red else "38;5;245", s"reset ${relReset(r.toLong, nowMs)}"))
-      (used, reset) match
-        case (Some(u), Some(r)) => segs += s"$u $r"
-        case (Some(u), None)    => segs += u
-        case (None, Some(r))    => segs += sgr("38;5;245", "wk-lim ") + r
-        case _                  =>
+    // Compact rate-limit cluster (BR 2026-07-17): factor the twice-repeated "lim"/"reset" words into ONE gray
+    // legend `lim/reset`, whose slash MIRRORS the value slash `P%/reset` — the legend IS the column header. Each
+    // window's whole cluster (`5h P%/reset`, `wk P%/reset`) takes its own gauge colour, so a near-cap limit reds as
+    // one solid block (the reset reddens WITH its limit, for free) and all of one window's info shares a hue. Both
+    // halves stay independently guarded: a missing % or reset simply drops from the cluster (no orphan slash).
+    def limCluster(label: String, base: String, usedP: Option[Double], reset: Option[String]): Option[String] =
+      Option.when(usedP.isDefined || reset.isDefined):
+        val body = (usedP.map(pct), reset) match
+          case (Some(p), Some(r)) => s"$label $p/$r"
+          case (Some(p), None)    => s"$label $p"
+          case (None, Some(r))    => s"$label $r"    // CC sent no %: show the window + its reset, ungraded
+          case (None, None)       => label            // unreachable under the Option.when guard
+        sgr(usedP.map(p => limGauge(p, warn, base)).getOrElse("38;5;245"), body)
+    val m5  = rl.flatMap(_.get("five_hour")).flatMap(_.obj)
+    val mWk = rl.flatMap(_.get("seven_day")).flatMap(_.obj)
+    val clusters = List(
+      limCluster("5h", "38;5;176", // rolling 5-hour window
+        m5.flatMap(_.get("used_percentage")).flatMap(_.num),
+        m5.flatMap(_.get("resets_at")).flatMap(_.num).map(r => relResetFine(r.toLong, nowMs))),
+      limCluster("wk", "38;5;174", // weekly window, rosy-red base
+        mWk.flatMap(_.get("used_percentage")).flatMap(_.num),
+        mWk.flatMap(_.get("resets_at")).flatMap(_.num).map(r => relReset(r.toLong, nowMs)))
+    ).flatten
+    // `lim/reset` legend glued to its first column by ONE space (BR); two-space `sep` between the two clusters.
+    if clusters.nonEmpty then segs += sgr("38;5;245", "lim/reset") + " " + clusters.mkString(sep)
     // cost LAST (least interesting on a fixed monthly plan) + blue, un-graded (no threshold meaning here)
     o.get("cost").flatMap(_.obj).flatMap(_.get("total_cost_usd")).flatMap(_.num)
       .foreach(c => segs += sgr("38;5;39", s"cost $$${c.toLong}")) // whole dollars, TRUNCATED (cents are noise on a fixed monthly plan; saves horiz space; never overstates)

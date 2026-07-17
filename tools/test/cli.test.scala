@@ -1256,9 +1256,9 @@ class CliSuite extends munit.FunSuite:
     assert(clue(out).contains("cost $12")) // whole dollars, no cents (12.34 -> 12)
     assert(!clue(out).contains("cost $12.34")) // cents dropped
     assert(clue(out).contains("ctx-fill 41%"))
-    assert(clue(out).contains("5h-lim 30%"))
-    assert(clue(out).contains("wk-lim 14%"))
-    assert(clue(out).contains("reset 3d"))
+    assert(clue(out).contains("lim/reset"))   // the shared gray legend, once
+    assert(clue(out).contains("5h 30%"))       // 5h cluster (no resets_at provided here)
+    assert(clue(out).contains("wk 14%/3d"))    // wk cluster: % and reset joined by the slash
   }
   test("statusline: missing rate_limits degrades gracefully (shows what's present, no crash)") {
     val (code, out, _) = run("statusline", """{"model":{"id":"haiku"},"cost":{"total_cost_usd":0.5}}""")
@@ -1266,6 +1266,7 @@ class CliSuite extends munit.FunSuite:
     assert(clue(out).contains("haiku"))
     assert(clue(out).contains("cost $0")) // 0.50 truncates to whole dollars -> $0
     assert(!clue(out).contains("wk")) // no rate_limits → no weekly segment
+    assert(!clue(out).contains("lim/reset")) // legend suppressed when neither limit is present
   }
   test("statusline: empty/invalid JSON prints an empty line at exit 0 (never breaks the prompt)") {
     val (code, out, _) = run("statusline", "not json at all")
@@ -1277,32 +1278,30 @@ class CliSuite extends munit.FunSuite:
     val resetsMs = now + 2 * 86400_000L // 2 days later, already in MS (> 1e12)
     val json = s"""{"rate_limits":{"seven_day":{"used_percentage":50,"resets_at":$resetsMs}}}"""
     val (_, out, _) = run("statusline", json, "--now-ms", now.toString)
-    assert(clue(out).contains("wk-lim 50%"))
-    assert(clue(out).contains("reset 2d"))
+    assert(clue(out).contains("wk 50%/2d")) // % and reset joined; MS resets_at auto-detected to 2d
+    assert(clue(out).contains("lim/reset")) // legend present
   }
   test("statusline: five_hour resets_at renders a fine h/m countdown") {
     val now = 1_000_000_000_000L
     val resetSec = now / 1000L + (2 * 3600 + 34 * 60) // 2h34m later, in SECONDS
     val json = s"""{"rate_limits":{"five_hour":{"used_percentage":68,"resets_at":$resetSec}}}"""
     val (_, out, _) = run("statusline", json, "--now-ms", now.toString)
-    assert(clue(out).contains("5h-lim 68%"))
-    assert(clue(out).contains("reset 2h34m"))
+    assert(clue(out).contains("5h 68%/2h34m")) // fine h/m countdown joined to the % by the slash
   }
   test("statusline: a usage limit at/above the warn threshold turns BOTH its % and its reset red") {
     val now = 1_000_000_000_000L
     val resetSec = now / 1000L + 3600 // 1h later
     val json = s"""{"rate_limits":{"five_hour":{"used_percentage":85,"resets_at":$resetSec}}}"""
     val (_, out, _) = run("statusline", json, "--now-ms", now.toString)
-    assert(clue(out).contains("38;5;203m5h-lim 85%")) // the % is red (>= 80% default warn)
-    assert(clue(out).contains("38;5;203mreset"))     // and its reset countdown reddens with it
+    assert(clue(out).contains("38;5;203m5h 85%/1h0m")) // % AND reset sit inside ONE red span (reset reddens with its limit)
   }
   test("statusline: --warn makes the threshold configurable (85% stays non-red under --warn 90)") {
     val now = 1_000_000_000_000L
     val resetSec = now / 1000L + 3600
     val json = s"""{"rate_limits":{"five_hour":{"used_percentage":85,"resets_at":$resetSec}}}"""
     val (_, out, _) = run("statusline", json, "--now-ms", now.toString, "--warn", "90")
-    assert(clue(out).contains("38;5;245mreset"))  // reset stays dim grey (85% is below the raised 90% threshold)
-    assert(!clue(out).contains("38;5;203mreset")) // and is not red
+    assert(clue(out).contains("38;5;214m5h 85%/1h0m")) // 85% is orange (>=70) but NOT red under --warn 90; reset shares the hue
+    assert(!clue(out).contains("38;5;203m5h"))       // the 5h cluster (incl its reset) is not red
   }
   test("statusline: ctx-fill reds at the dumb-zone threshold (Z, default 30%), oranges at 0.8*Z, green below") {
     val now = 1_000_000_000_000L
