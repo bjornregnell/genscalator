@@ -101,9 +101,47 @@ already had a security rule that says never allowlist an interpreter, on the gro
 shell. **BR's twist gives that rule a second, independent reason: an interpreter is prose that runs.** When two
 different arguments land on the same rule, the rule is probably right.
 
-**[figure: the same trade drawn as three rows, prose / unchecked code / typed code, against one column, "when does a
-falsehood get caught?" with the answers being "never", "at runtime, maybe", "before it exists". Real data optional;
-this one is a concept diagram and earns its place.]**
+The whole argument fits in one small table, and the useful thing about it is that the question along the top is not
+"is this code?" but "when do we find out we were wrong?":
+
+| what you wrote | when do you find out it is wrong? |
+|---|---|
+| **prose** - a comment, a note to yourself, a rule in a document | **never** |
+| **unchecked code** - a bash one-liner, a script the agent generated on the fly | **when it runs, in front of a user, if you are lucky** |
+| **typed code** - a Scala call that has to satisfy the compiler | **before it runs, in seconds, for free** |
+
+The middle row is the one to watch, because it is the one you reach for when you are in a hurry, and it is the worst
+of the three. It has all of code's power and none of code's checking. The top row at least admits it is only talk.
+
+> ### "The Scala compiler is our go-to favorite guard."
+>
+> (BR, 2026-07-17.)
+
+Which is the punchline, and it is a commitment rather than an observation. We have spent a lot of this project
+building guards: a hook that inspects commands before they run, rules about what may be approved, tools that refuse
+to do the dangerous thing. And the whole time, the best guard we own was already running on every save, for free,
+complaining in specific detail, and asking nobody's permission. **We just never called it a guard, because it came
+with the language.**
+
+**And the word Scala in that line is load-bearing, not a preference.** The bottom row of the table is not earned by
+compiling. C compiles, and C will cheerfully watch you free the same memory twice and say nothing. That is the point
+of the benchmark section further down, where the conclusion was that C is fastest and we still do not want it:
+brittle is not a speed property, it is a *what-can-go-uncaught* property. So the useful question is never "is this
+compiled?", it is **how much of what I know can I hand to the type system, and will it hold it?** A richer type
+system takes more of the knowledge off your hands. That is the whole reason the ranking ends where it does.
+
+Which also fixes the limit of the argument, honestly. A compiler rejects **false** code, not **wrong** code. It will
+compile a beautifully typed function that computes utter nonsense, and no amount of types will tell you that your
+translation of a Swedish string was half finished. So this is not a claim that the compiler thinks for you. It is a
+claim that the line between "the machine catches this" and "a tired human has to catch this" is **a line you can
+move**, and moving it is most of what good design is.
+
+So when there is a choice about where to put a piece of hard-won knowledge, the ranking is not about taste, and it is
+barely about elegance. Put it where the compiler can hold it, and it will guard it for you forever without either of
+us having to remember it was there.
+
+**[figure: the table above, drawn properly, with the three rows as a timeline instead of a list, so "never" sits off
+the right edge of the page. Concept diagram, no real data needed; it earns its place.]**
 
 ## "But isn't the fast one better?" We measured
 
