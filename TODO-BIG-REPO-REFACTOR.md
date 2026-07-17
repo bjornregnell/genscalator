@@ -27,7 +27,32 @@ Direction is sound: it is the same audience-relative-home principle we use for n
 * **Middle path worth considering:** the declutter benefit may be reachable with a clean top-level split INSIDE one repo (a lean tools+skills root, with `research/` and `media/` as clearly-secondary dirs) without paying the cross-repo-link tax — UNLESS the answer to the first question is "they clone", in which case the hard split earns its cost.
 * **Interacts with the planned `genscalator.ai/blog` -> `bjornregnell.se/genscalator/blog` URL move:** if `blog/` migrates to a `genscalator-media` repo the URL story changes, so plan the two together, not separately.
 
-**TODO decide later; we probably wont do this until genscalator release v1.0.0-M1 anyway.**
+**TODO decide later; but we probably will not do outsourcing as it may be too disruptive to links out there, anyways we will not do it until genscalator release v1.0.0-M1.**
+
+#### Migration plan (TODO soon on the migration step): the in-repo middle path — `git mv` blog + pod-casts into `media/`
+
+The near-term, low-risk step, and DISTINCT from the outsourcing above (which is deferred and leaning-against). Investigated 2026-07-17; impact is small and bounded, `git mv` preserves history, and it is reversible.
+
+**Target structure:** a new top-level `media/` (sibling to `research/`), holding `media/blog/` and `media/pod-casts/`. `research/` stays put. Keep media and research as SIBLINGS, not nested — they are different audiences (publishable vs findings), and siblings map cleanly onto a later genscalator-media / genscalator-research split if we ever do it.
+
+**Exactly one functional code change:**
+* `deployblog.sc`: `blogDir = "blog"` -> `"media/blog"`. That is the only functional edit. The remote/web path (`webroots/www/blog`) is unchanged; the public URL is a SEPARATE concern (the `genscalator.ai/blog` move).
+* `tt ssg` needs NO code change — the blog dir is a positional argument, not hardcoded. Only its help-text examples mention `blog` (cosmetic).
+
+**Cross-links (mechanical, modest):**
+* blog posts link outward (`../research/`, `../skills/`, `../SECURITY-MODEL.md`); one level deeper means `../` -> `../../` (~a dozen+ across the 27 posts). Note: these look like SUBSTRATE links (research is not deployed to the public site), so they matter for in-repo navigation + ssg's link rewriting, not the live site.
+* links INTO blog: only 2 (`research/028` -> `../blog/References.scala`, `research/037` -> `../blog/figures/`). Trivial.
+* `docs/foundations.md`: no path-links into blog. Clean.
+
+**Outside the moved dirs:**
+* `References.scala` is `package blog` (with a test); it moves with the dir, the package name can stay `blog`, but confirm whatever compiles it uses the new path.
+* external tooling/skills that hardcode ABSOLUTE paths into `blog/` need a path sweep.
+
+**Not affected:** the mirrors (whole-repo, transparent to internal moves), pod-casts (only self-references + its README), and every other tool (they reference `research/` in comments only, and research is not moving).
+
+**Order:** `git mv` both dirs -> fix `deployblog.sc` -> bump blog outbound `../` -> `../../` -> fix the 2 research links -> update ssg help text -> sweep external skill paths -> verify (`tt ssg` renders, `deployblog --dry-run` shows the right source, `ssg` + `References` tests pass).
+
+**Who/when:** the `git mv` + link fixes are safe-solo mechanical work; the deploy re-verification is BR-present (deployblog touches the live site). So: greenlight -> agent does the mechanical part -> verify the deploy together.
 
 ### Reason 2: insource issues as first class git citizen
 
