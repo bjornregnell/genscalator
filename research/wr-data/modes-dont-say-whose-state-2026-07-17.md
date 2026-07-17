@@ -97,7 +97,7 @@ built to be *shared*, and sharing turned out to mean *unattributed*.
 ## Cross-links
 
 `hangover-chip-fires-on-the-humans-thinking-pause-2026-07-17.md` · `nobody-dropped-the-hangover-chip-2026-07-16.md`
-· `research/case-studies/long-lived-meta-minion.md` §0.2 (**the pairing is the unit — this is a defect of the shared
+· `research/case-studies/action-research-meta-minion/long-lived-meta-minion.md` §0.2 (**the pairing is the unit — this is a defect of the shared
 surface, not of either party**) · [[agent-blind-to-input-channel-and-timing]] (broken twice tonight) · [[cue-go-afk]]
 (**defines the cue BR is now revising — a home that needs updating on his word**) · `docs/foundations.md` (*"Go afk
 cue"* in the A→Z — **second home**) · SM085 (terminology) · SM134 #3 (provenance, the orthogonal gap).

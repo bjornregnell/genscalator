@@ -96,7 +96,7 @@ twice; the sample of what was *not* caught is, by construction, unavailable.
 ## Candidate tool (per BR's build-and-dogfood directive) — NOT yet built
 
 **Traces to an observed specimen** (this exchange + the daytime inverse), so it clears the anti-quota guard in
-`research/case-studies/long-lived-meta-minion.md` §0.1.
+`research/case-studies/action-research-meta-minion/long-lived-meta-minion.md` §0.1.
 
 - **The gap:** no way to ask *"why does the mode line look like this?"* — no provenance, no transition history.
 - **Sketch:** `tt mode` records **transitions** with provenance (`who` = human / agent / derived, `when`, `label`),
@@ -109,7 +109,7 @@ twice; the sample of what was *not* caught is, by construction, unavailable.
 
 ## Cross-links
 
-`research/case-studies/long-lived-meta-minion.md` (the action-research protocol — this is pairing-level data of the
+`research/case-studies/action-research-meta-minion/long-lived-meta-minion.md` (the action-research protocol — this is pairing-level data of the
 kind its §0 goal put in scope: **the human's side of the loop, not just the agent's**) ·
 `research/wr-data/an-audit-finds-only-what-it-has-a-theory-for-2026-07-16.md` ·
 [[keep-the-ball-game-retract-by-annotating]] · [[hold-human-intent-uncertainty-like-fact]] · SM121 (`tt hangover`).

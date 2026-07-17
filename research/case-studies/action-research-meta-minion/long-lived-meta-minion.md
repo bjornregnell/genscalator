@@ -308,7 +308,7 @@ So the intervention is:
 - **Tool lane — ⚠️ REVISED 2026-07-16 23:5x by BR. Verdict changed; the superseded reasoning is KEPT below as the
   trajectory, not erased.**
   > **REVISED VERDICT: `general-purpose` + **CF5 / fable**, with a write contract scoped to the minion's own
-  > directory `research/case-studies/minion-log/`.**
+  > directory `research/case-studies/action-research-meta-minion/minion-log/`.**
   >
   > BR asked two questions. **The first — *does token-spending mode change the recommendation?* — does NOT**, and
   > saying so plainly matters more than agreeing: **the tool lane costs no tokens.** `Explore`'s weakness was a

@@ -124,5 +124,5 @@ cost zero. It costs a human decision.**
 `nobody-dropped-the-hangover-chip-2026-07-16.md` (**the sibling — read together: at 23:47 the chip vanished and BR
 credited the agent; at 00:13 it appeared and BR credited the agent again. Same chip, same missing affordance —
 NO PROVENANCE — twice in 90 minutes**) · SM121 (`tt hangover`) · SM134 (candidates #3 provenance, #5 this) ·
-`research/case-studies/long-lived-meta-minion.md` §0.2 (**the pairing is the unit — this specimen is the tool's
+`research/case-studies/action-research-meta-minion/long-lived-meta-minion.md` §0.2 (**the pairing is the unit — this specimen is the tool's
 fault, not either party's**) · [[joint-rot-vigilance-recovery-kit]] · [[tired-cue]].

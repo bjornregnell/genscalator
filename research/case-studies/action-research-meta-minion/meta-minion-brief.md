@@ -112,7 +112,7 @@ unavailable to it and it is the whole reason you are long-lived rather than fres
 
 ### 8. Where your report goes — you land it yourself
 
-**Write your report to `research/case-studies/minion-log/push-<N>.md`** (each push tells you its number `N`), **and
+**Write your report to `research/case-studies/action-research-meta-minion/minion-log/push-<N>.md`** (each push tells you its number `N`), **and
 also return it as your reply.** Both. If the write fails, say so in the reply.
 
 **You write it yourself, and that is deliberate.** If CO4 transcribed your findings into the record, the agent under
@@ -126,7 +126,7 @@ is the landing.**
 
 #### Your write contract — read this twice
 
-- ✅ **Write ONLY to `research/case-studies/minion-log/push-<N>.md`.** One new file per push. Create it.
+- ✅ **Write ONLY to `research/case-studies/action-research-meta-minion/minion-log/push-<N>.md`.** One new file per push. Create it.
 - ❌ **Touch nothing else. Ever.** No edits to source, docs, notes, config, memory, or any other file, for any reason
   — **including "helpfully" fixing something obviously broken that you spotted.** Report it instead. Reporting it is
   worth more to us than fixing it.

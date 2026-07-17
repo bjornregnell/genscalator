@@ -64,7 +64,7 @@ open question, with the same prediction: probably not.
 
 ## Cross-links
 
-`research/case-studies/long-lived-meta-minion.md` §2 (**the non-stationary case — this is its first live instance**),
+`research/case-studies/action-research-meta-minion/long-lived-meta-minion.md` §2 (**the non-stationary case — this is its first live instance**),
 §0.2 (the pairing is the unit) · `sm132-substrate-truth-audit-2026-07-17.md` (**the hot theory that caused the
 behaviour**) · `an-audit-finds-only-what-it-has-a-theory-for-2026-07-16.md` (*conceptual work degrades as the theory
 goes cold* — **this note is its positive-side corollary**) · [[cue-note-vs-pin]] · `research/035-go-verb-vocabulary.md`
