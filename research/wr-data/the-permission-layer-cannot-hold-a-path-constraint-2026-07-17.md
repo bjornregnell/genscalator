@@ -101,6 +101,69 @@ threat model says will fail.**
 
 ---
 
+## 3b. ⭐ THE INTENT MISMATCH — the gesture that grants carries NO evidence of intent to grant (BR, 2026-07-17)
+
+**BR's addition, and it is the worst of the four, because §2 still assumed the human MEANT to answer the dialog.**
+This one does not.
+
+> *"the **'clicky thingy'** UX pain that I stopped using with your help so mouse clicks dont accidentally blanket
+> allow which **CAN VERY EASY HAPPEN** as mouse clicks often are just **raise-window attempts** that could be based
+> on **human false hypothesis that window is not in scope** and then **BANG human has allowed `*`**"*
+
+**The mechanism, and it is precise:**
+1. The human forms a **false hypothesis about window state** — *"this window isn't focused."*
+2. They act to correct it: **click to raise.** A window-manager gesture. **Not a decision about anything.**
+3. The window **was** focused.
+4. **The click is consumed by whatever is under the cursor** — option **2**, *"don't ask again for `mv *`"*.
+
+> ### ⇒ **The grant is a SIDE EFFECT of correcting a false belief about the window manager. The human never decided
+> anything about permissions at all.**
+
+**§2 says the human's evidence is local while their decision is global. §3b is worse: THERE IS NO DECISION.** A
+keystroke (`2`) is at least a deliberate act aimed at the dialog. **A click is often just *arriving*.** ⇒ **The most
+irreversible option in the system is reachable by the LEAST intentional gesture a human makes.**
+
+⚠️ **And the human is BLIND to the error that causes it** — you cannot notice a false belief about focus; if you
+could, you would not hold it. **Structurally the same blindness the agent has about its own state** (§5), on the
+other side of the pair.
+
+**This is NOT hypothetical — the near-miss is on the board:** *"motivated by the **2026-07-07 near-miss (BR nearly
+clicked)**"* (`PIN-BOARD.md`), and the rule it bought is already written: *"a **mis-click can permanently widen the
+allowlist** and open unsafety by mistake"* → ***"never click always"*** → *"treat the allowlist as **reviewed
+code, not an accident of clicking**"* (`notes/workflow/confirmations-log.md`).
+
+### ⇒ BR's fix was to REMOVE THE REACH — and he did it before we had the rule
+
+**He disabled the mouse** (`CLAUDE_CODE_DISABLE_MOUSE=1` / `DISABLE_MOUSE_CLICKS=1`; SM093 investigated the
+trade-off and he chose `DISABLE_MOUSE_CLICKS` + Shift-drag, keeping wheel-scroll). **That is §3.5's own conclusion —
+*only removing the reach stops a shape* — applied by the HUMAN to HIMSELF, days before we wrote it down.**
+
+> ## ⭐⭐ THE THEORY THIS FORCES: "structure over willpower" applies to the HUMAN too
+>
+> The load-bearing finding lists the survivors as **the guard, the tool interface, and the HUMAN** — which quietly
+> implies **the human is the reliable one**. **§3b falsifies that framing.** BR disabling his own mouse is **the
+> human building a guard against himself**, for a reflex he cannot willpower his way out of (you cannot decide to
+> stop mis-modelling focus).
+>
+> ⇒ **The human is not a guard. The human is another reflex-driven system that needs guards.** SM125's
+> *human-rotted axis* already says the weak link is the rubber-stamp — **but the mitigation is not "be vigilant", it
+> is "remove your own reach."** Vigilance is willpower; the env var is structure. **The pair is symmetric: both
+> members need their reach narrowed, and neither can do it from the inside at the moment of action.**
+
+**Ties [[a5f4387]] (`human-tab-fires-redundant-preprompt-low-friction-2026-07-16.md`) — the SAME principle at
+trivial stakes:** a low-friction accidental action (TAB) fired a redundant preprompt, and the candidate rule was
+***match firing-friction to the stakes of what the prompt can trigger***. **§3b is that rule at CATASTROPHIC
+stakes, and the system has it exactly inverted:** the irreversible option costs one careless click; typing a commit
+message costs more effort than permanently disarming the guard.
+
+**Keyboard-vs-mouse, already recorded:** *"had he used the **mouse he could NOT have continued typing** — keyboard
+preserves the typing flow, mouse breaks it"* (`PIN-BOARD.md`). ⇒ the keyboard is not merely nicer; **it is the
+higher-friction, higher-intent channel**, which is precisely what a consent gesture should require.
+
+*(Homes respected: the mouse-mode **UX race** lives in `wr-data/harness-ux.md` § "New mouse-click TUI mode races the
+human's native terminal clicking" (2026-07-06) and the **env-var trade-off** in **SM093**. This section is the
+**dialog's** defect, which is why it lives here beside its three siblings — one home per finding.)*
+
 ## 4. ✅ LANDED in the security model as `SECURITY-MODEL.md` §3.5 (2026-07-17)
 
 > **⚠️ It was an ORPHAN for ~15 minutes, and BR caught it.** This section originally read *"a **candidate** guard rule

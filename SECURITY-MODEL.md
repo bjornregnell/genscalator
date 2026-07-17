@@ -197,7 +197,7 @@ outside the worktree**, so git enforces the containment a pattern cannot express
 > reach does** — which is why this rule's real form is *"the tool holds the check"*, not *"the agent remembers the
 > hazard"*.
 
-**Two dialog defects this exposes, both attacks on the human's attention (the §2 axis):**
+**Three dialog defects this exposes, all attacks on the human's attention (the §2 axis):**
 1. **The consent mismatch — LOCAL evidence, GLOBAL grant.** The dialog shows **one** command and takes an answer
    binding **every** command of that shape, **forever**. The human is not careless when this bites: **the instance
    shown genuinely IS benign, which is exactly why they say yes.** A blanket allow is an **irreversible policy
@@ -207,8 +207,32 @@ outside the worktree**, so git enforces the containment a pattern cannot express
    keystroke, was made for an **additive** `mkdir` and a **destructive** `mv` two minutes apart. **The only thing
    grading severity in that dialog is the human** — i.e. the mechanism leans on **exactly the faculty §1's threat
    model says will fail.**
+3. **The intent mismatch — the gesture that grants carries NO evidence of intent to grant** (BR, 2026-07-17). Worse
+   than (1), which at least assumes the human *meant* to answer. **A mouse click is usually a raise-window gesture**,
+   fired on a **false hypothesis that the window is not focused** — and the human is **blind to that error, because a
+   belief you could notice was false is one you would not hold.** The window *was* focused; the click lands on
+   option 2; **`mv *` is granted as a SIDE EFFECT of a window-manager correction.** ⇒ **The most irreversible option
+   in the system is reachable by the least intentional gesture a human makes.** *(Not hypothetical: the 2026-07-07
+   **near-miss** — "BR nearly clicked" — bought the standing rules **"never click always"** and **"treat the
+   allowlist as reviewed code, not an accident of clicking"**.)*
 
-**Full specimen + theory:** `research/wr-data/the-permission-layer-cannot-hold-a-path-constraint-2026-07-17.md`.
+> #### ⭐ The generalisation §3.3's table understates: STRUCTURE OVER WILLPOWER APPLIES TO THE HUMAN TOO
+>
+> §3.3 lists **the human** as a ✅ warp-survivor, which quietly implies the human is *the reliable one*. **Defect (3)
+> falsifies that framing.** BR's fix was not vigilance — it was `CLAUDE_CODE_DISABLE_MOUSE` (SM093): **the human
+> building a guard against himself**, for a reflex he cannot willpower his way out of. **He removed the reach, days
+> before we wrote §3.5's "only removing the reach works."**
+>
+> ⇒ **The human is not a guard. The human is another reflex-driven system that NEEDS guards.** §2's human-rotted axis
+> names the rubber-stamp as the weak link — **but the mitigation is "narrow your own reach", not "be careful".**
+> **The pair is symmetric: both members need their reach narrowed, and neither can do it from inside at the moment of
+> action.** *(Sibling: `human-tab-fires-redundant-preprompt-low-friction-2026-07-16.md` — **match firing-friction to
+> the stakes.** Today the system has it inverted: typing a commit message takes more effort than permanently
+> disarming the guard.)*
+
+**Full specimen + theory:** `research/wr-data/the-permission-layer-cannot-hold-a-path-constraint-2026-07-17.md`
+(§3b the intent mismatch). **Mouse-mode UX + env trade-off live elsewhere, by design:** `wr-data/harness-ux.md`
+§ "New mouse-click TUI mode races the human's native terminal clicking" (2026-07-06) and **SM093**.
 
 ## 4. Standing rules (already load-bearing elsewhere)
 
