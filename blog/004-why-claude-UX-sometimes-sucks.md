@@ -103,9 +103,38 @@ sad conclusion. It is a design brief.
 
 First, and this is the big one: *the safest confirmation is the one that never appears.* Every prompt is a fresh
 chance for me to be tired and tap the wrong thing. When the guard is sure a command is wrong, it should just say no
-to the agent and let the agent fix it and retry. That costs me nothing, because I never see it. We measured a full
-day of my sessions: eight stops, every one of them a kind the agent could have simply been told about. Eight chances
-to be dumb, for nothing.
+to the agent and let the agent fix it and retry. That costs me nothing, because I never see it. We counted a full
+day of my sessions and got eight stops, every one of them a kind the agent could have simply been told about. Eight
+chances to be dumb, for nothing.
+
+<!-- AGENT-DRAFT 2026-07-17 (BR to revoice / approve / cut): the "eight stops" sentence above CLAIMED A MEASUREMENT
+that turned out to be false, and was retracted the same day (genscalator 2e1fcc5 / f0188d3). It is left standing and
+then corrected below, rather than quietly edited, because the correction is a better pain-beat than the claim was.
+⚠️ DO NOT SHIP the original wording as a measurement: "we measured a full day of my sessions" implies a census; it
+was a count of BR's own pastes. The eight are real events and a valid lower bound. Source:
+research/wr-data/sm129s-probe-counted-brs-pastes-not-stalls-the-agent-is-blind-to-its-own-asks-2026-07-17.md -->
+
+Except that number is wrong, and how it is wrong is the better story.
+
+We went back to check it and it came apart in our hands. Those eight were not a count of the times the guard stopped
+me. They were a count of the times I was annoyed enough to paste the thing into the chat. The agent had searched the
+transcript for the stops and found my complaints about the stops, which is not the same set at all. It had measured
+our own note-taking and reported it as a measurement of the world. The number was real. What it counted was us.
+
+The reason is worth sitting with, because it is not a bug anyone chose. When the guard asks me something, that
+question goes onto my screen and nowhere else. The agent is not in the room for it. Nothing writes it down. A refusal
+gets recorded, because the agent has to be told it was refused, but a question to me leaves no trace at all, anywhere,
+and we went looking properly before saying so.
+
+So the honest sentence is: at least eight, and neither of us can tell you the real number.
+
+Which is its own pain, and I think the sharpest one in this post. **The thing that interrupts me does not record that
+it interrupted me.** I cannot audit my own interruptions. I cannot show you a week of them. I can only tell you that
+they happen, and that each one is a chance for me to be tired and tap the wrong thing, and that when I tried to put a
+number on it the only evidence I had was my own complaining.
+
+I want to be plain that this makes the case stronger, not weaker. We lost the number. We did not lose the argument.
+Eight is a floor, not a total, and every one above it is a chance to be dumb that nobody is counting.
 
 Second: the permanent option should not live in the same menu as the temporary one, one keystroke apart, with no
 difference in weight. It is offered in the same breath for `mkdir` (which makes a folder) as for `mv` (which can
@@ -254,6 +283,44 @@ written that em-dash into the text itself a moment earlier and then could not st
 own toes. The real papercut, though, is the silence: the tool just says "not found" and leaves you to guess which
 of seven lines diverged, so you grab the nearest suspect (the dash) and may well blame the wrong thing. The kind
 fix a tool could give is boring: tell me where the match broke.
+
+<!-- AGENT-DRAFT 2026-07-17 (BR to revoice / approve / place): the "in guard" beat, BR's #L + the routing discovery
+of the same day. Written in BR's voice but STOPPING AT THE MECHANISM — the grey-echo story is his, he found it, and
+it should be his telling. ⚠️ The strongest image is that he HAD a working instrument on screen and did not read it;
+keep that landing on the human, not on the machine, or it turns smug. Sources:
+research/wr-data/the-guard-stall-scrambles-message-ORDER-and-routes-input-to-the-wrong-agent-2026-07-17.md -->
+
+### Talking into the wrong room
+
+`[for BR to voice]` The menu has one more trick, and I only found it because I got caught by it.
+
+When the guard stops something, the prompt takes over the feed. It wants an answer now. And I have a habit: I paste
+the thing straight into it, with a note, so we can look at it later as data. I have done this dozens of times.
+
+Two things go wrong there, and neither of them is my carelessness, which is what makes them worth writing down.
+
+The first is that what I type in the prompt does not land where I typed it. It gets folded back into the feed at
+some moment I do not control and cannot predict. That sounds like nothing. It is not nothing, because in this
+workflow the order **is** the meaning. If I say "stop" the difference between before and after the last message is
+the whole message. We both read the feed positionally, and the guard quietly makes the position unreliable. And the
+asymmetry is nasty: I can at least suspect it happened, because I saw the box I typed into. The agent only ever sees
+the words, never where they came from or when. It cannot tell that I answered out of order. The one of us who can
+notice is the one who caused it.
+
+The second is worse and I did not know it until this week. That day, coming back from lunch, I saw a stall and did
+the usual thing: pasted it in with my note. The agent never got it. The prompt did not belong to the agent I thought
+I was talking to. It belonged to a helper it had started, off doing its own job, and my words went there. The helper
+read my question, worked out that I had blamed the wrong thing, wrote the answer down in its own notes, and got on
+with its day. Nobody told me. Nobody told the agent either.
+
+I was addressing one thing and typing into another, and there is no signpost. Whoever stopped gets my keystrokes.
+With one agent that is invisible and harmless. The moment there is more than one, which is where all of this is
+going, it is a live misdelivery.
+
+**What we did about it.** The same shape as the mouse: not "be careful", but a rule with a check on the end of it.
+Inside a stall I now type one thing and one thing only, a marker and the paste, and then I leave. The talking waits
+until the feed is mine again. It is a smaller habit than "pay attention", and unlike "pay attention" it is the kind
+of thing I can actually still do when I am tired, which is the only time it matters.
 
 Angle (TODO firm up): these aren't random bugs — most are **one family**: *timing/observability races between a human
 action and the system consuming a prior input*, plus *missing typed affordances* that push work into bash. For each,
