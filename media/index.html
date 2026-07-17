@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>genscalator</title>
+<!-- FIRST PROTO 2026-07-16. Photos: blacksmith work by BR's wife (consent given). TODO: add her name as credit;
+     confirm tagline; confirm bg shade (#000 vs #3d3c3d). -->
+<style>
+  :root { color-scheme: dark; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    background: #000;
+    color: #f0f0f0;
+    font-family: "Courier New", Courier, monospace;
+    overflow: hidden;                 /* single-screen hero */
+  }
+
+  .hero { position: relative; width: 100vw; height: 100dvh; overflow: hidden; }
+
+  /* carousel: all photos stacked, object-fit cover, crossfaded by toggling .show */
+  .carousel { position: absolute; inset: 0; }
+  .carousel img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: center;
+    opacity: 0; transition: opacity 2s ease-in-out;
+  }
+  .carousel img.show { opacity: 1; }
+
+  /* left scrim so the text stays readable over any photo */
+  .scrim {
+    position: absolute; inset: 0; z-index: 1;
+    background: linear-gradient(to right,
+      rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.78) 30%, rgba(0,0,0,0.18) 58%, rgba(0,0,0,0) 100%);
+  }
+
+  .overlay {
+    position: absolute; top: 0; left: 0; height: 100%;
+    max-width: 46vw; padding: 6vh 4vw;
+    display: flex; flex-direction: column; justify-content: center;
+    z-index: 2;
+  }
+  .name {
+    font-family: Rockwell, "Roboto Slab", "DejaVu Serif", Georgia, "Times New Roman", serif;
+    font-size: clamp(2rem, 5.2vw, 4.2rem); font-weight: 700; color: #ffffff;
+    letter-spacing: 0.02em; margin-bottom: 0.35em;
+  }
+  .tagline {
+    font-size: clamp(0.9rem, 1.6vw, 1.15rem); color: #c8c8c8;
+    max-width: 34ch; line-height: 1.5; margin-bottom: 2em;
+  }
+  nav a {
+    display: block; color: #e0e0e0; text-decoration: none;
+    font-size: clamp(1rem, 1.9vw, 1.4rem); font-weight: 700; margin: 0.4em 0;
+  }
+  nav a::before { content: "> "; color: #8fbf8f; }
+  nav a:hover { text-decoration: underline; color: #ffffff; }
+  .credit { margin-top: 2.4em; font-size: clamp(0.72rem, 1.2vw, 0.9rem); color: #8a8a8a; }
+
+  /* portrait (phone upright): keep the overlay, swap to a top-to-bottom scrim so text sits over a dark band */
+  @media (orientation: portrait) {
+    .overlay { max-width: 100%; padding: 9vh 7vw; justify-content: flex-start; }
+    .scrim {
+      background: linear-gradient(to bottom,
+        rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.55) 45%, rgba(0,0,0,0.35) 70%, rgba(0,0,0,0.8) 100%);
+    }
+  }
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="carousel">
+    <img src="img/axe-0.jpg" alt="Hand-forged blacksmith work" class="show">
+    <img src="img/axe-1.jpg" alt="">
+    <img src="img/axe-2.jpg" alt="">
+    <img src="img/axe-3.jpg" alt="">
+    <img src="img/black-smith-lock-1.jpg" alt="">
+    <img src="img/black-smith-lock-2.jpg" alt="">
+    <img src="img/black-smith-lock-3.jpg" alt="">
+    <img src="img/black-smith-lock-4.jpg" alt="">
+  </div>
+  <div class="scrim"></div>
+  <div class="overlay">
+    <p class="name">genscalator</p>
+    <p class="tagline">A typed Scala toolbox and habits for safer, calmer agentic software engineering.</p>
+    <nav>
+      <a href="https://bjornregnell.se/genscalator/blog/">genscalator blog</a>
+      <a href="https://codeberg.org/bjornregnell/genscalator">genscalator repo</a>
+      <a href="https://bjornregnell.se/genscalator/blog/000-why-genscalator.html">genscalator why</a>
+    </nav>
+    <p class="credit">Blacksmith photography by Susanne R. Built with her own tools.</p>
+  </div>
+</div>
+<script>
+(function () {
+  var imgs = Array.prototype.slice.call(document.querySelectorAll('.carousel img'));
+  if (imgs.length < 2) return;
+  var i = 0;
+  setInterval(function () {
+    imgs[i].classList.remove('show');
+    i = (i + 1) % imgs.length;
+    imgs[i].classList.add('show');
+  }, 4500);   // ~4.5s per photo, 2s crossfade
+})();
+</script>
+</body>
+</html>
