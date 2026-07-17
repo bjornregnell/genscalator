@@ -115,11 +115,18 @@ Third, and this is what we now do by hand: an always-allow rule should be **writ
 not collected by accident in the middle of a task. Our own rule for this is four words long, and I recommend it:
 **never click always.**
 
-**[figure: TODO, real screenshot]** The actual guard menu with option 2 reading *"Yes, and don't ask again for:
-`mv *`"*, showing how little separates one-time from forever. This is the whole post in one image, and it is
-ephemeral: grab it next time a stall fires. See
+Here is the actual thing. Look at how little there is to it:
+
+![A dangerous ask. The real guard menu: "This command requires approval. Do you want to proceed?" with three options. 1. Yes. 2. Yes, and don't ask again for: mv star. 3. No. Option 1 is a one-time yes. Option 2 is forever, for every command of that shape. They are one line apart, in the same plain type, at the same cost.](figures/a-dangerous-ask.png)
+
+Three short lines. The first is a decision about this command. The second is a decision about every command like it,
+for the rest of the project. They look the same, they weigh the same, and they are one line apart. Nothing in that
+picture tells you that one of them is a policy change. And notice what option 2 is offering to stop asking about:
+`mv *`, which is the command that moves and overwrites files. Not one folder. Anything, anywhere, from now on.
+
+Why the menu cannot be fixed by better wording is a longer story, and it is in
 [`the-permission-layer-cannot-hold-a-path-constraint-2026-07-17.md`](../research/wr-data/the-permission-layer-cannot-hold-a-path-constraint-2026-07-17.md)
-and [`SECURITY-MODEL.md`](../SECURITY-MODEL.md) §3.5 for why the menu cannot be fixed by wording alone.
+and [`SECURITY-MODEL.md`](../SECURITY-MODEL.md) §3.5.
 
 **The high-level frame (BR — why these bugs hit disproportionately hard).** A human embarks on a big endeavour and
 pours in energy, feelings, hours, sleepless nights — to do things with AI that were *never possible before*. The
