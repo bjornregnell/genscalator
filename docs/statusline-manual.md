@@ -61,6 +61,15 @@ The **red** trigger differs by segment, because "danger" means something differe
 The two thresholds are independent — the usage-limit warn (a subscription-budget signal) and the ctx-fill
 dumb-zone threshold (a rot signal) mean different things and default to different values (80 vs 30).
 
+**`ctx-fill` vs `rot?↑` / `tot↑` — different quantities, do not reconcile them.** `ctx-fill` is window
+**occupancy** (a percentage: how full the context window is right now). `rot?↑` and `tot↑` are cumulative
+**agent output tokens generated** (a count: `rot?↑` since the last warp/compact, `tot↑` for the whole
+session) — the `↑` marks them as output-*flow*, not occupancy. A flow-count and an occupancy-level are
+decoupled: you can generate a large `rot?↑` while `ctx-fill` stays low, or fill the window with one big
+paste at near-zero `rot?↑`. So `4%` and `2k` are not two views of one number and never add up — read
+`ctx-fill` for rot-risk, `rot?↑` for how hard the agent has been working this window. (Aside: `rot?↑` equals
+`tot↑` exactly when there has been no compact since the session started — a free "no warp yet" signal.)
+
 ## Turning it on and off
 
 **On** — add one line to `.claude/settings.json` (top level; merge alongside your existing keys, do not

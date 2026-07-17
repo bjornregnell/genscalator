@@ -1387,10 +1387,10 @@ class CliSuite extends munit.FunSuite:
   test("statusline SM128 render: rot?/tot gauges + showTot toggle (pure, no COLUMNS dependency)") {
     import StatuslineTool.*
     val withTot = render("{}", 1000000000000L, rotTokens = Some(400000L), totTokens = Some(6500000L), showTot = true)
-    assert(clue(withTot).contains("rot? 400k"))
-    assert(clue(withTot).contains("tot 6.5M"))
+    assert(clue(withTot).contains("rot?↑400k"))  // ↑ marks output-flow (vs ctx-fill's % occupancy); no space, saves width
+    assert(clue(withTot).contains("tot↑6.5M"))
     val noTot = render("{}", 1000000000000L, rotTokens = Some(400000L), totTokens = Some(6500000L), showTot = false)
-    assert(clue(noTot).contains("rot? 400k"))
+    assert(clue(noTot).contains("rot?↑400k"))
     assert(!clue(noTot).contains("tot"))          // tot dropped when showTot=false
   }
 
@@ -1401,9 +1401,9 @@ class CliSuite extends munit.FunSuite:
     val json = s"""{"context_window":{"used_percentage":20},"transcript_path":"${tmp.toString}"}"""
     val (code, out, _) = run("statusline", json, "--now-ms", "1000000000000")
     assertEquals(code, 0)
-    assert(clue(out).contains("rot? 1.5M")) // since-warp == cumulative here (no compact_boundary in this transcript)
+    assert(clue(out).contains("rot?↑1.5M")) // since-warp == cumulative here (no compact_boundary in this transcript)
     val (_, rotOnly, _) = run("statusline", json, "--now-ms", "1000000000000", "--rot-only")
-    assert(clue(rotOnly).contains("rot? 1.5M"))
+    assert(clue(rotOnly).contains("rot?↑1.5M"))
     assert(!clue(rotOnly).contains("tot"))
     java.nio.file.Files.deleteIfExists(tmp)
   }

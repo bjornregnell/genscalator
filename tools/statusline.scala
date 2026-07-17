@@ -235,8 +235,11 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     // rot?/tot token gauges (SM128): rot? = tokens since the last warp (compact/clear) = the CURRENT-window rot
     // signal, COLOURED by threshold; the `?` marks it an inferred proxy (SM118). tot = cumulative lifetime tokens,
     // dim (context only, no threshold meaning), and DROPPED on a narrow terminal (showTot). rot? is the star.
-    rotTokens.foreach(r => segs += sgr(tokGauge(r, tokWarn, tokDanger), s"rot? ${formatTokens(r)}"))
-    if showTot then totTokens.foreach(t => segs += sgr("38;5;245", s"tot ${formatTokens(t)}"))
+    // The `↑` marks these as OUTPUT-FLOW (agent tokens GENERATED), a different KIND of quantity from ctx-fill's
+    // window OCCUPANCY (%): a flow-count vs a level, decoupled, never expected to reconcile. The glyph stops a
+    // glancer grouping `2k` with `4%` on one axis (wr-data 2026-07-17, confirmed against TranscriptStats).
+    rotTokens.foreach(r => segs += sgr(tokGauge(r, tokWarn, tokDanger), s"rot?↑${formatTokens(r)}"))
+    if showTot then totTokens.foreach(t => segs += sgr("38;5;245", s"tot↑${formatTokens(t)}"))
     val rl = o.get("rate_limits").flatMap(_.obj)
     rl.flatMap(_.get("five_hour")).flatMap(_.obj).foreach: h5 =>
       val usedP  = h5.get("used_percentage").flatMap(_.num)
