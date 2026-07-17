@@ -42,6 +42,10 @@
 //     scala-cli run deployblog.sc                              # defaults: tmp/site -> webroots/www/genscalator/blog (additive)
 //     scala-cli run deployblog.sc -- tmp/site webroots/www/genscalator/blog --delete   # exact mirror (removes stale remote files)
 //
+//   DOWNLOAD FLOW (pull a remote subtree into the repo, e.g. deploy-only assets like images):
+//     scala-cli run deployblog.sc -- <localDest> <remoteSrc> --pull --dry-run   # preview what would download
+//     scala-cli run deployblog.sc -- media/img webroots/www/genscalator/img --pull   # mirror remote -> local (additive; never deletes local)
+//
 // REMOTE PATH NOTE
 //   On SFTP login you land in your one.com account home. bjornregnell.se's public web
 //   root is `webroots/www/` (it holds the live index.html), so the blog goes to
@@ -111,6 +115,7 @@ val check      = flags.contains("--check")
 val serve      = flags.contains("--serve")
 val push       = flags.contains("--push")
 val release    = flags.contains("--release")
+val pull       = flags.contains("--pull")  // DOWNLOAD remoteDir -> localDir (mirror without -R); additive, never deletes local
 val statusUpdateOpt = optVal("--status-update")
 val dateOpt    = optVal("--date")
 
@@ -146,7 +151,7 @@ if release then render("published,deployed")
 
 // ---- checks ----
 if !onPath("lftp") then die("`lftp` not found. Install it:  sudo apt install lftp")
-if !check && !Files.isDirectory(Paths.get(localDir)) then
+if !check && !pull && !Files.isDirectory(Paths.get(localDir)) then
   die(s"local dir not found: $localDir  (render it first with `tt ssg`, or use --push/--release/--serve)")
 
 // ---- read host + credentials from ~/.netrc ----
@@ -181,15 +186,16 @@ val (host, login) = entries.collectFirst {
 
 // ---- build the lftp command script (username in the URL; lftp reads the password from ~/.netrc itself) ----
 val mirrorOpts = Seq(
-  "-R",                                   // reverse = upload (local -> remote)
-  if doDelete then "--delete" else "",
+  if pull then "" else "-R",              // -R = reverse = UPLOAD (local -> remote); omit for --pull (DOWNLOAD remote -> local)
+  if doDelete && !pull then "--delete" else "",  // --delete never applies on a pull -- it would delete LOCAL files; pull is additive
   if dryRun then "--dry-run" else "",
   "--verbose"
 ).filter(_.nonEmpty).mkString(" ")
 
 val action =
   if check then "pwd\nls"                 // connection test: show the login directory, change nothing
-  else s"mirror $mirrorOpts ${q(localDir)} ${q(remoteDir)}"
+  else if pull then s"mirror $mirrorOpts ${q(remoteDir)} ${q(localDir)}"  // DOWNLOAD: remote source -> local dest
+  else s"mirror $mirrorOpts ${q(localDir)} ${q(remoteDir)}"               // UPLOAD: local source -> remote dest
 
 // ssh flags: accept-new pins the host key on first use; PubkeyAuthentication=no +
 // PreferredAuthentications=password force password auth -- otherwise ssh offers all your
@@ -204,6 +210,8 @@ val lftpScript =
 // ---- report our OWN plan (synthesized from localDir/remoteDir -- never from lftp's credential-bearing output) ----
 if check then
   println(s"deployblog: --check  connect to $host and list the login directory (read-only, no changes)")
+else if pull then
+  println(s"deployblog: ${if dryRun then "DRY-RUN " else ""}pull (download)  $host:$remoteDir  ->  $localDir  (additive)")
 else
   val mode = if doDelete then "exact mirror (--delete)" else "additive"
   println(s"deployblog: ${if dryRun then "DRY-RUN " else ""}mirror  $localDir  ->  $host:$remoteDir  ($mode)")
@@ -214,6 +222,10 @@ else
 val (code, captured) = runContained(lftpScript)
 if code == 0 then
   if check then println(captured.trim)   // the remote listing IS the point of --check
+  // --pull: after a real download, list what now sits locally (synthesized from local state -- no lftp/credential output).
+  if pull && !dryRun then
+    val root = Paths.get(localDir)
+    for f <- listLocalFiles(root) do println(s"  have  ${root.relativize(f)}")
   println(s"deployblog: done${if dryRun then " (dry-run: nothing changed)" else "."}")
   // --release: ONLY after a real (non-dry-run) successful upload, stamp the promoted posts deployed.
   if release && !dryRun then
