@@ -130,22 +130,29 @@ Naming these keeps "safe by design" an honest claim rather than a slogan.
 ## Future work
 
 The tools on this page get their narrow authority by construction and review: a `tt` command exposes only the
-operations it was written to expose. A stronger form is possible, where the *type system* proves the bound.
-Scala 3's **capture checking**, still an experimental language feature, tracks capabilities statically. A
-capability is a program value that regulates access to an effect or a resource, and the compiler tracks which
-capabilities each piece of code can reach.
-That turns "this tool is narrow because we wrote it narrowly" into "this tool cannot touch the filesystem, or
-the network, or a secret, because the type checker says so", and it enables *local purity*: proving that a
-sub-computation is side-effect-free, so an agent can process sensitive data with a compiler guarantee that it
-cannot leak.
+operations it was written to expose. A stronger form would have the *type system* prove the bound instead of
+trusting the author to keep it. This is a direction to look into, not something the model does today.
 
-The 2026 paper "Tracking Capabilities for Safer Agents" (linked below) demonstrates exactly this: an agent
-safety harness in which the agent expresses its intentions as code in a capability-safe language (Scala 3 with
-capture checking) instead of calling tools directly, with the type system statically preventing information
+Scala 3's **capture checking**, still an experimental language feature, tracks capabilities statically: a
+capability is a program value that regulates access to an effect or a resource, and the compiler tracks which
+capabilities each piece of code can reach. In principle that could turn "this tool is narrow because we wrote
+it narrowly" into "this tool cannot touch the filesystem, or the network, or a secret, because the type
+checker says so", and it enables *local purity*: proving a sub-computation is side-effect-free, so an agent
+could process sensitive data with a compiler guarantee against leaks.
+
+The 2026 paper "Tracking Capabilities for Safer Agents" (Odersky et al., EPFL; linked below) demonstrates
+this end to end: the agent expresses its intentions as code in a capability-safe language (Scala 3 with
+capture checking) instead of calling tools directly, and the type system statically prevents information
 leakage and malicious side effects at no significant cost to task performance. It formalizes the instinct
-behind this whole page. genscalator already experiments with capture checking
-(`research/experiments/capture-checking/`); making the toolbox's authority statically checkable, rather than
-narrow-by-review, is the natural next step for this model.
+behind this page.
+
+genscalator has early proof-of-concept experiments in this direction
+(`research/experiments/capture-checking/`), but adopting capture checking in the toolbox and in this security
+model is **open work, not done**, and it carries real limits worth stating up front: the feature is
+experimental and still changing; its guarantees cover only effects expressed as typed capabilities, so a
+command that shells out to the real terminal escapes back to the allowlist; and it constrains effects, not the
+correctness of the agent's decisions. So it is a promising direction to study as a complement to the guard and
+the allowlist, not a replacement for them and not a finished part of this model.
 
 ## Go deeper
 
