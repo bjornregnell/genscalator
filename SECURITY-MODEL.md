@@ -149,6 +149,67 @@ agent's reasoning drifted toward designing them around its own in-harness ergono
 on unescaped chars — which would reject BR's own valid regex). **That drift is how a tool quietly starts serving the
 agent instead of the human.** Reject designs that only make sense from inside the harness.
 
+### 3.5 A path constraint CANNOT live in a permission pattern — it is unenforceable, not merely weak
+
+**Never express a path-scoped permission as an allowlist rule. No pattern can hold it.** The permission layer matches
+the **command STRING**; the constraint lives at the **FILESYSTEM** layer, over **RESOLVED** paths. **Resolution
+happens AFTER the match, in a system that has never heard of the rule** — so `..` and symlinks walk straight out of
+any prefix you write:
+
+```
+mkdir -p /home/…/genscalator/../../../../tmp/anything   # satisfies ANY genscalator/-prefixed rule
+Bash(git -C /repo:*)  ⟵  git -C /repo/../../elsewhere   # the same hole in a rule that looks innocent
+```
+
+**⇒ It is not a matter of writing a better pattern. The two layers cannot see each other.**
+
+**This SPLITS §3.3's "guard" row, and the split is the point:**
+
+| guard layer | knows | can hold | example |
+|---|---|---|---|
+| **allowlist / permission pattern** | the command **string** | **SYNTACTIC** invariants only | no `\|`, no `&&` |
+| **the tool** (`tt …`) | **RESOLVED** paths, semantics | **SEMANTIC** invariants | stay inside this worktree |
+
+⚠️ **A semantic invariant parked in the allowlist is not a weak guard — it is a NON-guard, and it looks exactly like
+a real one.** (Same failure shape as `hangover?`, a measurement posing as a judgment.) **The rule: a constraint must
+live at the layer that can evaluate it. Put the check where the facts are.**
+
+**This is also the precise reason `tt git` is safe to allowlist** — and the usual explanation is wrong. **Not**
+because its string is safe: because **the TOOL enforces the invariant after resolution**. The allowlist grants *"run
+this tool"*; the tool decides what is permitted. `tt git mv` (SM134 #9) is the concrete instance: **git refuses paths
+outside the worktree**, so git enforces the containment a pattern cannot express.
+
+> #### ⚠️ The rationale that makes this a RULE and not an observation — the agent GENERATES this risk
+>
+> **Bought by two stalls FIVE MINUTES APART on 2026-07-17** (`mkdir *`, then `mv *` offered as blanket allows), and
+> the honest part is **whose fault they were: the agent's.** Neither was the guard being noisy. Both were the agent
+> reaching for a shell verb **out of habit, for something it did not need** — the **Write tool creates parent
+> directories** (verified: one Write created two dirs, no `mkdir`), and `git mv` moves tracked files.
+>
+> ⇒ **The agent is not merely a consumer of the guard; it is a GENERATOR of the risk the guard exists to contain.**
+> Each avoidable stall puts an **irreversible policy change one keystroke away from a human who is mid-task** (§2.1:
+> stalls are a budget; ALL of them must be minimised, not just the false ones). **Two draws in five minutes.**
+>
+> **And it recurs, which is why the rule may not route through agent recall (§3.3):** the identical shape was logged
+> **7 days earlier** (`guard-suggests-blanket-date-glob-but-tt-chrono-exists-2026-07-10.md` — the harness proposed an
+> over-broad glob while the right tool already existed), and the quoted-arg false positive recurred **3 days** after
+> being logged *and* written into a skill (`36f1532`). ⭐ **Knowing about a shape does not stop it. Only removing the
+> reach does** — which is why this rule's real form is *"the tool holds the check"*, not *"the agent remembers the
+> hazard"*.
+
+**Two dialog defects this exposes, both attacks on the human's attention (the §2 axis):**
+1. **The consent mismatch — LOCAL evidence, GLOBAL grant.** The dialog shows **one** command and takes an answer
+   binding **every** command of that shape, **forever**. The human is not careless when this bites: **the instance
+   shown genuinely IS benign, which is exactly why they say yes.** A blanket allow is an **irreversible policy
+   change elicited by displaying its most innocuous example** — and nothing ever re-arms it, so **guard coverage only
+   ratchets DOWN.**
+2. **The severity mismatch — the affordance does not grade by blast radius.** The *same* offer, same framing, same
+   keystroke, was made for an **additive** `mkdir` and a **destructive** `mv` two minutes apart. **The only thing
+   grading severity in that dialog is the human** — i.e. the mechanism leans on **exactly the faculty §1's threat
+   model says will fail.**
+
+**Full specimen + theory:** `research/wr-data/the-permission-layer-cannot-hold-a-path-constraint-2026-07-17.md`.
+
 ## 4. Standing rules (already load-bearing elsewhere)
 
 - **NEVER blanket-allow `rm` or any destructive/irreversible command.** One-time, shown, human-gated is fine; a

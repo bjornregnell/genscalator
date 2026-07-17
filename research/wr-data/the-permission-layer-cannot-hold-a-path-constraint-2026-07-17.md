@@ -101,9 +101,17 @@ threat model says will fail.**
 
 ---
 
-## 4. What this asks of the security model (SM131, `SECURITY-MODEL.md` §3)
+## 4. ✅ LANDED in the security model as `SECURITY-MODEL.md` §3.5 (2026-07-17)
 
-A candidate guard rule, in the same *"recorded with the mistake that bought it"* style §3 already uses:
+> **⚠️ It was an ORPHAN for ~15 minutes, and BR caught it.** This section originally read *"a **candidate** guard rule
+> for §3"* — i.e. the agent wrote a rule for a document, **into a different document**, and stopped. **Narratively
+> homed, actionably homeless** — the *exact* shape SM132's audit had named an hour earlier (`sm132-substrate-truth-audit-2026-07-17.md`
+> §3), committed by the agent that named it. BR: *"it is now pinned to SECURITY-MODEL.md? or else go do it."*
+> **The audit's rule does not arm the audit's author.** Add it to the tally: *carried ≠ armed*, *hot ≠ armed*, and now
+> **found-and-written-up ≠ armed.** ⇒ Landed at §3.5, with the introspective rationale BR asked for (the agent
+> **generates** this risk), and the two dialog defects (§2, §3) folded in.
+
+The rule as landed, in the same *"recorded with the mistake that bought it"* style §3 already uses:
 
 > **Never express a path constraint as a permission pattern — it is unenforceable, not merely weak.** Move it into a
 > tool that resolves the path and checks containment. *Bought by:* two 2026-07-17 stalls where the harness offered
