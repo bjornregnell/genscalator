@@ -106,7 +106,7 @@ The whole argument fits in one small table, and the useful thing about it is tha
 
 | what you wrote | when do you find out it is wrong? |
 |---|---|
-| **prose** - a comment, a note to yourself, a rule in a document | **never** |
+| **prose** - a comment, a note to yourself, a rule in a document | **maybe never** |
 | **unchecked code** - a bash one-liner, a script the agent generated on the fly | **when it runs, in front of a user, if you are lucky** |
 | **typed code** - a Scala call that has to satisfy the compiler | **before it runs, in seconds, for free** |
 
