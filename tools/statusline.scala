@@ -87,7 +87,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
   // (the agent is cold), so it rendered the HUMAN's 1-minute thinking pause as the AGENT's state, twice in 90
   // minutes (wr-data: nobody-dropped-the-hangover-chip / hangover-chip-fires-on-the-humans-thinking-pause).
   // BR's fix SPLITS them, and each half loses its `?`:
-  //   * the MEASUREMENT -> `idle` on LINE 1 (see render): counted, no threshold, no colour, subject = the FEED.
+  //   * the MEASUREMENT -> `silent` on LINE 1 (see render): counted, no threshold, no colour, subject = the FEED.
   //   * the INFERENCE   -> `hangover` on LINE 2: a DECLARED mode, owned by whoever declares it.
   // The graded-blink restraint the gauge encoded (an alarm is a budget, SM129) is not lost — it is MOOT: a readout
   // never alarms, so it can never cry wolf. Thresholds existed only to guess a hangover; nothing guesses now.
@@ -191,14 +191,14 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
   def render(json: String, nowMs: Long, warn: Double = 80, ctxWarn: Double = 30, dumbZone: Double = 75, autoCompact: Double = 92,
              rotTokens: Option[Long] = None, totTokens: Option[Long] = None, showTot: Boolean = true, humanChars: Option[Long] = None,
              tokWarn: Long = 200_000L, tokDanger: Long = 500_000L, tiredChars: Option[Long] = None,
-             idleSec: Option[Long] = None): String =
+             silentSec: Option[Long] = None): String =
     val o = MiniJson.parse(json).flatMap(_.obj) match
       case Some(m) => m
       case None    => return "" // nothing usable / not an object → empty line, exit 0 (never crash the prompt)
     val segs = scala.collection.mutable.ArrayBuffer[String]()
     segs += sgr("1;38;5;42", "genscalator") // brand prefix (BR: prepend "genscalator")
     segs += sgr("38;5;250", clock(nowMs)) // leading wall clock (light grey)
-    // `idle` — feed inactivity, riding just after the clock (BR, 2026-07-17). LINE-1 CONTRACT: this row is for what
+    // `silent` — feed inactivity, riding just after the clock (BR, 2026-07-17). LINE-1 CONTRACT: this row is for what
     // a MECHANISM MEASURES; line 2 is for what someone DECLARES. So the SURFACE encodes the provenance and no
     // provenance field is needed — the line IS the field.
     //
@@ -211,13 +211,22 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     // agent is cold) and so misattributed the HUMAN's thinking pause as the AGENT's state (wr-data 2026-07-17).
     // The inference now lives on line 2 as a DECLARED `hangover` mode, owned by whoever declares it.
     //
-    // Subject: `idle` describes the FEED, not a person — which is why it cannot misattribute. Nobody is idle; the
-    // feed is.
+    // Subject: `silent` describes the FEED, and that is the whole point of the NAME (BR renamed it from `idle`
+    // 2026-07-17, and the rename is not cosmetic). `idle` attributed a STATE to an unnamed SUBJECT — and got it
+    // wrong exactly when it mattered: while BR was away eating, the agent was NOT idle, it was making tool calls;
+    // and when the agent waits, BR is often NOT idle, he is thinking. `silent` names the MEASUREMENT instead: the
+    // feed has no new records. No subject, so nothing to misattribute. ⭐ The old name needed a comment defending
+    // what it did not mean ("nobody is idle; the feed is") — a name that needs a paragraph of defence is the wrong
+    // name. This one needs none: the feed IS silent. Same lesson as `human-stress` (the only mode that names its
+    // subject and the only one that never went wrong), pushed one step further: do not name the subject correctly,
+    // REMOVE it — the feed is the subject. (wr-data: modes-dont-say-whose-state-2026-07-17.)
     //
     // HONEST LIMIT, recorded at the code: a running command writes NO transcript record, so agent-busy time counts
-    // as idle (the measured 18s specimen). The feed IS quiet, the pair is not. Tolerable ONLY because there is no
-    // threshold and no colour: a readout may say "nothing has landed for 18s"; an alarm may not.
-    idleSec.foreach(s => segs += sgr("38;5;245", s"idle ${formatGapShort(s)}"))
+    // as silence (the measured 18s specimen). The feed IS silent, the pair is not. Tolerable ONLY because there is
+    // no threshold and no colour: a readout may say "nothing has landed for 18s"; an alarm may not. ⚠️ Note the
+    // limit SURVIVES the rename and is not fixed by it — `silent` is honest about the feed, and the feed is still
+    // an imperfect proxy for the pair. It just no longer LIES about whose state it is.
+    silentSec.foreach(s => segs += sgr("38;5;245", s"silent ${formatGapShort(s)}"))
     o.get("model").flatMap(_.obj).foreach: m =>
       m.get("display_name").orElse(m.get("id")).flatMap(_.str).foreach(n => segs += sgr("38;5;45", shortModel(n))) // un-bold so the bold genscalator prefix is the only bold thing
     o.get("context_window").flatMap(_.obj).flatMap(_.get("used_percentage")).flatMap(_.num)
@@ -337,11 +346,13 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       |Segments (left to right):
       |  genscalator         brand prefix
       |  HH:MM:SS            local wall clock
-      |  idle Ns             feed inactivity: now - the last timestamped transcript record. NO `?`:
+      |  silent Ns           feed inactivity: now - the last timestamped transcript record. NO `?`:
       |                      this is COUNTED, not inferred (cf. rot?, which is a proxy and keeps its
       |                      `?`). No threshold, no colour, never hidden — a READOUT, not a gauge.
-      |                      Its subject is the FEED, not a person, so it cannot misattribute. NB a
-      |                      running command writes no record, so agent-busy time counts as idle.
+      |                      Its subject is the FEED, not a person, so it cannot misattribute — and
+      |                      the NAME says so: nobody is "idle" (BR was reading a newspaper; the
+      |                      agent was making tool calls), the FEED is silent. NB a running command
+      |                      writes no record, so agent-busy time counts as silence.
       |  o4.8/1M             abbreviated model (Opus/Sonnet/Fable/Haiku -> o/s/f/h, /ctx suffix)
       |  ctx-fill N%         context-window fill; orange at the compact-dance trigger
       |                      (0.8*Z), red at Z = the dumb-zone threshold (--ctx-warn)
@@ -397,7 +408,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     var tiredChars: Option[Long] = None // human-char `tired?` nudge threshold; None = OFF (opt-in via --tired-chars)
     var noTok      = false // --no-tok: skip the transcript read entirely (no tok gauge)
     var rotOnly    = false // --rot-only: show rot? but DROP the secondary tot gauge (also auto-dropped if narrow)
-    // RETIRED 2026-07-17 with the chip: hangoverSec/Warn/Danger (60s/5min/1h) + their --hangover-* flags. `idle`
+    // RETIRED 2026-07-17 with the chip: hangoverSec/Warn/Danger (60s/5min/1h) + their --hangover-* flags. `silent`
     // has NO threshold, so there is nothing left to tune. Safe to drop: the live config is `tt statusline
     // --mode-line` and never passed them (checked, not assumed).
     //
@@ -457,8 +468,8 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     if !noStatus then println(render(json, nowMs, warn, ctxWarn, dumbZone, autoCompact,
       rotTokens = stats.map(_.sinceWarpTokens), totTokens = stats.map(_.agentTokens), showTot = showTot,
       humanChars = stats.map(_.humanChars), tokWarn = tokWarn, tokDanger = tokDanger, tiredChars = tiredChars,
-      idleSec = gapSec))
-    // LINE 2 is DECLARED-ONLY (BR 2026-07-17): the gap now rides line 1 as `idle`, and there is no derived-chip
+      silentSec = gapSec))
+    // LINE 2 is DECLARED-ONLY (BR 2026-07-17): the gap now rides line 1 as `silent`, and there is no derived-chip
     // argument left to pass — see renderModes.
     if modeLine then println(renderModes(readModes(modesFile)))
     0

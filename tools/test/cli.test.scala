@@ -827,7 +827,7 @@ class CliSuite extends munit.FunSuite:
     assertEquals(StatuslineTool.formatGapShort(303L), "5m")
     assertEquals(StatuslineTool.formatGapShort(42L), "42s")
   }
-  test("TranscriptStats: tracks the last timestamp for the idle gap") {
+  test("TranscriptStats: tracks the last timestamp for the silent gap") {
     val lines = Seq(
       """{"type":"user","timestamp":"2026-07-16T10:00:00.000Z","message":{"content":"hi"}}""",
       """{"type":"queue-operation"}""",                                   // no timestamp -> ignored, not a crash
@@ -839,25 +839,30 @@ class CliSuite extends munit.FunSuite:
   }
   // --- the two-line contract (BR 2026-07-17). LINE 1 = MEASURED by a mechanism; LINE 2 = DECLARED by someone.
   // The split makes the SURFACE encode the provenance, which is why these tests pin WHICH LINE a thing lands on,
-  // not just its text. `idle` replaces the retired `hangover?` chip, which fused a measurement with an inference
+  // not just its text. `silent` replaces the retired `hangover?` chip, which fused a measurement with an inference
   // and so rendered the HUMAN's thinking pause as the AGENT's state.
-  test("render: `idle` rides LINE 1 — counted, NO `?`, no threshold, and it names the FEED not a person") {
-    val line = StatuslineTool.render("""{"model":{"display_name":"Opus"}}""", 1_000_000_000L, idleSec = Some(42L))
-    assert(clue(line).contains("idle 42s"))
-    assert(!clue(line).contains("idle?"))      // `?` marks an INFERRED PROXY (cf. rot?); this is COUNTED, like tot
+  // RENAMED `idle` -> `silent` (BR, 2026-07-17) and the name is load-bearing, so it is pinned by a test: `idle`
+  // attributes a STATE to an unnamed SUBJECT, and was wrong in BOTH directions within one session — the agent was
+  // making tool calls while BR ate (not idle), and BR thinks while the agent waits (not idle either). `silent`
+  // names the MEASUREMENT (the feed has no new records), so there is no subject to misattribute.
+  test("render: `silent` rides LINE 1 — counted, NO `?`, no threshold, and it names the FEED not a person") {
+    val line = StatuslineTool.render("""{"model":{"display_name":"Opus"}}""", 1_000_000_000L, silentSec = Some(42L))
+    assert(clue(line).contains("silent 42s"))
+    assert(!clue(line).contains("silent?"))    // `?` marks an INFERRED PROXY (cf. rot?); this is COUNTED, like tot
     assert(!clue(line).contains("hangover"))   // the inference moved to line 2 as a DECLARED mode
+    assert(!clue(line).contains("idle"))       // the retired NAME must not come back: it named a subject, and lied
   }
-  test("render: `idle` shows at ALL sizes — no threshold, because nothing is being guessed") {
-    // the retired chip was SILENT below 60s, which is what let it pose as a judgment. A readout never hides.
-    assert(clue(StatuslineTool.render("""{}""", 1_000_000_000L, idleSec = Some(0L))).contains("idle 0s"))
-    assert(clue(StatuslineTool.render("""{}""", 1_000_000_000L, idleSec = Some(3L))).contains("idle 3s"))
-    assert(clue(StatuslineTool.render("""{}""", 1_000_000_000L, idleSec = Some(41865L))).contains("idle 11h"))
+  test("render: `silent` shows at ALL sizes — no threshold, because nothing is being guessed") {
+    // the retired chip SHOWED NOTHING below 60s, which is what let it pose as a judgment. A readout never hides.
+    assert(clue(StatuslineTool.render("""{}""", 1_000_000_000L, silentSec = Some(0L))).contains("silent 0s"))
+    assert(clue(StatuslineTool.render("""{}""", 1_000_000_000L, silentSec = Some(3L))).contains("silent 3s"))
+    assert(clue(StatuslineTool.render("""{}""", 1_000_000_000L, silentSec = Some(41865L))).contains("silent 11h"))
     // absent only when there is genuinely nothing to measure (a fresh transcript, no timestamped record)
-    assert(!clue(StatuslineTool.render("""{}""", 1_000_000_000L, idleSec = None)).contains("idle"))
+    assert(!clue(StatuslineTool.render("""{}""", 1_000_000_000L, silentSec = None)).contains("silent"))
   }
-  test("render: `idle` sits just after the clock, before the model (BR's layout)") {
-    val line = StatuslineTool.render("""{"model":{"display_name":"Opus"}}""", 1_000_000_000L, idleSec = Some(42L))
-    assert(clue(line).indexOf("idle") < clue(line).indexOf("Opus"))
+  test("render: `silent` sits just after the clock, before the model (BR's layout)") {
+    val line = StatuslineTool.render("""{"model":{"display_name":"Opus"}}""", 1_000_000_000L, silentSec = Some(42L))
+    assert(clue(line).indexOf("silent") < clue(line).indexOf("Opus"))
   }
   test("renderModes: `hangover` is a DECLARED mode — no `?`, and it leads the agent-state group") {
     val line = StatuslineTool.renderModes(Seq("solo", "rot-vigil", "hangover"))
