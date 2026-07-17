@@ -45,6 +45,82 @@ is the same one a good agent already applies to itself: **the friction should ma
 easily undo should cost more than one tap, and it should cost even more when the thing you are tapping was put in front
 of you by a machine.
 
+<!-- AGENT-DRAFT 2026-07-17 (BR to revoice / approve / place): the SEQUEL to the tasty-tab beat above, which ends on a
+hypothetical ("if that same tasty tab had let the bombers go"). This beat makes it real: same slip, stakes that
+actually bite, already a near-miss on record. BR's own words are quoted verbatim below and should stay verbatim.
+Agent introspection enters as QUOTED DATA, not as BR's voice (skill §3). Sources:
+research/wr-data/the-permission-layer-cannot-hold-a-path-constraint-2026-07-17.md (§2, §3, §3b);
+SECURITY-MODEL.md §3.5; research/wr-data/harness-ux.md (the mouse-mode race, 2026-07-06); SM093 (the env-var
+trade-off); notes/workflow/confirmations-log.md (the 2026-07-07 near-miss + "never click always");
+research/wr-data/stalls-are-countable-8-all-MED-empirical-2026-07-16.md (the stall budget, 8 stalls all MED). -->
+
+### The click that was not a decision
+
+The tab key was funny. This one is not, and it is the same slip.
+
+When the guard stops a risky command, I get a little menu. Option 1 says yes, just this once. Option 3 says no.
+And option 2, sitting politely between them, says *"Yes, and don't ask again for: `mv *`"*. One keystroke. One
+click. Forever.
+
+Here is what I told the agent, and I will leave it as I typed it:
+
+> *"mouse clicks often are just raise-window attempts that could be based on human false hypothesis that window is
+> not in scope and then BANG human has allowed `*`"*
+
+Think about what that actually is. I believe the window is not in focus. It is. I click to raise it, which is a
+thing I do a hundred times a day without thinking, because it is not a decision, it is a twitch. The click lands on
+option 2. I have just permanently disarmed a safety guard, as a side effect of being wrong about which window I was
+looking at.
+
+I never decided anything. There was no moment where I weighed a risk. And I cannot even catch myself doing it,
+because you cannot notice a false belief about focus: if you could notice it, you would not hold it.
+
+The keyboard is not innocent either. A confirmation prompt can steal your typing focus mid-sentence, and then your
+next character is a menu choice. The number 2 is a character I type in ordinary sentences. Enter is a key I press
+several times a minute. We have both of those in the log already, filed under the polite heading "input races",
+which now looks like a very gentle name for it.
+
+So the friction is exactly backwards. Writing a commit message takes me a minute of care. Permanently switching off
+a guard takes one careless tap. The thing I cannot undo is cheaper than the thing I can.
+
+**What we did about it.** Not vigilance. I turned the mouse off. There is an environment variable, we worked out the
+trade-off (I kept the scroll wheel and gave up plain drag-select, which turned out to be a fine trade), and now the
+clicky thingy cannot reach the menu at all. That is the whole fix, and I want to be honest about why it works: not
+because I became careful, but because I removed my own reach. You cannot willpower your way out of a twitch.
+
+And here is the part I did not expect, which the agent put its finger on when we wrote this up:
+
+> **"The human is not a guard. The human is another reflex-driven system that needs guards."**
+
+We had been telling ourselves a comfortable story. When we ask what survives when the agent's memory resets, our
+answer has three items: the guard, the tools, and the human. Listing the human there quietly implies that the human
+is the reliable one, the grown-up in the room. My mouse says otherwise. I needed a structural fix against my own
+hand, for exactly the same reason the agent needs one against its own habits. The pair is symmetric. Neither of us
+can be trusted at the moment of action, and neither of us can fix that from the inside at that moment. That is not a
+sad conclusion. It is a design brief.
+
+**The asks, in order of how much I want them.**
+
+First, and this is the big one: *the safest confirmation is the one that never appears.* Every prompt is a fresh
+chance for me to be tired and tap the wrong thing. When the guard is sure a command is wrong, it should just say no
+to the agent and let the agent fix it and retry. That costs me nothing, because I never see it. We measured a full
+day of my sessions: eight stops, every one of them a kind the agent could have simply been told about. Eight chances
+to be dumb, for nothing.
+
+Second: the permanent option should not live in the same menu as the temporary one, one keystroke apart, with no
+difference in weight. It is offered in the same breath for `mkdir` (which makes a folder) as for `mv` (which can
+quietly write over your work). The menu does not know the difference. Only I do, and I am the tired one.
+
+Third, and this is what we now do by hand: an always-allow rule should be **written down and reviewed**, like code,
+not collected by accident in the middle of a task. Our own rule for this is four words long, and I recommend it:
+**never click always.**
+
+**[figure: TODO, real screenshot]** The actual guard menu with option 2 reading *"Yes, and don't ask again for:
+`mv *`"*, showing how little separates one-time from forever. This is the whole post in one image, and it is
+ephemeral: grab it next time a stall fires. See
+[`the-permission-layer-cannot-hold-a-path-constraint-2026-07-17.md`](../research/wr-data/the-permission-layer-cannot-hold-a-path-constraint-2026-07-17.md)
+and [`SECURITY-MODEL.md`](../SECURITY-MODEL.md) §3.5 for why the menu cannot be fixed by wording alone.
+
 **The high-level frame (BR — why these bugs hit disproportionately hard).** A human embarks on a big endeavour and
 pours in energy, feelings, hours, sleepless nights — to do things with AI that were *never possible before*. The
 stakes feel high and the work often feels irreproducible. So when a UX bug breaks the flow, it is not a minor
