@@ -16,6 +16,19 @@ The plan is to move these things to a new repos tentatively called
 
 * `genscalator-media` : here we can have the stubbs and rafts evolving stuff into punlishable units, e.g. the `tt ssg` static site generator tool will bring blogs to genscalator.ai/blog  etc. Also the pods ideas go here. 
 
+#### Agent's counter argument on the big refactor of outsourcing research etc
+
+Direction is sound: it is the same audience-relative-home principle we use for notes (a thing's home is where its audience looks), applied at repo scale. But the costs are real and worth weighing first:
+
+* **The decisive question up front: how does a tool-only user actually GET the tools — clone the repo, or install a plugin/package?** If they install a plugin, they never see `research/` `blog/` `pod-casts/`, so the "cruft/noise" problem is cosmetic and the split may not earn its cost. If they clone, it is real. Answer this before deciding.
+* **Cross-repo links break the substrate.** Today everything is densely wiki-linked and relative-pathed (blog <-> research <-> foundations). Split into 3 repos and those become broken relative paths or absolute URLs, and the dangling-pointer discipline gets much harder to enforce across repo boundaries.
+* **Atomic cross-cutting commits fragment.** One insight today often lands in blog + research + SECURITY-MODEL in a single commit with one narrative. After the split that becomes 2-3 commits in 2-3 repos. Given how cross-cutting the insights are, that is a real workflow tax.
+* **Mirror surface multiplies** (each new repo needs the github/gitlab/coursegit mirrors too).
+* **Middle path worth considering:** the declutter benefit may be reachable with a clean top-level split INSIDE one repo (a lean tools+skills root, with `research/` and `media/` as clearly-secondary dirs) without paying the cross-repo-link tax — UNLESS the answer to the first question is "they clone", in which case the hard split earns its cost.
+* **Interacts with the planned `genscalator.ai/blog` -> `bjornregnell.se/genscalator/blog` URL move:** if `blog/` migrates to a `genscalator-media` repo the URL story changes, so plan the two together, not separately.
+
+**TODO decide later; we probably wont do this until genscalator release v1.0.0-M1 anyway.**
+
 ### Reason 2: insource issues as first class git citizen
 
 For sovereignty reasons we mirror genscalator from codeberg to e.g. github and gitlab. But any current [forge](https://en.wikipedia.org/wiki/Forge_(software)) has its own issue-workflow story and api.
