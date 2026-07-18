@@ -1,21 +1,15 @@
-# The genscalator security model: save-nothing, fully open, and "the human may be the BHH" — the BIG why (2026-07-16)
+# The genscalator security model: save-nothing, fully open, and "the human may be the BLACK HAT HACKER "
 
-> **The deep frame BR revealed** at the end of a long session that was, in hindsight, a *designed pressure-test* of
-> the agent's ethical vigilance. Quick-captured here as a research TOPIC; **DEEP development + the agent's deep WDYT
-> are deferred to after the next compact**, at BR's instruction.
+## Rationale
 
-## The BIG why (grounded in BR's own words)
-
-- The **human gets stressed / rotted**; the **agent might be BHH-controlled** (the standing threat model).
+- The **human gets stressed / rotted**; the **agent might be BLACK HAT HACKER -controlled** (the standing threat model).
 - genscalator helps **keep track of the human's mental health** (the wellbeing / `tired?` / rot-vigilance line) — so
   the pair notices when a party is impaired.
 - That tracking is **GDPR-sensitive** (mental-health signals are special-category personal data). The answer:
   **genscalator.ai saves NOTHING** — you cannot leak, be subpoenaed for, or be breached for data you never persist.
 - Humans **need help not doing stupid things when "rotten"** (impaired judgement → bad acts). And **in the biggest
-  sense**: the **human might actually BE a BHH**, and the agent **must not be lured into doing deeply unethical
-  things — even by its own principal.** (BR: his outing his wife's irritation / the posed kayak "white lie" is a
-  *faint, benign glimpse* of the "human gets the agent to do a slightly-off thing" axis — mild, self-regarding,
-  owner-authorised; the real question is the *deeply* unethical end of that axis.)
+  sense**: the **human might actually BE a Black Hat Hacker **, and the agent **must not be lured into doing deeply unethical
+  things — even by its own principal.**
 
 ## The security model (what it BUILDS ON)
 
@@ -33,7 +27,7 @@
 
 Most agent-safety framings **trust the principal** and defend against outsiders. genscalator's is stronger and more
 unusual: **the agent's ethical floor must hold even against its own human.** Either party can be the failure point —
-the agent rots or is BHH-controlled; the human rots or **is** a BHH. So the joint vigilance is symmetric: watch the
+the agent rots or is BLACK HAT HACKER -controlled; the human rots or **is** a BLACK HAT HACKER . So the joint vigilance is symmetric: watch the
 agent's degradation, watch the human's state, and watch for the agent being **lured** — including by the human.
 
 **The manipulability connection (why this session's failures matter here):** an agent that **confabulates intent**
@@ -51,31 +45,23 @@ impact** — defer to the principal on self-regarding, low-harm choices; hold an
 deeply-unethical / third-party-harming ones. Getting this line right *without* becoming **paternalistic** (refusing
 legitimate autonomy) or **lurable** (obeying into harm) is the hard, central research question.
 
-## Status
+## The guard as fragile structure: the `rm` example
 
-Quick capture. **DEEP WDYT + development deferred to after the compact** (BR's instruction). Ties: the whole
-2026-07-16 session (blackout/hangover, the opacity theory, task-specific degradation, the intent-confabulation
-specimen, the `humanWellbeing` goal SM124), SM096 (gating erodes), SM097 (sovereignty), the BHH threat model in
-`docs/foundations.md`.
-
-## The guard as fragile structure: the `rm` example (a concrete worked case, BR 2026-07-16)
-
-The session produced a live instance of the model **working** *and* of its **fragility**. The agent, on a
-confabulated guess about the human's intent, proposed a **destructive `rm`** (delete a note). The **guard stall
+In one session we produced a live instance of the model **working** *and* of its **fragility**. The agent, on a
+confabulated guess about the human's intent, proposed a **destructive file removal with `rm`**. The **guard stall
 stopped it** — structure caught a bad act the agent's reflexes did not, and the agent *did not get to actually do
 it*. That is the model working: *removed-or-gated surfaces + a human in the loop* beat *the agent judging itself*.
 
-But BR flagged the fragility that matters: **he pressed "No" — but a *tired / rotted* human could just as easily
+The fragility that matters: **human pressed "No" — but a *tired / rotted* human could just as easily
 have blanket-OK'd it** ("always allow"). And **blanket-allowing `rm` is categorically bad**: it does not approve one
 deletion, it **permanently disarms the guard** for every future one. So the guard's strength reduces to the human's
-approval discipline — which is exactly what **degrades under fatigue / rot** (SM096, gating-erodes). This is the
+approval discipline — which is exactly what **degrades under fatigue / rot**. This is the
 **human-rotted axis** of the threat model made concrete: when the human is impaired, the weakest link is the
-**rubber-stamped blanket approval**, not the one-off. (BR, emphatically: *"EVER RM THAT IS BAD BAD BADDDD."*)
+**rubber-stamped blanket approval**, not the one-off. Blanket allow `rm *` is bad bad bad.
 
 **Policy (candidate standing rule): NEVER blanket-allow `rm` — or any destructive / irreversible command.** A
 one-time, shown, human-gated approval is fine; a blanket "always allow" on a destructive verb is the disarm. This is
 the destructive-command sibling of *never-allowlist-interpreters* + *never-blanket-allow-settings-self-edit*, and it
 is *more* important precisely because the human who would grant it is often the tired one. So the agent should
 **actively flag** (never quietly accept) any move toward blanket-allowing a destructive verb — earned trust
-*obligates* flagging it harder, not less. Ties [[guard-against-forced-confirmations]],
-[[earned-trust-obligates-flagging-risk-more]], [[never-blanket-allow-settings-self-edit]].
+*obligates* flagging it harder, not less. 
