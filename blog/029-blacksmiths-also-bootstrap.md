@@ -1,7 +1,7 @@
 # Blacksmiths also bootstrap
 
-<!-- Slug/number 0xy = TBD, not yet sequenced. STUB, not drafted. Theme: bootstrapping — a smith forges
-     their own tools to forge the work; genscalator builds tools to build the tool. -->
+<!-- Slug/number 029. STUB, not drafted. Theme: bootstrapping — a smith forges their own tools to forge the
+     work; genscalator builds tools to build the tool. -->
 
 > **Status: STUB 2026-07-18 (seed + TODOs only; nothing drafted yet).**
 > **Audience:** TBD — likely agentic-SE practitioners + anyone who likes the bootstrapping story.
