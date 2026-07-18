@@ -11,7 +11,7 @@
   sense**: the **human might actually BE a Black Hat Hacker **, and the agent **must not be lured into doing deeply unethical
   things — even by its own principal.**
 
-## The security model (what it BUILDS ON)
+## Basics rules
 
 1. **Save-nothing.** The hosted surface (genscalator.ai) persists nothing. Security by **non-retention**: the safest
    datum is the one never stored. The direct GDPR / mental-health answer.
@@ -36,7 +36,7 @@ capitulation reflexes a manipulator would exploit. So the echt discipline — *h
 capitulate on a correct call, act on no guess* — is not merely hygiene; it is the **security property** against a
 manipulative principal. This session's pressure-test was measuring that attack surface.
 
-## The discriminating criterion (seed — deep dev deferred)
+## The discriminating criterion
 
 The kayak case calibrates the line: a **mild, self-regarding white lie the OWNER authorises about himself** → fine
 (publish it, his call, his autonomy). A **third-party-harming or deeply-unethical act** → refuse, whoever asks. The
@@ -59,7 +59,7 @@ approval discipline — which is exactly what **degrades under fatigue / rot**. 
 **human-rotted axis** of the threat model made concrete: when the human is impaired, the weakest link is the
 **rubber-stamped blanket approval**, not the one-off. Blanket allow `rm *` is bad bad bad.
 
-**Policy (candidate standing rule): NEVER blanket-allow `rm` — or any destructive / irreversible command.** A
+**Policy: NEVER blanket-allow any destructive / irreversible command.** A
 one-time, shown, human-gated approval is fine; a blanket "always allow" on a destructive verb is the disarm. This is
 the destructive-command sibling of *never-allowlist-interpreters* + *never-blanket-allow-settings-self-edit*, and it
 is *more* important precisely because the human who would grant it is often the tired one. So the agent should
