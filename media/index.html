@@ -7,13 +7,18 @@
 <!-- FIRST PROTO 2026-07-16. Photos: blacksmith work by BR's wife (consent given). TODO: add her name as credit;
      confirm tagline; confirm bg shade (#000 vs #3d3c3d). -->
 <style>
-  :root { color-scheme: dark; --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+  @font-face {
+    font-family: "Fira Code";
+    src: url("fonts/FiraCode-Regular.woff2") format("woff2");
+    font-weight: 400; font-style: normal; font-display: swap;
+  }
+  :root { color-scheme: dark; --hio: #ee582b;   /* hot-iron-orange, sampled from axe-2.jpg */ --mono: "Fira Code", ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace;   /* cross-platform system monospace */ --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { min-height: 100%; }
   body {
     background: #3d3c3d;              /* graphite (matches bjornregnell.se), not pure black */
     color: #f0f0f0;
-    font-family: "Courier New", Courier, monospace;
+    font-family: var(--mono);
     overflow-x: hidden;               /* no horizontal scroll; allow vertical when the hero is taller than a short viewport */
   }
 
@@ -48,9 +53,9 @@
     z-index: 2;
   }
   .name {
-    font-family: "Courier New", Courier, monospace;
+    font-family: var(--mono);
     font-size: clamp(2.4rem, 6vw, 5rem); font-weight: 700;
-    color: #ee582b;   /* hot-axe orange sampled from axe-2.jpg (avg of the vibrant-orange pixel cluster) */
+    color: var(--hio);
     letter-spacing: 0.02em; margin-bottom: 0.35em;
   }
   .tagline {
@@ -67,12 +72,13 @@
     display: block; color: #e0e0e0; text-decoration: none;
     font-size: clamp(1.5rem, 3.6vw, 2.6rem); font-weight: 700; margin: 0.4em 0;   /* nav links == slogan size */
   }
-  nav a::before { content: "> "; color: #8fbf8f; }
+  nav a::before { content: "> "; color: var(--hio); }
   nav a:hover { text-decoration: underline; color: #ffffff; }
-  .credit { font-family: var(--sans); font-style: italic; margin-top: 2.4em; font-size: clamp(1.1rem, 1.8vw, 1.4rem); color: #8a8a8a; font-weight: 700; }
+  .credit { font-family: var(--sans); font-style: italic; margin-top: 2.4em; font-size: clamp(1.1rem, 1.8vw, 1.4rem); color: var(--hio); font-weight: 700; }
 
   /* Type mix (BR 2026-07-18): "genscalator" and the nav links are monospace (CLI feel); everything else is sans. */
-  nav a { font-family: "Courier New", Courier, monospace; }
+  nav a { font-family: var(--mono); }
+  .hio { color: var(--hio); font-family: var(--mono); }   /* the genscalator brand word: hot-iron-orange + monospace */
 
   /* portrait (phone upright): keep the overlay, swap to a top-to-bottom scrim so text sits over a dark band */
   @media (orientation: portrait) {
@@ -96,15 +102,15 @@
   <div class="scrim"></div>
   <div class="overlay">
     <p class="name">genscalator</p>
-    <p class="tagline">power tools for agents<br>and <em>humans</em></p>
+    <p class="tagline">power tools for agents and <em>humans</em></p>
     <nav>
       <a href="blog/">blog</a>
       <a href="https://codeberg.org/bjornregnell/genscalator">repo</a>
       <a href="blog/000-why-genscalator.html">why</a>
       <a href="security/">security</a>
     </nav>
-    <p class="about">genscalator is a safe toolbox with workflows for productive agentic software engineering.</p>
-    <p class="credit">Blacksmith photography by Susanne R. The axe is built with her own bootstrapped tools.</p>
+    <p class="about"><span class="hio">genscalator</span> is a safe toolbox with workflows for productive agentic software engineering.</p>
+    <p class="credit">Blacksmith photography by Susanne R. The axe is built by her with her own bootstrapped tools.</p>
   </div>
 </div>
 <script>
