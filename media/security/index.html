@@ -9,15 +9,15 @@
 <style>
   :root { color-scheme: dark; --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { height: 100%; }
+  html, body { min-height: 100%; }
   body {
     background: #3d3c3d;              /* graphite (matches bjornregnell.se), not pure black */
     color: #f0f0f0;
     font-family: "Courier New", Courier, monospace;
-    overflow: hidden;                 /* single-screen hero */
+    overflow-x: hidden;               /* no horizontal scroll; allow vertical when the hero is taller than a short viewport */
   }
 
-  .hero { position: relative; width: 100vw; height: 100dvh; overflow: hidden; }
+  .hero { position: relative; width: 100vw; min-height: 100dvh; }   /* min-height, no overflow:hidden, so it GROWS when the text is taller than a wide-but-short viewport */
 
   /* carousel: all photos stacked, object-fit cover, crossfaded by toggling .show */
   .carousel { position: absolute; inset: 0 0 0 40%; }   /* photo occupies the RIGHT 60%; left 40% = bg (see .scrim) */
@@ -42,9 +42,9 @@
   }
 
   .overlay {
-    position: absolute; top: 0; left: 0; height: 100%;
+    position: relative;                /* in-flow (not absolute) so the text drives the hero's height and sits at the TOP-left */
     max-width: 46vw; padding: 6vh 4vw;
-    display: flex; flex-direction: column; justify-content: center;
+    display: flex; flex-direction: column; justify-content: flex-start;
     z-index: 2;
   }
   .name {
@@ -70,6 +70,9 @@
   nav a:hover { text-decoration: underline; color: #ffffff; }
   .credit { font-family: var(--sans); font-style: italic; margin-top: 2.4em; font-size: clamp(0.95rem, 1.55vw, 1.2rem); color: #8a8a8a; }
 
+  /* EXPERIMENT (BR 2026-07-18): force ALL text to monospace to compare vs the mixed serif/sans. Revert = delete this one rule. */
+  .name, .tagline, .about, nav a, .credit { font-family: "Courier New", Courier, monospace; }
+
   /* portrait (phone upright): keep the overlay, swap to a top-to-bottom scrim so text sits over a dark band */
   @media (orientation: portrait) {
     .carousel { inset: 0; }   /* full-bleed photo in portrait; the left-20% panel is a landscape-only idea */
@@ -92,7 +95,7 @@
   <div class="scrim"></div>
   <div class="overlay">
     <p class="name">genscalator security</p>
-    <p class="tagline">Power tools for agents:<br>smarter, safer, faster.</p>
+    <p class="tagline">Power tools for agents.</p>
     <nav>
       <a href="https://codeberg.org/bjornregnell/genscalator/src/branch/main/SECURITY-MODEL.md">security model</a>
       <a href="../">home</a>
