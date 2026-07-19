@@ -1256,9 +1256,9 @@ class CliSuite extends munit.FunSuite:
     assert(clue(out).contains("cost $12")) // whole dollars, no cents (12.34 -> 12)
     assert(!clue(out).contains("cost $12.34")) // cents dropped
     assert(clue(out).contains("ctx-fill 41%"))
-    assert(clue(out).contains("lim/reset"))   // the shared gray legend, once
+    assert(clue(out).contains("lim·reset"))   // the shared gray legend, once (middot separators, BR 2026-07-19)
     assert(clue(out).contains("5h 30%"))       // 5h cluster (no resets_at provided here)
-    assert(clue(out).contains("wk 14%/3d"))    // wk cluster: % and reset joined by the slash
+    assert(clue(out).contains("wk 14%·3d"))    // wk cluster: % and reset joined by the middot
   }
   test("statusline: missing rate_limits degrades gracefully (shows what's present, no crash)") {
     val (code, out, _) = run("statusline", """{"model":{"id":"haiku"},"cost":{"total_cost_usd":0.5}}""")
@@ -1266,7 +1266,7 @@ class CliSuite extends munit.FunSuite:
     assert(clue(out).contains("haiku"))
     assert(clue(out).contains("cost $0")) // 0.50 truncates to whole dollars -> $0
     assert(!clue(out).contains("wk")) // no rate_limits → no weekly segment
-    assert(!clue(out).contains("lim/reset")) // legend suppressed when neither limit is present
+    assert(!clue(out).contains("lim·reset")) // legend suppressed when neither limit is present
   }
   test("statusline: empty/invalid JSON prints an empty line at exit 0 (never breaks the prompt)") {
     val (code, out, _) = run("statusline", "not json at all")
@@ -1278,29 +1278,29 @@ class CliSuite extends munit.FunSuite:
     val resetsMs = now + 2 * 86400_000L // 2 days later, already in MS (> 1e12)
     val json = s"""{"rate_limits":{"seven_day":{"used_percentage":50,"resets_at":$resetsMs}}}"""
     val (_, out, _) = run("statusline", json, "--now-ms", now.toString)
-    assert(clue(out).contains("wk 50%/2d")) // % and reset joined; MS resets_at auto-detected to 2d
-    assert(clue(out).contains("lim/reset")) // legend present
+    assert(clue(out).contains("wk 50%·2d")) // % and reset joined; MS resets_at auto-detected to 2d
+    assert(clue(out).contains("lim·reset")) // legend present
   }
   test("statusline: five_hour resets_at renders a fine h/m countdown") {
     val now = 1_000_000_000_000L
     val resetSec = now / 1000L + (2 * 3600 + 34 * 60) // 2h34m later, in SECONDS
     val json = s"""{"rate_limits":{"five_hour":{"used_percentage":68,"resets_at":$resetSec}}}"""
     val (_, out, _) = run("statusline", json, "--now-ms", now.toString)
-    assert(clue(out).contains("5h 68%/2h34m")) // fine h/m countdown joined to the % by the slash
+    assert(clue(out).contains("5h 68%·2h34m")) // fine h/m countdown joined to the % by the middot
   }
   test("statusline: a usage limit at/above the warn threshold turns BOTH its % and its reset red") {
     val now = 1_000_000_000_000L
     val resetSec = now / 1000L + 3600 // 1h later
     val json = s"""{"rate_limits":{"five_hour":{"used_percentage":85,"resets_at":$resetSec}}}"""
     val (_, out, _) = run("statusline", json, "--now-ms", now.toString)
-    assert(clue(out).contains("38;5;203m5h 85%/1h0m")) // % AND reset sit inside ONE red span (reset reddens with its limit)
+    assert(clue(out).contains("38;5;203m5h 85%·1h0m")) // % AND reset sit inside ONE red span (reset reddens with its limit)
   }
   test("statusline: --warn makes the threshold configurable (85% stays non-red under --warn 90)") {
     val now = 1_000_000_000_000L
     val resetSec = now / 1000L + 3600
     val json = s"""{"rate_limits":{"five_hour":{"used_percentage":85,"resets_at":$resetSec}}}"""
     val (_, out, _) = run("statusline", json, "--now-ms", now.toString, "--warn", "90")
-    assert(clue(out).contains("38;5;214m5h 85%/1h0m")) // 85% is orange (>=70) but NOT red under --warn 90; reset shares the hue
+    assert(clue(out).contains("38;5;214m5h 85%·1h0m")) // 85% is orange (>=70) but NOT red under --warn 90; reset shares the hue
     assert(!clue(out).contains("38;5;203m5h"))       // the 5h cluster (incl its reset) is not red
   }
   test("statusline: ctx-fill reds at the dumb-zone threshold (Z, default 30%), oranges at 0.8*Z, green below") {
@@ -1334,25 +1334,25 @@ class CliSuite extends munit.FunSuite:
   test("statusline: prepends a HH:MM:SS wall clock, and abbreviates the model label") {
     val (_, out, _) = run("statusline", """{"model":{"display_name":"Fable 5 (1M context)"}}""", "--now-ms", "1000000000000")
     assert("""\d\d:\d\d:\d\d""".r.findFirstIn(out).isDefined, clue(out)) // a HH:MM:SS clock is present
-    assert(clue(out).contains("f5/1M")) // Fable 5 (1M context) -> f5/1M (compact SM117 form)
+    assert(clue(out).contains("f5·1M")) // Fable 5 (1M context) -> f5·1M (compact SM117 form; middot 2026-07-19)
     val (_, out2, _) = run("statusline",
       """{"model":{"display_name":"Fable 5"},"context_window":{"used_percentage":11,"context_window_size":1000000}}""",
       "--now-ms", "1000000000000")
-    assert(clue(out2).contains("f5/1M")) // measured context_window_size feeds the suffix even with a bare name (2026-07-19)
+    assert(clue(out2).contains("f5·1M")) // measured context_window_size feeds the suffix even with a bare name (2026-07-19)
   }
 
   // --- SM117 status-line gauges: pure helpers + transcript parsing + tok/tired? segments ---
   test("statusline SM117 pure helpers: shortModel / formatTokens / tokGauge") {
     import StatuslineTool.*
-    assertEquals(shortModel("Opus 4.8 (1M context)"), "o4.8/1M")
+    assertEquals(shortModel("Opus 4.8 (1M context)"), "o4.8·1M")
     assertEquals(shortModel("Fable 5"), "f5")
     assertEquals(shortModel("Sonnet 5"), "s5")
     assertEquals(shortModel("Haiku 4.5"), "h4.5")
     // measured ctx size (context_window.context_window_size) beats the name-parse; name stays the fallback.
     // Regression 2026-07-19: F5's display_name is bare "Fable 5", so the name-parsed "/1M" vanished at the warp.
-    assertEquals(shortModel("Fable 5", Some(1_000_000L)), "f5/1M")
-    assertEquals(shortModel("Fable 5", Some(200_000L)), "f5/200k")
-    assertEquals(shortModel("Opus 4.8 (1M context)", Some(200_000L)), "o4.8/200k") // measured wins over the name
+    assertEquals(shortModel("Fable 5", Some(1_000_000L)), "f5·1M")
+    assertEquals(shortModel("Fable 5", Some(200_000L)), "f5·200k")
+    assertEquals(shortModel("Opus 4.8 (1M context)", Some(200_000L)), "o4.8·200k") // measured wins over the name
     assertEquals(formatCtxSize(1_000_000L), "1M")   // nameplate: round millions stay whole, not "1.0M"
     assertEquals(formatCtxSize(1_500_000L), "1.5M")
     assertEquals(formatCtxSize(200_000L), "200k")
@@ -1377,8 +1377,8 @@ class CliSuite extends munit.FunSuite:
                           tempC = Some(55), jvmCount = 2, jvmRssKb = 1048576L, bloopRssKb = None)
     val outH = renderBox(healthy)
     assert(clue(outH).contains("box healthy"))
-    assert(clue(outH).contains("mem 32%/10.0G/31.0G")) // leading % = the number the colour grades on; G on both (BR)
-    assert(clue(outH).contains("load 25%/2.0avg/8cores")) // label stays `load`: it IS loadavg/cores, not a cpu%; every number self-describes
+    assert(clue(outH).contains("mem 32%·10.0G·31.0G")) // leading % = the number the colour grades on; G on both (BR)
+    assert(clue(outH).contains("load 25%·2.0avg·8cores")) // label stays `load`: it IS loadavg over cores, not a cpu%; every number self-describes
     assert(clue(outH).contains("temp 55C"))
     assert(clue(outH).contains("jvm 2x1.0G"))
     assert(!clue(outH).contains("bloop"))
@@ -1394,7 +1394,7 @@ class CliSuite extends munit.FunSuite:
     // disk segment: leading % is USED (grades the colour), the absolute is FREE; joins the severity vote
     val withDisk = healthy.copy(diskFreeKb = 115343360L, diskTotalKb = 524288000L) // 110G free of 500G = 78% used
     val outD = renderBox(withDisk)
-    assert(clue(outD).contains("disk 78%/110Gfree")) // whole G, no decimal (BR)
+    assert(clue(outD).contains("disk 78%·110Gfree")) // whole G, no decimal (BR)
     assert(clue(outD).contains("box healthy"))                       // 78% < 80 stays green
     assert(clue(renderBox(healthy.copy(diskFreeKb = 78643200L, diskTotalKb = 524288000L)))
       .contains("box huffing"))                                      // 85% used -> orange flips the lead

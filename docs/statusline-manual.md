@@ -14,7 +14,7 @@ your prompt.
 ## What a full line looks like
 
 ```
-genscalator  14:23:07  silent 3s  f5/1M  ctx-fill 41%  rot?↑120k  tot↑180k  lim/reset 5h 30%/4h17m  wk 14%/3d  cost $12
+genscalator  14:23:07  silent 3s  f5·1M  ctx-fill 41%  rot?↑120k  tot↑180k  lim·reset 5h 30%·4h17m  wk 14%·3d  cost $12
 ```
 
 Segments are separated by two spaces, in a fixed left-to-right order. If the line is wider than your
@@ -28,12 +28,12 @@ falls off first by design.
 | **`genscalator`** | bold green | The plugin plus statusline are active. If this prefix is **absent**, genscalator is not wired up. | Nothing — it is your at-a-glance "am I live?" indicator. |
 | **`14:23:07`** | light grey | Local wall clock, HH:MM:SS. **It freezes while the agent is working and ticks again when control returns to you.** | Use the freeze/tick as a turn signal: ticking clock = your move in the ballgame; frozen = the agent has the ball. |
 | **`silent 3s`** | dim grey | Feed inactivity: now minus the last timestamped transcript record. COUNTED, not inferred — no threshold, no colour, no alarm; its subject is the FEED, not a person. NB a running command writes no transcript record, so agent-busy time counts as silence. | Nothing — a readout of how long since anything landed in the feed. |
-| **`f5/1M`** | cyan | The model, abbreviated (`Opus 4.8` → `o4.8`, `Fable 5` → `f5`, `Sonnet 5` → `s5`, `Haiku 4.5` → `h4.5`; the family letter is lower-case so `o` does not read as a zero), with the context-window size as a `/1M` suffix — taken from the measured `context_window.context_window_size` field, falling back to a size spelled in the display name. | Confirm you are on the model (and window) you intend. |
+| **`f5·1M`** | cyan | The model, abbreviated (`Opus 4.8` → `o4.8`, `Fable 5` → `f5`, `Sonnet 5` → `s5`, `Haiku 4.5` → `h4.5`; the family letter is lower-case so `o` does not read as a zero), with the context-window size as a `·1M` suffix (middot, not `/`: a capacity tag, not a ratio) — taken from the measured `context_window.context_window_size` field, falling back to a size spelled in the display name. | Confirm you are on the model (and window) you intend. |
 | **`ctx-fill 41%`** | green (→ orange at the compact trigger ~24%, **red at the dumb-zone ceiling ~30%**) | How full the context window is. | This is the rot axis. Orange means you have crossed the **compact-dance trigger** (~0.8·Z) — start consolidating; **red means you are at the smart-zone ceiling Z and risking the dumb zone** (context rot) — do the compact dance now (commit, then compact) rather than letting it auto-compact mid-thought. Note this reds *early* (~30% of a 1M window), not near 100% — a full-but-rotting window is the danger, not a technically-full one. |
 | **`rot?↑120k  tot↑180k`** | graded (rot?) / dim (tot) | Agent output tokens SINCE the last warp/compact (`rot?↑` — the current-window rot proxy; the `?` marks it inferred, the `↑` marks output-FLOW) and for the whole session (`tot↑`; dropped on a narrow terminal). | Read `rot?↑` as "how hard has the agent worked this window" — a second rot axis besides `ctx-fill`; see the do-not-reconcile note below the grading section. |
-| **`lim/reset`** | dim grey | Shared legend for the two usage-limit clusters that follow. **Its slash mirrors the value slash** — `lim/reset` ⟷ `5h 30%/4h17m` reads *left of slash = limit % used, right = time until reset*. Shown only when at least one limit is present. | Nothing — it is the column header telling you how to read the `%/reset` pairs. |
-| **`5h 30%/4h17m`** | purple (→ orange ≥ 70%, **red at/above the warn threshold, default 80%**); the **whole cluster** — the % and its reset — shares the one hue | Your rolling 5-hour session limit: **% used** `/` **fine countdown** (h+m) to reset. The reset half shows only if CC sends `rate_limits.five_hour.resets_at`; with no %, just the window + reset show, ungraded. | When it reddens you are near the session cap — ease off, checkpoint, or wrap up. The reset reddens **with** its limit (same cluster colour), so cap-and-relief read as one unmistakable block. |
-| **`wk 14%/3d`** | rosy (→ orange ≥ 70%, **red at/above the warn threshold**); whole cluster shares the hue | Your weekly (7-day) limit: **% used** `/` **coarse countdown** (m/h/d) to reset. | The slow-moving budget. Reddens near the weekly cap; a distant reset then means pace the rest of the week. |
+| **`lim·reset`** | dim grey | Shared legend for the two usage-limit clusters that follow. **Its middot mirrors the value middot** — `lim·reset` ⟷ `5h 30%·4h17m` reads *left of the dot = limit % used, right = time until reset*. (The separator was `/` until 2026-07-19; the middot reads easier and `/` wrongly suggested division or "per".) Shown only when at least one limit is present. | Nothing — it is the column header telling you how to read the `%·reset` pairs. |
+| **`5h 30%·4h17m`** | purple (→ orange ≥ 70%, **red at/above the warn threshold, default 80%**); the **whole cluster** — the % and its reset — shares the one hue | Your rolling 5-hour session limit: **% used** `·` **fine countdown** (h+m) to reset. The reset half shows only if CC sends `rate_limits.five_hour.resets_at`; with no %, just the window + reset show, ungraded. | When it reddens you are near the session cap — ease off, checkpoint, or wrap up. The reset reddens **with** its limit (same cluster colour), so cap-and-relief read as one unmistakable block. |
+| **`wk 14%·3d`** | rosy (→ orange ≥ 70%, **red at/above the warn threshold**); whole cluster shares the hue | Your weekly (7-day) limit: **% used** `·` **coarse countdown** (m/h/d) to reset. | The slow-moving budget. Reddens near the weekly cap; a distant reset then means pace the rest of the week. |
 | **`cost $12`** | blue | Notional API-equivalent cost of this session, in whole dollars (cents dropped to save space): **what the tokens this conversation has burned would cost if billed at pay-as-you-go API rates.** It is cumulative across the session (and survives a compact), and is *not* tied to your monthly billing period. | On a fixed monthly plan this is **not** a real charge — it is a token-consumption meter, the least interesting number, which is why it is placed last and drops off first on a narrow terminal. |
 
 ### The gauge grading (the three limit/fill segments)
@@ -86,16 +86,16 @@ An optional third row of **measured box health**, read directly from `/proc` and
 print — nothing breaks.
 
 ```
-box huffing  mem 45%/14.1G/31.2G  load 64%/5.1avg/8cores  temp 63C  disk 78%/110Gfree  jvm 4x5.1G  bloop 5.0G
+box huffing  mem 45%·14.1G·31.2G  load 64%·5.1avg·8cores  temp 63C  disk 78%·110Gfree  jvm 4x5.1G  bloop 5.0G
 ```
 
 | Segment | Means | Grading |
 |---|---|---|
 | **`box healthy` / `box huffing` / `box swamped`** | The lead verdict: the WORST severity across the segments, computed from the same thresholds that colour them — not a new inference, just the colour semantics lifted into the name. (Each name is exactly 11 characters, so the three row-leads — `genscalator`, `gs mode set`, `box healthy` — align.) | green / orange / red = flips exactly when a segment leaves green |
-| **`mem 45%/14.1G/31.2G`** | Memory used / total; the leading % is the exact number the colour grades on. "Used" = total − available, the kernel's reclaimable-aware figure (matches `free`'s *available*, not *free*). | orange ≥ 70%, red ≥ 90% |
-| **`load 64%/5.1avg/8cores`** | The 1-minute load average over the core count: "5.1 cores' worth of demand on 8 cores". Load measures **demand** (tasks running or waiting, including disk-wait), not CPU busy-time — hence the label `load`, not `cpu`. A true cpu% would need a two-sample delta (SM165). | orange ≥ 70%, red ≥ 90% |
+| **`mem 45%·14.1G·31.2G`** | Memory used and total; the leading % is the exact number the colour grades on. "Used" = total − available, the kernel's reclaimable-aware figure (matches `free`'s *available*, not *free*). | orange ≥ 70%, red ≥ 90% |
+| **`load 64%·5.1avg·8cores`** | The 1-minute load average over the core count: "5.1 cores' worth of demand on 8 cores". Load measures **demand** (tasks running or waiting, including disk-wait), not CPU busy-time — hence the label `load`, not `cpu`. A true cpu% would need a two-sample delta (SM165). | orange ≥ 70%, red ≥ 90% |
 | **`temp 63C`** | The hottest thermal zone in °C (the fan story). | orange ≥ 70, red ≥ 85 |
-| **`disk 78%/110Gfree`** | Root filesystem: the leading % is space USED (what the colour grades on); the absolute is space FREE (what you act on). | orange ≥ 80%, red ≥ 90% (disks run fuller than mem) |
+| **`disk 78%·110Gfree`** | Root filesystem: the leading % is space USED (what the colour grades on); the absolute is space FREE (what you act on). | orange ≥ 80%, red ≥ 90% (disks run fuller than mem) |
 | **`jvm 4x5.1G`** | Running JVM count × their combined RSS. Informational (dim, ungraded) — JVMs are the heavy processes on a dev box, but their weight already counts inside `mem`. | ungraded |
 | **`bloop 5.0G`** | Shown only when a bloop compile daemon is running (matched by cmdline substring): its RSS. The known wedge-and-drain villain gets its own chip so its regrowth is visible early. | orange ≥ 2G, red ≥ 6G |
 
@@ -124,7 +124,7 @@ restart). There is no runtime toggle; presence of the key is the switch.
 
 Nothing is wrong — the tool only prints a segment when its field is present in the JSON CC sent:
 
-- The `rate_limits.*` clusters (`5h`, `wk`, with their `%/reset` pairs under the `lim/reset` legend) are a Claude Pro/Max
+- The `rate_limits.*` clusters (`5h`, `wk`, with their `%·reset` pairs under the `lim·reset` legend) are a Claude Pro/Max
   feature; on other tiers they simply do not appear.
 - A completely empty or non-JSON stdin prints a **blank line** (exit 0) — it will never break your prompt.
 - The leading clock is only added once the JSON parses, so a blank line really is blank (no stray clock).

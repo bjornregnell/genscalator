@@ -5,7 +5,7 @@
 
 // statusline — format the Claude Code `statusLine` stdin JSON into ONE compact line (SM039).
 // Claude Code pipes a JSON object to the configured statusLine command's stdin each turn; this reads it and prints:
-//   genscalator  14:23:07  o4.8/1M  ctx-fill 41%  5h-lim 30%  wk-lim 14% reset 3d  cost $12
+//   genscalator  14:23:07  o4.8·1M  ctx-fill 41%  lim·reset  5h 30%·2h5m  wk 14%·3d  cost $12
 //   (leading HH:MM:SS wall clock; ANSI-coloured segments; two-space separators; ctx is a FILL gauge, 5h/wk LIMITs)
 // Every segment is INDEPENDENTLY GUARDED: a field absent from the JSON simply omits its segment, so the tool
 // degrades gracefully across CC versions / subscription tiers (rate_limits are Claude Pro/Max only) and NEVER
@@ -149,16 +149,17 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     val secOfDay = math.floorMod((nowMs + offsetMs) / 1000L, 86400L)
     f"${secOfDay / 3600}%02d:${(secOfDay % 3600) / 60}%02d:${secOfDay % 60}%02d"
 
-  /** Compact ctx-window SIZE for the model tag's "/1M" suffix: 1000000 -> "1M", 200000 -> "200k". Round
+  /** Compact ctx-window SIZE for the model tag's "·1M" suffix: 1000000 -> "1M", 200000 -> "200k". Round
     * millions stay whole ("1M", not "1.0M" — it is a nameplate capacity, not a measurement of flow). PURE. */
   def formatCtxSize(n: Long): String =
     if n >= 1_000_000 then
       if n % 1_000_000 == 0 then s"${n / 1_000_000}M" else f"${n / 1e6}%.1fM"
     else s"${n / 1000}k"
 
-  /** Compact model tag (SM117): "Opus 4.8 (1M context)" -> "o4.8/1M"; "Fable 5" -> "f5"; "Sonnet 5" -> "s5";
+  /** Compact model tag (SM117): "Opus 4.8 (1M context)" -> "o4.8·1M"; "Fable 5" -> "f5"; "Sonnet 5" -> "s5";
     * "Haiku 4.5" -> "h4.5". The family initial is LOWER-CASE so "o" does not read as a zero (BR). The context
-    * window becomes a "/1M" suffix, PREFERRING the MEASURED `context_window.context_window_size` from the
+    * window becomes a "·1M" suffix (middot, not '/': it is a capacity tag, not a ratio — BR 2026-07-19),
+    * PREFERRING the MEASURED `context_window.context_window_size` from the
     * status JSON (`ctxSize`) over a "(1M ...)" parsed from the display name. Why (2026-07-19): Opus announced
     * itself as "Opus 4.8 (1M context)" so the name-parse worked, but Fable's display_name is bare "Fable 5"
     * and the suffix silently vanished at the model-warp — a nameplate fact should come from the measured field
@@ -176,7 +177,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     val ctx = ctxSize.map(formatCtxSize)
       .orElse(raw"\((\d+[MmKk])\b".r.findFirstMatchIn(name).map(_.group(1).toUpperCase))
     if ver.isEmpty then name.trim // no version to compact (e.g. a bare id like "haiku") — keep it recognisable
-    else ctx.map(c => s"$letter$ver/$c").getOrElse(s"$letter$ver")
+    else ctx.map(c => s"$letter${ver}·$c").getOrElse(s"$letter$ver") // ${ver} braced: '·' is a legal Scala identifier char and would glue onto a bare $ver
 
   /** Relative "time until reset" from an epoch that may be in SECONDS or MILLISECONDS (auto-detected). PURE. */
   def relReset(resetsAt: Long, nowMs: Long): String =
@@ -260,14 +261,16 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     if showTot then totTokens.foreach(t => segs += sgr("38;5;245", s"tot↑${formatTokens(t)}"))
     val rl = o.get("rate_limits").flatMap(_.obj)
     // Compact rate-limit cluster (BR 2026-07-17): factor the twice-repeated "lim"/"reset" words into ONE gray
-    // legend `lim/reset`, whose slash MIRRORS the value slash `P%/reset` — the legend IS the column header. Each
-    // window's whole cluster (`5h P%/reset`, `wk P%/reset`) takes its own gauge colour, so a near-cap limit reds as
+    // legend `lim·reset`, whose middot MIRRORS the value middot `P%·reset` — the legend IS the column header.
+    // (Separator changed '/'→'·' 2026-07-19, BR: the middot reads easier and '/' wrongly suggests division/"per";
+    // same sweep across the model tag and the box line.) Each
+    // window's whole cluster (`5h P%·reset`, `wk P%·reset`) takes its own gauge colour, so a near-cap limit reds as
     // one solid block (the reset reddens WITH its limit, for free) and all of one window's info shares a hue. Both
-    // halves stay independently guarded: a missing % or reset simply drops from the cluster (no orphan slash).
+    // halves stay independently guarded: a missing % or reset simply drops from the cluster (no orphan separator).
     def limCluster(label: String, base: String, usedP: Option[Double], reset: Option[String]): Option[String] =
       Option.when(usedP.isDefined || reset.isDefined):
         val body = (usedP.map(pct), reset) match
-          case (Some(p), Some(r)) => s"$label $p/$r"
+          case (Some(p), Some(r)) => s"$label ${p}·$r" // ${p} braced: '·' is a legal identifier char
           case (Some(p), None)    => s"$label $p"
           case (None, Some(r))    => s"$label $r"    // CC sent no %: show the window + its reset, ungraded
           case (None, None)       => label            // unreachable under the Option.when guard
@@ -283,7 +286,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
         mWk.flatMap(_.get("resets_at")).flatMap(_.num).map(r => relReset(r.toLong, nowMs)))
     ).flatten
     // `lim/reset` legend glued to its first column by ONE space (BR); two-space `sep` between the two clusters.
-    if clusters.nonEmpty then segs += sgr("38;5;245", "lim/reset") + " " + clusters.mkString(sep)
+    if clusters.nonEmpty then segs += sgr("38;5;245", "lim·reset") + " " + clusters.mkString(sep)
     // cost LAST (least interesting on a fixed monthly plan) + blue, un-graded (no threshold meaning here)
     o.get("cost").flatMap(_.obj).flatMap(_.get("total_cost_usd")).flatMap(_.num)
       .foreach(c => segs += sgr("38;5;39", s"cost $$${c.toLong}")) // whole dollars, TRUNCATED (cents are noise on a fixed monthly plan; saves horiz space; never overstates)
@@ -412,11 +415,11 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     // what the mechanism measures (the idle->silent lesson). A true cpu% needs a 2-sample /proc/stat delta.
     // Lead + first segment join with a SINGLE space (BR 2026-07-19): 11-char lead + one space = column 2
     // aligns with lines 1-2 (same rule as the brand+clock join on line 1).
-    segs += lead + " " + sgr(colour(sev(memPct), "38;5;114"), s"mem ${pct(memPct)}/${gb(b.memUsedKb)}/${gb(b.memTotalKb)}")
-    segs += sgr(colour(sev(loadPct), "38;5;110"), f"load ${pct(loadPct)}/${b.load1}%.1favg/${b.cores}cores") // every number self-describes (BR asked twice what the middle one was); NOT "(8tot)" — `tot` is taken by line 1's token count
+    segs += lead + " " + sgr(colour(sev(memPct), "38;5;114"), s"mem ${pct(memPct)}·${gb(b.memUsedKb)}·${gb(b.memTotalKb)}")
+    segs += sgr(colour(sev(loadPct), "38;5;110"), f"load ${pct(loadPct)}·${b.load1}%.1favg·${b.cores}cores") // every number self-describes (BR asked twice what the middle one was); NOT "(8tot)" — `tot` is taken by line 1's token count
     b.tempC.foreach(t => segs += sgr(colour(tempSev, "38;5;114"), s"temp ${t}C"))
     // leading % = USED (what the colour grades on); the absolute is FREE (what the human thinks in) — BR 2026-07-19
-    if b.diskTotalKb > 0 then segs += sgr(colour(diskSev, "38;5;114"), s"disk ${pct(diskPct)}/${b.diskFreeKb / 1048576}Gfree") // whole G, truncated (never overstates free) — BR: no .x precision here
+    if b.diskTotalKb > 0 then segs += sgr(colour(diskSev, "38;5;114"), s"disk ${pct(diskPct)}·${b.diskFreeKb / 1048576}Gfree") // whole G, truncated (never overstates free) — BR: no .x precision here
     if b.jvmCount > 0 then segs += sgr("38;5;245", s"jvm ${b.jvmCount}x${gb(b.jvmRssKb)}") // dim readout; its weight already counts inside mem
     // At RED the segment carries an advisory `restart?` — the `?` per the SM118 grammar: an INFERRED
     // suggestion from a threshold proxy, never an action (a render path must not kill; T3 design). The
@@ -443,7 +446,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       |                      the NAME says so: nobody is "idle" (BR was reading a newspaper; the
       |                      agent was making tool calls), the FEED is silent. NB a running command
       |                      writes no record, so agent-busy time counts as silence.
-      |  o4.8/1M             abbreviated model (Opus/Sonnet/Fable/Haiku -> o/s/f/h, /ctx suffix)
+      |  o4.8·1M             abbreviated model (Opus/Sonnet/Fable/Haiku -> o/s/f/h, ·ctx suffix)
       |  ctx-fill N%         context-window fill; orange at the compact-dance trigger
       |                      (0.8*Z), red at Z = the dumb-zone threshold (--ctx-warn)
       |  rot? N / tot N      rot? = agent tokens SINCE the last warp (compact/clear) = current-window rot,
