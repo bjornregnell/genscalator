@@ -142,7 +142,27 @@
       "WebFetch(domain:chatgpt.com)",
       "Bash(/home/bjornr/git/berg/bjornregnell/muntabot-synch-introprog/genscalator/bin/tt text *)",
       "Bash(/home/bjornr/git/berg/bjornregnell/genscalator/tt text *)",
-      "WebFetch(domain:blog.vincentqiao.com)"
+      "WebFetch(domain:blog.vincentqiao.com)",
+      "Skill(genscalator:gs-dwim)",
+      "Skill(genscalator:reqt-lang)",
+      "Skill(br-blog-ass)",
+      "Skill(genscalator:scala-style)",
+      "WebFetch(domain:scala-cli.virtuslab.org)",
+      "WebFetch(domain:scala-native.org)",
+      "Bash(gcc *)",
+      "Bash(/home/bjornr/git/berg/bjornregnell/genscalator/tmp/nativebench/noop-native *)",
+      "Bash(/home/bjornr/git/berg/bjornregnell/genscalator/tmp/nativebench/noop-native-nogc *)",
+      "Bash(/home/bjornr/git/berg/bjornregnell/genscalator/tmp/nativebench/noop-native-relsize *)",
+      "Bash(/home/bjornr/git/berg/bjornregnell/genscalator/tmp/nativebench/noop-jvm *)",
+      "Bash(/home/bjornr/git/berg/bjornregnell/genscalator/tmp/nativebench/noop-jvm-graal *)",
+      "Bash(time go build -o /home/bjornr/git/berg/bjornregnell/genscalator/tmp/nativebench/noop-go /home/bjornr/git/berg/bjornregnell/genscalator/tmp/nativebench/noop.go)",
+      "Bash(time rustc -O /home/bjornr/git/berg/bjornregnell/genscalator/tmp/nativebench/noop.rs -o /home/bjornr/git/berg/bjornregnell/genscalator/tmp/nativebench/noop-rs)",
+      "Bash(rustc *)",
+      "Bash(zig version *)",
+      "Bash(time zig build-exe /home/bjornr/git/berg/bjornregnell/genscalator/tmp/nativebench/noop.zig -O ReleaseFast -femit-bin=/home/bjornr/git/berg/bjornregnell/genscalator/tmp/nativebench/noop-zig)",
+      "WebFetch(domain:claude.ai)",
+      "Bash(/tmp/claude-1000/-home-bjornr-git-berg-bjornregnell-muntabot-synch-introprog/db4af88e-126a-4b07-908f-c695de0d8aa0/scratchpad/native-probe/noop-native *)",
+      "Skill(genscalator:research-methods)"
     ],
     "deny": [
       "Bash(git rm *)",
@@ -160,13 +180,31 @@
       "Bash(tt forge release-create *)"
     ]
   },
-  "statusLine": { "type": "command", "command": "tt statusline --mode-line" },
   "hooks": {
     "PreToolUse": [
-      { "matcher": "Bash", "hooks": [ { "type": "command", "command": "tt guardcheck hook" } ] }
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "tt guardcheck hook"
+          }
+        ]
+      }
     ],
     "SessionStart": [
-      { "hooks": [ { "type": "command", "command": "tt hangover hook --threshold-sec 10" } ] }
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "tt hangover hook --threshold-sec 10"
+          }
+        ]
+      }
     ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "tt statusline --mode-line --box-line"
   }
 }
