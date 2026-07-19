@@ -60,7 +60,7 @@ gracefully). The per-command behaviour is specified below.
 - **`gs status box on` / `off` / (bare = status)** — toggle the **box line** (line 3 of the statusline, SM163:
   MEASURED box health read directly from /proc + /sys, no subprocess — lead chip `box healthy` / `box huffing` /
   `box swamped` = the worst segment severity, each name exactly 11 chars so the three row-leads align; segments
-  `mem 45%/14.1G/31.2G`, `load 64%/5.1avg/8cores`, `temp 63C`, `jvm 4x5.1G`, and a `bloop 5.0G` chip when a
+  `mem 45%/14.1G/31.2G`, `load 64%/5.1avg/8cores`, `temp 63C`, `disk 78%/110Gfree`, `jvm 4x5.1G`, and a `bloop 5.0G` chip when a
   bloop JVM is present; Linux-only, silently absent elsewhere). Same settings mechanism as the mode line, via
   the `--box-line` flag on the statusLine command: `on` = ensure the flag, `off` = remove it, bare = report.
   Sensitive settings edit — SHOW the exact change, human-gated, reload via `/hooks`. All three lines toggle

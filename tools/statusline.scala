@@ -373,7 +373,8 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
   object BoxStats:
     /** One gathered snapshot of the box. PURE data; `renderBox` renders it (testable without /proc). */
     final case class BoxInfo(memUsedKb: Long, memTotalKb: Long, load1: Double, cores: Int,
-                             tempC: Option[Int], jvmCount: Int, jvmRssKb: Long, bloopRssKb: Option[Long])
+                             tempC: Option[Int], jvmCount: Int, jvmRssKb: Long, bloopRssKb: Option[Long],
+                             diskFreeKb: Long = 0, diskTotalKb: Long = 0) // 0 total = no disk segment
     /** MemTotal + MemAvailable (kB) from /proc/meminfo content. "Used" = total - available (the kernel's own
       * reclaimable-aware figure — matches what `free` calls available, unlike total - free). PURE. */
     def parseMemInfo(s: String): Option[(Long, Long)] =
@@ -427,7 +428,13 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
         load           <- readFile(java.nio.file.Path.of("/proc/loadavg")).flatMap(parseLoadAvg)
       yield
         val (jc, jr, br) = jvmScan()
-        BoxInfo(total - avail, total, load, Runtime.getRuntime.availableProcessors, readTempC(), jc, jr, br)
+        val (dFree, dTot) = // root filesystem; JDK FileStore, no /proc needed. Guarded like everything else.
+          try
+            val fs = java.nio.file.Files.getFileStore(java.nio.file.Path.of("/"))
+            (fs.getUsableSpace / 1024, fs.getTotalSpace / 1024)
+          catch case _: Throwable => (0L, 0L)
+        BoxInfo(total - avail, total, load, Runtime.getRuntime.availableProcessors, readTempC(), jc, jr, br,
+                diskFreeKb = dFree, diskTotalKb = dTot)
 
   /** The box line. Severity 0/1/2 (green/orange/red) per segment from explicit thresholds; the lead chip is
     * the MAX severity, so the name flips healthy -> huffing -> swamped exactly when a segment leaves green.
@@ -444,7 +451,9 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     val loadPct  = 100.0 * b.load1 / b.cores
     val tempSev  = b.tempC.map(t => if t >= 85 then 2 else if t >= 70 then 1 else 0).getOrElse(0)
     val bloopSev = b.bloopRssKb.map(r => if r >= 6L * 1048576 then 2 else if r >= 2L * 1048576 then 1 else 0).getOrElse(0)
-    val overall  = List(sev(memPct), sev(loadPct), tempSev, bloopSev).max
+    val diskPct  = if b.diskTotalKb > 0 then 100.0 * (b.diskTotalKb - b.diskFreeKb) / b.diskTotalKb else 0.0
+    val diskSev  = if diskPct >= 90 then 2 else if diskPct >= 80 then 1 else 0 // disks run fuller than mem: 80/90
+    val overall  = List(sev(memPct), sev(loadPct), tempSev, bloopSev, diskSev).max
     val lead = overall match // 11 chars each, aligning with "genscalator" / "gs mode set" (BR 2026-07-19)
       case 2 => sgr("1;38;5;203", "box swamped")
       case 1 => sgr("1;38;5;214", "box huffing")
@@ -456,6 +465,8 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     segs += sgr(colour(sev(memPct), "38;5;114"), s"mem ${pct(memPct)}/${gb(b.memUsedKb)}/${gb(b.memTotalKb)}")
     segs += sgr(colour(sev(loadPct), "38;5;110"), f"load ${pct(loadPct)}/${b.load1}%.1favg/${b.cores}cores") // every number self-describes (BR asked twice what the middle one was); NOT "(8tot)" — `tot` is taken by line 1's token count
     b.tempC.foreach(t => segs += sgr(colour(tempSev, "38;5;114"), s"temp ${t}C"))
+    // leading % = USED (what the colour grades on); the absolute is FREE (what the human thinks in) — BR 2026-07-19
+    if b.diskTotalKb > 0 then segs += sgr(colour(diskSev, "38;5;114"), s"disk ${pct(diskPct)}/${b.diskFreeKb / 1048576}Gfree") // whole G, truncated (never overstates free) — BR: no .x precision here
     if b.jvmCount > 0 then segs += sgr("38;5;245", s"jvm ${b.jvmCount}x${gb(b.jvmRssKb)}") // dim readout; its weight already counts inside mem
     b.bloopRssKb.foreach(r => segs += sgr(colour(bloopSev, "38;5;245"), s"bloop ${gb(r)}"))
     segs.mkString(sep)
@@ -502,8 +513,9 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       |  --box-line          ALSO emit the box line (line 3, SM163: MEASURED box health from
       |                      /proc + /sys — lead chip "box healthy"/"box huffing"/"box swamped"
       |                      = worst segment severity; mem used/total, 1-min load / cores, max
-      |                      thermal temp, JVM count + total RSS, a bloop chip when a bloop JVM
-      |                      is present. Linux-only; silently absent elsewhere)
+      |                      thermal temp, root-disk used% + free space, JVM count + total RSS,
+      |                      a bloop chip when a bloop JVM is present. Linux-only; silently
+      |                      absent elsewhere)
       |  --no-status         suppress line 1 (e.g. show ONLY the mode line)
       |  --modes-file F      the declared-modes state file (default ~/.claude/gs-modes)
       |

@@ -1391,6 +1391,14 @@ class CliSuite extends munit.FunSuite:
     val swamped = healthy.copy(bloopRssKb = Some(10905190L))
     assert(clue(renderBox(swamped)).contains("box swamped"))
     assert(clue(renderBox(healthy.copy(memUsedKb = 30408704L))).contains("box swamped"))
+    // disk segment: leading % is USED (grades the colour), the absolute is FREE; joins the severity vote
+    val withDisk = healthy.copy(diskFreeKb = 115343360L, diskTotalKb = 524288000L) // 110G free of 500G = 78% used
+    val outD = renderBox(withDisk)
+    assert(clue(outD).contains("disk 78%/110Gfree")) // whole G, no decimal (BR)
+    assert(clue(outD).contains("box healthy"))                       // 78% < 80 stays green
+    assert(clue(renderBox(healthy.copy(diskFreeKb = 78643200L, diskTotalKb = 524288000L)))
+      .contains("box huffing"))                                      // 85% used -> orange flips the lead
+    assert(!clue(outH).contains("disk"))                             // no disk data -> no segment
     // the three leads are exactly "genscalator".length so the row-leads align (BR 2026-07-19)
     assertEquals("box healthy".length, "genscalator".length)
     assertEquals("box huffing".length, "genscalator".length)
