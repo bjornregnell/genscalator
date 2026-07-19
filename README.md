@@ -3,14 +3,14 @@
 ## *Power tools for agents: smarter, safer, faster.*
 
 <p align="center">
-  <img src="media/img/awareness-1-cold.png" alt="genscalator's three awareness lines in Claude Code at a cold start: the introspection line (clock, model, context-fill 21%, usage limits, cost), the mode line with declared modes ColdStart, SmartZone and TokSpend, and the box line showing machine health" width="100%">
+  <img src="media/img/awareness-1-cold.png" alt="genscalator's three awareness lines in Claude Code at a cold start: the introspection line (clock, model, context-fill 5%, usage limits, cost), the mode line with declared modes ColdStart, SmartZone and TokSpend, and the box line showing machine health" width="100%">
 </p>
 
 The above image shows the genscalator awareness lines: 
 
 * The first line is the *introspection line* with important measured data and metrics. The second line is the *mode line* with the currently declared joint human-agent modes. The third line is the *box line* with the measured health of the machine itself.
 * In this session the agent has just been warp-started cold: the hand-off note (in genscalator called a *baton*) told the fresh agent to declare `ColdStart` (fresh process, not yet re-calibrated) and `SmartZone` (a fresh context window, low fill, sharp judgment), while `TokSpend` says the pair has token headroom to spend. 
-* Context-fill is low (21%), and the box line already hints at trouble ahead: the compile server is growing (`bloop 2.6G`) and the box is `huffing`.
+* Context-fill is low (5%), and the box line already hints at trouble ahead: the compile server is growing (`bloop 3.2G`) and the box is `huffing`.
 
 What do we mean with 
 * **smarter?** By introspection, genscalator tries to stay in the smart zone, aiming to stay away from the dumb zone and decrease the probability of agent mistakes.
