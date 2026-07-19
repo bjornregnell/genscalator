@@ -59,10 +59,13 @@ When you generate **Scala**, you get extra help from the bundled Scala skills (`
 
 Make sure you have the prerequisites above. In Claude Code, run:
 ```
-/plugin marketplace add https://codeberg.org/bjornregnell/genscalator.git
+/plugin marketplace add bjornregnell/genscalator
 /plugin install genscalator@bjornregnell
 /reload-plugins
 ```
+The short form installs from the GitHub mirror (kept in sync on every commit). The canonical
+Codeberg repo works too: `/plugin marketplace add https://codeberg.org/bjornregnell/genscalator.git`
+
 Then verify with **`/skills`** (you should see `tt-toolbox`,
 `scala-style`, and the rest of the set). If the skills do not show up yet, restart Claude Code and check again. 
 

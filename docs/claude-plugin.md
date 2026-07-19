@@ -22,14 +22,17 @@ Still required on the user's machine (plugins can't install dependencies): **`sc
 
 ## Install
 ```
-/plugin marketplace add https://codeberg.org/bjornregnell/genscalator.git
+/plugin marketplace add bjornregnell/genscalator
 /plugin install genscalator@bjornregnell
 ```
-**Use the full Codeberg URL with the `.git` suffix:**
-- The short `owner/repo` form of `/plugin marketplace add` resolves to **github.com**, so it would not
-  find a Codeberg-hosted repo.
-- The **`.git` suffix** tells Claude Code to *clone* the repo (so it finds `.claude-plugin/marketplace.json`
-  inside it) rather than treating the URL as a direct link to a hosted `marketplace.json`.
+**Why the short form works:**
+- The short `owner/repo` form of `/plugin marketplace add` resolves to **github.com**, and the GitHub
+  mirror `github.com/bjornregnell/genscalator` is pushed on every commit, so it is always current
+  (and github.com has steadier uptime than codeberg.org).
+- The canonical Codeberg repo also works, via the full URL:
+  `/plugin marketplace add https://codeberg.org/bjornregnell/genscalator.git`. Here the **`.git` suffix**
+  tells Claude Code to *clone* the repo (so it finds `.claude-plugin/marketplace.json` inside it) rather
+  than treating the URL as a direct link to a hosted `marketplace.json`.
 
 The install token is **`<plugin>@<marketplace>`** — here the plugin `genscalator` (its `name` in
 `plugin.json`) from the marketplace `bjornregnell` (its `name` in `marketplace.json`). It is *not* the
