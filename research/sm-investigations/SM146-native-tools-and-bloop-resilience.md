@@ -21,14 +21,15 @@ and the permission gate. Resilience = break that coupling. The three threads att
 
 The toolbox is ~35 single-file `scala-cli` scripts (`tools/*.scala`), deliberately **JDK-leaning** per
 [[dependency-preference-cascade]] (JDK-first): `MiniJson` is hand-rolled (ujson de-dep'd, SM112), but several
-tools lean hard on the JDK stdlib — `web.scala` (`java.net.http`), `serv.scala` (an HTTP server), `svg.scala` /
-the image work (`javax.imageio`, `java.awt`), file walking (`java.nio`). That JDK-dependence is the hinge of
-the choice:
+tools lean hard on the JDK stdlib — `web.scala` (`java.net.http`), `serv.scala` (an HTTP server), ~~`svg.scala` /
+the image work (`javax.imageio`, `java.awt`)~~ **[CORRECTED 2026-07-19, see the T4 addendum below: a fresh grep
+finds NO `javax.imageio`/`java.awt` in `tools/` except one vendored `java.awt.Color` helper — svg.scala emits SVG
+text]**, file walking (`java.nio`). That JDK-dependence is the hinge of the choice:
 
 | | **GraalVM native-image** | **Scala Native** |
 |---|---|---|
 | Input | JVM bytecode → AOT native binary | Scala → LLVM → native |
-| JDK libs | **Full** (`java.net.http`, `javax.imageio`, `java.awt`, nio all work) | **Partial** — no AWT/ImageIO, HTTP needs a SN lib; big porting cost |
+| JDK libs | **Full** (`java.net.http`, nio all work; ~~`javax.imageio`, `java.awt`~~ not actually used, per the 07-19 correction below) | **Partial** — no AWT/ImageIO (moot per the 07-19 correction), HTTP needs a SN lib; porting cost now mostly HTTP |
 | Reflection/resources | needs `reflect-config`/`resource-config` (some tools use reflection-ish JSON) | limited |
 | Startup | ~ms (no JVM, no bloop) | ~ms (no JVM, no bloop) |
 | Build cost | heavy (minutes/binary), per-OS/arch | lighter, per-OS/arch, but requires LLVM toolchain |
@@ -82,7 +83,9 @@ it is still a destructive-command shape — whether the *agent* may run it unatt
    resilience win (keeps the gate alive under a wedge) for the least porting risk.
 2. **Add a bloop-independent `tt doctor` + restart recipe** (bash or native) — detection + the one-liner.
 3. **Defer full-toolbox native-image** to a CI matrix program; adopt per-tool where cold-start cost bites.
-4. **Scala Native: not recommended** for this toolbox while it stays JDK-first (AWT/ImageIO/HTTP porting cost).
+4. **Scala Native: not recommended** for this toolbox while it stays JDK-first (HTTP-client porting cost; the
+   AWT/ImageIO half of this rationale FELL with the 07-19 correction below — the recommendation stands on the
+   HTTP + JDK-first grounds alone, and is weaker than originally stated).
 
 ## Addendum 2026-07-19 — T4 graal-for-all: box inventory + executable plan (agent-drafted AFK, no builds run)
 
@@ -101,7 +104,8 @@ build loud instead of shipping.
   `--native-image` build to the **25.0.1** distribution instead of whatever default resolved 17.0.9.
 - **System JDKs (sdkman):** Temurin 11/17/21/24/25; `current -> 25.0.2-tem`. Plain JVM assembly path healthy.
 - **AWT surface of the toolbox is ONE file:** a fresh grep over `tools/` finds `java.awt` only in
-  `tools/reqt-vendored/01-Settings.scala:24` (`java.awt.Color` constants for reqt syntax colouring).
+  `tools/reqt-vendored/01-Settings.scala:24` (a `java.awt.Color` constructor helper, `def JCol`, feeding the
+  reqt syntax-colour constants on the lines below it).
   **Correction to this note's Thread (a) table premise:** the 07-18 text says `svg.scala`/image work uses
   `javax.imageio`/`java.awt` — a fresh grep finds **no** `javax.imageio`/`BufferedImage` hits in `tools/`
   at all (svg.scala evidently emits SVG text). So the AWT boss fight is nearly empty: de-AWT
