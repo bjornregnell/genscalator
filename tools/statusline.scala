@@ -208,8 +208,10 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       case Some(m) => m
       case None    => return "" // nothing usable / not an object → empty line, exit 0 (never crash the prompt)
     val segs = scala.collection.mutable.ArrayBuffer[String]()
-    segs += sgr("1;38;5;42", "genscalator") // brand prefix (BR: prepend "genscalator")
-    segs += sgr("38;5;250", clock(nowMs)) // leading wall clock (light grey)
+    // Brand + clock are ONE segment joined by a SINGLE space (BR 2026-07-19): all three lines carry an
+    // 11-char lead ("genscalator" / "gs mode set" / "box healthy") + one space, so column 2 aligns across
+    // lines 1-3 — saves hspace and gives the stacked lines their aligned left edge.
+    segs += sgr("1;38;5;42", "genscalator") + " " + sgr("38;5;250", clock(nowMs))
     // `silent` — feed inactivity, riding just after the clock (BR, 2026-07-17). LINE-1 CONTRACT: this row is for what
     // a MECHANISM MEASURES; line 2 is for what someone DECLARES. So the SURFACE encodes the provenance and no
     // provenance field is needed — the line IS the field.
@@ -299,37 +301,45 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
   // by the @main). Each label renders REVERSE-video + bold in its own colour, joined by a plain " & "
   // (non-inverted, non-bold), prefixed "genscalator". Toggled INDEPENDENTLY of the status line above.
 
-  /** Curated colours for well-known modes; an unknown label gets a stable colour by hash. */
+  /** Curated colours for well-known modes; an unknown label gets a stable colour by hash.
+    * Labels are CamelCase (BR 2026-07-19): they will map 1:1 onto the future `enum ModeChips` case names,
+    * so the rendered chip IS the enum case — no label<->case mapping to drift. */
   val knownModeColors: Map[String, String] = Map(
-    "tok-spend" -> "38;5;214", "token-saving" -> "38;5;42", "high-context" -> "38;5;208",
-    "dumb-zone" -> "38;5;203", "hot-harvest" -> "38;5;215", "solo" -> "38;5;75",
-    "human-stress" -> "38;5;203", "rot-vigil" -> "38;5;220", "racing" -> "38;5;170",
-    "limit-near" -> "38;5;203", "delegation" -> "38;5;111",
+    "TokSpend" -> "38;5;214", "TokenSaving" -> "38;5;42", "HighContext" -> "38;5;208",
+    "DumbZone" -> "38;5;203", "HotHarvest" -> "38;5;215", "Solo" -> "38;5;75",
+    "HumanStress" -> "38;5;203", "RotVigil" -> "38;5;220", "Racing" -> "38;5;170",
+    "LimitNear" -> "38;5;203", "Delegation" -> "38;5;111",
     // `hangover` (BR 2026-07-17): DECLARED, never derived — the agent is still warming after a warp/compact and is
     // reading itself hot. Orange echoes the retired chip's "a real break" band, but nothing grades it now: it is
     // on/off because a person judged it, not a number that crossed a line.
-    "hangover" -> "38;5;209"
+    "Hangover" -> "38;5;209",
+    // `ColdStart` + `SmartZone` (BR 2026-07-19): the baton's warp declaration is `-RotVigil +ColdStart
+    // +SmartZone` — a fresh instance is un-rotted AND un-calibrated (icy blue), and demonstrably at low fill
+    // (bright green, the Z-axis opposite of DumbZone). ColdStart states a process FACT, so the agent may
+    // self-clear it once cold-start hygiene completes; SmartZone's clearing should become fill-derived (SM117).
+    "ColdStart" -> "38;5;81", "SmartZone" -> "38;5;82"
   )
   def modeColor(label: String): String =
     knownModeColors.getOrElse(label, {
       val palette = Vector("38;5;170", "38;5;114", "38;5;180", "38;5;75", "38;5;215", "38;5;150", "38;5;210", "38;5;111")
       palette(math.floorMod(label.hashCode, palette.size))
     })
-  /** One mode label: reverse-video (7) + bold (1) + its colour, padded to read as a chip. PURE. */
-  def renderMode(label: String): String = sgr(s"7;1;${modeColor(label)}", s" $label ")
+  /** One mode label: reverse-video (7) + bold (1) + its colour. No padding spaces (BR 2026-07-19):
+    * the chip is exactly the label, e.g. `ColdStart` not ` ColdStart `. PURE. */
+  def renderMode(label: String): String = sgr(s"7;1;${modeColor(label)}", label)
   /** SM119: a STABLE render order so a given SET of active modes always renders the same regardless of the
     * +/- add/remove history (the state file records insertion order, which reshuffles the line on every toggle).
     * First-cut canonical priority, grouped by frame; tune freely — it is only a DISPLAY order, no behaviour
     * depends on it. Any label not listed sorts alphabetically AFTER the known ones, so unknown modes stay stable
     * too. A `?`-suffixed inferred mode (SM118) sorts with its confirmed base, just after it. */
   val modeOrder: Vector[String] = Vector(
-    "afk", "solo", "delegation", "racing",   // session frame (who/how we are working)
-    "human-stress", "tired",                 // human state
-    "hangover", "rot-vigil", "dumb-zone",    // agent state + vigilance (hangover LEADS: it is the transient one,
-                                             //   and it is the one that most changes how the next few turns go)
-    "high-context", "limit-near",            // context / limits
-    "tok-spend", "token-saving",             // token budget
-    "hot-harvest"                            // task
+    "Afk", "Solo", "Delegation", "Racing",   // session frame (who/how we are working)
+    "HumanStress", "Tired",                  // human state
+    "ColdStart", "Hangover", "RotVigil",     // agent state + vigilance (ColdStart LEADS: even more transient than
+    "SmartZone", "DumbZone",                 //   Hangover; the zone pair sits together as the two ends of the Z-axis)
+    "HighContext", "LimitNear",              // context / limits
+    "TokSpend", "TokenSaving",               // token budget
+    "HotHarvest"                             // task
   )
   /** Order `modes` by `modeOrder` (known first, in that order), then alphabetically for the rest. PURE. */
   def sortModes(modes: Seq[String]): Seq[String] =
@@ -458,11 +468,13 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       case 2 => sgr("1;38;5;203", "box swamped")
       case 1 => sgr("1;38;5;214", "box huffing")
       case _ => sgr("1;38;5;114", "box healthy")
-    val segs = scala.collection.mutable.ArrayBuffer[String](lead)
+    val segs = scala.collection.mutable.ArrayBuffer[String]()
     // leading % = the exact number the colour thresholds on (BR 2026-07-19: make the grading transparent);
     // label stays `load` NOT `cpu` — the measurement is the 1-min loadavg over cores, and the name must say
     // what the mechanism measures (the idle->silent lesson). A true cpu% needs a 2-sample /proc/stat delta.
-    segs += sgr(colour(sev(memPct), "38;5;114"), s"mem ${pct(memPct)}/${gb(b.memUsedKb)}/${gb(b.memTotalKb)}")
+    // Lead + first segment join with a SINGLE space (BR 2026-07-19): 11-char lead + one space = column 2
+    // aligns with lines 1-2 (same rule as the brand+clock join on line 1).
+    segs += lead + " " + sgr(colour(sev(memPct), "38;5;114"), s"mem ${pct(memPct)}/${gb(b.memUsedKb)}/${gb(b.memTotalKb)}")
     segs += sgr(colour(sev(loadPct), "38;5;110"), f"load ${pct(loadPct)}/${b.load1}%.1favg/${b.cores}cores") // every number self-describes (BR asked twice what the middle one was); NOT "(8tot)" — `tot` is taken by line 1's token count
     b.tempC.foreach(t => segs += sgr(colour(tempSev, "38;5;114"), s"temp ${t}C"))
     // leading % = USED (what the colour grades on); the absolute is FREE (what the human thinks in) — BR 2026-07-19

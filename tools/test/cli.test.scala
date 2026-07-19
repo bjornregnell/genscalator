@@ -865,10 +865,10 @@ class CliSuite extends munit.FunSuite:
     assert(clue(line).indexOf("silent") < clue(line).indexOf("Opus"))
   }
   test("renderModes: `hangover` is a DECLARED mode — no `?`, and it leads the agent-state group") {
-    val line = StatuslineTool.renderModes(Seq("solo", "rot-vigil", "hangover"))
-    assert(clue(line).contains(" hangover "))                             // a chip like any other declared mode
-    assert(!clue(line).contains("hangover?"))                             // declared = a judgment with an OWNER, not a proxy
-    assert(clue(line).indexOf("hangover") < clue(line).indexOf("rot-vigil"))
+    val line = StatuslineTool.renderModes(Seq("Solo", "RotVigil", "Hangover"))
+    assert(clue(line).contains("Hangover"))                               // a chip like any other declared mode (no padding)
+    assert(!clue(line).contains("Hangover?"))                             // declared = a judgment with an OWNER, not a proxy
+    assert(clue(line).indexOf("Hangover") < clue(line).indexOf("RotVigil"))
     assert(clue(StatuslineTool.renderModes(Nil)).contains("no active mode labels"))
   }
 
@@ -1408,14 +1408,14 @@ class CliSuite extends munit.FunSuite:
   test("statusline SM119 sortModes: stable canonical order regardless of +/- add/remove history") {
     import StatuslineTool.*
     // same SET, different insertion orders -> identical render order (the whole point of SM119)
-    val a = sortModes(Seq("solo", "afk", "rot-vigil"))
-    val b = sortModes(Seq("rot-vigil", "afk", "solo"))
+    val a = sortModes(Seq("Solo", "Afk", "RotVigil"))
+    val b = sortModes(Seq("RotVigil", "Afk", "Solo"))
     assertEquals(a, b)
-    assertEquals(a, Seq("afk", "solo", "rot-vigil"))                       // session frame first, agent-vigilance after
-    assertEquals(sortModes(Seq("zzz", "tok-spend", "aaa")),               // unknowns sort alphabetically AFTER known
-                 Seq("tok-spend", "aaa", "zzz"))
-    assertEquals(sortModes(Seq("dumb-zone?", "dumb-zone")),               // ?-inferred sorts just after its base (SM118)
-                 Seq("dumb-zone", "dumb-zone?"))
+    assertEquals(a, Seq("Afk", "Solo", "RotVigil"))                       // session frame first, agent-vigilance after
+    assertEquals(sortModes(Seq("zzz", "TokSpend", "aaa")),                // unknowns sort alphabetically AFTER known
+                 Seq("TokSpend", "aaa", "zzz"))
+    assertEquals(sortModes(Seq("DumbZone?", "DumbZone")),                 // ?-inferred sorts just after its base (SM118)
+                 Seq("DumbZone", "DumbZone?"))
   }
 
   test("statusline SM128 TranscriptStats.of: agentTokens (excl sidechain), humanChars, sinceWarpTokens (reset at compact_boundary)") {

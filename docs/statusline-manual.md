@@ -73,8 +73,8 @@ paste at near-zero `rot?↑`. So `4%` and `2k` are not two views of one number a
 
 ## Line 2 — the mode line (`--mode-line`)
 
-An optional second row for the **declared joint state-of-mind**: short labels (`tok-spend`, `rot-vigil`,
-`afk`, ...) that you or the agent add with `tt mode add <label>` (shorthand `+<label>`) and remove with
+An optional second row for the **declared joint state-of-mind**: short CamelCase labels (`TokSpend`, `RotVigil`,
+`Afk`, ...; CamelCase so labels map 1:1 onto the planned `enum ModeChips` case names) that you or the agent add with `tt mode add <label>` (shorthand `+<label>`) and remove with
 `tt mode rm <label>` (`-<label>`). The contract: everything on this row was **declared by someone** —
 measured things live on line 1 and line 3, so the surface itself encodes the provenance. Renders as a
 `gs mode set` prefix plus one colour chip per active mode.

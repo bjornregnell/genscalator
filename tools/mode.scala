@@ -30,7 +30,9 @@ private val ModeHelp: String =
     |  mode --file <f> ...    override the state file (default ~/.claude/gs-modes)
     |
     |Labels are bare tokens [A-Za-z0-9._-]+ (no spaces / paths). Examples of modes:
-    |  tok-spend  token-saving  hot-harvest  high-context  solo  human-stress  rot-vigil  racing
+    |  TokSpend  TokenSaving  HotHarvest  HighContext  Solo  HumanStress  RotVigil  Racing
+    |  ColdStart  SmartZone  (the baton declares -RotVigil +ColdStart +SmartZone upon a warp)
+    |Labels are CamelCase so they map 1:1 onto the planned `enum ModeChips` case names.
     |
     |Examples:
     |  tt mode add hot-harvest       # agent or human declares hot-harvest mode
