@@ -64,10 +64,18 @@ zero.*
   checks pass. Open sub-questions: what belongs in the skill versus the template versus the substrate it points
   at; whether the skill should exist before the RQ5 experiment says which ingredients matter; and the RQ7 split
   applied to the skill itself, a public generic pattern versus the pair-private vocabulary.
+- **RQ9 (warp type):** does the type of warp change what a good baton is? A warp into a cold start (exit,
+  then a fresh session) hands the baton to a reader who knows it knows nothing; a compact hands it to a
+  reader carrying a lossy summary that *feels* like memory. The compact-survivor may over-trust what it
+  thinks it remembers and skip re-verification, which suggests the verify-instructions matter *more*
+  there, not less; the mode declaration also differs (a fresh process may declare a cold start; a
+  compacted one is rather warming up out of a blur). Other boundary types to place in the taxonomy: a
+  resume of the full transcript (barely a warp at all), a model switch, a machine reboot. The question:
+  one baton template with conditional sections, or per-warp-type variants?
 
 ## TODOs
 
-- **TODO:** run the SM168 joint-reasoning pass over RQ1-RQ8; trim to the few that earn the experiment.
+- **TODO:** run the SM168 joint-reasoning pass over RQ1-RQ9; trim to the few that earn the experiment.
 - **TODO:** decide whether the sub-agent experiment (RQ5) runs, and on which harness.
 - **TODO:** ground the "it worked" claim with the concrete cold-start episode (one home for the facts; this post
   points, the specimen file holds).
