@@ -67,6 +67,26 @@ Default recommendation: **`ask`**, with trash-by-default so an approved delete i
 - Not a replacement for `git rm` in a commit flow — `tt rm` stages the deletion; the commit still goes through
   `tt git commit`.
 
+## Addendum 2026-07-19 — live datums from the .bak cleanup round (PB SM147 ADDENDUM, work-repo `65a745c`)
+
+A real delete task ran end-to-end tonight (three obsolete `media/img/*.bak*` backups) and sharpened three
+design points with observed evidence:
+
+1. **Staging is load-bearing, not a nicety.** The "what it must NOT do" section above already said `tt rm`
+   stages the deletion — tonight showed the *absence* bites: `tt git commit --add <path>` **cannot stage a
+   removal** (it stat-checks the path and errors on the missing file), and `--add <dir>` through the wrapper
+   staged nothing either. The only path was a raw `git -C <repo> add -u <dir>` — exactly the improvised-shape
+   smell the SM167 addendum names. So: delete = filesystem remove **+ git-aware staging in the same typed verb**,
+   and `tt move` likewise (a rename is an add plus a delete).
+2. **Report the path's git standing: tracked / untracked / ignored.** The agent inferred "these .bak files are
+   tracked" from `git status` *silence* — wrong: `*.bak` is gitignored (`.gitignore:15`), and status silence is
+   ambiguous between tracked-clean and ignored. A `tt rm` that *says* which of the three it deleted dissolves
+   that inference trap for free (it must resolve the standing anyway to pick unlink vs `git rm`).
+3. **Deny-state drift observation (input to SM073, not asserted as fact):** the "Why" section records raw `rm`
+   as deny-listed per 2026-07-18; tonight three raw `rm` calls went through the guard lane ask-gated with BR
+   present. Whether the deny softened deliberately or drifted is for the SM073 settings-vs-SECURITY-MODEL
+   audit to adjudicate — flagged here so the note's own premise gets re-checked there.
+
 ## Ties
 SM146 (toolbox self-sufficiency — the sibling gap: native tools; this one: delete/move) · SM073 (this **retires a
 denied raw destructive op**, so it is an input to the settings-vs-`SECURITY-MODEL` audit) · `SECURITY-MODEL`
