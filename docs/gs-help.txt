@@ -12,6 +12,9 @@ matched to the nearest command in meaning (not exact syntax).
   gs status mode on        turn the mode line on (line 2: the declared joint state-of-mind)
   gs status mode off       turn the mode line off
   gs status mode           show whether the mode line is on or off
+  gs status box on         turn the box line on (line 3: measured box health from /proc)
+  gs status box off        turn the box line off
+  gs status box            show whether the box line is on or off
   gs mode                  list the active modes (the recorded joint state-of-mind)
   gs mode add <label>      declare a mode: add a label to the joint state-of-mind
   gs mode rm <label>       clear a mode: remove a label

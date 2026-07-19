@@ -42,7 +42,8 @@ gracefully). The per-command behaviour is specified below.
   EFFECTFUL tool (git/forge/ssg/serv/web/box), the normal permission flow still applies — the explicit `gs`
   command is the user's intent, but surface what will run.
 - **`gs status`** — expand the status-line information into a TABLE in session: each segment (brand, clock,
-  model, ctx-fill, 5h-lim, wk-lim, cost), its meaning, and its threshold/colour rule (from
+  model, ctx-fill, rot?/tot, 5h-lim, wk-lim, cost — plus, when wired, the line-2 mode chips and the line-3
+  box-health segments), its meaning, and its threshold/colour rule (from
   `docs/statusline-manual.md`). Fill in current values only if they are available in context (e.g. the user
   pasted the live line); otherwise present the legend and say the live values aren't visible to you.
 - **`gs status line on` / `off`** — the one-line `.claude/settings.json` change:
@@ -56,6 +57,14 @@ gracefully). The per-command behaviour is specified below.
   present. (Line 1 off but mode line on = `tt statusline --no-status --mode-line`.) A sensitive settings edit:
   SHOW the exact change, human-gated, reload via `/hooks` — same discipline as `gs status line`. The two lines
   toggle INDEPENDENTLY so the user budgets vertical space.
+- **`gs status box on` / `off` / (bare = status)** — toggle the **box line** (line 3 of the statusline, SM163:
+  MEASURED box health read directly from /proc + /sys, no subprocess — lead chip `box healthy` / `box huffing` /
+  `box swamped` = the worst segment severity, each name exactly 11 chars so the three row-leads align; segments
+  `mem 45%/14.1G/31.2G`, `load 64%/5.1avg/8cores`, `temp 63C`, `jvm 4x5.1G`, and a `bloop 5.0G` chip when a
+  bloop JVM is present; Linux-only, silently absent elsewhere). Same settings mechanism as the mode line, via
+  the `--box-line` flag on the statusLine command: `on` = ensure the flag, `off` = remove it, bare = report.
+  Sensitive settings edit — SHOW the exact change, human-gated, reload via `/hooks`. All three lines toggle
+  independently.
 - **`gs mode` / `gs mode add <label>` / `gs mode rm <label>`** — read or MUTATE the recorded joint
   state-of-mind (the declared modes the mode line renders). Thin front for `tt mode`: bare = `tt mode` (list),
   `add` = `tt mode add <label>`, `rm` = `tt mode rm <label>`, `gs mode clear` = `tt mode clear`. Labels are bare
@@ -252,6 +261,7 @@ real session; the rest are in the same spirit — accept anything that clearly m
 | status legend | `gs status` | `gs statusline`, `explain the status line`, `what does ctx-fill mean` |
 | status line on/off | `gs status line on`/`off` | `turn the status line on`, `show/hide line 1`, `gs statusline on` |
 | mode line on/off | `gs status mode on`/`off` | `show line 2`, `turn the mode line on`, `gs modeline on` |
+| box line on/off | `gs status box on`/`off` | `show line 3`, `box health line on`, `is the box swamped`, `gs boxline on` |
 | seed an app | `gs new app <what> <dir>` | `gs seed app`, `gs make app`, `gs create app` ("seed" = the internal skill verb, "new" = user-facing) |
 | compact bing-bing | `gs compact notify on`/`off` | `bing-bing on`, `notify me on compact`, `chime when compaction done` |
 | re-hydrate reflexes | `gs warm` | `warm up`, `rehydrate`, `load the guard reflexes`, `wake the reflexes` |

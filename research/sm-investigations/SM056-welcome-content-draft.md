@@ -95,6 +95,13 @@ deliverable. Proposed command file (path to confirm against CC plugin command co
 > cues, the label vocabulary, and the add/remove operation are still settling and may change between releases.
 > Feedback very welcome.
 >
+> **The box line (EXPERIMENTAL, new).** An optional *third* status line of **measured box health**
+> (Linux-only): a lead verdict `box healthy` / `box huffing` / `box swamped` plus memory, load, temperature,
+> running JVMs, and a bloop-daemon chip - so you can see that your *machine* is the thing struggling before
+> you blame a wedge on the toolbox. Turn it on by appending `--box-line` to the statusline command. Same
+> alpha heads-up as the mode line: brand-new, thresholds and format may change. On non-Linux it simply does
+> not appear.
+>
 > **Full command reference:** `tools/README.md`. **Install / allowlist / the scalex companion:**
 > `docs/claude-plugin.md`. **Needs on your machine:** `scala-cli` + a JDK (plugins can't install deps).
 >
