@@ -454,7 +454,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     // label stays `load` NOT `cpu` — the measurement is the 1-min loadavg over cores, and the name must say
     // what the mechanism measures (the idle->silent lesson). A true cpu% needs a 2-sample /proc/stat delta.
     segs += sgr(colour(sev(memPct), "38;5;114"), s"mem ${pct(memPct)}/${gb(b.memUsedKb)}/${gb(b.memTotalKb)}")
-    segs += sgr(colour(sev(loadPct), "38;5;110"), f"load ${pct(loadPct)}/${b.load1}%.1f/${b.cores}")
+    segs += sgr(colour(sev(loadPct), "38;5;110"), f"load ${pct(loadPct)}/${b.load1}%.1favg/${b.cores}cores") // every number self-describes (BR asked twice what the middle one was); NOT "(8tot)" — `tot` is taken by line 1's token count
     b.tempC.foreach(t => segs += sgr(colour(tempSev, "38;5;114"), s"temp ${t}C"))
     if b.jvmCount > 0 then segs += sgr("38;5;245", s"jvm ${b.jvmCount}x${gb(b.jvmRssKb)}") // dim readout; its weight already counts inside mem
     b.bloopRssKb.foreach(r => segs += sgr(colour(bloopSev, "38;5;245"), s"bloop ${gb(r)}"))

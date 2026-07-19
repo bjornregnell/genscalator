@@ -1378,7 +1378,7 @@ class CliSuite extends munit.FunSuite:
     val outH = renderBox(healthy)
     assert(clue(outH).contains("box healthy"))
     assert(clue(outH).contains("mem 32%/10.0G/31.0G")) // leading % = the number the colour grades on; G on both (BR)
-    assert(clue(outH).contains("load 25%/2.0/8"))     // label stays `load`: it IS loadavg/cores, not a cpu%
+    assert(clue(outH).contains("load 25%/2.0avg/8cores")) // label stays `load`: it IS loadavg/cores, not a cpu%; every number self-describes
     assert(clue(outH).contains("temp 55C"))
     assert(clue(outH).contains("jvm 2x1.0G"))
     assert(!clue(outH).contains("bloop"))
