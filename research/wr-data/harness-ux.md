@@ -958,3 +958,21 @@ false "vendor-manufactured, ships to every user by default, systemic dark-patter
 elaborations (the "affective hook / retention nudge" angle, the ironic-anthro tie) are kept ABOVE as
 retracted-but-recorded specimens, with the correction layered on top. **Standing rule for all WR corrections: retract
 by ANNOTATING, never by erasing** — the wrong path and its nuances are the data.
+
+### Spinner tips: an attention tax on the thinking human — that this once paid out (2026-07-19)
+**The quirk (BR, live):** the harness decorates its progress spinner with rotating feature tips, e.g.
+`✽ Julienning… (4m 16s · ↓ 15.8k tokens)` followed by `Tip: Dynamic workflows let Claude write a script that
+orchestrates many agents... Mention the keyword ultracode...`. BR: *"Spinner tips are somewhat irritating ...
+it sometimes disturbs my thinking."* The spinner runs precisely while the AGENT works — i.e. exactly the
+window in which the HUMAN is thinking (composing the next move, holding a design in mind) — so a rotating
+marketing-ish tip line lands as an attention tax on the pair's most cognitively loaded human moments. Same
+family as the notification/attention findings above: the harness treats the human's idle-looking wait as free
+attention, but in this workflow it is the opposite of free.
+**The twist (same event):** this particular tip made BR *justifiably curious* — he asked whether the
+workflow/ultracode machinery could drive our minions, which surfaced a genuinely load-bearing fact: workflow
+agents take per-agent MODEL overrides (opus vs fable), making the SM164 O4-vs-F5 A/B implementable as one
+scripted, blind-judged workflow. So the specimen is two-sided, like the guard-stall-that-taught: an
+interruption channel CAN pay out, which is what makes calibrating it hard (a pure-noise channel would be
+easy to mute). The cost is still real: the payout came from ONE tip; the tax recurs on every spinner.
+**UX shape it argues for:** tips off by default during long-running turns, or a per-kind toggle (the SM115
+notifications-enum shape) — the human should choose when to be taught.
