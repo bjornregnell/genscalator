@@ -147,7 +147,7 @@ leakage and malicious side effects at no significant cost to task performance. I
 behind this page.
 
 genscalator has early proof-of-concept experiments in this direction
-(`research/experiments/capture-checking/`), but adopting capture checking in the toolbox and in this security
+([`research/experiments/capture-checking/`](research/experiments/capture-checking/)), but adopting capture checking in the toolbox and in this security
 model is **open work, not done**, and it carries real limits worth stating up front: the feature is
 experimental and still changing; its guarantees cover only effects expressed as typed capabilities, so a
 command that shells out to the real terminal escapes back to the allowlist; and it constrains effects, not the
@@ -156,12 +156,12 @@ the allowlist, not a replacement for them and not a finished part of this model.
 
 ## Go deeper
 
-- `research/theory/genscalator-security-model-save-nothing-open-and-the-human-may-be-bhh.md` for the founding
+- [`research/theory/genscalator-security-model-save-nothing-open-and-the-human-may-be-bhh.md`](research/theory/genscalator-security-model-save-nothing-open-and-the-human-may-be-bhh.md) for the founding
   argument, the three pillars in full, and the discriminating criterion (how to hold a firm ethical floor
   without becoming either paternalistic or easy to manipulate).
-- `docs/foundations.md` for the glossary: BHH, BadGoals, confirmation fatigue, rot.
-- `tools/guardcheck.scala` for the guard itself, the mechanism behind this page.
-- `skills/avoid-guard-stall/SKILL.md` for the agent-side operational guidance.
+- [`docs/foundations.md`](docs/foundations.md) for the glossary: BHH, BadGoals, confirmation fatigue, rot.
+- [`tools/guardcheck.scala`](tools/guardcheck.scala) for the guard itself, the mechanism behind this page.
+- [`skills/avoid-guard-stall/SKILL.md`](skills/avoid-guard-stall/SKILL.md) for the agent-side operational guidance.
 
 ## Further reading
 
