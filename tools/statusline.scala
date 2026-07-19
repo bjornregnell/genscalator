@@ -450,8 +450,11 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       case 1 => sgr("1;38;5;214", "box huffing")
       case _ => sgr("1;38;5;114", "box healthy")
     val segs = scala.collection.mutable.ArrayBuffer[String](lead)
-    segs += sgr(colour(sev(memPct), "38;5;114"), f"mem ${b.memUsedKb / 1048576.0}%.1f/${gb(b.memTotalKb)}") // one G, on the total
-    segs += sgr(colour(sev(loadPct), "38;5;110"), f"load ${b.load1}%.1f/${b.cores}")
+    // leading % = the exact number the colour thresholds on (BR 2026-07-19: make the grading transparent);
+    // label stays `load` NOT `cpu` — the measurement is the 1-min loadavg over cores, and the name must say
+    // what the mechanism measures (the idle->silent lesson). A true cpu% needs a 2-sample /proc/stat delta.
+    segs += sgr(colour(sev(memPct), "38;5;114"), s"mem ${pct(memPct)}/${gb(b.memUsedKb)}/${gb(b.memTotalKb)}")
+    segs += sgr(colour(sev(loadPct), "38;5;110"), f"load ${pct(loadPct)}/${b.load1}%.1f/${b.cores}")
     b.tempC.foreach(t => segs += sgr(colour(tempSev, "38;5;114"), s"temp ${t}C"))
     if b.jvmCount > 0 then segs += sgr("38;5;245", s"jvm ${b.jvmCount}x${gb(b.jvmRssKb)}") // dim readout; its weight already counts inside mem
     b.bloopRssKb.foreach(r => segs += sgr(colour(bloopSev, "38;5;245"), s"bloop ${gb(r)}"))
