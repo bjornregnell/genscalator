@@ -20,8 +20,11 @@ agent where to look, what reflexes to re-install, and what NOT to start. We publ
 reconstructed the working state from it with zero human re-explanation. That one worked. But what makes a baton
 *good*? That is an empirical question, and this post is where we will answer it.
 
-[figure: screenshot of the real cold start - the fresh agent's first minutes reconstructing from the baton
-(mode cleared, pushes verified, the held queue left untouched). BR has the session feed; capture before it scrolls away.]
+<img src="../media/img/baton-example1.png" alt="Terminal screenshot: the fresh agent's session opening on the real baton - the pointer-not-truth header and the anti-regression checklist" width="900">
+
+*Above: the real thing, as the fresh agent received it at cold start on 2026-07-19. First the warning that a
+baton is a pointer, not the truth; then, before anything else, the checklist of reflexes that regress at turn
+zero.*
 
 ## Draft research questions
 
@@ -68,7 +71,7 @@ reconstructed the working state from it with zero human re-explanation. That one
 - **TODO:** decide whether the sub-agent experiment (RQ5) runs, and on which harness.
 - **TODO:** ground the "it worked" claim with the concrete cold-start episode (one home for the facts; this post
   points, the specimen file holds).
-- **TODO:** real figure per the placeholder above; a table of baton ingredients vs failure-they-prevent could be
+- **TODO:** a table of baton ingredients vs failure-they-prevent could be
   a good near-figure once RQ1 settles.
 - **TODO (BR):** revoice; decide if "warp baton" is the term to lock at first deploy (coined terms stay mutable
   until then).
