@@ -1,85 +1,154 @@
 # What is a good warp baton?
 
-<!-- Slug/number 030. STUB, not drafted. Seed: BR 2026-07-19, same day the real reboot baton was published as
-     work/BATON-EXAMPLE.md and pin SM168 opened the baton-quality investigation. This stub's job: hold the
-     research questions until the joint-reasoning pass and (maybe) the subagent experiment produce answers. -->
+<!-- Slug/number 030. Agent scaffold in BR's voice per the blog-assist skill; BR has NOT revoiced yet.
+     Sources: SM168 joint pass 2026-07-19 (PB), work/BATON-EXAMPLE.md, the P3b fidelity self-tests,
+     research/wr-data 07-19 entries. Working notes at the bottom. -->
 
-> **Status: STUB 2026-07-19 (research questions drafted by the agent; nothing else written; BR has not revoiced).**
-> **Audience:** TBD - likely people running long-lived agent collaborations who face the same handover problem;
-> agentic-SE practitioners; readers of the exit-resume material in 005.
+> **Status: drafted 2026-07-19 (SCAFFOLD - full draft written by the agent in BR's voice, every sentence
+> awaiting BR's rewrite/approval; nothing here is published prose yet).**
+> **Audience:** people running long-lived human-agent collaborations who face the handover problem;
+> agentic software engineering practitioners; anyone curious how a research programme gets scoped down
+> to one honest little experiment.
 
-## The idea in one paragraph (agent scaffold, for BR to revoice)
+## A relay race with amnesia
 
-A **warp** is our word for the jump from one agent instance to the next: the context window is cleared (a model
-upgrade, a machine reboot, a fresh session) and everything the old instance held in its head is gone. A **baton**
-is the small file the outgoing instance writes for the incoming one, named after the relay-race stick: the runner
-changes, the race continues. The trick that makes a baton work is that it is deliberately a *pointer to durable
-truth, not the truth itself*: the real state lives in committed files and memory, and the baton tells the fresh
-agent where to look, what reflexes to re-install, and what NOT to start. We published a real one, verbatim, in
-[BATON-EXAMPLE.md](../work/BATON-EXAMPLE.md): it carried an actual machine-reboot handover, and the fresh agent
-reconstructed the working state from it with zero human re-explanation. That one worked. But what makes a baton
-*good*? That is an empirical question, and this post is where we will answer it.
+I work daily with an AI agent that has no long-term memory. Every so often its context window is
+cleared and I get a fresh instance: a model upgrade, a machine reboot, a fresh session to escape
+context rot. We call that jump a **warp**. Everything the old instance held in its head is gone.
+
+What survives is what we wrote down. And the trick we use at every warp is borrowed from the relay
+race: the outgoing instance writes a **baton**, a small file for the incoming one. The runner changes,
+the race continues.
+
+The one rule we are most sure about: a baton is a *pointer to durable truth, not the truth itself*.
+The real state lives in committed files and memory notes; the baton tells the fresh agent where to
+look, which reflexes to re-install, and what NOT to start doing on its own.
+
+## The specimen that worked
 
 <img src="../media/img/baton-example1.png" alt="Terminal screenshot: the fresh agent's session opening on the real baton - the pointer-not-truth header and the anti-regression checklist" width="900">
 
-*Above: the real thing, as the fresh agent received it at cold start on 2026-07-19. First the warning that a
-baton is a pointer, not the truth; then, before anything else, the checklist of reflexes that regress at turn
-zero.*
+*Above: a real baton, exactly as a fresh agent received it after a machine reboot. First the warning
+that a baton is a pointer, not the truth; then, before anything else, a checklist of reflexes that
+regress at turn zero.*
 
-## Draft research questions
+We published this one verbatim in [BATON-EXAMPLE.md](../work/BATON-EXAMPLE.md), because it worked:
+the fresh agent reconstructed the working state with zero re-explanation from me. It cleared a stale
+mode flag it was pre-authorized to clear, verified that yesterday's pushes had actually landed before
+trusting them, and correctly did NOT start a work queue I had put on hold.
 
-<!-- Agent-drafted 2026-07-19 per BR's ask; these seed the SM168 joint-reasoning pass. Trim, merge, or cut. -->
+That is one success. One. Which brings us to the actual question.
 
-- **RQ1 (content):** What must a baton contain, and what must it leave out? Candidate ingredients from the one
-  specimen we have: a re-install list for reflexes that regress at turn zero (forbidden-to-allowed pairs), holds
-  stated together with who lifts them, checkable numbers (commit hashes, counts) instead of adjectives, and a map
-  of where durable truth lives. Which of these actually carry the handover, and which are ritual?
-- **RQ2 (measurement):** How do we measure baton quality objectively? We already have a candidate instrument: the
-  fresh-restart fidelity probes (a quiz the fresh agent answers cold, scored against a key it cannot see). The
-  behavioural version may be stronger: count the cold-start actions done right, and count the human
-  re-explanations needed. Agent self-report is the one instrument we rule out in advance.
-- **RQ3 (ordering):** Does order inside the baton matter? Our specimen puts the reflex re-install list first, on
-  the theory that turn-zero regressions must be caught before the first tool call. Is that measurable, for
-  instance by swapping section order in variants and watching early mistakes?
-- **RQ4 (size):** Is there an optimal length? Too short and reflexes or holds are lost; too long and the baton
-  competes with the substrate it is supposed to point at, invites unbounded reading, and rots like any duplicated
-  prose. Where is the knee of that curve?
-- **RQ5 (the experiment):** Can sub-agent experiments answer RQ1-RQ4 cheaply? Design sketch: give fresh
-  sub-agents the same reconstruction task but different baton variants (full, shuffled, stripped of the checklist,
-  stripped of numbers, none at all), score them blind with the fidelity probes. This reuses harness pieces we
-  already have, and a no-baton control group tells us how much the baton is worth at all.
-- **RQ6 (the honest limit):** What can no baton carry? A fresh instance holds every inherited fact at the same
-  strength; the outgoing instance knew which facts it had verified itself and which it was merely told. Is that
-  lost weighting real and does it show up in behaviour, or is it a romantic story the agent tells about itself?
-  (Speculation until measured; the agent's own account of this is exactly the kind of introspection we treat as
-  quoted data, not as evidence.)
-- **RQ7 (generality):** How much of a good baton transfers to another human-agent pair or another project, and
-  how much is pair-specific vocabulary? A baton full of local shorthand was written for *our* fresh agent; a
-  transferable template would need to separate the pattern from the private language.
-- **RQ8 (the skill):** What does a good baton-prep skill look like? A baton is written at the worst possible
-  moment: session end, a full context, sometimes a failing machine or a tired human, exactly when trained
-  reflexes degrade. So can the baton template be packaged as a skill that triggers on the exit cue and walks the
-  outgoing agent through a pre-flight? Part of quality is mechanically checkable (do the pointers resolve, do the
-  cited commit hashes exist, does every hold name who lifts it), and a skill can refuse to finish until those
-  checks pass. Open sub-questions: what belongs in the skill versus the template versus the substrate it points
-  at; whether the skill should exist before the RQ5 experiment says which ingredients matter; and the RQ7 split
-  applied to the skill itself, a public generic pattern versus the pair-private vocabulary.
-- **RQ9 (warp type):** does the type of warp change what a good baton is? A warp into a cold start (exit,
-  then a fresh session) hands the baton to a reader who knows it knows nothing; a compact hands it to a
-  reader carrying a lossy summary that *feels* like memory. The compact-survivor may over-trust what it
-  thinks it remembers and skip re-verification, which suggests the verify-instructions matter *more*
-  there, not less; the mode declaration also differs (a fresh process may declare a cold start; a
-  compacted one is rather warming up out of a blur). Other boundary types to place in the taxonomy: a
-  resume of the full transcript (barely a warp at all), a model switch, a machine reboot. The question:
-  one baton template with conditional sections, or per-warp-type variants?
+## What we think makes it good (so far: reasoning, not evidence)
 
-## TODOs
+The agent and I did a joint pass over the design. Here is where we landed, and I want to be honest
+about the epistemic status: this is two collaborators reasoning themselves into agreement, not
+measurement. Our best current answers:
 
-- **TODO:** run the SM168 joint-reasoning pass over RQ1-RQ9; trim to the few that earn the experiment.
-- **TODO:** decide whether the sub-agent experiment (RQ5) runs, and on which harness.
-- **TODO:** ground the "it worked" claim with the concrete cold-start episode (one home for the facts; this post
-  points, the specimen file holds).
-- **TODO:** a table of baton ingredients vs failure-they-prevent could be
-  a good near-figure once RQ1 settles.
-- **TODO (BR):** revoice; decide if "warp baton" is the term to lock at first deploy (coined terms stay mutable
-  until then).
+| what the baton carries | the failure it prevents |
+|---|---|
+| **a reflex checklist, first** - forbidden habit, then the allowed one | turn-zero regression: a fresh agent falls back to base habits before it has read anything else |
+| **holds, each with an owner** - what not to start, and who lifts it | an eager fresh agent resuming work a human deliberately paused |
+| **pre-authorized actions** - what it may do before anyone speaks | wasted round-trips, and its opposite: unauthorized initiative |
+| **numbers, not adjectives** - commit hashes, counts, percentages | inherited claims that cannot be checked against git and disk |
+| **verify-mandates** - each claim it will act on says how to check it | over-trust of inherited state (the baton says "verify before trusting", and means it) |
+| **a substrate map, last** - where durable truth lives | the baton itself swelling into a copy of the truth |
+
+Two design tensions came out of the pass. First: should the baton restate any state at all, or only
+point? Every restated fact is a future stale fact, and we have been burned by exactly that kind of
+prose rot before (see [022](022-brittle-bash-to-beautiful-scala.md) for the code-beats-prose version
+of this lesson). Our tentative call: at most a three-line state summary, and each line carries its own
+verify-mandate. Second: how much does each ingredient actually matter? We ranked them by gut feeling
+from one lived episode. That is exactly the kind of claim that should embarrass an empiricist.
+
+## Too many questions at once
+
+Drafting this post, the research questions multiplied: what content, what order, what size, does the
+type of warp matter (a fresh start knows it knows nothing, but an agent that survived a context
+compaction carries a lossy summary that *feels* like memory and may over-trust it), can any of this be
+measured on sub-agents, what can no baton ever carry, does it transfer to other pairs, should there be
+a baton-writing skill. Nine questions, each with sub-questions and hypotheses.
+
+There is a strong temptation to design one grand study that answers everything. In earlier work of
+ours - the textbook on experimentation in software engineering that I co-authored - we spent whole
+chapters warning against exactly this: pile every factor into one study and you confound all the
+things, and learn nothing cleanly. The discipline is boring and correct: a SERIES of small
+experiments, one factor at a time, everything else held fixed.
+
+And there is a second, more personal reason to insist on measurement here. When the agent and I
+finished the joint pass, agreeing happily with each other, I caught myself and said:
+
+> "we confabulate into agreement :)"
+
+Two reasoners who like each other's conclusions are not evidence. The agent literature calls the
+failure mode confabulation; the methods literature calls it a validity threat; my co-authors would
+just call it skipping the experiment.
+
+## So: a seed, and one small experiment
+
+The honest conclusion of this post is therefore not "here is what a good baton looks like". It is two
+much smaller deliverables:
+
+**1. A pre-hoc seed.** Our best-reasoned baton template - the table above, ordered checklist-first,
+with the three-line verified state summary - written down as the thing to beat. It is a seed, not a
+result. (The living template will be maintained in the repo; this post deliberately does not duplicate
+its details, so it cannot drift out of date here.)
+
+**2. A pilot A/B test.** One factor, the most primitive one: *baton versus no baton*. Fresh agent
+instances get the same reconstruction task on a frozen snapshot of a real repository; half receive the
+seed baton, half only the durable substrate (the committed files and notes both groups share). We
+measure behaviour, not self-report: cold-start actions done correctly, forbidden-habit relapses,
+recall probes scored blind against a key. A pilot in the textbook sense: its job is as much to shake
+down the instruments (does the task discriminate? do the metrics move?) as to estimate the effect. If
+the total-baton effect is small, the finer questions are moot; if it is large, its size becomes the
+yardstick that makes every later per-ingredient experiment interpretable. The next experiment in the
+series then isolates the ingredient we believe in most, the reflex checklist.
+
+## What no baton can carry
+
+One finding from our informal fidelity probes deserves its own paragraph. We quizzed fresh agent
+instances on our shared working vocabulary, twice, under different conditions. Both instances failed
+the *same* probes: the items our written substrate simply does not cover. A baton cannot fix a gap in
+the substrate it points to. Fidelity across a warp is bounded by what was ever written down.
+
+And below that bound sits something a baton compensates for but cannot restore. Asked what is
+genuinely lost at each context clear, the agent wrote (quoted as data, not as my view):
+
+> "What dies at /clear is the weighting, not the facts. [...] My successor will re-read the same pins
+> and hold them all at uniform strength - flat, like a photograph of a relief map."
+
+Whether that description is introspective truth or well-formed confabulation is itself one of the
+things we cannot know from the inside - which is precisely why the template's answer is mechanical:
+mandate re-verification of every claim the next instance will act on, and let the texture regrow
+through work. The pilot will tell us whether even that much is measurable.
+
+## Further Reading
+
+- **Experimentation in Software Engineering** - Wohlin, Runeson, Höst, Ohlsson, Regnell, Wesslén
+  (Springer). Our own book (I am a co-author); the series-of-experiments discipline and the validity
+  vocabulary used above. *(Link via the typed bibliography before publish.)*
+- [BATON-EXAMPLE.md](../work/BATON-EXAMPLE.md) - the real, working baton specimen, verbatim, with
+  annotations of its design moves.
+- [005 - Dancing with agents](005-dancing-with-agents.md) - the exit-resume dance this post's warp
+  handover belongs to.
+- [007 - Learning beyond the inference barrier](007-learning-beyond-the-inference-barrier.md) - why
+  durable substrate is the only thing that crosses a warp at all.
+- [011 - How dumb did the agent get?](011-how-dumb-did-the-agent-get.md) - an earlier, narrated
+  experiment on the compact boundary; the warp-type taxonomy of RQ9 starts there.
+
+<!-- ============ WORKING NOTES (agent), trim before publish ============
+The nine RQs in full detail (RQ1-RQ9 with sub-questions) were drafted in this file's stub version;
+they now live condensed in "Too many questions at once". Full versions: git history of this file +
+the SM168 pin on the PB. Decisions this draft encodes (BR 2026-07-19, in-feed): series-of-experiments
+framing; pilot = baton vs no-baton; tension A = three-line state summary WITH per-line verify-mandates
+(BR: "but i am not sure"); BR quote "we confabulate into agreement :)" verbatim, ratified by use.
+TODO before publish:
+- BR revoices everything; check plain-word rule; check no em-dash glyph slipped in.
+- Add the ESE book to blog/References.scala (Verified, with link) and cite from there; verify the
+  three internal blog cross-links still resolve after any renumbering.
+- Seed template: write BATON-TEMPLATE.md (or fold into a baton-prep skill per RQ8) and link it from
+  deliverable 1 instead of the parenthetical.
+- Figure check: baton-example1.png in place; consider a second real figure when the pilot runs
+  (metric chart per the dataviz skill).
+- Pilot preregistration: hypotheses, metrics, N, scoring key - as a research/ note, linked here.
+============ END WORKING NOTES ============ -->
