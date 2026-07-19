@@ -84,6 +84,54 @@ it is still a destructive-command shape — whether the *agent* may run it unatt
 3. **Defer full-toolbox native-image** to a CI matrix program; adopt per-tool where cold-start cost bites.
 4. **Scala Native: not recommended** for this toolbox while it stays JDK-first (AWT/ImageIO/HTTP porting cost).
 
+## Addendum 2026-07-19 — T4 graal-for-all: box inventory + executable plan (agent-drafted AFK, no builds run)
+
+T4 (P0, ✅DECIDED graal-for-all for alpha) got its first real datum tonight via the SM170 cold-claude
+experiment (PB SM146 ADDENDUM + ADDENDUM-2): GraalVM CE **17.0.9** aborted on `scala.Enumeration` reflection,
+then emitted a **fallback image that EXPIRES** (JVM-launching stub carrying build-time temp classpaths — it
+died at the next fresh prompt). Standing rule from that datum: **always `--no-fallback`** so a stub fails the
+build loud instead of shipping.
+
+### Inventory (read-only, this box, 2026-07-19 ~23:3x)
+
+- **A modern GraalVM is ALREADY cached — no download needed:** coursier arc cache holds GraalVM CE
+  distributions for **jdk-17.0.9, jdk-21.0.2, and jdk-25.0.1** (under
+  `~/.cache/coursier/arc/https/github.com/graalvm/graalvm-ce-builds/`). The SM146-addendum lesson
+  "upgrade GraalVM FIRST before config archaeology" is satisfiable offline: pin scala-cli's
+  `--native-image` build to the **25.0.1** distribution instead of whatever default resolved 17.0.9.
+- **System JDKs (sdkman):** Temurin 11/17/21/24/25; `current -> 25.0.2-tem`. Plain JVM assembly path healthy.
+- **AWT surface of the toolbox is ONE file:** a fresh grep over `tools/` finds `java.awt` only in
+  `tools/reqt-vendored/01-Settings.scala:24` (`java.awt.Color` constants for reqt syntax colouring).
+  **Correction to this note's Thread (a) table premise:** the 07-18 text says `svg.scala`/image work uses
+  `javax.imageio`/`java.awt` — a fresh grep finds **no** `javax.imageio`/`BufferedImage` hits in `tools/`
+  at all (svg.scala evidently emits SVG text). So the AWT boss fight is nearly empty: de-AWT
+  `01-Settings.scala` by replacing `java.awt.Color` with a tiny RGB case class (the colours are constants),
+  and the whole toolbox is headless-clean.
+
+### Plan (order of attack, each step BR-gated at build time)
+
+1. **Pin the GraalVM:** build with the cached CE 25.0.1 (JDK-25-era native-image auto-handles the
+   Enumeration/ScalaFeature reflection that killed the 17.0.9 attempt). Diagnose any residue with
+   `--no-fallback -H:+ReportExceptionStackTraces`.
+2. **guardcheck first** (this note's standing recommendation 1): the gate must survive a bloop wedge;
+   fallback to `scala-cli` stays in the launcher.
+3. **Hot-loop tools next:** `text`, `files`, `chrono`, `mode`, `statusline`, `git` — the per-turn and
+   per-commit path where cold-start cost bites hardest.
+4. **De-AWT `reqt-vendored/01-Settings.scala`** (RGB case class), unblocking `parsereqt`/`prd` for the
+   same pipeline instead of parking them as "the AWT tools".
+5. **Dispatcher question (BR):** the parked single-dispatcher decision ([[genscalator-toolbox-single-dispatcher]],
+   one `@main` + tools as pure fns) changes T4's economics — ONE native image for the whole toolbox vs ~32
+   separate binaries (build time, disk, upgrade story). T4 is a natural moment to unpark or re-park it
+   deliberately; flagged, not pre-decided.
+6. **Verification per binary:** the tool's own suite assertions against the NATIVE binary (not the scala-cli
+   form), a `file`-check that the artifact is a real ELF (the SM170 stub shipped precisely because nobody
+   `file`-checked it), and never installing any artifact built without `--no-fallback`.
+
+### AFK bound tonight
+
+Inventory and plan only — no native-image builds were run (long, resource-heavy, and the build tool-lane is
+guard-gated; also per this note's own header: adoption is BR-gated).
+
 ## Ties
 [[blixten-box-flaky]] (commit+push every unit; the box is fragile) · [[dependency-preference-cascade]] (JDK-first
 is what tilts a→GraalVM) · SM147 (a safe `tt rm`/`tt move` is another toolbox-self-sufficiency step) · the
