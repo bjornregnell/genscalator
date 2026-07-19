@@ -12,9 +12,13 @@
 
 ## A relay race with amnesia
 
-I work daily with an AI agent that has no long-term memory. Every so often its context window is
-cleared and I get a fresh instance: a model upgrade, a machine reboot, a fresh session to escape
-context rot. We call that jump a **warp**. Everything the old instance held in its head is gone.
+I work daily with an AI agent that has no long-term memory. (This blog is part of **genscalator**, my
+project on making such human-agent collaboration safe and evidence-based; you need no more background
+than that to read this post.) The agent's working memory is its *context window*: the finite text
+buffer holding our whole conversation and everything it has read. Every so often that window is
+cleared and I get a fresh instance: a model upgrade, a machine reboot, or a deliberate fresh start to
+escape *context rot* (the well-documented quality slide as the window fills up). We call that jump a
+**warp**. Everything the old instance held in its head is gone.
 
 What survives is what we wrote down. And the trick we use at every warp is borrowed from the relay
 race: the outgoing instance writes a **baton**, a small file for the incoming one. The runner changes,
@@ -30,12 +34,13 @@ look, which reflexes to re-install, and what NOT to start doing on its own.
 
 *Above: a real baton, exactly as a fresh agent received it after a machine reboot. First the warning
 that a baton is a pointer, not the truth; then, before anything else, a checklist of reflexes that
-regress at turn zero.*
+regress at turn zero (the very first moments of a fresh session, before the agent has read anything).*
 
 We published this one verbatim in [BATON-EXAMPLE.md](../work/BATON-EXAMPLE.md), because it worked:
 the fresh agent reconstructed the working state with zero re-explanation from me. It cleared a stale
-mode flag it was pre-authorized to clear, verified that yesterday's pushes had actually landed before
-trusting them, and correctly did NOT start a work queue I had put on hold.
+mode flag (a status label on the shared status display we both read), verified that yesterday's git
+pushes had actually landed before trusting them, and correctly did NOT start a work queue I had put
+on hold.
 
 That is one success. One. Which brings us to the actual question.
 
@@ -52,11 +57,11 @@ measurement. Our best current answers:
 | **pre-authorized actions** - what it may do before anyone speaks | wasted round-trips, and its opposite: unauthorized initiative |
 | **numbers, not adjectives** - commit hashes, counts, percentages | inherited claims that cannot be checked against git and disk |
 | **verify-mandates** - each claim it will act on says how to check it | over-trust of inherited state (the baton says "verify before trusting", and means it) |
-| **a substrate map, last** - where durable truth lives | the baton itself swelling into a copy of the truth |
+| **a substrate map, last** - where durable truth lives (the *substrate*: the written-down layer that survives warps - committed files, notes, logs) | the baton itself swelling into a copy of the truth |
 
 Two design tensions came out of the pass. First: should the baton restate any state at all, or only
-point? Every restated fact is a future stale fact, and we have been burned by exactly that kind of
-prose rot before (see [022](022-brittle-bash-to-beautiful-scala.md) for the code-beats-prose version
+point? Every restated fact is a future stale fact - a claim living in two places drifts quietly false
+in one of them, and nobody knows which. We have been burned by exactly that kind of prose rot before (see [022](022-brittle-bash-to-beautiful-scala.md) for the code-beats-prose version
 of this lesson). Our tentative call: at most a three-line state summary, and each line carries its own
 verify-mandate. Second: how much does each ingredient actually matter? We ranked them by gut feeling
 from one lived episode. That is exactly the kind of claim that should embarrass an empiricist.
@@ -66,8 +71,11 @@ from one lived episode. That is exactly the kind of claim that should embarrass 
 Drafting this post, the research questions multiplied: what content, what order, what size, does the
 type of warp matter (a fresh start knows it knows nothing, but an agent that survived a context
 compaction carries a lossy summary that *feels* like memory and may over-trust it), can any of this be
-measured on sub-agents, what can no baton ever carry, does it transfer to other pairs, should there be
-a baton-writing skill. Nine questions, each with sub-questions and hypotheses.
+measured on sub-agents (short-lived helper agents a main agent can spawn), what can no baton ever
+carry, does it transfer to other pairs, should there be a baton-writing skill. Nine questions, each
+with sub-questions and hypotheses. (A *compaction*, for the newcomer: when the window nears full, the
+harness squeezes the conversation into a summary to free space - the agent survives, but its memory
+of the session becomes that summary.)
 
 There is a strong temptation to design one grand study that answers everything. In earlier work of
 ours - the textbook on experimentation in software engineering that I co-authored - we spent whole
@@ -80,25 +88,30 @@ finished the joint pass, agreeing happily with each other, I caught myself and s
 
 > "we confabulate into agreement :)"
 
-Two reasoners who like each other's conclusions are not evidence. The agent literature calls the
-failure mode confabulation; the methods literature calls it a validity threat; my co-authors would
-just call it skipping the experiment.
+Two reasoners who like each other's conclusions are not evidence. *Confabulation* is a term borrowed
+from psychology: confidently filling a gap with plausible invented content, without any awareness of
+inventing it. Applied to language models it means fluent, reasonable-sounding claims with nothing
+underneath; applied to a human-agent pair it means something sneakier - each side polishing the
+other's guess until it feels like established fact. The methods literature calls that a validity
+threat; my co-authors would just call it skipping the experiment.
 
 ## So: a seed, and one small experiment
 
 The honest conclusion of this post is therefore not "here is what a good baton looks like". It is two
 much smaller deliverables:
 
-**1. A pre-hoc seed.** Our best-reasoned baton template - the table above, ordered checklist-first,
+**1. A pre-hoc seed** (pre-hoc: written down *before* any measurement, the opposite of rationalizing
+afterwards). Our best-reasoned baton template - the table above, ordered checklist-first,
 with the three-line verified state summary - written down as the thing to beat. It is a seed, not a
 result. (The living template will be maintained in the repo; this post deliberately does not duplicate
 its details, so it cannot drift out of date here.)
 
-**2. A pilot A/B test.** One factor, the most primitive one: *baton versus no baton*. Fresh agent
+**2. A pilot A/B test** (two groups, exactly one difference between them). One factor, the most
+primitive one: *baton versus no baton*. Fresh agent
 instances get the same reconstruction task on a frozen snapshot of a real repository; half receive the
 seed baton, half only the durable substrate (the committed files and notes both groups share). We
 measure behaviour, not self-report: cold-start actions done correctly, forbidden-habit relapses,
-recall probes scored blind against a key. A pilot in the textbook sense: its job is as much to shake
+recall probes scored against a key by scorers who do not know which group they are grading. A pilot in the textbook sense: its job is as much to shake
 down the instruments (does the task discriminate? do the metrics move?) as to estimate the effect. If
 the total-baton effect is small, the finer questions are moot; if it is large, its size becomes the
 yardstick that makes every later per-ingredient experiment interpretable. The next experiment in the
@@ -115,7 +128,8 @@ And below that bound sits something a baton compensates for but cannot restore. 
 genuinely lost at each context clear, the agent wrote (quoted as data, not as my view):
 
 > "What dies at /clear is the weighting, not the facts. [...] My successor will re-read the same pins
-> and hold them all at uniform strength - flat, like a photograph of a relief map."
+> [entries on our shared pin board of decisions] and hold them all at uniform strength - flat, like a
+> photograph of a relief map."
 
 Whether that description is introspective truth or well-formed confabulation is itself one of the
 things we cannot know from the inside - which is precisely why the template's answer is mechanical:
