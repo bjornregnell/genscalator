@@ -1335,6 +1335,10 @@ class CliSuite extends munit.FunSuite:
     val (_, out, _) = run("statusline", """{"model":{"display_name":"Fable 5 (1M context)"}}""", "--now-ms", "1000000000000")
     assert("""\d\d:\d\d:\d\d""".r.findFirstIn(out).isDefined, clue(out)) // a HH:MM:SS clock is present
     assert(clue(out).contains("f5/1M")) // Fable 5 (1M context) -> f5/1M (compact SM117 form)
+    val (_, out2, _) = run("statusline",
+      """{"model":{"display_name":"Fable 5"},"context_window":{"used_percentage":11,"context_window_size":1000000}}""",
+      "--now-ms", "1000000000000")
+    assert(clue(out2).contains("f5/1M")) // measured context_window_size feeds the suffix even with a bare name (2026-07-19)
   }
 
   // --- SM117 status-line gauges: pure helpers + transcript parsing + tok/tired? segments ---
@@ -1344,6 +1348,14 @@ class CliSuite extends munit.FunSuite:
     assertEquals(shortModel("Fable 5"), "f5")
     assertEquals(shortModel("Sonnet 5"), "s5")
     assertEquals(shortModel("Haiku 4.5"), "h4.5")
+    // measured ctx size (context_window.context_window_size) beats the name-parse; name stays the fallback.
+    // Regression 2026-07-19: F5's display_name is bare "Fable 5", so the name-parsed "/1M" vanished at the warp.
+    assertEquals(shortModel("Fable 5", Some(1_000_000L)), "f5/1M")
+    assertEquals(shortModel("Fable 5", Some(200_000L)), "f5/200k")
+    assertEquals(shortModel("Opus 4.8 (1M context)", Some(200_000L)), "o4.8/200k") // measured wins over the name
+    assertEquals(formatCtxSize(1_000_000L), "1M")   // nameplate: round millions stay whole, not "1.0M"
+    assertEquals(formatCtxSize(1_500_000L), "1.5M")
+    assertEquals(formatCtxSize(200_000L), "200k")
     assertEquals(formatTokens(5008654L), "5.0M")
     assertEquals(formatTokens(178118L), "178k")
     assertEquals(formatTokens(950L), "950")
@@ -1351,6 +1363,38 @@ class CliSuite extends munit.FunSuite:
     assertEquals(tokGauge(1_000_000L, 3_000_000L, 6_000_000L), "38;5;42")  // green base
     assertEquals(tokGauge(4_000_000L, 3_000_000L, 6_000_000L), "38;5;214") // orange past warn
     assertEquals(tokGauge(7_000_000L, 3_000_000L, 6_000_000L), Red)        // red past danger
+  }
+
+  test("statusline SM163 box line: pure parsers + renderBox severity lead") {
+    import StatuslineTool.*
+    import StatuslineTool.BoxStats.*
+    assertEquals(parseMemInfo("MemTotal:       32505856 kB\nMemFree:         1234 kB\nMemAvailable:   12582912 kB\n"),
+                 Some((32505856L, 12582912L)))
+    assertEquals(parseLoadAvg("3.50 2.10 1.00 2/1234 5678\n"), Some(3.5))
+    assertEquals(parseVmRssKb("Name:\tjava\nVmPeak:\t1 kB\nVmRSS:\t 8493465 kB\nThreads:\t99\n"), Some(8493465L))
+    // healthy: all segments under their orange thresholds -> green "box healthy" lead
+    val healthy = BoxInfo(memUsedKb = 10485760L, memTotalKb = 32505856L, load1 = 2.0, cores = 8,
+                          tempC = Some(55), jvmCount = 2, jvmRssKb = 1048576L, bloopRssKb = None)
+    val outH = renderBox(healthy)
+    assert(clue(outH).contains("box healthy"))
+    assert(clue(outH).contains("mem 10.0/31.0G"))
+    assert(clue(outH).contains("load 2.0/8"))
+    assert(clue(outH).contains("temp 55C"))
+    assert(clue(outH).contains("jvm 2x1.0G"))
+    assert(!clue(outH).contains("bloop"))
+    // one orange segment (a 2G+ bloop) flips the lead to "box huffing"
+    val huffing = healthy.copy(bloopRssKb = Some(3145728L), jvmRssKb = 4194304L, jvmCount = 3)
+    val outW = renderBox(huffing)
+    assert(clue(outW).contains("box huffing"))
+    assert(clue(outW).contains("bloop 3.0G"))
+    // any red segment (the lived 10.4GB bloop, or mem >= 90%) flips the lead to "box swamped"
+    val swamped = healthy.copy(bloopRssKb = Some(10905190L))
+    assert(clue(renderBox(swamped)).contains("box swamped"))
+    assert(clue(renderBox(healthy.copy(memUsedKb = 30408704L))).contains("box swamped"))
+    // the three leads are exactly "genscalator".length so the row-leads align (BR 2026-07-19)
+    assertEquals("box healthy".length, "genscalator".length)
+    assertEquals("box huffing".length, "genscalator".length)
+    assertEquals("box swamped".length, "genscalator".length)
   }
 
   test("statusline SM119 sortModes: stable canonical order regardless of +/- add/remove history") {

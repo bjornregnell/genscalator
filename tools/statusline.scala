@@ -148,11 +148,22 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     val secOfDay = math.floorMod((nowMs + offsetMs) / 1000L, 86400L)
     f"${secOfDay / 3600}%02d:${(secOfDay % 3600) / 60}%02d:${secOfDay % 60}%02d"
 
+  /** Compact ctx-window SIZE for the model tag's "/1M" suffix: 1000000 -> "1M", 200000 -> "200k". Round
+    * millions stay whole ("1M", not "1.0M" — it is a nameplate capacity, not a measurement of flow). PURE. */
+  def formatCtxSize(n: Long): String =
+    if n >= 1_000_000 then
+      if n % 1_000_000 == 0 then s"${n / 1_000_000}M" else f"${n / 1e6}%.1fM"
+    else s"${n / 1000}k"
+
   /** Compact model tag (SM117): "Opus 4.8 (1M context)" -> "o4.8/1M"; "Fable 5" -> "f5"; "Sonnet 5" -> "s5";
     * "Haiku 4.5" -> "h4.5". The family initial is LOWER-CASE so "o" does not read as a zero (BR). The context
-    * window (e.g. "1M") becomes a "/1M" suffix; absent → just the letter+version. Falls back to the first char
-    * for an unrecognised family (e.g. a bare model id). PURE. */
-  def shortModel(name: String): String =
+    * window becomes a "/1M" suffix, PREFERRING the MEASURED `context_window.context_window_size` from the
+    * status JSON (`ctxSize`) over a "(1M ...)" parsed from the display name. Why (2026-07-19): Opus announced
+    * itself as "Opus 4.8 (1M context)" so the name-parse worked, but Fable's display_name is bare "Fable 5"
+    * and the suffix silently vanished at the model-warp — a nameplate fact should come from the measured field
+    * when the harness provides one (line-1 provenance), with the name-parse kept as the fallback. Falls back
+    * to the first char for an unrecognised family (e.g. a bare model id). PURE. */
+  def shortModel(name: String, ctxSize: Option[Long] = None): String =
     val fam = name.toLowerCase
     val letter =
       if      fam.contains("opus")   then "o"
@@ -161,7 +172,8 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       else if fam.contains("haiku")  then "h"
       else name.trim.headOption.map(_.toLower.toString).getOrElse("?")
     val ver = raw"(\d+(?:\.\d+)?)".r.findFirstIn(name).getOrElse("")
-    val ctx = raw"\((\d+[MmKk])\b".r.findFirstMatchIn(name).map(_.group(1).toUpperCase)
+    val ctx = ctxSize.map(formatCtxSize)
+      .orElse(raw"\((\d+[MmKk])\b".r.findFirstMatchIn(name).map(_.group(1).toUpperCase))
     if ver.isEmpty then name.trim // no version to compact (e.g. a bare id like "haiku") — keep it recognisable
     else ctx.map(c => s"$letter$ver/$c").getOrElse(s"$letter$ver")
 
@@ -227,8 +239,11 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     // limit SURVIVES the rename and is not fixed by it — `silent` is honest about the feed, and the feed is still
     // an imperfect proxy for the pair. It just no longer LIES about whose state it is.
     silentSec.foreach(s => segs += sgr("38;5;245", s"silent ${formatGapShort(s)}"))
+    // measured ctx-window SIZE (docs: context_window.context_window_size, 200000 default / 1000000 extended) —
+    // feeds the model tag's "/1M" suffix so it survives a display_name that omits it (see shortModel).
+    val ctxSize = o.get("context_window").flatMap(_.obj).flatMap(_.get("context_window_size")).flatMap(_.num).map(_.toLong)
     o.get("model").flatMap(_.obj).foreach: m =>
-      m.get("display_name").orElse(m.get("id")).flatMap(_.str).foreach(n => segs += sgr("38;5;45", shortModel(n))) // un-bold so the bold genscalator prefix is the only bold thing
+      m.get("display_name").orElse(m.get("id")).flatMap(_.str).foreach(n => segs += sgr("38;5;45", shortModel(n, ctxSize))) // un-bold so the bold genscalator prefix is the only bold thing
     o.get("context_window").flatMap(_.obj).flatMap(_.get("used_percentage")).flatMap(_.num)
       .foreach(p => segs += sgr(ctxGauge(p, ctxWarn, dumbZone, autoCompact),
         s"ctx-fill ${pct(p)}${if p >= autoCompact then " auto-compact!" else if p >= dumbZone then " dumb-zone" else ""}")) // escalates green->orange->red(Z)->dumb-zone(D)->auto-compact(A)
@@ -343,6 +358,105 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     val chips = sortModes(modes).map(renderMode)
     if chips.isEmpty then s"$brand ${sgr("38;5;245", "clear: no active mode labels")}"
     else s"$brand ${chips.mkString(" & ")}"
+  // ---------- box line (SM163): a third MEASURED row — box health at a glance ----------
+  // Rationale: this box OOM-crashes GNOME and bloop wedges silently ([[blixten-box-flaky]], SM146/SM150), and
+  // the human was watching it with gnome-system-monitor at 2.2GB RSS. This line is a passive readout of the
+  // same facts for ~zero marginal cost: a few /proc and /sys FILE READS per tick, NO subprocess spawned.
+  // LINE-1 FAMILY (line-1-measured / line-2-declared contract): everything here is MEASURED by a mechanism.
+  // The LEAD CHIP is the one aggregate: "box healthy" / "box huffing" / "box swamped" (each exactly
+  // "genscalator".length = 11 chars, so the three row-leads align) = the WORST severity across the segments,
+  // computed from the SAME thresholds that colour them — a lift of the existing colour semantics into the
+  // name, not a new inference (precedent: ctx-fill's "dumb-zone" flag). Inferred proxies would carry `?`;
+  // none do yet (`wedge?` detection is SM146b, deferred).
+  // Linux-only by data source (/proc, /sys); EVERY reader is guarded, so on any other OS gather() yields None
+  // and the line simply does not print — alpha-tester-safe degradation.
+  object BoxStats:
+    /** One gathered snapshot of the box. PURE data; `renderBox` renders it (testable without /proc). */
+    final case class BoxInfo(memUsedKb: Long, memTotalKb: Long, load1: Double, cores: Int,
+                             tempC: Option[Int], jvmCount: Int, jvmRssKb: Long, bloopRssKb: Option[Long])
+    /** MemTotal + MemAvailable (kB) from /proc/meminfo content. "Used" = total - available (the kernel's own
+      * reclaimable-aware figure — matches what `free` calls available, unlike total - free). PURE. */
+    def parseMemInfo(s: String): Option[(Long, Long)] =
+      def kb(key: String): Option[Long] =
+        s.linesIterator.find(_.startsWith(key + ":")).flatMap(_.trim.split("\\s+").lift(1)).flatMap(_.toLongOption)
+      for t <- kb("MemTotal"); a <- kb("MemAvailable") yield (t, a)
+    /** 1-minute load average from /proc/loadavg content ("3.50 2.10 1.00 2/1234 5678"). PURE. */
+    def parseLoadAvg(s: String): Option[Double] =
+      s.trim.split("\\s+").headOption.flatMap(_.toDoubleOption)
+    /** VmRSS (kB) from a /proc/<pid>/status content. PURE. */
+    def parseVmRssKb(status: String): Option[Long] =
+      status.linesIterator.find(_.startsWith("VmRSS:")).flatMap(_.trim.split("\\s+").lift(1)).flatMap(_.toLongOption)
+
+    private def readFile(p: java.nio.file.Path): Option[String] =
+      try Option.when(java.nio.file.Files.isReadable(p))(String(java.nio.file.Files.readAllBytes(p), "UTF-8"))
+      catch case _: Throwable => None
+    /** Hottest thermal zone in whole °C (max across /sys/class/thermal/thermal_zone* — the fan story). */
+    def readTempC(): Option[Int] =
+      try
+        val dir = java.nio.file.Path.of("/sys/class/thermal")
+        if !java.nio.file.Files.isDirectory(dir) then None
+        else
+          val zones = scala.jdk.CollectionConverters.IteratorHasAsScala(java.nio.file.Files.list(dir).iterator()).asScala
+            .filter(_.getFileName.toString.startsWith("thermal_zone"))
+            .flatMap(z => readFile(z.resolve("temp")).flatMap(_.trim.toLongOption)).toVector
+          if zones.isEmpty then None else Some((zones.max / 1000).toInt)
+      catch case _: Throwable => None
+    /** Scan /proc for JVMs: (count, total VmRSS kB, bloop's VmRSS kB if a bloop JVM is present). A process is
+      * a JVM iff its comm is "java"; it is BLOOP iff its cmdline contains "bloop" (SUBSTRING heuristic — note
+      * `pkill -f BloopServer` missed a live BloopServer 2026-07-19, so the main-class string is NOT reliably in
+      * the cmdline; the ~/.cache/bloop classpath entries are). The cmdline is read, never printed — bounded
+      * OUTPUT is the SM160 constraint, and this emits at most two numbers. */
+    def jvmScan(): (Int, Long, Option[Long]) =
+      try
+        val procs = scala.jdk.CollectionConverters.IteratorHasAsScala(
+          java.nio.file.Files.list(java.nio.file.Path.of("/proc")).iterator()).asScala
+          .filter(_.getFileName.toString.forall(_.isDigit)).toVector
+        var count = 0; var rss = 0L; var bloopRss = Option.empty[Long]
+        procs.foreach: p =>
+          if readFile(p.resolve("comm")).map(_.trim).contains("java") then
+            val vm = readFile(p.resolve("status")).flatMap(parseVmRssKb).getOrElse(0L)
+            count += 1; rss += vm
+            if readFile(p.resolve("cmdline")).exists(_.toLowerCase.contains("bloop")) then
+              bloopRss = Some(bloopRss.getOrElse(0L) + vm)
+        (count, rss, bloopRss)
+      catch case _: Throwable => (0, 0L, None)
+    /** One effectful gather; None when the box offers no /proc (non-Linux) → the line silently absent. */
+    def gather(): Option[BoxInfo] =
+      for
+        (total, avail) <- readFile(java.nio.file.Path.of("/proc/meminfo")).flatMap(parseMemInfo)
+        load           <- readFile(java.nio.file.Path.of("/proc/loadavg")).flatMap(parseLoadAvg)
+      yield
+        val (jc, jr, br) = jvmScan()
+        BoxInfo(total - avail, total, load, Runtime.getRuntime.availableProcessors, readTempC(), jc, jr, br)
+
+  /** The box line. Severity 0/1/2 (green/orange/red) per segment from explicit thresholds; the lead chip is
+    * the MAX severity, so the name flips healthy -> huffing -> swamped exactly when a segment leaves green.
+    * All thresholds are first-cut GUESSES (mem/load reuse the 70/90 gauge; temp 70/85 °C; bloop 2G/6G from the
+    * lived 10.4GB specimen); tune against reality. PURE — testable with a synthetic BoxInfo. */
+  def renderBox(b: BoxStats.BoxInfo): String =
+    def gb(kb: Long): String = f"${kb / 1048576.0}%.1fG"
+    def sev(p: Double): Int = if p >= 90 then 2 else if p >= 70 then 1 else 0
+    def colour(s: Int, healthy: String): String = s match
+      case 2 => Red
+      case 1 => "38;5;214"
+      case _ => healthy
+    val memPct   = 100.0 * b.memUsedKb / b.memTotalKb
+    val loadPct  = 100.0 * b.load1 / b.cores
+    val tempSev  = b.tempC.map(t => if t >= 85 then 2 else if t >= 70 then 1 else 0).getOrElse(0)
+    val bloopSev = b.bloopRssKb.map(r => if r >= 6L * 1048576 then 2 else if r >= 2L * 1048576 then 1 else 0).getOrElse(0)
+    val overall  = List(sev(memPct), sev(loadPct), tempSev, bloopSev).max
+    val lead = overall match // 11 chars each, aligning with "genscalator" / "gs mode set" (BR 2026-07-19)
+      case 2 => sgr("1;38;5;203", "box swamped")
+      case 1 => sgr("1;38;5;214", "box huffing")
+      case _ => sgr("1;38;5;114", "box healthy")
+    val segs = scala.collection.mutable.ArrayBuffer[String](lead)
+    segs += sgr(colour(sev(memPct), "38;5;114"), f"mem ${b.memUsedKb / 1048576.0}%.1f/${gb(b.memTotalKb)}") // one G, on the total
+    segs += sgr(colour(sev(loadPct), "38;5;110"), f"load ${b.load1}%.1f/${b.cores}")
+    b.tempC.foreach(t => segs += sgr(colour(tempSev, "38;5;114"), s"temp ${t}C"))
+    if b.jvmCount > 0 then segs += sgr("38;5;245", s"jvm ${b.jvmCount}x${gb(b.jvmRssKb)}") // dim readout; its weight already counts inside mem
+    b.bloopRssKb.foreach(r => segs += sgr(colour(bloopSev, "38;5;245"), s"bloop ${gb(r)}"))
+    segs.mkString(sep)
+
   private val Help: String =
     """tt statusline — format Claude Code's statusLine JSON into one compact coloured line
       |
@@ -382,6 +496,11 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       |  --now-ms N          fixed "now" as epoch-ms (for deterministic tests)
       |  --mode-line         ALSO emit the mode line (line 2: the declared joint state-of-mind,
       |                      read from the state file `tt mode` writes)
+      |  --box-line          ALSO emit the box line (line 3, SM163: MEASURED box health from
+      |                      /proc + /sys — lead chip "box healthy"/"box huffing"/"box swamped"
+      |                      = worst segment severity; mem used/total, 1-min load / cores, max
+      |                      thermal temp, JVM count + total RSS, a bloop chip when a bloop JVM
+      |                      is present. Linux-only; silently absent elsewhere)
       |  --no-status         suppress line 1 (e.g. show ONLY the mode line)
       |  --modes-file F      the declared-modes state file (default ~/.claude/gs-modes)
       |
@@ -409,6 +528,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     var dumbZone    = 75.0 // context-fill DUMB-ZONE threshold (%): most likely rotted; set via `--dumb-zone N`
     var autoCompact = 92.0 // context-fill NEAR-AUTO-COMPACT threshold (%): harness about to compact; `--auto-compact N` (real value ~90-95%, a guess)
     var modeLine  = false // --mode-line: also emit the mode line (line 2)
+    var boxLine   = false // --box-line: also emit the box line (line 3, SM163 — measured box health)
     var noStatus  = false // --no-status: suppress line 1 (e.g. to show ONLY the mode line)
     var modesFile = defaultModesFile
     var tokWarn    = 200_000L // rot? (since-warp) orange threshold (GUESS for one window, configurable via --tok-warn)
@@ -445,6 +565,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
         case "--no-tok"                         => noTok     = true; i += 1
         case "--rot-only"                       => rotOnly   = true; i += 1
         case "--mode-line"                      => modeLine  = true; i += 1
+        case "--box-line"                       => boxLine   = true; i += 1
         case "--no-status"                      => noStatus  = true; i += 1
         case other                              => pos += other; i += 1
     // SM128: drop the secondary `tot` gauge on a narrow terminal. Claude Code sets $COLUMNS before running the
@@ -480,6 +601,8 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     // LINE 2 is DECLARED-ONLY (BR 2026-07-17): the gap now rides line 1 as `silent`, and there is no derived-chip
     // argument left to pass — see renderModes.
     if modeLine then println(renderModes(readModes(modesFile)))
+    // LINE 3 (SM163): measured box health; gather() is None off-Linux so the row is silently absent there.
+    if boxLine then BoxStats.gather().foreach(b => println(renderBox(b)))
     0
 
 @main def statusLine(args: String*): Unit = sys.exit(StatuslineTool.dispatch(args.toList))
