@@ -49,6 +49,10 @@ FORBIDDEN → ALLOWED:
 
 ## 3. Pre-authorized actions (do at cold start, report in-feed)
 - <action> — pre-authorized by <human>, verify by <check>.
+- IF the budget mode says spending (TokSpend lit): spawn the meta-minion to audit the handover —
+  the last session's final commits against this baton's claims. It is the one verifier outside
+  both the dying and the newborn context ("carried ≠ armed": baton content must be read to act,
+  a spawned watcher fires regardless). If not in spending mode: ask before spawning.
 - ...
 
 ## 4. State summary — MAX THREE LINES, each with its verify-mandate
@@ -75,4 +79,5 @@ Before exiting, the writer checks:
 
 Carried by the research programme (blog 030): whether the checklist earns its top slot (experiment
 2), whether the three-line summary beats pure pointers (experiment 3), how the template should vary
-by warp type, and what a no-baton control reveals about the whole idea (the pilot).
+by warp type, what a no-baton control reveals about the whole idea (the pilot), and whether the
+cold-start meta-minion audit earns its tokens (a later arm: baton+minion vs baton alone).
