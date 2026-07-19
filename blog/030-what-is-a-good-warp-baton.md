@@ -103,8 +103,8 @@ much smaller deliverables:
 **1. A pre-hoc seed** (pre-hoc: written down *before* any measurement, the opposite of rationalizing
 afterwards). Our best-reasoned baton template - the table above, ordered checklist-first,
 with the three-line verified state summary - written down as the thing to beat. It is a seed, not a
-result. (The living template will be maintained in the repo; this post deliberately does not duplicate
-its details, so it cannot drift out of date here.)
+result: [BATON-TEMPLATE.md](../work/BATON-TEMPLATE.md), living in the repo next to the real specimen.
+This post deliberately does not duplicate its details, so it cannot drift out of date here.
 
 **2. A pilot A/B test** (two groups, exactly one difference between them). One factor, the most
 primitive one: *baton versus no baton*. Fresh agent
