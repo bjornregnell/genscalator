@@ -1367,7 +1367,7 @@ class CliSuite extends munit.FunSuite:
 
   test("statusline SM163 box line: pure parsers + renderBox severity lead") {
     import StatuslineTool.*
-    import StatuslineTool.BoxStats.*
+    import BoxStats.*
     assertEquals(parseMemInfo("MemTotal:       32505856 kB\nMemFree:         1234 kB\nMemAvailable:   12582912 kB\n"),
                  Some((32505856L, 12582912L)))
     assertEquals(parseLoadAvg("3.50 2.10 1.00 2/1234 5678\n"), Some(3.5))
@@ -1405,6 +1405,29 @@ class CliSuite extends munit.FunSuite:
     assertEquals("box swamped".length, "genscalator".length)
   }
 
+  test("bloop T3: signature predicate + the red-only restart? hint on the box line") {
+    import BoxStats.isBloopCmdline
+    // signature: classpath entries under ~/.cache/bloop match; a plain JVM does not
+    assert(isBloopCmdline("java -cp /home/x/.cache/bloop/semanticdb.jar x.Main"))
+    assert(isBloopCmdline("java -Xmx4G bloop.BloopServer"))
+    assert(!isBloopCmdline("java -cp /opt/app/app.jar com.example.Main"))
+    // the 2026-07-19 live catch: Metals embeds bloop jars, so a bare substring matched 2 Metals JVMs;
+    // killing those would take down the editor's language server. Any metals mention excludes.
+    assert(!isBloopCmdline("java -cp /home/x/.cache/metals/bloop-frontend.jar scala.meta.metals.Main"))
+    // advisory hint: RED bloop (>=6G) says restart?, orange (>=2G) does not; render path never acts
+    val base = BoxStats.BoxInfo(memUsedKb = 8388608L, memTotalKb = 33554432L, load1 = 1.0,
+      cores = 8, tempC = None, jvmCount = 1, jvmRssKb = 1048576L, bloopRssKb = Some(7L * 1048576))
+    assert(clue(StatuslineTool.renderBox(base)).contains("restart?"))
+    assert(!clue(StatuslineTool.renderBox(base.copy(bloopRssKb = Some(3L * 1048576)))).contains("restart?"))
+  }
+  test("bloop T3 cli: --help exits 0, unknown verb aborts loudly with exit 2") {
+    val (hc, hout, _) = run("bloop", "--help")
+    assertEquals(hc, 0)
+    assert(clue(hout).contains("tt bloop"))
+    val (wc, _, werr) = run("bloop", "wat")
+    assertEquals(wc, 2)
+    assert(clue(werr).contains("unknown arguments"))
+  }
   test("statusline SM119 sortModes: stable canonical order regardless of +/- add/remove history") {
     import StatuslineTool.*
     // same SET, different insertion orders -> identical render order (the whole point of SM119)

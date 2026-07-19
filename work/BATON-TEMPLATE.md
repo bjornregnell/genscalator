@@ -9,8 +9,8 @@ real specimen it generalizes: [BATON-EXAMPLE.md](BATON-EXAMPLE.md).
 ## The rules the template encodes
 
 1. **Pointer, not truth.** Durable truth lives in committed files and notes; the baton points. The
-   only prose state allowed is the three-line summary of §5, and each of its lines must say how to
-   verify itself.
+   only prose state allowed is the three-line summary of §4, and each of its lines must say how to
+   verify itself. *(This pointer said §5 until minion push-4 F3 caught the off-by-one.)*
 2. **Verify-mandate rule.** Every inherited claim the fresh agent will ACT on carries its own
    check-instruction (a hash to compare, a command to run, a file to read). A fresh agent holds all
    inherited facts at uniform strength; the mandates substitute for the lost knowing-which-was-checked.

@@ -1,6 +1,7 @@
 //> using scala 3.8.4
 //> using jvm 21
 //> using file minijson.scala
+//> using file boxstats.scala
 
 // statusline — format the Claude Code `statusLine` stdin JSON into ONE compact line (SM039).
 // Claude Code pipes a JSON object to the configured statusLine command's stdin each turn; this reads it and prints:
@@ -380,71 +381,8 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
   // none do yet (`wedge?` detection is SM146b, deferred).
   // Linux-only by data source (/proc, /sys); EVERY reader is guarded, so on any other OS gather() yields None
   // and the line simply does not print — alpha-tester-safe degradation.
-  object BoxStats:
-    /** One gathered snapshot of the box. PURE data; `renderBox` renders it (testable without /proc). */
-    final case class BoxInfo(memUsedKb: Long, memTotalKb: Long, load1: Double, cores: Int,
-                             tempC: Option[Int], jvmCount: Int, jvmRssKb: Long, bloopRssKb: Option[Long],
-                             diskFreeKb: Long = 0, diskTotalKb: Long = 0) // 0 total = no disk segment
-    /** MemTotal + MemAvailable (kB) from /proc/meminfo content. "Used" = total - available (the kernel's own
-      * reclaimable-aware figure — matches what `free` calls available, unlike total - free). PURE. */
-    def parseMemInfo(s: String): Option[(Long, Long)] =
-      def kb(key: String): Option[Long] =
-        s.linesIterator.find(_.startsWith(key + ":")).flatMap(_.trim.split("\\s+").lift(1)).flatMap(_.toLongOption)
-      for t <- kb("MemTotal"); a <- kb("MemAvailable") yield (t, a)
-    /** 1-minute load average from /proc/loadavg content ("3.50 2.10 1.00 2/1234 5678"). PURE. */
-    def parseLoadAvg(s: String): Option[Double] =
-      s.trim.split("\\s+").headOption.flatMap(_.toDoubleOption)
-    /** VmRSS (kB) from a /proc/<pid>/status content. PURE. */
-    def parseVmRssKb(status: String): Option[Long] =
-      status.linesIterator.find(_.startsWith("VmRSS:")).flatMap(_.trim.split("\\s+").lift(1)).flatMap(_.toLongOption)
-
-    private def readFile(p: java.nio.file.Path): Option[String] =
-      try Option.when(java.nio.file.Files.isReadable(p))(String(java.nio.file.Files.readAllBytes(p), "UTF-8"))
-      catch case _: Throwable => None
-    /** Hottest thermal zone in whole °C (max across /sys/class/thermal/thermal_zone* — the fan story). */
-    def readTempC(): Option[Int] =
-      try
-        val dir = java.nio.file.Path.of("/sys/class/thermal")
-        if !java.nio.file.Files.isDirectory(dir) then None
-        else
-          val zones = scala.jdk.CollectionConverters.IteratorHasAsScala(java.nio.file.Files.list(dir).iterator()).asScala
-            .filter(_.getFileName.toString.startsWith("thermal_zone"))
-            .flatMap(z => readFile(z.resolve("temp")).flatMap(_.trim.toLongOption)).toVector
-          if zones.isEmpty then None else Some((zones.max / 1000).toInt)
-      catch case _: Throwable => None
-    /** Scan /proc for JVMs: (count, total VmRSS kB, bloop's VmRSS kB if a bloop JVM is present). A process is
-      * a JVM iff its comm is "java"; it is BLOOP iff its cmdline contains "bloop" (SUBSTRING heuristic — note
-      * `pkill -f BloopServer` missed a live BloopServer 2026-07-19, so the main-class string is NOT reliably in
-      * the cmdline; the ~/.cache/bloop classpath entries are). The cmdline is read, never printed — bounded
-      * OUTPUT is the SM160 constraint, and this emits at most two numbers. */
-    def jvmScan(): (Int, Long, Option[Long]) =
-      try
-        val procs = scala.jdk.CollectionConverters.IteratorHasAsScala(
-          java.nio.file.Files.list(java.nio.file.Path.of("/proc")).iterator()).asScala
-          .filter(_.getFileName.toString.forall(_.isDigit)).toVector
-        var count = 0; var rss = 0L; var bloopRss = Option.empty[Long]
-        procs.foreach: p =>
-          if readFile(p.resolve("comm")).map(_.trim).contains("java") then
-            val vm = readFile(p.resolve("status")).flatMap(parseVmRssKb).getOrElse(0L)
-            count += 1; rss += vm
-            if readFile(p.resolve("cmdline")).exists(_.toLowerCase.contains("bloop")) then
-              bloopRss = Some(bloopRss.getOrElse(0L) + vm)
-        (count, rss, bloopRss)
-      catch case _: Throwable => (0, 0L, None)
-    /** One effectful gather; None when the box offers no /proc (non-Linux) → the line silently absent. */
-    def gather(): Option[BoxInfo] =
-      for
-        (total, avail) <- readFile(java.nio.file.Path.of("/proc/meminfo")).flatMap(parseMemInfo)
-        load           <- readFile(java.nio.file.Path.of("/proc/loadavg")).flatMap(parseLoadAvg)
-      yield
-        val (jc, jr, br) = jvmScan()
-        val (dFree, dTot) = // root filesystem; JDK FileStore, no /proc needed. Guarded like everything else.
-          try
-            val fs = java.nio.file.Files.getFileStore(java.nio.file.Path.of("/"))
-            (fs.getUsableSpace / 1024, fs.getTotalSpace / 1024)
-          catch case _: Throwable => (0L, 0L)
-        BoxInfo(total - avail, total, load, Runtime.getRuntime.availableProcessors, readTempC(), jc, jr, br,
-                diskFreeKb = dFree, diskTotalKb = dTot)
+  // BoxStats MOVED to boxstats.scala (shared with `tt bloop` per the research/038 shared-helper pattern;
+  // the bloop signature needed ONE home the moment a second tool consumed it). Rendering stays here.
 
   /** The box line. Severity 0/1/2 (green/orange/red) per segment from explicit thresholds; the lead chip is
     * the MAX severity, so the name flips healthy -> huffing -> swamped exactly when a segment leaves green.
@@ -480,7 +418,11 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     // leading % = USED (what the colour grades on); the absolute is FREE (what the human thinks in) — BR 2026-07-19
     if b.diskTotalKb > 0 then segs += sgr(colour(diskSev, "38;5;114"), s"disk ${pct(diskPct)}/${b.diskFreeKb / 1048576}Gfree") // whole G, truncated (never overstates free) — BR: no .x precision here
     if b.jvmCount > 0 then segs += sgr("38;5;245", s"jvm ${b.jvmCount}x${gb(b.jvmRssKb)}") // dim readout; its weight already counts inside mem
-    b.bloopRssKb.foreach(r => segs += sgr(colour(bloopSev, "38;5;245"), s"bloop ${gb(r)}"))
+    // At RED the segment carries an advisory `restart?` — the `?` per the SM118 grammar: an INFERRED
+    // suggestion from a threshold proxy, never an action (a render path must not kill; T3 design). The
+    // declared action is `tt bloop restart`, run by a human or agent who saw the hint.
+    b.bloopRssKb.foreach(r => segs += sgr(colour(bloopSev, "38;5;245"),
+      s"bloop ${gb(r)}" + (if bloopSev == 2 then " restart?" else "")))
     segs.mkString(sep)
 
   private val Help: String =

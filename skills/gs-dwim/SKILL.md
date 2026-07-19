@@ -70,27 +70,28 @@ gracefully). The per-command behaviour is specified below.
   `add` = `tt mode add <label>`, `rm` = `tt mode rm <label>`, `gs mode clear` = `tt mode clear`. Labels are bare
   CamelCase tokens (`TokSpend`, `HotHarvest`, `HighContext`, `Solo`, `HumanStress`, `RotVigil`, `Racing`,
   ...; CamelCase maps 1:1 onto the planned `enum ModeChips` case names). NOT a settings edit — just the state file `~/.claude/gs-modes`, allowlisted, no confirmation. **Both
-  parties declare:** the human sets frame modes (tok-spend, racing, human-stress); the **agent should
-  proactively declare its own** as the MO shifts — `tt mode add hot-harvest` when harvesting, `rot-vigil`
-  when watching rot, `high-context` as fill rises, `solo` on an AFK handoff — and `rm` them when they end, so
+  parties declare:** the human sets frame modes (TokSpend, Racing, HumanStress); the **agent should
+  proactively declare its own** as the MO shifts — `tt mode add HotHarvest` when harvesting, `RotVigil`
+  when watching rot, `HighContext` as fill rises, `Solo` on an AFK handoff — and `rm` them when they end, so
   the mode line stays a live, mutually-visible reflection of the shared state.
 
 ### The bare `+`/`-` mode shorthand — a non-`gs`-led cue (SM120)
 
 The shortest way to change a mode is a **bare message led by `+` or `-`** on a mode label, with **no `gs`
-prefix**: `+afk` adds, `-afk` removes. This is the easiest human cue for the joint state-of-mind and is proven
-live (BR typed `+afk +solo`, `-afk -solo`, `+dumb-zone?`). Recognise it and run the matching `tt mode add|rm
+prefix**: `+Afk` adds, `-Afk` removes. This is the easiest human cue for the joint state-of-mind and is proven
+live (BR typed `+afk +solo`, `-afk -solo`, `+dumb-zone?` in the pre-CamelCase era, and `+RotVigil`,
+`+afk`/`+solo` after — match labels case-insensitively DWIM-style, persist the CamelCase form). Recognise it and run the matching `tt mode add|rm
 <label>` — same effect as `gs mode add|rm`, without the ceremony.
 
 - **`+<label>`** → `tt mode add <label>`   ·   **`-<label>`** → `tt mode rm <label>`.
-- **Composes left to right:** `+afk +solo` adds both; `-afk -solo` removes both; mixed `+solo -afk` is fine.
+- **Composes left to right:** `+Afk +Solo` adds both; `-Afk -Solo` removes both; mixed `+Solo -Afk` is fine.
   Run one `tt mode` call per label, in order.
-- **The `?` suffix (SM118)** marks an **inferred / member-check** mode — `+dumb-zone?` = "I hypothesise the
-  agent may be in dumb-zone", a nudge to confirm or deny, not an assertion. NB `tt mode` does not yet accept
+- **The `?` suffix (SM118)** marks an **inferred / member-check** mode — `+DumbZone?` = "I hypothesise the
+  agent may be in the dumb-zone", a nudge to confirm or deny, not an assertion. NB `tt mode` does not yet accept
   `?` in a label (SM118 covers that tool support), so for now treat a `?`-mode as a **conversational
   hypothesis** to acknowledge; persist only the confirmed (no-`?`) form once agreed, never pass `?` to the tool.
-- **Only for a genuine mode label** (afk, solo, tok-spend, rot-vigil, hot-harvest, high-context, racing,
-  human-stress, delegation, …). A leading `+`/`-` on a non-mode word is NOT this cue — do not force it; fall
+- **Only for a genuine mode label** (Afk, Solo, TokSpend, RotVigil, HotHarvest, HighContext, Racing,
+  HumanStress, Delegation, ColdStart, SmartZone, DumbZone, …). A leading `+`/`-` on a non-mode word is NOT this cue — do not force it; fall
   back to the DWIM contract (ask if genuinely ambiguous, e.g. `+1` or `-v` is not a mode toggle).
 - **No confirmation** — the mode file is allowlisted, non-sensitive state (`~/.claude/gs-modes`), exactly like
   `gs mode`. Just do it, then let the mode line (or a one-line ack) reflect the new state.

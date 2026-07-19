@@ -35,8 +35,8 @@ private val ModeHelp: String =
     |Labels are CamelCase so they map 1:1 onto the planned `enum ModeChips` case names.
     |
     |Examples:
-    |  tt mode add hot-harvest       # agent or human declares hot-harvest mode
-    |  tt mode rm hot-harvest        # clear it
+    |  tt mode add HotHarvest        # agent or human declares HotHarvest mode
+    |  tt mode rm HotHarvest         # clear it
     |  tt mode                       # list what is active
     |
     |Full reference: tools/README.md""".stripMargin
