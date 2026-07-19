@@ -18,9 +18,10 @@ sup.fn-ref{font-size:.75em;line-height:0}.footnotes{font-size:.9em;margin-top:2r
 </ul>
 <h2 id="1-install-the-claude-code-plugin">1. Install the Claude Code plugin</h2>
 <p>In Claude Code, run:</p>
-<pre><code>/plugin marketplace add https://codeberg.org/bjornregnell/genscalator.git
+<pre><code>/plugin marketplace add bjornregnell/genscalator
 /plugin install genscalator@bjornregnell
 /reload-plugins</code></pre>
+<p>The short form installs from the GitHub mirror (kept in sync on every commit). The canonical Codeberg repo works too: <code>/plugin marketplace add https://codeberg.org/bjornregnell/genscalator.git</code></p>
 <p>Then verify with <strong><code>/skills</code></strong> — you should see <code>tt-toolbox</code>, <code>scala-style</code>, and the rest of the set. If they do not show up yet, restart Claude Code and check again.</p>
 <p>An active skill is <em>lazy</em>: it loads when its trigger fires, not necessarily at the first turn. To confirm the set is present at any time, run:</p>
 <pre><code>gs skills</code></pre>
