@@ -53,10 +53,18 @@ reconstructed the working state from it with zero human re-explanation. That one
 - **RQ7 (generality):** How much of a good baton transfers to another human-agent pair or another project, and
   how much is pair-specific vocabulary? A baton full of local shorthand was written for *our* fresh agent; a
   transferable template would need to separate the pattern from the private language.
+- **RQ8 (the skill):** What does a good baton-prep skill look like? A baton is written at the worst possible
+  moment: session end, a full context, sometimes a failing machine or a tired human, exactly when trained
+  reflexes degrade. So can the baton template be packaged as a skill that triggers on the exit cue and walks the
+  outgoing agent through a pre-flight? Part of quality is mechanically checkable (do the pointers resolve, do the
+  cited commit hashes exist, does every hold name who lifts it), and a skill can refuse to finish until those
+  checks pass. Open sub-questions: what belongs in the skill versus the template versus the substrate it points
+  at; whether the skill should exist before the RQ5 experiment says which ingredients matter; and the RQ7 split
+  applied to the skill itself, a public generic pattern versus the pair-private vocabulary.
 
 ## TODOs
 
-- **TODO:** run the SM168 joint-reasoning pass over RQ1-RQ7; trim to the few that earn the experiment.
+- **TODO:** run the SM168 joint-reasoning pass over RQ1-RQ8; trim to the few that earn the experiment.
 - **TODO:** decide whether the sub-agent experiment (RQ5) runs, and on which harness.
 - **TODO:** ground the "it worked" claim with the concrete cold-start episode (one home for the facts; this post
   points, the specimen file holds).
