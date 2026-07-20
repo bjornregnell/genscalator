@@ -555,8 +555,9 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
 
   // ---------- mascot-lab-GENERATED.html: Forgy & Smither, v1 geometric takes ----------
   // Forgy = the FEMALE twin (BR 2026-07-20), the hot impulsive one: hammer, HIO/VRO accents, Forgy dark.
-  // Smither = the male twin, calm + methodical: TONGS (= human control, holding the hot iron safely),
-  // TIP/temper-blue accents, Smither light. Tableau: Forgy left, anvil with the axe center, Smither right.
+  // Smither = the male twin, calm + methodical: TONGS (= human control) gripping a freshly-forged
+  // GLOWING AXE HEAD (the axe = the palette's origin motif), TIP/temper-blue accents, Smither light.
+  // Tableau: Forgy left, the anvil center, Smither right holding the hot axe head over the iron.
   // All fills interpolate the palette, so mascots re-skin when the palette moves. Charmingly primitive v1.
 
   def forgySvg: String =
@@ -599,8 +600,9 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |  <line x1="38" y1="158" x2="10" y2="148" stroke="${acg.hex}" stroke-width="5" stroke-linecap="round"/>
        |  <line x1="38" y1="158" x2="12" y2="170" stroke="${acg.hex}" stroke-width="5" stroke-linecap="round"/>
        |  <circle cx="38" cy="158" r="5" fill="${acg.hex}"/>
-       |  <circle cx="6" cy="156" r="11" fill="${hio.hex}" opacity="0.22"/>
-       |  <rect x="0" y="152" width="13" height="9" rx="2" fill="${hio.hex}"/>
+       |  <circle cx="-2" cy="157" r="18" fill="${hio.hex}" opacity="0.2"/>
+       |  <path d="M-14 144 L10 149 L8 171 L-12 167 Q-23 156 -14 144 Z" fill="${hio.hex}"/>
+       |  <path d="M-12 167 Q-23 156 -14 144" stroke="${vro.hex}" stroke-width="3" fill="none" stroke-linecap="round"/>
        |  <line x1="130" y1="132" x2="156" y2="172" stroke="${tb.hex}" stroke-width="12" stroke-linecap="round"/>
        |  <rect x="82" y="210" width="12" height="28" fill="${ash.hex}"/>
        |  <rect x="106" y="210" width="12" height="28" fill="${ash.hex}"/>
@@ -608,11 +610,8 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |  <rect x="102" y="236" width="22" height="8" rx="3" fill="${acg.hex}"/>
        |</g>""".stripMargin
 
-  def anvilAxeSvg: String =
+  def anvilSvg: String =
     s"""<g>
-       |  <line x1="52" y1="38" x2="132" y2="30" stroke="${acg.hex}" stroke-width="6" stroke-linecap="round"/>
-       |  <path d="M30 18 L54 25 L52 44 L26 40 Q16 29 30 18 Z" fill="${cacg.hex}"/>
-       |  <path d="M26 40 Q16 29 30 18" stroke="${hio.hex}" stroke-width="3" fill="none" stroke-linecap="round"/>
        |  <rect x="20" y="44" width="120" height="18" rx="4" fill="${ash.hex}" stroke="${acg.hex}" stroke-width="3"/>
        |  <path d="M20 44 L20 62 L0 53 Z" fill="${ash.hex}" stroke="${acg.hex}" stroke-width="3"/>
        |  <rect x="62" y="62" width="36" height="16" fill="${ash.hex}" stroke="${acg.hex}" stroke-width="3"/>
@@ -624,11 +623,11 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
       s"""<svg viewBox="0 0 640 300" width="640" role="img" aria-label="Forgy and Smither at the anvil">
          |  <line x1="10" y1="283" x2="630" y2="283" stroke="${cacg.hex}" stroke-width="2" opacity="0.5"/>
          |  <g transform="translate(260,39) scale(-1,1)">$forgySvg</g>
-         |  <g transform="translate(240,191)">$anvilAxeSvg</g>
+         |  <g transform="translate(240,191)">$anvilSvg</g>
          |  <g transform="translate(380,39)">$smitherSvg</g>
          |</svg>""".stripMargin
     def solo(svg: String, label: String) =
-      s"""<figure><svg viewBox="0 0 200 260" width="180" role="img" aria-label="$label">$svg</svg><figcaption>$label</figcaption></figure>"""
+      s"""<figure><svg viewBox="-26 0 226 260" width="190" role="img" aria-label="$label">$svg</svg><figcaption>$label</figcaption></figure>"""
     s"""<!DOCTYPE html>
        |<html lang="en">
        |<head>
@@ -659,7 +658,7 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |    </div>
        |  </section>
        |  <section class="panel tip">
-       |    <div class="label">the tableau: Forgy · anvil with the freshly-forged axe (HIO edge-glow) · Smither</div>
+       |    <div class="label">the tableau: Forgy · the anvil · Smither, whose tongs hold a freshly-forged GLOWING AXE HEAD (VRO edge) over the iron</div>
        |    $tableau
        |  </section>
        |  <section class="panel light">
