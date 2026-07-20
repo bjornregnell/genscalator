@@ -66,6 +66,9 @@ body {
   color: var(--logo-fg);   /* the wordmark follows each theme's ratified logo color */
   letter-spacing: 0.02em; margin-bottom: 0.35em;
 }
+/* The design-language h1 seam under the hero wordmark (tried + ratified by BR eye 2026-07-20: "better!").
+   width: fit-content keeps the line at text width, not overlay width. */
+.overlay .name { width: fit-content; border-bottom: 4px solid var(--rule); padding-bottom: 0.12em; }
 .tagline {
   font-family: var(--sans);
   font-size: clamp(1.5rem, 3.6vw, 2.6rem); color: var(--fg);   /* slogan: sized so line 1 ~ heading width */
