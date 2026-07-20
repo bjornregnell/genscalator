@@ -130,8 +130,9 @@ object DesignLang {
        |the light-surface link/accent blue. On dark surfaces use CHIO/CVRO instead (TB fails there); no
        |single blue can serve both, so the blues come as a pair like the glow oranges vs the tempered darks.
        |Decorative exception (BR 2026-07-20): hairlines/rules on DARK may use TB deliberately — quiet by
-       |design (2.24 on TIP), e.g. the index h1 seam under a hot-iron heading (heading and its line must
-       |differ in color; both themes' h1 rules are TB). Visible dark-surface accents remain CHIO/CVRO.
+       |design (2.24 on TIP), e.g. the index DARK theme's h1 seam under a hot-iron heading (the rule:
+       |heading and its line must differ in color; light theme pairs a TIP heading with the hot-iron
+       |line instead). Visible dark-surface accents remain CHIO/CVRO.
        |  * https://en.wikipedia.org/wiki/Tempering_(metallurgy)#/media/File:Tempering_colors_in_steel.jpg
        |  * https://sv.wikipedia.org/wiki/Anl%C3%B6pning
        |
@@ -381,7 +382,7 @@ object DesignLang {
        |    --code-bg: var(--${tip.css}); --code-fg: var(--${ctip.css});
        |    --border: var(--${acg.css}); --th-bg: var(--${cacg.css});
        |    --logo-fg: var(--${tip.css}); --logo-gs: var(--${tb.css});
-       |    --rule: var(--${tb.css}); /* the h1 line matches each theme's logo accent */
+       |    --rule: var(--${hio.css}); /* TIP heading over the hot-iron line (heading and line must differ, BR) */
        |  }
        |  /* Forgy dark */
        |  body.dark {
