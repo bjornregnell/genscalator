@@ -21,6 +21,7 @@ Theme: blacksmith, forging, metallurgy and iron
 
 --anvil-coal-graphite: #322b25; /* anvil coal graphite */
 --cacg-cold-gray: #cdd4da; /* complement to anvil coal graphite */
+--coal-ash: #7d6e5f; /* mid-tone coal ash: garments/silhouettes on dark grounds */
 
 --neon-pink-purple: #c724b1; /* signal pair, base */
 --vivid-bright-green: #38db4e; /* complementary of neon-pink-purple */
@@ -73,6 +74,14 @@ A dark coal-stained cast anvil gray/brown sampled from axe-3
 
 #### Complementary color of ACG: #cdd4da
 
+### Coal Ash (ASH): #7d6e5f
+
+The ash raked over the coals — the very act that banks the warp ember overnight. A mid-tone warm
+gray between ACG and CACG, added 2026-07-20 when the mascots' graphite garments melted into the
+dark TIP ground (ACG on TIP is only 1.21) while cold-gray would glow like bare metal
+(11.25). ASH sits in the working window: 3.42 on TIP, 2.83 against ACG beside it,
+3.87 on bone-white. Role: garments, silhouette mid-tones, muted furniture on dark grounds.
+
 ### Neon Pink Purple (NPP): #c724b1
 
 The SIGNAL pair, base color — state semantics (chips, statusline, alerts) rather than material
@@ -107,6 +116,7 @@ Ratio then WCAG 2.1 verdict per cell.
 | CTIP ctip-bone-white `#e8e6c0` | 10.95 AAA | 13.24 AAA | - | 1.18 fail | 1.27 fail |
 | ACG anvil-coal-graphite `#322b25` | - | 1.21 fail | 10.95 AAA | 9.30 AAA | 13.93 AAA |
 | CACG cacg-cold-gray `#cdd4da` | 9.30 AAA | 11.25 AAA | 1.18 fail | - | 1.50 fail |
+| ASH coal-ash `#7d6e5f` | 2.83 fail | 3.42 AA-large | 3.87 AA-large | 3.29 AA-large | 4.92 AA |
 | NPP neon-pink-purple `#c724b1` | 2.86 fail | 3.46 AA-large | 3.83 AA-large | 3.25 AA-large | 4.87 AA |
 | VBG vivid-bright-green `#38db4e` | 7.57 AAA | 9.15 AAA | 1.45 fail | 1.23 fail | 1.84 fail |
 

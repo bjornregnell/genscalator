@@ -28,10 +28,11 @@ object DesignLang {
   val ctip = Color("CTIP", "ctip-bone-white",      "#e8e6c0")
   val acg  = Color("ACG",  "anvil-coal-graphite",  "#322b25")
   val cacg = Color("CACG", "cacg-cold-gray",       "#cdd4da")
+  val ash  = Color("ASH",  "coal-ash",             "#7d6e5f") // mid-tone between ACG and CACG (BR 2026-07-20): garments/silhouettes on dark; the ash that banks the ember
   val npp  = Color("NPP",  "neon-pink-purple",     "#c724b1")
   val vbg  = Color("VBG",  "vivid-bright-green",   "#38db4e")
 
-  val palette: Vector[Color] = Vector(hio, vro, chio, cvro, tb, tip, ctip, acg, cacg, npp, vbg)
+  val palette: Vector[Color] = Vector(hio, vro, chio, cvro, tb, tip, ctip, acg, cacg, ash, npp, vbg)
 
   // logo spec, frozen by BR 2026-07-20
   val logoWeight  = 700
@@ -99,6 +100,7 @@ object DesignLang {
        |
        |--${acg.css}: ${acg.hex}; /* anvil coal graphite */
        |--${cacg.css}: ${cacg.hex}; /* complement to anvil coal graphite */
+       |--${ash.css}: ${ash.hex}; /* mid-tone coal ash: garments/silhouettes on dark grounds */
        |
        |--${npp.css}: ${npp.hex}; /* signal pair, base */
        |--${vbg.css}: ${vbg.hex}; /* complementary of neon-pink-purple */
@@ -150,6 +152,14 @@ object DesignLang {
        |  * https://codeberg.org/bjornregnell/genscalator/src/branch/main/media/img/axe-3.jpg
        |
        |#### Complementary color of ACG: ${cacg.hex}
+
+### Coal Ash (ASH): ${ash.hex}
+
+The ash raked over the coals — the very act that banks the warp ember overnight. A mid-tone warm
+gray between ACG and CACG, added 2026-07-20 when the mascots' graphite garments melted into the
+dark TIP ground (ACG on TIP is only ${f"${ratio(acg.hex, tip.hex)}%.2f"}) while cold-gray would glow like bare metal
+(${f"${ratio(cacg.hex, tip.hex)}%.2f"}). ASH sits in the working window: ${f"${ratio(ash.hex, tip.hex)}%.2f"} on TIP, ${f"${ratio(ash.hex, acg.hex)}%.2f"} against ACG beside it,
+${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette mid-tones, muted furniture on dark grounds.
        |
        |### Neon Pink Purple (NPP): ${npp.hex}
        |
@@ -558,7 +568,7 @@ object DesignLang {
        |  <circle cx="112" cy="90" r="4" fill="${tip.hex}"/>
        |  <path d="M88 102 Q100 112 112 102" stroke="${tip.hex}" stroke-width="3" fill="none" stroke-linecap="round"/>
        |  <path d="M70 114 L130 114 L146 210 L54 210 Z" fill="${hio.hex}"/>
-       |  <path d="M84 130 L116 130 L124 200 L76 200 Z" fill="${acg.hex}"/>
+       |  <path d="M84 130 L116 130 L124 200 L76 200 Z" fill="${ash.hex}"/>
        |  <line x1="70" y1="130" x2="36" y2="104" stroke="${hio.hex}" stroke-width="12" stroke-linecap="round"/>
        |  <line x1="36" y1="104" x2="22" y2="64" stroke="${acg.hex}" stroke-width="7" stroke-linecap="round"/>
        |  <rect x="4" y="50" width="38" height="17" rx="3" fill="${acg.hex}"/>
@@ -567,8 +577,8 @@ object DesignLang {
        |  <circle cx="60" cy="42" r="2.5" fill="${vro.hex}"/>
        |  <circle cx="44" cy="38" r="2" fill="${hio.hex}"/>
        |  <line x1="130" y1="130" x2="158" y2="168" stroke="${hio.hex}" stroke-width="12" stroke-linecap="round"/>
-       |  <rect x="82" y="210" width="12" height="28" fill="${acg.hex}"/>
-       |  <rect x="106" y="210" width="12" height="28" fill="${acg.hex}"/>
+       |  <rect x="82" y="210" width="12" height="28" fill="${ash.hex}"/>
+       |  <rect x="106" y="210" width="12" height="28" fill="${ash.hex}"/>
        |  <rect x="76" y="236" width="22" height="8" rx="3" fill="${acg.hex}"/>
        |  <rect x="102" y="236" width="22" height="8" rx="3" fill="${acg.hex}"/>
        |</g>""".stripMargin
@@ -576,7 +586,7 @@ object DesignLang {
   def smitherSvg: String =
     s"""<g>
        |  <circle cx="100" cy="80" r="34" fill="${ctip.hex}"/>
-       |  <path d="M68 72 A32 32 0 0 1 132 72 Z" fill="${acg.hex}"/>
+       |  <path d="M68 72 A32 32 0 0 1 132 72 Z" fill="${ash.hex}"/>
        |  <circle cx="88" cy="90" r="8" stroke="${tb.hex}" stroke-width="2.5" fill="none"/>
        |  <circle cx="112" cy="90" r="8" stroke="${tb.hex}" stroke-width="2.5" fill="none"/>
        |  <line x1="96" y1="90" x2="104" y2="90" stroke="${tb.hex}" stroke-width="2.5"/>
@@ -584,7 +594,7 @@ object DesignLang {
        |  <circle cx="112" cy="90" r="3" fill="${tip.hex}"/>
        |  <line x1="90" y1="106" x2="110" y2="106" stroke="${tip.hex}" stroke-width="3" stroke-linecap="round"/>
        |  <path d="M70 114 L130 114 L140 210 L60 210 Z" fill="${tb.hex}"/>
-       |  <rect x="66" y="158" width="68" height="10" fill="${acg.hex}"/>
+       |  <rect x="66" y="158" width="68" height="10" fill="${ash.hex}"/>
        |  <line x1="70" y1="132" x2="38" y2="158" stroke="${tb.hex}" stroke-width="12" stroke-linecap="round"/>
        |  <line x1="38" y1="158" x2="10" y2="148" stroke="${acg.hex}" stroke-width="5" stroke-linecap="round"/>
        |  <line x1="38" y1="158" x2="12" y2="170" stroke="${acg.hex}" stroke-width="5" stroke-linecap="round"/>
@@ -592,8 +602,8 @@ object DesignLang {
        |  <circle cx="6" cy="156" r="11" fill="${hio.hex}" opacity="0.22"/>
        |  <rect x="0" y="152" width="13" height="9" rx="2" fill="${hio.hex}"/>
        |  <line x1="130" y1="132" x2="156" y2="172" stroke="${tb.hex}" stroke-width="12" stroke-linecap="round"/>
-       |  <rect x="82" y="210" width="12" height="28" fill="${acg.hex}"/>
-       |  <rect x="106" y="210" width="12" height="28" fill="${acg.hex}"/>
+       |  <rect x="82" y="210" width="12" height="28" fill="${ash.hex}"/>
+       |  <rect x="106" y="210" width="12" height="28" fill="${ash.hex}"/>
        |  <rect x="76" y="236" width="22" height="8" rx="3" fill="${acg.hex}"/>
        |  <rect x="102" y="236" width="22" height="8" rx="3" fill="${acg.hex}"/>
        |</g>""".stripMargin
