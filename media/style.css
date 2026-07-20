@@ -16,6 +16,7 @@
   --mono: "Fira Code", ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace;   /* Fira Code first, cross-platform system-monospace fallback */
   --sans: "Fira Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;   /* self-hosted Fira Sans first (pairs with Fira Code), then cross-platform system fallback */
   --sans-weight: 500;   /* one knob for the sans body weight (.tagline/.about/.credit); dial 400/500/600 (real files loaded) */
+  --fs: 0.8;   /* one knob scaling ALL hero/doc-header font sizes (BR 2026-07-20: 100% a bit big on desktop+mobile; trying 80%). The shared .prose is NOT scaled (blog-identical). */
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -62,7 +63,7 @@ body {
 }
 .name {
   font-family: var(--mono);
-  font-size: clamp(2.4rem, 6vw, 5rem); font-weight: 700;
+  font-size: calc(clamp(2.4rem, 6vw, 5rem) * var(--fs, 1)); font-weight: 700;
   color: var(--logo-fg);   /* the wordmark follows each theme's ratified logo color */
   letter-spacing: 0.02em; margin-bottom: 0.35em;
 }
@@ -71,21 +72,21 @@ body {
 .overlay .name { width: fit-content; border-bottom: 4px solid var(--rule); padding-bottom: 0.12em; }
 .tagline {
   font-family: var(--sans);
-  font-size: clamp(1.5rem, 3.6vw, 2.6rem); color: var(--fg);   /* slogan: sized so line 1 ~ heading width */
+  font-size: calc(clamp(1.5rem, 3.6vw, 2.6rem) * var(--fs, 1)); color: var(--fg);   /* slogan: sized so line 1 ~ heading width */
   max-width: 34ch; line-height: 1.5; margin-bottom: 1em; font-weight: var(--sans-weight, 400);
 }
 .about {
   font-family: var(--sans);
-  font-size: clamp(1.4rem, 2.2vw, 1.7rem); color: var(--fg); font-weight: var(--sans-weight, 400);
+  font-size: calc(clamp(1.4rem, 2.2vw, 1.7rem) * var(--fs, 1)); color: var(--fg); font-weight: var(--sans-weight, 400);
   max-width: 42ch; line-height: 1.5; margin-top: 1.8em;
 }
 nav a {
   display: block; color: var(--fg); text-decoration: none;
-  font-size: clamp(1.5rem, 3.6vw, 2.6rem); font-weight: 700; margin: 0.4em 0;   /* nav links == slogan size */
+  font-size: calc(clamp(1.5rem, 3.6vw, 2.6rem) * var(--fs, 1)); font-weight: 700; margin: 0.4em 0;   /* nav links == slogan size */
 }
 nav a::before { content: "> "; color: var(--hio); }   /* the hot prompt-prefix stays palette-fixed: large accent, AA-large on every ground */
 nav a:hover { text-decoration: underline; color: var(--link); }
-.credit { font-family: var(--sans); font-style: italic; margin-top: 2.4em; font-size: clamp(1.1rem, 1.8vw, 1.4rem); color: var(--head); font-weight: 400; }   /* photo credit always Regular, independent of --sans-weight; --head = HIO on Forgy (the pre-morph look) yet readable on the light grounds */
+.credit { font-family: var(--sans); font-style: italic; margin-top: 2.4em; font-size: calc(clamp(1.1rem, 1.8vw, 1.4rem) * var(--fs, 1)); color: var(--head); font-weight: 400; }   /* photo credit always Regular, independent of --sans-weight; --head = HIO on Forgy (the pre-morph look) yet readable on the light grounds */
 .credit a { color: var(--link); }
 
 /* Type mix (BR 2026-07-18): "genscalator" and the nav links are monospace (CLI feel); everything else is sans. */
@@ -110,10 +111,10 @@ nav a { font-family: var(--mono); }
   max-width: 78ch; margin: 0 auto; padding: 5vh 5vw 0;
   display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.2em 1.4em;
 }
-.doc-header .name { font-size: clamp(1.5rem, 4vw, 2.2rem); margin: 0; }
+.doc-header .name { font-size: calc(clamp(1.5rem, 4vw, 2.2rem) * var(--fs, 1)); margin: 0; }
 .doc-header .name a { color: var(--logo-fg); text-decoration: none; }
 .doc-header nav { display: flex; flex-wrap: wrap; gap: 0 1.1em; }
-.doc-header nav a { display: inline; font-size: clamp(1rem, 2.2vw, 1.15rem); font-weight: 400; margin: 0; color: var(--fg); }
+.doc-header nav a { display: inline; font-size: calc(clamp(1rem, 2.2vw, 1.15rem) * var(--fs, 1)); font-weight: 400; margin: 0; color: var(--fg); }
 .doc-header nav a:hover { color: var(--link); text-decoration: underline; }
 
 /* prose TYPOGRAPHY comes from design.css's shared .prose component (blog-identical reading look);
