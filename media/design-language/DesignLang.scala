@@ -34,6 +34,13 @@ object DesignLang {
 
   val palette: Vector[Color] = Vector(hio, vro, chio, cvro, tb, tip, ctip, acg, cacg, ash, npp, vbg)
 
+  // Theme SURFACE TOKENS (BR 2026-07-20), deliberately NOT palette members: the forge palette
+  // tells the brand story; these two near-neutrals only carry the Calm reading pair, each
+  // doubling as the other's text color (DNG text on DLW ground and vice versa).
+  val dng = Color("DNG", "dark-night-graphite", "#14161a") // Calm dark ground, Calm light text
+  val dlw = Color("DLW", "day-light-white",     "#fafafa") // Calm light ground, Calm dark text
+  val surfaceTokens: Vector[Color] = Vector(dng, dlw)
+
   // logo spec, frozen by BR 2026-07-20
   val logoWeight  = 700
   val logoGsScale = 1.35
@@ -59,7 +66,7 @@ object DesignLang {
     if r >= 7.0 then "AAA" else if r >= 4.5 then "AA" else if r >= 3.0 then "AA-large" else "fail"
 
   val surfaces: Vector[(String, Hex)] =
-    Vector("ACG" -> acg.hex, "TIP" -> tip.hex, "CTIP" -> ctip.hex, "CACG" -> cacg.hex, "white" -> "#ffffff")
+    Vector("ACG" -> acg.hex, "TIP" -> tip.hex, "DNG" -> dng.hex, "CTIP" -> ctip.hex, "CACG" -> cacg.hex, "DLW" -> dlw.hex, "white" -> "#ffffff")
 
   def contrastTable: String =
     val header = "| text color \\ background | " + surfaces.map(_._1).mkString(" | ") + " |"
@@ -195,6 +202,35 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |AAA) and fail on white — which is why **temper blue** exists: the darker sibling that is AA-or-better
        |on all three light surfaces (and fails on dark; the blues are a pair, one per surface family).
        |
+       |## Themes
+       |
+       |Four themes, one dropdown (BR 2026-07-20): every page carries `<select id="theme-select">`,
+       |filled and wired by `design.js` (or the blog template's inline copy of the same generated
+       |script) from the same list that names the CSS variable-sets, and applied as `data-theme` on
+       |`<html>`. The choice persists in `localStorage` (`gs-theme`); a first visit follows the OS
+       |scheme with the Forgy/Smither pair.
+       |
+       || theme | ground | text | headings | links |
+       ||---|---|---|---|---|
+       || Forgy dark (OS-dark default) | TIP | CTIP | HIO | CVRO |
+       || Smither light (default) | CTIP | TIP | TIP over an HIO rule | TB |
+       || Calm dark | DNG | DLW | DLW | CHIO |
+       || Calm light | DLW | DNG | DNG | TB |
+       |
+       |The Calm pair keeps the fonts, the logo and the chips but takes the brand colors out of text
+       |and headings — the h1 rule turns coal-ash and links keep a single accent. Its grounds are two
+       |theme SURFACE TOKENS, deliberately NOT palette members (the forge palette tells the brand
+       |story; these near-neutrals only carry the calm reading pair, each doubling as the other's
+       |text color — ${f"${ratio(dlw.hex, dng.hex)}%.2f"} both ways):
+       |
+       |```css
+       |--${dng.css}: ${dng.hex}; /* DNG: Calm dark ground, Calm light text */
+       |--${dlw.css}: ${dlw.hex}; /* DLW: Calm light ground, Calm dark text */
+       |```
+       |
+       |Code blocks stay TIP-grounded in ALL four themes, so the one measured syntax-token color-set
+       |serves every theme; both tokens also appear as columns in the contrast table above.
+       |
        |## Fonts
        |
        |* Fira Code (retina, regular, medium, bold)
@@ -230,7 +266,7 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        // would otherwise eat as margin chars (live bug on first generation, 2026-07-20).
 
   // ---------- shared html bits ----------
-  def cssVars: String = palette.map(c => s"    --${c.css}: ${c.hex};").mkString("\n")
+  def cssVars: String = (palette ++ surfaceTokens).map(c => s"    --${c.css}: ${c.hex};").mkString("\n")
 
   def wordmark(gsHex: Hex = ""): String =
     val style = if gsHex.isEmpty then "" else s""" style="color:$gsHex""""
@@ -279,6 +315,30 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |  .light code, .light pre { background: var(--${tip.css}); color: var(--${ctip.css}); }
        |  .light .kw { color: var(--${hio.css}); }
        |  .light .str { color: var(--${cvro.css}); }
+       |
+       |  .calm-dark { background: var(--${dng.css}); color: var(--${dlw.css}); }
+       |  .calm-dark .surface { background: var(--${tip.css}); }
+       |  .calm-dark h1, .calm-dark h2 { color: var(--${dlw.css}); }
+       |  .calm-dark h1 { border-bottom: 4px solid var(--${ash.css}); }
+       |  .calm-dark a { color: var(--${chio.css}); }
+       |  .calm-dark .muted { color: var(--${cacg.css}); }
+       |  .calm-dark code, .calm-dark pre { background: var(--${tip.css}); color: var(--${ctip.css}); }
+       |  .calm-dark .kw { color: var(--${hio.css}); }
+       |  .calm-dark .str { color: var(--${chio.css}); }
+       |  .calm-dark .logo { color: var(--${cacg.css}); }
+       |  .calm-dark .logo .gs { color: var(--${chio.css}); }
+       |
+       |  .calm-light { background: var(--${dlw.css}); color: var(--${dng.css}); }
+       |  .calm-light .surface { background: var(--${cacg.css}); }
+       |  .calm-light h1, .calm-light h2 { color: var(--${dng.css}); }
+       |  .calm-light h1 { border-bottom: 4px solid var(--${ash.css}); }
+       |  .calm-light a { color: var(--${tb.css}); }
+       |  .calm-light .muted { color: var(--${ash.css}); }
+       |  .calm-light code, .calm-light pre { background: var(--${tip.css}); color: var(--${ctip.css}); }
+       |  .calm-light .kw { color: var(--${hio.css}); }
+       |  .calm-light .str { color: var(--${cvro.css}); }
+       |  .calm-light .logo { color: var(--${dng.css}); }
+       |  .calm-light .logo .gs { color: var(--${tb.css}); }
        |
        |  h1 { font-size: 1.6rem; margin-bottom: .25rem; padding-bottom: .25rem; }
        |  h2 { font-size: 1.1rem; margin: 1.2rem 0 .4rem; }
@@ -364,43 +424,160 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |    </div>
        |  </section>
        |
+       |  <section class="panel calm-dark">
+       |    <div class="logo">${wordmark()}</div>
+       |    <h1>Calm dark</h1>
+       |    <p class="muted">dark-night-graphite ground · day-light-white text · one quiet accent</p>
+       |    <div class="chips">
+       |      <span class="chip spend">TokSpend</span><span class="chip smart">SmartZone</span>
+       |      <span class="chip cold">ColdStart</span><span class="chip vigil">RotVigil</span><span class="chip pink">Racing</span>
+       |    </div>
+       |    <h2>Body and links</h2>
+       |    <p>Headings keep the text color and the seam turns coal-ash; only <a href="README.md">links</a>
+       |       carry an accent. The chips and the logo still land, muted to the calm register.</p>
+       |    <div class="surface">
+       |      <p>A raised surface in tempered purple. Inline code like <code>tt forge</code> keeps the TIP ground.</p>
+       |    </div>
+       |    <h2>Code</h2>
+       |    <pre><span class="kw">object</span> Forge:
+       |  <span class="kw">val</span> ember = bank(fire)     <span class="str">// survives the warp</span>
+       |  <span class="kw">def</span> morning = blow(ember)  <span class="str">// back into flame</span></pre>
+       |  </section>
+       |
+       |  <section class="panel calm-light">
+       |    <div class="logo">${wordmark()}</div>
+       |    <h1>Calm light</h1>
+       |    <p class="muted">day-light-white ground · dark-night-graphite text · temper-blue links</p>
+       |    <div class="chips">
+       |      <span class="chip spend">TokSpend</span><span class="chip smart">SmartZone</span>
+       |      <span class="chip cold">ColdStart</span><span class="chip vigil">RotVigil</span><span class="chip pink">Racing</span>
+       |    </div>
+       |    <h2>Body and links</h2>
+       |    <p>Headings keep the text color and the seam turns coal-ash; only <a href="README.md">links</a>
+       |       carry an accent. The chips and the logo still land, muted to the calm register.</p>
+       |    <div class="surface">
+       |      <p>A raised surface in cold gray. Inline code like <code>tt forge</code> keeps the TIP ground.</p>
+       |    </div>
+       |    <h2>Code</h2>
+       |    <pre><span class="kw">object</span> Forge:
+       |  <span class="kw">val</span> ember = bank(fire)     <span class="str">// survives the warp</span>
+       |  <span class="kw">def</span> morning = blow(ember)  <span class="str">// back into flame</span></pre>
+       |  </section>
+       |
        |</div>
        |</body>
        |</html>
        |""".stripMargin
 
   // ---------- design.css + design.js: the SHARED tokens/components every genscalator page links ----------
-  // SM155 slice 1: palette custom properties, the two theme variable-sets (Smither light default,
-  // Forgy dark via body.dark), and the shared components (logo, chips, theme-toggle button). Pages
-  // keep their own layout CSS and consume these variables. The toggle JS is design.js.
+  // SM155 slice 1 + the four-theme dropdown (BR 2026-07-20): palette custom properties, FOUR theme
+  // variable-sets keyed off data-theme on <html> (Smither light default, Forgy dark as the OS-dark
+  // default, Calm light/dark on the DLW/DNG surface tokens), and the shared components (logo, chips,
+  // the theme dropdown). Pages keep their own layout CSS and consume these variables. design.js and
+  // the blog template both embed themeScript, which fills <select id="theme-select"> from the SAME
+  // themes list that names the CSS variable-sets — labels and selectors cannot drift apart.
+
+  val themes: Vector[(String, String)] = Vector(
+    "forgy-dark"    -> "Forgy dark",
+    "smither-light" -> "Smither light",
+    "calm-dark"     -> "Calm dark",
+    "calm-light"    -> "Calm light",
+  )
+
+  private def varSet(pairs: (String, Color)*): String =
+    pairs.map((k, c) => s"  --$k: var(--${c.css});").mkString("\n")
+
+  // Semantic variable-sets for design.css. Calm = same fonts, logo and chips, but text and headings
+  // drop the brand colors (fg doubles as head), links keep ONE accent, and code stays TIP-grounded
+  // in all four themes so the single syntax-token color-set keeps its measured contrast everywhere.
+  def smitherVars = varSet("bg" -> ctip, "fg" -> tip, "head" -> tip, "link" -> tb, "visited" -> tip,
+    "code-bg" -> tip, "code-fg" -> ctip, "border" -> acg, "th-bg" -> cacg, "logo-fg" -> tip, "logo-gs" -> tb, "rule" -> hio)
+  def forgyVars = varSet("bg" -> tip, "fg" -> ctip, "head" -> hio, "link" -> cvro, "visited" -> chio,
+    "code-bg" -> acg, "code-fg" -> ctip, "border" -> cacg, "th-bg" -> acg, "logo-fg" -> hio, "logo-gs" -> vro, "rule" -> tb)
+  def calmDarkVars = varSet("bg" -> dng, "fg" -> dlw, "head" -> dlw, "link" -> chio, "visited" -> chio,
+    "code-bg" -> tip, "code-fg" -> ctip, "border" -> ash, "th-bg" -> tip, "logo-fg" -> cacg, "logo-gs" -> chio, "rule" -> ash)
+  def calmLightVars = varSet("bg" -> dlw, "fg" -> dng, "head" -> dng, "link" -> tb, "visited" -> tb,
+    "code-bg" -> tip, "code-fg" -> ctip, "border" -> cacg, "th-bg" -> cacg, "logo-fg" -> dng, "logo-gs" -> tb, "rule" -> ash)
+
+  // The dropdown script, shared VERBATIM by design.js and the blog template: applies the saved
+  // theme before first paint, then fills <select id="theme-select"> on DOM ready. No saved choice
+  // leaves data-theme unset, so the CSS default pair (Smither light, Forgy dark via
+  // prefers-color-scheme) stays live and keeps following OS changes.
+  def themeScript: String =
+    val opts = themes.map((v, l) => s"""{v:"$v",l:"$l"}""").mkString("[", ",", "]")
+    s"""(function () {
+       |  var KEY = "gs-theme";
+       |  var THEMES = $opts;
+       |  var root = document.documentElement;
+       |  function get() {
+       |    try {
+       |      var v = localStorage.getItem(KEY);
+       |      if (!v) { /* migrate the two legacy two-state keys */
+       |        var old = localStorage.getItem("br-theme") || localStorage.getItem("gs-design-theme");
+       |        if (old === "dark") v = "forgy-dark";
+       |        if (old === "light") v = "smither-light";
+       |      }
+       |      return THEMES.some(function (t) { return t.v === v; }) ? v : null;
+       |    } catch (e) { return null; }
+       |  }
+       |  function apply(v) {
+       |    if (v) root.setAttribute("data-theme", v);
+       |    else root.removeAttribute("data-theme"); /* follow the OS pair */
+       |  }
+       |  apply(get()); /* before first paint */
+       |  document.addEventListener("DOMContentLoaded", function () {
+       |    var sel = document.getElementById("theme-select");
+       |    if (!sel) return;
+       |    THEMES.forEach(function (t) {
+       |      var o = document.createElement("option");
+       |      o.value = t.v;
+       |      o.textContent = t.l;
+       |      sel.appendChild(o);
+       |    });
+       |    var osDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+       |    sel.value = get() || (osDark ? "forgy-dark" : "smither-light");
+       |    sel.addEventListener("change", function () {
+       |      try { localStorage.setItem(KEY, sel.value); } catch (e) { /* still apply for this page */ }
+       |      apply(sel.value);
+       |    });
+       |  });
+       |})();""".stripMargin
 
   def designCss: String =
     s"""/* GENERATED by DesignLang.scala - DO NOT EDIT. Edit DesignLang.scala and re-run:
        |   scala-cli run media/design-language/DesignLang.scala --main-class generateDesignLanguage
        |   The genscalator design language: palette tokens + theme variable-sets + shared components.
-       |   Themes: Smither light (default) / Forgy dark (body.dark). See design-language/index.html. */
+       |   Themes (data-theme on <html>, dropdown filled by design.js): Smither light (default) /
+       |   Forgy dark (OS-dark default) / Calm dark / Calm light. See design-language/index.html. */
+       |/* Smither light (default): semantic vars flip per theme, palette vars never change */
        |:root {
        |$cssVars
        |  --mono: "Fira Code", "Fira Mono", ui-monospace, monospace;
        |  --sans: "Fira Sans", system-ui, sans-serif;
+       |$smitherVars
+       |  color-scheme: light;
        |}
-       |/* Smither light (default): semantic vars flip per theme, palette vars never change */
-       |body {
-       |  --bg: var(--${ctip.css}); --fg: var(--${tip.css}); --head: var(--${tip.css});
-       |  --link: var(--${tb.css}); --visited: var(--${tip.css});
-       |  --code-bg: var(--${tip.css}); --code-fg: var(--${ctip.css});
-       |  --border: var(--${acg.css}); --th-bg: var(--${cacg.css});
-       |  --logo-fg: var(--${tip.css}); --logo-gs: var(--${tb.css});
-       |  --rule: var(--${hio.css});
+       |/* Forgy dark when the OS prefers dark and no theme was picked yet */
+       |@media (prefers-color-scheme: dark) {
+       |:root:not([data-theme]) {
+       |$forgyVars
+       |  color-scheme: dark;
        |}
-       |/* Forgy dark */
-       |body.dark {
-       |  --bg: var(--${tip.css}); --fg: var(--${ctip.css}); --head: var(--${hio.css});
-       |  --link: var(--${cvro.css}); --visited: var(--${chio.css});
-       |  --code-bg: var(--${acg.css}); --code-fg: var(--${ctip.css});
-       |  --border: var(--${cacg.css}); --th-bg: var(--${acg.css});
-       |  --logo-fg: var(--${hio.css}); --logo-gs: var(--${vro.css});
-       |  --rule: var(--${tb.css}); /* heading and its line must differ: HIO heading over a quiet temper-blue seam */
+       |}
+       |/* Forgy dark — the rule: heading and its line must differ, HIO heading over a quiet temper-blue seam */
+       |:root[data-theme="forgy-dark"] {
+       |$forgyVars
+       |  color-scheme: dark;
+       |}
+       |/* Calm dark: day-light-white text on dark-night-graphite, brand colors leave the text */
+       |:root[data-theme="calm-dark"] {
+       |$calmDarkVars
+       |  color-scheme: dark;
+       |}
+       |/* Calm light: dark-night-graphite text on day-light-white */
+       |:root[data-theme="calm-light"] {
+       |$calmLightVars
+       |  color-scheme: light;
        |}
        |/* the wordmark (frozen: Fira Code $logoWeight, gs ${logoGsScale}em) */
        |.logo { font-family: var(--mono); font-weight: $logoWeight; color: var(--logo-fg); }
@@ -412,30 +589,17 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |.chip.cold   { background: var(--${chio.css}); color: var(--${tip.css}); }
        |.chip.vigil  { background: var(--${vro.css});  color: var(--${tip.css}); }
        |.chip.pink   { background: var(--${npp.css});  color: #ffffff; }
-       |/* theme toggle button (wired by design.js) */
-       |#theme-toggle { position: fixed; top: 1rem; right: 1rem; font-family: var(--mono);
+       |/* the theme dropdown (filled and wired by design.js) */
+       |#theme-select { position: fixed; top: 1rem; right: 1rem; font-family: var(--mono);
        |  font-size: .8rem; font-weight: bold; padding: .3rem .7rem; border-radius: 4px;
        |  border: 1px solid var(--border); background: var(--code-bg); color: var(--code-fg); cursor: pointer; }
        |""".stripMargin
 
   def designJs: String =
-    s"""/* GENERATED by DesignLang.scala - DO NOT EDIT. Theme toggle for the genscalator design
-       |   language: flips body.dark, persists in localStorage, first load follows the OS scheme.
-       |   Requires a <button id="theme-toggle"> on the page (styled by design.css). */
-       |(function () {
-       |  var btn = document.getElementById('theme-toggle');
-       |  if (!btn) return;
-       |  function label() { btn.textContent = document.body.classList.contains('dark') ? 'Smither light' : 'Forgy dark'; }
-       |  var saved = localStorage.getItem('gs-design-theme');
-       |  if (saved === 'dark' || (saved === null && window.matchMedia('(prefers-color-scheme: dark)').matches))
-       |    document.body.classList.add('dark');
-       |  label();
-       |  btn.addEventListener('click', function () {
-       |    document.body.classList.toggle('dark');
-       |    localStorage.setItem('gs-design-theme', document.body.classList.contains('dark') ? 'dark' : 'light');
-       |    label();
-       |  });
-       |})();
+    s"""/* GENERATED by DesignLang.scala - DO NOT EDIT. The four-theme dropdown: applies the saved
+       |   theme before first paint, fills <select id="theme-select"> (styled by design.css),
+       |   persists in localStorage; first visit follows the OS scheme (Smither/Forgy pair). */
+       |$themeScript
        |""".stripMargin
 
   // ---------- index.html: the README rendered via the house ssg (Smither-light theme) ----------
@@ -469,7 +633,7 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |</style>
        |</head>
        |<body>
-       |<button id="theme-toggle">Forgy dark</button>
+       |<select id="theme-select" aria-label="Theme"></select>
        |<script src="design.js"></script>
        |<div class="logo">${wordmark()}</div>
        |<nav><a href="preview-GENERATED.html">preview</a> · <a href="logo-lab-GENERATED.html">logo lab</a> ·
@@ -583,8 +747,9 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
 
   // ---------- blog/_template.html: the ssg blog template, reskinned to the design language ----------
   // GENERATED into blog/ (ssg's fixed template name) so the blog palette can never drift from here.
-  // The MECHANISMS (three-state toggle, TOC sidebar, to-top, footnotes, token classes) are ported
-  // verbatim from the 2026-07 hand template; only colors, fonts, brand and the h1 rule changed.
+  // The MECHANISMS (TOC sidebar, to-top, footnotes, token classes) are ported verbatim from the
+  // 2026-07 hand template; colors, fonts, brand and the h1 rule changed, and the original
+  // three-state toggle became the shared four-theme dropdown (themeScript, 2026-07-20).
   // Code blocks are TIP/ACG-grounded in BOTH themes, so ONE token color-set serves both (all
   // tokens measured >= 3.4 on TIP; comments in ASH read muted by design).
 
@@ -630,7 +795,7 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |  color-scheme: light;
        |}
        |/* Forgy dark */
-       |:root[data-theme="dark"] {
+       |:root[data-theme="forgy-dark"] {
        |  --bg: ${tip.hex};
        |  --bg-soft: ${acg.hex};
        |  --text: ${ctip.hex};
@@ -647,7 +812,7 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |  color-scheme: dark;
        |}
        |@media (prefers-color-scheme: dark) {
-       |  :root:not([data-theme="light"]) {
+       |  :root:not([data-theme]) {
        |    --bg: ${tip.hex};
        |    --bg-soft: ${acg.hex};
        |    --text: ${ctip.hex};
@@ -663,6 +828,43 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |    --brand-gs: ${vro.hex};
        |    color-scheme: dark;
        |  }
+       |}
+       |
+       |/* Calm dark: day-light-white text on dark-night-graphite — brand colors leave the text.
+       |   The tok- vars are NOT overridden in the calm pair: code keeps the TIP ground in all four
+       |   themes, so the one measured token color-set serves every theme. */
+       |:root[data-theme="calm-dark"] {
+       |  --bg: ${dng.hex};
+       |  --bg-soft: ${tip.hex};
+       |  --text: ${dlw.hex};
+       |  --text-muted: ${cacg.hex};
+       |  --accent: ${chio.hex};
+       |  --accent-hover: ${cvro.hex};
+       |  --border: ${ash.hex};
+       |  --code-bg: ${tip.hex};
+       |  --code-text: ${ctip.hex};
+       |  --quote-border: ${ash.hex};
+       |  --rule: ${ash.hex};
+       |  --brand-fg: ${cacg.hex};
+       |  --brand-gs: ${chio.hex};
+       |  color-scheme: dark;
+       |}
+       |/* Calm light: dark-night-graphite text on day-light-white */
+       |:root[data-theme="calm-light"] {
+       |  --bg: ${dlw.hex};
+       |  --bg-soft: ${cacg.hex};
+       |  --text: ${dng.hex};
+       |  --text-muted: ${ash.hex};
+       |  --accent: ${tb.hex};
+       |  --accent-hover: ${tip.hex};
+       |  --border: ${cacg.hex};
+       |  --code-bg: ${tip.hex};
+       |  --code-text: ${ctip.hex};
+       |  --quote-border: ${cacg.hex};
+       |  --rule: ${ash.hex};
+       |  --brand-fg: ${dng.hex};
+       |  --brand-gs: ${tb.hex};
+       |  color-scheme: light;
        |}
        |
        |* { box-sizing: border-box; }
@@ -726,29 +928,18 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |  text-decoration: underline;
        |}
        |
-       |.theme-toggle {
-       |  display: inline-flex;
+       |.theme-select {
        |  border: 1px solid var(--border);
        |  border-radius: 999px;
-       |  overflow: hidden;
-       |}
-       |.theme-toggle button {
-       |  appearance: none;
-       |  border: none;
-       |  background: transparent;
-       |  color: var(--text-muted);
+       |  background: var(--bg-soft);
+       |  color: var(--text);
        |  font: inherit;
        |  font-size: 0.72rem;
        |  line-height: 1;
-       |  padding: 0.35rem 0.55rem;
+       |  padding: 0.3rem 0.6rem;
        |  cursor: pointer;
        |}
-       |.theme-toggle button:hover { color: var(--text); }
-       |.theme-toggle button[aria-pressed="true"] {
-       |  background: var(--bg-soft);
-       |  color: var(--text);
-       |  font-weight: 600;
-       |}
+       |.theme-select:hover { color: var(--accent); }
        |
        |main {
        |  flex: 1;
@@ -968,50 +1159,7 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |}
        |</style>
        |<script>
-       |(function () {
-       |  var KEY = "br-theme";
-       |  var root = document.documentElement;
-       |
-       |  function apply(mode) {
-       |    if (mode === "light" || mode === "dark") {
-       |      root.setAttribute("data-theme", mode);
-       |    } else {
-       |      root.removeAttribute("data-theme"); /* auto: follow OS */
-       |    }
-       |  }
-       |
-       |  function saved() {
-       |    try { return localStorage.getItem(KEY); } catch (e) { return null; }
-       |  }
-       |
-       |  apply(saved()); /* run before paint to avoid theme flash */
-       |
-       |  document.addEventListener("DOMContentLoaded", function () {
-       |    var buttons = document.querySelectorAll(".theme-toggle button");
-       |
-       |    function refresh() {
-       |      var mode = saved();
-       |      if (mode !== "light" && mode !== "dark") mode = "auto";
-       |      buttons.forEach(function (b) {
-       |        b.setAttribute("aria-pressed", String(b.dataset.mode === mode));
-       |      });
-       |    }
-       |
-       |    buttons.forEach(function (b) {
-       |      b.addEventListener("click", function () {
-       |        var mode = b.dataset.mode;
-       |        try {
-       |          if (mode === "auto") localStorage.removeItem(KEY);
-       |          else localStorage.setItem(KEY, mode);
-       |        } catch (e) { /* storage unavailable: still apply for this page */ }
-       |        apply(mode === "auto" ? null : mode);
-       |        refresh();
-       |      });
-       |    });
-       |
-       |    refresh();
-       |  });
-       |})();
+       |$themeScript
        |</script>
        |</head>
        |<body>
@@ -1022,11 +1170,7 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |    <nav class="site-nav" aria-label="Site">
        |      <a href="https://bjornregnell.se">BR</a>
        |      <a href="index.html">Blog</a>
-       |      <div class="theme-toggle" role="group" aria-label="Color theme">
-       |        <button type="button" data-mode="light" title="Light theme">Light</button>
-       |        <button type="button" data-mode="dark" title="Dark theme">Dark</button>
-       |        <button type="button" data-mode="auto" title="Follow system theme">A</button>
-       |      </div>
+       |      <select id="theme-select" class="theme-select" aria-label="Color theme"></select>
        |    </nav>
        |  </div>
        |</header>

@@ -105,20 +105,20 @@ dark, with TIP text. Smithy hook if wanted: copper burns green in the forge.
 Computed by DesignLang.scala from the palette above at generation time — always in sync.
 Ratio then WCAG 2.1 verdict per cell.
 
-| text color \ background | ACG | TIP | CTIP | CACG | white |
-|---|---|---|---|---|---|
-| HIO hot-iron-orange `#ee582b` | 4.02 AA-large | 4.86 AA | 2.72 fail | 2.31 fail | 3.46 AA-large |
-| VRO vivid-red-orange `#E22200` | 2.96 fail | 3.58 AA-large | 3.70 AA-large | 3.14 AA-large | 4.71 AA |
-| CHIO chio-light-blue `#11a7d4` | 4.98 AA | 6.01 AA | 2.20 fail | 1.87 fail | 2.80 fail |
-| CVRO cvro-bright-blue `#05b9e9` | 6.05 AA | 7.31 AAA | 1.81 fail | 1.54 fail | 2.30 fail |
-| TB temper-blue `#095c75` | 1.86 fail | 2.24 fail | 5.90 AA | 5.01 AA | 7.50 AAA |
-| TIP tempered-iron-purple `#17193f` | 1.21 fail | - | 13.24 AAA | 11.25 AAA | 16.84 AAA |
-| CTIP ctip-bone-white `#e8e6c0` | 10.95 AAA | 13.24 AAA | - | 1.18 fail | 1.27 fail |
-| ACG anvil-coal-graphite `#322b25` | - | 1.21 fail | 10.95 AAA | 9.30 AAA | 13.93 AAA |
-| CACG cacg-cold-gray `#cdd4da` | 9.30 AAA | 11.25 AAA | 1.18 fail | - | 1.50 fail |
-| ASH coal-ash `#7d6e5f` | 2.83 fail | 3.42 AA-large | 3.87 AA-large | 3.29 AA-large | 4.92 AA |
-| NPP neon-pink-purple `#c724b1` | 2.86 fail | 3.46 AA-large | 3.83 AA-large | 3.25 AA-large | 4.87 AA |
-| VBG vivid-bright-green `#38db4e` | 7.57 AAA | 9.15 AAA | 1.45 fail | 1.23 fail | 1.84 fail |
+| text color \ background | ACG | TIP | DNG | CTIP | CACG | DLW | white |
+|---|---|---|---|---|---|---|---|
+| HIO hot-iron-orange `#ee582b` | 4.02 AA-large | 4.86 AA | 5.23 AA | 2.72 fail | 2.31 fail | 3.32 AA-large | 3.46 AA-large |
+| VRO vivid-red-orange `#E22200` | 2.96 fail | 3.58 AA-large | 3.85 AA-large | 3.70 AA-large | 3.14 AA-large | 4.51 AA | 4.71 AA |
+| CHIO chio-light-blue `#11a7d4` | 4.98 AA | 6.01 AA | 6.47 AA | 2.20 fail | 1.87 fail | 2.68 fail | 2.80 fail |
+| CVRO cvro-bright-blue `#05b9e9` | 6.05 AA | 7.31 AAA | 7.87 AAA | 1.81 fail | 1.54 fail | 2.21 fail | 2.30 fail |
+| TB temper-blue `#095c75` | 1.86 fail | 2.24 fail | 2.41 fail | 5.90 AA | 5.01 AA | 7.19 AAA | 7.50 AAA |
+| TIP tempered-iron-purple `#17193f` | 1.21 fail | - | 1.08 fail | 13.24 AAA | 11.25 AAA | 16.13 AAA | 16.84 AAA |
+| CTIP ctip-bone-white `#e8e6c0` | 10.95 AAA | 13.24 AAA | 14.24 AAA | - | 1.18 fail | 1.22 fail | 1.27 fail |
+| ACG anvil-coal-graphite `#322b25` | - | 1.21 fail | 1.30 fail | 10.95 AAA | 9.30 AAA | 13.34 AAA | 13.93 AAA |
+| CACG cacg-cold-gray `#cdd4da` | 9.30 AAA | 11.25 AAA | 12.10 AAA | 1.18 fail | - | 1.43 fail | 1.50 fail |
+| ASH coal-ash `#7d6e5f` | 2.83 fail | 3.42 AA-large | 3.68 AA-large | 3.87 AA-large | 3.29 AA-large | 4.71 AA | 4.92 AA |
+| NPP neon-pink-purple `#c724b1` | 2.86 fail | 3.46 AA-large | 3.72 AA-large | 3.83 AA-large | 3.25 AA-large | 4.66 AA | 4.87 AA |
+| VBG vivid-bright-green `#38db4e` | 7.57 AAA | 9.15 AAA | 9.84 AAA | 1.45 fail | 1.23 fail | 1.76 fail | 1.84 fail |
 
 Legend: AAA >= 7.0 · AA >= 4.5 (normal text) · AA-large >= 3.0 (large text/UI) · fail < 3.0 (WCAG 2.1).
 
@@ -128,6 +128,35 @@ are accent/heading colors** — fine large on dark (AA on TIP, AA-large on ACG),
 the light surfaces; **the complementary blues live on dark backgrounds only** (CVRO on TIP is even
 AAA) and fail on white — which is why **temper blue** exists: the darker sibling that is AA-or-better
 on all three light surfaces (and fails on dark; the blues are a pair, one per surface family).
+
+## Themes
+
+Four themes, one dropdown (BR 2026-07-20): every page carries `<select id="theme-select">`,
+filled and wired by `design.js` (or the blog template's inline copy of the same generated
+script) from the same list that names the CSS variable-sets, and applied as `data-theme` on
+`<html>`. The choice persists in `localStorage` (`gs-theme`); a first visit follows the OS
+scheme with the Forgy/Smither pair.
+
+| theme | ground | text | headings | links |
+|---|---|---|---|---|
+| Forgy dark (OS-dark default) | TIP | CTIP | HIO | CVRO |
+| Smither light (default) | CTIP | TIP | TIP over an HIO rule | TB |
+| Calm dark | DNG | DLW | DLW | CHIO |
+| Calm light | DLW | DNG | DNG | TB |
+
+The Calm pair keeps the fonts, the logo and the chips but takes the brand colors out of text
+and headings — the h1 rule turns coal-ash and links keep a single accent. Its grounds are two
+theme SURFACE TOKENS, deliberately NOT palette members (the forge palette tells the brand
+story; these near-neutrals only carry the calm reading pair, each doubling as the other's
+text color — 17.35 both ways):
+
+```css
+--dark-night-graphite: #14161a; /* DNG: Calm dark ground, Calm light text */
+--day-light-white: #fafafa; /* DLW: Calm light ground, Calm dark text */
+```
+
+Code blocks stay TIP-grounded in ALL four themes, so the one measured syntax-token color-set
+serves every theme; both tokens also appear as columns in the contrast table above.
 
 ## Fonts
 

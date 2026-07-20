@@ -40,7 +40,7 @@
   color-scheme: light;
 }
 /* Forgy dark */
-:root[data-theme="dark"] {
+:root[data-theme="forgy-dark"] {
   --bg: #17193f;
   --bg-soft: #322b25;
   --text: #e8e6c0;
@@ -57,7 +57,7 @@
   color-scheme: dark;
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  :root:not([data-theme]) {
     --bg: #17193f;
     --bg-soft: #322b25;
     --text: #e8e6c0;
@@ -73,6 +73,43 @@
     --brand-gs: #E22200;
     color-scheme: dark;
   }
+}
+
+/* Calm dark: day-light-white text on dark-night-graphite — brand colors leave the text.
+   The tok- vars are NOT overridden in the calm pair: code keeps the TIP ground in all four
+   themes, so the one measured token color-set serves every theme. */
+:root[data-theme="calm-dark"] {
+  --bg: #14161a;
+  --bg-soft: #17193f;
+  --text: #fafafa;
+  --text-muted: #cdd4da;
+  --accent: #11a7d4;
+  --accent-hover: #05b9e9;
+  --border: #7d6e5f;
+  --code-bg: #17193f;
+  --code-text: #e8e6c0;
+  --quote-border: #7d6e5f;
+  --rule: #7d6e5f;
+  --brand-fg: #cdd4da;
+  --brand-gs: #11a7d4;
+  color-scheme: dark;
+}
+/* Calm light: dark-night-graphite text on day-light-white */
+:root[data-theme="calm-light"] {
+  --bg: #fafafa;
+  --bg-soft: #cdd4da;
+  --text: #14161a;
+  --text-muted: #7d6e5f;
+  --accent: #095c75;
+  --accent-hover: #17193f;
+  --border: #cdd4da;
+  --code-bg: #17193f;
+  --code-text: #e8e6c0;
+  --quote-border: #cdd4da;
+  --rule: #7d6e5f;
+  --brand-fg: #14161a;
+  --brand-gs: #095c75;
+  color-scheme: light;
 }
 
 * { box-sizing: border-box; }
@@ -136,29 +173,18 @@ body {
   text-decoration: underline;
 }
 
-.theme-toggle {
-  display: inline-flex;
+.theme-select {
   border: 1px solid var(--border);
   border-radius: 999px;
-  overflow: hidden;
-}
-.theme-toggle button {
-  appearance: none;
-  border: none;
-  background: transparent;
-  color: var(--text-muted);
+  background: var(--bg-soft);
+  color: var(--text);
   font: inherit;
   font-size: 0.72rem;
   line-height: 1;
-  padding: 0.35rem 0.55rem;
+  padding: 0.3rem 0.6rem;
   cursor: pointer;
 }
-.theme-toggle button:hover { color: var(--text); }
-.theme-toggle button[aria-pressed="true"] {
-  background: var(--bg-soft);
-  color: var(--text);
-  font-weight: 600;
-}
+.theme-select:hover { color: var(--accent); }
 
 main {
   flex: 1;
@@ -379,47 +405,40 @@ sup.fn-ref a { text-decoration: none; padding: 0 0.1em; }
 </style>
 <script>
 (function () {
-  var KEY = "br-theme";
+  var KEY = "gs-theme";
+  var THEMES = [{v:"forgy-dark",l:"Forgy dark"},{v:"smither-light",l:"Smither light"},{v:"calm-dark",l:"Calm dark"},{v:"calm-light",l:"Calm light"}];
   var root = document.documentElement;
-
-  function apply(mode) {
-    if (mode === "light" || mode === "dark") {
-      root.setAttribute("data-theme", mode);
-    } else {
-      root.removeAttribute("data-theme"); /* auto: follow OS */
-    }
+  function get() {
+    try {
+      var v = localStorage.getItem(KEY);
+      if (!v) { /* migrate the two legacy two-state keys */
+        var old = localStorage.getItem("br-theme") || localStorage.getItem("gs-design-theme");
+        if (old === "dark") v = "forgy-dark";
+        if (old === "light") v = "smither-light";
+      }
+      return THEMES.some(function (t) { return t.v === v; }) ? v : null;
+    } catch (e) { return null; }
   }
-
-  function saved() {
-    try { return localStorage.getItem(KEY); } catch (e) { return null; }
+  function apply(v) {
+    if (v) root.setAttribute("data-theme", v);
+    else root.removeAttribute("data-theme"); /* follow the OS pair */
   }
-
-  apply(saved()); /* run before paint to avoid theme flash */
-
+  apply(get()); /* before first paint */
   document.addEventListener("DOMContentLoaded", function () {
-    var buttons = document.querySelectorAll(".theme-toggle button");
-
-    function refresh() {
-      var mode = saved();
-      if (mode !== "light" && mode !== "dark") mode = "auto";
-      buttons.forEach(function (b) {
-        b.setAttribute("aria-pressed", String(b.dataset.mode === mode));
-      });
-    }
-
-    buttons.forEach(function (b) {
-      b.addEventListener("click", function () {
-        var mode = b.dataset.mode;
-        try {
-          if (mode === "auto") localStorage.removeItem(KEY);
-          else localStorage.setItem(KEY, mode);
-        } catch (e) { /* storage unavailable: still apply for this page */ }
-        apply(mode === "auto" ? null : mode);
-        refresh();
-      });
+    var sel = document.getElementById("theme-select");
+    if (!sel) return;
+    THEMES.forEach(function (t) {
+      var o = document.createElement("option");
+      o.value = t.v;
+      o.textContent = t.l;
+      sel.appendChild(o);
     });
-
-    refresh();
+    var osDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    sel.value = get() || (osDark ? "forgy-dark" : "smither-light");
+    sel.addEventListener("change", function () {
+      try { localStorage.setItem(KEY, sel.value); } catch (e) { /* still apply for this page */ }
+      apply(sel.value);
+    });
   });
 })();
 </script>
@@ -432,11 +451,7 @@ sup.fn-ref a { text-decoration: none; padding: 0 0.1em; }
     <nav class="site-nav" aria-label="Site">
       <a href="https://bjornregnell.se">BR</a>
       <a href="index.html">Blog</a>
-      <div class="theme-toggle" role="group" aria-label="Color theme">
-        <button type="button" data-mode="light" title="Light theme">Light</button>
-        <button type="button" data-mode="dark" title="Dark theme">Dark</button>
-        <button type="button" data-mode="auto" title="Follow system theme">A</button>
-      </div>
+      <select id="theme-select" class="theme-select" aria-label="Color theme"></select>
     </nav>
   </div>
 </header>

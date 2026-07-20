@@ -20,6 +20,8 @@
     --coal-ash: #7d6e5f;
     --neon-pink-purple: #c724b1;
     --vivid-bright-green: #38db4e;
+    --dark-night-graphite: #14161a;
+    --day-light-white: #fafafa;
     --sans: "Fira Sans", system-ui, sans-serif;
     --mono: "Fira Code", ui-monospace, monospace;
   }
@@ -51,6 +53,30 @@
   .light code, .light pre { background: var(--tempered-iron-purple); color: var(--ctip-bone-white); }
   .light .kw { color: var(--hot-iron-orange); }
   .light .str { color: var(--cvro-bright-blue); }
+
+  .calm-dark { background: var(--dark-night-graphite); color: var(--day-light-white); }
+  .calm-dark .surface { background: var(--tempered-iron-purple); }
+  .calm-dark h1, .calm-dark h2 { color: var(--day-light-white); }
+  .calm-dark h1 { border-bottom: 4px solid var(--coal-ash); }
+  .calm-dark a { color: var(--chio-light-blue); }
+  .calm-dark .muted { color: var(--cacg-cold-gray); }
+  .calm-dark code, .calm-dark pre { background: var(--tempered-iron-purple); color: var(--ctip-bone-white); }
+  .calm-dark .kw { color: var(--hot-iron-orange); }
+  .calm-dark .str { color: var(--chio-light-blue); }
+  .calm-dark .logo { color: var(--cacg-cold-gray); }
+  .calm-dark .logo .gs { color: var(--chio-light-blue); }
+
+  .calm-light { background: var(--day-light-white); color: var(--dark-night-graphite); }
+  .calm-light .surface { background: var(--cacg-cold-gray); }
+  .calm-light h1, .calm-light h2 { color: var(--dark-night-graphite); }
+  .calm-light h1 { border-bottom: 4px solid var(--coal-ash); }
+  .calm-light a { color: var(--temper-blue); }
+  .calm-light .muted { color: var(--coal-ash); }
+  .calm-light code, .calm-light pre { background: var(--tempered-iron-purple); color: var(--ctip-bone-white); }
+  .calm-light .kw { color: var(--hot-iron-orange); }
+  .calm-light .str { color: var(--cvro-bright-blue); }
+  .calm-light .logo { color: var(--dark-night-graphite); }
+  .calm-light .logo .gs { color: var(--temper-blue); }
 
   h1 { font-size: 1.6rem; margin-bottom: .25rem; padding-bottom: .25rem; }
   h2 { font-size: 1.1rem; margin: 1.2rem 0 .4rem; }
@@ -134,6 +160,46 @@
       <div class="sw" style="background:#17193f;color:#e8e6c0">TIP #17193f</div>
       <div class="sw" style="background:#322b25;color:#cdd4da">ACG #322b25</div>
     </div>
+  </section>
+
+  <section class="panel calm-dark">
+    <div class="logo"><span class="gs">g</span>en<span class="gs">s</span>calator</div>
+    <h1>Calm dark</h1>
+    <p class="muted">dark-night-graphite ground · day-light-white text · one quiet accent</p>
+    <div class="chips">
+      <span class="chip spend">TokSpend</span><span class="chip smart">SmartZone</span>
+      <span class="chip cold">ColdStart</span><span class="chip vigil">RotVigil</span><span class="chip pink">Racing</span>
+    </div>
+    <h2>Body and links</h2>
+    <p>Headings keep the text color and the seam turns coal-ash; only <a href="README.md">links</a>
+       carry an accent. The chips and the logo still land, muted to the calm register.</p>
+    <div class="surface">
+      <p>A raised surface in tempered purple. Inline code like <code>tt forge</code> keeps the TIP ground.</p>
+    </div>
+    <h2>Code</h2>
+    <pre><span class="kw">object</span> Forge:
+  <span class="kw">val</span> ember = bank(fire)     <span class="str">// survives the warp</span>
+  <span class="kw">def</span> morning = blow(ember)  <span class="str">// back into flame</span></pre>
+  </section>
+
+  <section class="panel calm-light">
+    <div class="logo"><span class="gs">g</span>en<span class="gs">s</span>calator</div>
+    <h1>Calm light</h1>
+    <p class="muted">day-light-white ground · dark-night-graphite text · temper-blue links</p>
+    <div class="chips">
+      <span class="chip spend">TokSpend</span><span class="chip smart">SmartZone</span>
+      <span class="chip cold">ColdStart</span><span class="chip vigil">RotVigil</span><span class="chip pink">Racing</span>
+    </div>
+    <h2>Body and links</h2>
+    <p>Headings keep the text color and the seam turns coal-ash; only <a href="README.md">links</a>
+       carry an accent. The chips and the logo still land, muted to the calm register.</p>
+    <div class="surface">
+      <p>A raised surface in cold gray. Inline code like <code>tt forge</code> keeps the TIP ground.</p>
+    </div>
+    <h2>Code</h2>
+    <pre><span class="kw">object</span> Forge:
+  <span class="kw">val</span> ember = bank(fire)     <span class="str">// survives the warp</span>
+  <span class="kw">def</span> morning = blow(ember)  <span class="str">// back into flame</span></pre>
   </section>
 
 </div>

@@ -28,7 +28,7 @@
 </style>
 </head>
 <body>
-<button id="theme-toggle">Forgy dark</button>
+<select id="theme-select" aria-label="Theme"></select>
 <script src="design.js"></script>
 <div class="logo"><span class="gs">g</span>en<span class="gs">s</span>calator</div>
 <nav><a href="preview-GENERATED.html">preview</a> · <a href="logo-lab-GENERATED.html">logo lab</a> ·
@@ -99,25 +99,42 @@
 <p>Computed by DesignLang.scala from the palette above at generation time — always in sync. Ratio then WCAG 2.1 verdict per cell.</p>
 <table>
 <thead>
-<tr><th>text color \ background</th><th>ACG</th><th>TIP</th><th>CTIP</th><th>CACG</th><th>white</th></tr>
+<tr><th>text color \ background</th><th>ACG</th><th>TIP</th><th>DNG</th><th>CTIP</th><th>CACG</th><th>DLW</th><th>white</th></tr>
 </thead>
 <tbody>
-<tr><td>HIO hot-iron-orange <code>#ee582b</code></td><td>4.02 AA-large</td><td>4.86 AA</td><td>2.72 fail</td><td>2.31 fail</td><td>3.46 AA-large</td></tr>
-<tr><td>VRO vivid-red-orange <code>#E22200</code></td><td>2.96 fail</td><td>3.58 AA-large</td><td>3.70 AA-large</td><td>3.14 AA-large</td><td>4.71 AA</td></tr>
-<tr><td>CHIO chio-light-blue <code>#11a7d4</code></td><td>4.98 AA</td><td>6.01 AA</td><td>2.20 fail</td><td>1.87 fail</td><td>2.80 fail</td></tr>
-<tr><td>CVRO cvro-bright-blue <code>#05b9e9</code></td><td>6.05 AA</td><td>7.31 AAA</td><td>1.81 fail</td><td>1.54 fail</td><td>2.30 fail</td></tr>
-<tr><td>TB temper-blue <code>#095c75</code></td><td>1.86 fail</td><td>2.24 fail</td><td>5.90 AA</td><td>5.01 AA</td><td>7.50 AAA</td></tr>
-<tr><td>TIP tempered-iron-purple <code>#17193f</code></td><td>1.21 fail</td><td>-</td><td>13.24 AAA</td><td>11.25 AAA</td><td>16.84 AAA</td></tr>
-<tr><td>CTIP ctip-bone-white <code>#e8e6c0</code></td><td>10.95 AAA</td><td>13.24 AAA</td><td>-</td><td>1.18 fail</td><td>1.27 fail</td></tr>
-<tr><td>ACG anvil-coal-graphite <code>#322b25</code></td><td>-</td><td>1.21 fail</td><td>10.95 AAA</td><td>9.30 AAA</td><td>13.93 AAA</td></tr>
-<tr><td>CACG cacg-cold-gray <code>#cdd4da</code></td><td>9.30 AAA</td><td>11.25 AAA</td><td>1.18 fail</td><td>-</td><td>1.50 fail</td></tr>
-<tr><td>ASH coal-ash <code>#7d6e5f</code></td><td>2.83 fail</td><td>3.42 AA-large</td><td>3.87 AA-large</td><td>3.29 AA-large</td><td>4.92 AA</td></tr>
-<tr><td>NPP neon-pink-purple <code>#c724b1</code></td><td>2.86 fail</td><td>3.46 AA-large</td><td>3.83 AA-large</td><td>3.25 AA-large</td><td>4.87 AA</td></tr>
-<tr><td>VBG vivid-bright-green <code>#38db4e</code></td><td>7.57 AAA</td><td>9.15 AAA</td><td>1.45 fail</td><td>1.23 fail</td><td>1.84 fail</td></tr>
+<tr><td>HIO hot-iron-orange <code>#ee582b</code></td><td>4.02 AA-large</td><td>4.86 AA</td><td>5.23 AA</td><td>2.72 fail</td><td>2.31 fail</td><td>3.32 AA-large</td><td>3.46 AA-large</td></tr>
+<tr><td>VRO vivid-red-orange <code>#E22200</code></td><td>2.96 fail</td><td>3.58 AA-large</td><td>3.85 AA-large</td><td>3.70 AA-large</td><td>3.14 AA-large</td><td>4.51 AA</td><td>4.71 AA</td></tr>
+<tr><td>CHIO chio-light-blue <code>#11a7d4</code></td><td>4.98 AA</td><td>6.01 AA</td><td>6.47 AA</td><td>2.20 fail</td><td>1.87 fail</td><td>2.68 fail</td><td>2.80 fail</td></tr>
+<tr><td>CVRO cvro-bright-blue <code>#05b9e9</code></td><td>6.05 AA</td><td>7.31 AAA</td><td>7.87 AAA</td><td>1.81 fail</td><td>1.54 fail</td><td>2.21 fail</td><td>2.30 fail</td></tr>
+<tr><td>TB temper-blue <code>#095c75</code></td><td>1.86 fail</td><td>2.24 fail</td><td>2.41 fail</td><td>5.90 AA</td><td>5.01 AA</td><td>7.19 AAA</td><td>7.50 AAA</td></tr>
+<tr><td>TIP tempered-iron-purple <code>#17193f</code></td><td>1.21 fail</td><td>-</td><td>1.08 fail</td><td>13.24 AAA</td><td>11.25 AAA</td><td>16.13 AAA</td><td>16.84 AAA</td></tr>
+<tr><td>CTIP ctip-bone-white <code>#e8e6c0</code></td><td>10.95 AAA</td><td>13.24 AAA</td><td>14.24 AAA</td><td>-</td><td>1.18 fail</td><td>1.22 fail</td><td>1.27 fail</td></tr>
+<tr><td>ACG anvil-coal-graphite <code>#322b25</code></td><td>-</td><td>1.21 fail</td><td>1.30 fail</td><td>10.95 AAA</td><td>9.30 AAA</td><td>13.34 AAA</td><td>13.93 AAA</td></tr>
+<tr><td>CACG cacg-cold-gray <code>#cdd4da</code></td><td>9.30 AAA</td><td>11.25 AAA</td><td>12.10 AAA</td><td>1.18 fail</td><td>-</td><td>1.43 fail</td><td>1.50 fail</td></tr>
+<tr><td>ASH coal-ash <code>#7d6e5f</code></td><td>2.83 fail</td><td>3.42 AA-large</td><td>3.68 AA-large</td><td>3.87 AA-large</td><td>3.29 AA-large</td><td>4.71 AA</td><td>4.92 AA</td></tr>
+<tr><td>NPP neon-pink-purple <code>#c724b1</code></td><td>2.86 fail</td><td>3.46 AA-large</td><td>3.72 AA-large</td><td>3.83 AA-large</td><td>3.25 AA-large</td><td>4.66 AA</td><td>4.87 AA</td></tr>
+<tr><td>VBG vivid-bright-green <code>#38db4e</code></td><td>7.57 AAA</td><td>9.15 AAA</td><td>9.84 AAA</td><td>1.45 fail</td><td>1.23 fail</td><td>1.76 fail</td><td>1.84 fail</td></tr>
 </tbody>
 </table>
 <p>Legend: AAA &gt;= 7.0 · AA &gt;= 4.5 (normal text) · AA-large &gt;= 3.0 (large text/UI) · fail &lt; 3.0 (WCAG 2.1).</p>
 <p>Reading of the table: <strong>body text = bone-white or cold-gray on tempered purple or graphite</strong> (all four pairings are AAA both ways, so dark-on-light works equally well inverted); <strong>the glow oranges are accent/heading colors</strong> — fine large on dark (AA on TIP, AA-large on ACG), never body text on the light surfaces; <strong>the complementary blues live on dark backgrounds only</strong> (CVRO on TIP is even AAA) and fail on white — which is why <strong>temper blue</strong> exists: the darker sibling that is AA-or-better on all three light surfaces (and fails on dark; the blues are a pair, one per surface family).</p>
+<h2 id="themes">Themes</h2>
+<p>Four themes, one dropdown (BR 2026-07-20): every page carries <code>&lt;select id="theme-select"&gt;</code>, filled and wired by <code>design.js</code> (or the blog template's inline copy of the same generated script) from the same list that names the CSS variable-sets, and applied as <code>data-theme</code> on <code>&lt;html&gt;</code>. The choice persists in <code>localStorage</code> (<code>gs-theme</code>); a first visit follows the OS scheme with the Forgy/Smither pair.</p>
+<table>
+<thead>
+<tr><th>theme</th><th>ground</th><th>text</th><th>headings</th><th>links</th></tr>
+</thead>
+<tbody>
+<tr><td>Forgy dark (OS-dark default)</td><td>TIP</td><td>CTIP</td><td>HIO</td><td>CVRO</td></tr>
+<tr><td>Smither light (default)</td><td>CTIP</td><td>TIP</td><td>TIP over an HIO rule</td><td>TB</td></tr>
+<tr><td>Calm dark</td><td>DNG</td><td>DLW</td><td>DLW</td><td>CHIO</td></tr>
+<tr><td>Calm light</td><td>DLW</td><td>DNG</td><td>DNG</td><td>TB</td></tr>
+</tbody>
+</table>
+<p>The Calm pair keeps the fonts, the logo and the chips but takes the brand colors out of text and headings — the h1 rule turns coal-ash and links keep a single accent. Its grounds are two theme SURFACE TOKENS, deliberately NOT palette members (the forge palette tells the brand story; these near-neutrals only carry the calm reading pair, each doubling as the other's text color — 17.35 both ways):</p>
+<pre><code class="language-css">--dark-night-graphite: #14161a; /* DNG: Calm dark ground, Calm light text */
+--day-light-white: #fafafa; /* DLW: Calm light ground, Calm dark text */</code></pre>
+<p>Code blocks stay TIP-grounded in ALL four themes, so the one measured syntax-token color-set serves every theme; both tokens also appear as columns in the contrast table above.</p>
 <h2 id="fonts">Fonts</h2>
 <ul>
 <li>Fira Code (retina, regular, medium, bold)</li>
