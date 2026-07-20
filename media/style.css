@@ -6,26 +6,7 @@
    which the theme dropdown (design.js, <select id="theme-select">) flips per theme.
    Paths here are relative to THIS file (media/), so one @font-face serves both pages. */
 
-@font-face {
-  font-family: "Fira Code";
-  src: url("fonts/FiraCode-Regular.woff2") format("woff2");
-  font-weight: 400; font-style: normal; font-display: swap;
-}
-@font-face {
-  font-family: "Fira Sans";
-  src: url("fonts/FiraSans-Regular.woff2") format("woff2");
-  font-weight: 400; font-style: normal; font-display: swap;
-}
-@font-face {
-  font-family: "Fira Sans";
-  src: url("fonts/FiraSans-Medium.woff2") format("woff2");
-  font-weight: 500; font-style: normal; font-display: swap;
-}
-@font-face {
-  font-family: "Fira Sans";
-  src: url("fonts/FiraSans-SemiBold.woff2") format("woff2");
-  font-weight: 600; font-style: normal; font-display: swap;
-}
+/* @font-face lives in design.css now (root-absolute /genscalator/fonts/), one home for the font story. */
 
 :root {
   /* color-scheme + all color values come from design.css (per theme); these two aliases keep the
@@ -132,26 +113,6 @@ nav a { font-family: var(--mono); }
 .doc-header nav a { display: inline; font-size: clamp(1rem, 2.2vw, 1.15rem); font-weight: 400; margin: 0; color: var(--fg); }
 .doc-header nav a:hover { color: var(--link); text-decoration: underline; }
 
-.prose {
-  max-width: 78ch; margin: 0 auto; padding: 3vh 5vw 12vh;
-  font-family: var(--sans); font-weight: 400;
-  font-size: clamp(1.05rem, 1.5vw, 1.18rem); line-height: 1.7; color: var(--fg);
-}
-.prose h1 { font-family: var(--mono); color: var(--head); font-weight: 700; font-size: clamp(2rem, 5vw, 2.9rem); line-height: 1.15; margin: 0.3em 0 0.6em; letter-spacing: 0.01em; }
-.prose h2 { font-family: var(--mono); color: var(--fg); font-weight: 600; font-size: clamp(1.45rem, 3vw, 1.95rem); margin: 1.9em 0 0.5em; padding-bottom: 0.2em; border-bottom: 1px solid var(--rule); }
-.prose h3 { font-family: var(--mono); color: var(--head); font-weight: 500; font-size: clamp(1.2rem, 2.4vw, 1.4rem); margin: 1.5em 0 0.4em; }
-.prose p { margin: 0 0 1em; }
-.prose a { color: var(--link); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--link) 40%, transparent); overflow-wrap: anywhere; }
-.prose a:hover { border-bottom-color: var(--link); }
-.prose strong { color: var(--fg); font-weight: 600; }
-.prose em { color: inherit; }
-.prose ul, .prose ol { margin: 0 0 1.2em 1.4em; }
-.prose li { margin: 0.35em 0; }
-.prose code { font-family: var(--mono); font-size: 0.9em; background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 3px; color: var(--code-fg); }
-.prose pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 1em 1.2em; overflow-x: auto; margin: 0 0 1.3em; }
-.prose pre code { background: none; padding: 0; color: var(--code-fg); }
-.prose blockquote { margin: 0 0 1.2em; padding: 0.2em 0 0.2em 1.1em; border-left: 3px solid var(--rule); color: var(--fg); }
-.prose table { border-collapse: collapse; margin: 0 0 1.3em; width: 100%; font-size: 0.95em; display: block; overflow-x: auto; }
-.prose th, .prose td { border: 1px solid var(--border); padding: 0.4em 0.7em; text-align: left; }
-.prose th { background: var(--th-bg); }
-.prose hr { border: none; border-top: 1px solid var(--border); margin: 2em 0; }
+/* prose TYPOGRAPHY comes from design.css's shared .prose component (blog-identical reading look);
+   this file keeps only the doc page's column box. */
+.prose { max-width: 78ch; margin: 0 auto; padding: 3vh 5vw 12vh; }

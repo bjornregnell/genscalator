@@ -496,14 +496,18 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
   // drop the brand colors (fg doubles as head), links keep ONE accent, and code stays TIP-grounded
   // in all four themes so the single syntax-token color-set keeps its measured contrast everywhere.
   def smitherVars = varSet("bg" -> ctip, "fg" -> tip, "head" -> tip, "link" -> tb, "visited" -> tip,
+    "muted" -> ash, "link-hover" -> tip, "bg-soft" -> cacg, "quote-border" -> cacg,
     "code-bg" -> tip, "code-fg" -> ctip, "border" -> acg, "th-bg" -> cacg, "logo-fg" -> tip, "logo-gs" -> tb, "rule" -> hio)
   def forgyVars = varSet("bg" -> tip, "fg" -> ctip, "head" -> hio, "link" -> cvro, "visited" -> chio,
+    "muted" -> cacg, "link-hover" -> chio, "bg-soft" -> acg, "quote-border" -> ash,
     "code-bg" -> acg, "code-fg" -> ctip, "border" -> cacg, "th-bg" -> acg, "logo-fg" -> hio, "logo-gs" -> vro, "rule" -> tb)
   def calmDarkVars = varSet("bg" -> dng, "fg" -> dlw, "head" -> dlw, "link" -> chio, "visited" -> chio,
+    "muted" -> cacg, "link-hover" -> cvro, "bg-soft" -> tip, "quote-border" -> ash,
     "code-bg" -> tip, "code-fg" -> ctip, "border" -> ash, "th-bg" -> tip, "logo-fg" -> cacg, "logo-gs" -> chio, "rule" -> ash)
   // Calm light carries the CANONICAL orange wordmark (BR 2026-07-20): logos are WCAG-exempt, and
   // the DLW ground is bright enough that the oranges read (VRO ~4.5, HIO ~3.3 — vs washing on CTIP).
   def calmLightVars = varSet("bg" -> dlw, "fg" -> dng, "head" -> dng, "link" -> tb, "visited" -> tb,
+    "muted" -> ash, "link-hover" -> tip, "bg-soft" -> cacg, "quote-border" -> cacg,
     "code-bg" -> tip, "code-fg" -> ctip, "border" -> cacg, "th-bg" -> cacg, "logo-fg" -> hio, "logo-gs" -> vro, "rule" -> ash)
 
   // The dropdown script, shared VERBATIM by design.js and the blog template: applies the saved
@@ -549,17 +553,75 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |  });
        |})();""".stripMargin
 
+  // Self-hosted Fira faces, root-absolute so ANY /genscalator/** page resolves them (the deployed
+  // /genscalator/fonts/ dir is live-verified, meta-minion push-10). ONE def serves design.css and
+  // the blog template, so the font story cannot fork.
+  def fontFacesCss: String =
+    s"""@font-face { font-family: "Fira Code"; src: url("/genscalator/fonts/FiraCode-Regular.woff2") format("woff2");
+       |  font-weight: 400; font-style: normal; font-display: swap; }
+       |@font-face { font-family: "Fira Sans"; src: url("/genscalator/fonts/FiraSans-Regular.woff2") format("woff2");
+       |  font-weight: 400; font-style: normal; font-display: swap; }
+       |@font-face { font-family: "Fira Sans"; src: url("/genscalator/fonts/FiraSans-Medium.woff2") format("woff2");
+       |  font-weight: 500; font-style: normal; font-display: swap; }
+       |@font-face { font-family: "Fira Sans"; src: url("/genscalator/fonts/FiraSans-SemiBold.woff2") format("woff2");
+       |  font-weight: 600; font-style: normal; font-display: swap; }""".stripMargin
+
+  // The shared PROSE component: the blog's reading typography, scoped under .prose so any page
+  // (a security doc, a design-language page, a future doc) reads exactly like a blog post.
+  // Typography only — the page owns column width, margins and padding.
+  def proseCss: String =
+    s"""/* prose: the house reading column (blog-identical typography; page owns the layout box) */
+       |.prose { font-family: var(--sans); font-size: clamp(1rem, 0.95rem + 0.3vw, 1.125rem); line-height: 1.65; color: var(--fg); }
+       |.prose h1, .prose h2, .prose h3, .prose h4 { line-height: 1.25; margin: 2em 0 0.6em; font-weight: 700; color: var(--fg); }
+       |.prose h1 { font-size: 1.85em; margin-top: 0.4em; border-bottom: 4px solid var(--rule); padding-bottom: 0.2em; }
+       |.prose h2 { font-size: 1.4em; }
+       |.prose h3 { font-size: 1.15em; }
+       |.prose h4 { font-size: 1em; color: var(--muted); }
+       |.prose p { margin: 0 0 1.1em; }
+       |.prose p, .prose li { overflow-wrap: break-word; }
+       |.prose a { color: var(--link); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.15em; }
+       |.prose a:hover { color: var(--link-hover); }
+       |.prose strong { font-weight: 700; }
+       |.prose em { font-style: italic; }
+       |.prose ul, .prose ol { margin: 0 0 1.1em; padding-left: 1.5em; }
+       |.prose li { margin-bottom: 0.3em; }
+       |.prose blockquote { margin: 1.2em 0; padding: 0.2em 1.1em; border-left: 3px solid var(--quote-border); color: var(--muted); }
+       |.prose code, .prose pre { font-family: var(--mono); }
+       |.prose code { background: var(--code-bg); color: var(--code-fg); border-radius: 4px; padding: 0.12em 0.35em; font-size: 0.88em; overflow-wrap: break-word; }
+       |.prose pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.9rem 1.1rem; margin: 1.2em 0; overflow-x: auto; line-height: 1.5; }
+       |.prose pre > code { background: none; border-radius: 0; padding: 0; font-size: 0.85em; overflow-wrap: normal; }
+       |.prose img { max-width: 100%; height: auto; }
+       |.prose table { display: block; width: max-content; max-width: 100%; overflow-x: auto; border-collapse: collapse; margin: 1.2em 0; font-size: 0.95em; }
+       |.prose th, .prose td { border: 1px solid var(--border); padding: 0.45em 0.8em; text-align: left; vertical-align: top; }
+       |.prose thead th { background: var(--bg-soft); font-weight: 600; }
+       |.prose hr { border: none; border-top: 1px solid var(--border); margin: 2.5em 0; }
+       |.tok-kw { color: var(--tok-kw); font-weight: 700; }
+       |.tok-soft { color: var(--tok-soft); }
+       |.tok-str { color: var(--tok-str); }
+       |.tok-num { color: var(--tok-num); }
+       |.tok-comment { color: var(--tok-comment); font-style: italic; }
+       |.tok-type { color: var(--tok-type); }
+       |.tok-def { color: var(--tok-def); }""".stripMargin
+
   def designCss: String =
     s"""/* GENERATED by DesignLang.scala - DO NOT EDIT. Edit DesignLang.scala and re-run:
        |   scala-cli run media/design-language/DesignLang.scala --main-class generateDesignLanguage
        |   The genscalator design language: palette tokens + theme variable-sets + shared components.
        |   Themes (data-theme on <html>, dropdown filled by design.js): Automatic (default, the Calm
        |   pair follows the OS scheme) / Smither light / Forgy dark / Calm dark / Calm light. */
+       |$fontFacesCss
        |/* Automatic (default, no data-theme): Calm light — semantic vars flip per theme, palette vars never change */
        |:root {
        |$cssVars
        |  --mono: "Fira Code", "Fira Mono", ui-monospace, monospace;
        |  --sans: "Fira Sans", system-ui, sans-serif;
+       |  --tok-kw: var(--${hio.css});
+       |  --tok-soft: var(--${cacg.css});
+       |  --tok-str: var(--${vbg.css});
+       |  --tok-num: var(--${chio.css});
+       |  --tok-comment: var(--${ash.css});
+       |  --tok-type: var(--${cvro.css});
+       |  --tok-def: var(--${vro.css});
        |$calmLightVars
        |  color-scheme: light;
        |}
@@ -604,6 +666,7 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |#theme-select { position: fixed; top: 1rem; right: 1rem; z-index: 10; font-family: var(--mono);
        |  font-size: .8rem; font-weight: bold; padding: .3rem .7rem; border-radius: 4px;
        |  border: 1px solid var(--border); background: var(--code-bg); color: var(--code-fg); cursor: pointer; }
+       |$proseCss
        |""".stripMargin
 
   def designJs: String =
@@ -794,12 +857,7 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |<title>{{TITLE}}</title>
        |$generatedNote
        |<style>
-       |@font-face { font-family: "Fira Code"; src: url("../fonts/FiraCode-Regular.woff2") format("woff2");
-       |  font-weight: 400; font-style: normal; font-display: swap; }
-       |@font-face { font-family: "Fira Sans"; src: url("../fonts/FiraSans-Regular.woff2") format("woff2");
-       |  font-weight: 400; font-style: normal; font-display: swap; }
-       |@font-face { font-family: "Fira Sans"; src: url("../fonts/FiraSans-Medium.woff2") format("woff2");
-       |  font-weight: 500; font-style: normal; font-display: swap; }
+       |$fontFacesCss
        |/* Automatic (default, no data-theme): the Calm pair follows the OS scheme.
        |   Palette: media/design-language (GENERATED, do not edit here). The tok- vars live here
        |   ONCE and are never overridden: code keeps the TIP ground in every theme, so the one
