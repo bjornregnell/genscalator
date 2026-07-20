@@ -46,3 +46,15 @@ covered what the author was worried about (repo safety), not what §0 knows.
 A verbatim §0 block in the brief would have named tt text grepr and the
 no-pipe rule. Specimen count for canonical-warming: 2 (quoting 2026-07-17,
 search-lane 2026-07-20).
+
+## ADDENDUM-2 ~22:40 — pipe-in-tt-arg, third specimen, same agent
+BR (from the guard TUI, during his AFK wind-down): the same sandbox subagent
+later put a pipe inside a tt tool argument ("pipe clobbery in tt tool arg") —
+the exact §0 pattern-quoting rule (no (a|b) alternation, metachars out of
+patterns) that the 2026-07-17 minion also broke. Notable: my follow-up brief
+to this agent EXPLICITLY said "use tt text grepr not raw grep, no pipes to
+head/tail/wc" — it obeyed the tool-choice line yet still tripped on quoting,
+i.e. even a partial paraphrase that names the failure class adjacently does
+not transfer the sibling rule. Verbatim §0 (which states the quoting rule
+separately) remains the fix candidate. Specimen count: 3, two lanes
+(tool-choice, pattern-quoting), one evening.
