@@ -34,3 +34,15 @@ canonical (non-paraphrased) warming.
 Neither of tonight's subagents demonstrably misfired from a paraphrase gap
 (the clone stall was structural); this note is BR's forward-looking read plus
 the prior warming specimen, not a fresh misfire.
+
+## ADDENDUM 22:25 (clock-read) — the fresh misfire arrived minutes later
+The confound above is now RESOLVED in favour of BR's read: the SM145 sandbox
+subagent's own completion report honestly logs that two of its early searches
+regressed to raw recursive grep (one with a "| head" pipe) and tripped the
+guard; BR approved from the guard TUI. Cause fits the paraphrase-gap model
+exactly: the caller's brief warmed the git-lane and egress constraints
+carefully but never mentioned the search-tool lane — the author-paraphrase
+covered what the author was worried about (repo safety), not what §0 knows.
+A verbatim §0 block in the brief would have named tt text grepr and the
+no-pipe rule. Specimen count for canonical-warming: 2 (quoting 2026-07-17,
+search-lane 2026-07-20).
