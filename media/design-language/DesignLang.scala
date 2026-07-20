@@ -300,6 +300,7 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |  .dark { background: var(--${tip.css}); color: var(--${ctip.css}); }
        |  .dark .surface { background: var(--${acg.css}); }
        |  .dark h1, .dark h2 { color: var(--${hio.css}); }
+       |  .dark h1 { border-bottom: 4px solid var(--${tb.css}); } /* the quiet temper-blue seam the theme defines (--rule); was missing from the preview, BR spot 2026-07-20 */
        |  .dark .accent { color: var(--${vro.css}); }
        |  .dark a { color: var(--${cvro.css}); }
        |  .dark a:visited { color: var(--${chio.css}); }
