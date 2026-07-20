@@ -317,10 +317,11 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     // reading itself hot. Orange echoes the retired chip's "a real break" band, but nothing grades it now: it is
     // on/off because a person judged it, not a number that crossed a line.
     "Hangover" -> "38;5;209",
-    // `ColdStart` + `SmartZone` (BR 2026-07-19): the baton's warp declaration is `-RotVigil +ColdStart
+    // `ColdStart` + `SmartZone` (BR 2026-07-19): the warp ember's declaration is `-RotVigil +ColdStart
     // +SmartZone` — a fresh instance is un-rotted AND un-calibrated (icy blue), and demonstrably at low fill
-    // (bright green, the Z-axis opposite of DumbZone). ColdStart states a process FACT, so the agent may
-    // self-clear it once cold-start hygiene completes; SmartZone's clearing should become fill-derived (SM117).
+    // (bright green, the Z-axis opposite of DumbZone). ColdStart's clear-condition is UNSETTLED (2026-07-20:
+    // hygiene-done self-clear tried and reverted, the human clears it; SM118 owns the question); SmartZone's
+    // clearing should become fill-derived (SM117).
     "ColdStart" -> "38;5;81", "SmartZone" -> "38;5;82"
   )
   def modeColor(label: String): String =

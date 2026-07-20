@@ -31,7 +31,7 @@ private val ModeHelp: String =
     |
     |Labels are bare tokens [A-Za-z0-9._-]+ (no spaces / paths). Examples of modes:
     |  TokSpend  TokenSaving  HotHarvest  HighContext  Solo  HumanStress  RotVigil  Racing
-    |  ColdStart  SmartZone  (the baton declares -RotVigil +ColdStart +SmartZone upon a warp)
+    |  ColdStart  SmartZone  (the warp ember declares -RotVigil +ColdStart +SmartZone upon a warp)
     |Labels are CamelCase so they map 1:1 onto the planned `enum ModeChips` case names.
     |
     |Examples:
