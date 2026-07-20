@@ -54,7 +54,7 @@ A dark coal-stained cast anvil gray/brown sampled from axe-3
 
 ## Contrast (WCAG 2.1)
 
-Full generated matrix: **[contrast-table.md](contrast-table.md)** (written by
+Full generated matrix: **[contrast-table-GENERATED.md](contrast-table-GENERATED.md)** (written by
 [`contrast.scala`](contrast.scala) — `scala-cli run media/design-language/contrast.scala`;
 re-run when the palette changes, never edit the table by hand).
 

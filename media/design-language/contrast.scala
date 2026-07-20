@@ -1,6 +1,6 @@
 //> using scala 3.8.4
 // contrast — generate the WCAG 2.1 contrast table for the design-language palette.
-// Effectful driver by design (one visible effect): WRITES contrast-table.md next to this file
+// Effectful driver by design (one visible effect): WRITES contrast-table-GENERATED.md next to this file
 // (or to the path given as the single optional arg), so the table has ONE generated home and
 // README.md only links it — no hand-pasting to drift. Keep the palette below in sync with
 // README.md's Colors block.
@@ -65,7 +65,7 @@ object Contrast {
   val target = out.headOption.map(Path.of(_)).getOrElse {
     val next = Path.of("media", "design-language") // run from the repo root
     val dir  = if Files.isDirectory(next) then next else Path.of(".") // or from this dir
-    dir.resolve("contrast-table.md")
+    dir.resolve("contrast-table-GENERATED.md")
   }
   val doc =
     s"""# Design-language contrast table (GENERATED)
