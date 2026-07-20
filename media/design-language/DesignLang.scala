@@ -21,7 +21,7 @@ object DesignLang {
   // ---------- the palette: ONE home for every value ----------
   val hio  = Color("HIO",  "hot-iron-orange",      "#ee582b")
   val chio = Color("CHIO", "chio-light-blue",      "#11a7d4")
-  val vro  = Color("VRO",  "vivid-red-orange",     "#EE2400") // pushed redder+darker from #FA4616 (BR 2026-07-20)
+  val vro  = Color("VRO",  "vivid-red-orange",     "#E22200") // #FA4616→#EE2400→#E22200 (BR 2026-07-20): redder + darker, ~3.7/3.6 on bone-white/TIP
   val cvro = Color("CVRO", "cvro-bright-blue",     "#05b9e9")
   val tb   = Color("TB",   "temper-blue",          "#095c75")
   val tip  = Color("TIP",  "tempered-iron-purple", "#17193f")
@@ -36,8 +36,8 @@ object DesignLang {
   // logo spec, frozen by BR 2026-07-20
   val logoWeight  = 700
   val logoGsScale = 1.35
-  // VRO fine-tune neighbors (VRO settled to #EE2400 2026-07-20; these stay in the lab for comparison)
-  val vroCandidates: Vector[Hex] = Vector("#F22800", "#E62100")
+  // VRO fine-tune neighbors (VRO settled to #E22200 2026-07-20; these stay in the lab for comparison)
+  val vroCandidates: Vector[Hex] = Vector("#EE2400", "#D81F00")
 
   // ---------- WCAG 2.1 ----------
   def channel(v: Int): Double =
@@ -115,9 +115,10 @@ object DesignLang {
        |
        |  * https://sv.wikipedia.org/wiki/Smide#Gl%C3%B6dgning
        |
-       |*(Updated 2026-07-20: pushed from #FA4616 to ${vro.hex} — redder (hue ≈9° vs HIO's ≈14°, so the
-       |pair separates by hue, not just lightness) and a bit darker, at full saturation. Fine-tune
-       |neighbors ${vroCandidates.mkString(", ")} render as wordmarks in [logo-lab-GENERATED.html](logo-lab-GENERATED.html).)*
+       |*(Updated 2026-07-20, twice: #FA4616 → #EE2400 → ${vro.hex} — redder (hue ≈9° vs HIO's ≈14°, so the
+       |pair separates by hue, not just lightness) and darker for the LIGHT theme where VRO sits on
+       |bone-white: now ≈3.7 on CTIP and ≈3.6 on TIP, symmetric comfort on both grounds. Fine-tune
+       |neighbors ${vroCandidates.mkString(", ")} render as wordmarks on BOTH grounds in [logo-lab-GENERATED.html](logo-lab-GENERATED.html).)*
        |
        |#### Complementary color of VRO ${cvro.hex}
        |
@@ -438,7 +439,7 @@ object DesignLang {
        |</script>
        |<div class="logo">${wordmark()}</div>
        |<nav><a href="preview-GENERATED.html">preview</a> · <a href="logo-lab-GENERATED.html">logo lab</a> ·
-       |  <a href="DesignLang.scala">source of truth</a></nav>
+       |  <a href="mascot-lab-GENERATED.html">mascot lab</a> · <a href="DesignLang.scala">source of truth</a></nav>
        |{{CONTENT}}
        |</body>
        |</html>
@@ -452,6 +453,19 @@ object DesignLang {
     val gridRows = (for w <- Vector(500, 700); s <- Vector(120, 135, 150) yield (w, s))
     def rows(ws: Vector[(Int, Int)]) = ws.map((w, s) => markRow(s"w$w s$s")).mkString("\n")
     val candidateRows = vroCandidates.map(hex => s"""    <div class="mark big w$logoWeight s135">${wordmark(hex)}</div>""").mkString("\n")
+    val candidateRowsLight = candidateRows
+    def wordmarkLight = s"""<span class="gs" style="color:${tb.hex}">g</span>en<span class="gs" style="color:${tb.hex}">s</span>calator"""
+    val lightVariantSection =
+      s"""  <section class="panel light">
+         |    <div class="label">Smither-light VARIANT (TIP letters, temper-blue gs) — the light-surface mark candidate: big / heading / inline + gs tile</div>
+         |    <div class="mark big w$logoWeight s135" style="color:${tip.hex}">$wordmarkLight</div>
+         |    <div class="mark mid w$logoWeight s135" style="color:${tip.hex}">$wordmarkLight</div>
+         |    <div class="mark tiny w$logoWeight s135" style="color:${tip.hex}">$wordmarkLight</div>
+         |    <div class="favrow">
+         |      <div class="fav f64" style="background:${cacg.hex}"><span class="mark w$logoWeight" style="color:${tip.hex}"><span class="gs" style="color:${tb.hex}">g</span><span class="gs" style="color:${tb.hex}">s</span></span></div>
+         |      <div class="fav f32" style="background:${cacg.hex}"><span class="mark w$logoWeight" style="color:${tip.hex}"><span class="gs" style="color:${tb.hex}">g</span><span class="gs" style="color:${tb.hex}">s</span></span></div>
+         |    </div>
+         |  </section>""".stripMargin
     s"""<!DOCTYPE html>
        |<html lang="en">
        |<head>
@@ -517,12 +531,132 @@ object DesignLang {
        |  </section>
        |
        |  <section class="panel light">
-       |    <div class="label">evidence row: the color mark on a light surface (both oranges fail body
-       |      contrast on bone-white — the color logo is a DARK-surface mark; light surfaces get the
-       |      future black/purple variant of the SM155 logo family)</div>
+       |    <div class="label">VRO on BONE-WHITE (its light-theme accent ground): current ${vro.hex} then ${vroCandidates.mkString(" · ")}
+       |      — judge the gs redness where the light theme actually uses it (smaller HIO letters stay
+       |      washed here on purpose: the full color mark remains DARK-surface; light pages use the
+       |      TIP+temper-blue variant)</div>
        |    <div class="mark big w$logoWeight s135">${wordmark()}</div>
+       |$candidateRowsLight
        |  </section>
        |
+       |@LIGHT-VARIANT-SECTION@
+       |
+       |</div>
+       |</body>
+       |</html>
+       |""".stripMargin.replace("@LIGHT-VARIANT-SECTION@", lightVariantSection)
+       // (substituted after stripMargin, same trick as the contrast table)
+
+  // ---------- mascot-lab-GENERATED.html: Forgy & Smither, v1 geometric takes ----------
+  // Forgy = the FEMALE twin (BR 2026-07-20), the hot impulsive one: hammer, HIO/VRO accents, Forgy dark.
+  // Smither = the male twin, calm + methodical: TONGS (= human control, holding the hot iron safely),
+  // TIP/temper-blue accents, Smither light. Tableau: Forgy left, anvil with the axe center, Smither right.
+  // All fills interpolate the palette, so mascots re-skin when the palette moves. Charmingly primitive v1.
+
+  def forgySvg: String =
+    s"""<g>
+       |  <ellipse cx="146" cy="62" rx="13" ry="27" transform="rotate(24 146 62)" fill="${vro.hex}"/>
+       |  <circle cx="100" cy="80" r="34" fill="${ctip.hex}"/>
+       |  <path d="M66 78 A34 34 0 0 1 134 78 L134 70 Q100 46 66 70 Z" fill="${vro.hex}"/>
+       |  <circle cx="88" cy="90" r="4" fill="${tip.hex}"/>
+       |  <circle cx="112" cy="90" r="4" fill="${tip.hex}"/>
+       |  <path d="M88 102 Q100 112 112 102" stroke="${tip.hex}" stroke-width="3" fill="none" stroke-linecap="round"/>
+       |  <path d="M70 114 L130 114 L146 210 L54 210 Z" fill="${hio.hex}"/>
+       |  <path d="M84 130 L116 130 L124 200 L76 200 Z" fill="${tip.hex}"/>
+       |  <line x1="70" y1="130" x2="36" y2="104" stroke="${hio.hex}" stroke-width="12" stroke-linecap="round"/>
+       |  <line x1="36" y1="104" x2="22" y2="64" stroke="${acg.hex}" stroke-width="7" stroke-linecap="round"/>
+       |  <rect x="4" y="50" width="38" height="17" rx="3" fill="${acg.hex}"/>
+       |  <circle cx="52" cy="58" r="3" fill="${vro.hex}"/>
+       |  <circle cx="60" cy="42" r="2.5" fill="${vro.hex}"/>
+       |  <circle cx="44" cy="38" r="2" fill="${hio.hex}"/>
+       |  <line x1="130" y1="130" x2="158" y2="168" stroke="${hio.hex}" stroke-width="12" stroke-linecap="round"/>
+       |  <rect x="82" y="210" width="12" height="28" fill="${tip.hex}"/>
+       |  <rect x="106" y="210" width="12" height="28" fill="${tip.hex}"/>
+       |  <rect x="76" y="236" width="22" height="8" rx="3" fill="${acg.hex}"/>
+       |  <rect x="102" y="236" width="22" height="8" rx="3" fill="${acg.hex}"/>
+       |</g>""".stripMargin
+
+  def smitherSvg: String =
+    s"""<g>
+       |  <circle cx="100" cy="80" r="34" fill="${ctip.hex}"/>
+       |  <path d="M68 72 A32 32 0 0 1 132 72 Z" fill="${tip.hex}"/>
+       |  <circle cx="88" cy="90" r="8" stroke="${tb.hex}" stroke-width="2.5" fill="none"/>
+       |  <circle cx="112" cy="90" r="8" stroke="${tb.hex}" stroke-width="2.5" fill="none"/>
+       |  <line x1="96" y1="90" x2="104" y2="90" stroke="${tb.hex}" stroke-width="2.5"/>
+       |  <circle cx="88" cy="90" r="3" fill="${tip.hex}"/>
+       |  <circle cx="112" cy="90" r="3" fill="${tip.hex}"/>
+       |  <line x1="90" y1="106" x2="110" y2="106" stroke="${tip.hex}" stroke-width="3" stroke-linecap="round"/>
+       |  <path d="M70 114 L130 114 L140 210 L60 210 Z" fill="${tb.hex}"/>
+       |  <rect x="66" y="158" width="68" height="10" fill="${tip.hex}"/>
+       |  <line x1="70" y1="132" x2="38" y2="158" stroke="${tb.hex}" stroke-width="12" stroke-linecap="round"/>
+       |  <line x1="38" y1="158" x2="10" y2="148" stroke="${acg.hex}" stroke-width="5" stroke-linecap="round"/>
+       |  <line x1="38" y1="158" x2="12" y2="170" stroke="${acg.hex}" stroke-width="5" stroke-linecap="round"/>
+       |  <circle cx="38" cy="158" r="5" fill="${acg.hex}"/>
+       |  <rect x="0" y="152" width="13" height="9" rx="2" fill="${hio.hex}"/>
+       |  <line x1="130" y1="132" x2="156" y2="172" stroke="${tb.hex}" stroke-width="12" stroke-linecap="round"/>
+       |  <rect x="82" y="210" width="12" height="28" fill="${tip.hex}"/>
+       |  <rect x="106" y="210" width="12" height="28" fill="${tip.hex}"/>
+       |  <rect x="76" y="236" width="22" height="8" rx="3" fill="${acg.hex}"/>
+       |  <rect x="102" y="236" width="22" height="8" rx="3" fill="${acg.hex}"/>
+       |</g>""".stripMargin
+
+  def anvilAxeSvg: String =
+    s"""<g>
+       |  <line x1="52" y1="38" x2="132" y2="30" stroke="${acg.hex}" stroke-width="6" stroke-linecap="round"/>
+       |  <path d="M30 18 L54 25 L52 44 L26 40 Q16 29 30 18 Z" fill="${cacg.hex}"/>
+       |  <path d="M26 40 Q16 29 30 18" stroke="${hio.hex}" stroke-width="3" fill="none" stroke-linecap="round"/>
+       |  <rect x="20" y="44" width="120" height="18" rx="4" fill="${acg.hex}"/>
+       |  <path d="M20 44 L20 62 L0 53 Z" fill="${acg.hex}"/>
+       |  <rect x="62" y="62" width="36" height="16" fill="${acg.hex}"/>
+       |  <rect x="48" y="78" width="64" height="14" rx="3" fill="${acg.hex}"/>
+       |</g>""".stripMargin
+
+  def mascotLab: String =
+    def tableau =
+      s"""<svg viewBox="0 0 640 300" width="640" role="img" aria-label="Forgy and Smither at the anvil">
+         |  <g transform="translate(215,10) scale(-1,1)">$forgySvg</g>
+         |  <g transform="translate(240,190)">$anvilAxeSvg</g>
+         |  <g transform="translate(425,10)">$smitherSvg</g>
+         |</svg>""".stripMargin
+    def solo(svg: String, label: String) =
+      s"""<figure><svg viewBox="0 0 200 260" width="180" role="img" aria-label="$label">$svg</svg><figcaption>$label</figcaption></figure>"""
+    s"""<!DOCTYPE html>
+       |<html lang="en">
+       |<head>
+       |<meta charset="utf-8">
+       |<meta name="viewport" content="width=device-width, initial-scale=1">
+       |<title>genscalator mascot lab — Forgy &amp; Smither</title>
+       |$generatedNote
+       |<style>
+       |  * { box-sizing: border-box; margin: 0; }
+       |  body { font-family: "Fira Sans", system-ui, sans-serif; background: #888; padding: 1rem; }
+       |  .lab { max-width: 1100px; margin: 0 auto; display: grid; gap: 1rem; }
+       |  .panel { border-radius: 8px; padding: 1.5rem 2rem; }
+       |  .tip { background: ${tip.hex}; } .light { background: ${ctip.hex}; }
+       |  .label { font-size: .75rem; color: #ccc; font-family: "Fira Code", monospace; margin: 0 0 .6rem; }
+       |  .light .label { color: #555; }
+       |  .row { display: flex; gap: 2rem; align-items: flex-end; flex-wrap: wrap; }
+       |  figure { text-align: center; }
+       |  figcaption { font-family: "Fira Code", monospace; font-size: .8rem; color: #999; margin-top: .3rem; }
+       |</style>
+       |</head>
+       |<body>
+       |<div class="lab">
+       |  <section class="panel tip">
+       |    <div class="label">v1 geometric takes — Forgy (female, hammer, the hot one) · Smither (male, tongs = human control, holding a glowing ember) — iterate in DesignLang.scala</div>
+       |    <div class="row">
+       |      ${solo(forgySvg, "Forgy")}
+       |      ${solo(smitherSvg, "Smither")}
+       |    </div>
+       |  </section>
+       |  <section class="panel tip">
+       |    <div class="label">the tableau: Forgy · anvil with the freshly-forged axe (HIO edge-glow) · Smither</div>
+       |    $tableau
+       |  </section>
+       |  <section class="panel light">
+       |    <div class="label">same tableau on Smither light</div>
+       |    $tableau
+       |  </section>
        |</div>
        |</body>
        |</html>
@@ -540,6 +674,7 @@ object DesignLang {
     "index.html"                -> DesignLang.index,
     "preview-GENERATED.html"    -> DesignLang.preview,
     "logo-lab-GENERATED.html"   -> DesignLang.logoLab,
+    "mascot-lab-GENERATED.html" -> DesignLang.mascotLab,
   )
   for (name, content) <- outputs do
     Files.writeString(dir.resolve(name), content)

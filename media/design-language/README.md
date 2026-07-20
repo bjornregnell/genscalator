@@ -11,7 +11,7 @@ Theme: blacksmith, forging, metallurgy and iron
 
 ```css
 --hot-iron-orange: #ee582b; /* sampled from axe-2.jpg */
---vivid-red-orange: #EE2400;  /*  https://colorcodes.io/orange/red-orange-color-codes/ */
+--vivid-red-orange: #E22200;  /*  https://colorcodes.io/orange/red-orange-color-codes/ */
 --chio-light-blue: #11a7d4;
 --cvro-bright-blue: #05b9e9;
 --temper-blue: #095c75; /* link/accent blue for LIGHT surfaces; tempering blue, sv. blåanlöpning */
@@ -33,13 +33,14 @@ hot-iron-orange, sampled from axe-2.jpg. Glowing iron at bright-orange working h
 
 #### Complementary color of HIO: #11a7d4
 
-### Vivid Red Orange (VRO) #EE2400
+### Vivid Red Orange (VRO) #E22200
 
   * https://sv.wikipedia.org/wiki/Smide#Gl%C3%B6dgning
 
-*(Updated 2026-07-20: pushed from #FA4616 to #EE2400 — redder (hue ≈9° vs HIO's ≈14°, so the
-pair separates by hue, not just lightness) and a bit darker, at full saturation. Fine-tune
-neighbors #F22800, #E62100 render as wordmarks in [logo-lab-GENERATED.html](logo-lab-GENERATED.html).)*
+*(Updated 2026-07-20, twice: #FA4616 → #EE2400 → #E22200 — redder (hue ≈9° vs HIO's ≈14°, so the
+pair separates by hue, not just lightness) and darker for the LIGHT theme where VRO sits on
+bone-white: now ≈3.7 on CTIP and ≈3.6 on TIP, symmetric comfort on both grounds. Fine-tune
+neighbors #EE2400, #D81F00 render as wordmarks on BOTH grounds in [logo-lab-GENERATED.html](logo-lab-GENERATED.html).)*
 
 #### Complementary color of VRO #05b9e9
 
@@ -94,7 +95,7 @@ Ratio then WCAG 2.1 verdict per cell.
 | text color \ background | ACG | TIP | CTIP | CACG | white |
 |---|---|---|---|---|---|
 | HIO hot-iron-orange `#ee582b` | 4.02 AA-large | 4.86 AA | 2.72 fail | 2.31 fail | 3.46 AA-large |
-| VRO vivid-red-orange `#EE2400` | 3.24 AA-large | 3.92 AA-large | 3.38 AA-large | 2.87 fail | 4.30 AA-large |
+| VRO vivid-red-orange `#E22200` | 2.96 fail | 3.58 AA-large | 3.70 AA-large | 3.14 AA-large | 4.71 AA |
 | CHIO chio-light-blue `#11a7d4` | 4.98 AA | 6.01 AA | 2.20 fail | 1.87 fail | 2.80 fail |
 | CVRO cvro-bright-blue `#05b9e9` | 6.05 AA | 7.31 AAA | 1.81 fail | 1.54 fail | 2.30 fail |
 | TB temper-blue `#095c75` | 1.86 fail | 2.24 fail | 5.90 AA | 5.01 AA | 7.50 AAA |
@@ -127,7 +128,7 @@ mark teaches the vocabulary. Candidates: [logo-lab-GENERATED.html](logo-lab-GENE
 context: [preview-GENERATED.html](preview-GENERATED.html).
 
 - **Canonical color mark (dark surfaces only):** smaller letters in HIO `#ee582b`, the enlarged
-  g and s one step hotter in VRO `#EE2400` — a heat gradient inside the word. Backgrounds: TIP or
+  g and s one step hotter in VRO `#E22200` — a heat gradient inside the word. Backgrounds: TIP or
   ACG (both oranges fail contrast on the light surfaces, even at logo sizes — see the contrast table).
 - **Light-surface variant (CANDIDATE, not yet ratified):** letters in TIP `#17193f`, g and s in
   temper blue `#095c75` — shown on the preview's light panel for judgment.
