@@ -776,8 +776,8 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
     "accent" -> tb, "accent-hover" -> tip, "border" -> cacg, "code-bg" -> tip, "code-text" -> ctip,
     "quote-border" -> cacg, "rule" -> ash, "brand-fg" -> hio, "brand-gs" -> vro, "brand-hover" -> tb)
 
-  // ---------- blog/_template.html: the ssg blog template, reskinned to the design language ----------
-  // GENERATED into blog/ (ssg's fixed template name) so the blog palette can never drift from here.
+  // ---------- media/blog/_template.html: the ssg blog template, reskinned to the design language ----------
+  // GENERATED into media/blog/ (ssg's fixed template name) so the blog palette can never drift from here.
   // The MECHANISMS (TOC sidebar, to-top, footnotes, token classes) are ported verbatim from the
   // 2026-07 hand template; colors, fonts, brand and the h1 rule changed, and the original
   // three-state toggle became the shared four-theme dropdown (themeScript, 2026-07-20).
@@ -1320,7 +1320,7 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
     "preview-GENERATED.html"    -> DesignLang.preview,
     "logo-lab-GENERATED.html"   -> DesignLang.logoLab,
     "mascot-lab-GENERATED.html" -> DesignLang.mascotLab,
-    "../../blog/_template.html" -> DesignLang.blogTemplate, // ssg's fixed template name; generated so the blog palette cannot drift
+    "../blog/_template.html" -> DesignLang.blogTemplate, // ssg's fixed template name (media/blog is our SIBLING since SM142); generated so the blog palette cannot drift
   )
   for (name, content) <- outputs do
     Files.writeString(dir.resolve(name), content)

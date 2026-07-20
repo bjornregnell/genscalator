@@ -11,7 +11,7 @@ live guard-stall specimens plus the ColdStart-clearing revert, and the baton→e
 PRE-EXPERIMENT: no pilot has run; these refinements move the thing-to-beat, they are not results.
 This is the best-*reasoned* ember template from the SM168 joint pass - written down BEFORE any
 measurement, as the thing for the pilot experiment to beat (see blog post
-[030](../blog/030-what-is-a-good-warp-ember.md)). It is a seed, not a result: the pilot
+[030](../media/blog/030-what-is-a-good-warp-ember.md)). It is a seed, not a result: the pilot
 (ember vs no ember) and the follow-up experiments (per-ingredient) may change any part of it. The
 real specimen it generalizes: [EMBER-EXAMPLE.md](EMBER-EXAMPLE.md).
 

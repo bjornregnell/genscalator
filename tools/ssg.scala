@@ -405,9 +405,9 @@ object Ssg:
       |that fell out of the set, so the out-dir holds exactly the rendered set.
       |
       |Examples:
-      |  tt ssg blog/002-scala-style.md tmp/site              # one post → tmp/site/<name>.html
-      |  tt ssg blog tmp/site                                 # a whole dir of posts
-      |  tt ssg --status published,deployed --out site blog   # the publishable set, one pass
+      |  tt ssg media/blog/002-scala-style.md tmp/site        # one post → tmp/site/<name>.html
+      |  tt ssg media/blog tmp/site                           # a whole dir of posts
+      |  tt ssg --status published,deployed --out site media/blog   # the publishable set, one pass
       |  tt serv tmp/site                                     # then preview at the printed URL
       |
       |Full reference: tools/README.md""".stripMargin

@@ -176,7 +176,7 @@ leaves the calls the note reserves for the author (like the aligned `if` above) 
 ## 5. The experiment
 
 The full harness, raw data, and analysis scripts are in the repository
-([`../research/experiments/indent-vs-braces/`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/experiments/indent-vs-braces/)); everything below is
+([`../../research/experiments/indent-vs-braces/`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/experiments/indent-vs-braces/)); everything below is
 reproducible.
 
 ### 5.1 Research questions
@@ -510,8 +510,8 @@ tool grade its own homework - you are reading the right blog. That is much of wh
   [`README.md`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/experiments/indent-vs-braces/README.md), results
   [`RESULTS.md`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/experiments/indent-vs-braces/RESULTS.md), raw data
   [`results-raw.tsv`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/experiments/indent-vs-braces/results-raw.tsv).
-- Background: [`../research/001-scala-style-evolution.md`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/001-scala-style-evolution.md),
-  [`../research/017-scala-style-recommendations.md`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/017-scala-style-recommendations.md).
+- Background: [`../../research/001-scala-style-evolution.md`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/001-scala-style-evolution.md),
+  [`../../research/017-scala-style-recommendations.md`](https://codeberg.org/bjornregnell/genscalator/src/branch/main/research/017-scala-style-recommendations.md).
 
 ## Credits
 

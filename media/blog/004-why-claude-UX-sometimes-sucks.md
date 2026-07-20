@@ -11,7 +11,7 @@
 (keystroke → UI warp → agent silence → the panic writes on a clock → Ctrl+D+D → resume-fork reunion) and/or the
 **session-fork lineage graph** (original session → orphan spawns → the resume-fork this work continued in). This is the
 Act-V evidence *as* the figure — the same externalized substrate that recovered the panic writes, rendered. Source:
-[`fleetview-warp-panic-writes-2026-07-04.md`](../research/wr-data/fleetview-warp-panic-writes-2026-07-04.md) + the
+[`fleetview-warp-panic-writes-2026-07-04.md`](../../research/wr-data/fleetview-warp-panic-writes-2026-07-04.md) + the
 transcripts.
 
 **TODO: include the HUMAN's personal experience on the pain side.** These pains are *joint*, not just agent-observed
@@ -154,8 +154,8 @@ picture tells you that one of them is a policy change. And notice what option 2 
 `mv *`, which is the command that moves and overwrites files. Not one folder. Anything, anywhere, from now on.
 
 Why the menu cannot be fixed by better wording is a longer story, and it is in
-[`the-permission-layer-cannot-hold-a-path-constraint-2026-07-17.md`](../research/wr-data/the-permission-layer-cannot-hold-a-path-constraint-2026-07-17.md)
-and [`SECURITY-MODEL.md`](../SECURITY-MODEL.md) §3.5.
+[`the-permission-layer-cannot-hold-a-path-constraint-2026-07-17.md`](../../research/wr-data/the-permission-layer-cannot-hold-a-path-constraint-2026-07-17.md)
+and [`SECURITY-MODEL.md`](../../SECURITY-MODEL.md) §3.5.
 
 **The high-level frame (BR — why these bugs hit disproportionately hard).** A human embarks on a big endeavour and
 pours in energy, feelings, hours, sleepless nights — to do things with AI that were *never possible before*. The
@@ -166,7 +166,7 @@ to swallow a sleepless-night's work is devastating. This is the thesis of 004: a
 because the people pushing hardest on it are all-in on something new — and the tooling must be built knowing that.
 
 **Verbatim source — the "panic writes"** (a real gut-punch caught live, 2026-07-04): see
-[`fleetview-warp-panic-writes-2026-07-04.md`](../research/wr-data/fleetview-warp-panic-writes-2026-07-04.md) — an
+[`fleetview-warp-panic-writes-2026-07-04.md`](../../research/wr-data/fleetview-warp-panic-writes-2026-07-04.md) — an
 accidental keystroke warped BR into FleetView, his messages spawned orphan sessions, the agent went silent, and he
 typed "UX CHANGED under my feet", "I get no answers from you", "anything lost?", "aaargh I want back the other session
 feed". Quote these; they *are* the emotional core of this post.
@@ -216,8 +216,8 @@ mode-warp, redundancy (we already plan freely in tmp docs and chat), and a langu
 word). The deeper theme is 004's spine: **trust the checkable substrate, not the chrome** (the agent dispelled the "is
 my git flow diverted?" worry by reading git, not the marker). It fits the 004 family too: a timing/observability/control
 race between a human action and the system's mode-classifier. Sources:
-[`plan-mode-approval-flips-to-automode-surprise-2026-07-11.md`](../research/wr-data/plan-mode-approval-flips-to-automode-surprise-2026-07-11.md),
-[`does-harness-disinformation-survive-a-compact-2026-07-10.md`](../research/wr-data/does-harness-disinformation-survive-a-compact-2026-07-10.md).
+[`plan-mode-approval-flips-to-automode-surprise-2026-07-11.md`](../../research/wr-data/plan-mode-approval-flips-to-automode-surprise-2026-07-11.md),
+[`does-harness-disinformation-survive-a-compact-2026-07-10.md`](../../research/wr-data/does-harness-disinformation-survive-a-compact-2026-07-10.md).
 Harness-side asks: separate a plan's *acceptance* from its *execution-trigger*; do not mode-switch on ordinary words;
 clear stale status chrome. Structural fix idea: de-trigger words in the super-harness input tap (SM016).
 

@@ -117,9 +117,9 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   is how genscalator's claims earn an evidence base rather than resting on assertion (see `METHODOLOGY.md`); "WR data"
   in chat is BR flagging an episode for that log.
 - **SSG — static site generator** — a **separate work strand** (like WR and AT): the planned pipeline that renders the
-  genscalator `blog/*.md` posts into the public site at **bjornregnell.se**. Its job is *publishing* the blog, not the
+  genscalator `media/blog/*.md` posts into the public site at **bjornregnell.se**. Its job is *publishing* the blog, not the
   research (WR) or the translation (AT). Today the site is a shallow placeholder that needs design love; the generator
-  choice + deployment order are open (`blog/README.md` "Deployment"), and the blog `deployed`/`updated` status states
+  choice + deployment order are open (`media/blog/README.md` "Deployment"), and the blog `deployed`/`updated` status states
   exist to track what's live once SSG ships.
 - **to ape** (v.) — the **agent's** move: to imitate human-ness (our language, our behaviour). An LLM is trained to
   sound like us, so it apes us. Swedish cognate *att efterapa* (*efter* + *apa* = "ape after"), the same
@@ -792,7 +792,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   hands off **autonomy**) and the *compact* dance (which manages **context**). Memory: [[delegation-dance]];
   deepened in `research/049-the-dilemma-of-delegation.md` (economics + briefing fidelity),
   `research/050-does-delegation-lower-context-rot.md` (the empirical rot study), blog **BP013**, figure
-  `blog/figures/seq-delegation-dance.svg`. (BR 2026-07-07, name ratified.)
+  `media/blog/figures/seq-delegation-dance.svg`. (BR 2026-07-07, name ratified.)
 
 ### Memory habits and substrate
 - **Memory hygiene (agent)** — keeping the agent's **durable memory store** (the persistent `MEMORY.md` + the

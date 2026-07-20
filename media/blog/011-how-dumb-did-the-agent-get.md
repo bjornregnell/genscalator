@@ -3,11 +3,11 @@
 **Status: STUB.** (started 2026-07-05) TODO: narrate the before/after-compact context-rot experiment for an outside reader.
 
 > **Research grounding.** This post distils one within-session natural experiment:
-> [`research/wr-data/context-rot-before-after-2026-07-05.md`](../research/wr-data/context-rot-before-after-2026-07-05.md)
+> [`research/wr-data/context-rot-before-after-2026-07-05.md`](../../research/wr-data/context-rot-before-after-2026-07-05.md)
 > (the live data log: pre-registration P1-P6, observations O1-O11, the loaded-me self-assessment A1, and the
 > fresh-context after-inspect that scored it). Theory it leans on:
-> [`006-smart-zone-ceiling.md`](../research/006-smart-zone-ceiling.md) (Z, context rot) and the speed angle in
-> [`041-token-speed-degradation-with-context-fill.md`](../research/041-token-speed-degradation-with-context-fill.md).
+> [`006-smart-zone-ceiling.md`](../../research/006-smart-zone-ceiling.md) (Z, context rot) and the speed angle in
+> [`041-token-speed-degradation-with-context-fill.md`](../../research/041-token-speed-degradation-with-context-fill.md).
 
 ## The hook
 BR ran a deliberate experiment on the agent itself: pin the git HEAD, then **flood the agent with messages at high
@@ -41,7 +41,7 @@ actually get, measured objectively (commits, tests, diffs), not by the agent's o
 Case Study Research in Software Engineering (Runeson, Höst, Rainer and Regnell, Wiley 2012), which BR co-authored:
 first-hand authority, and a conflict of interest we name openly. Kept deliberately plain: the rigour is in what we
 did, not in the vocabulary. Companion public summary:
-[summary-case-study-research.md](../skills/research-methods/summary-case-study-research.md).)*
+[summary-case-study-research.md](../../skills/research-methods/summary-case-study-research.md).)*
 
 Why explain *how* we got the numbers at all? Because the whole post rests on a claim the agent could not verify about
 itself, so the credibility has to come from the method, not from the story being neat. Here is what we did to earn it.

@@ -45,7 +45,7 @@ the rename, so its banner still says "baton". First the warning that it is a poi
 then, before anything else, a checklist of reflexes that regress at turn zero (the very first moments
 of a fresh session, before the agent has read anything).*
 
-We published this one verbatim in [EMBER-EXAMPLE.md](../work/EMBER-EXAMPLE.md), because it worked:
+We published this one verbatim in [EMBER-EXAMPLE.md](../../work/EMBER-EXAMPLE.md), because it worked:
 the fresh agent reconstructed the working state with zero re-explanation from me. It cleared a stale
 mode flag (a status label on the shared status display we both read), verified that yesterday's git
 pushes had actually landed before trusting them, and correctly did NOT start a work queue I had put
@@ -112,7 +112,7 @@ much smaller deliverables:
 **1. A pre-hoc seed** (pre-hoc: written down *before* any measurement, the opposite of rationalizing
 afterwards). Our best-reasoned ember template - the table above, ordered checklist-first,
 with the three-line verified state summary - written down as the thing to beat. It is a seed, not a
-result: [EMBER-TEMPLATE.md](../work/EMBER-TEMPLATE.md), living in the repo next to the real specimen.
+result: [EMBER-TEMPLATE.md](../../work/EMBER-TEMPLATE.md), living in the repo next to the real specimen.
 This post deliberately does not duplicate its details, so it cannot drift out of date here.
 
 **2. A pilot A/B test** (two groups, exactly one difference between them). One factor, the most
@@ -150,7 +150,7 @@ through work. The pilot will tell us whether even that much is measurable.
 - **Experimentation in Software Engineering** - Wohlin, Runeson, Höst, Ohlsson, Regnell, Wesslén
   (Springer). Our own book (I am a co-author); the series-of-experiments discipline and the validity
   vocabulary used above. *(Link via the typed bibliography before publish.)*
-- [EMBER-EXAMPLE.md](../work/EMBER-EXAMPLE.md) - the real, working warp-ember specimen, verbatim,
+- [EMBER-EXAMPLE.md](../../work/EMBER-EXAMPLE.md) - the real, working warp-ember specimen, verbatim,
   with annotations of its design moves (pre-rename, so the specimen itself says "baton").
 - [005 - Dancing with agents](005-dancing-with-agents.md) - the exit-resume dance this post's warp
   handover belongs to.

@@ -20,7 +20,7 @@ models disjoint from the pilot's 7.
 ## The preregistration (the honesty guarantee)
 
 The full frozen design lives at
-[`../research/experiments/indent-vs-braces/BIG-RUN-PREREG.md`](../research/experiments/indent-vs-braces/BIG-RUN-PREREG.md).
+[`../../research/experiments/indent-vs-braces/BIG-RUN-PREREG.md`](../../research/experiments/indent-vs-braces/BIG-RUN-PREREG.md).
 Its anti-fishing core: **fixed n, one primary test, no optional stopping, a committed random seed, and a standing
 commitment to report the null if it stands.** (Preregistration = lock the hypotheses, sample size, primary test and
 analysis script *before* collecting data — so you can't try many tests and report the smallest p, drop inconvenient
@@ -42,7 +42,7 @@ models, or stop the moment it looks good.)
   the 4B). So at analysis the confirmatory set is deduplicated by each model's **ollama content-ID**, and any tag
   whose ID equals a pilot model's is folded out; the post reports the **effective disjoint n** (which may sit a
   model or two below 56) and names any tags that collapsed. Logged as it happened in
-  [`../research/experiments/indent-vs-braces/RUN-LOG.md`](../research/experiments/indent-vs-braces/RUN-LOG.md) — the
+  [`../../research/experiments/indent-vs-braces/RUN-LOG.md`](../../research/experiments/indent-vs-braces/RUN-LOG.md) — the
   frozen list stays exactly as committed; only the *reported* effective n reflects the dedup.
 
 ## Hardware & feasibility — why the "lame GPU" is actually on-target
@@ -144,7 +144,7 @@ the compute host and **resumed from a per-cell checkpoint** with zero lost or du
 - **The model dominates, not the style:** pass-rates span 0.00 → 0.89, with ~10 models flat-zero across all styles.
 - **Effective n:** 56 distinct tags; by content-ID only `gemma3:4b` aliases a pilot model (`gemma3:latest`), so 55/56
   are out-of-sample vs the pilot — no drop, reported. Full numbers + per-model table:
-  [`../research/experiments/indent-vs-braces/RESULTS.md`](../research/experiments/indent-vs-braces/RESULTS.md).
+  [`../../research/experiments/indent-vs-braces/RESULTS.md`](../../research/experiments/indent-vs-braces/RESULTS.md).
 
 ## What it means
 

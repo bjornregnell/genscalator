@@ -29,22 +29,22 @@
 //
 // USAGE  (run from the genscalator root)
 //   STATUS-DRIVEN FLOW (SM032, recommended) -- each post carries a status preamble; `deployed` = what should be live:
-//     scala-cli run deployblog.sc -- --serve             # render the published+deployed posts, preview on :8000
-//     scala-cli run deployblog.sc -- --release --dry-run # render + show what WOULD upload, change nothing
-//     scala-cli run deployblog.sc -- --release           # promote published:deployed + push, one idempotent shot
-//     scala-cli run deployblog.sc -- --push              # (re)render + upload just the already-deployed set
-//     scala-cli run deployblog.sc -- --status-update published:deployed   # only stamp status (no render/upload)
+//     scala-cli run deploy/deployblog.sc -- --serve             # render the published+deployed posts, preview on :8000
+//     scala-cli run deploy/deployblog.sc -- --release --dry-run # render + show what WOULD upload, change nothing
+//     scala-cli run deploy/deployblog.sc -- --release           # promote published:deployed + push, one idempotent shot
+//     scala-cli run deploy/deployblog.sc -- --push              # (re)render + upload just the already-deployed set
+//     scala-cli run deploy/deployblog.sc -- --status-update published:deployed   # only stamp status (no render/upload)
 //   These call `tt ssg` to render (by status) + append status transitions. A spec uses a colon (from:to).
 //
 //   LOW-LEVEL FLOW (mirror a pre-rendered dir as-is):
-//     tt ssg --status published,deployed --out tmp/site blog   # render the deploy set yourself
-//     scala-cli run deployblog.sc -- --dry-run                 # ALWAYS dry-run first to confirm the target path
-//     scala-cli run deployblog.sc                              # defaults: tmp/site -> webroots/www/genscalator/blog (additive)
-//     scala-cli run deployblog.sc -- tmp/site webroots/www/genscalator/blog --delete   # exact mirror (removes stale remote files)
+//     tt ssg --status published,deployed --out tmp/site media/blog   # render the deploy set yourself
+//     scala-cli run deploy/deployblog.sc -- --dry-run                 # ALWAYS dry-run first to confirm the target path
+//     scala-cli run deploy/deployblog.sc                              # defaults: tmp/site -> webroots/www/genscalator/blog (additive)
+//     scala-cli run deploy/deployblog.sc -- tmp/site webroots/www/genscalator/blog --delete   # exact mirror (removes stale remote files)
 //
 //   DOWNLOAD FLOW (pull a remote subtree into the repo, e.g. deploy-only assets like images):
-//     scala-cli run deployblog.sc -- <localDest> <remoteSrc> --pull --dry-run   # preview what would download
-//     scala-cli run deployblog.sc -- media/img webroots/www/genscalator/img --pull   # mirror remote -> local (additive; never deletes local)
+//     scala-cli run deploy/deployblog.sc -- <localDest> <remoteSrc> --pull --dry-run   # preview what would download
+//     scala-cli run deploy/deployblog.sc -- media/img webroots/www/genscalator/img --pull   # mirror remote -> local (additive; never deletes local)
 //
 // REMOTE PATH NOTE
 //   On SFTP login you land in your one.com account home. bjornregnell.se's public web
@@ -108,7 +108,7 @@ val positional =
 val flags      = args.filter(_.startsWith("--")).toSet
 val localDir   = positional.lift(0).getOrElse("tmp/site")
 val remoteDir  = positional.lift(1).getOrElse("webroots/www/genscalator/blog") // SM140: canonical web home (blog moved under genscalator/)
-val blogDir    = "blog"                               // source posts dir (relative to cwd = the genscalator root)
+val blogDir    = "media/blog"                         // source posts dir (relative to cwd = the genscalator root; SM142 media/ move)
 val doDelete   = flags.contains("--delete")
 val dryRun     = flags.contains("--dry-run")
 val check      = flags.contains("--check")

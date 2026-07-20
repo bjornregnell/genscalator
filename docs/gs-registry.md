@@ -114,7 +114,7 @@ of truth). For the full prose on any entry, follow it back to foundations.
 | **ape ⟷ anthro asymmetry** | a mirror pair; the agent's aping lures the human's anthro-ing, and it strengthens as models improve. |
 | **CO4 / CF5** | the agent handle encodes the model: Claude Opus 4 / Claude Fable 5. |
 | **AT** (AutoTranslate) | the introprog Swedish→English case study (now closed). |
-| **SSG** (static site generator) | the strand that publishes the `blog/*.md` posts to bjornregnell.se. |
+| **SSG** (static site generator) | the strand that publishes the `media/blog/*.md` posts to bjornregnell.se. |
 | **substrate-grounding** | check the deterministic substrate instead of recalling; regex-triangulation beats stochastic recall. |
 | **gs** | genscalator (always lower-case); deliberately overloaded — a leading `gs` cue means "run a gs command". |
 | **PB** | the closed pinboard `PIN-BOARD.md`. |
