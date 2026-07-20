@@ -558,7 +558,7 @@ object DesignLang {
        |  <circle cx="112" cy="90" r="4" fill="${tip.hex}"/>
        |  <path d="M88 102 Q100 112 112 102" stroke="${tip.hex}" stroke-width="3" fill="none" stroke-linecap="round"/>
        |  <path d="M70 114 L130 114 L146 210 L54 210 Z" fill="${hio.hex}"/>
-       |  <path d="M84 130 L116 130 L124 200 L76 200 Z" fill="${tip.hex}"/>
+       |  <path d="M84 130 L116 130 L124 200 L76 200 Z" fill="${acg.hex}"/>
        |  <line x1="70" y1="130" x2="36" y2="104" stroke="${hio.hex}" stroke-width="12" stroke-linecap="round"/>
        |  <line x1="36" y1="104" x2="22" y2="64" stroke="${acg.hex}" stroke-width="7" stroke-linecap="round"/>
        |  <rect x="4" y="50" width="38" height="17" rx="3" fill="${acg.hex}"/>
@@ -567,8 +567,8 @@ object DesignLang {
        |  <circle cx="60" cy="42" r="2.5" fill="${vro.hex}"/>
        |  <circle cx="44" cy="38" r="2" fill="${hio.hex}"/>
        |  <line x1="130" y1="130" x2="158" y2="168" stroke="${hio.hex}" stroke-width="12" stroke-linecap="round"/>
-       |  <rect x="82" y="210" width="12" height="28" fill="${tip.hex}"/>
-       |  <rect x="106" y="210" width="12" height="28" fill="${tip.hex}"/>
+       |  <rect x="82" y="210" width="12" height="28" fill="${acg.hex}"/>
+       |  <rect x="106" y="210" width="12" height="28" fill="${acg.hex}"/>
        |  <rect x="76" y="236" width="22" height="8" rx="3" fill="${acg.hex}"/>
        |  <rect x="102" y="236" width="22" height="8" rx="3" fill="${acg.hex}"/>
        |</g>""".stripMargin
@@ -576,7 +576,7 @@ object DesignLang {
   def smitherSvg: String =
     s"""<g>
        |  <circle cx="100" cy="80" r="34" fill="${ctip.hex}"/>
-       |  <path d="M68 72 A32 32 0 0 1 132 72 Z" fill="${tip.hex}"/>
+       |  <path d="M68 72 A32 32 0 0 1 132 72 Z" fill="${acg.hex}"/>
        |  <circle cx="88" cy="90" r="8" stroke="${tb.hex}" stroke-width="2.5" fill="none"/>
        |  <circle cx="112" cy="90" r="8" stroke="${tb.hex}" stroke-width="2.5" fill="none"/>
        |  <line x1="96" y1="90" x2="104" y2="90" stroke="${tb.hex}" stroke-width="2.5"/>
@@ -584,7 +584,7 @@ object DesignLang {
        |  <circle cx="112" cy="90" r="3" fill="${tip.hex}"/>
        |  <line x1="90" y1="106" x2="110" y2="106" stroke="${tip.hex}" stroke-width="3" stroke-linecap="round"/>
        |  <path d="M70 114 L130 114 L140 210 L60 210 Z" fill="${tb.hex}"/>
-       |  <rect x="66" y="158" width="68" height="10" fill="${tip.hex}"/>
+       |  <rect x="66" y="158" width="68" height="10" fill="${acg.hex}"/>
        |  <line x1="70" y1="132" x2="38" y2="158" stroke="${tb.hex}" stroke-width="12" stroke-linecap="round"/>
        |  <line x1="38" y1="158" x2="10" y2="148" stroke="${acg.hex}" stroke-width="5" stroke-linecap="round"/>
        |  <line x1="38" y1="158" x2="12" y2="170" stroke="${acg.hex}" stroke-width="5" stroke-linecap="round"/>
@@ -592,8 +592,8 @@ object DesignLang {
        |  <circle cx="6" cy="156" r="11" fill="${hio.hex}" opacity="0.22"/>
        |  <rect x="0" y="152" width="13" height="9" rx="2" fill="${hio.hex}"/>
        |  <line x1="130" y1="132" x2="156" y2="172" stroke="${tb.hex}" stroke-width="12" stroke-linecap="round"/>
-       |  <rect x="82" y="210" width="12" height="28" fill="${tip.hex}"/>
-       |  <rect x="106" y="210" width="12" height="28" fill="${tip.hex}"/>
+       |  <rect x="82" y="210" width="12" height="28" fill="${acg.hex}"/>
+       |  <rect x="106" y="210" width="12" height="28" fill="${acg.hex}"/>
        |  <rect x="76" y="236" width="22" height="8" rx="3" fill="${acg.hex}"/>
        |  <rect x="102" y="236" width="22" height="8" rx="3" fill="${acg.hex}"/>
        |</g>""".stripMargin
