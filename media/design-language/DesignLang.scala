@@ -1,8 +1,15 @@
 //> using scala 3.8.4
+//> using file ../../tools/lib.scala
+//> using file ../../tools/mdparse.scala
+//> using file ../../tools/ssg.scala
+// NB all three declared here: `using file` does NOT chain, so ssg's own file-directives are
+// inert when ssg.scala is included this way. Two @mains in the unit (ssg's + ours) ⇒ run with:
+//   scala-cli run . --main-class generateDesignLanguage
 // DesignLang — THE single point of truth for the genscalator design language (SM155/T8).
 // Effectful driver by design (visible effects only at the end): generates README.md,
-// preview-GENERATED.html and logo-lab-GENERATED.html next to this file (or into the dir given
-// as the single optional arg). Everything else in this folder is OUTPUT — edit HERE, re-run:
+// index.html (the README rendered through the house Ssg.renderPage — one parser, one more
+// consumer), preview-GENERATED.html and logo-lab-GENERATED.html next to this file (or into
+// the dir given as the single optional arg). Everything else in this folder is OUTPUT — edit HERE, re-run:
 //   scala-cli run media/design-language/DesignLang.scala
 // Grew from contrast.scala (2026-07-20) when the palette had reached four hand-synced homes.
 object DesignLang {
@@ -356,6 +363,53 @@ object DesignLang {
        |</html>
        |""".stripMargin
 
+  // ---------- index.html: the README rendered via the house ssg (Smithy-light theme) ----------
+  def indexTemplate: String =
+    s"""<!DOCTYPE html>
+       |<html lang="en">
+       |<head>
+       |<meta charset="utf-8">
+       |<meta name="viewport" content="width=device-width, initial-scale=1">
+       |<title>{{TITLE}}</title>
+       |$generatedNote
+       |<style>
+       |  :root {
+       |$cssVars
+       |    --sans: "Fira Sans", system-ui, sans-serif;
+       |    --mono: "Fira Code", ui-monospace, monospace;
+       |  }
+       |  * { box-sizing: border-box; }
+       |  body { font-family: var(--sans); background: var(--${ctip.css}); color: var(--${tip.css});
+       |         max-width: 60rem; margin: 0 auto; padding: 2rem 1.5rem 4rem; line-height: 1.55; }
+       |  h1, h2, h3, h4 { color: var(--${tip.css}); margin: 1.4em 0 .4em; }
+       |  h1 { border-bottom: 4px solid var(--${hio.css}); padding-bottom: .25rem; }
+       |  a { color: var(--${tb.css}); }
+       |  a:visited { color: var(--${tip.css}); }
+       |  pre, code { font-family: var(--mono); }
+       |  pre { background: var(--${tip.css}); color: var(--${ctip.css}); padding: .8rem 1rem;
+       |        border-radius: 6px; overflow-x: auto; }
+       |  code { background: var(--${tip.css}); color: var(--${ctip.css}); padding: .05rem .3rem; border-radius: 4px; }
+       |  pre code { padding: 0; }
+       |  table { border-collapse: collapse; margin: 1rem 0; }
+       |  th, td { border: 1px solid var(--${acg.css}); padding: .3rem .6rem; font-size: .9rem; }
+       |  th { background: var(--${cacg.css}); }
+       |  .logo { font-family: var(--mono); font-weight: $logoWeight; font-size: 2.2rem;
+       |          color: var(--${tip.css}); margin-bottom: .2rem; }
+       |  .logo .gs { font-size: ${logoGsScale}em; color: var(--${tb.css}); }
+       |  nav { font-family: var(--mono); font-size: .85rem; margin-bottom: 2rem; }
+       |</style>
+       |</head>
+       |<body>
+       |<div class="logo">${wordmark()}</div>
+       |<nav><a href="preview-GENERATED.html">preview</a> · <a href="logo-lab-GENERATED.html">logo lab</a> ·
+       |  <a href="DesignLang.scala">source of truth</a></nav>
+       |{{CONTENT}}
+       |</body>
+       |</html>
+       |""".stripMargin
+
+  def index: String = Ssg.renderPage(readme, indexTemplate)
+
   // ---------- logo-lab-GENERATED.html ----------
   def logoLab: String =
     def markRow(cls: String) = s"""    <div class="mark big $cls">${wordmark()}</div>"""
@@ -447,6 +501,7 @@ object DesignLang {
   }
   val outputs = Vector(
     "README.md"                 -> DesignLang.readme,
+    "index.html"                -> DesignLang.index,
     "preview-GENERATED.html"    -> DesignLang.preview,
     "logo-lab-GENERATED.html"   -> DesignLang.logoLab,
   )
