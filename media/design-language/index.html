@@ -30,6 +30,7 @@
     --code-bg: var(--tempered-iron-purple); --code-fg: var(--ctip-bone-white);
     --border: var(--anvil-coal-graphite); --th-bg: var(--cacg-cold-gray);
     --logo-fg: var(--tempered-iron-purple); --logo-gs: var(--temper-blue);
+    --rule: var(--temper-blue); /* the h1 line matches each theme's logo accent */
   }
   /* Forgy dark */
   body.dark {
@@ -38,11 +39,12 @@
     --code-bg: var(--anvil-coal-graphite); --code-fg: var(--ctip-bone-white);
     --border: var(--cacg-cold-gray); --th-bg: var(--anvil-coal-graphite);
     --logo-fg: var(--hot-iron-orange); --logo-gs: var(--vivid-red-orange);
+    --rule: var(--temper-blue); /* heading and its line must DIFFER (BR): HIO heading over a quiet temper-blue seam */
   }
   body { font-family: var(--sans); background: var(--bg); color: var(--fg);
          max-width: 60rem; margin: 0 auto; padding: 2rem 1.5rem 4rem; line-height: 1.55; }
   h1, h2, h3, h4 { color: var(--head); margin: 1.4em 0 .4em; }
-  h1 { border-bottom: 4px solid var(--hot-iron-orange); padding-bottom: .25rem; }
+  h1 { border-bottom: 4px solid var(--rule); padding-bottom: .25rem; }
   a { color: var(--link); }
   a:visited { color: var(--visited); }
   pre, code { font-family: var(--mono); }
@@ -113,7 +115,7 @@
 <p><em>(Updated 2026-07-20, twice: #FA4616 → #EE2400 → #E22200 — redder (hue ≈9° vs HIO's ≈14°, so the pair separates by hue, not just lightness) and darker for the LIGHT theme where VRO sits on bone-white: now ≈3.7 on CTIP and ≈3.6 on TIP, symmetric comfort on both grounds. Fine-tune neighbors #EE2400, #D81F00 render as wordmarks on BOTH grounds in <a href="logo-lab-GENERATED.html">logo-lab-GENERATED.html</a>.)</em></p>
 <h4 id="complementary-color-of-vro-05b9e9">Complementary color of VRO #05b9e9</h4>
 <h3 id="temper-blue-tb-095c75">Temper Blue (TB): #095c75</h3>
-<p>Tempering blue: steel tempered at around 300°C turns blue (sv. <em>blåanlöpning</em>) — the same oxide color chart that gives TIP its purple, one step hotter. Derived 2026-07-20 by darkening the CHIO hue until it clears WCAG AA on ALL light surfaces (white 7.50, bone-white 5.90, cold-gray 5.01) — the light-surface link/accent blue. On dark surfaces use CHIO/CVRO instead (TB fails there); no single blue can serve both, so the blues come as a pair like the glow oranges vs the tempered darks.</p>
+<p>Tempering blue: steel tempered at around 300°C turns blue (sv. <em>blåanlöpning</em>) — the same oxide color chart that gives TIP its purple, one step hotter. Derived 2026-07-20 by darkening the CHIO hue until it clears WCAG AA on ALL light surfaces (white 7.50, bone-white 5.90, cold-gray 5.01) — the light-surface link/accent blue. On dark surfaces use CHIO/CVRO instead (TB fails there); no single blue can serve both, so the blues come as a pair like the glow oranges vs the tempered darks. Decorative exception (BR 2026-07-20): hairlines/rules on DARK may use TB deliberately — quiet by design (2.24 on TIP), e.g. the index h1 seam under a hot-iron heading (heading and its line must differ in color; both themes' h1 rules are TB). Visible dark-surface accents remain CHIO/CVRO.</p>
 <ul>
 <li>https://en.wikipedia.org/wiki/Tempering_(metallurgy)#/media/File:Tempering_colors_in_steel.jpg</li>
 <li>https://sv.wikipedia.org/wiki/Anl%C3%B6pning</li>

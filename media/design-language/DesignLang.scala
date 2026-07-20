@@ -129,6 +129,9 @@ object DesignLang {
        |hue until it clears WCAG AA on ALL light surfaces (white ${f"${ratio(tb.hex, "#ffffff")}%.2f"}, bone-white ${f"${ratio(tb.hex, ctip.hex)}%.2f"}, cold-gray ${f"${ratio(tb.hex, cacg.hex)}%.2f"}) —
        |the light-surface link/accent blue. On dark surfaces use CHIO/CVRO instead (TB fails there); no
        |single blue can serve both, so the blues come as a pair like the glow oranges vs the tempered darks.
+       |Decorative exception (BR 2026-07-20): hairlines/rules on DARK may use TB deliberately — quiet by
+       |design (2.24 on TIP), e.g. the index h1 seam under a hot-iron heading (heading and its line must
+       |differ in color; both themes' h1 rules are TB). Visible dark-surface accents remain CHIO/CVRO.
        |  * https://en.wikipedia.org/wiki/Tempering_(metallurgy)#/media/File:Tempering_colors_in_steel.jpg
        |  * https://sv.wikipedia.org/wiki/Anl%C3%B6pning
        |
@@ -378,6 +381,7 @@ object DesignLang {
        |    --code-bg: var(--${tip.css}); --code-fg: var(--${ctip.css});
        |    --border: var(--${acg.css}); --th-bg: var(--${cacg.css});
        |    --logo-fg: var(--${tip.css}); --logo-gs: var(--${tb.css});
+       |    --rule: var(--${tb.css}); /* the h1 line matches each theme's logo accent */
        |  }
        |  /* Forgy dark */
        |  body.dark {
@@ -386,11 +390,12 @@ object DesignLang {
        |    --code-bg: var(--${acg.css}); --code-fg: var(--${ctip.css});
        |    --border: var(--${cacg.css}); --th-bg: var(--${acg.css});
        |    --logo-fg: var(--${hio.css}); --logo-gs: var(--${vro.css});
+       |    --rule: var(--${tb.css}); /* heading and its line must DIFFER (BR): HIO heading over a quiet temper-blue seam */
        |  }
        |  body { font-family: var(--sans); background: var(--bg); color: var(--fg);
        |         max-width: 60rem; margin: 0 auto; padding: 2rem 1.5rem 4rem; line-height: 1.55; }
        |  h1, h2, h3, h4 { color: var(--head); margin: 1.4em 0 .4em; }
-       |  h1 { border-bottom: 4px solid var(--${hio.css}); padding-bottom: .25rem; }
+       |  h1 { border-bottom: 4px solid var(--rule); padding-bottom: .25rem; }
        |  a { color: var(--link); }
        |  a:visited { color: var(--visited); }
        |  pre, code { font-family: var(--mono); }
