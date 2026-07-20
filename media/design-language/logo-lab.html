@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>genscalator logo lab</title>
+<!-- Logo candidates per BR's spec 2026-07-20: all lowercase, Fira mono-family (Code/Mono),
+     smaller letters in HIO hot-iron-orange, enlarged g and s in VRO vivid-red-orange.
+     Iteration lab, not the shipped logo. Self-contained; Fira falls back to any monospace. -->
+<style>
+  :root {
+    --hio: #ee582b; --vro: #FA4616;
+    --tip: #17193f; --acg: #322b25; --ctip: #e8e6c0;
+    --mono: "Fira Code", "Fira Mono", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: system-ui, sans-serif; background: #888; padding: 1rem; }
+  .lab { max-width: 1100px; margin: 0 auto; display: grid; gap: 1rem; }
+  .panel { border-radius: 8px; padding: 1.5rem 2rem; }
+  .tip { background: var(--tip); } .acg { background: var(--acg); } .light { background: var(--ctip); }
+  .label { font-size: .75rem; color: #ccc; font-family: var(--mono); margin: 1.1rem 0 .2rem; }
+  .light .label { color: #555; }
+  .mark { font-family: var(--mono); color: var(--hio); }
+  .mark .gs { color: var(--vro); }
+  .w500 { font-weight: 500; } .w700 { font-weight: 700; }
+  .s120 .gs { font-size: 1.20em; } .s135 .gs { font-size: 1.35em; } .s150 .gs { font-size: 1.50em; }
+  .big { font-size: 3rem; } .mid { font-size: 1.6rem; } .tiny { font-size: .95rem; }
+  .favrow { display: flex; gap: 1rem; align-items: center; margin-top: .4rem; }
+  .fav { background: var(--acg); border-radius: 20%; display: grid; place-items: center; }
+  .f64 { width: 64px; height: 64px; font-size: 30px; }
+  .f32 { width: 32px; height: 32px; font-size: 15px; }
+  .f16 { width: 16px; height: 16px; font-size: 8px; }
+</style>
+</head>
+<body>
+<div class="lab">
+
+  <section class="panel tip">
+    <div class="label">weight 500 · gs 1.20 / 1.35 / 1.50 — on tempered-iron purple</div>
+    <div class="mark big w500 s120"><span class="gs">g</span>en<span class="gs">s</span>calator</div>
+    <div class="mark big w500 s135"><span class="gs">g</span>en<span class="gs">s</span>calator</div>
+    <div class="mark big w500 s150"><span class="gs">g</span>en<span class="gs">s</span>calator</div>
+    <div class="label">weight 700 · gs 1.20 / 1.35 / 1.50</div>
+    <div class="mark big w700 s120"><span class="gs">g</span>en<span class="gs">s</span>calator</div>
+    <div class="mark big w700 s135"><span class="gs">g</span>en<span class="gs">s</span>calator</div>
+    <div class="mark big w700 s150"><span class="gs">g</span>en<span class="gs">s</span>calator</div>
+  </section>
+
+  <section class="panel acg">
+    <div class="label">same six on anvil-coal graphite</div>
+    <div class="mark big w500 s120"><span class="gs">g</span>en<span class="gs">s</span>calator</div>
+    <div class="mark big w500 s135"><span class="gs">g</span>en<span class="gs">s</span>calator</div>
+    <div class="mark big w500 s150"><span class="gs">g</span>en<span class="gs">s</span>calator</div>
+    <div class="mark big w700 s120"><span class="gs">g</span>en<span class="gs">s</span>calator</div>
+    <div class="mark big w700 s135"><span class="gs">g</span>en<span class="gs">s</span>calator</div>
+    <div class="mark big w700 s150"><span class="gs">g</span>en<span class="gs">s</span>calator</div>
+  </section>
+
+  <section class="panel tip">
+    <div class="label">smaller sizes (weight 700 · gs 1.35): heading and inline</div>
+    <div class="mark mid w700 s135"><span class="gs">g</span>en<span class="gs">s</span>calator</div>
+    <div class="mark tiny w700 s135"><span class="gs">g</span>en<span class="gs">s</span>calator</div>
+    <div class="label">the small variant: gs extracted (favicon / statusline brand)</div>
+    <div class="favrow">
+      <div class="fav f64"><span class="mark w700"><span class="gs">g</span><span class="gs">s</span></span></div>
+      <div class="fav f32"><span class="mark w700"><span class="gs">g</span><span class="gs">s</span></span></div>
+      <div class="fav f16"><span class="mark w700"><span class="gs">g</span><span class="gs">s</span></span></div>
+    </div>
+  </section>
+
+  <section class="panel light">
+    <div class="label">evidence row: the color mark on a light surface (both oranges fail body
+      contrast on bone-white — the color logo is a DARK-surface mark; light surfaces get the
+      future black/purple variant of the SM155 logo family)</div>
+    <div class="mark big w700 s135"><span class="gs">g</span>en<span class="gs">s</span>calator</div>
+  </section>
+
+</div>
+</body>
+</html>
