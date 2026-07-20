@@ -4,11 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>genscalator</title>
-<!-- FIRST PROTO 2026-07-16. Photos: blacksmith work by BR's wife (consent given). TODO: add her name as credit;
-     confirm tagline; confirm bg shade (#000 vs #3d3c3d). -->
+<!-- FIRST PROTO 2026-07-16. Photos: blacksmith work by BR's wife (consent given).
+     2026-07-20: bg-shade question RESOLVED by the design language (BR "go palette") — the ground is
+     now the theme var from design.css (root-absolute: resolves on the deployed site, not in local preview);
+     the dropdown (design.js) offers Automatic/Forgy/Smither/Calm. -->
+<link rel="stylesheet" href="/genscalator/design-language/design.css">
 <link rel="stylesheet" href="style.css">
+<script src="/genscalator/design-language/design.js" defer></script>
 </head>
 <body>
+<select id="theme-select" aria-label="Theme"></select>
 <div class="hero">
   <div class="carousel" style="--zoom: 1.2; --pan: 8%">   <!-- zoom in for horizontal slack, then pan RIGHT so axe-3's anvil-hole nears the right edge -->
 

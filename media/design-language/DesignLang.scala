@@ -600,8 +600,8 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |.chip.cold   { background: var(--${chio.css}); color: var(--${tip.css}); }
        |.chip.vigil  { background: var(--${vro.css});  color: var(--${tip.css}); }
        |.chip.pink   { background: var(--${npp.css});  color: #ffffff; }
-       |/* the theme dropdown (filled and wired by design.js) */
-       |#theme-select { position: fixed; top: 1rem; right: 1rem; font-family: var(--mono);
+       |/* the theme dropdown (filled and wired by design.js); z-index clears hero scrims/overlays (landing z 1-2) */
+       |#theme-select { position: fixed; top: 1rem; right: 1rem; z-index: 10; font-family: var(--mono);
        |  font-size: .8rem; font-weight: bold; padding: .3rem .7rem; border-radius: 4px;
        |  border: 1px solid var(--border); background: var(--code-bg); color: var(--code-fg); cursor: pointer; }
        |""".stripMargin

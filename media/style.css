@@ -1,5 +1,9 @@
 /* genscalator media — shared stylesheet for the landing + security pages.
-   Single source of truth: both pages link this (index.html: style.css, security/index.html: ../style.css).
+   Single source of truth for LAYOUT: both pages link this (index.html: style.css, security/index.html: ../style.css).
+   COLORS come from the design language (SM155): every page links
+   /genscalator/design-language/design.css BEFORE this file and consumes its semantic vars
+   (--bg --fg --head --link --rule --logo-fg --logo-gs --code-bg --code-fg --border --th-bg),
+   which the theme dropdown (design.js, <select id="theme-select">) flips per theme.
    Paths here are relative to THIS file (media/), so one @font-face serves both pages. */
 
 @font-face {
@@ -24,9 +28,10 @@
 }
 
 :root {
-  color-scheme: dark;
-  --hio: #ee582b;   /* hot-iron-orange, sampled from axe-2.jpg */
-  --redorange: #E22200; /* VRO vivid-red-orange — canonical value lives in media/design-language (DesignLang.scala); updated 2026-07-20 (was #FA4616) */
+  /* color-scheme + all color values come from design.css (per theme); these two aliases keep the
+     old local names alive for the few places a fixed palette accent is wanted */
+  --hio: var(--hot-iron-orange);
+  --redorange: var(--vivid-red-orange);
   --mono: "Fira Code", ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace;   /* Fira Code first, cross-platform system-monospace fallback */
   --sans: "Fira Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;   /* self-hosted Fira Sans first (pairs with Fira Code), then cross-platform system fallback */
   --sans-weight: 500;   /* one knob for the sans body weight (.tagline/.about/.credit); dial 400/500/600 (real files loaded) */
@@ -35,8 +40,8 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html, body { min-height: 100%; }
 body {
-  background: #3d3c3d;              /* graphite (matches bjornregnell.se), not pure black */
-  color: #f0f0f0;
+  background: var(--bg);            /* theme ground (BR 2026-07-20 "go palette": was hard-coded graphite #3d3c3d) */
+  color: var(--fg);
   font-family: var(--mono);
   overflow-x: hidden;               /* no horizontal scroll; allow vertical when the hero is taller than a short viewport */
 }
@@ -60,10 +65,12 @@ body {
 /* left scrim so the text stays readable over any photo */
 .scrim {
   position: absolute; inset: 0; z-index: 1;
-  /* solid graphite over the left panel, then a soft fade (starting ~24%) so the photo emerges from the
-     graphite bg; transparent by ~58% so the mid-photo action keeps its brightness (not dimmed) */
+  /* solid theme ground over the left panel, then a soft fade (starting ~24%) so the photo emerges
+     from the bg; transparent by ~58% so the mid-photo action keeps its brightness (not dimmed).
+     color-mix keeps the same stops working on EVERY theme ground (dark and light). */
   background: linear-gradient(to right,
-    #3d3c3d 0%, #3d3c3d 34%, rgba(61,60,61,0.55) 48%, rgba(61,60,61,0) 68%, transparent 100%);
+    var(--bg) 0%, var(--bg) 34%, color-mix(in srgb, var(--bg) 55%, transparent) 48%,
+    color-mix(in srgb, var(--bg) 0%, transparent) 68%, transparent 100%);
 }
 
 .overlay {
@@ -75,30 +82,31 @@ body {
 .name {
   font-family: var(--mono);
   font-size: clamp(2.4rem, 6vw, 5rem); font-weight: 700;
-  color: var(--hio);
+  color: var(--logo-fg);   /* the wordmark follows each theme's ratified logo color */
   letter-spacing: 0.02em; margin-bottom: 0.35em;
 }
 .tagline {
   font-family: var(--sans);
-  font-size: clamp(1.5rem, 3.6vw, 2.6rem); color: #c8c8c8;   /* slogan: sized so line 1 ~ heading width */
+  font-size: clamp(1.5rem, 3.6vw, 2.6rem); color: var(--fg);   /* slogan: sized so line 1 ~ heading width */
   max-width: 34ch; line-height: 1.5; margin-bottom: 1em; font-weight: var(--sans-weight, 400);
 }
 .about {
   font-family: var(--sans);
-  font-size: clamp(1.4rem, 2.2vw, 1.7rem); color: #c0c0c0; font-weight: var(--sans-weight, 400);
+  font-size: clamp(1.4rem, 2.2vw, 1.7rem); color: var(--fg); font-weight: var(--sans-weight, 400);
   max-width: 42ch; line-height: 1.5; margin-top: 1.8em;
 }
 nav a {
-  display: block; color: #e0e0e0; text-decoration: none;
+  display: block; color: var(--fg); text-decoration: none;
   font-size: clamp(1.5rem, 3.6vw, 2.6rem); font-weight: 700; margin: 0.4em 0;   /* nav links == slogan size */
 }
-nav a::before { content: "> "; color: var(--hio); }
-nav a:hover { text-decoration: underline; color: #ffffff; }
-.credit { font-family: var(--sans); font-style: italic; margin-top: 2.4em; font-size: clamp(1.1rem, 1.8vw, 1.4rem); color: var(--hio); font-weight: 400; }   /* photo credit always Regular, independent of --sans-weight */
+nav a::before { content: "> "; color: var(--hio); }   /* the hot prompt-prefix stays palette-fixed: large accent, AA-large on every ground */
+nav a:hover { text-decoration: underline; color: var(--link); }
+.credit { font-family: var(--sans); font-style: italic; margin-top: 2.4em; font-size: clamp(1.1rem, 1.8vw, 1.4rem); color: var(--head); font-weight: 400; }   /* photo credit always Regular, independent of --sans-weight; --head = HIO on Forgy (the pre-morph look) yet readable on the light grounds */
+.credit a { color: var(--link); }
 
 /* Type mix (BR 2026-07-18): "genscalator" and the nav links are monospace (CLI feel); everything else is sans. */
 nav a { font-family: var(--mono); }
-.hio { color: var(--hio); font-family: var(--mono); }   /* the genscalator brand word: hot-iron-orange + monospace */
+.hio { color: var(--logo-fg); font-family: var(--mono); }   /* the genscalator brand word: per-theme logo color + monospace */
 
 /* portrait (phone upright): keep the overlay, swap to a top-to-bottom scrim so text sits over a dark band */
 @media (orientation: portrait) {
@@ -106,7 +114,10 @@ nav a { font-family: var(--mono); }
   .overlay { max-width: 100%; padding: 9vh 7vw; justify-content: flex-start; }
   .scrim {
     background: linear-gradient(to bottom,
-      rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.55) 45%, rgba(0,0,0,0.35) 70%, rgba(0,0,0,0.8) 100%);
+      color-mix(in srgb, var(--bg) 90%, transparent) 0%,
+      color-mix(in srgb, var(--bg) 55%, transparent) 45%,
+      color-mix(in srgb, var(--bg) 35%, transparent) 70%,
+      color-mix(in srgb, var(--bg) 80%, transparent) 100%);
   }
 }
 
@@ -116,31 +127,31 @@ nav a { font-family: var(--mono); }
   display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.2em 1.4em;
 }
 .doc-header .name { font-size: clamp(1.5rem, 4vw, 2.2rem); margin: 0; }
-.doc-header .name a { color: var(--hio); text-decoration: none; }
+.doc-header .name a { color: var(--logo-fg); text-decoration: none; }
 .doc-header nav { display: flex; flex-wrap: wrap; gap: 0 1.1em; }
-.doc-header nav a { display: inline; font-size: clamp(1rem, 2.2vw, 1.15rem); font-weight: 400; margin: 0; color: #cfcfcf; }
-.doc-header nav a:hover { color: #fff; text-decoration: underline; }
+.doc-header nav a { display: inline; font-size: clamp(1rem, 2.2vw, 1.15rem); font-weight: 400; margin: 0; color: var(--fg); }
+.doc-header nav a:hover { color: var(--link); text-decoration: underline; }
 
 .prose {
   max-width: 78ch; margin: 0 auto; padding: 3vh 5vw 12vh;
   font-family: var(--sans); font-weight: 400;
-  font-size: clamp(1.05rem, 1.5vw, 1.18rem); line-height: 1.7; color: #e8e8e8;
+  font-size: clamp(1.05rem, 1.5vw, 1.18rem); line-height: 1.7; color: var(--fg);
 }
-.prose h1 { font-family: var(--mono); color: var(--hio); font-weight: 700; font-size: clamp(2rem, 5vw, 2.9rem); line-height: 1.15; margin: 0.3em 0 0.6em; letter-spacing: 0.01em; }
-.prose h2 { font-family: var(--mono); color: #f2f2f2; font-weight: 600; font-size: clamp(1.45rem, 3vw, 1.95rem); margin: 1.9em 0 0.5em; padding-bottom: 0.2em; border-bottom: 1px solid rgba(238,88,43,0.35); }
-.prose h3 { font-family: var(--mono); color: var(--hio); font-weight: 500; font-size: clamp(1.2rem, 2.4vw, 1.4rem); margin: 1.5em 0 0.4em; }
+.prose h1 { font-family: var(--mono); color: var(--head); font-weight: 700; font-size: clamp(2rem, 5vw, 2.9rem); line-height: 1.15; margin: 0.3em 0 0.6em; letter-spacing: 0.01em; }
+.prose h2 { font-family: var(--mono); color: var(--fg); font-weight: 600; font-size: clamp(1.45rem, 3vw, 1.95rem); margin: 1.9em 0 0.5em; padding-bottom: 0.2em; border-bottom: 1px solid var(--rule); }
+.prose h3 { font-family: var(--mono); color: var(--head); font-weight: 500; font-size: clamp(1.2rem, 2.4vw, 1.4rem); margin: 1.5em 0 0.4em; }
 .prose p { margin: 0 0 1em; }
-.prose a { color: var(--hio); text-decoration: none; border-bottom: 1px solid rgba(238,88,43,0.4); overflow-wrap: anywhere; }
-.prose a:hover { border-bottom-color: var(--hio); }
-.prose strong { color: #ffffff; font-weight: 600; }
-.prose em { color: #eaeaea; }
+.prose a { color: var(--link); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--link) 40%, transparent); overflow-wrap: anywhere; }
+.prose a:hover { border-bottom-color: var(--link); }
+.prose strong { color: var(--fg); font-weight: 600; }
+.prose em { color: inherit; }
 .prose ul, .prose ol { margin: 0 0 1.2em 1.4em; }
 .prose li { margin: 0.35em 0; }
-.prose code { font-family: var(--mono); font-size: 0.9em; background: rgba(255,255,255,0.09); padding: 0.1em 0.35em; border-radius: 3px; color: #f0d9b5; }
-.prose pre { background: #2a292a; border: 1px solid rgba(255,255,255,0.09); border-radius: 6px; padding: 1em 1.2em; overflow-x: auto; margin: 0 0 1.3em; }
-.prose pre code { background: none; padding: 0; color: #e8e8e8; }
-.prose blockquote { margin: 0 0 1.2em; padding: 0.2em 0 0.2em 1.1em; border-left: 3px solid var(--hio); color: #cbcbcb; }
+.prose code { font-family: var(--mono); font-size: 0.9em; background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 3px; color: var(--code-fg); }
+.prose pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 1em 1.2em; overflow-x: auto; margin: 0 0 1.3em; }
+.prose pre code { background: none; padding: 0; color: var(--code-fg); }
+.prose blockquote { margin: 0 0 1.2em; padding: 0.2em 0 0.2em 1.1em; border-left: 3px solid var(--rule); color: var(--fg); }
 .prose table { border-collapse: collapse; margin: 0 0 1.3em; width: 100%; font-size: 0.95em; display: block; overflow-x: auto; }
-.prose th, .prose td { border: 1px solid rgba(255,255,255,0.15); padding: 0.4em 0.7em; text-align: left; }
-.prose th { background: rgba(255,255,255,0.06); }
-.prose hr { border: none; border-top: 1px solid rgba(255,255,255,0.15); margin: 2em 0; }
+.prose th, .prose td { border: 1px solid var(--border); padding: 0.4em 0.7em; text-align: left; }
+.prose th { background: var(--th-bg); }
+.prose hr { border: none; border-top: 1px solid var(--border); margin: 2em 0; }
