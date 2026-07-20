@@ -189,6 +189,10 @@ val mirrorOpts = Seq(
   if pull then "" else "-R",              // -R = reverse = UPLOAD (local -> remote); omit for --pull (DOWNLOAD remote -> local)
   if doDelete && !pull then "--delete" else "",  // --delete never applies on a pull -- it would delete LOCAL files; pull is additive
   if dryRun then "--dry-run" else "",
+  // scala-cli build caches are never web content: excluded so a source dir (e.g. media/design-language,
+  // where DesignLang.scala runs in place) can be mirrored directly. Deliberately NOT a blanket dotfile
+  // exclude -- .htaccess uploads (the SM140 redirect) must keep working.
+  "-x ^\\.scala-build/ -x ^\\.bsp/",
   "--verbose"
 ).filter(_.nonEmpty).mkString(" ")
 
@@ -216,7 +220,11 @@ else
   val mode = if doDelete then "exact mirror (--delete)" else "additive"
   println(s"deployblog: ${if dryRun then "DRY-RUN " else ""}mirror  $localDir  ->  $host:$remoteDir  ($mode)")
   val root = Paths.get(localDir)
-  for f <- listLocalFiles(root) do println(s"  ${if dryRun then "would send" else "send"}  ${root.relativize(f)}")
+  val sendable = listLocalFiles(root).filterNot { f =>
+    val rel = root.relativize(f).toString
+    rel.startsWith(".scala-build/") || rel.startsWith(".bsp/")  // mirrors the lftp -x excludes above
+  }
+  for f <- sendable do println(s"  ${if dryRun then "would send" else "send"}  ${root.relativize(f)}")
 
 // ---- run lftp CONTAINED: its output is captured locally and never printed on the normal path ----
 val (code, captured) = runContained(lftpScript)
