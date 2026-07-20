@@ -131,18 +131,19 @@ on all three light surfaces (and fails on dark; the blues are a pair, one per su
 
 ## Themes
 
-Four themes, one dropdown (BR 2026-07-20): every page carries `<select id="theme-select">`,
-filled and wired by `design.js` (or the blog template's inline copy of the same generated
-script) from the same list that names the CSS variable-sets, and applied as `data-theme` on
-`<html>`. The choice persists in `localStorage` (`gs-theme`); a first visit follows the OS
-scheme with the Forgy/Smither pair.
+Four themes plus Automatic, one dropdown (BR 2026-07-20): every page carries
+`<select id="theme-select">`, filled and wired by `design.js` (or the blog template's inline
+copy of the same generated script) from the same list that names the CSS variable-sets, and
+applied as `data-theme` on `<html>`. The choice persists in `localStorage` (`gs-theme`).
+**Automatic is the first-visit default: it follows the OS light/dark setting with the Calm
+pair** and keeps following live OS changes; the brand-loud pair is an explicit pick.
 
 | theme | ground | text | headings | links |
 |---|---|---|---|---|
-| Forgy dark (OS-dark default) | TIP | CTIP | HIO | CVRO |
-| Smither light (default) | CTIP | TIP | TIP over an HIO rule | TB |
-| Calm dark | DNG | DLW | DLW | CHIO |
-| Calm light | DLW | DNG | DNG | TB |
+| Forgy dark | TIP | CTIP | HIO | CVRO |
+| Smither light | CTIP | TIP | TIP over an HIO rule | TB |
+| Calm dark (Automatic + OS dark) | DNG | DLW | DLW | CHIO |
+| Calm light (Automatic + OS light) | DLW | DNG | DNG | TB |
 
 The Calm pair keeps the fonts, the logo and the chips but takes the brand colors out of text
 and headings — the h1 rule turns coal-ash and links keep a single accent. Its grounds are two
@@ -173,6 +174,9 @@ context: [preview-GENERATED.html](preview-GENERATED.html).
 - **Canonical color mark (dark surfaces only):** smaller letters in HIO `#ee582b`, the enlarged
   g and s one step hotter in VRO `#E22200` — a heat gradient inside the word. Backgrounds: TIP or
   ACG (both oranges fail contrast on the light surfaces, even at logo sizes — see the contrast table).
+  **Exception (BR 2026-07-20): the Calm light header carries the canonical mark on DLW** — logos are
+  WCAG-exempt, and the near-white ground is just bright enough for the oranges to read
+  (VRO 4.51, HIO 3.32); on bone-white CTIP they still wash.
 - **Light-surface variant (CANDIDATE, not yet ratified):** letters in TIP `#17193f`, g and s in
   temper blue `#095c75` — shown on the preview's light panel for judgment.
 - **Small variant:** the enlarged `gs` pair extracted alone (favicon, statusline brand) — same

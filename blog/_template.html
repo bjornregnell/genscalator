@@ -13,8 +13,55 @@
   font-weight: 400; font-style: normal; font-display: swap; }
 @font-face { font-family: "Fira Sans"; src: url("../fonts/FiraSans-Medium.woff2") format("woff2");
   font-weight: 500; font-style: normal; font-display: swap; }
-/* Smither light (default) — palette: media/design-language (GENERATED, do not edit here) */
+/* Automatic (default, no data-theme): the Calm pair follows the OS scheme.
+   Palette: media/design-language (GENERATED, do not edit here). The tok- vars live here
+   ONCE and are never overridden: code keeps the TIP ground in every theme, so the one
+   measured token color-set serves them all. */
 :root {
+  --bg: #fafafa;
+  --bg-soft: #cdd4da;
+  --text: #14161a;
+  --text-muted: #7d6e5f;
+  --accent: #095c75;
+  --accent-hover: #17193f;
+  --border: #cdd4da;
+  --code-bg: #17193f;
+  --code-text: #e8e6c0;
+  --quote-border: #cdd4da;
+  --rule: #7d6e5f;
+  --brand-fg: #ee582b;
+  --brand-gs: #E22200;
+  --tok-kw: #ee582b;
+  --tok-soft: #cdd4da;
+  --tok-str: #38db4e;
+  --tok-num: #11a7d4;
+  --tok-comment: #7d6e5f;
+  --tok-type: #05b9e9;
+  --tok-def: #E22200;
+  --mono: "Fira Code", ui-monospace, monospace;
+  --sans: "Fira Sans", system-ui, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+:root:not([data-theme]) {
+  --bg: #14161a;
+  --bg-soft: #17193f;
+  --text: #fafafa;
+  --text-muted: #cdd4da;
+  --accent: #11a7d4;
+  --accent-hover: #05b9e9;
+  --border: #7d6e5f;
+  --code-bg: #17193f;
+  --code-text: #e8e6c0;
+  --quote-border: #7d6e5f;
+  --rule: #7d6e5f;
+  --brand-fg: #cdd4da;
+  --brand-gs: #11a7d4;
+  color-scheme: dark;
+}
+}
+/* Smither light */
+:root[data-theme="smither-light"] {
   --bg: #e8e6c0;
   --bg-soft: #cdd4da;
   --text: #17193f;
@@ -28,15 +75,6 @@
   --rule: #ee582b;
   --brand-fg: #17193f;
   --brand-gs: #095c75;
-  --tok-kw: #ee582b;
-  --tok-soft: #cdd4da;
-  --tok-str: #38db4e;
-  --tok-num: #11a7d4;
-  --tok-comment: #7d6e5f;
-  --tok-type: #05b9e9;
-  --tok-def: #E22200;
-  --mono: "Fira Code", ui-monospace, monospace;
-  --sans: "Fira Sans", system-ui, sans-serif;
   color-scheme: light;
 }
 /* Forgy dark */
@@ -56,28 +94,7 @@
   --brand-gs: #E22200;
   color-scheme: dark;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) {
-    --bg: #17193f;
-    --bg-soft: #322b25;
-    --text: #e8e6c0;
-    --text-muted: #cdd4da;
-    --accent: #05b9e9;
-    --accent-hover: #11a7d4;
-    --border: #7d6e5f;
-    --code-bg: #322b25;
-    --code-text: #e8e6c0;
-    --quote-border: #7d6e5f;
-    --rule: #095c75;
-    --brand-fg: #ee582b;
-    --brand-gs: #E22200;
-    color-scheme: dark;
-  }
-}
-
-/* Calm dark: day-light-white text on dark-night-graphite — brand colors leave the text.
-   The tok- vars are NOT overridden in the calm pair: code keeps the TIP ground in all four
-   themes, so the one measured token color-set serves every theme. */
+/* Calm dark */
 :root[data-theme="calm-dark"] {
   --bg: #14161a;
   --bg-soft: #17193f;
@@ -94,7 +111,7 @@
   --brand-gs: #11a7d4;
   color-scheme: dark;
 }
-/* Calm light: dark-night-graphite text on day-light-white */
+/* Calm light */
 :root[data-theme="calm-light"] {
   --bg: #fafafa;
   --bg-soft: #cdd4da;
@@ -107,8 +124,8 @@
   --code-text: #e8e6c0;
   --quote-border: #cdd4da;
   --rule: #7d6e5f;
-  --brand-fg: #14161a;
-  --brand-gs: #095c75;
+  --brand-fg: #ee582b;
+  --brand-gs: #E22200;
   color-scheme: light;
 }
 
@@ -406,7 +423,7 @@ sup.fn-ref a { text-decoration: none; padding: 0 0.1em; }
 <script>
 (function () {
   var KEY = "gs-theme";
-  var THEMES = [{v:"forgy-dark",l:"Forgy dark"},{v:"smither-light",l:"Smither light"},{v:"calm-dark",l:"Calm dark"},{v:"calm-light",l:"Calm light"}];
+  var THEMES = [{v:"auto",l:"Automatic"},{v:"forgy-dark",l:"Forgy dark"},{v:"smither-light",l:"Smither light"},{v:"calm-dark",l:"Calm dark"},{v:"calm-light",l:"Calm light"}];
   var root = document.documentElement;
   function get() {
     try {
@@ -420,8 +437,8 @@ sup.fn-ref a { text-decoration: none; padding: 0 0.1em; }
     } catch (e) { return null; }
   }
   function apply(v) {
-    if (v) root.setAttribute("data-theme", v);
-    else root.removeAttribute("data-theme"); /* follow the OS pair */
+    if (v && v !== "auto") root.setAttribute("data-theme", v);
+    else root.removeAttribute("data-theme"); /* Automatic: the Calm pair follows the OS */
   }
   apply(get()); /* before first paint */
   document.addEventListener("DOMContentLoaded", function () {
@@ -433,8 +450,7 @@ sup.fn-ref a { text-decoration: none; padding: 0 0.1em; }
       o.textContent = t.l;
       sel.appendChild(o);
     });
-    var osDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    sel.value = get() || (osDark ? "forgy-dark" : "smither-light");
+    sel.value = get() || "auto";
     sel.addEventListener("change", function () {
       try { localStorage.setItem(KEY, sel.value); } catch (e) { /* still apply for this page */ }
       apply(sel.value);

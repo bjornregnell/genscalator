@@ -204,18 +204,19 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |
        |## Themes
        |
-       |Four themes, one dropdown (BR 2026-07-20): every page carries `<select id="theme-select">`,
-       |filled and wired by `design.js` (or the blog template's inline copy of the same generated
-       |script) from the same list that names the CSS variable-sets, and applied as `data-theme` on
-       |`<html>`. The choice persists in `localStorage` (`gs-theme`); a first visit follows the OS
-       |scheme with the Forgy/Smither pair.
+       |Four themes plus Automatic, one dropdown (BR 2026-07-20): every page carries
+       |`<select id="theme-select">`, filled and wired by `design.js` (or the blog template's inline
+       |copy of the same generated script) from the same list that names the CSS variable-sets, and
+       |applied as `data-theme` on `<html>`. The choice persists in `localStorage` (`gs-theme`).
+       |**Automatic is the first-visit default: it follows the OS light/dark setting with the Calm
+       |pair** and keeps following live OS changes; the brand-loud pair is an explicit pick.
        |
        || theme | ground | text | headings | links |
        ||---|---|---|---|---|
-       || Forgy dark (OS-dark default) | TIP | CTIP | HIO | CVRO |
-       || Smither light (default) | CTIP | TIP | TIP over an HIO rule | TB |
-       || Calm dark | DNG | DLW | DLW | CHIO |
-       || Calm light | DLW | DNG | DNG | TB |
+       || Forgy dark | TIP | CTIP | HIO | CVRO |
+       || Smither light | CTIP | TIP | TIP over an HIO rule | TB |
+       || Calm dark (Automatic + OS dark) | DNG | DLW | DLW | CHIO |
+       || Calm light (Automatic + OS light) | DLW | DNG | DNG | TB |
        |
        |The Calm pair keeps the fonts, the logo and the chips but takes the brand colors out of text
        |and headings — the h1 rule turns coal-ash and links keep a single accent. Its grounds are two
@@ -246,6 +247,9 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |- **Canonical color mark (dark surfaces only):** smaller letters in HIO `${hio.hex}`, the enlarged
        |  g and s one step hotter in VRO `${vro.hex}` — a heat gradient inside the word. Backgrounds: TIP or
        |  ACG (both oranges fail contrast on the light surfaces, even at logo sizes — see the contrast table).
+       |  **Exception (BR 2026-07-20): the Calm light header carries the canonical mark on DLW** — logos are
+       |  WCAG-exempt, and the near-white ground is just bright enough for the oranges to read
+       |  (VRO ${f"${ratio(vro.hex, dlw.hex)}%.2f"}, HIO ${f"${ratio(hio.hex, dlw.hex)}%.2f"}); on bone-white CTIP they still wash.
        |- **Light-surface variant (CANDIDATE, not yet ratified):** letters in TIP `${tip.hex}`, g and s in
        |  temper blue `${tb.hex}` — shown on the preview's light panel for judgment.
        |- **Small variant:** the enlarged `gs` pair extracted alone (favicon, statusline brand) — same
@@ -337,8 +341,8 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |  .calm-light code, .calm-light pre { background: var(--${tip.css}); color: var(--${ctip.css}); }
        |  .calm-light .kw { color: var(--${hio.css}); }
        |  .calm-light .str { color: var(--${cvro.css}); }
-       |  .calm-light .logo { color: var(--${dng.css}); }
-       |  .calm-light .logo .gs { color: var(--${tb.css}); }
+       |  .calm-light .logo { color: var(--${hio.css}); }
+       |  .calm-light .logo .gs { color: var(--${vro.css}); }
        |
        |  h1 { font-size: 1.6rem; margin-bottom: .25rem; padding-bottom: .25rem; }
        |  h2 { font-size: 1.1rem; margin: 1.2rem 0 .4rem; }
@@ -496,15 +500,17 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
     "code-bg" -> acg, "code-fg" -> ctip, "border" -> cacg, "th-bg" -> acg, "logo-fg" -> hio, "logo-gs" -> vro, "rule" -> tb)
   def calmDarkVars = varSet("bg" -> dng, "fg" -> dlw, "head" -> dlw, "link" -> chio, "visited" -> chio,
     "code-bg" -> tip, "code-fg" -> ctip, "border" -> ash, "th-bg" -> tip, "logo-fg" -> cacg, "logo-gs" -> chio, "rule" -> ash)
+  // Calm light carries the CANONICAL orange wordmark (BR 2026-07-20): logos are WCAG-exempt, and
+  // the DLW ground is bright enough that the oranges read (VRO ~4.5, HIO ~3.3 — vs washing on CTIP).
   def calmLightVars = varSet("bg" -> dlw, "fg" -> dng, "head" -> dng, "link" -> tb, "visited" -> tb,
-    "code-bg" -> tip, "code-fg" -> ctip, "border" -> cacg, "th-bg" -> cacg, "logo-fg" -> dng, "logo-gs" -> tb, "rule" -> ash)
+    "code-bg" -> tip, "code-fg" -> ctip, "border" -> cacg, "th-bg" -> cacg, "logo-fg" -> hio, "logo-gs" -> vro, "rule" -> ash)
 
   // The dropdown script, shared VERBATIM by design.js and the blog template: applies the saved
-  // theme before first paint, then fills <select id="theme-select"> on DOM ready. No saved choice
-  // leaves data-theme unset, so the CSS default pair (Smither light, Forgy dark via
+  // theme before first paint, then fills <select id="theme-select"> on DOM ready. Automatic (the
+  // default) leaves data-theme unset, so the CSS default pair (the CALM pair, BR 2026-07-20, via
   // prefers-color-scheme) stays live and keeps following OS changes.
   def themeScript: String =
-    val opts = themes.map((v, l) => s"""{v:"$v",l:"$l"}""").mkString("[", ",", "]")
+    val opts = (("auto" -> "Automatic") +: themes).map((v, l) => s"""{v:"$v",l:"$l"}""").mkString("[", ",", "]")
     s"""(function () {
        |  var KEY = "gs-theme";
        |  var THEMES = $opts;
@@ -521,8 +527,8 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |    } catch (e) { return null; }
        |  }
        |  function apply(v) {
-       |    if (v) root.setAttribute("data-theme", v);
-       |    else root.removeAttribute("data-theme"); /* follow the OS pair */
+       |    if (v && v !== "auto") root.setAttribute("data-theme", v);
+       |    else root.removeAttribute("data-theme"); /* Automatic: the Calm pair follows the OS */
        |  }
        |  apply(get()); /* before first paint */
        |  document.addEventListener("DOMContentLoaded", function () {
@@ -534,8 +540,7 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |      o.textContent = t.l;
        |      sel.appendChild(o);
        |    });
-       |    var osDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-       |    sel.value = get() || (osDark ? "forgy-dark" : "smither-light");
+       |    sel.value = get() || "auto";
        |    sel.addEventListener("change", function () {
        |      try { localStorage.setItem(KEY, sel.value); } catch (e) { /* still apply for this page */ }
        |      apply(sel.value);
@@ -547,22 +552,27 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
     s"""/* GENERATED by DesignLang.scala - DO NOT EDIT. Edit DesignLang.scala and re-run:
        |   scala-cli run media/design-language/DesignLang.scala --main-class generateDesignLanguage
        |   The genscalator design language: palette tokens + theme variable-sets + shared components.
-       |   Themes (data-theme on <html>, dropdown filled by design.js): Smither light (default) /
-       |   Forgy dark (OS-dark default) / Calm dark / Calm light. See design-language/index.html. */
-       |/* Smither light (default): semantic vars flip per theme, palette vars never change */
+       |   Themes (data-theme on <html>, dropdown filled by design.js): Automatic (default, the Calm
+       |   pair follows the OS scheme) / Smither light / Forgy dark / Calm dark / Calm light. */
+       |/* Automatic (default, no data-theme): Calm light — semantic vars flip per theme, palette vars never change */
        |:root {
        |$cssVars
        |  --mono: "Fira Code", "Fira Mono", ui-monospace, monospace;
        |  --sans: "Fira Sans", system-ui, sans-serif;
-       |$smitherVars
+       |$calmLightVars
        |  color-scheme: light;
        |}
-       |/* Forgy dark when the OS prefers dark and no theme was picked yet */
+       |/* Automatic + OS dark: Calm dark */
        |@media (prefers-color-scheme: dark) {
        |:root:not([data-theme]) {
-       |$forgyVars
+       |$calmDarkVars
        |  color-scheme: dark;
        |}
+       |}
+       |/* Smither light */
+       |:root[data-theme="smither-light"] {
+       |$smitherVars
+       |  color-scheme: light;
        |}
        |/* Forgy dark — the rule: heading and its line must differ, HIO heading over a quiet temper-blue seam */
        |:root[data-theme="forgy-dark"] {
@@ -596,9 +606,9 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |""".stripMargin
 
   def designJs: String =
-    s"""/* GENERATED by DesignLang.scala - DO NOT EDIT. The four-theme dropdown: applies the saved
+    s"""/* GENERATED by DesignLang.scala - DO NOT EDIT. The theme dropdown: applies the saved
        |   theme before first paint, fills <select id="theme-select"> (styled by design.css),
-       |   persists in localStorage; first visit follows the OS scheme (Smither/Forgy pair). */
+       |   persists in localStorage; Automatic (default) = the Calm pair following the OS scheme. */
        |$themeScript
        |""".stripMargin
 
@@ -745,6 +755,24 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |""".stripMargin.replace("@LIGHT-VARIANT-SECTION@", lightVariantSection)
        // (substituted after stripMargin, same trick as the contrast table)
 
+  // Blog-template variable-sets (raw hex: blog pages are self-contained). Same theme mapping as the
+  // design.css sets above, in the blog's own var names; the tok- vars live once in :root and are
+  // never overridden because code keeps the TIP ground in every theme. Automatic default = Calm.
+  private def blogVarSet(pairs: (String, Color)*): String =
+    pairs.map((k, c) => s"  --$k: ${c.hex};").mkString("\n")
+  def blogSmitherVars = blogVarSet("bg" -> ctip, "bg-soft" -> cacg, "text" -> tip, "text-muted" -> ash,
+    "accent" -> tb, "accent-hover" -> tip, "border" -> cacg, "code-bg" -> tip, "code-text" -> ctip,
+    "quote-border" -> cacg, "rule" -> hio, "brand-fg" -> tip, "brand-gs" -> tb)
+  def blogForgyVars = blogVarSet("bg" -> tip, "bg-soft" -> acg, "text" -> ctip, "text-muted" -> cacg,
+    "accent" -> cvro, "accent-hover" -> chio, "border" -> ash, "code-bg" -> acg, "code-text" -> ctip,
+    "quote-border" -> ash, "rule" -> tb, "brand-fg" -> hio, "brand-gs" -> vro)
+  def blogCalmDarkVars = blogVarSet("bg" -> dng, "bg-soft" -> tip, "text" -> dlw, "text-muted" -> cacg,
+    "accent" -> chio, "accent-hover" -> cvro, "border" -> ash, "code-bg" -> tip, "code-text" -> ctip,
+    "quote-border" -> ash, "rule" -> ash, "brand-fg" -> cacg, "brand-gs" -> chio)
+  def blogCalmLightVars = blogVarSet("bg" -> dlw, "bg-soft" -> cacg, "text" -> dng, "text-muted" -> ash,
+    "accent" -> tb, "accent-hover" -> tip, "border" -> cacg, "code-bg" -> tip, "code-text" -> ctip,
+    "quote-border" -> cacg, "rule" -> ash, "brand-fg" -> hio, "brand-gs" -> vro)
+
   // ---------- blog/_template.html: the ssg blog template, reskinned to the design language ----------
   // GENERATED into blog/ (ssg's fixed template name) so the blog palette can never drift from here.
   // The MECHANISMS (TOC sidebar, to-top, footnotes, token classes) are ported verbatim from the
@@ -768,21 +796,12 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |  font-weight: 400; font-style: normal; font-display: swap; }
        |@font-face { font-family: "Fira Sans"; src: url("../fonts/FiraSans-Medium.woff2") format("woff2");
        |  font-weight: 500; font-style: normal; font-display: swap; }
-       |/* Smither light (default) — palette: media/design-language (GENERATED, do not edit here) */
+       |/* Automatic (default, no data-theme): the Calm pair follows the OS scheme.
+       |   Palette: media/design-language (GENERATED, do not edit here). The tok- vars live here
+       |   ONCE and are never overridden: code keeps the TIP ground in every theme, so the one
+       |   measured token color-set serves them all. */
        |:root {
-       |  --bg: ${ctip.hex};
-       |  --bg-soft: ${cacg.hex};
-       |  --text: ${tip.hex};
-       |  --text-muted: ${ash.hex};
-       |  --accent: ${tb.hex};
-       |  --accent-hover: ${tip.hex};
-       |  --border: ${cacg.hex};
-       |  --code-bg: ${tip.hex};
-       |  --code-text: ${ctip.hex};
-       |  --quote-border: ${cacg.hex};
-       |  --rule: ${hio.hex};
-       |  --brand-fg: ${tip.hex};
-       |  --brand-gs: ${tb.hex};
+       |$blogCalmLightVars
        |  --tok-kw: ${hio.hex};
        |  --tok-soft: ${cacg.hex};
        |  --tok-str: ${vbg.hex};
@@ -794,76 +813,30 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |  --sans: "Fira Sans", system-ui, sans-serif;
        |  color-scheme: light;
        |}
+       |@media (prefers-color-scheme: dark) {
+       |:root:not([data-theme]) {
+       |$blogCalmDarkVars
+       |  color-scheme: dark;
+       |}
+       |}
+       |/* Smither light */
+       |:root[data-theme="smither-light"] {
+       |$blogSmitherVars
+       |  color-scheme: light;
+       |}
        |/* Forgy dark */
        |:root[data-theme="forgy-dark"] {
-       |  --bg: ${tip.hex};
-       |  --bg-soft: ${acg.hex};
-       |  --text: ${ctip.hex};
-       |  --text-muted: ${cacg.hex};
-       |  --accent: ${cvro.hex};
-       |  --accent-hover: ${chio.hex};
-       |  --border: ${ash.hex};
-       |  --code-bg: ${acg.hex};
-       |  --code-text: ${ctip.hex};
-       |  --quote-border: ${ash.hex};
-       |  --rule: ${tb.hex};
-       |  --brand-fg: ${hio.hex};
-       |  --brand-gs: ${vro.hex};
+       |$blogForgyVars
        |  color-scheme: dark;
        |}
-       |@media (prefers-color-scheme: dark) {
-       |  :root:not([data-theme]) {
-       |    --bg: ${tip.hex};
-       |    --bg-soft: ${acg.hex};
-       |    --text: ${ctip.hex};
-       |    --text-muted: ${cacg.hex};
-       |    --accent: ${cvro.hex};
-       |    --accent-hover: ${chio.hex};
-       |    --border: ${ash.hex};
-       |    --code-bg: ${acg.hex};
-       |    --code-text: ${ctip.hex};
-       |    --quote-border: ${ash.hex};
-       |    --rule: ${tb.hex};
-       |    --brand-fg: ${hio.hex};
-       |    --brand-gs: ${vro.hex};
-       |    color-scheme: dark;
-       |  }
-       |}
-       |
-       |/* Calm dark: day-light-white text on dark-night-graphite — brand colors leave the text.
-       |   The tok- vars are NOT overridden in the calm pair: code keeps the TIP ground in all four
-       |   themes, so the one measured token color-set serves every theme. */
+       |/* Calm dark */
        |:root[data-theme="calm-dark"] {
-       |  --bg: ${dng.hex};
-       |  --bg-soft: ${tip.hex};
-       |  --text: ${dlw.hex};
-       |  --text-muted: ${cacg.hex};
-       |  --accent: ${chio.hex};
-       |  --accent-hover: ${cvro.hex};
-       |  --border: ${ash.hex};
-       |  --code-bg: ${tip.hex};
-       |  --code-text: ${ctip.hex};
-       |  --quote-border: ${ash.hex};
-       |  --rule: ${ash.hex};
-       |  --brand-fg: ${cacg.hex};
-       |  --brand-gs: ${chio.hex};
+       |$blogCalmDarkVars
        |  color-scheme: dark;
        |}
-       |/* Calm light: dark-night-graphite text on day-light-white */
+       |/* Calm light */
        |:root[data-theme="calm-light"] {
-       |  --bg: ${dlw.hex};
-       |  --bg-soft: ${cacg.hex};
-       |  --text: ${dng.hex};
-       |  --text-muted: ${ash.hex};
-       |  --accent: ${tb.hex};
-       |  --accent-hover: ${tip.hex};
-       |  --border: ${cacg.hex};
-       |  --code-bg: ${tip.hex};
-       |  --code-text: ${ctip.hex};
-       |  --quote-border: ${cacg.hex};
-       |  --rule: ${ash.hex};
-       |  --brand-fg: ${dng.hex};
-       |  --brand-gs: ${tb.hex};
+       |$blogCalmLightVars
        |  color-scheme: light;
        |}
        |

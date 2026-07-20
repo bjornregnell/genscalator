@@ -119,16 +119,16 @@
 <p>Legend: AAA &gt;= 7.0 · AA &gt;= 4.5 (normal text) · AA-large &gt;= 3.0 (large text/UI) · fail &lt; 3.0 (WCAG 2.1).</p>
 <p>Reading of the table: <strong>body text = bone-white or cold-gray on tempered purple or graphite</strong> (all four pairings are AAA both ways, so dark-on-light works equally well inverted); <strong>the glow oranges are accent/heading colors</strong> — fine large on dark (AA on TIP, AA-large on ACG), never body text on the light surfaces; <strong>the complementary blues live on dark backgrounds only</strong> (CVRO on TIP is even AAA) and fail on white — which is why <strong>temper blue</strong> exists: the darker sibling that is AA-or-better on all three light surfaces (and fails on dark; the blues are a pair, one per surface family).</p>
 <h2 id="themes">Themes</h2>
-<p>Four themes, one dropdown (BR 2026-07-20): every page carries <code>&lt;select id="theme-select"&gt;</code>, filled and wired by <code>design.js</code> (or the blog template's inline copy of the same generated script) from the same list that names the CSS variable-sets, and applied as <code>data-theme</code> on <code>&lt;html&gt;</code>. The choice persists in <code>localStorage</code> (<code>gs-theme</code>); a first visit follows the OS scheme with the Forgy/Smither pair.</p>
+<p>Four themes plus Automatic, one dropdown (BR 2026-07-20): every page carries <code>&lt;select id="theme-select"&gt;</code>, filled and wired by <code>design.js</code> (or the blog template's inline copy of the same generated script) from the same list that names the CSS variable-sets, and applied as <code>data-theme</code> on <code>&lt;html&gt;</code>. The choice persists in <code>localStorage</code> (<code>gs-theme</code>). <strong>Automatic is the first-visit default: it follows the OS light/dark setting with the Calm pair</strong> and keeps following live OS changes; the brand-loud pair is an explicit pick.</p>
 <table>
 <thead>
 <tr><th>theme</th><th>ground</th><th>text</th><th>headings</th><th>links</th></tr>
 </thead>
 <tbody>
-<tr><td>Forgy dark (OS-dark default)</td><td>TIP</td><td>CTIP</td><td>HIO</td><td>CVRO</td></tr>
-<tr><td>Smither light (default)</td><td>CTIP</td><td>TIP</td><td>TIP over an HIO rule</td><td>TB</td></tr>
-<tr><td>Calm dark</td><td>DNG</td><td>DLW</td><td>DLW</td><td>CHIO</td></tr>
-<tr><td>Calm light</td><td>DLW</td><td>DNG</td><td>DNG</td><td>TB</td></tr>
+<tr><td>Forgy dark</td><td>TIP</td><td>CTIP</td><td>HIO</td><td>CVRO</td></tr>
+<tr><td>Smither light</td><td>CTIP</td><td>TIP</td><td>TIP over an HIO rule</td><td>TB</td></tr>
+<tr><td>Calm dark (Automatic + OS dark)</td><td>DNG</td><td>DLW</td><td>DLW</td><td>CHIO</td></tr>
+<tr><td>Calm light (Automatic + OS light)</td><td>DLW</td><td>DNG</td><td>DNG</td><td>TB</td></tr>
 </tbody>
 </table>
 <p>The Calm pair keeps the fonts, the logo and the chips but takes the brand colors out of text and headings — the h1 rule turns coal-ash and links keep a single accent. Its grounds are two theme SURFACE TOKENS, deliberately NOT palette members (the forge palette tells the brand story; these near-neutrals only carry the calm reading pair, each doubling as the other's text color — 17.35 both ways):</p>
@@ -143,7 +143,7 @@
 <h2 id="logo">Logo</h2>
 <p><strong>Frozen (BR 2026-07-20): the wordmark.</strong> All-lowercase <code>genscalator</code> in <strong>Fira Code, weight 700</strong>, with the <strong>g and s enlarged to 1.35em</strong> — the big letters spell out the <code>gs</code> command prefix, so the mark teaches the vocabulary. Candidates: <a href="logo-lab-GENERATED.html">logo-lab-GENERATED.html</a>; in context: <a href="preview-GENERATED.html">preview-GENERATED.html</a>.</p>
 <ul>
-<li><strong>Canonical color mark (dark surfaces only):</strong> smaller letters in HIO <code>#ee582b</code>, the enlarged g and s one step hotter in VRO <code>#E22200</code> — a heat gradient inside the word. Backgrounds: TIP or ACG (both oranges fail contrast on the light surfaces, even at logo sizes — see the contrast table).</li>
+<li><strong>Canonical color mark (dark surfaces only):</strong> smaller letters in HIO <code>#ee582b</code>, the enlarged g and s one step hotter in VRO <code>#E22200</code> — a heat gradient inside the word. Backgrounds: TIP or ACG (both oranges fail contrast on the light surfaces, even at logo sizes — see the contrast table). <strong>Exception (BR 2026-07-20): the Calm light header carries the canonical mark on DLW</strong> — logos are WCAG-exempt, and the near-white ground is just bright enough for the oranges to read (VRO 4.51, HIO 3.32); on bone-white CTIP they still wash.</li>
 <li><strong>Light-surface variant (CANDIDATE, not yet ratified):</strong> letters in TIP <code>#17193f</code>, g and s in temper blue <code>#095c75</code> — shown on the preview's light panel for judgment.</li>
 <li><strong>Small variant:</strong> the enlarged <code>gs</code> pair extracted alone (favicon, statusline brand) — same colors, on an ACG rounded tile; sized specimens at 64/32/16 px in the logo lab.</li>
 </ul>
