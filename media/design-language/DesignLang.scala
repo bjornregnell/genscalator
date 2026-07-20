@@ -302,7 +302,7 @@ object DesignLang {
        |
        |  <section class="panel dark">
        |    <div class="logo">${wordmark()}</div>
-       |    <h1>Forge dark</h1>
+       |    <h1>Forgy dark</h1>
        |    <p class="muted">tempered-iron purple ground · bone-white body · glow-orange headings</p>
        |    <div class="chips">
        |      <span class="chip spend">TokSpend</span><span class="chip smart">SmartZone</span>
@@ -331,7 +331,7 @@ object DesignLang {
        |
        |  <section class="panel light">
        |    <div class="logo">${wordmark()}</div>
-       |    <h1>Smithy light</h1>
+       |    <h1>Smither light</h1>
        |    <p class="muted">bone-white ground · tempered-purple body · hot-iron rule · temper-blue links</p>
        |    <div class="chips">
        |      <span class="chip spend">TokSpend</span><span class="chip smart">SmartZone</span>
@@ -363,7 +363,7 @@ object DesignLang {
        |</html>
        |""".stripMargin
 
-  // ---------- index.html: the README rendered via the house ssg (Smithy-light theme) ----------
+  // ---------- index.html: the README rendered via the house ssg (Smither-light theme) ----------
   def indexTemplate: String =
     s"""<!DOCTYPE html>
        |<html lang="en">
@@ -379,7 +379,7 @@ object DesignLang {
        |    --mono: "Fira Code", ui-monospace, monospace;
        |  }
        |  * { box-sizing: border-box; }
-       |  /* Smithy light (default) — semantic vars flip per theme, palette vars never change */
+       |  /* Smither light (default) — semantic vars flip per theme, palette vars never change */
        |  body {
        |    --bg: var(--${ctip.css}); --fg: var(--${tip.css}); --head: var(--${tip.css});
        |    --link: var(--${tb.css}); --visited: var(--${tip.css});
@@ -387,7 +387,7 @@ object DesignLang {
        |    --border: var(--${acg.css}); --th-bg: var(--${cacg.css});
        |    --logo-fg: var(--${tip.css}); --logo-gs: var(--${tb.css});
        |  }
-       |  /* Forge dark */
+       |  /* Forgy dark */
        |  body.dark {
        |    --bg: var(--${tip.css}); --fg: var(--${ctip.css}); --head: var(--${hio.css});
        |    --link: var(--${cvro.css}); --visited: var(--${chio.css});
@@ -419,11 +419,11 @@ object DesignLang {
        |</style>
        |</head>
        |<body>
-       |<button id="theme-toggle">Forge dark</button>
+       |<button id="theme-toggle">Forgy dark</button>
        |<script>
        |  (function () {
        |    var btn = document.getElementById('theme-toggle');
-       |    function label() { btn.textContent = document.body.classList.contains('dark') ? 'Smithy light' : 'Forge dark'; }
+       |    function label() { btn.textContent = document.body.classList.contains('dark') ? 'Smither light' : 'Forgy dark'; }
        |    var saved = localStorage.getItem('gs-design-theme');
        |    if (saved === 'dark' || (saved === null && window.matchMedia('(prefers-color-scheme: dark)').matches))
        |      document.body.classList.add('dark');

@@ -23,7 +23,7 @@
     --mono: "Fira Code", ui-monospace, monospace;
   }
   * { box-sizing: border-box; }
-  /* Smithy light (default) — semantic vars flip per theme, palette vars never change */
+  /* Smither light (default) — semantic vars flip per theme, palette vars never change */
   body {
     --bg: var(--ctip-bone-white); --fg: var(--tempered-iron-purple); --head: var(--tempered-iron-purple);
     --link: var(--temper-blue); --visited: var(--tempered-iron-purple);
@@ -31,7 +31,7 @@
     --border: var(--anvil-coal-graphite); --th-bg: var(--cacg-cold-gray);
     --logo-fg: var(--tempered-iron-purple); --logo-gs: var(--temper-blue);
   }
-  /* Forge dark */
+  /* Forgy dark */
   body.dark {
     --bg: var(--tempered-iron-purple); --fg: var(--ctip-bone-white); --head: var(--hot-iron-orange);
     --link: var(--cvro-bright-blue); --visited: var(--chio-light-blue);
@@ -63,11 +63,11 @@
 </style>
 </head>
 <body>
-<button id="theme-toggle">Forge dark</button>
+<button id="theme-toggle">Forgy dark</button>
 <script>
   (function () {
     var btn = document.getElementById('theme-toggle');
-    function label() { btn.textContent = document.body.classList.contains('dark') ? 'Smithy light' : 'Forge dark'; }
+    function label() { btn.textContent = document.body.classList.contains('dark') ? 'Smither light' : 'Forgy dark'; }
     var saved = localStorage.getItem('gs-design-theme');
     if (saved === 'dark' || (saved === null && window.matchMedia('(prefers-color-scheme: dark)').matches))
       document.body.classList.add('dark');
