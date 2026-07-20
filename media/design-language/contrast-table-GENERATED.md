@@ -15,5 +15,7 @@ there (in sync with [README.md](README.md)) and re-run:
  CTIP bone-white `#e8e6c0` | 10.95 AAA | 13.24 AAA | - | 1.18 fail | 1.27 fail |
  ACG anvil-coal-graphite `#322b25` | - | 1.21 fail | 10.95 AAA | 9.30 AAA | 13.93 AAA |
  CACG cold-gray `#cdd4da` | 9.30 AAA | 11.25 AAA | 1.18 fail | - | 1.50 fail |
+ NPP neon-pink-purple `#c724b1` | 2.86 fail | 3.46 AA-large | 3.83 AA-large | 3.25 AA-large | 4.87 AA |
+ VBG vivid-bright-green `#38db4e` | 7.57 AAA | 9.15 AAA | 1.45 fail | 1.23 fail | 1.84 fail |
 
 Legend: AAA >= 7.0 · AA >= 4.5 (normal text) · AA-large >= 3.0 (large text/UI) · fail < 3.0 (WCAG 2.1).

@@ -16,6 +16,9 @@ Theme: blacksmith, forging, metallurgy and iron
 
 --anvil-coal-graphite: #322b25; /* anvil coal graphite */
 --cacg-cold-gray: #cdd4da; /* complement to anvil coal graphite */
+
+--neon-pink-purple: #c724b1; /* signal pair, base */
+--vivid-bright-green: #38db4e; /* complementary of neon-pink-purple */
 ```
 
 ### Hot Iron Orange (HIO) #ee582b
@@ -57,6 +60,19 @@ A dark coal-stained cast anvil gray/brown sampled from axe-3
   * https://codeberg.org/bjornregnell/genscalator/src/branch/main/media/img/axe-3.jpg
 
 #### Complementary color of ACG: #cdd4da
+
+### Neon Pink Purple (NPP): #c724b1
+
+The SIGNAL pair, base color — state semantics (chips, statusline, alerts) rather than material
+iron-and-fire. Measured facts (see the contrast table): the one accent that is AA as TEXT on
+white (4.87); on dark it is large-text-only (TIP 3.46) and fails on graphite; as a chip
+BACKGROUND its text must be white (4.87) — TIP or bone text stay below AA at chip sizes.
+
+#### Complementary color of NPP: #38db4e (Vivid Bright Green, VBG)
+
+Pure dark-surface signal: AAA-class on the tempered darks (TIP 9.15, ACG 7.57), fails on all
+light surfaces — the glow-orange profile, in green. Natural role: the SmartZone/healthy chip on
+dark, with TIP text (9.15). Smithy hook if wanted: copper burns green in the forge.
 
 ### References:
   * https://colorcodes.io/

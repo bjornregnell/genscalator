@@ -18,6 +18,8 @@ object Contrast {
     "CTIP bone-white"          -> "#e8e6c0",
     "ACG anvil-coal-graphite"  -> "#322b25",
     "CACG cold-gray"           -> "#cdd4da",
+    "NPP neon-pink-purple"     -> "#c724b1",
+    "VBG vivid-bright-green"   -> "#38db4e",
   )
 
   val backgrounds: Vector[(String, Hex)] = Vector(
