@@ -760,18 +760,21 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
   // never overridden because code keeps the TIP ground in every theme. Automatic default = Calm.
   private def blogVarSet(pairs: (String, Color)*): String =
     pairs.map((k, c) => s"  --$k: ${c.hex};").mkString("\n")
+  // brand-hover: the wordmark's hover color must CONTRAST its resting color — Smither light hovers
+  // to hot iron (TIP -> TB was two near-identical dark blues, BR 2026-07-20); the others keep their
+  // accent, which already jumps (orange -> blue, gray -> blue).
   def blogSmitherVars = blogVarSet("bg" -> ctip, "bg-soft" -> cacg, "text" -> tip, "text-muted" -> ash,
     "accent" -> tb, "accent-hover" -> tip, "border" -> cacg, "code-bg" -> tip, "code-text" -> ctip,
-    "quote-border" -> cacg, "rule" -> hio, "brand-fg" -> tip, "brand-gs" -> tb)
+    "quote-border" -> cacg, "rule" -> hio, "brand-fg" -> tip, "brand-gs" -> tb, "brand-hover" -> hio)
   def blogForgyVars = blogVarSet("bg" -> tip, "bg-soft" -> acg, "text" -> ctip, "text-muted" -> cacg,
     "accent" -> cvro, "accent-hover" -> chio, "border" -> ash, "code-bg" -> acg, "code-text" -> ctip,
-    "quote-border" -> ash, "rule" -> tb, "brand-fg" -> hio, "brand-gs" -> vro)
+    "quote-border" -> ash, "rule" -> tb, "brand-fg" -> hio, "brand-gs" -> vro, "brand-hover" -> cvro)
   def blogCalmDarkVars = blogVarSet("bg" -> dng, "bg-soft" -> tip, "text" -> dlw, "text-muted" -> cacg,
     "accent" -> chio, "accent-hover" -> cvro, "border" -> ash, "code-bg" -> tip, "code-text" -> ctip,
-    "quote-border" -> ash, "rule" -> ash, "brand-fg" -> cacg, "brand-gs" -> chio)
+    "quote-border" -> ash, "rule" -> ash, "brand-fg" -> cacg, "brand-gs" -> chio, "brand-hover" -> chio)
   def blogCalmLightVars = blogVarSet("bg" -> dlw, "bg-soft" -> cacg, "text" -> dng, "text-muted" -> ash,
     "accent" -> tb, "accent-hover" -> tip, "border" -> cacg, "code-bg" -> tip, "code-text" -> ctip,
-    "quote-border" -> cacg, "rule" -> ash, "brand-fg" -> hio, "brand-gs" -> vro)
+    "quote-border" -> cacg, "rule" -> ash, "brand-fg" -> hio, "brand-gs" -> vro, "brand-hover" -> tb)
 
   // ---------- blog/_template.html: the ssg blog template, reskinned to the design language ----------
   // GENERATED into blog/ (ssg's fixed template name) so the blog palette can never drift from here.
@@ -884,7 +887,7 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |  text-decoration: none;
        |}
        |.brand .gs { font-size: ${logoGsScale}em; color: var(--brand-gs); }
-       |.brand:hover { color: var(--accent); }
+       |.brand:hover { color: var(--brand-hover); }
        |.site-nav {
        |  margin-left: auto;
        |  display: flex;
