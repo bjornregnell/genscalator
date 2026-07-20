@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>genscalator design language — preview</title>
+<!-- Hand-maintained preview of media/design-language/README.md's palette.
+     Keep the :root variables below in sync with README.md's Colors block.
+     Self-contained on purpose: no external fonts/requests; Fira falls back to system fonts. -->
+<style>
+  :root {
+    --hot-iron-orange: #ee582b;
+    --vivid-red-orange: #FA4616;
+    --chio-light-blue: #11a7d4;
+    --cvro-bright-blue: #05b9e9;
+    --temper-blue: #095c75;
+    --tempered-iron-purple: #17193f;
+    --ctip-bone-white: #e8e6c0;
+    --anvil-coal-graphite: #322b25;
+    --cacg-cold-gray: #cdd4da;
+    --sans: "Fira Sans", system-ui, sans-serif;
+    --mono: "Fira Code", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: var(--sans); background: #888; padding: 1rem; }
+  .page { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; max-width: 1200px; margin: 0 auto; }
+  @media (max-width: 800px) { .page { grid-template-columns: 1fr; } }
+  .panel { padding: 2rem; border-radius: 8px; }
+
+  /* ---------- DARK THEME: tempered iron ---------- */
+  .dark { background: var(--tempered-iron-purple); color: var(--ctip-bone-white); }
+  .dark .surface { background: var(--anvil-coal-graphite); }
+  .dark h1, .dark h2 { color: var(--hot-iron-orange); }
+  .dark .accent { color: var(--vivid-red-orange); }
+  .dark a { color: var(--cvro-bright-blue); }
+  .dark a:visited { color: var(--chio-light-blue); }
+  .dark .muted { color: var(--cacg-cold-gray); }
+  .dark code, .dark pre { background: var(--anvil-coal-graphite); color: var(--ctip-bone-white); }
+  .dark .kw { color: var(--hot-iron-orange); }
+  .dark .str { color: var(--chio-light-blue); }
+
+  /* ---------- LIGHT THEME: bone white ---------- */
+  .light { background: var(--ctip-bone-white); color: var(--tempered-iron-purple); }
+  .light .surface { background: var(--cacg-cold-gray); }
+  .light h1, .light h2 { color: var(--tempered-iron-purple); }
+  .light h1 { border-bottom: 4px solid var(--hot-iron-orange); }
+  .light .accent { color: var(--anvil-coal-graphite); }
+  .light a { color: var(--temper-blue); }
+  .light a:visited { color: var(--tempered-iron-purple); }
+  .light .muted { color: var(--anvil-coal-graphite); }
+  .light code, .light pre { background: var(--tempered-iron-purple); color: var(--ctip-bone-white); }
+  .light .kw { color: var(--hot-iron-orange); }
+  .light .str { color: var(--cvro-bright-blue); }
+
+  /* ---------- shared components ---------- */
+  h1 { font-size: 1.6rem; margin-bottom: .25rem; padding-bottom: .25rem; }
+  h2 { font-size: 1.1rem; margin: 1.2rem 0 .4rem; }
+  p { line-height: 1.55; margin-bottom: .6rem; }
+  pre { font-family: var(--mono); font-size: .85rem; padding: .8rem 1rem; border-radius: 6px; overflow-x: auto; margin: .5rem 0 1rem; }
+  code { font-family: var(--mono); padding: .05rem .3rem; border-radius: 4px; }
+  .surface { padding: 1rem; border-radius: 6px; margin: .8rem 0; }
+  .chips { display: flex; gap: .5rem; flex-wrap: wrap; margin: .6rem 0 1rem; }
+  .chip { font-family: var(--mono); font-size: .8rem; font-weight: bold; padding: .15rem .55rem; border-radius: 3px; }
+  .chip.spend  { background: var(--hot-iron-orange);      color: var(--tempered-iron-purple); }
+  .chip.smart  { background: #57e389;                     color: var(--tempered-iron-purple); }
+  .chip.cold   { background: var(--chio-light-blue);      color: var(--tempered-iron-purple); }
+  .chip.vigil  { background: var(--vivid-red-orange);     color: var(--ctip-bone-white); }
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; margin-top: 1rem; }
+  .sw { border-radius: 5px; padding: .5rem; font-family: var(--mono); font-size: .68rem; min-height: 3.2rem; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <section class="panel dark">
+    <h1>Forge dark</h1>
+    <p class="muted">tempered-iron purple ground · bone-white body · glow-orange headings</p>
+    <div class="chips">
+      <span class="chip spend">TokSpend</span><span class="chip smart">SmartZone</span>
+      <span class="chip cold">ColdStart</span><span class="chip vigil">RotVigil</span>
+    </div>
+    <h2>Body and links</h2>
+    <p>The exit banks the fire; the fresh agent blows the <span class="accent">warp ember</span>
+       back into flame. Read the <a href="README.md">design language</a> and the generated
+       <a href="contrast-table-GENERATED.md">contrast table</a> before styling anything.</p>
+    <div class="surface">
+      <p>A raised surface in anvil-coal graphite. Inline code like <code>tt forge</code> sits on it.</p>
+    </div>
+    <h2>Code</h2>
+    <pre><span class="kw">object</span> Forge:
+  <span class="kw">val</span> ember = bank(fire)     <span class="str">// survives the warp</span>
+  <span class="kw">def</span> morning = blow(ember)  <span class="str">// back into flame</span></pre>
+    <div class="swatches">
+      <div class="sw" style="background:#ee582b;color:#17193f">HIO #ee582b</div>
+      <div class="sw" style="background:#FA4616;color:#e8e6c0">VRO #FA4616</div>
+      <div class="sw" style="background:#05b9e9;color:#17193f">CVRO #05b9e9</div>
+      <div class="sw" style="background:#11a7d4;color:#17193f">CHIO #11a7d4</div>
+      <div class="sw" style="background:#17193f;color:#e8e6c0">TIP #17193f</div>
+      <div class="sw" style="background:#322b25;color:#e8e6c0">ACG #322b25</div>
+    </div>
+  </section>
+
+  <section class="panel light">
+    <h1>Smithy light</h1>
+    <p class="muted">bone-white ground · tempered-purple body · hot-iron rule · temper-blue links</p>
+    <div class="chips">
+      <span class="chip spend">TokSpend</span><span class="chip smart">SmartZone</span>
+      <span class="chip cold">ColdStart</span><span class="chip vigil">RotVigil</span>
+    </div>
+    <h2>Body and links</h2>
+    <p>The exit banks the fire; the fresh agent blows the <span class="accent">warp ember</span>
+       back into flame. Read the <a href="README.md">design language</a> and the generated
+       <a href="contrast-table-GENERATED.md">contrast table</a> before styling anything.</p>
+    <div class="surface">
+      <p>A raised surface in cold gray. Inline code like <code>tt forge</code> inverts to the dark pair.</p>
+    </div>
+    <h2>Code</h2>
+    <pre><span class="kw">object</span> Forge:
+  <span class="kw">val</span> ember = bank(fire)     <span class="str">// survives the warp</span>
+  <span class="kw">def</span> morning = blow(ember)  <span class="str">// back into flame</span></pre>
+    <div class="swatches">
+      <div class="sw" style="background:#095c75;color:#e8e6c0">TB #095c75</div>
+      <div class="sw" style="background:#e8e6c0;color:#17193f">CTIP #e8e6c0</div>
+      <div class="sw" style="background:#cdd4da;color:#322b25">CACG #cdd4da</div>
+      <div class="sw" style="background:#ee582b;color:#17193f">HIO #ee582b</div>
+      <div class="sw" style="background:#17193f;color:#e8e6c0">TIP #17193f</div>
+      <div class="sw" style="background:#322b25;color:#cdd4da">ACG #322b25</div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

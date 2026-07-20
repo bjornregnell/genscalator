@@ -13,6 +13,7 @@ object Contrast {
     "VRO vivid-red-orange"     -> "#FA4616",
     "CHIO light-blue"          -> "#11a7d4",
     "CVRO bright-blue"         -> "#05b9e9",
+    "TB temper-blue"           -> "#095c75",
     "TIP tempered-iron-purple" -> "#17193f",
     "CTIP bone-white"          -> "#e8e6c0",
     "ACG anvil-coal-graphite"  -> "#322b25",

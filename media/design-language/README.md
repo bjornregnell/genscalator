@@ -9,6 +9,7 @@ Theme: blacksmith, forging, metallurgy and iron
 --vivid-red-orange: #FA4616;  /*  https://colorcodes.io/orange/red-orange-color-codes/ */
 --chio-light-blue: #11a7d4;
 --cvro-bright-blue: #05b9e9;
+--temper-blue: #095c75; /* link/accent blue for LIGHT surfaces; tempering blue, sv. blåanlöpning */
 
 --tempered-iron-purple: #17193f; /* Tempered Iron Purple */
 --ctip-bone-white: #e8e6c0; 
@@ -40,6 +41,16 @@ Tempered iron at 282°C (540°F)
 
 #### Complementary color of TIP: #e8e6c0
 
+### Temper Blue (TB): #095c75
+
+Tempering blue: steel tempered at around 300°C turns blue (sv. *blåanlöpning*) — the same oxide
+color chart that gives TIP its purple, one step hotter. Derived 2026-07-20 by darkening the CHIO
+hue until it clears WCAG AA on ALL light surfaces (white 7.50, bone-white 5.90, cold-gray 5.01) —
+the light-surface link/accent blue. On dark surfaces use CHIO/CVRO instead (TB fails there); no
+single blue can serve both, so the blues come as a pair like the glow oranges vs the tempered darks.
+  * https://en.wikipedia.org/wiki/Tempering_(metallurgy)#/media/File:Tempering_colors_in_steel.jpg
+  * https://sv.wikipedia.org/wiki/Anl%C3%B6pning
+
 ### Anvil Coal Graphite (ACG): #322b25
 
 A dark coal-stained cast anvil gray/brown sampled from axe-3
@@ -62,7 +73,8 @@ Reading of the table: **body text = bone-white or cold-gray on tempered purple o
 four pairings are AAA both ways, so dark-on-light works equally well inverted); **the glow oranges
 are accent/heading colors** — fine large on dark (AA on TIP, AA-large on ACG), never body text on
 the light surfaces; **the complementary blues live on dark backgrounds only** (CVRO on TIP is even
-AAA) and fail on white, so links on light surfaces need a darker blue variant.
+AAA) and fail on white — which is why **temper blue** exists: the darker sibling that is AA-or-better
+on all three light surfaces (and fails on dark; the blues are a pair, one per surface family).
 
 ## Fonts
 

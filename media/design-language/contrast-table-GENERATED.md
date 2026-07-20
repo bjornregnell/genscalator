@@ -10,6 +10,7 @@ there (in sync with [README.md](README.md)) and re-run:
  VRO vivid-red-orange `#FA4616` | 3.95 AA-large | 4.77 AA | 2.77 fail | 2.36 fail | 3.53 AA-large |
  CHIO light-blue `#11a7d4` | 4.98 AA | 6.01 AA | 2.20 fail | 1.87 fail | 2.80 fail |
  CVRO bright-blue `#05b9e9` | 6.05 AA | 7.31 AAA | 1.81 fail | 1.54 fail | 2.30 fail |
+ TB temper-blue `#095c75` | 1.86 fail | 2.24 fail | 5.90 AA | 5.01 AA | 7.50 AAA |
  TIP tempered-iron-purple `#17193f` | 1.21 fail | - | 13.24 AAA | 11.25 AAA | 16.84 AAA |
  CTIP bone-white `#e8e6c0` | 10.95 AAA | 13.24 AAA | - | 1.18 fail | 1.27 fail |
  ACG anvil-coal-graphite `#322b25` | - | 1.21 fail | 10.95 AAA | 9.30 AAA | 13.93 AAA |
