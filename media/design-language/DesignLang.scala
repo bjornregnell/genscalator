@@ -551,9 +551,9 @@ object DesignLang {
 
   def forgySvg: String =
     s"""<g>
-       |  <ellipse cx="146" cy="62" rx="13" ry="27" transform="rotate(24 146 62)" fill="${vro.hex}"/>
+       |  <ellipse cx="144" cy="66" rx="12" ry="26" transform="rotate(22 144 66)" fill="${vro.hex}"/>
        |  <circle cx="100" cy="80" r="34" fill="${ctip.hex}"/>
-       |  <path d="M66 78 A34 34 0 0 1 134 78 L134 70 Q100 46 66 70 Z" fill="${vro.hex}"/>
+       |  <path d="M66 80 A34 34 0 0 1 134 80 L134 74 Q118 60 112 66 Q100 48 78 58 Q68 64 66 74 Z" fill="${vro.hex}"/>
        |  <circle cx="88" cy="90" r="4" fill="${tip.hex}"/>
        |  <circle cx="112" cy="90" r="4" fill="${tip.hex}"/>
        |  <path d="M88 102 Q100 112 112 102" stroke="${tip.hex}" stroke-width="3" fill="none" stroke-linecap="round"/>
@@ -562,6 +562,7 @@ object DesignLang {
        |  <line x1="70" y1="130" x2="36" y2="104" stroke="${hio.hex}" stroke-width="12" stroke-linecap="round"/>
        |  <line x1="36" y1="104" x2="22" y2="64" stroke="${acg.hex}" stroke-width="7" stroke-linecap="round"/>
        |  <rect x="4" y="50" width="38" height="17" rx="3" fill="${acg.hex}"/>
+       |  <circle cx="52" cy="56" r="6" fill="${vro.hex}" opacity="0.25"/>
        |  <circle cx="52" cy="58" r="3" fill="${vro.hex}"/>
        |  <circle cx="60" cy="42" r="2.5" fill="${vro.hex}"/>
        |  <circle cx="44" cy="38" r="2" fill="${hio.hex}"/>
@@ -588,6 +589,7 @@ object DesignLang {
        |  <line x1="38" y1="158" x2="10" y2="148" stroke="${acg.hex}" stroke-width="5" stroke-linecap="round"/>
        |  <line x1="38" y1="158" x2="12" y2="170" stroke="${acg.hex}" stroke-width="5" stroke-linecap="round"/>
        |  <circle cx="38" cy="158" r="5" fill="${acg.hex}"/>
+       |  <circle cx="6" cy="156" r="11" fill="${hio.hex}" opacity="0.22"/>
        |  <rect x="0" y="152" width="13" height="9" rx="2" fill="${hio.hex}"/>
        |  <line x1="130" y1="132" x2="156" y2="172" stroke="${tb.hex}" stroke-width="12" stroke-linecap="round"/>
        |  <rect x="82" y="210" width="12" height="28" fill="${tip.hex}"/>
@@ -610,9 +612,10 @@ object DesignLang {
   def mascotLab: String =
     def tableau =
       s"""<svg viewBox="0 0 640 300" width="640" role="img" aria-label="Forgy and Smither at the anvil">
-         |  <g transform="translate(215,10) scale(-1,1)">$forgySvg</g>
-         |  <g transform="translate(240,190)">$anvilAxeSvg</g>
-         |  <g transform="translate(425,10)">$smitherSvg</g>
+         |  <line x1="10" y1="283" x2="630" y2="283" stroke="${cacg.hex}" stroke-width="2" opacity="0.5"/>
+         |  <g transform="translate(215,39) scale(-1,1)">$forgySvg</g>
+         |  <g transform="translate(240,191)">$anvilAxeSvg</g>
+         |  <g transform="translate(425,39)">$smitherSvg</g>
          |</svg>""".stripMargin
     def solo(svg: String, label: String) =
       s"""<figure><svg viewBox="0 0 200 260" width="180" role="img" aria-label="$label">$svg</svg><figcaption>$label</figcaption></figure>"""
