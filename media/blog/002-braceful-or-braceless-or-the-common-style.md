@@ -1,6 +1,6 @@
 # Braceful, braceless, or the common style?
 
-> **Status: drafted 2026-07-03; published 2026-07-08; deployed 2026-07-08; updated 2026-07-13.** **Author: Björn Regnell.** A Scala-syntax post that judges braces vs
+> **Status: drafted 2026-07-03; published 2026-07-08; deployed 2026-07-08; updated 2026-07-13; deployed 2026-07-20.** **Author: Björn Regnell.** A Scala-syntax post that judges braces vs
 > significant indentation not only by human taste but by a second, newer yardstick: **what it costs a coding
 > *agent* to edit the code.**
 > **Audience:** Scala developers weighing a Scala-3 style policy; language designers and SIP folk; builders of
