@@ -76,7 +76,7 @@ rather than reads cold? Two catches keep it honest: (a) the human must still **v
 relevant has to be caught), so cost may just move to verification; (b) agent relevance/quality ratings risk
 **confabulation** (rating a judgment it can't truly make), so the human can't drop the guard. Whether triage nets a
 real saving or just adds a to-verify layer is **empirical and depends on the agent's assessment reliability** — measure
-it, don't assume it. Refs (with COI flags) in [`../blog/References.scala`](../blog/References.scala).
+it, don't assume it. Refs (with COI flags) in [`../media/blog/References.scala`](../media/blog/References.scala).
 
 ## Draft RQs (to refine)
 - RQ1: What established terms/fields study "the psychology/behaviour of LLM agents," and how do they relate?

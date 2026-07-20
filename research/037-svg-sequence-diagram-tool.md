@@ -86,7 +86,7 @@ tools get it. `ascii` defaults to Unicode box-drawing glyphs for looks, with `--
 
 1. **Blog figures** (blog-assistant §7 wants *real* figures): render an actual protocol — the compact dance, the
    note→pin pipeline, a confirmation-guard round — as a crisp diagram instead of a wall of prose. First real
-   artifact: [`../blog/figures/seq-compact-dance.svg`](../blog/figures/seq-compact-dance.svg) (source spec
+   artifact: [`../media/blog/figures/seq-compact-dance.svg`](../media/blog/figures/seq-compact-dance.svg) (source spec
    alongside it, so it is regenerable). Candidate figure for blog 005 (*dancing with agents*).
 2. **Design discussions while coding together** — sketch a proposed message flow in a few lines, render, look at
    it, argue about it. Cheaper than a whiteboard and it version-controls.
