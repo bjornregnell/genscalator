@@ -562,7 +562,7 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
   def forgySvg: String =
     s"""<g>
        |  <ellipse cx="144" cy="66" rx="12" ry="26" transform="rotate(22 144 66)" fill="${vro.hex}"/>
-       |  <circle cx="100" cy="80" r="34" fill="${ctip.hex}"/>
+       |  <circle cx="100" cy="80" r="34" fill="${ctip.hex}" stroke="${acg.hex}" stroke-width="3"/>
        |  <path d="M66 80 A34 34 0 0 1 134 80 L134 74 Q118 60 112 66 Q100 48 78 58 Q68 64 66 74 Z" fill="${vro.hex}"/>
        |  <circle cx="88" cy="90" r="4" fill="${tip.hex}"/>
        |  <circle cx="112" cy="90" r="4" fill="${tip.hex}"/>
@@ -585,7 +585,7 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
 
   def smitherSvg: String =
     s"""<g>
-       |  <circle cx="100" cy="80" r="34" fill="${ctip.hex}"/>
+       |  <circle cx="100" cy="80" r="34" fill="${ctip.hex}" stroke="${acg.hex}" stroke-width="3"/>
        |  <path d="M68 72 A32 32 0 0 1 132 72 Z" fill="${ash.hex}"/>
        |  <circle cx="88" cy="90" r="8" stroke="${tb.hex}" stroke-width="2.5" fill="none"/>
        |  <circle cx="112" cy="90" r="8" stroke="${tb.hex}" stroke-width="2.5" fill="none"/>
