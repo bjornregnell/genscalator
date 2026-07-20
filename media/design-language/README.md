@@ -99,6 +99,33 @@ on all three light surfaces (and fails on dark; the blues are a pair, one per su
 
 ## Logo
 
+**Frozen (BR 2026-07-20): the wordmark.** All-lowercase `genscalator` in **Fira Code, weight 700**,
+with the **g and s enlarged to 1.35em** — the big letters spell out the `gs` command prefix, so the
+mark teaches the vocabulary. Chosen from the candidate grid in [logo-lab.html](logo-lab.html); seen
+in context in [preview.html](preview.html).
+
+- **Canonical color mark (dark surfaces only):** smaller letters in HIO `#ee582b`, the enlarged
+  g and s one step hotter in VRO `#FA4616` — a heat gradient inside the word. Backgrounds: TIP or
+  ACG (both oranges fail contrast on the light surfaces, even at logo sizes — see the contrast table).
+- **Light-surface variant (CANDIDATE, not yet ratified):** letters in TIP `#17193f`, g and s in
+  temper blue `#095c75` — shown on preview.html's light panel for judgment.
+- **Small variant:** the enlarged `gs` pair extracted alone (favicon, statusline brand) — same
+  colors, on an ACG rounded tile; sized specimens at 64/32/16 px in logo-lab.html.
+
+Reference implementation (keep in sync with preview.html):
+
+```html
+<span class="logo"><span class="gs">g</span>en<span class="gs">s</span>calator</span>
+<style>
+  .logo { font-family: "Fira Code", ui-monospace, monospace; font-weight: 700; color: #ee582b; }
+  .logo .gs { font-size: 1.35em; color: #FA4616; }
+</style>
+```
+
+TODO for the SM155 logo family: outline the text to SVG paths (so the mark stops depending on Fira
+being installed), export the color/black-white/big/small variants, and ratify or replace the
+light-surface colors.
+
 ## Further reading
 
 * Forging (en) == Smide (sv)
