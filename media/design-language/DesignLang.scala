@@ -207,20 +207,10 @@ object DesignLang {
        |
        |## Further reading
        |
-       |* Forging (en) == Smide (sv)
-       |  * https://en.wikipedia.org/wiki/Forging
-       |  * https://sv.wikipedia.org/wiki/Smide
-       |* Tempering (en) == Anlöpning (sv)
-       |  * https://en.wikipedia.org/wiki/Tempering_(metallurgy)
-       |  * https://sv.wikipedia.org/wiki/Anl%C3%B6pning
-       |
-       |* Annealing (en) == Glödgning (sv)
-       |  * https://en.wikipedia.org/wiki/Annealing_(materials_science)
-       |  * https://sv.wikipedia.org/wiki/Gl%C3%B6dgning
-       |
-       |* Anvil (En) == Städ (sv)
-       |  * https://en.wikipedia.org/wiki/Anvil
-       |  * https://sv.wikipedia.org/wiki/St%C3%A4d
+       |* Forging (en) == Smide (sv): [en](https://en.wikipedia.org/wiki/Forging) · [sv](https://sv.wikipedia.org/wiki/Smide)
+       |* Tempering (en) == Anlöpning (sv): [en](https://en.wikipedia.org/wiki/Tempering_%28metallurgy%29) · [sv](https://sv.wikipedia.org/wiki/Anl%C3%B6pning)
+       |* Annealing (en) == Glödgning (sv): [en](https://en.wikipedia.org/wiki/Annealing_%28materials_science%29) · [sv](https://sv.wikipedia.org/wiki/Gl%C3%B6dgning)
+       |* Anvil (en) == Städ (sv): [en](https://en.wikipedia.org/wiki/Anvil) · [sv](https://sv.wikipedia.org/wiki/St%C3%A4d)
        |""".stripMargin.replace("@CONTRAST-TABLE@", contrastTable)
        // NB the table is substituted AFTER stripMargin: its rows start with `|`, which stripMargin
        // would otherwise eat as margin chars (live bug on first generation, 2026-07-20).
