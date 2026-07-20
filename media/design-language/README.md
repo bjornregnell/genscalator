@@ -11,7 +11,7 @@ Theme: blacksmith, forging, metallurgy and iron
 
 ```css
 --hot-iron-orange: #ee582b; /* sampled from axe-2.jpg */
---vivid-red-orange: #FA4616;  /*  https://colorcodes.io/orange/red-orange-color-codes/ */
+--vivid-red-orange: #EE2400;  /*  https://colorcodes.io/orange/red-orange-color-codes/ */
 --chio-light-blue: #11a7d4;
 --cvro-bright-blue: #05b9e9;
 --temper-blue: #095c75; /* link/accent blue for LIGHT surfaces; tempering blue, sv. blåanlöpning */
@@ -33,12 +33,13 @@ hot-iron-orange, sampled from axe-2.jpg. Glowing iron at bright-orange working h
 
 #### Complementary color of HIO: #11a7d4
 
-### Vivid Red Orange (VRO) #FA4616
+### Vivid Red Orange (VRO) #EE2400
 
   * https://sv.wikipedia.org/wiki/Smide#Gl%C3%B6dgning
 
-*(Open 2026-07-20: pushing VRO redder for more separation from HIO — candidates #F22800, #EE2400, #E62100
-render as wordmarks in [logo-lab-GENERATED.html](logo-lab-GENERATED.html); BR picks by eye.)*
+*(Updated 2026-07-20: pushed from #FA4616 to #EE2400 — redder (hue ≈9° vs HIO's ≈14°, so the
+pair separates by hue, not just lightness) and a bit darker, at full saturation. Fine-tune
+neighbors #F22800, #E62100 render as wordmarks in [logo-lab-GENERATED.html](logo-lab-GENERATED.html).)*
 
 #### Complementary color of VRO #05b9e9
 
@@ -93,7 +94,7 @@ Ratio then WCAG 2.1 verdict per cell.
 | text color \ background | ACG | TIP | CTIP | CACG | white |
 |---|---|---|---|---|---|
 | HIO hot-iron-orange `#ee582b` | 4.02 AA-large | 4.86 AA | 2.72 fail | 2.31 fail | 3.46 AA-large |
-| VRO vivid-red-orange `#FA4616` | 3.95 AA-large | 4.77 AA | 2.77 fail | 2.36 fail | 3.53 AA-large |
+| VRO vivid-red-orange `#EE2400` | 3.24 AA-large | 3.92 AA-large | 3.38 AA-large | 2.87 fail | 4.30 AA-large |
 | CHIO chio-light-blue `#11a7d4` | 4.98 AA | 6.01 AA | 2.20 fail | 1.87 fail | 2.80 fail |
 | CVRO cvro-bright-blue `#05b9e9` | 6.05 AA | 7.31 AAA | 1.81 fail | 1.54 fail | 2.30 fail |
 | TB temper-blue `#095c75` | 1.86 fail | 2.24 fail | 5.90 AA | 5.01 AA | 7.50 AAA |
@@ -126,7 +127,7 @@ mark teaches the vocabulary. Candidates: [logo-lab-GENERATED.html](logo-lab-GENE
 context: [preview-GENERATED.html](preview-GENERATED.html).
 
 - **Canonical color mark (dark surfaces only):** smaller letters in HIO `#ee582b`, the enlarged
-  g and s one step hotter in VRO `#FA4616` — a heat gradient inside the word. Backgrounds: TIP or
+  g and s one step hotter in VRO `#EE2400` — a heat gradient inside the word. Backgrounds: TIP or
   ACG (both oranges fail contrast on the light surfaces, even at logo sizes — see the contrast table).
 - **Light-surface variant (CANDIDATE, not yet ratified):** letters in TIP `#17193f`, g and s in
   temper blue `#095c75` — shown on the preview's light panel for judgment.

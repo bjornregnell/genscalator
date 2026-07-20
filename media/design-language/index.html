@@ -9,7 +9,7 @@
 <style>
   :root {
     --hot-iron-orange: #ee582b;
-    --vivid-red-orange: #FA4616;
+    --vivid-red-orange: #EE2400;
     --chio-light-blue: #11a7d4;
     --cvro-bright-blue: #05b9e9;
     --temper-blue: #095c75;
@@ -87,7 +87,7 @@
 <p>Theme: blacksmith, forging, metallurgy and iron</p>
 <h2 id="colors">Colors</h2>
 <pre><code class="language-css">--hot-iron-orange: #ee582b; /* sampled from axe-2.jpg */
---vivid-red-orange: #FA4616;  /*  https://colorcodes.io/orange/red-orange-color-codes/ */
+--vivid-red-orange: #EE2400;  /*  https://colorcodes.io/orange/red-orange-color-codes/ */
 --chio-light-blue: #11a7d4;
 --cvro-bright-blue: #05b9e9;
 --temper-blue: #095c75; /* link/accent blue for LIGHT surfaces; tempering blue, sv. blåanlöpning */
@@ -106,11 +106,11 @@
 <li>https://codeberg.org/bjornregnell/genscalator/src/branch/main/media/img/axe-2.jpg</li>
 </ul>
 <h4 id="complementary-color-of-hio-11a7d4">Complementary color of HIO: #11a7d4</h4>
-<h3 id="vivid-red-orange-vro-fa4616">Vivid Red Orange (VRO) #FA4616</h3>
+<h3 id="vivid-red-orange-vro-ee2400">Vivid Red Orange (VRO) #EE2400</h3>
 <ul>
 <li>https://sv.wikipedia.org/wiki/Smide#Gl%C3%B6dgning</li>
 </ul>
-<p><em>(Open 2026-07-20: pushing VRO redder for more separation from HIO — candidates #F22800, #EE2400, #E62100 render as wordmarks in <a href="logo-lab-GENERATED.html">logo-lab-GENERATED.html</a>; BR picks by eye.)</em></p>
+<p><em>(Updated 2026-07-20: pushed from #FA4616 to #EE2400 — redder (hue ≈9° vs HIO's ≈14°, so the pair separates by hue, not just lightness) and a bit darker, at full saturation. Fine-tune neighbors #F22800, #E62100 render as wordmarks in <a href="logo-lab-GENERATED.html">logo-lab-GENERATED.html</a>.)</em></p>
 <h4 id="complementary-color-of-vro-05b9e9">Complementary color of VRO #05b9e9</h4>
 <h3 id="temper-blue-tb-095c75">Temper Blue (TB): #095c75</h3>
 <p>Tempering blue: steel tempered at around 300°C turns blue (sv. <em>blåanlöpning</em>) — the same oxide color chart that gives TIP its purple, one step hotter. Derived 2026-07-20 by darkening the CHIO hue until it clears WCAG AA on ALL light surfaces (white 7.50, bone-white 5.90, cold-gray 5.01) — the light-surface link/accent blue. On dark surfaces use CHIO/CVRO instead (TB fails there); no single blue can serve both, so the blues come as a pair like the glow oranges vs the tempered darks.</p>
@@ -149,7 +149,7 @@
 </thead>
 <tbody>
 <tr><td>HIO hot-iron-orange <code>#ee582b</code></td><td>4.02 AA-large</td><td>4.86 AA</td><td>2.72 fail</td><td>2.31 fail</td><td>3.46 AA-large</td></tr>
-<tr><td>VRO vivid-red-orange <code>#FA4616</code></td><td>3.95 AA-large</td><td>4.77 AA</td><td>2.77 fail</td><td>2.36 fail</td><td>3.53 AA-large</td></tr>
+<tr><td>VRO vivid-red-orange <code>#EE2400</code></td><td>3.24 AA-large</td><td>3.92 AA-large</td><td>3.38 AA-large</td><td>2.87 fail</td><td>4.30 AA-large</td></tr>
 <tr><td>CHIO chio-light-blue <code>#11a7d4</code></td><td>4.98 AA</td><td>6.01 AA</td><td>2.20 fail</td><td>1.87 fail</td><td>2.80 fail</td></tr>
 <tr><td>CVRO cvro-bright-blue <code>#05b9e9</code></td><td>6.05 AA</td><td>7.31 AAA</td><td>1.81 fail</td><td>1.54 fail</td><td>2.30 fail</td></tr>
 <tr><td>TB temper-blue <code>#095c75</code></td><td>1.86 fail</td><td>2.24 fail</td><td>5.90 AA</td><td>5.01 AA</td><td>7.50 AAA</td></tr>
@@ -171,7 +171,7 @@
 <h2 id="logo">Logo</h2>
 <p><strong>Frozen (BR 2026-07-20): the wordmark.</strong> All-lowercase <code>genscalator</code> in <strong>Fira Code, weight 700</strong>, with the <strong>g and s enlarged to 1.35em</strong> — the big letters spell out the <code>gs</code> command prefix, so the mark teaches the vocabulary. Candidates: <a href="logo-lab-GENERATED.html">logo-lab-GENERATED.html</a>; in context: <a href="preview-GENERATED.html">preview-GENERATED.html</a>.</p>
 <ul>
-<li><strong>Canonical color mark (dark surfaces only):</strong> smaller letters in HIO <code>#ee582b</code>, the enlarged g and s one step hotter in VRO <code>#FA4616</code> — a heat gradient inside the word. Backgrounds: TIP or ACG (both oranges fail contrast on the light surfaces, even at logo sizes — see the contrast table).</li>
+<li><strong>Canonical color mark (dark surfaces only):</strong> smaller letters in HIO <code>#ee582b</code>, the enlarged g and s one step hotter in VRO <code>#EE2400</code> — a heat gradient inside the word. Backgrounds: TIP or ACG (both oranges fail contrast on the light surfaces, even at logo sizes — see the contrast table).</li>
 <li><strong>Light-surface variant (CANDIDATE, not yet ratified):</strong> letters in TIP <code>#17193f</code>, g and s in temper blue <code>#095c75</code> — shown on the preview's light panel for judgment.</li>
 <li><strong>Small variant:</strong> the enlarged <code>gs</code> pair extracted alone (favicon, statusline brand) — same colors, on an ACG rounded tile; sized specimens at 64/32/16 px in the logo lab.</li>
 </ul>

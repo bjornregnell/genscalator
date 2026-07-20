@@ -21,7 +21,7 @@ object DesignLang {
   // ---------- the palette: ONE home for every value ----------
   val hio  = Color("HIO",  "hot-iron-orange",      "#ee582b")
   val chio = Color("CHIO", "chio-light-blue",      "#11a7d4")
-  val vro  = Color("VRO",  "vivid-red-orange",     "#FA4616")
+  val vro  = Color("VRO",  "vivid-red-orange",     "#EE2400") // pushed redder+darker from #FA4616 (BR 2026-07-20)
   val cvro = Color("CVRO", "cvro-bright-blue",     "#05b9e9")
   val tb   = Color("TB",   "temper-blue",          "#095c75")
   val tip  = Color("TIP",  "tempered-iron-purple", "#17193f")
@@ -36,8 +36,8 @@ object DesignLang {
   // logo spec, frozen by BR 2026-07-20
   val logoWeight  = 700
   val logoGsScale = 1.35
-  // VRO push candidates (BR 2026-07-20: "a bit redder and a tiny bit darker") — remove once settled
-  val vroCandidates: Vector[Hex] = Vector("#F22800", "#EE2400", "#E62100")
+  // VRO fine-tune neighbors (VRO settled to #EE2400 2026-07-20; these stay in the lab for comparison)
+  val vroCandidates: Vector[Hex] = Vector("#F22800", "#E62100")
 
   // ---------- WCAG 2.1 ----------
   def channel(v: Int): Double =
@@ -115,8 +115,9 @@ object DesignLang {
        |
        |  * https://sv.wikipedia.org/wiki/Smide#Gl%C3%B6dgning
        |
-       |*(Open 2026-07-20: pushing VRO redder for more separation from HIO — candidates ${vroCandidates.mkString(", ")}
-       |render as wordmarks in [logo-lab-GENERATED.html](logo-lab-GENERATED.html); BR picks by eye.)*
+       |*(Updated 2026-07-20: pushed from #FA4616 to ${vro.hex} — redder (hue ≈9° vs HIO's ≈14°, so the
+       |pair separates by hue, not just lightness) and a bit darker, at full saturation. Fine-tune
+       |neighbors ${vroCandidates.mkString(", ")} render as wordmarks in [logo-lab-GENERATED.html](logo-lab-GENERATED.html).)*
        |
        |#### Complementary color of VRO ${cvro.hex}
        |
@@ -285,7 +286,7 @@ object DesignLang {
        |  .chip.spend  { background: var(--${hio.css});  color: var(--${tip.css}); }
        |  .chip.smart  { background: var(--${vbg.css});  color: var(--${tip.css}); }
        |  .chip.cold   { background: var(--${chio.css}); color: var(--${tip.css}); }
-       |  .chip.vigil  { background: var(--${vro.css});  color: var(--${ctip.css}); }
+       |  .chip.vigil  { background: var(--${vro.css});  color: var(--${tip.css}); } /* TIP text: bone drops to ~3.0 on the redder VRO */
        |  .chip.pink   { background: var(--${npp.css});  color: #ffffff; }
        |  .logo { font-family: var(--mono); font-weight: $logoWeight; font-size: 2.2rem; margin-bottom: 1rem; }
        |  .logo .gs { font-size: ${logoGsScale}em; }
