@@ -622,9 +622,9 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
     def tableau =
       s"""<svg viewBox="0 0 640 300" width="640" role="img" aria-label="Forgy and Smither at the anvil">
          |  <line x1="10" y1="283" x2="630" y2="283" stroke="${cacg.hex}" stroke-width="2" opacity="0.5"/>
-         |  <g transform="translate(260,39) scale(-1,1)">$forgySvg</g>
+         |  <g transform="translate(286,39) scale(-1,1)">$forgySvg</g>
          |  <g transform="translate(240,191)">$anvilSvg</g>
-         |  <g transform="translate(380,39)">$smitherSvg</g>
+         |  <g transform="translate(328,39)">$smitherSvg</g>
          |</svg>""".stripMargin
     def solo(svg: String, label: String) =
       s"""<figure><svg viewBox="-26 0 226 260" width="190" role="img" aria-label="$label">$svg</svg><figcaption>$label</figcaption></figure>"""
