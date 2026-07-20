@@ -613,10 +613,10 @@ ${f"${ratio(ash.hex, ctip.hex)}%.2f"} on bone-white. Role: garments, silhouette 
        |  <line x1="52" y1="38" x2="132" y2="30" stroke="${acg.hex}" stroke-width="6" stroke-linecap="round"/>
        |  <path d="M30 18 L54 25 L52 44 L26 40 Q16 29 30 18 Z" fill="${cacg.hex}"/>
        |  <path d="M26 40 Q16 29 30 18" stroke="${hio.hex}" stroke-width="3" fill="none" stroke-linecap="round"/>
-       |  <rect x="20" y="44" width="120" height="18" rx="4" fill="${acg.hex}"/>
-       |  <path d="M20 44 L20 62 L0 53 Z" fill="${acg.hex}"/>
-       |  <rect x="62" y="62" width="36" height="16" fill="${acg.hex}"/>
-       |  <rect x="48" y="78" width="64" height="14" rx="3" fill="${acg.hex}"/>
+       |  <rect x="20" y="44" width="120" height="18" rx="4" fill="${ash.hex}" stroke="${acg.hex}" stroke-width="3"/>
+       |  <path d="M20 44 L20 62 L0 53 Z" fill="${ash.hex}" stroke="${acg.hex}" stroke-width="3"/>
+       |  <rect x="62" y="62" width="36" height="16" fill="${ash.hex}" stroke="${acg.hex}" stroke-width="3"/>
+       |  <rect x="48" y="78" width="64" height="14" rx="3" fill="${ash.hex}" stroke="${acg.hex}" stroke-width="3"/>
        |</g>""".stripMargin
 
   def mascotLab: String =
