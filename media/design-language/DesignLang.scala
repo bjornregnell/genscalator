@@ -379,27 +379,62 @@ object DesignLang {
        |    --mono: "Fira Code", ui-monospace, monospace;
        |  }
        |  * { box-sizing: border-box; }
-       |  body { font-family: var(--sans); background: var(--${ctip.css}); color: var(--${tip.css});
+       |  /* Smithy light (default) — semantic vars flip per theme, palette vars never change */
+       |  body {
+       |    --bg: var(--${ctip.css}); --fg: var(--${tip.css}); --head: var(--${tip.css});
+       |    --link: var(--${tb.css}); --visited: var(--${tip.css});
+       |    --code-bg: var(--${tip.css}); --code-fg: var(--${ctip.css});
+       |    --border: var(--${acg.css}); --th-bg: var(--${cacg.css});
+       |    --logo-fg: var(--${tip.css}); --logo-gs: var(--${tb.css});
+       |  }
+       |  /* Forge dark */
+       |  body.dark {
+       |    --bg: var(--${tip.css}); --fg: var(--${ctip.css}); --head: var(--${hio.css});
+       |    --link: var(--${cvro.css}); --visited: var(--${chio.css});
+       |    --code-bg: var(--${acg.css}); --code-fg: var(--${ctip.css});
+       |    --border: var(--${cacg.css}); --th-bg: var(--${acg.css});
+       |    --logo-fg: var(--${hio.css}); --logo-gs: var(--${vro.css});
+       |  }
+       |  body { font-family: var(--sans); background: var(--bg); color: var(--fg);
        |         max-width: 60rem; margin: 0 auto; padding: 2rem 1.5rem 4rem; line-height: 1.55; }
-       |  h1, h2, h3, h4 { color: var(--${tip.css}); margin: 1.4em 0 .4em; }
+       |  h1, h2, h3, h4 { color: var(--head); margin: 1.4em 0 .4em; }
        |  h1 { border-bottom: 4px solid var(--${hio.css}); padding-bottom: .25rem; }
-       |  a { color: var(--${tb.css}); }
-       |  a:visited { color: var(--${tip.css}); }
+       |  a { color: var(--link); }
+       |  a:visited { color: var(--visited); }
        |  pre, code { font-family: var(--mono); }
-       |  pre { background: var(--${tip.css}); color: var(--${ctip.css}); padding: .8rem 1rem;
+       |  pre { background: var(--code-bg); color: var(--code-fg); padding: .8rem 1rem;
        |        border-radius: 6px; overflow-x: auto; }
-       |  code { background: var(--${tip.css}); color: var(--${ctip.css}); padding: .05rem .3rem; border-radius: 4px; }
+       |  code { background: var(--code-bg); color: var(--code-fg); padding: .05rem .3rem; border-radius: 4px; }
        |  pre code { padding: 0; }
        |  table { border-collapse: collapse; margin: 1rem 0; }
-       |  th, td { border: 1px solid var(--${acg.css}); padding: .3rem .6rem; font-size: .9rem; }
-       |  th { background: var(--${cacg.css}); }
+       |  th, td { border: 1px solid var(--border); padding: .3rem .6rem; font-size: .9rem; }
+       |  th { background: var(--th-bg); }
        |  .logo { font-family: var(--mono); font-weight: $logoWeight; font-size: 2.2rem;
-       |          color: var(--${tip.css}); margin-bottom: .2rem; }
-       |  .logo .gs { font-size: ${logoGsScale}em; color: var(--${tb.css}); }
+       |          color: var(--logo-fg); margin-bottom: .2rem; }
+       |  .logo .gs { font-size: ${logoGsScale}em; color: var(--logo-gs); }
        |  nav { font-family: var(--mono); font-size: .85rem; margin-bottom: 2rem; }
+       |  #theme-toggle { position: fixed; top: 1rem; right: 1rem; font-family: var(--mono);
+       |    font-size: .8rem; font-weight: bold; padding: .3rem .7rem; border-radius: 4px;
+       |    border: 1px solid var(--border); background: var(--code-bg); color: var(--code-fg); cursor: pointer; }
        |</style>
        |</head>
        |<body>
+       |<button id="theme-toggle">Forge dark</button>
+       |<script>
+       |  (function () {
+       |    var btn = document.getElementById('theme-toggle');
+       |    function label() { btn.textContent = document.body.classList.contains('dark') ? 'Smithy light' : 'Forge dark'; }
+       |    var saved = localStorage.getItem('gs-design-theme');
+       |    if (saved === 'dark' || (saved === null && window.matchMedia('(prefers-color-scheme: dark)').matches))
+       |      document.body.classList.add('dark');
+       |    label();
+       |    btn.addEventListener('click', function () {
+       |      document.body.classList.toggle('dark');
+       |      localStorage.setItem('gs-design-theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+       |      label();
+       |    });
+       |  })();
+       |</script>
        |<div class="logo">${wordmark()}</div>
        |<nav><a href="preview-GENERATED.html">preview</a> · <a href="logo-lab-GENERATED.html">logo lab</a> ·
        |  <a href="DesignLang.scala">source of truth</a></nav>
