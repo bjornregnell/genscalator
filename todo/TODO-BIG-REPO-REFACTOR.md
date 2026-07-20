@@ -31,6 +31,13 @@ Direction is sound: it is the same audience-relative-home principle we use for n
 
 #### Migration plan (TODO soon on the migration step): the in-repo middle path — `git mv` blog + pod-casts into `media/`
 
+> **✅ EXECUTED 2026-07-20** (genscalator `b1f29f2` + `96a92c5`; audited by meta-minion push-11). Two
+> corrections to the text below, which is kept as written (annotate, never erase): the "exactly one
+> functional code change" became TWO by execution time — `deployblog.sc` blogDir AND
+> `DesignLang.scala`'s template-output path `../../blog` → `../blog` (that generator post-dates this
+> plan) — and `docs/foundations.md` was NOT clean (3 blog-path sites, fixed). Everything else held,
+> incl. `deployblog.sc`'s bundled relocation to `deploy/`.
+
 The near-term, low-risk step, and DISTINCT from the outsourcing above (which is deferred and leaning-against). Investigated 2026-07-17; impact is small and bounded, `git mv` preserves history, and it is reversible.
 
 **Target structure:** a new top-level `media/` (sibling to `research/`), holding `media/blog/` and `media/pod-casts/`. `research/` stays put. Keep media and research as SIBLINGS, not nested — they are different audiences (publishable vs findings), and siblings map cleanly onto a later genscalator-media / genscalator-research split if we ever do it.
