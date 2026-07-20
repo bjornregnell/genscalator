@@ -1,16 +1,23 @@
-# BATON-TEMPLATE: the pre-hoc seed
+# EMBER-TEMPLATE: the pre-hoc seed
+
+*A **warp ember** is what a smith's banked fire is to the morning: at exit the session rakes ash
+over the coals; the fresh agent on the other side of the warp blows the ember back into flame.
+Formerly called the "baton" — renamed 2026-07-20 (Swedish* batong *= police club; the smithy fit
+won: `tt forge`, banking the fire). Raw pre-rename records keep the old word; see
+`../research/wr-data/rename-baton-to-warp-ember-2026-07-20.md`.*
 
 **Status: pre-hoc seed, v0 (2026-07-19); v0.1 maintenance 2026-07-20** — operational updates from
-live guard-stall specimens plus the ColdStart-clearing revert. Still PRE-EXPERIMENT: no pilot has
-run; these refinements move the thing-to-beat, they are not results. This is the best-*reasoned* baton template from the SM168
-joint pass - written down BEFORE any measurement, as the thing for the pilot experiment to beat (see
-blog post [030](../blog/030-what-is-a-good-warp-baton.md)). It is a seed, not a result: the pilot
-(baton vs no baton) and the follow-up experiments (per-ingredient) may change any part of it. The
-real specimen it generalizes: [BATON-EXAMPLE.md](BATON-EXAMPLE.md).
+live guard-stall specimens plus the ColdStart-clearing revert, and the baton→ember rename. Still
+PRE-EXPERIMENT: no pilot has run; these refinements move the thing-to-beat, they are not results.
+This is the best-*reasoned* ember template from the SM168 joint pass - written down BEFORE any
+measurement, as the thing for the pilot experiment to beat (see blog post
+[030](../blog/030-what-is-a-good-warp-ember.md)). It is a seed, not a result: the pilot
+(ember vs no ember) and the follow-up experiments (per-ingredient) may change any part of it. The
+real specimen it generalizes: [EMBER-EXAMPLE.md](EMBER-EXAMPLE.md).
 
 ## The rules the template encodes
 
-1. **Pointer, not truth.** Durable truth lives in committed files and notes; the baton points. The
+1. **Pointer, not truth.** Durable truth lives in committed files and notes; the ember points. The
    only prose state allowed is the three-line summary of §4, and each of its lines must say how to
    verify itself. *(This pointer said §5 until minion push-4 F3 caught the off-by-one.)*
 2. **Verify-mandate rule.** Every inherited claim the fresh agent will ACT on carries its own
@@ -19,17 +26,17 @@ real specimen it generalizes: [BATON-EXAMPLE.md](BATON-EXAMPLE.md).
 3. **Numbers over adjectives.** Commit hashes, counts, percentages - checkable against git and disk.
 4. **One screen.** Size is a duplication budget, not a token budget: if a section grows, relocate
    content to the substrate and point.
-5. **Exit order.** Commit and push ALL work first, then write the baton, then exit. A baton written
+5. **Exit order.** Commit and push ALL work first, then write the ember, then exit. An ember written
    before the final commits points at a moving target.
 6. **English**, even if the working chat is not: the reader may be any future agent.
 
 ## The skeleton (section order is part of the design)
 
 ```markdown
-⛔ THIS IS A BATON: a pointer to durable truth, not the truth. Verify before
+⛔ THIS IS A WARP EMBER: a pointer to durable truth, not the truth. Verify before
 trusting; read only what you need (bounded reads).
 
-# Baton — <warp type: cold start | compact | model switch | reboot>, written <real timestamp> by <writer>
+# Ember — <warp type: cold start | compact | model switch | reboot>, written <real timestamp> by <writer>
 
 ## 0. Anti-regression checklist — READ FIRST (reflexes regress at turn zero)
 FORBIDDEN → ALLOWED:
@@ -61,8 +68,8 @@ FORBIDDEN → ALLOWED:
 ## 3. Pre-authorized actions (do at cold start, report in-feed)
 - <action> — pre-authorized by <human>, verify by <check>.
 - IF the budget mode says spending (TokSpend lit): spawn the meta-minion to audit the handover —
-  the last session's final commits against this baton's claims. It is the one verifier outside
-  both the dying and the newborn context ("carried ≠ armed": baton content must be read to act,
+  the last session's final commits against this ember's claims. It is the one verifier outside
+  both the dying and the newborn context ("carried ≠ armed": ember content must be read to act,
   a spawned watcher fires regardless). If not in spending mode: ask before spawning.
 - ...
 
@@ -75,19 +82,19 @@ FORBIDDEN → ALLOWED:
 <board/roadmap file> · <memory index> · <research/data dir> · <this file's own queue section if any>
 ```
 
-## Pre-flight checklist (mechanical; a future baton-prep skill can enforce it)
+## Pre-flight checklist (mechanical; a future ember-prep skill can enforce it)
 
 Before exiting, the writer checks:
-- [ ] every path in the baton resolves on disk;
+- [ ] every path in the ember resolves on disk;
 - [ ] every commit hash named exists in the repo it is claimed in;
 - [ ] every hold names its owner and release condition;
 - [ ] every state line and pre-authorized action carries a verify-mandate;
 - [ ] all work is committed AND pushed (both remotes if the primary flaps);
 - [ ] the file fits on roughly one screen;
 - [ ] timestamps are read from a clock, never guessed;
-- [ ] the baton was (re)written or re-stamped at THIS exit — a baton reused from an earlier
+- [ ] the ember was (re)written or re-stamped at THIS exit — an ember reused from an earlier
       warp is stale by construction (specimen 2026-07-20: a cold start received the previous
-      evening's baton, missing a whole morning session of pins);
+      evening's ember, missing a whole morning session of pins);
 - [ ] the FORBIDDEN→ALLOWED lines reflect the NEWEST stall data — retire lines proven false
       (specimen: "test suite guard-stalls, BR-present only" outlived its truth by a day).
 
@@ -95,5 +102,5 @@ Before exiting, the writer checks:
 
 Carried by the research programme (blog 030): whether the checklist earns its top slot (experiment
 2), whether the three-line summary beats pure pointers (experiment 3), how the template should vary
-by warp type, what a no-baton control reveals about the whole idea (the pilot), and whether the
-cold-start meta-minion audit earns its tokens (a later arm: baton+minion vs baton alone).
+by warp type, what a no-ember control reveals about the whole idea (the pilot), and whether the
+cold-start meta-minion audit earns its tokens (a later arm: ember+minion vs ember alone).

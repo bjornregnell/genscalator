@@ -497,7 +497,7 @@ and the session pin board. The through-line is a new general goal, sovereigntyOf
 * Feature: gsNative helps Goal: jointHumanAgentProductivity
 
 * Feature: gsSettings has
-  * Gist: (pinned SM115) a genscalator settings story — one discovered gs config file for the many tweakable knobs (statusline thresholds and colours, mode labels, allowlist preferences, grepr defaults, notification branding, native-compile tool selection) with a DWIM gs config editor.
+  * Gist: (pinned SM115) a genscalator settings story — one discovered gs config file for the many tweakable knobs (statusline thresholds and colours, mode labels, allowlist preferences, safe-delete legit places for tt rm (SM147 addendum 2026-07-20), grepr defaults, notification branding, native-compile tool selection) with a DWIM gs config editor.
   * Spec: the north star is configureAllTheThings — expose every meaningful knob with sane defaults so the file stays OPTIONAL; keep a clean boundary versus the Claude Code settings.local.json (harness permissions and hooks stay there, genscalator-specific knobs here) with precedence defaults then settings-file then env then flags; extends ttConfigFile.
 * Feature: gsSettings requires Feature: ttConfigFile
 * Feature: gsSettings helps Goal: dwim

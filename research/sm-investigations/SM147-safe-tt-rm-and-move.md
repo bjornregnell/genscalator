@@ -87,6 +87,29 @@ design points with observed evidence:
    present. Whether the deny softened deliberately or drifted is for the SM073 settings-vs-SECURITY-MODEL
    audit to adjudicate — flagged here so the note's own premise gets re-checked there.
 
+## Addendum 2026-07-20 — "legit places" become a gsSettings knob (BR from guard, during the ember rename)
+
+Fresh specimen: the baton→ember rename sweep needed plain file renames (write new + `rm` old), and each
+raw `rm` guard-stalled BR — who asked from inside the guard: *"could we have a tool that just removes
+stuff in legit places"* and then pointed at the genscalator-settings idea as the natural home for WHERE
+those legit places are declared. Design consequence, folded into the feature pair:
+
+1. **The boundedness comes in two layers.** Layer 1 (structural, always on): repo-relative path, no
+   `..`/absolute escapes, never `.git/` or the root — the existing "must NOT do" list. Layer 2
+   (configurable): a **`rmLegitPlaces`** knob in the gsSettings file (PRD `gsSettings`, SM115) listing
+   project-relative directories where deletion is routine (`tmp/`, generated media, scratch dirs). Inside
+   a legit place `tt rm` runs in the normal allow lane; outside it, it escalates to `ask` (or refuses,
+   per a second knob) — destruction stays one keystroke away exactly where it is NOT routine.
+2. **Git standing still decides reversibility** (addendum-1 point 2): tracked deletes are recoverable
+   from history and may deserve a laxer lane than untracked ones even inside a legit place; the
+   tracked/untracked/ignored report line stays mandatory.
+3. **PRD hook:** `gsSettings`' Gist now names the knob ("safe-delete legit places", this addendum); a
+   future `Feature: ttRm` should `requires Feature: gsSettings` for layer 2 while layer 1 ships
+   config-free.
+
+Rename-sweep context (why the rms happened): `BATON-TEMPLATE.md` → `EMBER-TEMPLATE.md` etc., see
+`../wr-data/rename-baton-to-warp-ember-2026-07-20.md`.
+
 ## Ties
 SM146 (toolbox self-sufficiency — the sibling gap: native tools; this one: delete/move) · SM073 (this **retires a
 denied raw destructive op**, so it is an input to the settings-vs-`SECURITY-MODEL` audit) · `SECURITY-MODEL`

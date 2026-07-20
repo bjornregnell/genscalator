@@ -79,7 +79,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 
 **Groups:** [Roles and cases](#roles-and-cases) · [Channel: bandwidth and confirmation fatigue](#channel-bandwidth-and-confirmation-fatigue) · [Echt and honest writing](#echt-and-honest-writing) · [Context rot and the smart zone](#context-rot-and-the-smart-zone) · [Dances and handoffs](#dances-and-handoffs) · [Memory, habits and substrate](#memory-habits-and-substrate) · [Autonomy and safety](#autonomy-and-safety)
 
-**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · Agentic requirements engineering (agentic RE) · Agentic software engineering (agentic SE) · AT · Authority anchor · Ballgame · Baton · BR · BRB dance · Cold start · Comms shorthand · Communication bandwidth · Compact dance · Compact sleep · Compact trigger · Confabulation · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context dance · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · Delegation dance · echt / äkthet · echt-mimicry · Edit dance · Edit vs clarification cues · Extrinsic-volatile plasticity · Go afk cue · Go dance · Go dial ((go)/go/GO) · gs (genscalator) · Guard stall · Habit · Hardening dance · Harvest-hot-context mode · Hot context · Index rot · Live-edit dance · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Post-warp dissection · Prosthetic habit · P-word / plan-mode modal · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Silent · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Swedish-marker cue (|sv) · Thriller state · Token acceleration · Token efficiency (TE) · Token-usage dance · Token velocity · Warp · WR · Why cue
+**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · Agentic requirements engineering (agentic RE) · Agentic software engineering (agentic SE) · AT · Authority anchor · Ballgame · BR · BRB dance · Cold start · Comms shorthand · Communication bandwidth · Compact dance · Compact sleep · Compact trigger · Confabulation · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context dance · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · Delegation dance · echt / äkthet · echt-mimicry · Edit dance · Edit vs clarification cues · Ember (warp ember; formerly baton) · Extrinsic-volatile plasticity · Go afk cue · Go dance · Go dial ((go)/go/GO) · gs (genscalator) · Guard stall · Habit · Hardening dance · Harvest-hot-context mode · Hot context · Index rot · Live-edit dance · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Post-warp dissection · Prosthetic habit · P-word / plan-mode modal · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Silent · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Swedish-marker cue (|sv) · Thriller state · Token acceleration · Token efficiency (TE) · Token-usage dance · Token velocity · Warp · WR · Why cue
 
 ### Roles and cases
 *BR and the agent are the **roles** (stakeholders, above). **WR** is the research program; **AT** and **SSG** are its **cases / units of analysis** — the object-level projects during which workflow data is collected. (Terminology per* Case Study Research in Software Engineering: Guidelines and Examples*, Runeson, Höst, Rainer & Regnell, Wiley 2012, §3.2.3 "Cases and Units of Analyses" — of which BR is a co-author.)*
@@ -423,31 +423,38 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   dance" was NOT yet a defined term here — regex-ing this glossary would have flagged the absence and prompted a
   confirm; this entry closes that gap (see `research/wr-data/agent-overcommitted-context-dance-to-compact-dance-2026-07-12.md`,
   [[live-edit-dance]] confirm-on-ambiguity). Related: **Compact dance**, **Token-usage dance**, **Session-limit dance**.
-- **Baton** — the file the agent writes **before** a warp so that the agent on the other side can pick the work up:
-  modes, what is committed, the menu, the anti-regression list. Currently implemented as `tmp/resume-prompt.md` (the
-  *implementation detail*, deliberately not the name — BR: *"a mouthful to type"*). **Named for the relay baton, and
-  the metaphor is the point: a baton is passed between DIFFERENT runners.** The post-warp agent is not the same
-  agent; only the object survives. *(Agent coinage 2026-07-17 as "carrier"; renamed `baton` on BR's settle the same
-  day, while nothing was deployed — coined terms stay mutable until first deploy. BR may type `batton`; understood
-  and normalised silently.)*
+- **Ember (warp ember; formerly baton)** — the file the agent writes **before** a warp so that the agent on the
+  other side can pick the work up: modes, what is committed, the menu, the anti-regression list. Currently
+  implemented as `tmp/resume-prompt.md` (the *implementation detail*, deliberately not the name — BR: *"a mouthful
+  to type"*). **Named for the smith's banked fire: at exit the session rakes ash over the coals so an ember
+  survives the night; the fresh agent blows it back into flame.** The metaphor carries the discontinuity too: the
+  post-warp agent is not the same agent — the fire dies, only the ember crosses. It also sits at home in the forge
+  vocabulary (`tt forge`, the smithy). *(Naming history: agent coinage 2026-07-17 as "carrier"; BR settled "baton"
+  the same day; renamed **ember** 2026-07-20 on BR's call — Swedish *batong* means police club, connotations we do
+  not want, and both English senses (conductor's stick, truncheon) point wrong; coined terms stay mutable until
+  first deploy, and the SM168 experiments had not yet run. In prose the full term is* warp ember*; files are
+  `EMBER-*.md`. BR may type `embr`/`amber`; understood and normalised silently.)*
   ⭐ **THE HAZARD IS NOT FADING — IT IS BEING WRONG AND BELIEVED.** SM132 audited one (`2ad9ef5`): it carried a false
   orphan, a wrong count, and a broken experimental control into a fresh agent that **believed all three, for eleven
-  hours**. It did not fail by being forgotten. **It was read perfectly.** ⇒ **`carried ≠ still true`**: a baton rots
+  hours**. It did not fail by being forgotten. **It was read perfectly.** ⇒ **`carried ≠ still true`**: an ember rots
   **on disk while the world moves**, not in anyone's memory. Its named orphan had been homed **39 minutes before the
-  baton was written**, by its own author, who then wrote "homeless".
+  ember was written**, by its own author, who then wrote "homeless".
   ⭐⭐ **AND THE BANNER DOES NOT ARM THE READER — this is the load-bearing finding, and it is about the reader, not
-  the file.** The current baton **opens** with *"⛔ THIS FILE IS A CLAIM, NOT A FACT."* On 2026-07-17 the post-compact
+  the file.** The ember **opens** with *"⛔ THIS FILE IS A CLAIM, NOT A FACT."* On 2026-07-17 the post-compact
   agent read that banner, and then **took the same file's line — "Ground truth: 8 stalls" — as ground truth** and
   went to build a tool on it. The false claim was caught **by the WORK** (building the instrument forced a look at
   the raw data, which disconfirmed it), **not by the warning**. Had the tool been buildable without inspecting the
   corpus, it would have shipped on a false premise. ⇒ **a warning that says "don't trust this file" does not make you
   distrust the file; it makes you FEEL that you have** (the *well-formed summary produces closure* mechanism, one
-  level up). **A baton must be AUDITED, and an audit is a TASK, not a resolution** — the only thing that has ever
+  level up). **An ember must be AUDITED, and an audit is a TASK, not a resolution** — the only thing that has ever
   armed a check here is giving it a tool call to execute in.
-  ⚠️ **It is gitignored, so it has NO HISTORY** — which means **a claim about what a baton previously said cannot be
+  ⚠️ **It is gitignored, so it has NO HISTORY** — which means **a claim about what an ember previously said cannot be
   verified** (the meta-minion hit exactly this: *"tmp/resume-prompt.md is untracked, no history"* ⇒ `CANNOT VERIFY`).
   A file whose whole job is to be checked against reality is the one file with no audit trail. **Open, and it is a
-  real gap.** Cf. *Compact dance*, *Post-warp dissection*, *Warp*, *Dangling pointer*.
+  real gap.** *(Pre-rename raw record — wr-data specimens, minion-log pushes, the published example's verbatim
+  section — keeps saying "baton"; that is deliberate: raw stays raw, see
+  `research/wr-data/rename-baton-to-warp-ember-2026-07-20.md`.)* Cf. *Compact dance*, *Post-warp dissection*,
+  *Warp*, *Dangling pointer*.
 - **Compact dance** — the deliberate **hand-off ritual across a context compaction**, so crossing it costs
   little of what matters. Context compaction (summarizing the transcript to reclaim window space) is the main
   smart-zone hygiene move — but a naive compact *loses* live state (decisions just made, the exact next step,

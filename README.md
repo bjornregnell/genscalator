@@ -9,7 +9,7 @@
 The above image shows the genscalator awareness lines: 
 
 * The first line is the *introspection line* with important measured data and metrics. The second line is the *mode line* with the currently declared joint human-agent modes. The third line is the *box line* with the measured health of the machine itself.
-* In this session the agent has just been warp-started cold: the hand-off note (in genscalator called a *baton*) told the fresh agent to declare `ColdStart` (fresh process, not yet re-calibrated) and `SmartZone` (a fresh context window, low fill, sharp judgment), while `TokSpend` says the pair has token headroom to spend. 
+* In this session the agent has just been warp-started cold: the hand-off note (in genscalator called a *warp ember* — the banked coal a session leaves so the next agent can blow the context back into flame) told the fresh agent to declare `ColdStart` (fresh process, not yet re-calibrated) and `SmartZone` (a fresh context window, low fill, sharp judgment), while `TokSpend` says the pair has token headroom to spend. 
 * Context-fill is low (5%), and the box line already hints at trouble ahead: the compile server is growing (`bloop 3.2G`) and the box is `huffing`.
 
 What do we mean with 
