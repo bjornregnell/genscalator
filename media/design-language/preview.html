@@ -68,6 +68,12 @@
   .chip.pink   { background: var(--neon-pink-purple);     color: #ffffff; }
   .chip.cold   { background: var(--chio-light-blue);      color: var(--tempered-iron-purple); }
   .chip.vigil  { background: var(--vivid-red-orange);     color: var(--ctip-bone-white); }
+  .logo { font-family: var(--mono); font-weight: 700; font-size: 2.2rem; margin-bottom: 1rem; }
+  .logo .gs { font-size: 1.35em; }
+  .dark .logo { color: var(--hot-iron-orange); }
+  .dark .logo .gs { color: var(--vivid-red-orange); }
+  .light .logo { color: var(--tempered-iron-purple); }
+  .light .logo .gs { color: var(--temper-blue); }
   .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; margin-top: 1rem; }
   .sw { border-radius: 5px; padding: .5rem; font-family: var(--mono); font-size: .68rem; min-height: 3.2rem; }
 </style>
@@ -76,6 +82,7 @@
 <div class="page">
 
   <section class="panel dark">
+    <div class="logo"><span class="gs">g</span>en<span class="gs">s</span>calator</div>
     <h1>Forge dark</h1>
     <p class="muted">tempered-iron purple ground · bone-white body · glow-orange headings</p>
     <div class="chips">
@@ -104,6 +111,7 @@
   </section>
 
   <section class="panel light">
+    <div class="logo"><span class="gs">g</span>en<span class="gs">s</span>calator</div>
     <h1>Smithy light</h1>
     <p class="muted">bone-white ground · tempered-purple body · hot-iron rule · temper-blue links</p>
     <div class="chips">
