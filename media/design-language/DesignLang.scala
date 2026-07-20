@@ -209,11 +209,11 @@ object DesignLang {
        |  * https://en.wikipedia.org/wiki/Forging
        |  * https://sv.wikipedia.org/wiki/Smide
        |* Tempering (en) == Anlöpning (sv)
-       |  https://en.wikipedia.org/wiki/Tempering_(metallurgy)
+       |  * https://en.wikipedia.org/wiki/Tempering_(metallurgy)
        |  * https://sv.wikipedia.org/wiki/Anl%C3%B6pning
        |
        |* Annealing (en) == Glödgning (sv)
-       |  *
+       |  * https://en.wikipedia.org/wiki/Annealing_(materials_science)
        |  * https://sv.wikipedia.org/wiki/Gl%C3%B6dgning
        |
        |* Anvil (En) == Städ (sv)
