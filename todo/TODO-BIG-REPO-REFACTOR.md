@@ -109,6 +109,20 @@ The current ide is to:
   Sequencing is free relative to Reason 2 EXCEPT the inbox removal, which lands with or
   after the `issues/` dirs exist (never delete the inbox before its successor is real).
 
+### Reason 4: future stuff goes into `reqts/` (JOINT 🤝 BR+CF5, pinned 2026-07-21 as SM183)
+
+* **New top-level `reqts/` collects the requirements-and-future substrate**, so the repo
+  root stays lean and mean (same motive as Reason 3): `reqts/PRD.md` (moves from root)
+  and `reqts/issues/` as the home of the insourced issues.
+* **AMENDS Reason 2's target path**: the issue dirs become `reqts/issues/open/` and
+  `reqts/issues/closed/` (identity/naming/status rules of Reason 2 unchanged).
+* **Subtask "issue-zero"**: on ALL genscalator forge mirrors (Codeberg origin, GitHub,
+  GitLab, coursegit — wherever a tracker is visible), create one pinned forge issue
+  explaining that issues are INSOURCED into the repo at `reqts/issues/` — what that
+  means, how to read them, and how an outsider reports (per Reason 2's open decision:
+  the forge tracker as outsider inbox, transcribed into canonical in-repo issues).
+  Posting to forges is outward: agent drafts issue-zero text, BR posts/pins.
+
 
 
 
