@@ -702,6 +702,20 @@ equivalence in the *model* is not equivalence to the *human*, who loses their sp
 the record; and the `L → Z` rename that deliberately *left `RAW-DATA.md` untouched*.) **Promoted to `docs/foundations.md`**
 (2026-07-05) as the glossary term **Order stability** (maxim: *stable order > tidy order*).
 
+## Plugin version needs a deeeeep modal descent (BR 2026-07-21, `#harness-ux`)
+Tags: `#harness-ux` `#papercut`
+**BR (live, right after the v0.9.1 update-pipeline test):** *"that was a deeeeep modal tree; but i got down to
+the version eventually."* Reading a single installed-plugin version string requires descending the `/plugin`
+manager's nested modals; there is no one-shot readout. **The bite:** version identity is exactly what a human
+checks when verifying an update landed (the alpha-tester onboarding case), and the answer sits several modal
+levels deep — while the harness *had* just printed it inline ("genscalator is already at the latest version
+(0.9.1)") only because an update happened to be a no-op. **Workarounds today:** `! ls
+~/.claude/plugins/cache/<marketplace>/<plugin>/` (the version-keyed cache dirs), or the agent checks the cache.
+**Genscalator-side fix candidate (SM189 family):** grow `tt update --brief` an "installed vX / latest vY" line
+so `gs update` answers in the feed, no modal descent. **Upstream ask:** a flat `/plugin list` style one-liner
+per plugin with name@marketplace + version. Same family as the version-identity confusion found minutes earlier
+(marketplace name vs plugin name, fixed in docs `c1fbcd5`).
+
 ## Can't check `/context` while messages are queued — no meta-state peek during a flood (BR 2026-07-05, `#harness-ux`)
 Tags: `#harness-ux` `#methodology`
 **BR (live, during the context-rot flood experiment):** *"it is irritating that I cannot check context while messages
