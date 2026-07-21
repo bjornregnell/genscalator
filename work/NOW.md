@@ -8,7 +8,7 @@
 > distrust it and say so. Sibling-to-be: `SOLO-MENU.md` (deliberately separate, so a
 > context-rot-aware reader can wear blinders: one narrow file per question).
 
-*As of 2026-07-21 21:49 (commit-stamped by this file's own git log):*
+*As of 2026-07-22 00:10 (commit-stamped by this file's own git log):*
 
 ## Just landed (today)
 
@@ -31,13 +31,19 @@
   first lean ember + this file: zero estimated stamps (first clean push since 13), two real
   findings (a dropped BR-gate, this file's first staleness specimen) — both fixed in this
   commit; report at `research/case-studies/action-research-meta-minion/minion-log/push-17.md`.
-* Introprog v2026.5 release: candidate built 44/44 green, BR's rendered eyeball produced
-  22 findings (work-repo `notes/en-pdf-review-v2026.5-2026-07-21.md`), 14 fixed same
-  evening via cache surgery; REMAINS: BR's go for the final third-pass builds, asset
-  attach, tag + publish, fileadmin -en upload. AT baton back from Hans (his pause email
-  2026-07-21). Evening's genscalator movement: HUMANS tables + em-dash relief, guard-clean
-  digest gained a URLS block (raw-curl regression specimen), CD13 executed, SM194-SM199
-  pinned in the work repo.
+* **Introprog v2026.5 PUBLISHED 2026-07-22 00:07** (tag at master, 6 compendium assets,
+  agent-published on BR's explicit go): the whole rendered-review arc (27 findings, ~30
+  fixes incl. the fi-glue class three-layer fix and a deglueFi mirror post-pass) lives in
+  work-repo `notes/en-pdf-review-v2026.5-2026-07-21.md`. UML warts ship as-is by BR's
+  call, next-release batch. REMAINS: BR's fileadmin publish, gated on a deck-rebuild round.
+* **Post-warp pre-authorized (BR's "go 12345", fresh agent picks the order):** (1) rebuild
+  all EN decks + SV wjava + intro decks for fileadmin, report; (2) meta-minion push-18
+  audits the review doc + the evening's PB claims; (3) SM200 solo core (`--cache-only` +
+  gauge ratchet, NO yaml, BR reviews the diff); (4) SM196 design note from the 11-prompt
+  casefile (wr-data `gh-vs-tt-forge-capability-gap-2026-07-21.md`); (5) SM195 drafts
+  (modly contributor README + bjornyx.local inventory; NO ssh/config changes).
+* AT baton back from Hans (his pause email 2026-07-21); evening's genscalator movement:
+  HUMANS tables, guard-clean digest URLS block, CD13 executed, SM194-SM200 + CD13 pinned.
 
 ## Next up (decided, unstarted)
 
