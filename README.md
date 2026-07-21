@@ -37,6 +37,7 @@ When you generate **Scala**, you get extra help from the bundled Scala skills (`
 `scala-code-review`, `reqt-lang`) and the optional [Scala-code companions](#22-companions-for-scala-code-recommended)
 (scalex, Metals MCP).
 
+
 ## 2. How to install genscalator
 
 * **Prerequisites:** [scala-cli](https://scala-cli.virtuslab.org/install) and a JDK (to run the tools), plus `git`
@@ -115,28 +116,6 @@ ln -s "$PWD/tools/tt" ~/.local/bin/tt    # ensure ~/.local/bin is on your PATH
 ```
 The typed-tools launcher is one literal, allowlist-friendly command from any repo. First run of a tool
 compiles (a couple of seconds); reruns are cached. Verify with `tt files src .scala --count`.
-
-## 3. Why genscalator?
-
-Out-of-the-box agent workflows lean on approving dense bash compounds and archaic Unix tools 
-stitched together in a difficult-to-review blob. 
-Much of the guardrail machinery exists precisely to contain what can go wrong there, and the 
-cost is **confirmation fatigue** and bad UX from reviewing cryptic, dynamic, unsafe code.
-
-### 3.1 Why may genscalator improve safety?
-
-Genscalator shifts to **safe, compiled code with static guarantees**. Every time the agent would reach for a
-one-off bash/grep/awk helper, it instead creates (or reuses) a persistent, self-contained Scala tool.
-That earns static guarantees, reduces the agent getting stuck debugging brittle helpers, and shrinks the
-number of dangerous operations that need human approval at all.
-
-See [`docs/foundations.md`](docs/foundations.md) for the full goals, stakeholders (human / agent / Black
-Hat Hacker threat model), and glossary.
-
-### 3.2 The deeper idea
-
-Why workflows and not just typed tools, and how this doubles as a research project: see
-[`HUMANS.md`](HUMANS.md) — the deeper README.
 
 ## 4. Using the Claude Code plugin
 

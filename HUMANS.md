@@ -38,13 +38,22 @@ The full glossary lives in [`docs/foundations.md`](docs/foundations.md) — thes
 
 ## 3. The main goals of genscalator
 
-The one-line version of the three goals in the README, with the depth pointer:
+The one-line version of the three goals in the README:
 
 * **Smarter** — keep the joint human-agent work inside the smart zone by making state visible (the awareness lines) and workflows deliberate (cues and dances).
 * **Safer** — replace dynamic shell blobs with typed, compiled, allowlistable tools, so fewer dangerous approvals are needed at all and the human's attention is spent where it matters.
 * **Faster** — make the joint workflow composable and low-friction, and (roadmap) compile hot tools to native binaries for instant start-up.
 
-The goal/stakeholder rationale in full — including the Black Hat Hacker as an explicitly modeled stakeholder — lives in [`docs/foundations.md`](docs/foundations.md); the requirements form lives in [`reqts/PRD.md`](reqts/PRD.md).
+Out-of-the-box agent workflows lean on approving dense bash compounds and archaic Unix tools 
+stitched together in a difficult-to-review blob. 
+Much of the guardrail machinery exists precisely to contain what can go wrong there, and the cost is **confirmation fatigue** and bad UX from reviewing cryptic, dynamic, unsafe code. Your agent can be **smarter** if you give it more powerful tools.
+
+With genscalator your human-agent workflows shift to **safe, compiled code with static guarantees**. Every time the agent would reach for a
+one-off bash/grep/awk helper, it instead creates (or reuses) a persistent, self-contained Scala tool.
+That earns static guarantees, reduces the agent getting stuck debugging brittle helpers, and shrinks the
+number of dangerous operations that need human approval at all.
+
+With the genscalator plugin installed and the native tools activated you move to **fast** startup of compiled and audited Scala tools at your agents' fingertips.
 
 ## 4. Why workflows, why not just typed tools?
 
@@ -58,13 +67,13 @@ Genscalator is also a research project into agentic software engineering workflo
 
 ## 6. The scope of genscalator
 
-### In scope: personal agentic software engineering
+### In scope: personal Agentic Software Engineering (ASE)
 
-Genscalator focuses on the personal agentic software engineering process. It is the joint human-agent collaboration productivity escalation that is the main objective.
+Genscalator focuses on the personal Agentic Software Engineering (ASE) process. It is the joint human-agent collaboration productivity escalation that is the main objective.
 
-### Out of scope for now: team- and organization-level agentic software engineering
+### Out of scope for now: team- and organization-level ASE
 
-We leave the organisational aspects for later, as it is currently difficult to do live action research in a real software engineering organisation, with all the business-impacting caveats of doing so. But if an organisation is willing to research the on-the-fly implementation of productive team-level and organization-wide agentic software engineering with genscalator, this may become feasible at a later time.
+We leave the organisational aspects of Agentic Software Engineering (ASE) for later, as it is currently difficult to do live action research in a real software engineering organisation, with all the business-impacting caveats of doing so. But if an organisation is willing to research the on-the-fly implementation of productive team-level and organization-wide agentic software engineering with genscalator, this may become feasible at a later time.
 
 TODO: add some cred/connection to Watts Humphrey's PSP (never widely succeeded because it is SO boring for humans to fill in all those tables; but agents do not get bored...)
 
