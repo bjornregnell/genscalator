@@ -8,7 +8,7 @@
 > distrust it and say so. Sibling-to-be: `SOLO-MENU.md` (deliberately separate, so a
 > context-rot-aware reader can wear blinders: one narrow file per question).
 
-*As of 2026-07-21 20:02 (commit-stamped by this file's own git log):*
+*As of 2026-07-21 21:49 (commit-stamped by this file's own git log):*
 
 ## Just landed (today)
 
@@ -31,10 +31,13 @@
   first lean ember + this file: zero estimated stamps (first clean push since 13), two real
   findings (a dropped BR-gate, this file's first staleness specimen) — both fixed in this
   commit; report at `research/case-studies/action-research-meta-minion/minion-log/push-17.md`.
-* Introprog AT baton is BACK (Hans suspended his Claude work 2026-07-21, spend limit +
-  holiday — his email in the work feed): the Swedish-percent-grind hold's release condition
-  fired. BR's (go): assess what a new introprog release with a regenerated English side
-  needs; assessment running, report lands in the feed.
+* Introprog v2026.5 release: candidate built 44/44 green, BR's rendered eyeball produced
+  22 findings (work-repo `notes/en-pdf-review-v2026.5-2026-07-21.md`), 14 fixed same
+  evening via cache surgery; REMAINS: BR's go for the final third-pass builds, asset
+  attach, tag + publish, fileadmin -en upload. AT baton back from Hans (his pause email
+  2026-07-21). Evening's genscalator movement: HUMANS tables + em-dash relief, guard-clean
+  digest gained a URLS block (raw-curl regression specimen), CD13 executed, SM194-SM199
+  pinned in the work repo.
 
 ## Next up (decided, unstarted)
 
