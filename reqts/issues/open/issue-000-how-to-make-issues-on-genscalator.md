@@ -2,7 +2,7 @@
      forge Issue Zero. This whole file is forge-paste-ready: these comment lines do not render.
      Forge copies: codeberg.org/bjornregnell/genscalator/issues/1 (canonical), mirrors per below. -->
 
-TLDR: prefer `reqts/issues` but ok to file here if you are a one-timer
+TLDR: prefer `reqts/issues` but ok to file here if you are a first-timer
 
 # Issue Zero: how to make issues on genscalator
 
