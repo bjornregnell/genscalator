@@ -71,4 +71,6 @@ re-patched a SECOND time within minutes (a credit reworded to the GitHub handle)
 draft loop is edit-until-right, and with a raw gh shape EVERY iteration costs one guard
 prompt on a present human. Confirmation fatigue scales with review rounds; one typed,
 allowlistable draft-edit shape amortizes the whole loop. n=2 iterations tonight, both
-guard-caught, both BR-allowed by hand.
+guard-caught, both BR-allowed by hand. UPDATE ~20:5x: n=3 (a measured-residual table added
+to the body) — every single draft iteration keeps costing one hand-approval, exactly as
+predicted; the specimen now demonstrates its own point in real time.
