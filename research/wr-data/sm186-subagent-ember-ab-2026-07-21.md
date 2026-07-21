@@ -79,3 +79,16 @@ reducer, not a binary switch — raw-shell rate 0/2 and 0/4 (read, warmed), 1/2 
 1/10 (write, warmed) — and super-agent adjudication remains load-bearing regardless of warming.
 Sub-agents CAN write good genscalator Scala; they cannot yet be trusted to notice their own
 reflex slips.
+
+## ADDENDUM-2 (2026-07-21 16:08:15 clock-read) — stakeholder reaction, verbatim
+
+BR, in-feed on reading the SM188 write-probe report, explicitly cueing "WR data on" it:
+"WE ARE GETTING THERE!!! BR very happy!"
+
+Reading of the datum: the confidence signal attaches to the LOOP, not to a flawless sub-agent.
+The report BR reacted to contained one reflex slip (the raw `ls`) and one adjudication-caught
+defect (the fd leak) — reported plainly, fixed, and logged. So what is being validated is
+delegation + verbatim warming + super-agent adjudication + honest probe accounting working as
+one system. A stakeholder-validation point for the delegation-dance thread ([[delegation-dance]],
+[[echt-effort-especially-self-generated]]: the slips being visible is part of what earned the
+reaction).
