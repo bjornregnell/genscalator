@@ -1,4 +1,21 @@
-# PLAN: Refactor genscalator repo structur
+# Issue 002: big repo refactor
+
+> status: done (2026-07-21) · labels: refactor, repo-structure · summary: restructure the repo —
+> media/ split (Reason 1 middle path, executed 2026-07-20), insourced issues (Reason 2, executed
+> 2026-07-21 as `reqts/issues/`), docs-surface refactor (Reason 3: inbox retired 2026-07-21; the
+> lean-README/extended-HUMANS.md split executed by BR's hand the same evening), and `reqts/` as
+> the future-stuff home (Reason 4, executed 2026-07-21). Residue routed: repo OUTSOURCING
+> (research/media as separate repos) was deliberately deferred, leaning-against, revisit no
+> earlier than v1.0.0-M1 — if it ever revives it becomes its own issue.
+
+## Description
+
+The original plan document follows verbatim below, with the EXECUTED banners annotated in place
+as each part landed (annotate, never erase). This file began life as `todo/TODO-BIG-REPO-REFACTOR.md`,
+moved to `reqts/` when `todo/` was retired, and was closed as issue-002 on 2026-07-21 — its final
+move being itself an instance of the workflow it specifies.
+
+---
 
 ## Why
 
@@ -106,7 +123,8 @@ The current ide is to:
 
 > **⏳ PARTIALLY EXECUTED 2026-07-21**: `HUMANS.inbox.md` REMOVED (triage: 4 of 5 items obsolete,
 > 1 transcribed to issue-001 — the successor `reqts/issues/` existed first, rule honored). The
-> lean-README / extended-HUMANS.md split remains OPEN (BR's first-screen call + agent drafts).
+> lean-README / extended-HUMANS.md split was taken by BR's OWN hand the same evening (2026-07-21,
+> README.md + HUMANS.md edited live by the human — the first-screen call exercised directly).
 > Movers that rode this session: `mirror.sc` → `deploy/mirror.sc` (self-check + usage + failure
 > hint updated) and `blog-legacy-redirect.htaccess` → `deploy/`.
 
