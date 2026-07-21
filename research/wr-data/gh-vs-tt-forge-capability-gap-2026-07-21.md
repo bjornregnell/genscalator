@@ -74,3 +74,16 @@ allowlistable draft-edit shape amortizes the whole loop. n=2 iterations tonight,
 guard-caught, both BR-allowed by hand. UPDATE ~20:5x: n=3 (a measured-residual table added
 to the body) — every single draft iteration keeps costing one hand-approval, exactly as
 predicted; the specimen now demonstrates its own point in real time.
+
+## ADDENDUM 3 ~23:5x: ASSET UPLOAD, the fourth missing verb — and the full-evening tally
+
+Six release assets (the v2026.5 compendium PDFs, SV+EN) uploaded to the GitHub draft via
+raw `gh api POST uploads.github.com/...` — BR hand-approved EVERY one from the guard,
+flagging "could be tt forge" as they went by. Fourth missing verb for SM196:
+`release-asset-upload` (per-forge upload endpoints, content types, draft-id addressing).
+FULL-EVENING TALLY of hand-approvals spent on release mechanics through raw gh shapes:
+2 list/read calls + 3 draft-body PATCHes + 6 asset uploads = **11 guard prompts** for ONE
+release's plumbing, every one a shape a typed `tt forge` verb set would have made a single
+allowlist entry. This file is now the complete requirements casefile for SM196's
+release-all: list, edit-by-id, draft flow, asset upload, per-forge adapters, per-forge
+auth — each verb evidenced by a live specimen with a present human paying the prompt.
