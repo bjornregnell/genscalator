@@ -2,7 +2,7 @@
 
 > This is a counterpart to [`AGENTS.md`](AGENTS.md): that file is *for the agent(s)*, this one is *for humans* that want to understand the deeper idea behind genscalator and the structure of this repo.
 > **New here?** Start with [README.md](README.md) and then read "Where are all the things?" below.
-> Want to contribute (issues, PRs, requirements)? That lives in [`CONTRIBUTING.md`](CONTRIBUTING.md) — this file only points.
+> Want to contribute (issues, PRs, requirements)? That lives in [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## 1. Where are all the things?
 
