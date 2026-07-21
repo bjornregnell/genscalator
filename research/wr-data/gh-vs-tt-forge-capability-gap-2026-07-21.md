@@ -66,3 +66,9 @@ are reachable only by numeric release id, a concept absent from tt forge's surfa
 SM196 requirements harvested: per-forge adapters (again), draft-release support, and
 id-addressing alongside tag-addressing. The draft-first flow (create draft, iterate body,
 tag+publish last) is exactly how a careful human releases, so release-all must model it.
+ITERATION datum (~20:5x, BR guard-flagged the same shape again): the draft body was
+re-patched a SECOND time within minutes (a credit reworded to the GitHub handle) — the
+draft loop is edit-until-right, and with a raw gh shape EVERY iteration costs one guard
+prompt on a present human. Confirmation fatigue scales with review rounds; one typed,
+allowlistable draft-edit shape amortizes the whole loop. n=2 iterations tonight, both
+guard-caught, both BR-allowed by hand.
