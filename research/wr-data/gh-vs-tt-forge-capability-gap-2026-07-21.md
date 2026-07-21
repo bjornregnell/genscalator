@@ -54,3 +54,15 @@ fresh documentation — documentation-in-context does not arm reflexes (the carr
 pattern, same evening as the raw-curl specimen), and (b) the 404 is a concrete SM196
 requirement datum: a `release-all` needs per-forge API adapters (Gitea vs GitHub vs GitLab
 paths + auth models), not just a BASE-url parameter. Ties SM196 (pinned minutes before).
+
+## ADDENDUM 2 ~20:4x: the PATCH-a-draft call, third specimen, sharpest requirement yet
+
+BR guard-asked whether `gh api ... releases/357549566 -X PATCH -F body=@notes.md` is tt
+forge material. Analysis: `tt forge release-edit` EXISTS and already has the right
+body-from-file ergonomics (`--body-file F`) — but it could not have made this call for TWO
+independent reasons: (1) Gitea-only API paths (the 404 datum above), and (2) it addresses a
+release BY TAG, while a GitHub DRAFT release has an empty tag_name until publish — drafts
+are reachable only by numeric release id, a concept absent from tt forge's surface. New
+SM196 requirements harvested: per-forge adapters (again), draft-release support, and
+id-addressing alongside tag-addressing. The draft-first flow (create draft, iterate body,
+tag+publish last) is exactly how a careful human releases, so release-all must model it.
