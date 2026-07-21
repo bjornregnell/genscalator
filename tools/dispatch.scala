@@ -19,7 +19,7 @@ object Dispatch {
   val entries: Vector[(Verb, Seq[String] => Unit)] = Vector(
     "ascii"       -> (a => renderAsciiDiagram(a*)),
     "bloop"       -> (a => bloopServerCtl(a*)),
-    "box"         -> (a => boxRemoteOps(a*)),
+    "box"         -> (a => boxOps(a*)),
     "chrono"      -> (a => chronoStopwatch(a*)),
     "doc"         -> (a => doc(a*)),
     "files"       -> (a => files(a*)),
