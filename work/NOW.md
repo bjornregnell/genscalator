@@ -8,7 +8,7 @@
 > distrust it and say so. Sibling-to-be: `SOLO-MENU.md` (deliberately separate, so a
 > context-rot-aware reader can wear blinders: one narrow file per question).
 
-*As of 2026-07-21 19:54 (commit-stamped by this file's own git log):*
+*As of 2026-07-21 20:02 (commit-stamped by this file's own git log):*
 
 ## Just landed (today)
 
@@ -20,6 +20,10 @@
   issues section that issue-000 promises; README 3.2/3.3 relocated to HUMANS (`9eaa091`).
 * GitLab mirror revived + Issue Zero on all three forges; `work/NOW.md` born (SM192 pilot);
   eyes-on-the-ball research designed (`research/055`) with blog 031 drafted for BR's revoice.
+* CD13 (BR HD in-feed ~20:00): gitlab JOINS the every-unit push routine as a plain
+  fast-forward push (genscalator set now x4: origin, github, coursegit, gitlab);
+  `mirror.sc` demotes to the sole deliberate force/repair path. EMBER-TEMPLATE v0.2 carries
+  both this and the push-17 mode-state phrasing fix.
 
 ## In flight
 
@@ -27,8 +31,10 @@
   first lean ember + this file: zero estimated stamps (first clean push since 13), two real
   findings (a dropped BR-gate, this file's first staleness specimen) — both fixed in this
   commit; report at `research/case-studies/action-research-meta-minion/minion-log/push-17.md`.
-* The gitlab-in-push-set open decision is under live co-design (agent recommendation on the
-  table: join as plain fast-forward push, mirror.sc stays the only force path); BR's call.
+* Introprog AT baton is BACK (Hans suspended his Claude work 2026-07-21, spend limit +
+  holiday — his email in the work feed): the Swedish-percent-grind hold's release condition
+  fired. BR's (go): assess what a new introprog release with a regenerated English side
+  needs; assessment running, report lands in the feed.
 
 ## Next up (decided, unstarted)
 
@@ -42,6 +48,5 @@
 
 ## Open decisions (human's call pending)
 
-* Does the gitlab mirror join the every-unit push routine, or stay `deploy/mirror.sc`-driven?
 * Scaladoc palette override via the design language: feasible-cheap, worth-it undecided.
 * API-docs commit/deploy call after inspection at the local server (port 8138 while it runs).

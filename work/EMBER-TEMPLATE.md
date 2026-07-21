@@ -6,7 +6,10 @@ Formerly called the "baton" — renamed 2026-07-20 (Swedish* batong *= police cl
 won: `tt forge`, banking the fire). Raw pre-rename records keep the old word; see
 `../research/wr-data/rename-baton-to-warp-ember-2026-07-20.md`.*
 
-**Status: pre-hoc seed, v0 (2026-07-19); v0.1 maintenance 2026-07-20** — operational updates from
+**Status: pre-hoc seed, v0 (2026-07-19); v0.1 maintenance 2026-07-20; v0.2 maintenance
+2026-07-21** — v0.2: mode-state phrasing clarified (meta-minion push-17 nit: modes live in the
+harness, not in committed files) and the routine push set grew to include the gitlab mirror
+(CD13). v0.1: operational updates from
 live guard-stall specimens plus the ColdStart-clearing revert, and the baton→ember rename. Still
 PRE-EXPERIMENT: no pilot has run; these refinements move the thing-to-beat, they are not results.
 This is the best-*reasoned* ember template from the SM168 joint pass - written down BEFORE any
@@ -58,6 +61,9 @@ FORBIDDEN → ALLOWED:
   (fresh = un-rotted but un-calibrated and demonstrably at low fill; ColdStart clearing is
   the HUMAN's call — the hygiene-done self-clear stance was tried and reverted 2026-07-20;
   the clear-condition is an open SM118 question)
+- modes live in the HARNESS state (`tt mode`), never in a committed file: budget modes like
+  TokSpend persist across the warp there. Verify with `tt mode`; do not hunt modes in
+  NOW.md. (Phrasing fixed after meta-minion push-17 caught "rides the state file".)
 - compact survivor instead: consider `+Hangover`; distrust what you think you remember —
   the verify-mandates below apply DOUBLE to you.
 
@@ -89,7 +95,10 @@ Before exiting, the writer checks:
 - [ ] every commit hash named exists in the repo it is claimed in;
 - [ ] every hold names its owner and release condition;
 - [ ] every state line and pre-authorized action carries a verify-mandate;
-- [ ] all work is committed AND pushed (both remotes if the primary flaps);
+- [ ] all work is committed AND pushed to the FULL routine push set (genscalator: origin +
+      github + coursegit + gitlab per CD13, plain fast-forward only — `mirror.sc` stays the
+      sole force path; work repo: origin + github + coursegit); a flapping remote is retried
+      next unit, never rewritten around;
 - [ ] the file fits on roughly one screen;
 - [ ] timestamps are read from a clock, never guessed;
 - [ ] the ember was (re)written or re-stamped at THIS exit — an ember reused from an earlier
