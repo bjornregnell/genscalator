@@ -8,7 +8,7 @@
 > distrust it and say so. Sibling-to-be: `SOLO-MENU.md` (deliberately separate, so a
 > context-rot-aware reader can wear blinders: one narrow file per question).
 
-*As of 2026-07-22 00:10 (commit-stamped by this file's own git log):*
+*As of 2026-07-22 00:4x (commit-stamped by this file's own git log):*
 
 ## Just landed (today)
 
@@ -36,12 +36,23 @@
   fixes incl. the fi-glue class three-layer fix and a deglueFi mirror post-pass) lives in
   work-repo `notes/en-pdf-review-v2026.5-2026-07-21.md`. UML warts ship as-is by BR's
   call, next-release batch. REMAINS: BR's fileadmin publish, gated on a deck-rebuild round.
-* **Post-warp pre-authorized (BR's "go 12345", fresh agent picks the order):** (1) rebuild
-  all EN decks + SV wjava + intro decks for fileadmin, report; (2) meta-minion push-18
-  audits the review doc + the evening's PB claims; (3) SM200 solo core (`--cache-only` +
-  gauge ratchet, NO yaml, BR reviews the diff); (4) SM196 design note from the 11-prompt
-  casefile (wr-data `gh-vs-tt-forge-capability-gap-2026-07-21.md`); (5) SM195 drafts
-  (modly contributor README + bjornyx.local inventory; NO ssh/config changes).
+* **Post-warp "go 12345" batch — 4 of 5 LANDED this session (BR went +afk +solo ~00:17):**
+  (1) ✅ deck rebuild for fileadmin: 19 EN decks (98 s, per-deck Swedish gauges), SV wjava,
+  intro SV+EN via the scratch builder — every build exit 0, zero LaTeX errors; **BR's
+  fileadmin publish is now UNBLOCKED**. (2) ⏳ meta-minion push-18 launched (audits the
+  review doc + evening PB claims, local-substrate-only brief). (3) ✅ SM200 solo core:
+  `--cache-only` (read-only cache, no backend resolution, fallbacks-vs-baseline gate) +
+  `--prose-leaks-ratchet` (152 measured live = the release-notes residual) implemented and
+  gate-tested BOTH ways — **diff UNCOMMITTED in introprog for BR review** (2 sources + 2
+  baseline files; found+fixed en route: sys.exit in an unforked sbt run kills the hot sbt
+  server — gates now sys.error). NO yaml (JOINT, as pinned). (4) ✅ SM196 design note at
+  `research/sm-investigations/SM196-release-all-design.md` (c4b6f53): R1-R7 from the
+  11-prompt casefile, 3-stage build, 4 decisions left open for BR. (5) ✅ SM195 drafts in
+  work-repo `notes/sm195-modly-generalization-drafts.md` (7f4b945): 3-row CODE inventory,
+  frozen-records rule honored, README in paste-ready fences — ⚠ HD datum for BR: an ssh
+  alias does NOT resolve `http://modly.local:8080`; the name needs an mDNS (avahi) publish
+  on the box. TokSpend was dropped by BR (~00:20, 24% weekly at 6d-to-reset) — session ran
+  in saving mode; the ember's TokSpend-gated ember-audit was skipped accordingly.
 * AT baton back from Hans (his pause email 2026-07-21); evening's genscalator movement:
   HUMANS tables, guard-clean digest URLS block, CD13 executed, SM194-SM200 + CD13 pinned.
 
@@ -59,3 +70,9 @@
 
 * Scaladoc palette override via the design language: feasible-cheap, worth-it undecided.
 * API-docs commit/deploy call after inspection at the local server (port 8138 while it runs).
+* SM200 introprog diff review (uncommitted, 2 sources + 2 baselines) — note: a live
+  `--cache-only` verification run was deliberately NOT done; `mirror()` wipes + re-creates
+  slides-en/compendium-en, which would delete the freshly built deck PDFs staged for the
+  fileadmin publish. Run it BR-present after the publish (expected fallbacks: 1).
+* SM195: avahi-publish vs /etc/hosts for `modly.local` (the drafts note recommends avahi),
+  then BR's ssh config + the 3 CODE edits.
