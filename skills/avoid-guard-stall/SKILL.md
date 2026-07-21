@@ -17,6 +17,19 @@ commands that never *need* the confirmation. Structure over willpower.
 auto-injected into the fresh window — but a skill's description **is** re-listed every session. So this skill
 is the compaction-surviving carrier of the reflexes. ([[compaction-regresses-fine-grained-reflexes-2026-07-13]].)
 
+## Delegating? The reflexes don't travel
+
+A sub-agent inherits NONE of this skill — not the table, not the reflexes; only its brief. So when
+spawning ANY sub-agent (cold worker or steerable minion), assemble the brief per
+`docs/EMBER-for-sub-agents.md` (print with `tt doc EMBER-for-sub-agents`): the `tt doc guard-clean-digest`
+output VERBATIM + the ember's delta rules VERBATIM + the task payload with an explicit tool-lane.
+Paraphrase loses sibling rules — measured, not hypothetical (wr-data
+`sm186-subagent-ember-ab-2026-07-21`: the unwarmed arm ran a raw `find`; three earlier specimens in
+`subagents-need-the-ember-s0-checklist`). For a LONG-lived minion the reflexes also fade within its own
+window: instruct it to re-run `tt doc guard-clean-digest` at phase boundaries (self-re-warm), and when a
+steering message changes work lane (read-only → committing), paste the relevant digest block into that
+message.
+
 ## The guard-tripping shapes and their clean alternatives
 
 | Tripping shape | Why it fires | Guard-clean alternative |

@@ -33,6 +33,8 @@
   tt shape.
 - Report in ENGLISH; enumerate what you checked (never "all"/"every" unless you verified each).
 - Your final text IS the return value: raw data per the output contract, no pleasantries.
+- Multi-phase or long task? Re-run `tt doc guard-clean-digest` at phase boundaries — reflex
+  salience fades in YOUR window too, and you can re-warm yourself.
 === SUB-AGENT DELTA RULES — END ===
 
 ## Why verbatim beats paraphrase (the evidence, dated)
@@ -45,6 +47,23 @@
   lands on a present human as a stall.
 - A/B run 2026-07-21 (verbatim-assembly arm vs polite-paraphrase arm, identical read-only task):
   see wr-data `sm186-subagent-ember-ab` for command logs and the verdict.
+
+## Two temperatures: cold workers and hot minions
+
+- **Cold worker** (one-shot, fire-and-report): the assembly above IS the whole channel. Inheritance
+  subtlety measured in the A/B/C probe: on the author's own box, sub-agents still see the project
+  memory index, so some tt salience leaks in — but a plugin user's sub-agents are TRULY cold, so the
+  ember must (and does) carry everything. Never budget on the leak.
+- **Hot minion** (steerable: the super-agent continues it with follow-up messages): warm ONCE via
+  the initial brief — its context persists, so steering messages need no full re-paste. Two decay
+  guards: (1) the minion self-re-warms (`tt doc guard-clean-digest`) at phase boundaries — it can
+  run tt, so use that; (2) when a steering message CHANGES WORK LANE (e.g. read-only → committing),
+  the super-agent pastes just the relevant digest block (e.g. GIT) into that message. A minion that
+  compacts or runs very long is treated as cold again: re-paste the full assembly.
+- **Arm D verdict (2026-07-21 investigation):** a true no-leak cold baseline is NOT runnable on the
+  author's box — project memory auto-injects into every sub-agent — but that leak IS the production
+  condition here, so the A/B/C numbers measure the population that matters locally. The true-cold
+  population is other users' installs, where the ember is the only channel by construction.
 
 ## Scope notes
 

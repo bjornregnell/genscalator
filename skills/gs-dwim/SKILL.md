@@ -311,5 +311,9 @@ Two refinements that make the decision smarter:
   fits — no heavy reasoning. And a delegated gs command must write **nothing durable** (no memory, no commits):
   it reads and returns. If a gs command would need to write or commit, it is NOT a delegation candidate.
 
+- **Brief assembly.** Any delegated job gets the standard warming block: assemble the brief per
+  `docs/EMBER-for-sub-agents.md` (`tt doc EMBER-for-sub-agents`) — the guard-clean digest + the delta rules
+  VERBATIM (paraphrase loses sibling rules, measured), then the task payload with an explicit tool-lane.
+
 Neat consequence: the delegatable commands are exactly **Tier 2** (dogfooding), and the Tier-1 user commands
 mostly want to render inline. **The dogfooding tier is also the delegation tier.**

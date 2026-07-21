@@ -51,3 +51,31 @@ Raw-command rate: A 0/2, B 0/4, C 1/2. No arm reported a denial or error.
   no-leak baseline.
 - A multi-step task probing the sibling rules (a commit, a timestamp, a process-shaped
   temptation) where the verbatim-vs-named-tools difference should actually separate.
+
+## ADDENDUM 2026-07-21 16:0x (clock-read 15:52:15 at the SM188 pin; BR "(go)" on SM186 follow-up)
+
+**Arm D investigated, verdict: reframed, not run.** A true no-leak cold baseline is not
+runnable on this box — project memory (the index that carries tt salience) auto-injects into
+every sub-agent regardless of isolation flags. But that leak IS the local production condition,
+so the A/B/C numbers already measure the population that matters here. The genuinely cold
+population is OTHER users' plugin installs, where the ember is the only channel by construction
+— which is an argument FOR verbatim assembly, not against the probe. Landed in substrate:
+`docs/EMBER-for-sub-agents.md` gained a "Two temperatures" section (cold worker vs hot minion:
+minions warm once via the initial brief, self-re-warm with `tt doc guard-clean-digest` at phase
+boundaries, get the relevant digest block pasted into lane-changing steering messages, and count
+as cold again after a compact); the delta rules gained the self-re-warm line; the
+`avoid-guard-stall` and `gs-dwim` skills now point every delegation at the ember file; the
+[[delegation-dance]] memory carries the same instruction.
+
+**The missing WRITE-task probe arrived for free (SM188, same day):** a steerable minion with a
+fully verbatim-assembled brief wrote `deploy/deployttapi.sc` (a real ~130-line effectful script),
+ran and verified it. Command log: 10 commands, 9 clean, **1 raw `ls <dir>`** — the digest's own
+forbidden shape, run under full verbatim warming and self-reported without being flagged as a
+violation. Script quality: genuinely genscalator-styled (name-pinned rmrf, path-pinned clear,
+three-layer README guard that held — sha256 byte-identical, honest dry-run, loud verdict); ONE
+defect found in super-agent adjudication (an unclosed `Files.list` stream in the empty-dir prune;
+fd leak, fixed and re-run green). Updated reading across all four arms: warming is a RATE
+reducer, not a binary switch — raw-shell rate 0/2 and 0/4 (read, warmed), 1/2 (read, unwarmed),
+1/10 (write, warmed) — and super-agent adjudication remains load-bearing regardless of warming.
+Sub-agents CAN write good genscalator Scala; they cannot yet be trusted to notice their own
+reflex slips.
