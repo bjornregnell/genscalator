@@ -198,7 +198,7 @@ variants, this absorbs the bare ones.
   item's safety against the CURRENT state before presenting ([[cue-go-afk]]).
 - **`gs reqt [<file>]`** — verify a reqT-lang file in one step: run `tt parsereqt parse <file>` then
   `tt parsereqt lint <file>`, and report BOTH (parse errors and unknown-concept fall-throughs). Default
-  `<file>` to `PRD.md` if none is given. This is the after-every-reqT-edit check folded into one command.
+  `<file>` to `reqts/PRD.md` if none is given. This is the after-every-reqT-edit check folded into one command.
 - **`gs test`** — run the genscalator toolbox test suite and report green/red. Command shape:
   `scala-cli test <repo>/tools --java-prop tt.tools=<repo>/tools` — the `tt.tools` prop is REQUIRED whenever
   the cwd is not the tools dir (a known gotcha); resolve `<repo>` to the genscalator checkout. Report the

@@ -112,6 +112,6 @@ that surfaces both kinds without forking the vendored parser; a native in-parser
 ask (reqT/reqT-lang#15; `research/015-reqt-lang-review.md`). Also known: `Assumption` is NOT a valid reqT
 EntType (it falls through) — use `Constraints` or a `Comment`.
 
-Related: [`../scala-style/SKILL.md`](../scala-style/SKILL.md) (how to WRITE a tool), [`../../PRD.md`](../../PRD.md)
+Related: [`../scala-style/SKILL.md`](../scala-style/SKILL.md) (how to WRITE a tool), [`../../reqts/PRD.md`](../../reqts/PRD.md)
 (the live model + META), `tools/reqt-vendored/02-meta-model.scala` (the authoritative concept list with
 informal-semantics strings), the `tt parsereqt` tool.

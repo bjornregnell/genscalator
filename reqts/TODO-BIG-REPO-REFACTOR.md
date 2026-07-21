@@ -65,6 +65,15 @@ The near-term, low-risk step, and DISTINCT from the outsourcing above (which is 
 
 ### Reason 2: insource issues as first class git citizen
 
+> **✅ EXECUTED 2026-07-21** (with Reason 4's amended path `reqts/issues/open|closed/`). Two
+> supersessions of the text below, kept as written (annotate, never erase): **(1) the ID scheme**
+> — the `YYYYMMDDA` date-ID design below was superseded by `issue-NNN-name.md` (three-digit
+> monotonic), decided by BR in the published Issue Zero (live on Codeberg/GitHub/GitLab) before
+> this doc was reconciled; NNN is canonical, see `reqts/issues/README.md`. **(2) the
+> participation open-decision** resolved: forge trackers stay ENABLED as the outsider inbox with
+> transcription (the Issue Zero policy). First citizens: issue-000 (the policy itself) and
+> issue-001 (References split, transcribed from the retired HUMANS.inbox.md).
+
 For sovereignty reasons we mirror genscalator from codeberg to e.g. github and gitlab. But any current [forge](https://en.wikipedia.org/wiki/Forge_(software)) has its own issue-workflow story and api.
 
 One way to dis-entangle the issue workflow from the forge is to insource and git track issues *in* the repo.
@@ -95,6 +104,12 @@ The current ide is to:
 
 ### Reason 3: docs-surface refactor — lean README, extended HUMANS.md (JOINT 🤝 BR+CF5, pinned 2026-07-21)
 
+> **⏳ PARTIALLY EXECUTED 2026-07-21**: `HUMANS.inbox.md` REMOVED (triage: 4 of 5 items obsolete,
+> 1 transcribed to issue-001 — the successor `reqts/issues/` existed first, rule honored). The
+> lean-README / extended-HUMANS.md split remains OPEN (BR's first-screen call + agent drafts).
+> Movers that rode this session: `mirror.sc` → `deploy/mirror.sc` (self-check + usage + failure
+> hint updated) and `blog-legacy-redirect.htaccess` → `deploy/`.
+
 * **Remove `HUMANS.inbox.md`** — superseded by the in-repo issues of Reason 2: an inbox
   file duplicates what `issues/open/` will do with proper identity and workflow. Part of
   the removal: migrate any still-live inbox items into issues (the file has been untouched
@@ -110,6 +125,16 @@ The current ide is to:
   after the `issues/` dirs exist (never delete the inbox before its successor is real).
 
 ### Reason 4: future stuff goes into `reqts/` (JOINT 🤝 BR+CF5, pinned 2026-07-21 as SM183)
+
+> **✅ EXECUTED 2026-07-21** (same day it was pinned — BR decided the refactor lands before
+> v0.10.0 so Issue Zero could state 0.10.0 facts): `reqts/` created with `reqts/PRD.md` (git mv
+> from root; reference sweep: `tt prd` default path in `tools/prd.scala`, gs-dwim `gs reqt`
+> default, reqt-lang skill link, README/CONTRIBUTING/RELEASING/foundations links, and the PRD's
+> own four outbound links rebased `../`), `reqts/issues/open|closed/` with real README workflow
+> docs. Verified: whole-toolbox compile green + `tt prd summarize` resolves the new default
+> ("49 gists from .../reqts/PRD.md"). Issue-zero subtask: DONE earlier same day (posted, pinned
+> and labeled on Codeberg, labeled on GitHub + GitLab — the GitLab mirror itself revived under
+> SM191).
 
 * **New top-level `reqts/` collects the requirements-and-future substrate**, so the repo
   root stays lean and mean (same motive as Reason 3): `reqts/PRD.md` (moves from root)

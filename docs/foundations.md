@@ -99,7 +99,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   (spell it out in a passage that uses it only once — acronym-amortization, cf. *Comms shorthand*; we use **no bare
   "ARE"**). Also emerging (LLM multi-agent RE frameworks, e.g. **MARE**; the RE'25 line of work) — and the field is
   independently arriving at genscalator's own move, treating **"must-not-do" constraints as primary**, which is
-  exactly the **BHH anti-goals** ("Goals we Hurt"). Worked example: this project's own [`PRD.md`](../PRD.md) in
+  exactly the **BHH anti-goals** ("Goals we Hurt"). Worked example: this project's own [`PRD.md`](../reqts/PRD.md) in
   reqT-lang with the BHH threat model.
 - **agent (`CO4` / `CF5`)** — the AI collaborator and primary tool-user (role defined under *Stakeholders*). Its
   identity is **model-dependent**, and the handle **encodes the model**: **`CO4`** = Claude Opus 4 (current), **`CF5`** =

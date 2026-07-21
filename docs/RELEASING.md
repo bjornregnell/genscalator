@@ -24,7 +24,7 @@ but kept a doc for now (a rarely-fired skill would bloat the skill listing; see 
    (`research/sm-investigations/SM056-welcome-content-draft.md`, later the shipped welcome) to the release being
    cut. (BR pin — a forgettable step.)
 6. **PRD.md** — add reqT Features for anything shipped-but-unspecified; move the released block FUTURE →
-   PAST/IMPLEMENTED. Verify: `tt parsereqt parse PRD.md` and `tt parsereqt lint PRD.md` (clean, at/under the
+   PAST/IMPLEMENTED. Verify: `tt parsereqt parse reqts/PRD.md` and `tt parsereqt lint reqts/PRD.md` (clean, at/under the
    known lint baseline).
 7. **Consistency sweep** — every shipped tool has: a `tools/README.md` entry, a PRD Feature, a CHANGELOG line,
    and (where testable) tests in `tools/test/`. Flag any tool missing one.

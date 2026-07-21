@@ -81,7 +81,7 @@ tests see the tool sources without any `//> using file` wiring, and a plain `sca
 
 What's shipped so far, per release: [`CHANGELOG.md`](CHANGELOG.md).
 For the toolbox-specific roadmap (new/extended `tt` tools), see [`tools/README.md`](tools/README.md#roadmap).
-For general goals and requirements see the [Product Requirements Document](PRD.md)
+For general goals and requirements see the [Product Requirements Document](reqts/PRD.md)
 
 **Planned, not yet built - roughly cheapest-to-build first:**
 - **Update awareness** — an *inform-only* update skill + a read-only version-check (compare the installed

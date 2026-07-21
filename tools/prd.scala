@@ -5,11 +5,11 @@
 // prd — read + navigate the genscalator PRD.md (PURE, read-only). Complements `tt parsereqt` (which
 // parses + lints the reqT-lang); this one is for a human/agent who wants to SEE what the PRD says without
 // re-emitting the whole file token-by-token. Three verbs:
-//   tt prd show               print the whole PRD.md verbatim (like `tt doc`, but the repo-root PRD)
+//   tt prd show               print the whole PRD.md verbatim (like `tt doc`, but the repo PRD at reqts/PRD.md)
 //   tt prd summarize          one-screen structural summary of the FUTURE part: each release's Feature/Goal
 //                             Gists, one line each — EXTRACTED from the markdown, never LLM-generated
 //   tt prd find <what>        find where <what> appears in the PRD (case-insensitive), with its section
-//   tt prd --prd <file> ...   override the PRD path (default <tools>/../PRD.md, via -Dtt.tools)
+//   tt prd --prd <file> ...   override the PRD path (default <tools>/../reqts/PRD.md, via -Dtt.tools)
 // Design (echt): show is a trivial cat; summarize walks `## FUTURE`..`## PAST`, pairs each
 // `* Feature|Goal: <id> has` with its nested `* Gist:` line under the current `### Release` header; find is a
 // deterministic case-insensitive line scan tagged with the nearest heading. No LLM, feed-efficient. Ties SM065.
@@ -26,7 +26,7 @@ private val PrdHelp: String =
     |  prd show               print the whole PRD.md verbatim
     |  prd summarize          one-screen summary of FUTURE: each release's Feature/Goal Gists, one line each
     |  prd find <what>        find where <what> appears (case-insensitive), tagged with its section heading
-    |  prd --prd <file> ...   override the PRD path (default: <tools>/../PRD.md, via -Dtt.tools or cwd walk-up)
+    |  prd --prd <file> ...   override the PRD path (default: <tools>/../reqts/PRD.md, via -Dtt.tools or cwd walk-up)
     |
     |Examples:
     |  tt prd summarize            # what is on the roadmap, gist by gist
@@ -74,9 +74,9 @@ private def headingAt(lines: Vector[String], i: Int): String =
   val consumed = if prdIdx >= 0 then Set(prdIdx, prdIdx + 1) else Set.empty[Int]
   val prdPath: Path =
     (if prdIdx >= 0 && prdIdx + 1 < a.size then Some(Path.of(a(prdIdx + 1))) else None)
-      .orElse(Lib.toolsDir().map(_.getParent.resolve("PRD.md")))
+      .orElse(Lib.toolsDir().map(_.getParent.resolve("reqts").resolve("PRD.md")))
       .getOrElse:
-        Console.err.println("prd: cannot locate PRD.md (pass --prd <file>, or set -Dtt.tools=<dir>)")
+        Console.err.println("prd: cannot locate reqts/PRD.md (pass --prd <file>, or set -Dtt.tools=<dir>)")
         sys.exit(2)
   if !Files.isRegularFile(prdPath) then
     Console.err.println(s"prd: no such PRD file: $prdPath")

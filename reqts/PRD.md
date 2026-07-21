@@ -10,21 +10,21 @@ must read linearly. A human can read this whole file as lightly-structured prose
 
 **Structure of this document:** *Stakeholders → their Goals* (who wants what) come first; then **FUTURE** — the
 roadmap of what is **not yet built**, grouped by release; then **PAST** — what has **shipped**, kept as the
-requirements-form mirror of [`CHANGELOG.md`](CHANGELOG.md). Requirements move FUTURE → PAST as they ship. The
+requirements-form mirror of [`CHANGELOG.md`](../CHANGELOG.md). Requirements move FUTURE → PAST as they ship. The
 notation is **reqT-lang**, a small markdown subset for requirements, explained in **META** just below.
 
 **Related documents** (this PRD is only the requirements *spine* — the rest live elsewhere by design, so look
 here when the PRD leans on them):
-- [`docs/foundations.md`](docs/foundations.md) — the **glossary** + goals/stakeholders rationale in plain prose.
+- [`docs/foundations.md`](../docs/foundations.md) — the **glossary** + goals/stakeholders rationale in plain prose.
   Read it first if a term here is unfamiliar (smart zone / **Z** ceiling, confirmation fatigue, the compact /
   rest / AFK dances, **BHH**/BadGoal, safe-by-design …).
-- [`CHANGELOG.md`](CHANGELOG.md) — the shipped history; the PRD's **PAST** section mirrors it in requirements form.
+- [`CHANGELOG.md`](../CHANGELOG.md) — the shipped history; the PRD's **PAST** section mirrors it in requirements form.
 - `research/` — the investigations behind the requirements: e.g. `001-scala-style-evolution.md` /
   `017-scala-style-recommendations.md`, `006-smart-zone-ceiling.md`, `011-human-state-and-joint-zone.md`,
   `022-proactive-compaction-point.md`, `015-reqt-lang-review.md`, `METHODOLOGY.md`.
 - `research/wr-data/` — the raw **evidence** (Workflow-Research friction logs) the requirements are grounded in.
 - `blog/` — the narrative, outside-reader versions of these ideas.
-- [`README.md`](README.md) — what the product is and how to run `tt`.
+- [`README.md`](../README.md) — what the product is and how to run `tt`.
 
 **Role split** (keeps this document focused): **PRD = requirements spine · `research/` = investigations ·
 `wr-data/` = evidence · `docs/foundations.md` = glossary · `memory` = agent ops.**

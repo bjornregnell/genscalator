@@ -1,3 +1,0 @@
-TODO
-
-See todo/TODO-BIG-REPO-REFACTOR.md

@@ -26,13 +26,14 @@
 // (and `--dry-run`, which still connects) will fail at the connect - that SSH setup is
 // the deferred joint step.
 //
-// USAGE (from the genscalator root):
-//   scala-cli run mirror.sc -- --dry-run           # clone master + show what WOULD push (all mirrors)
-//   scala-cli run mirror.sc                         # clone master + push --mirror to ALL mirrors
-//   scala-cli run mirror.sc -- github               # only the named mirror: github | gitlab | coursegit
-//   scala-cli run mirror.sc -- --dry-run github     # dry-run a single mirror
+// USAGE (from the genscalator root; lives in deploy/ since the 2026-07-21 repo refactor):
+//   scala-cli run deploy/mirror.sc -- --dry-run       # clone master + show what WOULD push (all mirrors)
+//   scala-cli run deploy/mirror.sc                     # clone master + push --mirror to ALL mirrors
+//   scala-cli run deploy/mirror.sc -- gitlab           # only the named mirror: github | gitlab | coursegit
+//   scala-cli run deploy/mirror.sc -- --dry-run github # dry-run a single mirror
 //   (pass one or more names to mirror just those - go one repo at a time as SSH keys land)
-//   scala-cli run mirror.sc -- --root <abs> ...     # treat <abs> as the genscalator checkout (else cwd must be the root)
+//   scala-cli run deploy/mirror.sc -- --root <abs> ... # treat <abs> as the genscalator checkout (else cwd must be the root)
+//   (bloop wedged? add --server=false after `run` - the daemon-free escape hatch, slower but wedge-proof)
 //
 // SAFETY: `git push --mirror` FORCE-updates each target to match the master and
 // DELETES target refs not in the master. That is the intent (a verbatim mirror), so
@@ -65,8 +66,8 @@ val positional =
 // We clone into <root>/tmp/, so VERIFY the root really is a genscalator checkout - this
 // refuses to run (and, below, refuses to rmrf) from an unexpected directory.
 val root = optVal("--root").map(Paths.get(_)).getOrElse(Paths.get("")).toAbsolutePath.normalize
-if !Files.exists(root.resolve("mirror.sc")) || !Files.isDirectory(root.resolve("tools")) then
-  die(s"'$root' is not a genscalator checkout (expected mirror.sc + tools/ there); run from the repo root, or pass --root <abs>")
+if !Files.exists(root.resolve("deploy").resolve("mirror.sc")) || !Files.isDirectory(root.resolve("tools")) then
+  die(s"'$root' is not a genscalator checkout (expected deploy/mirror.sc + tools/ there); run from the repo root, or pass --root <abs>")
 
 // All mirror targets (name -> SSH URL). Pass one or more NAMES as positional args to
 // mirror ONLY those - so we can go one repo at a time as each host's SSH key gets set
@@ -119,10 +120,10 @@ for (name, url) <- mirrors do {  // the real action
   val cmd = (Seq("-C", bare.toString, "push", "--mirror") ++ (if dryRun then Seq("--dry-run") else Nil)) :+ url
   if git(cmd*) != 0 then
     failures += 1
-    System.err.println(s"mirror: FAILED $name - is an SSH key set up for this host on blixten? (the deferred joint step)")
+    System.err.println(s"mirror: FAILED $name - READ git's own message above for the real cause: no SSH key for this host? a PROTECTED branch/tag on the target refusing the force-push (fix in the forge's repo settings)? (SM191 specimen 2026-07-21: the old always-blame-auth hint here misdiagnosed a protected-branch rejection)")
 } 
 
 if failures == 0 then
   println(s"mirror: done${if dryRun then " (dry-run: nothing pushed)" else s", ${mirrors.size} mirror(s) synced to the master"}.")
 else
-  die(s"$failures mirror(s) failed (see above); most likely missing SSH auth - the deferred joint step.")
+  die(s"$failures mirror(s) failed - the real cause is in git's message above (auth? protected branch/tag? host down?).")
