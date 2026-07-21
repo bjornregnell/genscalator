@@ -46,7 +46,17 @@ The one-line version of the three goals in the README, with the depth pointer:
 
 The goal/stakeholder rationale in full — including the Black Hat Hacker as an explicitly modeled stakeholder — lives in [`docs/foundations.md`](docs/foundations.md); the requirements form lives in [`reqts/PRD.md`](reqts/PRD.md).
 
-## 4. The scope of genscalator
+## 4. Why workflows, why not just typed tools?
+
+In the genscalator research project we have the hypothesis (perhaps plausible when you think of it) that an escalation of the joint human-agent productivity in agentic software engineering relies on *mutual awareness* of each other's state-of-mind plus a set of workflow "atoms", in genscalator called "cues" and "dances". Their aim is to help make communication efficient and unambiguous. Dances serve as micro-workflows that can be composed into bigger macro-workflows for each unique human-agent pair to create and build on.
+
+> Workflows are **opt-in**: you decide when to adopt available cues and dances and how to compose them. Genscalator makes them available to agents in their hot context and to the fingertips of the human at the keyboard.
+
+## 5. The bigger picture
+
+Genscalator is also a research project into agentic software engineering workflow productivity. The invention of typed tools is supported by a dog-fooding action research approach where genscalator is used in meta-level experiments and case studies on human-agent workflows. Emerging research questions and findings are reported in [`media/blog/`](https://bjornregnell.se/genscalator/blog) and research studies are brainstormed, designed and executed in [`research/`](research/), as we go, supported by the genscalator typed tools and joint human-agent workflow under development.
+
+## 6. The scope of genscalator
 
 ### In scope: personal agentic software engineering
 
@@ -62,7 +72,7 @@ TODO: add some cred/connection to Watts Humphrey's PSP (never widely succeeded b
 
 TODO
 
-## 5. The genscalator awareness lines
+## 7. The genscalator awareness lines
 
 <p align="center">
   <img src="media/img/awareness-1-cold.png" alt="genscalator's three awareness lines in Claude Code at a cold start: the introspection line (clock, model, context-fill 5%, usage limits, cost), the mode line with declared modes ColdStart, SmartZone and TokSpend, and the box line showing machine health" width="100%">

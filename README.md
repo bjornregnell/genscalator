@@ -6,7 +6,7 @@
   <img src="media/img/awareness-1-cold.png" alt="genscalator's three awareness lines in Claude Code at a cold start: the introspection line (clock, model, context-fill 5%, usage limits, cost), the mode line with declared modes ColdStart, SmartZone and TokSpend, and the box line showing machine health" width="100%">
 </p>
 
-The above image shows the genscalator awareness lines. Read more about what they mean in [HUMANS.md, "The genscalator awareness lines"](HUMANS.md#5-the-genscalator-awareness-lines).
+The above image shows the genscalator awareness lines. Read more about what they mean in [HUMANS.md, "The genscalator awareness lines"](HUMANS.md#7-the-genscalator-awareness-lines).
 
 What do we mean by 
 * **smarter?** By introspection, genscalator tries to stay in the smart zone, aiming to stay away from the dumb zone and decrease the probability of agent mistakes.
@@ -133,16 +133,10 @@ number of dangerous operations that need human approval at all.
 See [`docs/foundations.md`](docs/foundations.md) for the full goals, stakeholders (human / agent / Black
 Hat Hacker threat model), and glossary.
 
-### 3.2 Why workflows, why not just typed tools?
+### 3.2 The deeper idea
 
-In the genscalator research project we have the hypothesis (perhaps plausible when you think of it) that an escalation of the joint human-agent productivity in agentic software engineering relies on *mutual awareness* of each other's state-of-mind plus a set of workflow "atoms", in genscalator called "cues" and "dances". Their aim is to help make communication efficient and unambiguous. Dances serve as micro-workflows that can be composed into bigger macro-workflows for each unique human-agent pair to create and build on.
-
-> Workflows are **opt-in**: you decide when to adopt available cues and dances and how to compose them. Genscalator makes them available to agents in their hot context and to the fingertips of the human at the keyboard. 
-
-### 3.3 The bigger picture
-
-Genscalator is also a research project into agentic software engineering workflow productivity. The invention of typed tools is supported by a dog-fooding action research approach where genscalator is used in meta-level experiments and case studies on human-agent workflows. Emerging research questions and findings are reported in [`media/blog/`](https://bjornregnell.se/genscalator/blog) and research studies are brainstormed, designed and executed in [`research/`](research/), as we go, supported by the genscalator typed tools and joint human-agent workflow under development.     
-
+Why workflows and not just typed tools, and how this doubles as a research project: see
+[`HUMANS.md`](HUMANS.md) — the deeper README.
 
 ## 4. Using the Claude Code plugin
 
