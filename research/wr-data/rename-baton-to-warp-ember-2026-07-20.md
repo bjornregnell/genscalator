@@ -35,7 +35,7 @@ still unrun — coined terms stay mutable until first deploy.
 ## Sweep record (living docs updated 2026-07-20)
 
 work/EMBER-TEMPLATE.md (renamed + rename header) · work/EMBER-EXAMPLE.md (renamed + naming note;
-BATON-EXAMPLE.md left as a tombstone pointer for inbound links) · blog/030-what-is-a-good-warp-ember.md
+BATON-EXAMPLE.md left as a tombstone pointer for inbound links; tombstone REMOVED 2026-07-21 by BR's call after an inbound-link hunt found zero live links — git history preserves it at pre-rename commits) · blog/030-what-is-a-good-warp-ember.md
 (renamed; new naming-confession paragraph awaits BR revoice) · docs/foundations.md (glossary entry
 moved B→E, naming history kept) · README.md (line 12) · PRD gsSettings Gist (unrelated same-day edit
 rode along: SM147 legit-places knob) · work-repo PB active pins + 2 memories. NOT touched: wr-data
