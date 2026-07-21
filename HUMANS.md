@@ -19,7 +19,7 @@ Every top-level entry, what it is for, and where to read more:
 * [`docs/`](docs/) — human-facing documentation: [`foundations.md`](docs/foundations.md) (goals, stakeholders, the full glossary), the `gs`-command registry, manuals for the status line and releasing, and `docs/generated/` for generated output (the API docs are built locally by `deploy/deployttapi.sc` and are not tracked).
 * [`reqts/`](reqts/) — the requirements side: [`PRD.md`](reqts/PRD.md) (the Product Requirements Document in reqT-lang) and [`issues/`](reqts/issues/README.md) (issues live *in the repo*; the forge trackers are just an inbox — see CONTRIBUTING.md).
 * [`deploy/`](deploy/) — everything that ships things *out* of the repo: the blog/site deployer, the API-docs generator, the mirror script, server config snippets.
-* [`media/`](media/) — publishable material: [`blog/`](media/blog/), pod-cast drafts, images, and the design language that generates the site's look.
+* [`media/`](media/) — publishable material: [`blog/`](media/blog/), podcast drafts, images, and the design language that generates the site's look.
 * [`research/`](research/) — the open action-research substrate: numbered research notes, `wr-data/` (workflow-research field data, logged live), and case studies. Raw and honest by design; findings graduate into blog posts.
 * [`work/`](work/) — tracked working state: [`NOW.md`](work/NOW.md) (the current in-flight state of development, committed so its history is git's) and the warp-ember templates (how a session hands off to the next).
 * [`bin/`](bin/) — a thin launcher shim (`bin/tt`) for installs that want the launcher outside `tools/`.
@@ -53,7 +53,7 @@ one-off bash/grep/awk helper, it instead creates (or reuses) a persistent, self-
 That earns static guarantees, reduces the agent getting stuck debugging brittle helpers, and shrinks the
 number of dangerous operations that need human approval at all.
 
-With the genscalator plugin installed and the native tools activated you move to **fast** startup of compiled and audited Scala tools at your agents' fingertips.
+With the genscalator plugin installed and the native tools activated (a roadmap item, see the Faster goal above) you move to **fast** startup of compiled and audited Scala tools at your agents' fingertips.
 
 ## 4. Why workflows, why not just typed tools?
 
@@ -73,7 +73,7 @@ Genscalator focuses on the personal Agentic Software Engineering (ASE) process. 
 
 ### Out of scope for now: team- and organization-level ASE
 
-We leave the organisational aspects of Agentic Software Engineering (ASE) for later, as it is currently difficult to do live action research in a real software engineering organisation, with all the business-impacting caveats of doing so. But if an organisation is willing to research the on-the-fly implementation of productive team-level and organization-wide agentic software engineering with genscalator, this may become feasible at a later time.
+We leave the organisational aspects of Agentic Software Engineering (ASE) for later, as it is currently difficult to do live action research in a real software engineering organization, with all the business-impacting caveats of doing so. But if an organization is willing to research the on-the-fly implementation of productive team-level and organization-wide agentic software engineering with genscalator, this may become feasible at a later time.
 
 TODO: add some cred/connection to Watts Humphrey's PSP (never widely succeeded because it is SO boring for humans to fill in all those tables; but agents do not get bored...)
 

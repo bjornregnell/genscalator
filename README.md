@@ -11,11 +11,11 @@ The above image shows the genscalator awareness lines. Read more about what they
 What do we mean by 
 * **smarter?** By introspection, genscalator tries to stay in the smart zone, aiming to stay away from the dumb zone and decrease the probability of agent mistakes.
 * **safer?** By open, inspectable, compile-time checked strongly typed tools genscalator avoids harness guard stalls that ask for permission, with the aim to reduce human confirmation fatigue.
-* **faster?**  With defined workflow elements (cues and dances) genscalator aims to provide composable efficient joint human-agent workflows. Also, the `gs native` command will check what you have on your box and suggest compiling relevant typed tools to bare metal for faster typed tool start-up times.
+* **faster?** With defined workflow elements (cues and dances) genscalator aims to provide composable efficient joint human-agent workflows. Also, the planned `gs native` command (roadmap) will check what you have on your box and suggest compiling relevant typed tools to bare metal for faster typed tool start-up times.
 
-You can read more on the background and goals of genscalator in [HUMANS.md](TODO) and navigate the structure of this repo by reading [Section ? in HUMANS.md](TODO).
+You can read more on the background and goals of genscalator in [HUMANS.md](HUMANS.md#3-the-main-goals-of-genscalator) and navigate the structure of this repo by reading ["Where are all the things?" in HUMANS.md](HUMANS.md#1-where-are-all-the-things).
 
-This README.md focus on a brief overview of genscalator and how to get started.
+This README.md focuses on a brief overview of genscalator and how to get started.
 
 ## 1. What is genscalator?
 
@@ -63,9 +63,9 @@ If you just type this in chat:
 ```
 gs
 ```
-you should see help on how to use the genscalator's *do-what-I-mean* commands.
+you should see help on how to use genscalator's *do-what-I-mean* commands.
 
-For the full skill set, the recommended allowlist, the `gs` commands, etc., see [Using the Claude Code plugin](#4-using-the-claude-code-plugin) further down.
+For the full skill set, the recommended allowlist, the `gs` commands, etc., see [Using the Claude Code plugin](#3-using-the-claude-code-plugin) further down.
 
 
 **Allow the typed tools to run without a prompt.** When the Claude Code harness asks for permissions you can allow according to its suggestions. 
@@ -117,14 +117,14 @@ ln -s "$PWD/tools/tt" ~/.local/bin/tt    # ensure ~/.local/bin is on your PATH
 The typed-tools launcher is one literal, allowlist-friendly command from any repo. First run of a tool
 compiles (a couple of seconds); reruns are cached. Verify with `tt files src .scala --count`.
 
-## 4. Using the Claude Code plugin
+## 3. Using the Claude Code plugin
 
 You installed the plugin in [How to install genscalator](#2-how-to-install-genscalator); here is what it gives
 you and how to drive it. Details, the recommended allowlist, and caveats: [`docs/claude-plugin.md`](docs/claude-plugin.md).
 
-### 4.1 What you get
+### 3.1 What you get
 
-Installing the plugin puts the `tt` toolbox on your PATH for the agents to use when the genscalator plugin is active (see [Usage](#5-using-typed-tools-directly-in-terminal)) and adds a set of **skills** — focused
+Installing the plugin puts the `tt` toolbox on your PATH for the agents to use when the genscalator plugin is active (see [Usage](#4-using-typed-tools-directly-in-terminal)) and adds a set of **skills** — focused
 playbooks the agent invokes by name, or by matching what you ask for:
 
 | Skill | What it does |
@@ -139,7 +139,7 @@ The plugin also ships the operating contract [`AGENTS.md`](AGENTS.md) — the sh
 selection, shorthand, workflow "dances", safe-by-design allowlist habit, etc.) that the agent reads as its
 modus operandi. Full glossary and cues live in [`docs/foundations.md`](docs/foundations.md).
 
-### 4.2 The `gs` in-session commands
+### 3.2 The `gs` in-session commands
 
 Once the plugin is active you can drive genscalator by typing 
 ```
@@ -148,16 +148,16 @@ gs help
 to the agent in chat. 
 
 `gs` is a
-**do-what-i-mean** cue: the agent matches your words to the nearest command in meaning (an informal list, not a rigid
+**do-what-I-mean** cue: the agent matches your words to the nearest command in meaning (an informal list, not a rigid
 syntax, so near-miss spellings and phrasings still work) and does it in the session.
 
-You can get help with Claude Code settings for allow/deny/ask by issuing this command and follow instructions by the agent:
+You can get help with Claude Code settings for allow/deny/ask by issuing this command and following the instructions from the agent:
 
 ```
 gs allow
 ```
 
-### 4.3 Getting started: Try seeding a working web app
+### 3.3 Getting started: Try seeding a working web app
 
 New to genscalator? The fastest way to see it work is to let the agent **seed a complete, runnable Scala web app** for
 you, then run and read it. After installing the plugin, in a fresh context, ask in plain language, naming the directory you want, something similar to:
@@ -172,9 +172,9 @@ gs new app todo ./my-todo
 The agent runs the **`crud-web-app-seed`** skill, which writes a small full-stack project into the directory you chose:
 a shared datamodel, a **JDK-only** HTTP server, and a **Scala.js + Laminar** browser client, plus a Product Requirements Document in `PRD.md`, and a test suite. Then follow the agent's instructions or ask when you need help. The todo app is deliberately small and commented so you can read the whole thing and adapt it to your liking together with the agent that will invoke genscalator's typed tools when it sees fit.
 
-## 5. Using typed tools directly in terminal
+## 4. Using typed tools directly in terminal
 
-After following the install instructions above to get `tt` on path you can run the typed tools directly in terminal like so:
+After following the install instructions above to get `tt` on your PATH you can run the typed tools directly in terminal like so:
 
 ```
 tt <tool> <args...>
@@ -193,7 +193,7 @@ TODO: add and improve examples above.
 Full cheat-sheet: [`tools/README.md`](tools/README.md).
 
 
-### 5.1 Tool dependencies
+### 4.1 Tool dependencies
 
 Most `tt` tools need only **scala-cli + a JDK** — scala-cli fetches the Scala compiler and the small library set on
 first run, then caches them (no manual library install). A few tools additionally shell out to an **external program**
@@ -209,21 +209,21 @@ errors with the install hint only on the render path. (The sibling renderers `tt
 external dependency — pure JDK.)
 
 
-## 6. Licenses
+## 5. Licenses
 
 * All code in this repo is licensed under Apache-2.0 — see [`LICENSE`](LICENSE).
 * All blog posts and research topics are licensed as CC-BY 4.0.
 
-## 7. Donations
+## 6. Donations
 
 Genscalator is developed as a liberally licensed open source software project that anyone can use. If you want to support the maintenance and implementation of new features of genscalator contact genscalator@bjornregnell.se
 
-## 8. Commercial Support
+## 7. Commercial Support
 
 * For commercial support and consultancy in using genscalator to improve agentic software engineering productivity contact genscalator@bjornregnell.se
 
 
-## 9. Mirrors and digital sovereignty
+## 8. Mirrors and digital sovereignty
 
-The genscalator repo is mirrored from [Codeberg](https://codeberg.org/bjornregnell/genscalator) to [GitHub (owned by Microsoft)](https://github.com/bjornregnell/genscalator), [GitLab](https://gitlab.com/bjornregnell/genscalator) and [LTH coursegit](https://coursegit.cs.lth.se/bjorn.regnell/genscalator) in the spirit of [digital sovereignty](https://en.wikipedia.org/wiki/Digital_sovereignty). See also [here](https://codeberg.org/bjornregnell/digital-sovereignty).
+The genscalator repo is mirrored from [Codeberg](https://codeberg.org/bjornregnell/genscalator) to [GitHub (owned by Microsoft)](https://github.com/bjornregnell/genscalator), [GitLab](https://gitlab.com/bjornregnell/genscalator) and LTH coursegit (Lund University internal, login required) in the spirit of [digital sovereignty](https://en.wikipedia.org/wiki/Digital_sovereignty). See also [here](https://codeberg.org/bjornregnell/digital-sovereignty).
 
