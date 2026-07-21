@@ -8,33 +8,37 @@
 
 Every top-level entry, what it is for, and where to read more:
 
-* [`README.md`](README.md) — what genscalator is, install, quickstart. The first screen.
-* [`HUMANS.md`](HUMANS.md) — this file: the deeper idea and the repo map.
-* [`AGENTS.md`](AGENTS.md) — the operating contract the *agent* reads: conventions, tool selection, workflow habits.
-* [`CONTRIBUTING.md`](CONTRIBUTING.md) — how to contribute: issues (in-repo!), pull requests, new tools.
-* [`SECURITY-MODEL.md`](SECURITY-MODEL.md) — the threat model and why the safe-by-design choices look the way they do.
-* [`CHANGELOG.md`](CHANGELOG.md) — the shipped history, release by release.
-* [`tools/`](tools/README.md) — the typed `tt` toolbox: one Scala file per tool, plus the `tt` launcher and the test suite (`tools/test/`).
-* [`skills/`](skills/) — the Claude Code skills the plugin ships (the toolbox habit, Scala style, code review, reqT-lang, the app seed, ...).
-* [`docs/`](docs/) — human-facing documentation: [`foundations.md`](docs/foundations.md) (goals, stakeholders, the full glossary), the `gs`-command registry, manuals for the status line and releasing, and `docs/generated/` for generated output (the API docs are built locally by `deploy/deployttapi.sc` and are not tracked).
-* [`reqts/`](reqts/) — the requirements side: [`PRD.md`](reqts/PRD.md) (the Product Requirements Document in reqT-lang) and [`issues/`](reqts/issues/README.md) (issues live *in the repo*; the forge trackers are just an inbox — see CONTRIBUTING.md).
-* [`deploy/`](deploy/) — everything that ships things *out* of the repo: the blog/site deployer, the API-docs generator, the mirror script, server config snippets.
-* [`media/`](media/) — publishable material: [`blog/`](media/blog/), podcast drafts, images, and the design language that generates the site's look.
-* [`research/`](research/) — the open action-research substrate: numbered research notes, `wr-data/` (workflow-research field data, logged live), and case studies. Raw and honest by design; findings graduate into blog posts.
-* [`work/`](work/) — tracked working state: [`NOW.md`](work/NOW.md) (the current in-flight state of development, committed so its history is git's) and the warp-ember templates (how a session hands off to the next).
-* [`bin/`](bin/) — a thin launcher shim (`bin/tt`) for installs that want the launcher outside `tools/`.
-* `.claude-plugin/` — the Claude Code plugin + marketplace manifests (name, version).
+| Where | What |
+|-------|------|
+| [`README.md`](README.md) | what genscalator is, install, quickstart. The first screen. |
+| [`HUMANS.md`](HUMANS.md) | this file: the deeper idea and the repo map. |
+| [`AGENTS.md`](AGENTS.md) | the operating contract the *agent* reads: conventions, tool selection, workflow habits. |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | how to contribute: issues (in-repo!), pull requests, new tools. |
+| [`SECURITY-MODEL.md`](SECURITY-MODEL.md) | the threat model and why the safe-by-design choices look the way they do. |
+| [`CHANGELOG.md`](CHANGELOG.md) | the shipped history, release by release. |
+| [`tools/`](tools/README.md) | the typed `tt` toolbox: one Scala file per tool, plus the `tt` launcher and the test suite (`tools/test/`). |
+| [`skills/`](skills/) | the Claude Code skills the plugin ships (the toolbox habit, Scala style, code review, reqT-lang, the app seed, ...). |
+| [`docs/`](docs/) | human-facing documentation: [`foundations.md`](docs/foundations.md) (goals, stakeholders, the full glossary), the `gs`-command registry, manuals for the status line and releasing, and `docs/generated/` for generated output (the API docs are built locally by `deploy/deployttapi.sc` and are not tracked). |
+| [`reqts/`](reqts/) | the requirements side: [`PRD.md`](reqts/PRD.md) (the Product Requirements Document in reqT-lang) and [`issues/`](reqts/issues/README.md) (issues live *in the repo*; the forge trackers are just an inbox, see CONTRIBUTING.md). |
+| [`deploy/`](deploy/) | everything that ships things *out* of the repo: the blog/site deployer, the API-docs generator, the mirror script, server config snippets. |
+| [`media/`](media/) | publishable material: [`blog/`](media/blog/), podcast drafts, images, and the design language that generates the site's look. |
+| [`research/`](research/) | the open action-research substrate: numbered research notes, `wr-data/` (workflow-research field data, logged live), and case studies. Raw and honest by design; findings graduate into blog posts. |
+| [`work/`](work/) | tracked working state: [`NOW.md`](work/NOW.md) (the current in-flight state of development, committed so its history is git's) and the warp-ember templates (how a session hands off to the next). |
+| [`bin/`](bin/) | a thin launcher shim (`bin/tt`) for installs that want the launcher outside `tools/`. |
+| `.claude-plugin/` | the Claude Code plugin + marketplace manifests (name, version). |
 
 ## 2. Important terminology
 
-The full glossary lives in [`docs/foundations.md`](docs/foundations.md) — these one-liners are just enough to read this repo's documents, each pointing there for depth:
+The full glossary lives in [`docs/foundations.md`](docs/foundations.md); these one-liners are just enough to read this repo's documents, each pointing there for depth:
 
-* **typed tool** — a small, self-contained, compiler-checked Scala program run as `tt <tool> <args>`; the safe replacement for one-off bash/grep/awk.
-* **cue** — a short standing signal between human and agent ("go", "hang on", "WDYT") with an agreed meaning, so communication stays fast and unambiguous.
-* **dance** — a small named micro-workflow the pair performs together (the compact dance, the delegation dance); dances compose into bigger workflows.
-* **smart zone / dumb zone** — the context-fill range where the agent's judgment is sharp, versus past the ceiling where quality degrades (*context rot*).
-* **warp ember** — the banked coal a session leaves at exit so the next cold-started agent can blow the context back into flame (templates in `work/`).
-* **äkthet** (Swedish: genuineness) — the standing demand that text and claims stay grounded in checkable substrate; the opposite of confident-but-hollow output.
+| Term | Meaning |
+|------|---------|
+| **typed tool** | a small, self-contained, compiler-checked Scala program run as `tt <tool> <args>`; the safe replacement for one-off bash/grep/awk. |
+| **cue** | a short standing signal between human and agent ("go", "hang on", "WDYT") with an agreed meaning, so communication stays fast and unambiguous. |
+| **dance** | a small named micro-workflow the pair performs together (the compact dance, the delegation dance); dances compose into bigger workflows. |
+| **smart zone / dumb zone** | the context-fill range where the agent's judgment is sharp, versus past the ceiling where quality degrades (*context rot*). |
+| **warp ember** | the banked coal a session leaves at exit so the next cold-started agent can blow the context back into flame (templates in `work/`). |
+| **äkthet** (Swedish: genuineness) | the standing demand that text and claims stay grounded in checkable substrate; the opposite of confident-but-hollow output. |
 
 ## 3. The main goals of genscalator
 
