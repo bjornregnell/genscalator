@@ -6,9 +6,9 @@
   <img src="media/img/awareness-1-cold.png" alt="genscalator's three awareness lines in Claude Code at a cold start: the introspection line (clock, model, context-fill 5%, usage limits, cost), the mode line with declared modes ColdStart, SmartZone and TokSpend, and the box line showing machine health" width="100%">
 </p>
 
-The above image shows the genscalator awareness lines. Read more about what they mean in [HUMANS.md Section ?.](TODO) 
+The above image shows the genscalator awareness lines. Read more about what they mean in [HUMANS.md, "The genscalator awareness lines"](HUMANS.md#5-the-genscalator-awareness-lines).
 
-What do we mean with 
+What do we mean by 
 * **smarter?** By introspection, genscalator tries to stay in the smart zone, aiming to stay away from the dumb zone and decrease the probability of agent mistakes.
 * **safer?** By open, inspectable, compile-time checked strongly typed tools genscalator avoids harness guard stalls that ask for permission, with the aim to reduce human confirmation fatigue.
 * **faster?**  With defined workflow elements (cues and dances) genscalator aims to provide composable efficient joint human-agent workflows. Also, the `gs native` command will check what you have on your box and suggest compiling relevant typed tools to bare metal for faster typed tool start-up times.
@@ -119,11 +119,11 @@ compiles (a couple of seconds); reruns are cached. Verify with `tt files src .sc
 ## 3. Why genscalator?
 
 Out-of-the-box agent workflows lean on approving dense bash compounds and archaic Unix tools 
-stitched together in a difficult to review blob. 
+stitched together in a difficult-to-review blob. 
 Much of the guardrail machinery exists precisely to contain what can go wrong there, and the 
 cost is **confirmation fatigue** and bad UX from reviewing cryptic, dynamic, unsafe code.
 
-### 3.1 Why genscalator may improve safety?
+### 3.1 Why may genscalator improve safety?
 
 Genscalator shifts to **safe, compiled code with static guarantees**. Every time the agent would reach for a
 one-off bash/grep/awk helper, it instead creates (or reuses) a persistent, self-contained Scala tool.
@@ -187,7 +187,7 @@ gs allow
 ### 4.3 Getting started: Try seeding a working web app
 
 New to genscalator? The fastest way to see it work is to let the agent **seed a complete, runnable Scala web app** for
-you, then run and read it. After install of plugin and in a fresh context, ask in plain language, naming the directory you want, something similar to:
+you, then run and read it. After installing the plugin, in a fresh context, ask in plain language, naming the directory you want, something similar to:
 
 > Use the crud-web-app-seed skill to create a todo web app in ./my-todo
 
@@ -238,12 +238,12 @@ external dependency — pure JDK.)
 
 ## 6. Licenses
 
-* All code in this repo is licenced under Apache-2.0 — see [`LICENSE`](LICENSE).
-* All blog posts and research topics are licenced as CC-BY 4.0.
+* All code in this repo is licensed under Apache-2.0 — see [`LICENSE`](LICENSE).
+* All blog posts and research topics are licensed as CC-BY 4.0.
 
 ## 7. Donations
 
-Genscalator is developed as a liberally licenced open source software project that anyone can use. If you want to support the maintenance and implementation of new features of genscalator contact genscalator@bjornregnell.se
+Genscalator is developed as a liberally licensed open source software project that anyone can use. If you want to support the maintenance and implementation of new features of genscalator contact genscalator@bjornregnell.se
 
 ## 8. Commercial Support
 

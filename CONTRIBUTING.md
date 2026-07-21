@@ -7,6 +7,22 @@ replace a brittle bash/grep/awk reflex, and — if it turns out to be generally 
 > New here? Skim [`docs/foundations.md`](docs/foundations.md) (goals, stakeholders, glossary) and
 > [`tools/README.md`](tools/README.md) (the toolbox conventions) first.
 
+## Issues — in the repo, not (only) on a forge
+
+genscalator tracks issues **inside the repository**, under [`reqts/issues/`](reqts/issues/README.md),
+so they travel with the code to every mirror (forge-independent by design). The short form:
+
+- **One-time reporter?** File on any forge tracker as usual (Codeberg is canonical); a maintainer
+  transcribes it in-repo with credit. See the pinned "Issue Zero" on the tracker.
+- **Contributor?** Add a file `reqts/issues/open/issue-NNN-your-chosen-issue-name.md` (next free
+  three-digit number) and open a PR with it.
+- The identity scheme, open/closed rules, and file syntax live in ONE place:
+  [`reqts/issues/README.md`](reqts/issues/README.md).
+
+Requirements-level contributions (features, goals) belong in the reqT-lang
+[`reqts/PRD.md`](reqts/PRD.md) — see the `reqt-lang` skill for the language, and always verify
+edits with `tt parsereqt parse` + `lint`.
+
 ## What belongs here
 A tool is a good fit when it is:
 - **Project-agnostic** — no hardcoded paths/hostnames or single-project assumptions; useful across repos.
