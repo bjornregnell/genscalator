@@ -322,6 +322,32 @@ Inside a stall I now type one thing and one thing only, a marker and the paste, 
 until the feed is mine again. It is a smaller habit than "pay attention", and unlike "pay attention" it is the kind
 of thing I can actually still do when I am tired, which is the only time it matters.
 
+<!-- AGENT-DRAFT 2026-07-21 (BR to revoice / approve / place): the arrow-overshoot beat, third member of the
+menu-slip family (mouse click, focus-steal, now arrow overshoot). BR live in-feed, verbatim incl. his own
+term-upgrade: "i was typing and by mistake arrowed too far; this is also a UX quirk (this time it was a NO but
+next time it could be BLANKET ALLOW) aaaaargh" then "*UX quirk; UX hazard".
+Source: research/wr-data/approval-arrow-overshoot-2026-07-21.md -->
+
+### The arrow that went one step too far
+
+The menu got me again, and this time I was not even clicking, and I was not distracted either.
+
+I was typing, mid-flow, when an approval prompt appeared. A good prompt, one we designed: the agent asking
+whether it may publish a release, a question that should cost a human decision. And I wanted to say yes. But
+my hands were still in typing gear, an arrow key repeated once too often, and the selection walked one row past
+my intent. Enter. Rejected. Oops, laugh, fire it again, thirty seconds lost.
+
+Then do the arithmetic and stop laughing. Presence: I was there. Intent: I knew my answer. Attention: I was
+looking at the very menu. Every box the "a human approved it" story needs was ticked, and the outcome was still
+a dice roll between adjacent rows. Today the overshoot landed on no, which costs a retry. On another prompt the
+same slip lands on the always-allow row, which costs a standing policy. My finger's extra tap does not know the
+difference between those two lines. Only the menu knows, and it prices them the same: one press each, one row
+apart.
+
+We already have the rule "never click always". This is its keyboard sibling, and it needs the same structural
+answer: a permanent grant should not be reachable by the same single-keystroke motion as a one-time answer.
+Make the forever-row cost something a twitch cannot pay.
+
 Angle (TODO firm up): these aren't random bugs — most are **one family**: *timing/observability races between a human
 action and the system consuming a prior input*, plus *missing typed affordances* that push work into bash. For each,
 pair the felt problem with a concrete harness-side ask (widen the edit window; read-only `/context`; a nonblocking
