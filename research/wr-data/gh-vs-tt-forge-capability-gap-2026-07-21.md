@@ -37,3 +37,20 @@ of github.com/lunduniversity/introprog.
    line: "forge/PR/issue/release operations: check `tt forge help` first; gh only for
    GitHub-specific reads" — closing the no-trigger hole that made the right choice lucky.
 3. Guardcheck hint candidate: raw `gh` -> "is there a tt forge shape?" (SM143 family).
+
+## ADDENDUM ~20:3x same evening: the reflex missed AGAIN, and this time the verb EXISTED
+
+Within the hour, the agent ran `gh api repos/lunduniversity/introprog/releases` to read BR's
+draft release — BR guard-caught it again ("could be tt forge"). Sharper than the first
+specimen: `tt forge releases <owner>/<repo>` EXISTS (the earlier "no capability overlap"
+claim was about pr/issue verbs only), and the agent did not check before reaching for gh —
+the exact no-trigger hole recurring after it was WRITTEN UP in this very file. Empirical
+test run immediately: `tt forge releases lunduniversity/introprog --url https://api.github.com`
+-> 404, because tt forge builds Gitea paths (`/api/v1/repos/...`) while GitHub wants
+`/repos/...` on api.github.com. Also: GitHub DRAFT releases are invisible without auth, and
+tt forge reads a token only for create/edit, not list. Net: gh remained necessary in
+practice for this call, but (a) the check-first reflex failed twice in one hour despite
+fresh documentation — documentation-in-context does not arm reflexes (the carried-not-armed
+pattern, same evening as the raw-curl specimen), and (b) the 404 is a concrete SM196
+requirement datum: a `release-all` needs per-forge API adapters (Gitea vs GitHub vs GitLab
+paths + auth models), not just a BASE-url parameter. Ties SM196 (pinned minutes before).
