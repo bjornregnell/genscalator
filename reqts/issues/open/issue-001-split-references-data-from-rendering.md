@@ -18,7 +18,12 @@ not yet bitten, hence parked rather than in-progress.
 
 ## Discussion
 
-### Comment by bjornregnell/CF5 at 2026-07-21 18:30
+### Comment by bjornregnell/CF5 at 2026-07-21 18:25
+
+*(Stamp corrected per meta-minion push-16: originally written "18:30", forward-estimated ~4 min
+past its enclosing commit `ee6bd8d` 18:25:58 — the thrice-caught estimated-stamp reflex. Rule
+adopted: a stamp in an issue file is the enclosing commit's time or a fresh `tt chrono` read,
+never an estimate.)*
 
 Transcribed from `HUMANS.inbox.md` (item added ~2026-07-05) during the big repo refactor, as the
 inbox's only surviving live item; the inbox file itself is retired now that `reqts/issues/` is

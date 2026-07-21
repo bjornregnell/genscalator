@@ -2,7 +2,7 @@
 //> using jvm 21
 //> using file reqt-vendored
 
-// tt parsereqt — parse / lint reqT-lang requirements (e.g. this repo's PRD.md).
+// tt parsereqt — parse / lint reqT-lang requirements (e.g. this repo's reqts/PRD.md).
 //
 // WORKING MODEL (BR 2026-07-01): reqT-lang is used by the reqT desktop tool, so changing it cascades
 // release + docs work over there. So we IN-SOURCE it: `reqt-vendored/` is a PRISTINE copy of reqT-lang's
@@ -42,7 +42,7 @@ object ParseReqt {
     walk(m.elems).toList
 
   private val Help: String =
-    """tt parsereqt — parse / lint reqT-lang requirements models (e.g. this repo's PRD.md)
+    """tt parsereqt — parse / lint reqT-lang requirements models (e.g. this repo's reqts/PRD.md)
       |
       |Parses a Markdown file written in reqT-lang into a structured requirements model, or lints it
       |for silent fall-throughs where a mistyped concept or a misplaced relation is kept as plain Text.
@@ -58,8 +58,8 @@ object ParseReqt {
       |                                      write it as a top-level 'ENT requires ENT' clause
       |
       |Examples:
-      |  tt parsereqt parse PRD.md       # print the parsed model, then 'N top-level elems in PRD.md'
-      |  tt parsereqt lint PRD.md        # list fall-throughs (real Swedish? typo? un-mapped term?)
+      |  tt parsereqt parse reqts/PRD.md # print the parsed model, then a top-level elem count
+      |  tt parsereqt lint reqts/PRD.md  # list fall-throughs (real Swedish? typo? un-mapped term?)
       |
       |Full reference: tools/README.md""".stripMargin
 
