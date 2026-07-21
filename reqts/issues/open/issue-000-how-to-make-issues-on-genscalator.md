@@ -30,6 +30,8 @@ genscalator keeps its **issues in the repository itself**, under `reqts/issues/`
   (three-digit `NNN`, next free number) and open a Pull Request (also called Merge Request) with it.
 * Read more about issue management in `CONTRIBUTING.md`.
 
+Option 2 is preferred, if you are willing to help out and reduce issue inbox maintenance.
+
 This pinned issue (Issue Zero) stays open on purpose, so the tracker is never mistaken for
 empty-by-neglect.
 
