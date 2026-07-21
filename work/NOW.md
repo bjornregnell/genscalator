@@ -32,9 +32,10 @@
   findings (a dropped BR-gate, this file's first staleness specimen) — both fixed in this
   commit; report at `research/case-studies/action-research-meta-minion/minion-log/push-17.md`.
 * **Introprog v2026.5 PUBLISHED 2026-07-22 00:07** (tag at master, 6 compendium assets,
-  agent-published on BR's explicit go): the whole rendered-review arc (27 findings, ~30
-  fixes incl. the fi-glue class three-layer fix and a deglueFi mirror post-pass) lives in
-  work-repo `notes/en-pdf-review-v2026.5-2026-07-21.md`. UML warts ship as-is by BR's
+  agent-published on BR's explicit go): the whole rendered-review arc (26 findings, ~30
+  fixes incl. the fi-glue class three-layer fix and a deglueFi mirror post-pass) lives in the
+  work-repo `notes/en-pdf-review-v2026.5-2026-07-21.md` (findings numbered to 27 but
+  #9 does not exist, so 26 — push-18 CONFIRMED, the PB pin said 27). UML warts ship as-is by BR's
   call, next-release batch. REMAINS: BR's fileadmin publish, gated on a deck-rebuild round.
 * **Post-warp "go 12345" batch — 4 of 5 LANDED this session (BR went +afk +solo ~00:17):**
   (1) ✅ deck rebuild for fileadmin: 19 EN decks (98 s, per-deck Swedish gauges), SV wjava,
