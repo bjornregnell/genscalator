@@ -38,7 +38,6 @@ The full glossary lives in [`docs/foundations.md`](docs/foundations.md); these o
 | **dance** | a small named micro-workflow the pair performs together (the compact dance, the delegation dance); dances compose into bigger workflows. |
 | **smart zone / dumb zone** | the context-fill range where the agent's judgment is sharp, versus past the ceiling where quality degrades (*context rot*). |
 | **warp ember** | the banked coal a session leaves at exit so the next cold-started agent can blow the context back into flame (templates in `work/`). |
-| **äkthet** (Swedish: genuineness) | the standing demand that text and claims stay grounded in checkable substrate; the opposite of confident-but-hollow output. |
 
 ## 3. The main goals of genscalator
 
