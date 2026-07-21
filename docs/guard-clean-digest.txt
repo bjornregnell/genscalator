@@ -18,5 +18,9 @@ GIT
   write the message file FIRST (sequential) ; no shell-glob metachars in commit PROSE ;
   no Claude-credit trailers .    Never  cd repo && git …
 
+URLS
+  tt web get <url>                          fetch a URL — never raw curl / wget
+  (remote-host checks over ssh have no typed shape yet — flag the gap, keep them minimal)
+
 WHY: structure over willpower. The reflex regresses across a compaction / clear ; re-read
 this digest (gs warm) or read skills/avoid-guard-stall + skills/tt-toolbox when unsure.
