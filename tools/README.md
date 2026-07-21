@@ -369,7 +369,7 @@ genscalator's **own update-awareness**, because the platform gives none: a third
 **not** auto-update, there is no per-plugin update command, and plugin authors get no update-check API. But
 genscalator *is* a git checkout, so git is the mechanism — `update` **fetches remote-tracking refs (read-only, never
 the working tree)**, compares your installed version against the remote, and, if you are behind, prints the incoming
-commits plus the steps **you** run (`/plugin marketplace update genscalator` then `/reload-plugins` — the harness
+commits plus the steps **you** run (`/plugin marketplace update bjornregnell` (the MARKETPLACE name from marketplace.json, not the plugin name) then `/reload-plugins` — the harness
 commands a tool cannot drive). It changes nothing itself; the human is the actuator. Exits 0 in all normal cases and
 degrades gracefully when offline, when the branch has no upstream, or when genscalator is not a git checkout.
 `--throttle` is what **`gs warm`** calls (`tt update --brief --throttle 24`), so warm gains update-awareness without

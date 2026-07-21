@@ -177,7 +177,7 @@ variants, this absorbs the bare ones.
 - **`gs update`** — check whether the installed genscalator is BEHIND its git marketplace remote, and tell the
   user how to update. Run **`tt update`** (read-only: it fetches remote-tracking refs, never the working tree, and
   self-locates the repo via the tools dir) and report its finding: up to date, or N commit(s) behind plus the
-  manual steps. It updates NOTHING itself — Claude Code plugins update via `/plugin marketplace update genscalator`
+  manual steps. It updates NOTHING itself — Claude Code plugins update via `/plugin marketplace update <MARKETPLACE-name>` — the MARKETPLACE name (the `name` field of `marketplace.json`, here `bjornregnell`), NOT the plugin name; verified live 2026-07-21 when `genscalator` was not found —
   + `/reload-plugins`, which only the human can run, and plugin authors get no update-check/notify API — so git is
   the mechanism and the human is the actuator. WHY a genscalator command at all: a third-party marketplace does NOT
   auto-update by default, and skills carry no version-check on load, so genscalator owns its own update-awareness.
