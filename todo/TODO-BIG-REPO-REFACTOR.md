@@ -93,6 +93,22 @@ The current ide is to:
 * **Participation vs sovereignty (TODO decide later).** Insourced issues raise the bar for OUTSIDE bug-filers: a drive-by contributor won't clone, hand-author an ID-named markdown file, and open a PR just to report a bug. One option that keeps both: **keep the forge issue tracker ENABLED as an "outsider inbox"** for drive-by reports, and transcribe accepted ones into in-repo canonical issues (the git-tracked files stay the source of truth). Decide later whether to do this, or to accept the higher bar as a quality filter.
 * **TODO investigate git-bug** (issues stored in git objects, with github/gitlab bridges) for lessons on the hard parts (distributed IDs, forge bridging) — but **insourced markdown-in-dirs is probably what we want instead of it**: more transparent and greppable, and it fits the genscalator ethos, whereas git-bug's storage is opaque.
 
+### Reason 3: docs-surface refactor — lean README, extended HUMANS.md (JOINT 🤝 BR+CF5, pinned 2026-07-21)
+
+* **Remove `HUMANS.inbox.md`** — superseded by the in-repo issues of Reason 2: an inbox
+  file duplicates what `issues/open/` will do with proper identity and workflow. Part of
+  the removal: migrate any still-live inbox items into issues (the file has been untouched
+  since 2026-07-05, so expect mostly stale content — triage, don't bulk-copy).
+* **Make `README.md` leaner and meaner**: first-screen essentials only — what genscalator
+  is, install/use quickstart, and pointers onward. Everything deeper moves to `HUMANS.md`,
+  which becomes a kind of **extended README**: the deep explanations PLUS a repo-structure
+  guide — what lives where and where to find stuff (the audience-relative-home principle
+  made explicit for human readers).
+* **Joint split of labour**: co-design the lean/deep split (what earns the first screen is
+  BR's call), agent drafts the moves and the structure guide, BR reviews and ships.
+  Sequencing is free relative to Reason 2 EXCEPT the inbox removal, which lands with or
+  after the `issues/` dirs exist (never delete the inbox before its successor is real).
+
 
 
 
