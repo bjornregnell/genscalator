@@ -25,7 +25,7 @@ Every top-level entry, what it is for, and where to read more:
 | [`research/`](research/) | the open action-research substrate: numbered research notes, `wr-data/` (workflow-research field data, logged live), and case studies. Raw and honest by design; findings graduate into blog posts. |
 | [`work/`](work/) | tracked working state: [`NOW.md`](work/NOW.md) (the current in-flight state of development, committed so its history is git's) and the warp-ember templates (how a session hands off to the next). |
 | [`bin/`](bin/) | a thin launcher shim (`bin/tt`) for installs that want the launcher outside `tools/`. |
-| `.claude-plugin/` | the Claude Code plugin + marketplace manifests (name, version). |
+| [`.claude-plugin/`](.claude-plugin/) | the Claude Code plugin + marketplace manifests (name, version). |
 
 ## 2. Important terminology
 
