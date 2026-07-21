@@ -39,6 +39,7 @@ of truth). For the full prose on any entry, follow it back to foundations.
 | `pin:` / `WR data:` | save durably (agent picks the home). |
 | `fyi:` | hand over a fact; agent decides the disposition (the you-decide cue). |
 | `gs ...` | a genscalator do-what-I-mean command (this system). |
+| `pin a joint task` / `JOINT 🤝` | work requiring BOTH parties: agent may prepare, never executes or decides solo; excluded from AFK/solo menus; unparks on the human's go. |
 | `use fleet` | spawn parallel sub-agents. |
 | `do Q-test` | run the fresh-restart fidelity self-test. |
 | `bg` | an agent-solo background task (runs when the AFK menu is empty + human away). |

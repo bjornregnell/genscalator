@@ -207,6 +207,15 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   `go`). A sibling of the other HOLD signals (*hang on*, *hmmmm*, *I rest*); the trigger is a colon at the very END
   of the message (a mid-message colon in an otherwise complete instruction is fine). Memory:
   [[cue-trailing-colon-hold]]. (BR 2026-07-14.)
+- **Joint-task cue (`pin a joint task` / a pin marked `JOINT 🤝`)** — when the human marks work as **joint**, it
+  enters the substrate as a task that requires **both parties**: the agent may PREPARE (investigate within stated
+  bounds, draft, pin, gather substrate) but must **not execute or decide solo** — the co-design or the call belongs
+  to the pair, and the task unparks only on the human's go. In the PB the convention is the `JOINT 🤝` tag on the
+  pin header, and joint pins are **excluded from every AFK/solo menu by construction** ([[cue-go-afk]]). Distinct
+  from `(go)` (proceed solo on a scoped plan) and from *BR-gated* (the agent does the work, the human ships one
+  gate at the end): joint means the **work itself is shared**, not just its shipping. Long in live use (SM184,
+  SM185, SM189, SM190 are specimens); named as a cue 2026-07-21 (BR: *"pin 'joint task' as cue-joint-task"*).
+  Memory: [[cue-joint-task]].
 - **Edit vs clarification cues (`edit:` / `clarification:`)** — two human message-correction cues, prepended when
   amending a just-sent message, distinguished by the human's **own risk assessment**. **`edit:`** = a low-stakes
   **fix** of a typo or a word (e.g. "edit: common" repairing "commin"); mechanical, and the original was not really
