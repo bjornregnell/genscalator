@@ -1,58 +1,57 @@
-# HUMANS.md — the humans' review queue
+# HUMANS.md — the deeper README
 
-The counterpart to [`AGENTS.md`](AGENTS.md): that file is *for the agent(s)*, this one is *for the human(s)* — a
-to-do list of **human** tasks, above all **reviewing agent-authored changes** before they land. Together the
-`AGENTS.md` ↔ `HUMANS.md` ↔ `HUMANS.inbox.md` trio is a small, reusable **protocol for human–agent collaboration** — and
-genscalator uses its own copy as a live example. New contributors: this is the pattern; copy it into your own repo.
+> This is a counterpart to [`AGENTS.md`](AGENTS.md): that file is *for the agent(s)*, this one is *for humans* that want to understand the deeper idea behind genscalator and the structure of this repo. 
+> **New here?** Start with README.md and then read "Where are all the things?" below.
 
-> **New here?** Start with [`CONTRIBUTING.md`](CONTRIBUTING.md) (how to propose tools + the agent-proposes/human-approves
-> ethos), then skim [`docs/foundations.md`](docs/foundations.md) (goals, glossary) and [`AGENTS.md`](AGENTS.md).
+## 1. Where are all the things?
 
-## The protocol (how this file works)
+TODO: a bullet lists that explains all top level dirs and their contents and purpose and link to their README.md
 
-- **Agent → human channel is the inbox, never this file.** The agent **never writes `HUMANS.md` directly** (so it can't
-  clobber your live edits). It appends proposals to [`HUMANS.inbox.md`](HUMANS.inbox.md) (append-only, agent-owned). You
-  **harvest**: move an item into `## TODO` below, then delete it from the inbox. **You alone own `## TODO` and
-  `## DONE`.**
-- **Tick as you go.** When a whole subsection is done, move it to `## DONE` (or delete it if it no longer matters for
-  memory/changelog). Empty `## TODO` = you're caught up.
-- **Two tags you can add when harvesting or ticking:**
-  - **`HD:`** *(Human Decision)* — prefix a decision only you can make, so the record shows *what* was decided and *why*.
-  - **`TAP:`** *(To Agent — Plan)* — a job for the agent; when you next ask the agent to read `HUMANS.md`, it folds all
-    `TAP:` items into its work plan and checks with you on prioritization.
-- **The historical record lives in [`CHANGELOG.md`](CHANGELOG.md)** (`## Unreleased`). This file is only the
-  *what-humans-still-owe* checklist; the agent keeps `CHANGELOG.md` consistent when a change affects it.
-- **Docs/research** the agent may commit + push freely once agreed. **Tool/version changes follow the human-reviewed
-  release flow** ([`docs/updating.md`](docs/updating.md)) — never auto-pushed; they wait for human approval.
+## 2. Important terminology
 
-## A related variant (for the curious)
+TODO: bring stable and, for the reading of this doc, useful concepts from foundations.md
 
-This inbox-harvest form is the **safe, multi-human** variant: the agent proposes, humans own the list, nothing lands
-unreviewed. A **higher-trust single-human** variant also exists, where the agent *maintains* the human's pinboard live
-(the human reads, the agent pins) and the session feed *is* the inbox — no separate inbox file. Pick the variant that
-matches your trust level and team size. genscalator's public repo uses the reviewable inbox-harvest form here.
+## ?. The main goals of genscalator
 
-## TODO
+TODO
 
-*(Genscalator's live human-review queue. Doubling as a worked example of the protocol above.)*
 
-### Improve the HUMANS.md ↔ AGENTS.md protocol itself
-- [ ] **Fold this collaboration protocol into the `/genscalator` plugin** so any repo can adopt the
-      `AGENTS.md`/`HUMANS.md`/`HUMANS.inbox.md` trio out of the box. *TAP:* chat about the packaging.
-      *(Side note for agents: humans usually type a plain `-`, not `—`/`--` — match that in prose.)*
 
-## DONE
+## ?. The scope of genscalator
 
-*(Kept as a short worked example of the protocol closing items. Full history is in [`CHANGELOG.md`](CHANGELOG.md).)*
+### In scope: personal agentic software engineering
 
-- [x] **`AGENTS.md` vs `CLAUDE.md` canonicalization** — *HD:* `AGENTS.md` is the source of truth (provider-agnostic:
-      also works for Codex, opencode, etc.).
-- [x] **Emoji rule** — *HD:* dropped the flat ban; scoped guidance instead (no decorative clutter; functional status
-      glyphs OK).
-- [x] **Language-channel rule placement** — *HD:* the universal version belongs in the global "Instructions for Claude";
-      per-project nuances stay in agent memory.
+The genscalator focuses on the personal agentic software engineering process. It is the joint human-agent collaboration productivity escalation that is the main objective.
 
----
-*Agent: never write this file directly — append review-worthy proposals to [`HUMANS.inbox.md`](HUMANS.inbox.md)
-(append-only). The human harvests into `## TODO`, ticks, and moves completed subsections to `## DONE`. Keep
-`CHANGELOG.md` consistent when relevant; stage only agent-authored paths, never `git add -A`.*
+### Out of scope for now: team- and organization-level agentic software engineering
+
+We leave the organisational aspects for later as it is currently difficult to do live action resaerch in areal software engineering organisation with all the business-impacting caveats of doing so. But if an organisation willing to research on-the-fly of implementen productive team-level and organization wide agentic software engineering for higher productivity with genscalator this may become feasible at a later time.
+
+TODO: add some cred/connection to Humphry's PSP (nvere succeded because it is SOOO boring for humans to fill in all those tables; but agents do not get bored...)
+
+### The extended genscalator action research endeavour
+
+TODO 
+
+## ?. The genscalator awareness lines
+
+<p align="center">
+  <img src="media/img/awareness-1-cold.png" alt="genscalator's three awareness lines in Claude Code at a cold start: the introspection line (clock, model, context-fill 5%, usage limits, cost), the mode line with declared modes ColdStart, SmartZone and TokSpend, and the box line showing machine health" width="100%">
+</p>
+
+The above image shows the genscalator awareness lines: 
+
+* The first line is the *introspection line* with important measured data and metrics. The second line is the *mode line* with the currently declared joint human-agent modes. The third line is the *box line* with the measured health of the machine itself.
+* In this session the agent has just been warp-started cold: the hand-off note (in genscalator called a *warp ember* — the banked coal a session leaves so the next agent can blow the context back into flame) told the fresh agent to declare `ColdStart` (fresh process, not yet re-calibrated) and `SmartZone` (a fresh context window, low fill, sharp judgment), while `TokSpend` says the pair has token headroom to spend. 
+* Context-fill is low (5%), and the box line already hints at trouble ahead: the compile server is growing (`bloop 3.2G`) and the box is `huffing`.
+
+<p align="center">
+  <img src="media/img/awareness-2-swamped.png" alt="genscalator's three awareness lines in Claude Code three hours later, in a critical moment: high generated-token count, declared modes Afk, Solo, RotVigil, DumbZone, TokSpend and HotHarvest, and a red box line reading box swamped with all cores busy and the compile server at 6.0G with a restart hint" width="100%">
+</p>
+
+The above image shows the same awareness lines three hours later, in a critical moment:
+
+* The human is away from keyboard and the agent is doing solo jobs (`Afk` and `Solo` are declared), while trying to stay clear of harness guard-stalls. The agent runs a fleet of steerable sub-agents (in genscalator called *minions* if the super-agent can dynamically chat with them or put them on hold with a hot context) - the harness chrome at the bottom shows 7 shells and 4 agents.
+* The session has been going on for a while, with many messages from the human and over half a million tokens generated by the agent (`rot?↑529k`). The agent has declared `RotVigil` (rot-vigilance: extra care with mechanical edits, commit and push after every unit) and, based on its own measured slip rate that evening, `DumbZone` - the agent itself putting on record that its judgment is degrading. `HotHarvest` means it is busy harvesting still-hot insights into durable notes before the session ends.
+* The *box line* shows the machine itself struggling: `box swamped`, all cores busy at `load 100%`, and the compile server at `bloop 6.0G` where the line adds its built-in advice: `restart?`. (Honesty note: the CPU load in this shot came from a deliberate, bounded stress test staged for this figure; the token counts, modes, memory and bloop figures are the session's real, measured state.)
+
