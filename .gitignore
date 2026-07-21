@@ -11,6 +11,11 @@ target/
 # in-repo scratch (preferred over /tmp so paths stay inside the trusted tree)
 tmp/
 
+# the generated scaladoc api site (SM188): ~600 files, fully derivable in one
+# deploy/deployttapi.sc run and deployed to the website rather than consumed from
+# the repo -- tracking it would put a whole-site churn diff on every regeneration
+docs/generated/api/
+
 # experiment run backups / partial-result snapshots
 *.bak
 
