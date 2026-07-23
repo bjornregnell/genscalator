@@ -25,13 +25,14 @@ tool="$1"; shift
 # Per-run timing (feedback kind b): time the whole invocation — note this is dominated by scala-cli/JVM
 # startup+compile, NOT the tool logic — print a one-line summary to stderr (keeps stdout = tool output
 # clean), and append to a perf log (gitignored tmp/ by default; override with TT_PERF_LOG). Opt out: TT_TIME=0.
-# Native fast path (OPT-IN: TT_NATIVE=1): run the native-image dispatcher binary instead of
-# scala-cli when it exists AND no tools/**.scala is newer than it — a stale binary would
-# silently run old tool behaviour, so staleness falls back to scala-cli with a stderr note.
-# Default path (TT_NATIVE unset) is byte-identical to before. Binary: $TOOLS/../tmp/tt-native
-# (override: TT_NATIVE_BIN). Build recipe + parity evidence: docs/native.md (tt-graalify).
+# Native fast path (DEFAULT-ON since 2026-07-23; opt OUT with TT_NATIVE=0): run the
+# native-image dispatcher binary instead of scala-cli when it exists AND no tools/**.scala
+# is newer than it — a stale binary would silently run old tool behaviour, so staleness
+# falls back to scala-cli with a stderr note (degrades to slow, never to wrong). Refresh
+# via the ritual: scala-cli run deploy/buildnative.sc (build -> parity -> atomic swap).
+# Binary: $TOOLS/../tmp/tt-native (override: TT_NATIVE_BIN). Details: docs/native.md.
 runner=(scala-cli run "$TOOLS/$tool.scala" --java-prop "tt.tools=$TOOLS" --)
-if [[ "${TT_NATIVE:-0}" == "1" ]]; then
+if [[ "${TT_NATIVE:-1}" == "1" ]]; then
   bin="${TT_NATIVE_BIN:-$TOOLS/../tmp/tt-native}"
   if [[ -x "$bin" && -z "$(find "$TOOLS" -name '*.scala' -newer "$bin" -print -quit)" ]]; then
     runner=("$bin" "-Dtt.tools=$TOOLS" "$tool")

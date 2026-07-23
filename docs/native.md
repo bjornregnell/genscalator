@@ -36,13 +36,14 @@ scala-cli --power package --native-image <repo>/tools \
   → 317 tests / 13 suites / 0 failures (2026-07-23; CliSuite 163/163 through the binary).
   Re-run this after EVERY rebuild — it is the golden identical-behaviour net.
 
-## Using it today (opt-in)
+## Using it today (DEFAULT-ON since 2026-07-23; `TT_NATIVE=0` opts out)
 
 ```
-TT_NATIVE=1 tt <tool> <args...>
+tt <tool> <args...>              # native when fresh, scala-cli otherwise
+TT_NATIVE=0 tt <tool> <args...>  # force the JVM path
 ```
 
-The launcher (`tools/tt`) prefers the binary ONLY when `TT_NATIVE=1`, the binary exists
+The launcher (`tools/tt`) prefers the binary when `TT_NATIVE` is unset or `1`, the binary exists
 (default `tmp/tt-native`, override `TT_NATIVE_BIN`), and **no `tools/**.scala` is newer
 than it** — otherwise it falls back to scala-cli with a stderr note. Live-verified through
 the launcher 2026-07-23 (BR): `time TT_NATIVE=1 tt chrono now` → 0.032 s real end-to-end
@@ -52,8 +53,8 @@ rebuild).
 
 ## What remains toward default-on and `gs native` (SM112)
 
-1. **Default-flip decision** (BR): make the native path the default when fresh, demote
-   `TT_NATIVE` to an opt-OUT. Needs a rebuild ritual first (below).
+1. **Default-flip: DONE 2026-07-23** (BR's "flip it"): native-when-fresh is the default,
+   `TT_NATIVE=0` the opt-out.
 2. **Rebuild ritual: `deploy/buildnative.sc`** — build to `tmp/tt-native.next`, run the
    full suite THROUGH the candidate (parity mode), atomic swap only on green; build
    failure changes nothing, parity failure keeps the candidate for inspection and the
