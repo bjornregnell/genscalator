@@ -1,0 +1,66 @@
+# tt-graalify: the native-image `tt` (status + recipe)
+
+> **What this is.** The working notes for compiling the whole `tt` toolbox into ONE
+> GraalVM native-image binary — why, how, what is proven, and what remains before
+> `gs native` (the consent-gated provisioning DWIM, PRD SM112) can ship it to users.
+> Status as of 2026-07-23: **built and parity-proven on linux-x64, opt-in via
+> `TT_NATIVE=1`; not yet the default path.**
+
+## Why
+
+* **Startup**: measured 6-9 ms per tool call vs ~0.5 s warm JVM (60-80x); the golden
+  CLI suite drops from 118 s to 3.5 s. Sub-agents issuing dozens of small `tt` calls
+  feel this most.
+* **No build server**: a native binary never touches bloop/scala-cli at run time —
+  the whole class of daemon-wedge and compile-contention failures disappears (see
+  wr-data: the 123-phantom-failure episode, the 10 GB bloop specimens).
+* **Windows/alpha**: Graal keeps the full JDK surface (java.time, java.net.http...),
+  unlike Scala Native — the decided direction for alpha (PB 2026-07-19: graal-for-all).
+
+## The proven recipe (linux-x64, 2026-07-23)
+
+```
+scala-cli --power package --native-image <repo>/tools \
+  --main-class dispatchTypedTools -o <repo>/tmp/tt-native \
+  -- --no-fallback --enable-url-protocols=https,http -J-Xmx6g
+```
+
+* Entry point: `tools/dispatch.scala` (the single dispatcher; contract `tt-native <tool> <args...>`).
+* Measured: image generation 1 m 39 s, peak RSS 3.3 GB (cap the heap; check free mem
+  first — 6 GB floor), binary 39.5 MB (19.3 code + 18.1 heap). GraalVM CE 17.0.9 via
+  scala-cli's own fetch; `--no-fallback` is load-bearing (a fallback image would fake
+  the win). 2,438 types auto-registered for reflection by ScalaFeature; no manual
+  reflection config was needed.
+* **Parity evidence**: the CLI-contract suite run with BOTH
+  `--java-prop tt.tools=<repo>/tools` and `--java-prop tt.native.bin=<repo>/tmp/tt-native`
+  → 317 tests / 13 suites / 0 failures (2026-07-23; CliSuite 163/163 through the binary).
+  Re-run this after EVERY rebuild — it is the golden identical-behaviour net.
+
+## Using it today (opt-in)
+
+```
+TT_NATIVE=1 tt <tool> <args...>
+```
+
+The launcher (`tools/tt`) prefers the binary ONLY when `TT_NATIVE=1`, the binary exists
+(default `tmp/tt-native`, override `TT_NATIVE_BIN`), and **no `tools/**.scala` is newer
+than it** — otherwise it falls back to scala-cli with a stderr note. Staleness = source
+mtime newer than binary; conservative by design (any edit disarms the fast path until a
+rebuild).
+
+## What remains toward default-on and `gs native` (SM112)
+
+1. **Default-flip decision** (BR): make the native path the default when fresh, demote
+   `TT_NATIVE` to an opt-OUT. Needs a rebuild ritual first (below).
+2. **Rebuild ritual**: a typed shape (`tt update --native` or a deploy script) that
+   rebuilds + re-runs the parity suite + swaps the binary atomically. Until then:
+   manual recipe above.
+3. **Platform matrix**: macOS + Windows binaries (CI build matrix — the alpha-tester
+   long pole named in the SM146 distance report).
+4. **`gs native` DWIM** (PRD SM112): detect toolchain (gcc, free mem), consent-gated
+   build/install, never forcing native on anyone; suggests, not surprises.
+5. **Distribution question**: ship binaries per release (forge release assets — SM196
+   release-all would carry them) vs build-on-box. Undecided.
+
+*Ties: SM146 (native = no-bloop endgame), SM112/PRD provisioning, SM196, the scala-platform
+skill (JVM vs SN vs Graal decision guide), CliSuite parity mode (tools/test/cli.test.scala).*

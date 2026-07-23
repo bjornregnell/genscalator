@@ -25,6 +25,19 @@
   `mirror.sc` demotes to the sole deliberate force/repair path. EMBER-TEMPLATE v0.2 carries
   both this and the push-17 mode-state phrasing fix.
 
+## Just landed (2026-07-23 evening)
+
+* **tt-graalify milestone: native-image `tt` BUILT + PARITY-CLEAN** (317 tests/13 suites/0
+  fail through the binary; startup 6-9 ms vs ~0.5 s; CliSuite 3.5 s vs 118 s). Launcher
+  gained the OPT-IN `TT_NATIVE=1` fast path with staleness fallback; recipe + remaining
+  steps (rebuild ritual, platform matrix, default-flip = BR) in `docs/native.md`. Live
+  `TT_NATIVE=1` smoke through the launcher awaits BR-present (env-prefixed command is not
+  allowlist-matchable; binary itself smoke-tested directly by the build minion).
+* Forge verbs day: `tt forge` issues/prs/issue/pr/protection (+ --gh GitHub dialect);
+  introprog #956+#957 merged (Hans), Example-compile-gate now REQUIRED on master; SM201
+  (Codeberg ToU ratified 358-144 — compliance prep) + SM202 (self-hosted Forgejo on
+  bjornix, plan + recon done, 443-ask emailed) pinned in the work repo.
+
 ## In flight
 
 * Post-warp session live (cold start 19:46 verified clean). Meta-minion push-17 audited the
