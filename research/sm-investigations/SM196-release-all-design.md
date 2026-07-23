@@ -104,3 +104,13 @@ Stage 3 — draft-loop ergonomics: `release-all --draft` creates/updates drafts 
 Ties: SM196 (this), SM149, SM189, SM178e, CD13, the casefile. Next concrete step if BR
 ratifies: stage-1 adapter interface as a `tools/` change proposal, test-first against
 codeberg (whoami/releases are read-only probes).
+
+## Update 2026-07-24 — real-world driver + implementation pin (SM207)
+
+A second cross-session specimen confirms the need: `muntabot-synch-introprog/notes/other-claude-on-tt-forge-need.md`
+(from the prontopop Claude) — a dual-mirror (github + git.cs.lth.se) release that
+`release-create` could serve on NEITHER forge. It supplies the per-forge WRITE specifics
+(GitHub: fixed `api.github.com` root, payload already GitHub-shaped, PATCH-by-id edit; GitLab:
+`/api/v4/projects/<url-encoded-path>/releases`, `PRIVATE-TOKEN` header, `description` not `body`,
+configurable self-managed base via `TT_FORGE_HOSTS`) plus a two-line acceptance test. That IS
+this design's stage 1 (single-forge `release-create` per dialect), now tracked as **SM207**.
