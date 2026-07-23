@@ -54,9 +54,12 @@ rebuild).
 
 1. **Default-flip decision** (BR): make the native path the default when fresh, demote
    `TT_NATIVE` to an opt-OUT. Needs a rebuild ritual first (below).
-2. **Rebuild ritual**: a typed shape (`tt update --native` or a deploy script) that
-   rebuilds + re-runs the parity suite + swaps the binary atomically. Until then:
-   manual recipe above.
+2. **Rebuild ritual: `deploy/buildnative.sc`** — build to `tmp/tt-native.next`, run the
+   full suite THROUGH the candidate (parity mode), atomic swap only on green; build
+   failure changes nothing, parity failure keeps the candidate for inspection and the
+   live binary untouched. Free-memory floor 6 GB. Run BR-present from the repo root:
+   `scala-cli run deploy/buildnative.sc`. *(Script written 2026-07-23; first proving
+   run pending — until it has gone green once, treat the ritual as unproven.)*
 3. **Platform matrix**: macOS + Windows binaries (CI build matrix — the alpha-tester
    long pole named in the SM146 distance report).
 4. **`gs native` DWIM** (PRD SM112): detect toolchain (gcc, free mem), consent-gated
