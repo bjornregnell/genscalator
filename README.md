@@ -224,7 +224,8 @@ fixed host.
   This lifts the anonymous rate limit and enables `tt forge protection <owner>/<repo> <branch> --gh`.
   No new secret to manage: revoking the `gh` login revokes this too.
 
-- **Codeberg/Forgejo (optional):** mint a token in Codeberg → Settings → Applications (scope
+- **Codeberg/Forgejo (optional):** mint a token in Codeberg → Settings → Applications
+  ([how-to in the Codeberg docs](https://docs.codeberg.org/advanced/access-token/)) (scope
   `read:repository`, plus `write:repository` if you will create releases) and add to your `~/.bashrc`:
   ```bash
   export CODEBERG_TOKEN="<your token>"
