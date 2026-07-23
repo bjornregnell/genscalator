@@ -17,6 +17,23 @@ You can read more on the background and goals of genscalator in [HUMANS.md](HUMA
 
 This README.md focuses on a brief overview of genscalator and how to get started.
 
+**Contents**
+
+* [1. What is genscalator?](#1-what-is-genscalator)
+* [2. How to install genscalator](#2-how-to-install-genscalator)
+  * [2.1 Install the genscalator Claude Code plugin](#21-install-the-genscalator-claude-code-plugin)
+  * [2.2 Companions for Scala code (recommended)](#22-companions-for-scala-code-recommended)
+  * [2.3 Manual install](#23-manual-install-recommended-if-you-dont-use-claude-code)
+* [3. Using the Claude Code plugin](#3-using-the-claude-code-plugin)
+  * [3.1 What you get](#31-what-you-get)
+  * [3.2 The gs in-session commands](#32-the-gs-in-session-commands)
+  * [3.3 Getting started: seed a working web app](#33-getting-started-try-seeding-a-working-web-app)
+  * [3.4 Graalify for speed and low footprint](#34-graalify-genscalator-for-speed-and-low-footprint)
+* [4. Using typed tools directly in terminal](#4-using-typed-tools-directly-in-terminal)
+  * [4.1 Tool dependencies](#41-tool-dependencies)
+  * [4.2 Optional: forge tokens for tt forge](#42-optional-forge-tokens-for-tt-forge-github-and-codeberg)
+* [5. Licenses](#5-licenses) · [6. Donations](#6-donations) · [7. Commercial support](#7-commercial-support) · [8. Mirrors and digital sovereignty](#8-mirrors-and-digital-sovereignty)
+
 ## 1. What is genscalator?
 
 Genscalator is a toolbox and a set of workflows for Agentic Software Engineering (ASE) that replaces the brittle
