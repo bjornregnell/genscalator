@@ -44,7 +44,9 @@ TT_NATIVE=1 tt <tool> <args...>
 
 The launcher (`tools/tt`) prefers the binary ONLY when `TT_NATIVE=1`, the binary exists
 (default `tmp/tt-native`, override `TT_NATIVE_BIN`), and **no `tools/**.scala` is newer
-than it** — otherwise it falls back to scala-cli with a stderr note. Staleness = source
+than it** — otherwise it falls back to scala-cli with a stderr note. Live-verified through
+the launcher 2026-07-23 (BR): `time TT_NATIVE=1 tt chrono now` → 0.032 s real end-to-end
+(tool 0.006 s; the bash launcher itself is now the dominant ~26 ms). Staleness = source
 mtime newer than binary; conservative by design (any edit disarms the fast path until a
 rebuild).
 
