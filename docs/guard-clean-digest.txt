@@ -15,8 +15,9 @@ SHELL HYGIENE
 
 GIT
   tt git commit --repo <dir> --message-file <path> --add <p> [--add …] --push
-  write the message file FIRST (sequential) ; no shell-glob metachars in commit PROSE ;
-  no Claude-credit trailers .    Never  cd repo && git …
+  write the message file FIRST (sequential), into the repo's gitignored tmp/ — NEVER the
+  session scratchpad or /tmp (reboot-volatile, off-tree) ; no shell-glob metachars in
+  commit PROSE ; no Claude-credit trailers .    Never  cd repo && git …
 
 URLS
   tt web get <url>                          fetch a URL — never raw curl / wget
