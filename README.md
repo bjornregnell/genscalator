@@ -11,7 +11,7 @@ The above image shows the genscalator awareness lines. Read more about what they
 What do we mean by 
 * **smarter?** By introspection, genscalator tries to stay in the smart zone, aiming to stay away from the dumb zone and decrease the probability of agent mistakes.
 * **safer?** By open, inspectable, compile-time checked strongly typed tools genscalator avoids harness guard stalls that ask for permission, with the aim to reduce human confirmation fatigue.
-* **faster?** With defined workflow elements (cues and dances) genscalator aims to provide composable efficient joint human-agent workflows. Also, the planned `gs native` command (roadmap) will check what you have on your box and suggest compiling relevant typed tools to bare metal for faster typed tool start-up times.
+* **faster?** With defined workflow elements (cues and dances) genscalator aims to provide composable efficient joint human-agent workflows. Also, the typed tools can be compiled to bare metal for ~0.03 s start-up times (see [Graalify](#34-graalify-genscalator-for-speed-and-low-footprint)); the planned `gs native` command (roadmap) will check what you have on your box and help you set this up with consent.
 
 You can read more on the background and goals of genscalator in [HUMANS.md](HUMANS.md#3-the-main-goals-of-genscalator) and navigate the structure of this repo by reading ["Where are all the things?" in HUMANS.md](HUMANS.md#1-where-are-all-the-things).
 
