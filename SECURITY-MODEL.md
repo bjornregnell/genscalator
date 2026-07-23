@@ -54,6 +54,32 @@ can ship while being false and stay false for a long time. A claim written in ty
 does not, so whole classes of error are caught before the command ever runs. Each tool is also a small,
 reviewable, purpose-built executable rather than a blank shell that can do anything.
 
+### When the tool's job is to run code
+
+Narrowing works when a tool *can* be narrow: "search this directory" or "GET this URL" have no dangerous
+degrees of freedom, so the typed version is safe whatever the input. But some tools exist precisely to run
+generated code, a build-and-test runner or the app you are developing. In agentic software engineering the
+agent writes code and runs it; that is the work, not an abuse to be prevented. "Safe by construction" does not
+reach this case, because executing a program has every degree of freedom there is.
+
+For that residual class the posture is not prevention but three layered levers:
+
+1. **Keep the human on the outward, irreversible effects** — a deploy, a destructive git command, anything
+   that leaves the machine. Scarce human review is spent where a mistake cannot be undone, not on every test
+   run.
+2. **Bounded, earned trust** for the routine inward loop, where the operation is the intended one.
+3. **Contain the blast radius** so that even un-reviewed code cannot reach a secret, the network, or the
+   filesystem beyond its box. This is what the capture-checking direction below aims at.
+
+This also sharpens what a typed wrapper buys when it cannot make execution itself safe. Allowlisting a raw
+interpreter such as `scala-cli *` is dangerous not because building the project is dangerous, that is the
+intended operation, but because the same broad grant *silently* permits everything else the interpreter can
+do: inline `-e` evaluation, running a script from anywhere on disk, execution with nothing to do with the
+project. A typed runner narrows the *surface* it exposes, directory-scoped verbs, no inline eval, no
+arbitrary-path run, and so lets that blanket grant be removed. It does not make running code safe; it removes
+the surplus authority a broad allow hands out for free. The rule of thumb: narrow what is *silently permitted*,
+not what the human is *able to intend*.
+
 ### The guard
 
 Before the agent runs a shell command, an automatic check runs first (a Claude Code PreToolUse hook,
