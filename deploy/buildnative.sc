@@ -50,6 +50,15 @@ val tmpDir    = root.resolve("tmp")
 val liveBin   = tmpDir.resolve("tt-native")
 val nextBin   = tmpDir.resolve("tt-native.next")
 
+// Fail fast if the resolved tools dir is a propagated SUBSET (no dispatcher) rather than the
+// canonical toolbox — else the native build dies late with a cryptic "Main entry point class
+// 'dispatchTypedTools' not found" (SM203 cross-repo resolution: a work-repo tools/ carries `tt`
+// but not dispatch.scala, so the root check above passes yet the build cannot start). Name the fix.
+val dispatchSrc = toolsDir.resolve("dispatch.scala")
+if !Files.isRegularFile(dispatchSrc) || !Files.readString(dispatchSrc).contains("dispatchTypedTools") then
+  die(s"'$toolsDir' has no dispatcher (dispatch.scala with @main dispatchTypedTools) - it looks like a " +
+      "propagated tools SUBSET, not the canonical genscalator toolbox. Pass --root <genscalator-root>.")
+
 // ---- step 0: free-memory floor (native-image measured peak 3.3 GB; floor 6 GB) ----
 def availableGb: Long =
   val memLine = Files.readAllLines(Paths.get("/proc/meminfo")).stream()
