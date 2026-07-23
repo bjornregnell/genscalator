@@ -38,6 +38,7 @@ object Dispatch {
     "newtool"     -> (a => newtoolEntry(a)),
     "parsereqt"   -> (a => requirementsMarkdownParser(a*)),
     "prd"         -> (a => prd(a*)),
+    "scala"       -> (a => scalaProjectDriver(a*)),
     "serv"        -> (a => serveStaticFiles(a*)),
     "skillcheck"  -> (a => skillcheck(a*)),
     "skillgrants" -> (a => printSkillGrants(a*)),

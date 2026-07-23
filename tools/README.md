@@ -186,6 +186,27 @@ tt verify --exit 0 --out 8 -- scala-cli run tools/text.scala -- grepr /abs/tools
 tt verify -- tt files /abs/src .scala --count
 ```
 
+### scala — typed driver over scala-cli for a project DIRECTORY (EFFECTFUL)
+```
+scala test <dir> [--prop k=v]...                # run the suite (exit 0 = green)
+scala compile <dir> [--prop k=v]...             # compile only
+scala run <dir> [--prop k=v]...                 # run the project @main (tightest verb)
+scala package-js <dir> -o <out> [--prop k=v]... # link Scala.js to <out>
+```
+An **effectful driver** (os-lib) that runs `scala-cli` on a validated **directory** — never `-e` inline
+eval, never an arbitrary script path — with the argv built here (no shell, no arbitrary-flag passthrough)
+and `--server=false` baked (the no-bloop path). This is what lets the blanket `Bash(scala-cli *)` allow be
+retired (SM205): each verb is per-verb allowlistable (`Bash(tt scala test *)`) while bare `scala-cli` stays
+off the allowlist. It does **not** make running code safe — tests and `@main` run real code (SECURITY-MODEL,
+"When the tool's job is to run code"); it removes the *surplus* a broad allow grants. `--prop k=v` becomes
+`--java-prop` (e.g. `--prop tt.tools=<abs-tools>` for the toolbox suite). Prints an audit line (argv, exit,
+ms) and passes scala-cli's exit code through.
+Examples:
+```
+tt scala test /abs/tools --prop tt.tools=/abs/tools
+tt scala package-js /abs/my-spa -o /abs/my-spa/main.js
+```
+
 ### guardcheck — flag guard-trip / banned-reflex patterns (PURE)
 ```
 guardcheck cmd <shell-command>       # flag &&, ;, $(, backtick, |head, raw grep -r, line-leading #, …
@@ -424,6 +445,7 @@ diagnostics, refactors). Full guide: [`../docs/tool-selection.md`](../docs/tool-
 - `text.scala` — the grep/awk replacement.
 - `log.scala` — the build/run-log analyzer.
 - `verify.scala` — the run-and-verify driver (effectful; os-lib).
+- `scala.scala` — typed driver over scala-cli for a project dir (effectful; os-lib).
 - `files.scala` — the find / grep -l replacement.
 - `guardcheck.scala` — guard-trip / banned-reflex flagger.
 - `typo.scala` — keyboard-aware typo classifier.
