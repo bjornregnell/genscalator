@@ -59,6 +59,12 @@
 
 ## Next up (decided, unstarted)
 
+* *(added 2026-07-23 16:5x clock-read)* SM201 JOINT: prepare compliance with Codeberg ToU
+  2(1)7 (the new no-mostly-generative-AI clause, verified live on their main; governance
+  status under investigation). Options doc in the work repo; outward steps BR-only.
+* *(added 2026-07-23 16:5x clock-read)* SM202 JOINT: self-hosted forge on bjornix.cs.lth.se
+  (SM201 option B concretized; department-IT approval + install = BR, prep = agent).
+
 * README section on plugin-update slash-magic (marketplace name gotcha, reload, version
   check) — JOINT: agent drafts, BR calls placement (SM190).
 * Versioning-scheme semantics: what plugin version, tags and `tt update` each track —
