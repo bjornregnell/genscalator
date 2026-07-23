@@ -38,9 +38,16 @@
 
 ## Next up (decided, unstarted)
 
-* The ember §3 queue: CliSuite toolsDir self-announce+fail-fast · tt web error classes ·
-  tt forge --gl · tt bloop clean · SM196 release-all design note · SM197 privacy-sweep
-  classification report · SM201 option-B move checklist.
+* The ember §3 queue, after a 2026-07-23 safe-solo/AFK pass:
+  - CliSuite toolsDir self-announce+fail-fast · tt web error classes · tt forge --gl · tt
+    bloop clean — HELD for BR-present: each is a code unit needing `scala-cli test` runs,
+    which are non-allowlistable and forbidden under AFK (would stall), so the code+tests+ship
+    unit cannot be verified solo.
+  - SM196 release-all design note — ALREADY DONE 2026-07-22 (commit c4b6f53,
+    research/sm-investigations/SM196-release-all-design.md); the queue entry was stale.
+    Awaits BR ratification.
+  - SM197 privacy classification report + SM201 option-B move checklist — DRAFTED into the
+    private work repo (no public detail here; both await BR). No moves/outward actions taken.
 * README plugin-update slash-magic section (SM190, JOINT) · versioning semantics (SM189,
   JOINT) · deployttapi step 2 deploy (BR-gated) · blog 031 revoice + RT055 go (BR).
 
