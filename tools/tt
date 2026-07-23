@@ -34,11 +34,14 @@ tool="$1"; shift
 runner=(scala-cli run "$TOOLS/$tool.scala" --java-prop "tt.tools=$TOOLS" --)
 if [[ "${TT_NATIVE:-1}" == "1" ]]; then
   bin="${TT_NATIVE_BIN:-$TOOLS/../tmp/tt-native}"
-  if [[ -x "$bin" && -z "$(find "$TOOLS" -name '*.scala' -newer "$bin" -print -quit)" ]]; then
-    runner=("$bin" "-Dtt.tools=$TOOLS" "$tool")
-  else
-    echo "tt: TT_NATIVE=1 but native binary missing or stale - falling back to scala-cli" >&2
+  if [[ -x "$bin" ]]; then
+    if [[ -z "$(find "$TOOLS" -name '*.scala' -newer "$bin" -print -quit)" ]]; then
+      runner=("$bin" "-Dtt.tools=$TOOLS" "$tool")
+    else
+      echo "tt: native binary is STALE (tools/ edited since build) - using scala-cli; refresh: scala-cli run deploy/buildnative.sc" >&2
+    fi
   fi
+  # no binary at all = not graalified yet: silently use scala-cli (the pre-native default)
 fi
 start=$(date +%s%N)
 set +e

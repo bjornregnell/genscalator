@@ -3,8 +3,10 @@
 > **What this is.** The working notes for compiling the whole `tt` toolbox into ONE
 > GraalVM native-image binary — why, how, what is proven, and what remains before
 > `gs native` (the consent-gated provisioning DWIM, PRD SM112) can ship it to users.
-> Status as of 2026-07-23: **built and parity-proven on linux-x64, opt-in via
-> `TT_NATIVE=1`; not yet the default path.**
+> Status as of 2026-07-23 evening: **built, parity-proven and DEFAULT-ON on linux-x64
+> in this repo's launcher** (`TT_NATIVE=0` opts out; a checkout without a built binary
+> silently uses scala-cli as before). Plugin users get the new launcher at the next
+> plugin release — the 0.9.1 cache still ships the pre-native `tt`.
 
 ## Why
 
@@ -45,7 +47,9 @@ TT_NATIVE=0 tt <tool> <args...>  # force the JVM path
 
 The launcher (`tools/tt`) prefers the binary when `TT_NATIVE` is unset or `1`, the binary exists
 (default `tmp/tt-native`, override `TT_NATIVE_BIN`), and **no `tools/**.scala` is newer
-than it** — otherwise it falls back to scala-cli with a stderr note. Live-verified through
+than it**. Fallback behaviour: a missing binary is SILENT (not graalified yet = the
+pre-native default experience); a STALE binary prints a one-line stderr note naming the
+refresh command. Live-verified through
 the launcher 2026-07-23 (BR): `time TT_NATIVE=1 tt chrono now` → 0.032 s real end-to-end
 (tool 0.006 s; the bash launcher itself is now the dominant ~26 ms). Staleness = source
 mtime newer than binary; conservative by design (any edit disarms the fast path until a
