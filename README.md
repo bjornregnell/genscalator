@@ -208,6 +208,34 @@ Tools degrade gracefully when their dependency is missing: `tt gvdot` still prin
 errors with the install hint only on the render path. (The sibling renderers `tt svg` and `tt ascii` need **no**
 external dependency — pure JDK.)
 
+### 4.2 Optional: forge tokens for `tt forge` (GitHub and Codeberg)
+
+`tt forge` talks to code forges (issues, PRs, releases, tags, branch protection) on Codeberg/Forgejo and,
+via `--gh`, on GitHub. **All read verbs work without any token** — GitHub just rate-limits anonymous reads
+(60/hour). A token is only needed for `protection` (admin-scoped read) and the release verbs. Tokens are
+read **only from fixed environment variables** (never flags) and are only ever sent to their own forge's
+fixed host.
+
+- **GitHub (optional):** install [GitHub's `gh` CLI](https://cli.github.com/), authenticate once with
+  `gh auth login`, then reuse its token by adding to your `~/.bashrc`:
+  ```bash
+  export GITHUB_TOKEN="$(gh auth token)"
+  ```
+  This lifts the anonymous rate limit and enables `tt forge protection <owner>/<repo> <branch> --gh`.
+  No new secret to manage: revoking the `gh` login revokes this too.
+
+- **Codeberg/Forgejo (optional):** mint a token in Codeberg → Settings → Applications (scope
+  `read:repository`, plus `write:repository` if you will create releases) and add to your `~/.bashrc`:
+  ```bash
+  export CODEBERG_TOKEN="<your token>"
+  ```
+  (Each forge also honours a genscalator-specific name checked first — `GENSCALATOR_CODEBERG_TOKEN`
+  respectively `GENSCALATOR_GITHUB_TOKEN` — if you want a token dedicated to these tools.)
+
+Putting the exports in `~/.bashrc` makes them reach both your own terminals and the shells your agent
+spawns (note that a running agent session keeps its start-time environment; restart the session after
+adding them). Full verb reference: [`tools/README.md`](tools/README.md).
+
 
 ## 5. Licenses
 
