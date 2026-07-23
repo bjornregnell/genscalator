@@ -1558,3 +1558,12 @@ class CliSuite extends munit.FunSuite:
     assertEquals(run("forge", "release-edit")._1, 2)            // no repo
     assertEquals(run("forge", "release-edit", "foo/bar")._1, 2) // repo but no tag
   }
+
+  // --- forge issue/PR/protection READ verbs (arg contract; live reads need a network, so only arg errors here) ---
+  test("forge issues/prs/issue/pr/protection with missing or bad args exit 2 before any network") {
+    assertEquals(run("forge", "issues")._1, 2)                    // no repo
+    assertEquals(run("forge", "prs", "--state", "weird")._1, 2)   // bad --state value
+    assertEquals(run("forge", "issue", "foo/bar")._1, 2)          // no issue number
+    assertEquals(run("forge", "pr", "foo/bar", "xyz")._1, 2)      // non-numeric PR number
+    assertEquals(run("forge", "protection", "foo/bar")._1, 2)     // no branch
+  }

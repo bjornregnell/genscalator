@@ -323,6 +323,11 @@ Example: `tt ssg blog/002-....md tmp/site` then `tt serv tmp/site` and open the 
 forge whoami   [--url BASE]                               # verify auth: print the token's login (never the token)
 forge releases <owner>/<repo> [--url BASE] [--limit N]    # list releases  (READ, no auth → allowlistable)
 forge tags     <owner>/<repo> [--url BASE] [--limit N]    # list tags      (READ, no auth → allowlistable)
+forge issues <owner>/<repo> [--gh | --url BASE] [--state open|closed|all] [--limit N]   # list issues (READ)
+forge prs    <owner>/<repo> [--gh | --url BASE] [--state open|closed|all] [--limit N]   # list PRs    (READ)
+forge issue  <owner>/<repo> <n> [--gh | --url BASE]        # show an issue + comments   (READ)
+forge pr     <owner>/<repo> <n> [--gh | --url BASE]        # show a PR: merge state + body (READ)
+forge protection <owner>/<repo> <branch> [--gh | --url BASE]   # show the protection rule (needs token)
 forge release-create <owner>/<repo> <tag> [--name S] [--body S | --body-file F]
                      [--prerelease] [--draft] [--target COMMITISH] [--url BASE]   # CREATE (effectful)
 ```
@@ -331,9 +336,15 @@ Replaces hand-curling the REST API (a `curl` with a token on the command line). 
 verb (`release-create`) reads its token **only** from a fixed set of human-set env vars
 (**`GENSCALATOR_CODEBERG_TOKEN`**, then `CODEBERG_TOKEN`, then `FORGE_TOKEN`) — never a flag — so the agent can't self-authorize (same trust-boundary rule as `verify`'s
 `TT_VERIFY_ALLOW`). It prints an `[audit]` line and is deliberately **not** blanket-allowlistable (creating a
-release stays a visible, confirmed op). Example:
+release stays a visible, confirmed op). **GitHub dialect:** `--gh` (or a github.com `--url`) switches the path
+shapes to the GitHub REST API, rooted at the fixed `api.github.com` — never derived from `--url`, so a token
+cannot be redirected. The GitHub token comes only from fixed env names (`GENSCALATOR_GITHUB_TOKEN`,
+`GITHUB_TOKEN`, `GH_TOKEN`); reads work anonymously (60/h rate limit), `protection` requires it (admin read).
+Example:
 ```
 tt forge releases bjornregnell/genscalator --limit 5
+tt forge prs lunduniversity/introprog --gh                 # open PRs on a GitHub repo
+tt forge issue lunduniversity/introprog 951 --gh           # one issue with its comment thread
 tt forge release-create bjornregnell/genscalator v0.8.0 --name "v0.8.0: …" --body-file NOTES.md --prerelease
 ```
 
@@ -424,7 +435,7 @@ diagnostics, refactors). Full guide: [`../docs/tool-selection.md`](../docs/tool-
 - `ascii.scala` — sequence-diagram spec → good-looking monospace/box-drawing art (pure; `--pure` for 7-bit ASCII).
 - `gvdot.scala` — sequence-diagram spec → image via graphviz `dot` (effectful; needs graphviz; argv-no-shell, DOT on stdin).
 - `web.scala` — safe read-only HTTP GET (effectful: network; requests).
-- `forge.scala` — Forgejo/Gitea forge client, releases/tags + env-token create (effectful; requests+ujson+os-lib).
+- `forge.scala` — forge client (Gitea/Codeberg + GitHub via `--gh`): releases/tags/issues/PRs/protection reads + env-token create (effectful; requests+ujson+os-lib).
 - `git.scala` — safe git helper: commit-from-file, ff-only pull, fetch, read-only show (effectful; os-lib).
 - `update.scala` — update-awareness: is genscalator behind its marketplace remote? (effectful: git fetch; read-only; os-lib).
 - `newtool.scala` — the generator.

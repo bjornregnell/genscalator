@@ -18,6 +18,12 @@
 //                           [--prerelease] [--draft] [--target COMMITISH] [--url BASE]
 //   tt forge release-edit   <owner>/<repo> <tag> [--name S] [--body S | --body-file F] [--prerelease] [--draft] [--url BASE]
 //                           # PATCH an existing release (look up by tag); sends ONLY the provided fields
+//   READ verbs for issues/PRs/branch protection (both dialects; --gh = GitHub, see GitHubApi below):
+//   tt forge issues <owner>/<repo> [--gh | --url BASE] [--state open|closed|all] [--limit N]
+//   tt forge prs    <owner>/<repo> [--gh | --url BASE] [--state open|closed|all] [--limit N]
+//   tt forge issue  <owner>/<repo> <n> [--gh | --url BASE]           # body + comments
+//   tt forge pr     <owner>/<repo> <n> [--gh | --url BASE]           # merge state + body
+//   tt forge protection <owner>/<repo> <branch> [--gh | --url BASE]  # protection rule (needs a token)
 //   BASE defaults to https://codeberg.org
 import scala.util.Try
 
@@ -33,9 +39,15 @@ object Forge {
       "  forge whoami   [--url BASE]                              (verify auth: prints the token's login)\n" +
       "  forge releases <owner>/<repo> [--url BASE] [--limit N]\n" +
       "  forge tags     <owner>/<repo> [--url BASE] [--limit N]\n" +
+      "  forge issues <owner>/<repo> [--gh | --url BASE] [--state open|closed|all] [--limit N]\n" +
+      "  forge prs    <owner>/<repo> [--gh | --url BASE] [--state open|closed|all] [--limit N]\n" +
+      "  forge issue  <owner>/<repo> <n> [--gh | --url BASE]             (body + comments)\n" +
+      "  forge pr     <owner>/<repo> <n> [--gh | --url BASE]             (merge state + body)\n" +
+      "  forge protection <owner>/<repo> <branch> [--gh | --url BASE]    (needs a token)\n" +
       "  forge release-create <owner>/<repo> <tag> [--name S] [--body S | --body-file F] [--prerelease] [--draft] [--target C] [--url BASE]\n" +
       "  forge release-edit   <owner>/<repo> <tag> [--name S] [--body S | --body-file F] [--prerelease] [--draft] [--url BASE]\n" +
-      "  BASE defaults to https://codeberg.org; release-create/edit read the token from env CODEBERG_TOKEN or FORGE_TOKEN (never a flag)."
+      "  BASE defaults to https://codeberg.org; release-create/edit read the token from env CODEBERG_TOKEN or FORGE_TOKEN (never a flag).\n" +
+      "  --gh targets the GitHub API; its token (optional for reads, required for protection) comes from env GITHUB_TOKEN or GH_TOKEN."
   )
 
   private val Help: String =
@@ -50,6 +62,14 @@ object Forge {
       |                                                          login (never the token itself)
       |  forge releases <owner>/<repo> [--url BASE] [--limit N]  list releases (READ, no auth)
       |  forge tags     <owner>/<repo> [--url BASE] [--limit N]  list tags     (READ, no auth)
+      |  forge issues <owner>/<repo> [--gh | --url BASE] [--state S] [--limit N]
+      |                                                          list issues   (READ)
+      |  forge prs    <owner>/<repo> [--gh | --url BASE] [--state S] [--limit N]
+      |                                                          list PRs, head branch in [brackets]
+      |  forge issue  <owner>/<repo> <n> [--gh | --url BASE]     show an issue + comments (READ)
+      |  forge pr     <owner>/<repo> <n> [--gh | --url BASE]     show a PR: merge state + body (READ)
+      |  forge protection <owner>/<repo> <branch> [--gh | --url BASE]
+      |                                                          show the protection rule (token)
       |  forge release-create <owner>/<repo> <tag> [--name S] [--body S | --body-file F]
       |                       [--prerelease] [--draft] [--target COMMITISH] [--url BASE]
       |  forge release-edit   <owner>/<repo> <tag> [--name S] [--body S | --body-file F]
@@ -63,11 +83,16 @@ object Forge {
       |  --prerelease      mark as prerelease
       |  --draft           mark as draft
       |  --target C        commitish the new tag points at (release-create only)
+      |  --gh              talk to the GitHub API (api.github.com) instead of a Gitea forge
+      |  --state S         open | closed | all for issues/prs (default open)
       |
       |Token: whoami and release-create/edit read the token from env
       |GENSCALATOR_CODEBERG_TOKEN, then CODEBERG_TOKEN, then FORGE_TOKEN — never a flag,
       |and it is only ever sent to a trusted host (codeberg.org; the human may extend
       |the set via env TT_FORGE_HOSTS). Effectful verbs print an [audit] line first.
+      |GitHub verbs (--gh) read their token from env GENSCALATOR_GITHUB_TOKEN, GITHUB_TOKEN
+      |or GH_TOKEN and only ever send it to api.github.com; reads work anonymously too
+      |(60 requests/h), protection requires the token (admin-scoped read).
       |
       |Examples:
       |  tt forge releases bjornregnell/genscalator --limit 5    # latest 5 releases
@@ -100,12 +125,45 @@ object Forge {
 
   private def apiBase(url: String): String = url.stripSuffix("/") + "/api/v1"
 
+  // GitHub dialect. `--gh` (or a github.com --url) switches the path shapes to the GitHub REST API,
+  // rooted at the FIXED GitHubApi constant below — never derived from --url — so the GitHub token
+  // can only ever travel to that one host (same no-redirect rule as trustedHosts for the Gitea token).
+  // The token comes ONLY from fixed human-set env names; READ verbs work without it (60/h anonymous
+  // rate limit); `protection` requires it (admin-scoped read).
+  private val GitHubApi       = "https://api.github.com"
+  private val GhTokenEnvNames = List("GENSCALATOR_GITHUB_TOKEN", "GITHUB_TOKEN", "GH_TOKEN")
+  private def ghToken: Option[String] =
+    GhTokenEnvNames.iterator.flatMap(sys.env.get).map(_.trim).find(_.nonEmpty)
+  private def isGitHub(base: String): Boolean =
+    Set("github.com", "www.github.com", "api.github.com").contains(hostOf(base))
+  private def ghHeaders: Map[String, String] = // pair ONLY with GitHubApi-rooted URLs
+    Map("Accept" -> "application/vnd.github+json") ++
+      ghToken.map(t => "Authorization" -> s"Bearer $t")
+
+  private def userLogin(v: ujson.Value): String =
+    Try(v.obj("user").obj("login").str).getOrElse("?")
+
+  // one issue/PR per line: number, updated, author, title (tab-separated, like releases/tags)
+  private def itemLine(v: ujson.Value): String =
+    val num     = Try(v.obj("number").num.toLong).getOrElse(0L)
+    val title   = Try(v.obj("title").str).getOrElse("?")
+    val updated = Try(v.obj("updated_at").str).getOrElse("")
+    s"#$num\t$updated\t${userLogin(v)}\t$title"
+
+  private def strOrEmpty(v: Option[ujson.Value]): String = // JSON bodies may be null, not just absent
+    v.flatMap(x => Try(x.str).toOption).getOrElse("")
+
   def dispatch(args: String*): Unit =
     if args.contains("--help") || args.contains("-h") then { println(Help); sys.exit(0) }
     args.toList match
       case "whoami" :: rest         => whoami(rest)
       case "releases" :: rest       => listReleases(rest)
       case "tags" :: rest           => listTags(rest)
+      case "issues" :: rest         => listIssues(rest)
+      case "prs" :: rest            => listPrs(rest)
+      case "issue" :: rest          => showIssue(rest)
+      case "pr" :: rest             => showPr(rest)
+      case "protection" :: rest     => showProtection(rest)
       case "release-create" :: rest => releaseCreate(rest)
       case "release-edit" :: rest   => releaseEdit(rest)
       case _                        => forgeUsage()
@@ -136,7 +194,7 @@ object Forge {
       case 401 => die(s"token present but rejected (401) by $host — check the token / its scope")
       case c   => die(s"GET $url -> $c ${r.statusMessage}")
 
-  private final case class ReadOpts(repo: Option[String], base: String, limit: Int)
+  private final case class ReadOpts(repo: Option[String], base: String, limit: Int, state: String)
 
   private def parseRead(args: List[String]): ReadOpts =
     @annotation.tailrec
@@ -144,6 +202,10 @@ object Forge {
       rest match
         case Nil                 => o
         case "--url" :: u :: t   => go(t, o.copy(base = u))
+        case "--gh" :: t         => go(t, o.copy(base = "https://github.com"))
+        case "--state" :: s :: t =>
+          if Set("open", "closed", "all").contains(s) then go(t, o.copy(state = s))
+          else die(s"--state must be open, closed or all, got '$s'")
         case "--limit" :: n :: t =>
           n.toIntOption match
             case Some(v) if v > 0 => go(t, o.copy(limit = v))
@@ -151,10 +213,10 @@ object Forge {
         case flag :: _ if flag.startsWith("--") => die(s"unknown/incomplete flag '$flag'")
         case r :: t if o.repo.isEmpty            => go(t, o.copy(repo = Some(r)))
         case other :: _                          => die(s"unexpected argument '$other'")
-    go(args, ReadOpts(None, DefaultBase, 50))
+    go(args, ReadOpts(None, DefaultBase, 50, "open"))
 
-  private def getJson(url: String): ujson.Value =
-    val r = Try(requests.get(url, check = false, readTimeout = 30000, connectTimeout = 10000))
+  private def getJson(url: String, headers: Map[String, String] = Map.empty): ujson.Value =
+    val r = Try(requests.get(url, headers = headers, check = false, readTimeout = 30000, connectTimeout = 10000))
       .getOrElse(die(s"request failed: $url"))
     if r.statusCode != 200 then die(s"GET $url -> ${r.statusCode} ${r.statusMessage}")
     Try(ujson.read(r.text())).getOrElse(die(s"unexpected (non-JSON) response from $url"))
@@ -187,6 +249,138 @@ object Forge {
         val name = t.obj.get("name").map(_.str).getOrElse("?")
         val sha  = t.obj.get("commit").flatMap(_.obj.get("sha")).map(_.str).getOrElse("").take(10)
         println(s"$name\t$sha")
+      }
+
+  // ---- issue / PR / branch-protection READ verbs (both dialects; --gh = GitHub) ----
+
+  private def listIssues(args: List[String]): Unit =
+    val o             = parseRead(args)
+    val (owner, repo) = splitRepo(o.repo.getOrElse(forgeUsage()))
+    val arr =
+      if isGitHub(o.base) then
+        // GitHub's /issues endpoint interleaves PRs — drop entries carrying a pull_request key
+        Try(getJson(s"$GitHubApi/repos/$owner/$repo/issues?state=${o.state}&per_page=${o.limit}", ghHeaders).arr)
+          .getOrElse(die("expected a JSON array of issues")).filterNot(_.obj.contains("pull_request"))
+      else
+        Try(getJson(s"${apiBase(o.base)}/repos/$owner/$repo/issues?state=${o.state}&type=issues&limit=${o.limit}").arr)
+          .getOrElse(die("expected a JSON array of issues"))
+    arr.foreach(i => println(itemLine(i)))
+    println(s"=== ${arr.size} ${o.state} issues")
+
+  private def listPrs(args: List[String]): Unit =
+    val o             = parseRead(args)
+    val (owner, repo) = splitRepo(o.repo.getOrElse(forgeUsage()))
+    val gh            = isGitHub(o.base)
+    val url =
+      if gh then s"$GitHubApi/repos/$owner/$repo/pulls?state=${o.state}&per_page=${o.limit}"
+      else s"${apiBase(o.base)}/repos/$owner/$repo/pulls?state=${o.state}&limit=${o.limit}"
+    val arr = Try(getJson(url, if gh then ghHeaders else Map.empty).arr)
+      .getOrElse(die("expected a JSON array of pull requests"))
+    arr.foreach { p =>
+      val head = Try(p.obj("head").obj("ref").str).getOrElse("?")
+      println(s"${itemLine(p)}\t[$head]")
+    }
+    println(s"=== ${arr.size} ${o.state} PRs")
+
+  private final case class ItemOpts(repo: Option[String], item: Option[String], base: String)
+
+  private def parseItem(args: List[String]): ItemOpts =
+    @annotation.tailrec
+    def go(rest: List[String], o: ItemOpts): ItemOpts =
+      rest match
+        case Nil               => o
+        case "--url" :: u :: t => go(t, o.copy(base = u))
+        case "--gh" :: t       => go(t, o.copy(base = "https://github.com"))
+        case flag :: _ if flag.startsWith("--") => die(s"unknown/incomplete flag '$flag'")
+        case r :: t if o.repo.isEmpty => go(t, o.copy(repo = Some(r)))
+        case i :: t if o.item.isEmpty => go(t, o.copy(item = Some(i)))
+        case other :: _               => die(s"unexpected argument '$other'")
+    go(args, ItemOpts(None, None, DefaultBase))
+
+  private def showIssue(args: List[String]): Unit =
+    val o             = parseItem(args)
+    val (owner, repo) = splitRepo(o.repo.getOrElse(forgeUsage()))
+    val n    = o.item.flatMap(_.toIntOption).getOrElse(die("expected an issue number after <owner>/<repo>"))
+    val gh   = isGitHub(o.base)
+    val root = if gh then s"$GitHubApi/repos/$owner/$repo/issues/$n" else s"${apiBase(o.base)}/repos/$owner/$repo/issues/$n"
+    val hdrs = if gh then ghHeaders else Map.empty[String, String]
+    val issue = getJson(root, hdrs)
+    println(itemLine(issue))
+    println(s"state: ${Try(issue.obj("state").str).getOrElse("?")}")
+    println("")
+    println(strOrEmpty(issue.obj.get("body")))
+    val commentsUrl = if gh then s"$root/comments?per_page=100" else s"$root/comments"
+    val comments = Try(getJson(commentsUrl, hdrs).arr).getOrElse(die("expected a JSON array of comments"))
+    comments.foreach { c =>
+      println(s"\n--- comment by ${userLogin(c)} at ${Try(c.obj("created_at").str).getOrElse("?")} ---")
+      println(strOrEmpty(c.obj.get("body")))
+    }
+    println(s"\n=== ${comments.size} comments")
+
+  private def showPr(args: List[String]): Unit =
+    val o             = parseItem(args)
+    val (owner, repo) = splitRepo(o.repo.getOrElse(forgeUsage()))
+    val n   = o.item.flatMap(_.toIntOption).getOrElse(die("expected a PR number after <owner>/<repo>"))
+    val gh  = isGitHub(o.base)
+    val url = if gh then s"$GitHubApi/repos/$owner/$repo/pulls/$n" else s"${apiBase(o.base)}/repos/$owner/$repo/pulls/$n"
+    val pr  = getJson(url, if gh then ghHeaders else Map.empty)
+    println(itemLine(pr))
+    val baseRef   = Try(pr.obj("base").obj("ref").str).getOrElse("?")
+    val headRef   = Try(pr.obj("head").obj("ref").str).getOrElse("?")
+    val state     = Try(pr.obj("state").str).getOrElse("?")
+    val merged    = Try(pr.obj("merged").bool).getOrElse(false)
+    val mergeable = pr.obj.get("mergeable").map(v => Try(v.bool).map(_.toString).getOrElse("computing")).getOrElse("?")
+    val mergeState = if gh then s"  merge_state=${Try(pr.obj("mergeable_state").str).getOrElse("?")}" else ""
+    println(s"state: $state  merged=$merged  mergeable=$mergeable$mergeState  $headRef -> $baseRef")
+    println("")
+    println(strOrEmpty(pr.obj.get("body")))
+
+  private def showProtection(args: List[String]): Unit =
+    val o             = parseItem(args)
+    val (owner, repo) = splitRepo(o.repo.getOrElse(forgeUsage()))
+    val branch        = o.item.getOrElse(die("expected a branch name after <owner>/<repo>"))
+    if isGitHub(o.base) then
+      if ghToken.isEmpty then die(
+        s"protection on GitHub needs an admin-read token — the HUMAN sets one of env ${GhTokenEnvNames.mkString(", ")} (never a flag).")
+      val p = getJson(s"$GitHubApi/repos/$owner/$repo/branches/$branch/protection", ghHeaders)
+      def enabled(key: String): String =
+        Try(p.obj(key).obj("enabled").bool).toOption.map(b => if b then "yes" else "no").getOrElse("?")
+      p.obj.get("required_status_checks") match
+        case Some(c) =>
+          val strict = Try(c.obj("strict").bool).getOrElse(false)
+          val ctxs   = Try(c.obj("contexts").arr.map(_.str).toList).getOrElse(Nil)
+          println(s"required status checks: ${if ctxs.isEmpty then "(none selected)" else ctxs.mkString(", ")}  strict=$strict")
+        case None => println("required status checks: NONE")
+      println(s"enforce admins: ${enabled("enforce_admins")}")
+      println(s"required PR reviews: ${if p.obj.contains("required_pull_request_reviews") then "yes" else "no"}")
+      p.obj.get("restrictions") match
+        case Some(r) =>
+          val users = Try(r.obj("users").arr.map(_.obj("login").str).toList).getOrElse(Nil)
+          val teams = Try(r.obj("teams").arr.map(_.obj("slug").str).toList).getOrElse(Nil)
+          println(s"push restricted to: users=[${users.mkString(", ")}] teams=[${teams.mkString(", ")}]")
+        case None => println("push restrictions: none")
+      println(s"force pushes allowed: ${enabled("allow_force_pushes")}")
+      println(s"deletions allowed: ${enabled("allow_deletions")}")
+    else
+      val tok = token.getOrElse(die(
+        s"protection needs a token — the HUMAN sets one of env ${TokenEnvNames.mkString(", ")} (never a flag)."))
+      val url  = s"${apiBase(o.base)}/repos/$owner/$repo/branch_protections"
+      val host = hostOf(url)
+      if !trustedHosts.contains(host) then die(
+        s"refusing to send the token to untrusted host '$host'. Trusted: ${trustedHosts.toVector.sorted.mkString(", ")}.")
+      val r = Try(requests.get(url, headers = Map("Authorization" -> s"token $tok"),
+        check = false, readTimeout = 30000, connectTimeout = 10000)).getOrElse(die("request failed"))
+      if r.statusCode != 200 then die(s"GET $url -> ${r.statusCode} ${r.statusMessage}")
+      val arr  = Try(ujson.read(r.text()).arr).getOrElse(die("expected a JSON array of branch protections"))
+      val hits = arr.filter(p =>
+        Try(p.obj("branch_name").str).toOption.orElse(Try(p.obj("rule_name").str).toOption).contains(branch))
+      if hits.isEmpty then println(s"no branch protection rule matches '$branch' (${arr.size} rules total)")
+      else hits.foreach { p =>
+        val checksOn = Try(p.obj("enable_status_check").bool).getOrElse(false)
+        val ctxs     = Try(p.obj("status_check_contexts").arr.map(_.str).toList).getOrElse(Nil)
+        println(s"rule: $branch  status-checks=${if checksOn then ctxs.mkString(", ") else "off"}")
+        println(s"push whitelist: ${Try(p.obj("push_whitelist_usernames").arr.map(_.str).toList).getOrElse(Nil).mkString(", ")}")
+        println(s"force pushes allowed: ${Try(p.obj("enable_force_push").bool).getOrElse(false)}")
       }
 
   private final case class CreateOpts(repo: Option[String], tag: Option[String], name: Option[String],
