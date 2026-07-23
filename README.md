@@ -172,6 +172,29 @@ gs new app todo ./my-todo
 The agent runs the **`crud-web-app-seed`** skill, which writes a small full-stack project into the directory you chose:
 a shared datamodel, a **JDK-only** HTTP server, and a **Scala.js + Laminar** browser client, plus a Product Requirements Document in `PRD.md`, and a test suite. Then follow the agent's instructions or ask when you need help. The todo app is deliberately small and commented so you can read the whole thing and adapt it to your liking together with the agent that will invoke genscalator's typed tools when it sees fit.
 
+### 3.4 Graalify genscalator for speed and low footprint
+
+The whole `tt` toolbox can be compiled into **one native binary** (GraalVM native-image), and the
+launcher then prefers it automatically. What you gain:
+
+* **Speed**: a `tt` call starts in ~0.03 s instead of ~0.5 s on the JVM — agents issuing many small
+  typed-tool calls feel this immediately (the full test suite drops from ~2 minutes to ~30 seconds).
+* **Low footprint**: no compile server (bloop) and no warm JVM need to stay resident — the binary
+  just runs, so a whole class of build-daemon stalls and memory drains disappears.
+
+Build it once with the **rebuild ritual** (from the repo root, takes a few minutes and ~4 GB RAM):
+```
+scala-cli run deploy/buildnative.sc
+```
+The ritual never swaps in an unproven binary: it builds a candidate, runs the complete
+CLI-contract test suite *through* that candidate, and only on all-green replaces the live binary
+atomically. After any edit under `tools/` the launcher detects the binary is stale and safely
+falls back to scala-cli (slower, never wrong) until you re-run the ritual. Opt out anytime with
+`TT_NATIVE=0 tt ...`.
+
+Status: proven on linux-x64; macOS/Windows binaries are on the roadmap. Details, measurements and
+design: [`docs/native.md`](docs/native.md).
+
 ## 4. Using typed tools directly in terminal
 
 After following the install instructions above to get `tt` on your PATH you can run the typed tools directly in terminal like so:
