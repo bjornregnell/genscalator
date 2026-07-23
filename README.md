@@ -232,6 +232,9 @@ fixed host.
   (Each forge also honours a genscalator-specific name checked first — `GENSCALATOR_CODEBERG_TOKEN`
   respectively `GENSCALATOR_GITHUB_TOKEN` — if you want a token dedicated to these tools.)
 
+- **GitLab:** no token to set — `tt forge` has no GitLab dialect (yet), so nothing reads a GitLab
+  token; git-level mirroring to GitLab needs no API token.
+
 Putting the exports in `~/.bashrc` makes them reach both your own terminals and the shells your agent
 spawns (note that a running agent session keeps its start-time environment; restart the session after
 adding them). Full verb reference: [`tools/README.md`](tools/README.md).
