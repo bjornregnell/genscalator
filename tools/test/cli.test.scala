@@ -36,6 +36,21 @@ class CliSuite extends munit.FunSuite:
           .call(check = false, stdout = os.Pipe, stderr = os.Pipe)
     (r.exitCode, r.out.text().trim, r.err.text().trim)
 
+  // Announce the resolved tools dir ONCE, and fail fast on a stale/partial one. The ember records a
+  // 6-file copy resolved via cwd walk-up that produced ~123 phantom failures; this turns that whole
+  // confusing class into ONE clear message before any test runs (beforeAll throwing aborts the suite).
+  override def beforeAll(): Unit =
+    val toolFiles = os.list(toolsDir)
+      .filter(p => os.isFile(p) && p.ext == "scala")
+      .filter(p => os.read.lines(p).exists(_.startsWith("@main ")))
+      .map(_.baseName).filterNot(_ == "dispatch").toSet
+    println(s"[CliSuite] tools dir: $toolsDir — ${toolFiles.size} @main tool files, dispatch table expects ${Dispatch.verbs.size}")
+    val missing = Dispatch.verbs.toSet -- toolFiles
+    require(missing.isEmpty,
+      s"STALE/partial tools dir: $toolsDir holds ${toolFiles.size} @main tool files but the dispatch table " +
+        s"expects ${Dispatch.verbs.size}; missing ${missing.toVector.sorted.mkString("{", ", ", "}")}. " +
+        "Likely the wrong dir resolved via cwd walk-up — pass -Dtt.tools=<abs tools>.")
+
   // --- text ---
   test("text count: number of regex matches") {
     val f = os.temp(contents = "foo\nbar\nfoo baz foo\n", suffix = ".txt")
