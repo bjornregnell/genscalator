@@ -20,10 +20,20 @@ class CliSuite extends munit.FunSuite:
         .find(d => os.exists(d / "tools" / "tt")).map(_ / "tools")
         .getOrElse(throw IllegalStateException(s"cannot locate tools/ (pass -Dtt.tools=<dir>); cwd=${os.pwd}"))
 
-  /** Run a tool file as a subprocess; return (exit, stdout, stderr). */
+  // Parity mode (opt-in): -Dtt.native.bin=<path-to-native-dispatcher> runs every test through the
+  // native-image binary (`<bin> <tool> <args...>`, the dispatcher contract) instead of a per-file
+  // `scala-cli run` subprocess — the golden identical-output-before/after net for tt-graalify.
+  private lazy val nativeBin: Option[os.Path] =
+    sys.props.get("tt.native.bin").map(os.Path(_, os.pwd)).filter(os.exists)
+
+  /** Run a tool as a subprocess (scala-cli, or the native binary in parity mode); return (exit, stdout, stderr). */
   private def run(tool: String, args: String*): (Int, String, String) =
-    val r = os.proc("scala-cli", "run", (toolsDir / s"$tool.scala").toString, "--", args)
-      .call(check = false, stdout = os.Pipe, stderr = os.Pipe)
+    val r = nativeBin match
+      case Some(bin) =>
+        os.proc(bin.toString, tool, args).call(check = false, stdout = os.Pipe, stderr = os.Pipe)
+      case None =>
+        os.proc("scala-cli", "run", (toolsDir / s"$tool.scala").toString, "--", args)
+          .call(check = false, stdout = os.Pipe, stderr = os.Pipe)
     (r.exitCode, r.out.text().trim, r.err.text().trim)
 
   // --- text ---
