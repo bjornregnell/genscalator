@@ -27,6 +27,11 @@
 
 ## Just landed (2026-07-23 evening)
 
+* **tt-graalify COMPLETE at step default-on (2026-07-23 20:5x): ritual PROVEN green
+  (build 91 s, parity 31 s, 0 failures, atomic swap) and the DEFAULT FLIPPED on BR's
+  "flip it" — plain `tt` now runs native-when-fresh (0.03-0.10 s end-to-end),
+  `TT_NATIVE=0` opts out.** Remaining, no rush: platform matrix, release-asset
+  distribution (SM196), `gs native` DWIM (SM112).
 * **tt-graalify milestone: native-image `tt` BUILT + PARITY-CLEAN** (317 tests/13 suites/0
   fail through the binary; startup 6-9 ms vs ~0.5 s; CliSuite 3.5 s vs 118 s). Launcher
   gained the OPT-IN `TT_NATIVE=1` fast path with staleness fallback; recipe + remaining
