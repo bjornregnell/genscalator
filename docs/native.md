@@ -66,7 +66,9 @@ rebuild).
    `scala-cli run deploy/buildnative.sc`. *(Script written 2026-07-23; first proving
    run pending — until it has gone green once, treat the ritual as unproven.)*
 3. **Platform matrix**: macOS + Windows binaries (CI build matrix — the alpha-tester
-   long pole named in the SM146 distance report).
+   long pole named in the SM146 distance report). Once `buildnative.sc` is proven green
+   on both, the ritual promotes to a typed `tt update --native` verb —
+   `reqts/issues/open/issue-003-tt-update-native-verb.md` (BR-gated on exactly that).
 4. **`gs native` DWIM** (PRD SM112): detect toolchain (gcc, free mem), consent-gated
    build/install, never forcing native on anyone; suggests, not surprises.
 5. **Distribution question**: ship binaries per release (forge release assets — SM196
