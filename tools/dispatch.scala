@@ -50,6 +50,7 @@ object Dispatch {
     "update"      -> (a => checkGenscalatorUpdate(a*)),
     "verify"      -> (a => verifyCommand(a*)),
     "web"         -> (a => webFetch(a*)),
+    "which"       -> (a => which(a*)),
     "wr"          -> (a => workflowResearch(a*)),
   )
 

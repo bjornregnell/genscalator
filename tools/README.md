@@ -107,6 +107,25 @@ tt find docs --name 'SM*.md'                # docs named SM*.md
 tt find . --type d --max-depth 1            # immediate sub-directories
 ```
 
+### which — what is this command? (PURE, read-only)
+```
+which <name> [<name> ...]            # PATH hits in order, symlink chain, kind, size/mode/mtime
+```
+The guard-clean composite of the whole bash reflex family `command -v` / `which` / `which -a` / `type` /
+`file` / `readlink -f` / `ls -l`: for each name, every `$PATH` hit in order (the first is what a shell
+runs; later ones are flagged shadowed), the symlink chain hop by hop, and the FINAL target's kind from
+magic bytes (ELF / script with its shebang line / jar / text) plus size, mode and mtime. Knows the bash
+builtins, so `tt which cd` answers honestly (aliases/functions live in the interactive shell and are
+invisible to any subprocess — stated, not guessed). A name containing `/` is inspected as a path. It
+never EXECUTES the target (no `--version` probing) — the line that keeps it allowlistable. Exit 0 when
+every name resolved, 2 otherwise (scriptable existence check).
+Examples:
+```
+tt which tt                                 # script or binary? symlinked from where? shadowed?
+tt which cd echo                            # builtin honesty (echo is BOTH builtin and file)
+tt which scala-cli sbt java                 # batch-check a toolchain
+```
+
 ### doc — print a genscalator doc verbatim (PURE, read-only)
 ```
 doc <name>                # print docs/<name>(.txt|.md) to stdout, verbatim

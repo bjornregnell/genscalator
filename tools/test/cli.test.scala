@@ -324,6 +324,56 @@ class CliSuite extends munit.FunSuite:
     finally os.remove.all(d)
   }
 
+  // --- which (typed "what is this command?"; born from the command -v guard stall 2026-07-24) ---
+  test("which: a bash builtin resolves honestly, exit 0") {
+    val (code, out, _) = run("which", "cd")
+    assertEquals(code, 0)
+    assert(clue(out).contains("bash builtin"))
+  }
+  test("which: an unknown name exits 2 and says not found") {
+    val (code, out, _) = run("which", "zzz-no-such-command-zzz")
+    assertEquals(code, 2)
+    assert(clue(out).contains("not found in PATH"))
+  }
+  test("which: a '/' name is inspected as a path — script kind, shebang line shown") {
+    val d = os.temp.dir()
+    try
+      val f = d / "myscript"
+      os.write(f, "#!/usr/bin/env bash\necho hi\n")
+      val (code, out, _) = run("which", f.toString)
+      assertEquals(code, 0)
+      assert(clue(out).contains("script"))
+      assert(clue(out).contains("#!/usr/bin/env bash"))
+    finally os.remove.all(d)
+  }
+  test("which --help: elaborate help, exit 0") {
+    val (code, out, _) = run("which", "--help")
+    assertEquals(code, 0)
+    assert(clue(out).contains("tt which"))
+    assert(clue(out).contains("never runs the target"))
+  }
+  test("WhichTool.kindOf: magic-byte classification (PURE)") {
+    assertEquals(WhichTool.kindOf(Array(0x7f, 'E', 'L', 'F', 2).map(_.toByte)), "ELF binary (64-bit)")
+    assertEquals(WhichTool.kindOf("#!/bin/sh\nbody".getBytes), "script  #!/bin/sh")
+    assertEquals(WhichTool.kindOf("plain words\n".getBytes), "text (no shebang)")
+    assertEquals(WhichTool.kindOf(Array.emptyByteArray), "empty file")
+    assertEquals(WhichTool.kindOf(Array(0x00, 0x01).map(_.toByte)), "data (unknown magic)")
+  }
+  test("WhichTool.chainOf: follows a relative symlink hop; cycle-guarded") {
+    val d = os.temp.dir()
+    try
+      os.write(d / "real", "x")
+      java.nio.file.Files.createSymbolicLink((d / "link").toNIO, java.nio.file.Path.of("real"))
+      assertEquals(WhichTool.chainOf((d / "link").toNIO).map(_.toString), Vector((d / "real").toString))
+      assertEquals(WhichTool.chainOf((d / "real").toNIO), Vector.empty) // not a link -> no hops
+    finally os.remove.all(d)
+  }
+  test("WhichTool.human: size formatting") {
+    assertEquals(WhichTool.human(512L), "512B")
+    assertEquals(WhichTool.human(3175L), "3.1K")
+    assertEquals(WhichTool.human(142_000_000L), "135.4M")
+  }
+
   // --- skillcheck (SM070: expected-skill manifest from disk; warn on the silent skill outage) ---
   private def skillsFixture(): os.Path =
     val d = os.temp.dir()
