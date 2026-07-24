@@ -79,7 +79,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 
 **Groups:** [Roles and cases](#roles-and-cases) · [Channel: bandwidth and confirmation fatigue](#channel-bandwidth-and-confirmation-fatigue) · [Echt and honest writing](#echt-and-honest-writing) · [Context rot and the smart zone](#context-rot-and-the-smart-zone) · [Dances and handoffs](#dances-and-handoffs) · [Memory, habits and substrate](#memory-habits-and-substrate) · [Autonomy and safety](#autonomy-and-safety)
 
-**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · Agentic requirements engineering (agentic RE) · Agentic software engineering (agentic SE) · AT · Authority anchor · Ballgame · BR · BRB dance · Cold start · Comms shorthand · Communication bandwidth · Compact dance · Compact sleep · Compact trigger · Confabulation · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context dance · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · Delegation dance · echt / äkthet · echt-mimicry · Edit dance · Edit vs clarification cues · Ember (warp ember; formerly baton) · Extrinsic-volatile plasticity · Go afk cue · Go dance · Go dial ((go)/go/GO) · gs (genscalator) · Guard stall · Habit · Hardening dance · Harvest-hot-context mode · Hot context · Index rot · Live-edit dance · Memory hygiene · Note dance · Order stability · Pin dance · Pinboard · Post-warp dissection · Prosthetic habit · P-word / plan-mode modal · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Silent · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Swedish-marker cue (|sv) · Thriller state · Token acceleration · Token efficiency (TE) · Token-usage dance · Token velocity · Warp · WR · Why cue
+**A→Z (Ctrl-F):** agent (CO4 / CF5) · AFK mode · Agentic requirements engineering (agentic RE) · Agentic software engineering (agentic SE) · AT · Authority anchor · Ballgame · BR · BRB dance · Cold start · Comms shorthand · Communication bandwidth · Compact dance · Compact sleep · Compact trigger · Confabulation · Confirmation fatigue (CF) · Consistency dance · Consolidation point · Context dance · Context rot · Context usage / fill · Corroboration asymmetry · Coupled-system capability · Dangling pointer · Delegation dance · echt / äkthet · echt-mimicry · Edit dance · Edit vs clarification cues · Ember (warp ember; formerly baton) · Extrinsic-volatile plasticity · Go afk cue · Go dance · Go dial ((go)/go/GO) · gs (genscalator) · Guard stall · Habit · Hardening dance · Harvest-hot-context mode · Hot context · Index rot · Live-edit dance · Memory hygiene · Model warp · Note dance · Order stability · Pin dance · Pinboard · Post-warp dissection · Prosthetic habit · P-word / plan-mode modal · Quick / deep cues · Ralph loop · Reach (access horizon) · Reflex · Rest dance · Review overload · Safe by design · Silent · Smart zone / dumb zone · Smart-zone ceiling (Z) · Solo dance · Solo-safe · SSG · Structural vs knowledge safeguard · Substrate · Substrate-as-multiplier · Swedish-marker cue (|sv) · Thriller state · Token acceleration · Token efficiency (TE) · Token-usage dance · Token velocity · Warp · WR · Why cue
 
 ### Roles and cases
 *BR and the agent are the **roles** (stakeholders, above). **WR** is the research program; **AT** and **SSG** are its **cases / units of analysis** — the object-level projects during which workflow data is collected. (Terminology per* Case Study Research in Software Engineering: Guidelines and Examples*, Runeson, Höst, Rainer & Regnell, Wiley 2012, §3.2.3 "Cases and Units of Analyses" — of which BR is a co-author.)*
@@ -934,6 +934,23 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   session ("old-old-me"). So **warp = the verb/event, cold start = the state a raw warp lands in.** Substrate-hierarchy
   cousin of the **compact dance** (which hands off *within* a session across a compaction; a warp crosses *between*
   processes). See `research/047-fresh-restart-fidelity.md`; memory [[exit-resume-dance]].
+  *All three (raw / resume / compact) move the **context**; contrast the **model warp** below, which moves the model
+  and leaves the context in place.*
+- **Model warp** — swapping the model that backs a **live** session (e.g. `/model`, Fable 5 ↔ Opus 4.8) **without
+  crossing the context boundary**: the whole context window carries over unchanged, only the *reader* changes. A
+  distinct **axis** from **Warp**: a warp moves the *context* (raw → **cold start**, resume → warm), a model warp
+  moves the *model* while staying inside one context. So the two questions are orthogonal — *did the context reset?*
+  (Warp) and *which model is reading it?* (Model warp). **Rot property (the reason it matters):** a model warp is
+  **rot-neutral** — it neither **clears** rot (the context is preserved, so any accumulated fill rides along; unlike a
+  **raw / cold** warp, which lands in an **un-rotted** fresh window) nor **causes** rot (it adds no tokens, does not
+  lengthen the thread). Two honest caveats: (a) a different model can have a different *sensitivity* to the **same**
+  fill (different context-length training / attention behaviour), so identical rotted context may **express**
+  differently after the swap — the swap does not create rot but can change how existing rot shows; (b) the incoming
+  model **inherits the prior model's turns as given** — ember-grade, *verify-don't-trust*, a fidelity concern, not
+  rot. *Naming: BR floated "cold warp" for the contrast; recorded as the already-named **raw warp → cold start** (the
+  rot-clearer), so we avoid a synonym and keep the axis pair **context warp** (whether the context resets) vs **model
+  warp** (which model reads it). BR + agent, first observed 2026-07-24 at the Fable 5 → Opus 4.8 swap.* Cf. **Warp**,
+  **Cold start**, **Context rot**.
 - **Cold start** — the **true fresh-restart condition** (and its data): what a **raw warp** lands in — a raw `claude`
   process, **no `--resume`, no warm working context**, reconstructing the working self **only from the durable
   substrate** (layers 2–3: memory + `PB` + this glossary/foundations) plus the auto-loaded index. Deliberate resonance
