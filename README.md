@@ -1,9 +1,9 @@
-# genscalator.ai
+# genscalator
 
 ## *Power tools for agents and humans: smarter, safer, faster.*
 
 <p align="center">
-  <img src="docs/img/status-line-2.png" alt="genscalator's three awareness lines in Claude Code at a cold start: the introspection line (clock, model, context-fill 5%, usage limits, cost), the mode line with declared modes ColdStart, SmartZone and TokSpend, and the box line showing machine health" width="100%">
+  <img src="docs/img/status-line-2.png" alt="genscalator's three awareness lines in Claude Code at a cold start: the introspection line (clock, model, context-fill 4%, usage limits, cost), the mode line with declared modes ColdStart, SmartZone and TokSaving, and the box line showing machine health" width="100%">
 </p>
 
 The above image shows the genscalator awareness lines. Read more about what they mean in [HUMANS.md, "The genscalator awareness lines"](HUMANS.md#7-the-genscalator-awareness-lines).
