@@ -546,6 +546,16 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     val cols = Option(System.getenv("COLUMNS")).flatMap(_.toIntOption)
     val showTot = !rotOnly && cols.forall(_ >= 90)
     val json = pos.headOption.getOrElse(scala.io.Source.stdin.mkString)
+    // Raw-capture facility (SM209): iff ~/.claude/gs-statusline-dump-on exists, tee the raw stdin JSON to
+    // ~/.claude/gs-statusline-last.json. This is the recall-free way to "confirm fields against a real
+    // invocation" (header) when a CC version adds/renames fields — touch the marker, read the file, remove
+    // the marker. No settings change, no flag in the wired command; absent marker costs one exists() check.
+    try
+      val dir = java.nio.file.Path.of(sys.props.getOrElse("user.home", "."), ".claude")
+      if java.nio.file.Files.exists(dir.resolve("gs-statusline-dump-on")) then
+        java.nio.file.Files.writeString(dir.resolve("gs-statusline-last.json"), json)
+    catch case _: Throwable => () // capture is best-effort; never break the prompt
+
     // Transcript-derived cumulative stats (SM117): the statusline JSON carries `transcript_path`; parse the JSONL
     // for the agent-token rot gauge (+ the internal human-char fatigue gauge feeding `tired?`). Fully guarded — any
     // failure yields no gauge, never a broken prompt. Reads the transcript on EACH render; --no-tok opts out.
