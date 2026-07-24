@@ -120,7 +120,7 @@ says which tool answers which question.
 
 **A. Clone the repo:**
 ```
-git clone git@github.com:bjornregnell/genscalator.git
+git clone https://github.com/bjornregnell/genscalator.git
 cd genscalator
 ```
 
@@ -295,5 +295,5 @@ Genscalator is developed as a liberally licensed open source software project th
 
 ## 8. Mirrors and digital sovereignty
 
-The genscalator repo is mirrored from [GitHub](https://github.com/bjornregnell/genscalator) to [Codeberg](https://codeberg.org/bjornregnell/genscalator) and [GitLab](https://gitlab.com/bjornregnell/genscalator) and in the spirit of [digital sovereignty](https://en.wikipedia.org/wiki/Digital_sovereignty). See also [here](https://codeberg.org/bjornregnell/digital-sovereignty).
+The genscalator repo is mirrored from [GitHub](https://github.com/bjornregnell/genscalator) to [Codeberg](https://codeberg.org/bjornregnell/genscalator) and [GitLab](https://gitlab.com/bjornregnell/genscalator) in the spirit of [digital sovereignty](https://en.wikipedia.org/wiki/Digital_sovereignty). See also [here](https://codeberg.org/bjornregnell/digital-sovereignty).
 
