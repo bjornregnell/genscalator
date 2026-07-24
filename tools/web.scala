@@ -45,6 +45,12 @@ object Web {
       |  tt web get https://example.org/big.json --max-bytes 20000
       |  tt web get https://codeberg.org/x --host codeberg.org    # refuse any other host
       |
+      |When a request never gets a response, the failure is CLASSIFIED rather than dumped raw:
+      |  [dns] [refused] [timeout] [tls] [unreachable] [reset] [other]
+      |each with a concrete next thing to check. The class is found by walking the exception's whole
+      |cause chain, since the transport error is normally wrapped several layers deep. Exit stays 2 for
+      |every class, so nothing that branches on the exit code changes behaviour.
+      |
       |Full reference: tools/README.md""".stripMargin
 
   private def webUsage(): Nothing =
@@ -55,6 +61,89 @@ object Web {
     sys.exit(2)
 
   private final case class WebOpts(url: Option[String], hosts: Vector[String], maxBytes: Int, status: Boolean, trace: Boolean)
+
+  /** Why a request never produced a response. The point of naming these: `request failed: null` (which
+    * is what a bare getMessage prints for several of them) tells the reader nothing, and the three
+    * cases an agent most needs to tell apart — the name did not resolve, nothing was listening, the
+    * peer never answered — are exactly the ones that look alike at the call site. */
+  enum NetFail:
+    case Dns, Refused, Timeout, Tls, Unreachable, Reset, Other
+
+  /** PURE: the cause chain, innermost failures included, with a cycle guard (a self-referencing cause
+    * would otherwise spin forever). requests/HttpURLConnection wrap the real cause, so classifying only
+    * the outermost throwable misses nearly everything. */
+  def causes(e: Throwable): List[Throwable] =
+    @annotation.tailrec
+    def go(t: Throwable, seen: List[Throwable]): List[Throwable] =
+      if t == null || seen.exists(_ eq t) then seen.reverse else go(t.getCause, t :: seen)
+    go(e, Nil)
+
+  private def msgOf(t: Throwable): String = Option(t.getMessage).getOrElse("").toLowerCase
+
+  /** PURE: last-resort classification from an exception's class name and message.
+    *
+    * WHY this exists, learned the hard way: the typed match below is not enough in practice. `requests`
+    * throws its OWN `requests.UnknownHostException` — not the JDK's — with no JDK cause underneath, so a
+    * purely type-based classifier reported `[other]` for the single most common failure (a name that does
+    * not resolve). Unit tests built from JDK exceptions all passed while the real path was wrong; only
+    * running it against a `.invalid` host exposed that. So: types first (precise), text second (survives
+    * whatever a client library wraps things in). */
+  def classifyByText(t: Throwable): Option[NetFail] =
+    val text = (t.getClass.getName + " " + Option(t.getMessage).getOrElse("")).toLowerCase
+    def has(s: String): Boolean = text.contains(s)
+    if has("unknownhost") || has("unknown host") || has("name or service not known")
+      || has("nodename nor servname") || has("temporary failure in name resolution") then Some(NetFail.Dns)
+    else if has("connection refused") then Some(NetFail.Refused)
+    else if has("timed out") || has("timeout") then Some(NetFail.Timeout)
+    else if has("no route to host") then Some(NetFail.Unreachable)
+    else if has("connection reset") then Some(NetFail.Reset)
+    else if has("certificate") || has("sslhandshake") || has("ssl") || has("tls") then Some(NetFail.Tls)
+    else None
+
+  /** PURE: classify a thrown request failure. Order matters — ConnectException extends SocketException,
+    * so the connect cases must be tried before the generic socket case. Typed matches win; anything the
+    * types miss falls through to `classifyByText` over the whole cause chain. */
+  def classify(e: Throwable): NetFail =
+    typedClassify(e).orElse(causes(e).flatMap(classifyByText).headOption).getOrElse(NetFail.Other)
+
+  private def typedClassify(e: Throwable): Option[NetFail] =
+    causes(e).collectFirst {
+      case _: java.net.UnknownHostException           => NetFail.Dns
+      case _: java.net.SocketTimeoutException         => NetFail.Timeout
+      case _: java.net.NoRouteToHostException         => NetFail.Unreachable
+      case _: java.net.PortUnreachableException       => NetFail.Unreachable
+      case _: javax.net.ssl.SSLException              => NetFail.Tls
+      case _: java.security.cert.CertificateException => NetFail.Tls
+      case c: java.net.ConnectException if msgOf(c).contains("timed out") => NetFail.Timeout
+      case _: java.net.ConnectException               => NetFail.Refused
+      case s: java.net.SocketException if msgOf(s).contains("reset")      => NetFail.Reset
+    }
+
+  /** PURE: the short tag printed in brackets. */
+  def label(f: NetFail): String = f match
+    case NetFail.Dns         => "dns"
+    case NetFail.Refused     => "refused"
+    case NetFail.Timeout     => "timeout"
+    case NetFail.Tls         => "tls"
+    case NetFail.Unreachable => "unreachable"
+    case NetFail.Reset       => "reset"
+    case NetFail.Other       => "other"
+
+  /** PURE: what the reader should check next. Kept concrete — a hint that just restates the class is noise. */
+  def hint(f: NetFail): String = f match
+    case NetFail.Dns         => "host name did not resolve — check the spelling, or DNS/offline"
+    case NetFail.Refused     => "nothing listening on that host and port — check the port, or the service is down"
+    case NetFail.Timeout     => "no answer before the timeout — host may be firewalled, slow, or the network is down"
+    case NetFail.Tls         => "TLS/certificate problem — expired, self-signed, or a name mismatch"
+    case NetFail.Unreachable => "no route to that host — check the network or the address"
+    case NetFail.Reset       => "peer closed the connection mid-request — it may be rejecting the client"
+    case NetFail.Other       => "unclassified transport failure"
+
+  /** PURE: the whole stderr line, so the wording is testable without a network. */
+  def failureLine(url: String, e: Throwable): String =
+    val f    = classify(e)
+    val why  = Option(e.getMessage).filter(_.nonEmpty).getOrElse(e.getClass.getSimpleName)
+    s"web: request failed [${label(f)}] at $url: $why  (${hint(f)})"
 
   def dispatch(args: String*): Unit =
     if args.contains("--help") || args.contains("-h") then { println(Help); sys.exit(0) }
@@ -92,7 +181,7 @@ object Web {
 
     // GET only. NO credential/cookie headers are ever attached — this tool cannot carry secrets outward.
     Try(requests.get(url, check = false, readTimeout = 30000, connectTimeout = 10000)) match
-      case Failure(e) => System.err.println(s"web: request failed: ${e.getMessage}"); sys.exit(2)
+      case Failure(e) => System.err.println(failureLine(url, e)); sys.exit(2)
       case Success(r) =>
         if o.status then
           val ct = r.headers.getOrElse("content-type", Nil).mkString(";")
@@ -119,7 +208,7 @@ object Web {
       else
         Try(requests.head(url, check = false, maxRedirects = 0, readTimeout = 30000, connectTimeout = 10000)) match
           case Failure(e) =>
-            System.err.println(s"web: request failed at $url: ${e.getMessage}"); sys.exit(2)
+            System.err.println(failureLine(url, e)); sys.exit(2)
           case Success(r) =>
             val loc    = r.headers.get("location").flatMap(_.headOption)
             val ct     = r.headers.getOrElse("content-type", Nil).mkString(";")
