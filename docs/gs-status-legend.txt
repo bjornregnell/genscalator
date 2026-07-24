@@ -1,0 +1,39 @@
+genscalator status line — how to read it (the tt statusline bar)
+
+LINE 1 — measured session gauges (fixed left-to-right order, two spaces apart)
+  genscalator      plugin + statusline are LIVE; absent = not wired up            bold green
+  14:37:19         local clock HH:MM:SS; FREEZES while the agent works, ticks     grey
+                   again when it is your turn (use it as a turn signal)
+  silent·22s       time since anything last landed in the feed (counted)          dim, ungraded
+  f5·1M            model abbreviated + context-window size (·1M = capacity tag)   cyan
+  ctx·4%           context-window FILL — the rot axis                             green → orange → red
+  rot?↑1k·tot↑1k   agent OUTPUT tokens: since last warp/compact · whole session   graded / dim
+  lim·%·res        legend header for the limit block (shape = window·used%·res)   dim grey
+  5h·55%·2h        rolling 5-hour limit: % used · countdown to reset              purple → orange → red
+  w·46%·3d         weekly (7-day) limit: % used · countdown to reset              blue-violet → … → red
+  f5·~88%·3d       HUMAN-DECLARED per-model weekly (~ = declared, only climbs;    same warn grading
+                   auto-drops once its reset passes — a dead declaration can't lie)
+  $0               notional API-equivalent cost (NOT a real charge on a fixed     blue; drops off first
+                   plan); a token-consumption meter, the least interesting number
+
+  Two glue glyphs carry KIND:   ·  glues a label to a LEVEL/state  (ctx·4%, w·46%·3d)
+                                ↑  glues a label to an output FLOW  (rot?↑1k, tot↑1k)
+
+LINE 2 — mode line (--mode-line): the DECLARED joint state-of-mind
+  gs mode set ColdStart & SmartZone & TokSaving
+  CamelCase chips set by you or the agent via  tt mode add <label>  (shorthand +label / -label)
+
+LINE 3 — box line (--box-line): MEASURED box health from /proc + /sys (Linux only)
+  box healthy | huffing | swamped   lead verdict = the worst segment's severity
+  mem 23%·7.0G·31.2G   load 46%·3.6avg·8cores   temp 44C   disk 56%·193Gfree   jvm 2x1.6G   bloop 1.5G
+
+GRADING (each gauge: healthy < 70% → orange → red; the red trigger differs by meaning)
+  ctx      orange at the compact trigger ~24% (0.8·Z), RED at the dumb-zone ceiling ~30% (Z).
+           Reds EARLY on purpose — a 1M window at 30% is already rot-risky. Tune: --ctx-warn (def 30).
+  5h & w   orange at 70%, RED at the usage warn threshold (def 80%); a limit's reset reddens WITH it.
+           Tune: --warn (def 80). The two thresholds are independent (rot signal vs budget signal).
+  box      mem/load orange 70% red 90% · temp orange 70 red 85 · disk orange 80 red 90 · bloop orange 2G red 6G
+
+PROVENANCE is encoded in the SURFACE: line 1 and line 3 are MEASURED, line 2 is DECLARED;
+and on line 1 the single "~" marks the one human-declared value. Read ctx for rot-risk,
+rot?↑ for how hard the agent has worked this window — they are different quantities, never added.
