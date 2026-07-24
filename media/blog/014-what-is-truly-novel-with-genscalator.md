@@ -14,7 +14,7 @@ While working on genscalator I got these two very relevant questions from my son
 1. **What is truly novel with genscalator, if anything?**
 2. **Why hasn't Anthropic with Claude done something similar already?**
 
-I should honestly try to answer them with a true [echt](https://codeberg.org/bjornregnell/genscalator/src/branch/main/docs/foundations.md#echt-and-honest-writing) ambition.
+I should honestly try to answer them with a true [echt](https://github.com/bjornregnell/genscalator/blob/main/docs/foundations.md#echt-and-honest-writing) ambition.
 
 ## Racing frontier models with triangulation
 

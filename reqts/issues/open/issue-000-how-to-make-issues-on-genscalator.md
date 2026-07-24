@@ -1,6 +1,6 @@
 <!-- issue-000 | status: open | created 2026-07-21 by bjornregnell | the in-repo form of the pinned
      forge Issue Zero. This whole file is forge-paste-ready: these comment lines do not render.
-     Forge copies: codeberg.org/bjornregnell/genscalator/issues/1 (canonical), mirrors per below. -->
+     Forge copies: github.com/bjornregnell/genscalator/issues/1 (canonical), mirrors per below. -->
 
 TLDR: prefer `reqts/issues` but ok to file here if you are a first-timer
 
@@ -37,9 +37,9 @@ empty-by-neglect.
 
 ## Where to find all the things
 
-* The canonical repository is https://codeberg.org/bjornregnell/genscalator
+* The canonical repository is https://github.com/bjornregnell/genscalator
   * You can also file issues on the mirrors; they are transcribed the same way:
-    * GitHub: https://github.com/bjornregnell/genscalator
+    * Codeberg: https://codeberg.org/bjornregnell/genscalator
     * GitLab: https://gitlab.com/bjornregnell/genscalator
 * `reqts/` holds the requirements side of the project. First go-tos:
   * the Product Requirements Document: `reqts/PRD.md`

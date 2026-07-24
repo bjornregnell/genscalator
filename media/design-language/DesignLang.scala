@@ -116,7 +116,7 @@ object DesignLang {
        |### Hot Iron Orange (HIO) ${hio.hex}
        |
        |hot-iron-orange, sampled from axe-2.jpg. Glowing iron at bright-orange working heat, roughly 900-950°C (about 1650-1750°F) *(approximate, read off the forge glow scale; verify against the temp-color chart in References before publishing)*
-       |  * https://codeberg.org/bjornregnell/genscalator/src/branch/main/media/img/axe-2.jpg
+       |  * https://github.com/bjornregnell/genscalator/blob/main/media/img/axe-2.jpg
        |
        |#### Complementary color of HIO: ${chio.hex}
        |
@@ -156,7 +156,7 @@ object DesignLang {
        |### Anvil Coal Graphite (ACG): ${acg.hex}
        |
        |A dark coal-stained cast anvil gray/brown sampled from axe-3
-       |  * https://codeberg.org/bjornregnell/genscalator/src/branch/main/media/img/axe-3.jpg
+       |  * https://github.com/bjornregnell/genscalator/blob/main/media/img/axe-3.jpg
        |
        |#### Complementary color of ACG: ${cacg.hex}
 
