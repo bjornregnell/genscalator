@@ -302,7 +302,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       limCluster("5h", "38;5;176", // rolling 5-hour window; countdown largest-unit-only since 2026-07-24
         m5.flatMap(_.get("used_percentage")).flatMap(_.num),
         m5.flatMap(_.get("resets_at")).flatMap(_.num).map(r => relReset(r.toLong, nowMs))),
-      limCluster("w", "38;5;174", // weekly window, rosy-red base; label dieted wk->w 2026-07-24
+      limCluster("w", "38;5;99", // weekly window, blue-violet base (BR 2026-07-24: 174 rose sat too close to 5h's 176 pink; 99 is clearly apart from BOTH the pink and the declared 139 dusty purple); label dieted wk->w 2026-07-24
         mWk.flatMap(_.get("used_percentage")).flatMap(_.num),
         mWk.flatMap(_.get("resets_at")).flatMap(_.num).map(r => relReset(r.toLong, nowMs)))
     ) ++ extras.map((label, m) =>
