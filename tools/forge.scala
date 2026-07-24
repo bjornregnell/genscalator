@@ -44,10 +44,10 @@ object Forge {
       "  forge issue  <owner>/<repo> <n> [--gh | --url BASE]             (body + comments)\n" +
       "  forge pr     <owner>/<repo> <n> [--gh | --url BASE]             (merge state + body)\n" +
       "  forge protection <owner>/<repo> <branch> [--gh | --url BASE]    (needs a token)\n" +
-      "  forge release-create <owner>/<repo> <tag> [--name S] [--body S | --body-file F] [--prerelease] [--draft] [--target C] [--url BASE]\n" +
+      "  forge release-create <owner>/<repo> <tag> [--gh | --gl | --url BASE] [--name S] [--body S | --body-file F] [--prerelease] [--draft] [--target C]\n" +
       "  forge release-edit   <owner>/<repo> <tag> [--name S] [--body S | --body-file F] [--prerelease] [--draft] [--url BASE]\n" +
-      "  BASE defaults to https://codeberg.org; release-create/edit read the token from env CODEBERG_TOKEN or FORGE_TOKEN (never a flag).\n" +
-      "  --gh targets the GitHub API; its token (optional for reads, required for protection) comes from env GITHUB_TOKEN or GH_TOKEN."
+      "  Dialects for release-create: default = Gitea/Forgejo (--url BASE, default https://codeberg.org); --gh = GitHub (fixed api.github.com); --gl = GitLab (--url BASE, default https://gitlab.com).\n" +
+      "  Tokens come ONLY from fixed env names (never a flag): Gitea = CODEBERG_TOKEN/FORGE_TOKEN, GitHub = GITHUB_TOKEN/GH_TOKEN, GitLab = GITLAB_TOKEN (GENSCALATOR_-prefixed variants win first)."
   )
 
   private val Help: String =
@@ -70,20 +70,23 @@ object Forge {
       |  forge pr     <owner>/<repo> <n> [--gh | --url BASE]     show a PR: merge state + body (READ)
       |  forge protection <owner>/<repo> <branch> [--gh | --url BASE]
       |                                                          show the protection rule (token)
-      |  forge release-create <owner>/<repo> <tag> [--name S] [--body S | --body-file F]
-      |                       [--prerelease] [--draft] [--target COMMITISH] [--url BASE]
+      |  forge release-create <owner>/<repo> <tag> [--gh | --gl | --url BASE]
+      |                       [--name S] [--body S | --body-file F]
+      |                       [--prerelease] [--draft] [--target COMMITISH]
+      |                       (create a release; three dialects — see below)
       |  forge release-edit   <owner>/<repo> <tag> [--name S] [--body S | --body-file F]
       |                       [--prerelease] [--draft] [--url BASE]
-      |                       (PATCH an existing release; sends ONLY the provided fields)
+      |                       (PATCH an existing Gitea release; sends ONLY the provided fields)
       |Flags:
-      |  --url BASE        forge base URL (default https://codeberg.org)
+      |  --url BASE        forge base URL (Gitea default https://codeberg.org; GitLab default https://gitlab.com)
       |  --limit N         max items for releases/tags (default 50)
       |  --name S          release title (default: the tag)
       |  --body S          release notes inline; --body-file F reads them from a file
-      |  --prerelease      mark as prerelease
-      |  --draft           mark as draft
-      |  --target C        commitish the new tag points at (release-create only)
-      |  --gh              talk to the GitHub API (api.github.com) instead of a Gitea forge
+      |  --prerelease      mark as prerelease (Gitea/GitHub only; GitLab has no such flag)
+      |  --draft           mark as draft (Gitea/GitHub only; GitLab has no such flag)
+      |  --target C        commitish/ref the new tag points at (release-create only)
+      |  --gh              talk to the GitHub API (fixed api.github.com) instead of a Gitea forge
+      |  --gl              talk to the GitLab API (--url BASE, default https://gitlab.com)
       |  --state S         open | closed | all for issues/prs (default open)
       |
       |Token: whoami and release-create/edit read the token from env
@@ -92,13 +95,22 @@ object Forge {
       |the set via env TT_FORGE_HOSTS). Effectful verbs print an [audit] line first.
       |GitHub verbs (--gh) read their token from env GENSCALATOR_GITHUB_TOKEN, GITHUB_TOKEN
       |or GH_TOKEN and only ever send it to api.github.com; reads work anonymously too
-      |(60 requests/h), protection requires the token (admin-scoped read).
+      |(60 requests/h), protection requires the token (admin-scoped read). release-create
+      |--gh needs it too (Contents: read-and-write, or the classic `repo` scope).
+      |GitLab release-create (--gl) reads its token from env GENSCALATOR_GITLAB_TOKEN or
+      |GITLAB_TOKEN (scope: api), sends it as PRIVATE-TOKEN, and only ever to a trusted host
+      |(gitlab.com; the HUMAN extends the set via env TT_FORGE_GITLAB_HOSTS or TT_FORGE_HOSTS
+      |for self-managed instances like git.cs.lth.se).
       |
       |Examples:
       |  tt forge releases bjornregnell/genscalator --limit 5    # latest 5 releases
       |  tt forge tags bjornregnell/genscalator                  # tag list with short SHAs
       |  tt forge release-create bjornregnell/genscalator v0.9.0 --name "v0.9.0: title" \
-      |           --body-file NOTES.md --prerelease
+      |           --body-file NOTES.md --prerelease                # Gitea/Codeberg (default)
+      |  tt forge release-create bjornregnell/prontopop v0.1.1 --gh --name "v0.1.1" \
+      |           --body-file NOTES.md                             # GitHub
+      |  tt forge release-create bjornregnell/prontopop v0.1.1 --gl \
+      |           --url https://git.cs.lth.se --name "v0.1.1" --body-file NOTES.md   # GitLab
       |
       |Full reference: tools/README.md""".stripMargin
 
@@ -139,6 +151,19 @@ object Forge {
   private def ghHeaders: Map[String, String] = // pair ONLY with GitHubApi-rooted URLs
     Map("Accept" -> "application/vnd.github+json") ++
       ghToken.map(t => "Authorization" -> s"Bearer $t")
+
+  // GitLab dialect. Unlike GitHub, GitLab has self-managed instances (git.cs.lth.se, …), so the base URL IS
+  // configurable via --url — which means the trusted-host guard matters here exactly as it does for the Gitea
+  // token: the token only ever travels to a host in gitlabTrustedHosts. Default: gitlab.com; the HUMAN extends
+  // the set via env TT_FORGE_GITLAB_HOSTS (or the shared TT_FORGE_HOSTS) — never a flag. Auth header is
+  // `PRIVATE-TOKEN` (not `Authorization: token`); token from fixed human-set env names only.
+  private val GlTokenEnvNames = List("GENSCALATOR_GITLAB_TOKEN", "GITLAB_TOKEN")
+  private def glToken: Option[String] =
+    GlTokenEnvNames.iterator.flatMap(sys.env.get).map(_.trim).find(_.nonEmpty)
+  private def gitlabTrustedHosts: Set[String] =
+    val extra = List("TT_FORGE_GITLAB_HOSTS", "TT_FORGE_HOSTS").iterator
+      .flatMap(n => sys.env.getOrElse(n, "").split(",")).map(_.trim).filter(_.nonEmpty).toSet
+    Set("gitlab.com") ++ extra
 
   private def userLogin(v: ujson.Value): String =
     Try(v.obj("user").obj("login").str).getOrElse("?")
@@ -383,9 +408,14 @@ object Forge {
         println(s"force pushes allowed: ${Try(p.obj("enable_force_push").bool).getOrElse(false)}")
       }
 
+  // Which forge dialect release-create/edit speaks. Gitea (default, --url) posts the Gitea payload with an
+  // `Authorization: token` header to a trustedHosts host; GitHub (--gh) posts to the FIXED api.github.com root;
+  // GitLab (--gl) posts the /api/v4 payload with a `PRIVATE-TOKEN` header to a gitlabTrustedHosts host.
+  private enum Dialect { case Gitea, GitHub, GitLab }
+
   private final case class CreateOpts(repo: Option[String], tag: Option[String], name: Option[String],
       body: Option[String], bodyFile: Option[String], prerelease: Boolean, draft: Boolean,
-      target: Option[String], base: String)
+      target: Option[String], base: String, dialect: Dialect)
 
   private def releaseCreate(args: List[String]): Unit =
     @annotation.tailrec
@@ -399,13 +429,25 @@ object Forge {
         case "--draft" :: t            => go(t, o.copy(draft = true))
         case "--target" :: c :: t      => go(t, o.copy(target = Some(c)))
         case "--url" :: u :: t         => go(t, o.copy(base = u))
+        case "--gh" :: t               => go(t, o.copy(dialect = Dialect.GitHub))
+        case "--gl" :: t               => go(t, o.copy(dialect = Dialect.GitLab))
         case flag :: _ if flag.startsWith("--") => die(s"unknown/incomplete flag '$flag'")
         case r :: t if o.repo.isEmpty  => go(t, o.copy(repo = Some(r)))
         case tg :: t if o.tag.isEmpty  => go(t, o.copy(tag = Some(tg)))
         case other :: _                => die(s"unexpected argument '$other'")
-    val o          = go(args, CreateOpts(None, None, None, None, None, false, false, None, DefaultBase))
+    val o             = go(args, CreateOpts(None, None, None, None, None, false, false, None, DefaultBase, Dialect.Gitea))
     val (owner, repo) = splitRepo(o.repo.getOrElse(forgeUsage()))
-    val tag        = o.tag.getOrElse(forgeUsage())
+    val tag           = o.tag.getOrElse(forgeUsage())
+    val bodyText = o.bodyFile match
+      case Some(f) => Try(os.read(os.Path(f, os.pwd))).getOrElse(die(s"cannot read --body-file '$f'"))
+      case None    => o.body.getOrElse("")
+    o.dialect match
+      case Dialect.Gitea  => createGitea(owner, repo, tag, bodyText, o)
+      case Dialect.GitHub => createGitHub(owner, repo, tag, bodyText, o)
+      case Dialect.GitLab => createGitLab(owner, repo, tag, bodyText, o)
+
+  // Gitea/Forgejo dialect (default): POST <base>/api/v1/repos/<o>/<r>/releases, `Authorization: token`, GitHub-shaped payload.
+  private def createGitea(owner: String, repo: String, tag: String, bodyText: String, o: CreateOpts): Unit =
     val tok = token.getOrElse(die(
       s"release-create needs a token — the HUMAN sets one of env ${TokenEnvNames.mkString(", ")}; it is deliberately\n" +
         "  NOT a flag, so the agent cannot self-authorize. Create one at Codeberg → Settings → Applications (write:repository)."))
@@ -414,9 +456,6 @@ object Forge {
     if !trustedHosts.contains(host) then die(
       s"refusing to send the token to untrusted host '$host'. Trusted: ${trustedHosts.toVector.sorted.mkString(", ")}.\n" +
         "  The HUMAN may extend the set via env TT_FORGE_HOSTS (comma-separated) — not a flag.")
-    val bodyText = o.bodyFile match
-      case Some(f) => Try(os.read(os.Path(f, os.pwd))).getOrElse(die(s"cannot read --body-file '$f'"))
-      case None    => o.body.getOrElse("")
     val payload = ujson.Obj(
       "tag_name"   -> tag,
       "name"       -> o.name.getOrElse(tag),
@@ -433,6 +472,62 @@ object Forge {
       case 201 =>
         val html = Try(ujson.read(r.text()).obj.get("html_url").map(_.str).getOrElse("")).getOrElse("")
         println(s"created release $tag  $html")
+      case 409 => die(s"a release for tag '$tag' already exists (409)")
+      case c   => die(s"POST $url -> $c ${r.statusMessage}\n${r.text().take(500)}")
+
+  // GitHub dialect (--gh): POST to the FIXED api.github.com root (never derived from --url, so the token cannot be
+  // redirected — same no-exfiltration rule as the read verbs). Payload is already GitHub-shaped (Gitea copied it).
+  private def createGitHub(owner: String, repo: String, tag: String, bodyText: String, o: CreateOpts): Unit =
+    if o.base != DefaultBase then die("--gh targets the fixed GitHub API root; drop --url (it is not used with --gh).")
+    val tok = ghToken.getOrElse(die(
+      s"release-create --gh needs a token — the HUMAN sets one of env ${GhTokenEnvNames.mkString(", ")} (never a flag).\n" +
+        "  Create a fine-grained token with Contents: read-and-write (or a classic token with the `repo` scope)."))
+    val url     = s"$GitHubApi/repos/$owner/$repo/releases"
+    val payload = ujson.Obj(
+      "tag_name"   -> tag,
+      "name"       -> o.name.getOrElse(tag),
+      "body"       -> bodyText,
+      "prerelease" -> o.prerelease,
+      "draft"      -> o.draft
+    )
+    o.target.foreach(c => payload("target_commitish") = c)
+    System.err.println(s"forge: [audit] POST $url  tag=$tag name=${o.name.getOrElse(tag)} prerelease=${o.prerelease} draft=${o.draft}")
+    val r = Try(requests.post(url, data = ujson.write(payload),
+      headers = Map("Content-Type" -> "application/json", "Accept" -> "application/vnd.github+json", "Authorization" -> s"Bearer $tok"),
+      check = false, readTimeout = 30000, connectTimeout = 10000)).getOrElse(die("request failed"))
+    r.statusCode match
+      case 201 =>
+        val html = Try(ujson.read(r.text()).obj.get("html_url").map(_.str).getOrElse("")).getOrElse("")
+        println(s"created release $tag  $html")
+      case 422 => die(s"GitHub rejected the release (422) — a release for tag '$tag' may already exist, or the ref is invalid.\n${r.text().take(500)}")
+      case c   => die(s"POST $url -> $c ${r.statusMessage}\n${r.text().take(500)}")
+
+  // GitLab dialect (--gl): POST <base>/api/v4/projects/<owner%2Frepo>/releases, `PRIVATE-TOKEN` header. Payload keys
+  // differ (description, not body); GitLab has no prerelease/draft concept. Base is configurable (self-managed
+  // instances) so the token only travels to a gitlabTrustedHosts host.
+  private def createGitLab(owner: String, repo: String, tag: String, bodyText: String, o: CreateOpts): Unit =
+    if o.prerelease || o.draft then die(
+      "GitLab releases have no prerelease/draft flag — drop --prerelease/--draft when using --gl.")
+    val base = if o.base == DefaultBase then "https://gitlab.com" else o.base // default gitlab.com, not codeberg
+    val tok  = glToken.getOrElse(die(
+      s"release-create --gl needs a token — the HUMAN sets one of env ${GlTokenEnvNames.mkString(", ")} (never a flag).\n" +
+        "  Create a personal/project access token with the `api` scope."))
+    val host = hostOf(base)
+    if !gitlabTrustedHosts.contains(host) then die(
+      s"refusing to send the token to untrusted host '$host'. Trusted: ${gitlabTrustedHosts.toVector.sorted.mkString(", ")}.\n" +
+        "  The HUMAN may extend the set via env TT_FORGE_GITLAB_HOSTS or TT_FORGE_HOSTS (comma-separated) — not a flag.")
+    val proj    = s"$owner%2F$repo" // GitLab wants the project path URL-encoded ('/' -> %2F)
+    val url     = s"${base.stripSuffix("/")}/api/v4/projects/$proj/releases"
+    val payload = ujson.Obj("tag_name" -> tag, "name" -> o.name.getOrElse(tag), "description" -> bodyText)
+    o.target.foreach(c => payload("ref") = c) // GitLab creates the tag from `ref` when it doesn't yet exist
+    System.err.println(s"forge: [audit] POST $url  tag=$tag name=${o.name.getOrElse(tag)}")
+    val r = Try(requests.post(url, data = ujson.write(payload),
+      headers = Map("Content-Type" -> "application/json", "PRIVATE-TOKEN" -> tok),
+      check = false, readTimeout = 30000, connectTimeout = 10000)).getOrElse(die("request failed"))
+    r.statusCode match
+      case 201 =>
+        val link = Try(ujson.read(r.text()).obj("_links").obj("self").str).getOrElse("")
+        println(s"created release $tag  $link")
       case 409 => die(s"a release for tag '$tag' already exists (409)")
       case c   => die(s"POST $url -> $c ${r.statusMessage}\n${r.text().take(500)}")
 

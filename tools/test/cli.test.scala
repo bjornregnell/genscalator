@@ -1718,6 +1718,22 @@ class CliSuite extends munit.FunSuite:
     assertEquals(run("forge", "release-edit", "foo/bar")._1, 2) // repo but no tag
   }
 
+  // --- forge release-create dialects (arg contract; the effectful POST needs a live forge + token, so only the
+  //     env-independent guards that die BEFORE any token/network are asserted here) ---
+  test("forge release-create without a repo or tag prints usage and exits 2 (before any token/network)") {
+    assertEquals(run("forge", "release-create")._1, 2)             // no repo
+    assertEquals(run("forge", "release-create", "foo/bar")._1, 2)  // repo but no tag
+  }
+  test("forge release-create --gh with --url exits 2 (GitHub root is fixed; token can't be redirected)") {
+    val (code, _, err) = run("forge", "release-create", "foo/bar", "v1", "--gh", "--url", "https://example.com")
+    assertEquals(code, 2)
+    assert(clue(err).toLowerCase.contains("fixed"))
+  }
+  test("forge release-create --gl rejects --prerelease/--draft (GitLab has no such flag) with exit 2 before network") {
+    assertEquals(run("forge", "release-create", "foo/bar", "v1", "--gl", "--prerelease")._1, 2)
+    assertEquals(run("forge", "release-create", "foo/bar", "v1", "--gl", "--draft")._1, 2)
+  }
+
   // --- forge issue/PR/protection READ verbs (arg contract; live reads need a network, so only arg errors here) ---
   test("forge issues/prs/issue/pr/protection with missing or bad args exit 2 before any network") {
     assertEquals(run("forge", "issues")._1, 2)                    // no repo
