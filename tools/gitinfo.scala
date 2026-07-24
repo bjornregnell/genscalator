@@ -14,6 +14,43 @@ import scala.util.Try
 object GitInfo {
   private def fail(msg: String): Nothing = { System.err.println(s"gitinfo: $msg"); sys.exit(2) }
 
+  /** Verdict comparing the local HEAD against a remote's HEAD. A plain equality test cannot tell a
+    * deliberately-behind mirror (e.g. a batched release mirror) from a genuinely forked history, so
+    * we classify by ancestry, not by hash-mismatch. */
+  enum RemoteSync:
+    case InSync       // same commit
+    case RemoteBehind // remote HEAD is an ancestor of local HEAD (local is ahead; the mirror lags)
+    case RemoteAhead  // local HEAD is an ancestor of remote HEAD (local is behind; fetch to catch up)
+    case Diverged     // histories have forked (neither is an ancestor of the other)
+    case Unresolved   // cannot decide: the remote HEAD object is not present locally (fetch to compare)
+
+  /** Pure classifier. `remoteAncestorOfLocal` / `localAncestorOfRemote` carry the ancestry facts as
+    * `Some(true|false)`, or `None` when git could not decide (typically the remote object is not in
+    * the local store). Equality wins first; then a true ancestry; then a definite fork; else Unresolved. */
+  def classify(
+      localHead: String,
+      remoteHead: String,
+      remoteAncestorOfLocal: Option[Boolean],
+      localAncestorOfRemote: Option[Boolean],
+  ): RemoteSync =
+    if remoteHead == localHead then RemoteSync.InSync
+    else (remoteAncestorOfLocal, localAncestorOfRemote) match
+      case (Some(true), _)            => RemoteSync.RemoteBehind
+      case (_, Some(true))            => RemoteSync.RemoteAhead
+      case (Some(false), Some(false)) => RemoteSync.Diverged
+      case _                          => RemoteSync.Unresolved
+
+  def verdictLine(rname: String, localHead: String, remoteHead: String, s: RemoteSync): String =
+    val l = localHead.take(12)
+    val r = remoteHead.take(12)
+    val note = s match
+      case RemoteSync.InSync       => "IN SYNC"
+      case RemoteSync.RemoteBehind => "remote BEHIND (local is ahead; the mirror lags)"
+      case RemoteSync.RemoteAhead  => "remote AHEAD (local is behind; fetch to catch up)"
+      case RemoteSync.Diverged     => "DIVERGED (histories have forked)"
+      case RemoteSync.Unresolved   => "differs (remote HEAD not present locally; fetch to compare)"
+    s"remote $rname: $note (local $l vs remote $r)"
+
   private def run(repo: os.Path, args: String*): (Int, String) =
     Try(os.proc(("git" +: "-C" +: repo.toString +: args)).call(
       check = false, stdout = os.Pipe, stderr = os.Pipe, timeout = 60_000)) match
@@ -31,7 +68,9 @@ object GitInfo {
       |Usage:
       |  gitinfo <repo>                    overview of the repo at <repo>
       |  gitinfo <repo> --remote <name>    also compare local HEAD against that remote's
-      |                                    HEAD (via ls-remote): prints IN SYNC or DIVERGED
+      |                                    HEAD (via ls-remote), classified by ANCESTRY:
+      |                                    IN SYNC / remote BEHIND / remote AHEAD / DIVERGED
+      |                                    (a deliberately-lagging mirror reads BEHIND, not DIVERGED)
       |
       |Examples:
       |  tt gitinfo /abs/myrepo                   # branch, state, upstream sync, recent commits
@@ -80,8 +119,20 @@ object GitInfo {
       run(repo, "ls-remote", rname, "HEAD") match
         case (0, out) if out.nonEmpty =>
           val remoteHead = out.split("\\s+").headOption.getOrElse("")
-          val verdict = if remoteHead == localHead then "IN SYNC" else "DIVERGED"
-          println(s"remote $rname: $verdict (local ${localHead.take(12)} vs remote ${remoteHead.take(12)})")
+          // Ancestry over hash-equality: `merge-base --is-ancestor A B` exits 0 (A is ancestor of B),
+          // 1 (not), or non-0/1 (git could not decide — typically the remote object is not present
+          // locally). Map each to Some(true)/Some(false)/None so a lagging mirror reads BEHIND, not DIVERGED.
+          def isAncestor(a: String, b: String): Option[Boolean] =
+            run(repo, "merge-base", "--is-ancestor", a, b)._1 match
+              case 0 => Some(true)
+              case 1 => Some(false)
+              case _ => None
+          val sync = classify(
+            localHead, remoteHead,
+            remoteAncestorOfLocal = isAncestor(remoteHead, localHead),
+            localAncestorOfRemote = isAncestor(localHead, remoteHead),
+          )
+          println(verdictLine(rname, localHead, remoteHead, sync))
         case (_, out) =>
           println(s"remote $rname: check failed ($out)")
 }
