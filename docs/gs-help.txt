@@ -6,7 +6,7 @@ matched to the nearest command in meaning (not exact syntax).
   gs help tt               list all available typed tools and a one-liner of what each does
   gs help tt <what>        show detailed help on the tool nearest in meaning to <what>
   gs tt <tool>             run <tool> and give its output in session, e.g. gs tt chrono
-  gs status                the status line information, expanded into a table in session
+  gs status                explain the status line: prints the ready-made legend (tt doc gs-status-legend)
   gs status line on        turn the status line (line 1) on
   gs status line off       turn the status line off
   gs status mode on        turn the mode line on (line 2: the declared joint state-of-mind)

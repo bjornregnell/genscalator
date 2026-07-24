@@ -41,11 +41,13 @@ gracefully). The per-command behaviour is specified below.
 - **`gs tt <tool>`** — run `tt <tool>` (with any args the user gave) and show its output inline. For an
   EFFECTFUL tool (git/forge/ssg/serv/web/box), the normal permission flow still applies — the explicit `gs`
   command is the user's intent, but surface what will run.
-- **`gs status`** — expand the status-line information into a TABLE in session: each segment (brand, clock,
-  model, ctx-fill, rot?/tot, 5h-lim, wk-lim, cost — plus, when wired, the line-2 mode chips and the line-3
-  box-health segments), its meaning, and its threshold/colour rule (from
-  `docs/statusline-manual.md`). Fill in current values only if they are available in context (e.g. the user
-  pasted the live line); otherwise present the legend and say the live values aren't visible to you.
+- **`gs status`** — **run `tt doc gs-status-legend`** (it cats `docs/gs-status-legend.txt`, the FINISHED
+  render-ready legend: all three lines, every segment's meaning, the grading rules) **and PASTE its output
+  verbatim in a code fence.** Do NOT re-compose a table from `docs/statusline-manual.md` — that in-session
+  re-synthesis was the measured 43s latency (SM219); the pre-baked paste is the fix, same reason as
+  `gs help`. Gloss live values only if the user pasted their status line; for a question the legend does
+  not answer, read `docs/statusline-manual.md` and answer JUST that question (smallest faithful paste).
+  Keep `docs/gs-status-legend.txt` current when the statusline changes.
 - **`gs status line on` / `off`** — the one-line `.claude/settings.json` change:
   on = add `"statusLine": { "type": "command", "command": "tt statusline" }`; off = remove that key; then
   reload via `/hooks`. Treat the explicit `gs` command as the user's go, but SHOW the exact change you make
@@ -99,14 +101,15 @@ live (BR typed `+afk +solo`, `-afk -solo`, `+dumb-zone?` in the pre-CamelCase er
 This is the no-prefix sibling of the `gs mode +afk` synonym in the crib below: the crib absorbs the `gs`-led
 variants, this absorbs the bare ones.
 - **`gs cues`** — list the cues (human→agent and agent→human) and what each means. **Source:
-  `docs/gs-registry.md`** (the ready-to-grab Cues tables — read it and render; it is kept in sync with
-  `docs/foundations.md` + the `cue-*` memories, which stay canonical if the registry looks stale). Present
-  grouped by direction.
+  `docs/gs-registry.md`** (kept in sync with `docs/foundations.md` + the `cue-*` memories, which stay
+  canonical if the registry looks stale). **PASTE its Cues tables verbatim** — they are ready-to-grab and
+  already grouped by direction; re-synthesising them into a fresh table is the SM219 latency, skip it.
 - **`gs cue <what>`** — explain the cue **nearest in meaning** to `<what>` (e.g. "tired" → `:Z`, "go away
   for a bit" → `BRB`/`hang on`, "do what I mean" → this).
 - **`gs dances`** — list the dances (compact, rest/`:Z`, delegation, live-edit, solo/AFK, token-usage,
   session-limit, weekly-limit, context, hardening, ...) and each one's goal. **Source:
-  `docs/gs-registry.md`** (the Dances table; regenerate from `docs/foundations.md` "Dances and handoffs" if stale).
+  `docs/gs-registry.md`** (the Dances table; regenerate from `docs/foundations.md` "Dances and handoffs" if
+  stale). **PASTE the Dances table verbatim** — ready-to-grab, no re-composition (SM219).
 - **`gs dance <what>`** — explain the dance **nearest in meaning** to `<what>` (e.g. "running low on
   context" → the compact dance, "hand off work" → the solo/delegation dance).
 - **`gs term <what>`** — explain the foundations glossary term **nearest in meaning** to `<what>`. Broader
