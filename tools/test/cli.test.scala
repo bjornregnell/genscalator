@@ -1774,6 +1774,135 @@ class CliSuite extends munit.FunSuite:
     assert(out.contains("tt chrono —"), clue(out))
   }
 
+  // --- json (SM228: read a JSON file — the verb whose absence let a raw python3 reflex through) ---
+  // These matter beyond their assertions: this suite runs each tool through `scala-cli run
+  // tools/<t>.scala`, the SAME single-file path the tt launcher falls back to whenever the native
+  // binary is stale. json.scala depends on minijson.scala, and without a `//> using file` directive it
+  // compiled fine under `scala-cli test tools` (whole-directory) while failing with 41 errors on that
+  // path. A tool absent from this suite is a tool whose real launcher path nothing checks.
+  private val jsonFixture =
+    """{"name":"gs","version":3,"permissions":{"allow":["a","b","c"]},"hooks":[{"matcher":"Bash"}]}"""
+
+  test("json check: well-formed file exits 0 and names the root kind") {
+    val f = os.temp(contents = jsonFixture, suffix = ".json")
+    try
+      val (code, out, _) = run("json", "check", f.toString)
+      assertEquals(code, 0)
+      assert(out.contains("ok:") && out.contains("object"), clue(out))
+    finally os.remove(f)
+  }
+  test("json check: malformed file exits 2 and says so") {
+    val f = os.temp(contents = """{"a": }""", suffix = ".json")
+    try
+      val (code, _, err) = run("json", "check", f.toString)
+      assertEquals(code, 2)
+      assert(err.contains("malformed json"), clue(err))
+    finally os.remove(f)
+  }
+  test("json get: dot path with a numeric array index prints the scalar unquoted") {
+    val f = os.temp(contents = jsonFixture, suffix = ".json")
+    try
+      assertEquals(run("json", "get", f.toString, "name"), (0, "gs", ""))
+      assertEquals(run("json", "get", f.toString, "permissions.allow.2")._2, "c")
+      assertEquals(run("json", "get", f.toString, "hooks.0.matcher")._2, "Bash")
+      assertEquals(run("json", "get", f.toString, "version")._2, "3") // whole number, no decimal tail
+    finally os.remove(f)
+  }
+  test("json keys: object keys sorted; array reports its size") {
+    val f = os.temp(contents = jsonFixture, suffix = ".json")
+    try
+      assertEquals(run("json", "keys", f.toString)._2.linesIterator.toList,
+        List("hooks", "name", "permissions", "version"))
+      assertEquals(run("json", "keys", f.toString, "permissions.allow")._2, "[array of 3]")
+    finally os.remove(f)
+  }
+  test("json pretty: output re-parses, so the renderer emits valid json") {
+    val f = os.temp(contents = jsonFixture, suffix = ".json")
+    try
+      val (code, out, _) = run("json", "pretty", f.toString)
+      assertEquals(code, 0)
+      assert(MiniJson.parse(out).isDefined, clue(out))
+    finally os.remove(f)
+  }
+  test("json: a bad path and a missing file both exit 2 with a locating message") {
+    val f = os.temp(contents = jsonFixture, suffix = ".json")
+    try
+      val (c1, _, e1) = run("json", "get", f.toString, "nope")
+      assertEquals(c1, 2); assert(e1.contains("no such key"), clue(e1))
+      val (c2, _, e2) = run("json", "get", f.toString, "permissions.allow.9")
+      assertEquals(c2, 2); assert(e2.contains("out of bounds"), clue(e2))
+      val (c3, _, e3) = run("json", "check", "/no/such/file.json")
+      assertEquals(c3, 2); assert(e3.contains("cannot read"), clue(e3))
+    finally os.remove(f)
+  }
+  test("json: unknown verb and missing args are usage errors, not silent defaults") {
+    assertEquals(run("json", "frobnicate", "/x")._1, 2)
+    assertEquals(run("json")._1, 2)
+  }
+
+  // --- sbt (SM226: run sbt in an explicit dir, no shell cd) ---
+  // Only the REJECTION paths are exercised: every case here must fail BEFORE any sbt process starts,
+  // which is the whole safety claim. Nothing in this suite may spawn a build.
+  test("sbt: --dir must be absolute, and must come first so no sbt arg can shadow it") {
+    assertEquals(run("sbt", "--dir", "relative/path")._1, 2)
+    assertEquals(run("sbt", "--dir", "../up")._1, 2)
+    assertEquals(run("sbt", "compile", "--dir", "/tmp")._1, 2)
+    val (_, _, err) = run("sbt", "--dir", "relative/path")
+    assert(err.contains("ABSOLUTE"), clue(err))
+  }
+  test("sbt: missing --dir value, and no args at all, are usage errors") {
+    assertEquals(run("sbt", "--dir")._1, 2)
+    assertEquals(run("sbt")._1, 2)
+  }
+  test("sbt: a nonexistent dir is refused before anything is spawned") {
+    val (code, _, err) = run("sbt", "--dir", "/no/such/dir/at/all")
+    assertEquals(code, 2)
+    assert(err.contains("not a directory"), clue(err))
+  }
+  test("sbt: a real dir that is not an sbt build is refused (no stray sbt session)") {
+    val d = os.temp.dir()
+    try
+      val (code, _, err) = run("sbt", "--dir", d.toString)
+      assertEquals(code, 2)
+      assert(err.contains("not an sbt build"), clue(err))
+    finally os.remove.all(d)
+  }
+
+  // --- bloop clean (reclaim .scala-build caches; DRY RUN unless --yes) ---
+  // Every case here either refuses, or reports without deleting. No test may pass --yes.
+  test("bloop clean: dry run finds a .scala-build dir, reports it, and deletes NOTHING") {
+    val d = os.temp.dir()
+    try
+      val cache = d / "sub" / ".scala-build"
+      os.makeDir.all(cache)
+      os.write(cache / "artifact.bin", "x" * 2048)
+      val (code, out, _) = run("bloop", "clean", "--dir", d.toString)
+      assertEquals(code, 0)
+      assert(out.contains("would remove"), clue(out))
+      assert(out.contains("DRY RUN"), clue(out))
+      assert(os.exists(cache), "dry run must not delete anything")
+    finally os.remove.all(d)
+  }
+  test("bloop clean: reports plainly when there is nothing to reclaim") {
+    val d = os.temp.dir()
+    try
+      val (code, out, _) = run("bloop", "clean", "--dir", d.toString)
+      assertEquals(code, 0)
+      assert(out.contains("no .scala-build"), clue(out))
+    finally os.remove.all(d)
+  }
+  test("bloop clean: refuses a relative dir, the filesystem root, and a too-shallow dir") {
+    assertEquals(run("bloop", "clean", "--dir", "relative")._1, 2)
+    assertEquals(run("bloop", "clean", "--dir", "/")._1, 2)
+    assertEquals(run("bloop", "clean", "--dir", "/home")._1, 2)
+    assertEquals(run("bloop", "clean", "--dir", System.getProperty("user.home"))._1, 2)
+  }
+  test("bloop clean: refuses with no --dir rather than sweeping the cwd") {
+    val (code, _, err) = run("bloop", "clean")
+    assertEquals(code, 2)
+    assert(err.contains("--dir"), clue(err))
+  }
+
   // --- harden (Layer-1 deterministic secret scanner; SM042) ---
   test("harden egress: flags AWS key + high-entropy assignment + PEM + sensitive filename; gates placeholders; redacts") {
     val d = os.temp.dir()
