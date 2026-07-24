@@ -8,7 +8,7 @@
 > distrust it and say so. Sibling-to-be: `SOLO-MENU.md` (deliberately separate, so a
 > context-rot-aware reader can wear blinders: one narrow file per question).
 
-*As of 2026-07-24 14:41 (commit-stamped by this file's own git log):*
+*As of 2026-07-24 18:02 (commit-stamped by this file's own git log):*
 
 ## Just landed (2026-07-24, the transfer-and-v0.9.2 day)
 
@@ -33,6 +33,15 @@
 * **SM215/SM216 pinned**: post-warp solo task (hmiddelk introprog scan + sandboxed-minion
   PR review) · `tt init` spec amended (init also creates in-repo `tmp/` + idempotent
   gitignore entry).
+* **SM207 SHIPPED** (ebc0388): `tt forge release-create` speaks three dialects
+  (Gitea/Codeberg default · `--gh` GitHub · `--gl` GitLab), CliSuite 179/0 with the new
+  arg-contract tests. Unblocks the gitlab v0.9.2 release object (LIVE create = BR, token).
+* **SM220 FIXED**: the live `tt` launcher was re-pointed from the retired berg clone to
+  the hub clone and the native binary rebuilt from hub; verified at the 18:00 cold start
+  (launcher symlink → hub, `gs-status-legend` served, chrono footer 0.009s).
+* **Doc/reflex hardening**: guard-clean digest gained the `tt gitinfo` row (8aaca4f),
+  `gs-status-legend` doc added (07d8766), tools/README missing-tools section filled
+  (43e8a2d), RT056 model-warp study committed.
 
 ## In flight
 
@@ -41,13 +50,14 @@
 
 ## Next up (decided, unstarted)
 
-* The pre-authorized solo queue (ember §4, re-confirmed at the 2026-07-24 cold start):
-  - (1) tt web surfaces the error CLASS (refused/timeout/dns).
-  - (3) **SM207** tt forge release-create --gh + --gl WRITE dialects (spec:
-    `notes/other-claude-on-tt-forge-need.md`; pure request-building solo; LIVE
-    release-create + tokens = BR). Feeds SM196; gitlab v0.9.2 release object waits on it.
-  - (4) tt bloop clean (path-pinned .scala-build removal; destructive RUN = BR review).
-  - (5) **SM215** hmiddelk introprog scan + sandboxed-minion PR review (outward = BR).
+* The pre-authorized solo queue, RE-PRIORITIZED by BR 2026-07-24 (ember §4; drain order):
+  - (1) **SM215** hmiddelk introprog scan + sandboxed-minion PR review (outward = BR).
+  - (2) **SM219** pre-baked render-ready docs (extend `gs-status-legend`; gs-dwim cats it).
+  - (3) **SM217** `tt git` log-search (grep/author/trailer) + `tt forge contributors` READ verbs.
+  - (4) `tt web` surfaces the error CLASS (refused/timeout/dns).
+  - (5) **SM218** promote the validated commit-message filter to a separate effectful tool
+    OUTSIDE `tt git` (non-allowlistable; mandatory backup/dry-run/audit + `tt git bundle`).
+  - (6) tt bloop clean (path-pinned .scala-build removal; destructive RUN = BR review).
 * SM203 `tt init` Stage 1: solo IF BR ratifies the design (spec AMENDED by SM216).
 * Awaiting BR: SM196 release-all design · SM197 tier decision · SM201 option-B
   checklist · SM204 seed browser eyeball + `gs new spa` wiring · SM206 SECURITY-MODEL
