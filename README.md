@@ -70,8 +70,6 @@ Make sure you have the prerequisites above. In Claude Code, run:
 /plugin install genscalator@bjornregnell
 /reload-plugins
 ```
-The short form installs from the GitHub mirror (kept in sync on every commit). The canonical
-Codeberg repo works too: `/plugin marketplace add https://codeberg.org/bjornregnell/genscalator.git`
 
 Then verify with **`/skills`** (you should see `tt-toolbox`,
 `scala-style`, and the rest of the set). If the skills do not show up yet, restart Claude Code and check again. 
@@ -122,7 +120,7 @@ says which tool answers which question.
 
 **A. Clone the repo:**
 ```
-git clone https://codeberg.org/bjornregnell/genscalator.git
+git clone git@github.com:bjornregnell/genscalator.git
 cd genscalator
 ```
 
@@ -297,5 +295,5 @@ Genscalator is developed as a liberally licensed open source software project th
 
 ## 8. Mirrors and digital sovereignty
 
-The genscalator repo is mirrored from [Codeberg](https://codeberg.org/bjornregnell/genscalator) to [GitHub (owned by Microsoft)](https://github.com/bjornregnell/genscalator), [GitLab](https://gitlab.com/bjornregnell/genscalator) and LTH coursegit (Lund University internal, login required) in the spirit of [digital sovereignty](https://en.wikipedia.org/wiki/Digital_sovereignty). See also [here](https://codeberg.org/bjornregnell/digital-sovereignty).
+The genscalator repo is mirrored from [GitHub](https://github.com/bjornregnell/genscalator) to [Codeberg](https://codeberg.org/bjornregnell/genscalator) and [GitLab](https://gitlab.com/bjornregnell/genscalator) and in the spirit of [digital sovereignty](https://en.wikipedia.org/wiki/Digital_sovereignty). See also [here](https://codeberg.org/bjornregnell/digital-sovereignty).
 
