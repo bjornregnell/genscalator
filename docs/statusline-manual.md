@@ -14,12 +14,19 @@ your prompt.
 ## What a full line looks like
 
 ```
-genscalator  14:23:07  silent 3s  f5·1M  ctx-fill 41%  rot?↑120k  tot↑180k  lim·reset 5h 30%·4h17m  wk 14%·3d  cost $12
+genscalator 14:23:07 silent·3s  f5·1M  ctx·41%  rot?↑120k  tot↑180k  lim·res·5h·30%·4h|w·14%·3d  $12
 ```
 
 Segments are separated by two spaces, in a fixed left-to-right order. If the line is wider than your
 terminal, CC truncates it at the right edge (it does not wrap), so the least-important segment — cost —
 falls off first by design.
+
+**The space diet (BR, 2026-07-24) and the two glue glyphs.** Labels were shortened (`ctx-fill`→`ctx`,
+`lim·reset`→`lim·res`, `wk`→`w`, `cost $N`→`$N`), countdowns are largest-unit-only, clock+silent fused
+into one segment, and the lim block welded into one unit with `|` between windows. Two glyphs carry
+KIND: **`·` glues a label to a state/level** (`silent·3s`, `ctx·41%`, `f5·1M`, `w·14%·3d`) while
+**`↑` glues a label to an output-FLOW count** (`rot?↑120k`, `tot↑180k`) — so the glue itself tells you
+whether you are reading a level or a flow.
 
 ## Reading each segment, and what to do about it
 
@@ -27,18 +34,18 @@ falls off first by design.
 |---|---|---|---|
 | **`genscalator`** | bold green | The plugin plus statusline are active. If this prefix is **absent**, genscalator is not wired up. | Nothing — it is your at-a-glance "am I live?" indicator. |
 | **`14:23:07`** | light grey | Local wall clock, HH:MM:SS. **It freezes while the agent is working and ticks again when control returns to you.** | Use the freeze/tick as a turn signal: ticking clock = your move in the ballgame; frozen = the agent has the ball. |
-| **`silent 3s`** | dim grey | Feed inactivity: now minus the last timestamped transcript record. COUNTED, not inferred — no threshold, no colour, no alarm; its subject is the FEED, not a person. NB a running command writes no transcript record, so agent-busy time counts as silence. | Nothing — a readout of how long since anything landed in the feed. |
+| **`silent·3s`** | dim grey | Feed inactivity: now minus the last timestamped transcript record. COUNTED, not inferred — no threshold, no colour, no alarm; its subject is the FEED, not a person. Rides one space after the clock (they are both time facts). NB a running command writes no transcript record, so agent-busy time counts as silence. | Nothing — a readout of how long since anything landed in the feed. |
 | **`f5·1M`** | cyan | The model, abbreviated (`Opus 4.8` → `o4.8`, `Fable 5` → `f5`, `Sonnet 5` → `s5`, `Haiku 4.5` → `h4.5`; the family letter is lower-case so `o` does not read as a zero), with the context-window size as a `·1M` suffix (middot, not `/`: a capacity tag, not a ratio) — taken from the measured `context_window.context_window_size` field, falling back to a size spelled in the display name. | Confirm you are on the model (and window) you intend. |
-| **`ctx-fill 41%`** | green (→ orange at the compact trigger ~24%, **red at the dumb-zone ceiling ~30%**) | How full the context window is. | This is the rot axis. Orange means you have crossed the **compact-dance trigger** (~0.8·Z) — start consolidating; **red means you are at the smart-zone ceiling Z and risking the dumb zone** (context rot) — do the compact dance now (commit, then compact) rather than letting it auto-compact mid-thought. Note this reds *early* (~30% of a 1M window), not near 100% — a full-but-rotting window is the danger, not a technically-full one. |
+| **`ctx·41%`** | green (→ orange at the compact trigger ~24%, **red at the dumb-zone ceiling ~30%**) | How full the context window is (label dieted from `ctx-fill`; the FILL sense is unchanged). | This is the rot axis. Orange means you have crossed the **compact-dance trigger** (~0.8·Z) — start consolidating; **red means you are at the smart-zone ceiling Z and risking the dumb zone** (context rot) — do the compact dance now (commit, then compact) rather than letting it auto-compact mid-thought. Note this reds *early* (~30% of a 1M window), not near 100% — a full-but-rotting window is the danger, not a technically-full one. |
 | **`rot?↑120k  tot↑180k`** | graded (rot?) / dim (tot) | Agent output tokens SINCE the last warp/compact (`rot?↑` — the current-window rot proxy; the `?` marks it inferred, the `↑` marks output-FLOW) and for the whole session (`tot↑`; dropped on a narrow terminal). | Read `rot?↑` as "how hard has the agent worked this window" — a second rot axis besides `ctx-fill`; see the do-not-reconcile note below the grading section. |
-| **`lim·reset`** | dim grey | Shared legend for the two usage-limit clusters that follow. **Its middot mirrors the value middot** — `lim·reset` ⟷ `5h 30%·4h17m` reads *left of the dot = limit % used, right = time until reset*. (The separator was `/` until 2026-07-19; the middot reads easier and `/` wrongly suggested division or "per".) Shown only when at least one limit is present. | Nothing — it is the column header telling you how to read the `%·reset` pairs. |
-| **`5h 30%·4h17m`** | purple (→ orange ≥ 70%, **red at/above the warn threshold, default 80%**); the **whole cluster** — the % and its reset — shares the one hue | Your rolling 5-hour session limit: **% used** `·` **fine countdown** (h+m) to reset. The reset half shows only if CC sends `rate_limits.five_hour.resets_at`; with no %, just the window + reset show, ungraded. | When it reddens you are near the session cap — ease off, checkpoint, or wrap up. The reset reddens **with** its limit (same cluster colour), so cap-and-relief read as one unmistakable block. |
-| **`wk 14%·3d`** | rosy (→ orange ≥ 70%, **red at/above the warn threshold**); whole cluster shares the hue | Your weekly (7-day) limit: **% used** `·` **coarse countdown** (m/h/d) to reset. | The slow-moving budget. Reddens near the weekly cap; a distant reset then means pace the rest of the week. |
-| **`cost $12`** | blue | Notional API-equivalent cost of this session, in whole dollars (cents dropped to save space): **what the tokens this conversation has burned would cost if billed at pay-as-you-go API rates.** It is cumulative across the session (and survives a compact), and is *not* tied to your monthly billing period. | On a fixed monthly plan this is **not** a real charge — it is a token-consumption meter, the least interesting number, which is why it is placed last and drops off first on a narrow terminal. |
+| **`lim·res·`** | dim grey | Shared legend for the usage-limit block, middot-WELDED to its first cluster. **Its middots mirror the value middots** — each cluster reads `window·used%·countdown`. Shown only when at least one limit is present. The whole block is one visual unit: gray `|` between windows, each window its own hue. | Nothing — it is the column header telling you how to read the clusters. |
+| **`5h·30%·4h`** | purple (→ orange ≥ 70%, **red at/above the warn threshold, default 80%**); the **whole cluster** — the % and its reset — shares the one hue | Your rolling 5-hour session limit: **% used** `·` **countdown** (largest unit only) to reset. The % anchors the middle: the window label reads before it, the countdown after (both may end in `h`). The reset half shows only if CC sends `rate_limits.five_hour.resets_at`; with no %, just the window + reset show, ungraded. | When it reddens you are near the session cap — ease off, checkpoint, or wrap up. The reset reddens **with** its limit (same cluster colour), so cap-and-relief read as one unmistakable block. |
+| **`w·14%·3d`** | rosy (→ orange ≥ 70%, **red at/above the warn threshold**); whole cluster shares the hue | Your weekly (7-day) limit (label dieted from `wk`): **% used** `·` **coarse countdown** to reset. Any EXTRA `rate_limits` window a future CC version adds (e.g. a per-model weekly) joins the block automatically with a compacted label, e.g. `f5·77%·3d` — as of CC 2.1.218 the feed carries only the two windows, verified live 2026-07-24. | The slow-moving budget. Reddens near the weekly cap; a distant reset then means pace the rest of the week. |
+| **`$12`** | blue | Notional API-equivalent cost of this session, in whole dollars (cents dropped to save space): **what the tokens this conversation has burned would cost if billed at pay-as-you-go API rates.** It is cumulative across the session (and survives a compact), and is *not* tied to your monthly billing period. | On a fixed monthly plan this is **not** a real charge — it is a token-consumption meter, the least interesting number, which is why it is placed last and drops off first on a narrow terminal. |
 
 ### The gauge grading (the three limit/fill segments)
 
-`ctx-fill` and the two limit clusters (`5h`, `wk`) each start in their own healthy hue and escalate:
+`ctx` and the limit clusters (`5h`, `w`) each start in their own healthy hue and escalate:
 
 - **healthy** — below 70%: the segment's base colour (green / purple / rosy).
 - **orange** — 70% or above: getting full; start planning.
@@ -46,13 +53,13 @@ falls off first by design.
 
 The **red** trigger differs by segment, because "danger" means something different for each:
 
-- **`ctx-fill`** is graded to the **compact-dance math**, not a near-full window:
+- **`ctx`** is graded to the **compact-dance math**, not a near-full window:
   - **orange** at the **compact trigger** ≈ 0.8·Z (default ~24%) — start consolidating toward a compact.
   - **red** at the **smart-zone ceiling Z** (default ~30%) — you are risking the **dumb zone** (context rot);
     do the compact dance now. It reds *early* on purpose: a context window at 30% of 1M is already rot-risky
     long before it is technically full, so waiting for 90% would be far too late.
   - Configure with **`--ctx-warn N`** (default 30). Orange automatically tracks 0.8·N.
-- **The `5h` and `wk` clusters** are graded to the **usage-limit warn threshold**:
+- **The `5h` and `w` clusters** are graded to the **usage-limit warn threshold**:
   - **orange** at 70%, **red** at the **warn threshold (default 80%)** — and when a limit reddens **its reset
     countdown reddens with it**, so an approaching cap is unmistakable at a glance. This is the ambient
     early-warning slice of the usage-limit WARNING requirement.
@@ -62,13 +69,13 @@ The **red** trigger differs by segment, because "danger" means something differe
 The two thresholds are independent — the usage-limit warn (a subscription-budget signal) and the ctx-fill
 dumb-zone threshold (a rot signal) mean different things and default to different values (80 vs 30).
 
-**`ctx-fill` vs `rot?↑` / `tot↑` — different quantities, do not reconcile them.** `ctx-fill` is window
+**`ctx` vs `rot?↑` / `tot↑` — different quantities, do not reconcile them.** `ctx` is window
 **occupancy** (a percentage: how full the context window is right now). `rot?↑` and `tot↑` are cumulative
 **agent output tokens generated** (a count: `rot?↑` since the last warp/compact, `tot↑` for the whole
 session) — the `↑` marks them as output-*flow*, not occupancy. A flow-count and an occupancy-level are
 decoupled: you can generate a large `rot?↑` while `ctx-fill` stays low, or fill the window with one big
 paste at near-zero `rot?↑`. So `4%` and `2k` are not two views of one number and never add up — read
-`ctx-fill` for rot-risk, `rot?↑` for how hard the agent has been working this window. (Aside: `rot?↑` equals
+`ctx` for rot-risk, `rot?↑` for how hard the agent has been working this window. (Aside: `rot?↑` equals
 `tot↑` exactly when there has been no compact since the session started — a free "no warp yet" signal.)
 
 ## Line 2 — the mode line (`--mode-line`)
@@ -124,8 +131,9 @@ restart). There is no runtime toggle; presence of the key is the switch.
 
 Nothing is wrong — the tool only prints a segment when its field is present in the JSON CC sent:
 
-- The `rate_limits.*` clusters (`5h`, `wk`, with their `%·reset` pairs under the `lim·reset` legend) are a Claude Pro/Max
-  feature; on other tiers they simply do not appear.
+- The `rate_limits.*` clusters (`5h`, `w`, welded under the `lim·res·` legend) are a Claude Pro/Max
+  feature; on other tiers they simply do not appear. A per-model weekly limit (the one `/usage` shows,
+  e.g. Fable) is NOT in the feed as of CC 2.1.218 — the day CC adds it, it joins the block automatically.
 - A completely empty or non-JSON stdin prints a **blank line** (exit 0) — it will never break your prompt.
 - The leading clock is only added once the JSON parses, so a blank line really is blank (no stray clock).
 
@@ -134,3 +142,7 @@ Nothing is wrong — the tool only prints a segment when its field is present in
 The tool is `tools/statusline.scala` (`tt statusline`). It reads stdin by default, and for deterministic
 tests also accepts the JSON as a positional argument plus `--now-ms N` to pin the clock. See the toolbox
 test suite for the exact fields consumed and the rendering assertions.
+
+**Raw capture (what is CC actually sending?):** touch `~/.claude/gs-statusline-dump-on` and the next
+render tees its raw stdin JSON to `~/.claude/gs-statusline-last.json`; remove the marker to stop. This is
+the recall-free way to confirm the fields against a real invocation when a CC version changes the feed.

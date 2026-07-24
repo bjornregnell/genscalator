@@ -5,8 +5,11 @@
 
 // statusline — format the Claude Code `statusLine` stdin JSON into ONE compact line (SM039).
 // Claude Code pipes a JSON object to the configured statusLine command's stdin each turn; this reads it and prints:
-//   genscalator  14:23:07  o4.8·1M  ctx-fill 41%  lim·reset  5h 30%·2h5m  wk 14%·3d  cost $12
-//   (leading HH:MM:SS wall clock; ANSI-coloured segments; two-space separators; ctx is a FILL gauge, 5h/wk LIMITs)
+//   genscalator 14:23:07 silent·42s  o4.8·1M  ctx·41%  lim·res·5h·30%·2h|w·14%·3d  $12
+//   (leading HH:MM:SS wall clock; ANSI-coloured segments; two-space separators; ctx is a FILL gauge, 5h/w LIMITs;
+//   space diet 2026-07-24, BR: `·` is the universal label·value glue for states/levels (`↑` stays exclusively the
+//   rot?/tot output-flow marker), clock+silent fused by ONE space, ctx-fill->ctx, lim·reset->lim·res, wk->w, the
+//   lim block welded with gray `|` between clusters, cost dropped to a bare $N, countdowns largest-unit-only)
 // Every segment is INDEPENDENTLY GUARDED: a field absent from the JSON simply omits its segment, so the tool
 // degrades gracefully across CC versions / subscription tiers (rate_limits are Claude Pro/Max only) and NEVER
 // crashes the prompt — a bad/empty stdin prints an empty line, exit 0.
@@ -16,9 +19,9 @@
 //   model.display_name|model.id · cost.total_cost_usd · context_window.used_percentage ·
 //   rate_limits.five_hour.{used_percentage,resets_at} · rate_limits.seven_day.{used_percentage,resets_at}
 // Reads stdin by default; also accepts the JSON as a positional arg + `--now-ms N` (both for deterministic tests).
-// `--warn N` sets the usage-limit warn threshold (default 80): a 5h/wk limit at/above it turns its % AND its
+// `--warn N` sets the usage-limit warn threshold (default 80): a 5h/w limit at/above it turns its % AND its
 // reset countdown RED (the ambient slice of the SM022b usage-limit WARNING). Context-fill has a 3-step warn
-// ladder: `--ctx-warn N` = the smart-zone ceiling Z (default 30; ctx-fill reds at/above, oranges at 0.8*Z);
+// ladder: `--ctx-warn N` = the smart-zone ceiling Z (default 30; ctx reds at/above, oranges at 0.8*Z);
 // `--dumb-zone N` = most-likely-rotted (default 75; bold bright-red + a "dumb-zone" flag); `--auto-compact N`
 // = the harness is about to auto-compact (default 92 - a GUESS; the real trigger is UNDOCUMENTED/opaque, the
 // 90% warning is a separate alert, observed ~90-95%; bold reverse red +
@@ -28,7 +31,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
   def pct(v: Double): String = s"${v.round.toInt}%"
 
   // --- ANSI colour (SM039 polish). Each SEGMENT is wrapped as a WHOLE so its plain text stays a substring
-  // (the tests match on `contains("ctx-fill 41%")` etc.), and a bad/empty stdin still yields "" with no codes.
+  // (the tests match on `contains("ctx 41%")` etc.), and a bad/empty stdin still yields "" with no codes.
   // 256-colour; on a terminal without 256-colour support the sequences degrade to plain text.
   val ESC: Char = 27.toChar // the ANSI escape byte (0x1B); explicit to avoid any \u-escape ambiguity
   def sgr(code: String, s: String): String = s"${ESC}[${code}m${s}${ESC}[0m"
@@ -190,16 +193,8 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       else if mins < 1440 then s"${mins / 60}h"
       else s"${mins / 1440}d"
 
-  /** Finer countdown (hours + minutes) for SHORT windows like the 5-hour limit. PURE. */
-  def relResetFine(resetsAt: Long, nowMs: Long): String =
-    val resetMs = if resetsAt < 1000000000000L then resetsAt * 1000L else resetsAt // <1e12 ⇒ seconds
-    val deltaMs = resetMs - nowMs
-    if deltaMs <= 0 then "now"
-    else
-      val totalMin = deltaMs / 60000L
-      val h = totalMin / 60
-      val m = totalMin % 60
-      if h <= 0 then s"${m}m" else s"${h}h${m}m"
+  // relResetFine (h+m countdown for the 5h window) RETIRED 2026-07-24 (BR space diet): every window now
+  // counts down largest-unit-only via relReset, at the cost of near-reset precision on the 5h window.
 
   /** PURE: statusLine JSON + current time → the one-line status ("" if nothing usable / not JSON). */
   def render(json: String, nowMs: Long, warn: Double = 80, ctxWarn: Double = 30, dumbZone: Double = 75, autoCompact: Double = 92,
@@ -213,7 +208,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     // Brand + clock are ONE segment joined by a SINGLE space (BR 2026-07-19): all three lines carry an
     // 11-char lead ("genscalator" / "gs mode set" / "box healthy") + one space, so column 2 aligns across
     // lines 1-3 — saves hspace and gives the stacked lines their aligned left edge.
-    segs += sgr("1;38;5;42", "genscalator") + " " + sgr("38;5;250", clock(nowMs))
+    val brandClock = sgr("1;38;5;42", "genscalator") + " " + sgr("38;5;250", clock(nowMs))
     // `silent` — feed inactivity, riding just after the clock (BR, 2026-07-17). LINE-1 CONTRACT: this row is for what
     // a MECHANISM MEASURES; line 2 is for what someone DECLARES. So the SURFACE encodes the provenance and no
     // provenance field is needed — the line IS the field.
@@ -242,7 +237,11 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     // no threshold and no colour: a readout may say "nothing has landed for 18s"; an alarm may not. ⚠️ Note the
     // limit SURVIVES the rename and is not fixed by it — `silent` is honest about the feed, and the feed is still
     // an imperfect proxy for the pair. It just no longer LIES about whose state it is.
-    silentSec.foreach(s => segs += sgr("38;5;245", s"silent ${formatGapShort(s)}"))
+    // silent rides INSIDE the clock segment, ONE space after it (BR space diet 2026-07-24): both are
+    // "time facts", so the single space that fuses them is also the visual grouping. Label·value are
+    // MIDDOT-glued (BR 2026-07-24): `·` is the universal state/level glue; `↑` stays EXCLUSIVELY the
+    // output-flow marker on rot?/tot — the diet sharpened that distinction rather than diluting it.
+    segs += silentSec.map(s => brandClock + " " + sgr("38;5;245", s"silent·${formatGapShort(s)}")).getOrElse(brandClock)
     // measured ctx-window SIZE (docs: context_window.context_window_size, 200000 default / 1000000 extended) —
     // feeds the model tag's "/1M" suffix so it survives a display_name that omits it (see shortModel).
     val ctxSize = o.get("context_window").flatMap(_.obj).flatMap(_.get("context_window_size")).flatMap(_.num).map(_.toLong)
@@ -250,46 +249,66 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       m.get("display_name").orElse(m.get("id")).flatMap(_.str).foreach(n => segs += sgr("38;5;45", shortModel(n, ctxSize))) // un-bold so the bold genscalator prefix is the only bold thing
     o.get("context_window").flatMap(_.obj).flatMap(_.get("used_percentage")).flatMap(_.num)
       .foreach(p => segs += sgr(ctxGauge(p, ctxWarn, dumbZone, autoCompact),
-        s"ctx-fill ${pct(p)}${if p >= autoCompact then " auto-compact!" else if p >= dumbZone then " dumb-zone" else ""}")) // escalates green->orange->red(Z)->dumb-zone(D)->auto-compact(A)
+        s"ctx·${pct(p)}${if p >= autoCompact then " auto-compact!" else if p >= dumbZone then " dumb-zone" else ""}")) // escalates green->orange->red(Z)->dumb-zone(D)->auto-compact(A); label dieted from ctx-fill + middot-glued 2026-07-24 (colour carries the fill-vs-limit distinction; the alarm flags keep their space — they are words, not values)
     // rot?/tot token gauges (SM128): rot? = tokens since the last warp (compact/clear) = the CURRENT-window rot
     // signal, COLOURED by threshold; the `?` marks it an inferred proxy (SM118). tot = cumulative lifetime tokens,
     // dim (context only, no threshold meaning), and DROPPED on a narrow terminal (showTot). rot? is the star.
-    // The `↑` marks these as OUTPUT-FLOW (agent tokens GENERATED), a different KIND of quantity from ctx-fill's
+    // The `↑` marks these as OUTPUT-FLOW (agent tokens GENERATED), a different KIND of quantity from ctx's
     // window OCCUPANCY (%): a flow-count vs a level, decoupled, never expected to reconcile. The glyph stops a
     // glancer grouping `2k` with `4%` on one axis (wr-data 2026-07-17, confirmed against TranscriptStats).
     rotTokens.foreach(r => segs += sgr(tokGauge(r, tokWarn, tokDanger), s"rot?↑${formatTokens(r)}"))
     if showTot then totTokens.foreach(t => segs += sgr("38;5;245", s"tot↑${formatTokens(t)}"))
     val rl = o.get("rate_limits").flatMap(_.obj)
     // Compact rate-limit cluster (BR 2026-07-17): factor the twice-repeated "lim"/"reset" words into ONE gray
-    // legend `lim·reset`, whose middot MIRRORS the value middot `P%·reset` — the legend IS the column header.
+    // legend `lim·res` (dieted from `lim·reset` 2026-07-24), whose middot MIRRORS the value middot `P%·reset`
+    // — the legend IS the column header.
     // (Separator changed '/'→'·' 2026-07-19, BR: the middot reads easier and '/' wrongly suggests division/"per";
     // same sweep across the model tag and the box line.) Each
-    // window's whole cluster (`5h P%·reset`, `wk P%·reset`) takes its own gauge colour, so a near-cap limit reds as
+    // window's whole cluster (`5h P%·reset`, `w P%·reset`) takes its own gauge colour, so a near-cap limit reds as
     // one solid block (the reset reddens WITH its limit, for free) and all of one window's info shares a hue. Both
     // halves stay independently guarded: a missing % or reset simply drops from the cluster (no orphan separator).
     def limCluster(label: String, base: String, usedP: Option[Double], reset: Option[String]): Option[String] =
       Option.when(usedP.isDefined || reset.isDefined):
-        val body = (usedP.map(pct), reset) match
-          case (Some(p), Some(r)) => s"$label ${p}·$r" // ${p} braced: '·' is a legal identifier char
-          case (Some(p), None)    => s"$label $p"
-          case (None, Some(r))    => s"$label $r"    // CC sent no %: show the window + its reset, ungraded
-          case (None, None)       => label            // unreachable under the Option.when guard
+        val body = (usedP.map(pct), reset) match // label·%·countdown all middot-glued (BR 2026-07-24): position
+          case (Some(p), Some(r)) => s"${label}·${p}·$r" // carries the meaning — the % anchors the middle, so the
+          case (Some(p), None)    => s"${label}·$p"      // window label sits before it, the countdown after (both
+          case (None, Some(r))    => s"${label}·$r"      // may end in 'h': 5h·14%·4h). CC sent no %: ungraded.
+          case (None, None)       => label               // unreachable under the Option.when guard
+          // every interpolant before a '·' is BRACED: '·' is a legal Scala identifier char and would glue onto a bare $name
         sgr(usedP.map(p => limGauge(p, warn, base)).getOrElse("38;5;245"), body)
     val m5  = rl.flatMap(_.get("five_hour")).flatMap(_.obj)
     val mWk = rl.flatMap(_.get("seven_day")).flatMap(_.obj)
-    val clusters = List(
-      limCluster("5h", "38;5;176", // rolling 5-hour window
+    // FUTURE-PROOF extra windows (SM210): CC 2.1.218 sends ONLY five_hour + seven_day — the per-model weekly
+    // limit BR reads in /usage (e.g. Fable at 77%) is NOT in the feed (verified live via the raw capture AND
+    // the statusline docs, 2026-07-24). If a CC version ever adds one (say "seven_day_fable"), it renders here
+    // with a dieted label (window words dropped — the countdown already disambiguates; model words compacted
+    // like shortModel: "f5 77%·3d") with zero further work. Until then this renders nothing.
+    def extraLabel(key: String): String =
+      val wordMap = Map("opus" -> "o", "fable" -> "f5", "sonnet" -> "s", "haiku" -> "h")
+      val drop = Set("five", "hour", "seven", "day", "week", "weekly", "rolling", "")
+      val l = key.split('_').toVector.filterNot(drop).map(w => wordMap.getOrElse(w, w.take(2))).mkString
+      if l.isEmpty then key.take(3) else l
+    val extras = rl.map(_.toVector).getOrElse(Vector.empty)
+      .filter((k, _) => k != "five_hour" && k != "seven_day")
+      .flatMap((k, v) => v.obj.map(m => (extraLabel(k), m)))
+    val clusters = (List(
+      limCluster("5h", "38;5;176", // rolling 5-hour window; countdown largest-unit-only since 2026-07-24
         m5.flatMap(_.get("used_percentage")).flatMap(_.num),
-        m5.flatMap(_.get("resets_at")).flatMap(_.num).map(r => relResetFine(r.toLong, nowMs))),
-      limCluster("wk", "38;5;174", // weekly window, rosy-red base
+        m5.flatMap(_.get("resets_at")).flatMap(_.num).map(r => relReset(r.toLong, nowMs))),
+      limCluster("w", "38;5;174", // weekly window, rosy-red base; label dieted wk->w 2026-07-24
         mWk.flatMap(_.get("used_percentage")).flatMap(_.num),
         mWk.flatMap(_.get("resets_at")).flatMap(_.num).map(r => relReset(r.toLong, nowMs)))
-    ).flatten
-    // `lim/reset` legend glued to its first column by ONE space (BR); two-space `sep` between the two clusters.
-    if clusters.nonEmpty then segs += sgr("38;5;245", "lim·reset") + " " + clusters.mkString(sep)
+    ) ++ extras.map((label, m) =>
+      limCluster(label, "38;5;168", // a future per-model window, its own rose hue
+        m.get("used_percentage").flatMap(_.num),
+        m.get("resets_at").flatMap(_.num).map(r => relReset(r.toLong, nowMs))))).flatten
+    // The whole lim block welds into ONE visual unit (BR 2026-07-24): legend middot-glued to the first
+    // cluster, clusters joined by a legend-gray `|` (same width as the space it replaced, but connective)
+    // while each window keeps its own hue as a clean block: lim·res·5h·14%·4h|w·42%·3d
+    if clusters.nonEmpty then segs += sgr("38;5;245", "lim·res·") + clusters.mkString(sgr("38;5;245", "|"))
     // cost LAST (least interesting on a fixed monthly plan) + blue, un-graded (no threshold meaning here)
     o.get("cost").flatMap(_.obj).flatMap(_.get("total_cost_usd")).flatMap(_.num)
-      .foreach(c => segs += sgr("38;5;39", s"cost $$${c.toLong}")) // whole dollars, TRUNCATED (cents are noise on a fixed monthly plan; saves horiz space; never overstates)
+      .foreach(c => segs += sgr("38;5;39", s"$$${c.toLong}")) // whole dollars, TRUNCATED (cents are noise on a fixed monthly plan; never overstates); the "cost" label dropped 2026-07-24 — $ is self-labeling
     // human-fatigue NUDGE (SM117): the human's char-count is an INTERNAL gauge (showing the raw number can itself
     // stress — BR); only a gentle `tired?` surfaces, and ONLY when a threshold is explicitly set (opt-in, default
     // off). Calm lavender, NEVER red — a nudge, not an alarm. The `?` marks it INFERRED (the agent cannot know the
@@ -381,7 +400,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
   // The LEAD CHIP is the one aggregate: "box healthy" / "box huffing" / "box swamped" (each exactly
   // "genscalator".length = 11 chars, so the three row-leads align) = the WORST severity across the segments,
   // computed from the SAME thresholds that colour them — a lift of the existing colour semantics into the
-  // name, not a new inference (precedent: ctx-fill's "dumb-zone" flag). Inferred proxies would carry `?`;
+  // name, not a new inference (precedent: ctx's "dumb-zone" flag). Inferred proxies would carry `?`;
   // none do yet (`wedge?` detection is SM146b, deferred).
   // Linux-only by data source (/proc, /sys); EVERY reader is guarded, so on any other OS gather() yields None
   // and the line simply does not print — alpha-tester-safe degradation.
@@ -440,7 +459,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       |Segments (left to right):
       |  genscalator         brand prefix
       |  HH:MM:SS            local wall clock
-      |  silent Ns           feed inactivity: now - the last timestamped transcript record. NO `?`:
+      |  silent·Ns           feed inactivity: now - the last timestamped transcript record. NO `?`:
       |                      this is COUNTED, not inferred (cf. rot?, which is a proxy and keeps its
       |                      `?`). No threshold, no colour, never hidden — a READOUT, not a gauge.
       |                      Its subject is the FEED, not a person, so it cannot misattribute — and
@@ -448,16 +467,23 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       |                      agent was making tool calls), the FEED is silent. NB a running command
       |                      writes no record, so agent-busy time counts as silence.
       |  o4.8·1M             abbreviated model (Opus/Sonnet/Fable/Haiku -> o/s/f/h, ·ctx suffix)
-      |  ctx-fill N%         context-window fill; orange at the compact-dance trigger
-      |                      (0.8*Z), red at Z = the dumb-zone threshold (--ctx-warn)
+      |  ctx·N%              context-window FILL (label dieted from ctx-fill 2026-07-24); orange at
+      |                      the compact-dance trigger (0.8*Z), red at Z = dumb-zone (--ctx-warn).
+      |                      NB the glue glyphs carry KIND: `·` joins a label to a state/level;
+      |                      `↑` (rot?/tot only) marks an output-FLOW count — different axes
       |  rot? N / tot N      rot? = agent tokens SINCE the last warp (compact/clear) = current-window rot,
       |                      coloured by threshold (the `?` marks it an inferred proxy); tot = cumulative
       |                      lifetime tokens (dim; dropped if the terminal is narrow or --rot-only). Both from
       |                      the transcript; --no-tok skips the read entirely.
-      |  5h-lim / wk-lim     usage limits (Claude Pro/Max only) + reset countdown; both
-      |                      the % and its countdown turn RED at/above --warn
-      |  cost $N             total cost in whole dollars, last (least interesting on a
-      |                      fixed monthly plan)
+      |  lim·res·5h·P%·R|w·P%·R   usage limits (Claude Pro/Max only), welded into one block:
+      |                      per window label·used%·reset-countdown, gray `|` between windows
+      |                      (5h rolling / w weekly; countdowns largest-unit-only; the % anchors
+      |                      the middle, so label reads before it, countdown after). Both the %
+      |                      and countdown turn RED at/above --warn. Any EXTRA rate_limits window
+      |                      a future CC adds (e.g. per-model weekly -> f5·77%·3d) renders too,
+      |                      with a compacted label — nothing extra shows today (feed = 5h + w).
+      |  $N                  total cost in whole dollars, last (least interesting on a
+      |                      fixed monthly plan; the "cost" label was dropped — $ self-labels)
       |
       |Usage:
       |  statusline [flags]             read the JSON from stdin (how Claude Code calls it)
