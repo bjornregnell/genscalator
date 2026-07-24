@@ -1,4 +1,4 @@
-# genscalator
+# genscalator.ai
 
 ## *Power tools for agents and humans: smarter, safer, faster.*
 
