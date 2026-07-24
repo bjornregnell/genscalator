@@ -23,9 +23,10 @@
   fast-forwarded to current + tag v0.9.2. Forge-side v0.9.2 release object on codeberg
   still pending (tt forge release-create, BR's call).
 * **statusline f5 SOLVED via declared route**: `tt limit set f5 <pct>` shows `f5·~<pct>%·3d`
-  (human-declared `~`, live countdown, auto-drop past reset; `gs f5 NN` updates). Currently
-  declared ~90% (BR, 2026-07-24 18:05). Measured route impossible in CC 2.1.218 — upstream
-  feature request drafted (BR files). Live declaration expires Tue Jul 28 ~09:00. Screenshot
+  (human-declared `~`, live countdown, auto-drop past reset; `gs f5 NN` updates). The live value
+  is the statusline / `tt limit`, never narrated here (it moves through the day — a fixed number
+  in this file only goes stale). Measured route impossible in CC 2.1.218 — upstream feature
+  request drafted (BR files). Live declaration expires Tue Jul 28 ~09:00. Screenshot
   `docs/img/status-line-2.png` committed (e456712).
 * **SM202 hold CLEARED**: sysadmins confirmed 80+443 already open on bjornix; Forgejo
   test now blocked only on BR-led local setup (ufw, nginx+TLS, binary). bjornix protocol
