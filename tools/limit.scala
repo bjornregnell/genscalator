@@ -19,6 +19,8 @@ private val LimitHelp: String =
     |and declare it here; the statusline renders `f5·~84%·3d` in the lim block — `~` marks
     |the % as HUMAN-DECLARED, the countdown is computed live from your declared reset anchor,
     |and the cluster auto-drops once the reset passes (a stale declaration cannot outlive it).
+    |Provenance contract: the HUMAN is always the source; either party can be the hands (an
+    |agent may transcribe a number the human pasted, never invent or bump one on its own).
     |
     |Usage:
     |  limit                                 list declarations (with time left)
