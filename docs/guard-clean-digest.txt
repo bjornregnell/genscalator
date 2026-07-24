@@ -24,8 +24,23 @@ GIT
   (commit-log SEARCH by grep/author/co-author trailer has no typed shape yet — SM217 gap;
    keep it a bare  git log --grep …  , NEVER piped to | head .)
 
+DATA / JSON      (never  python3 -m json.tool , never  jq , never a hand-rolled parser)
+  tt json check <file>                      parse-or-fail            (exit 0 = well-formed)
+  tt json get <file> <path>                 one scalar, unquoted     (permissions.allow.3)
+  tt json keys <file> [path]                an object's keys, or an array's length
+  tt json pretty <file> [path]              indented, for READING — it sorts keys, so never
+                                            write its output back over a human's file
+  (SM228 specimen: the missing verb is exactly when the python3 reflex fires. The guard does
+   NOT block that shape — no cd, no pipe, no redirect — so nothing catches it but you.)
+
+DIRECTORIES      (a bare  cd  is guard-blocked, and rightly so)
+  tt sbt --dir <abs> [sbt-args…]            run sbt somewhere else, no shell cd
+  tt git --repo <dir> …                     the same move for git
+  (other programs have no dir-scoped shape yet — flag the gap, do not reach for  cd )
+
 URLS
   tt web get <url>                          fetch a URL — never raw curl / wget
+    failures come back CLASSIFIED: [dns] [refused] [timeout] [tls] [unreachable] [reset]
   (remote-host checks over ssh have no typed shape yet — flag the gap, keep them minimal)
 
 WHY: structure over willpower. The reflex regresses across a compaction / clear ; re-read

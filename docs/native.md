@@ -63,8 +63,10 @@ rebuild).
    full suite THROUGH the candidate (parity mode), atomic swap only on green; build
    failure changes nothing, parity failure keeps the candidate for inspection and the
    live binary untouched. Free-memory floor 6 GB. Run BR-present from the repo root:
-   `scala-cli run deploy/buildnative.sc`. *(Script written 2026-07-23; first proving
-   run pending — until it has gone green once, treat the ritual as unproven.)*
+   `scala-cli run deploy/buildnative.sc`. *(Script written 2026-07-23; **PROVEN on
+   linux-x64 2026-07-24** — the SM220 post-transfer rebuild from the hub clone swapped
+   the live binary, and the script swaps only on a green parity run, so the swap is
+   itself the evidence: `tmp/tt-native`, 39.8 MB, mtime 2026-07-24 20:42.)*
 3. **Platform matrix**: macOS + Windows binaries (CI build matrix — the alpha-tester
    long pole named in the SM146 distance report). Once `buildnative.sc` is proven green
    on both, the ritual promotes to a typed `tt update --native` verb —
