@@ -2,6 +2,7 @@
 //> using jvm 21
 //> using file minijson.scala
 //> using file boxstats.scala
+//> using file limitstore.scala
 
 // statusline — format the Claude Code `statusLine` stdin JSON into ONE compact line (SM039).
 // Claude Code pipes a JSON object to the configured statusLine command's stdin each turn; this reads it and prints:
@@ -200,7 +201,8 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
   def render(json: String, nowMs: Long, warn: Double = 80, ctxWarn: Double = 30, dumbZone: Double = 75, autoCompact: Double = 92,
              rotTokens: Option[Long] = None, totTokens: Option[Long] = None, showTot: Boolean = true, humanChars: Option[Long] = None,
              tokWarn: Long = 200_000L, tokDanger: Long = 500_000L, tiredChars: Option[Long] = None,
-             silentSec: Option[Long] = None): String =
+             silentSec: Option[Long] = None,
+             declaredLimits: Seq[(label: String, usedP: Double, resetsAtMs: Long)] = Nil): String =
     val o = MiniJson.parse(json).flatMap(_.obj) match
       case Some(m) => m
       case None    => return "" // nothing usable / not an object → empty line, exit 0 (never crash the prompt)
@@ -307,11 +309,19 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       limCluster(label, "38;5;168", // a future per-model window, its own rose hue
         m.get("used_percentage").flatMap(_.num),
         m.get("resets_at").flatMap(_.num).map(r => relReset(r.toLong, nowMs))))).flatten
+    // DECLARED limits (tt limit, 2026-07-24 — the f5 case): clusters the feed cannot carry, declared by
+    // the HUMAN from /usage or a warning banner. The `~` marks the % as declared (the line-1 provenance
+    // exception, marked at the value itself); the countdown stays LIVE (computed from the declared reset
+    // anchor vs measured now); a declaration whose reset has PASSED renders NOTHING — auto-expiry is what
+    // keeps a stale declaration from lying on. Same gauge colours, so a declared 84% reds like a measured.
+    val declaredClusters = declaredLimits.filter(_.resetsAtMs > nowMs).map: d =>
+      sgr(limGauge(d.usedP, warn, "38;5;139"), s"${d.label}·~${pct(d.usedP)}·${relReset(d.resetsAtMs, nowMs)}")
+    val allClusters = clusters ++ declaredClusters
     // The whole lim block welds into ONE visual unit (BR 2026-07-24): legend middot-glued to the first
     // cluster, clusters joined by a legend-gray `|` (same width as the space it replaced, but connective)
     // while each window keeps its own hue as a clean block: lim·res·5h·14%·4h|w·42%·3d
     // legend `lim·%·res` mirrors the FULL three-part cluster shape label·used%·countdown (BR 2026-07-24)
-    if clusters.nonEmpty then segs += sgr("38;5;245", "lim·%·res·") + clusters.mkString(sgr("38;5;245", "|"))
+    if allClusters.nonEmpty then segs += sgr("38;5;245", "lim·%·res·") + allClusters.mkString(sgr("38;5;245", "|"))
     // cost LAST (least interesting on a fixed monthly plan) + blue, un-graded (no threshold meaning here)
     o.get("cost").flatMap(_.obj).flatMap(_.get("total_cost_usd")).flatMap(_.num)
       .foreach(c => segs += sgr("38;5;39", s"$$${c.toLong}")) // whole dollars, TRUNCATED (cents are noise on a fixed monthly plan; never overstates); the "cost" label dropped 2026-07-24 — $ is self-labeling
@@ -488,6 +498,9 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       |                      and countdown turn RED at/above --warn. Any EXTRA rate_limits window
       |                      a future CC adds (e.g. per-model weekly -> f5·77%·3d) renders too,
       |                      with a compacted label — nothing extra shows today (feed = 5h + w).
+      |                      A `~` before a % marks a HUMAN-DECLARED cluster (`tt limit`,
+      |                      e.g. f5·~84%·3d from a /usage reading the feed cannot carry);
+      |                      its countdown is live and it AUTO-DROPS once its reset passes.
       |  $N                  total cost in whole dollars, last (least interesting on a
       |                      fixed monthly plan; the "cost" label was dropped — $ self-labels)
       |
@@ -508,6 +521,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       |                      absent elsewhere)
       |  --no-status         suppress line 1 (e.g. show ONLY the mode line)
       |  --modes-file F      the declared-modes state file (default ~/.claude/gs-modes)
+      |  --limits-file F     the declared-limits store (default ~/.claude/gs-limits.json)
       |
       |Wire it up (human-gated settings step) in .claude/settings.json:
       |  "statusLine": { "type": "command", "command": "tt statusline --warn 85 --ctx-warn 28" }
@@ -536,6 +550,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     var boxLine   = false // --box-line: also emit the box line (line 3, SM163 — measured box health)
     var noStatus  = false // --no-status: suppress line 1 (e.g. to show ONLY the mode line)
     var modesFile = defaultModesFile
+    var limitsFile = LimitStore.defaultFile // human-declared limits store (tt limit); --limits-file overrides (tests)
     var tokWarn    = 200_000L // rot? (since-warp) orange threshold (GUESS for one window, configurable via --tok-warn)
     var tokDanger  = 500_000L // rot? (since-warp) red threshold (GUESS for one window, configurable via --tok-danger)
     var tiredChars: Option[Long] = None // human-char `tired?` nudge threshold; None = OFF (opt-in via --tired-chars)
@@ -564,6 +579,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
         case "--dumb-zone"    if i + 1 < a.length => dumbZone    = a(i + 1).toDoubleOption.getOrElse(dumbZone); i += 2
         case "--auto-compact" if i + 1 < a.length => autoCompact = a(i + 1).toDoubleOption.getOrElse(autoCompact); i += 2
         case "--modes-file" if i + 1 < a.length => modesFile = java.nio.file.Path.of(a(i + 1)); i += 2
+        case "--limits-file" if i + 1 < a.length => limitsFile = java.nio.file.Path.of(a(i + 1)); i += 2
         case "--tok-warn"    if i + 1 < a.length => tokWarn    = a(i + 1).toLongOption.getOrElse(tokWarn); i += 2
         case "--tok-danger"  if i + 1 < a.length => tokDanger  = a(i + 1).toLongOption.getOrElse(tokDanger); i += 2
         case "--tired-chars" if i + 1 < a.length => tiredChars = a(i + 1).toLongOption; i += 2
@@ -609,10 +625,13 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     val gapSec: Option[Long] =
       stats.map(_.lastStampMs).filter(_ > 0L).map(ms => math.max(0L, (nowMs - ms) / 1000L))
     // Each println is a SEPARATE status row (Claude Code renders multi-line statuslines).
+    // Human-DECLARED limits (tt limit): read the global store on each render, fully guarded (read()
+    // returns empty on any problem). Expiry filtering happens inside render (it owns nowMs logic).
+    val declared = LimitStore.read(limitsFile).map(d => (label = d.label, usedP = d.usedP, resetsAtMs = d.resetsAtMs))
     if !noStatus then println(render(json, nowMs, warn, ctxWarn, dumbZone, autoCompact,
       rotTokens = stats.map(_.sinceWarpTokens), totTokens = stats.map(_.agentTokens), showTot = showTot,
       humanChars = stats.map(_.humanChars), tokWarn = tokWarn, tokDanger = tokDanger, tiredChars = tiredChars,
-      silentSec = gapSec))
+      silentSec = gapSec, declaredLimits = declared))
     // LINE 2 is DECLARED-ONLY (BR 2026-07-17): the gap now rides line 1 as `silent`, and there is no derived-chip
     // argument left to pass — see renderModes.
     if modeLine then println(renderModes(readModes(modesFile)))

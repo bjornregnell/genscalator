@@ -126,6 +126,26 @@ tt which cd echo                            # builtin honesty (echo is BOTH buil
 tt which scala-cli sbt java                 # batch-check a toolchain
 ```
 
+### limit — declare a usage limit the harness feed does not carry
+```
+limit                                # list declarations (with time left)
+limit set <label> <pct> [--resets-in <dur>]   # declare/update (dur: 3d20h, 5h, 90m)
+limit rm <label>  |  limit clear     # remove
+```
+Born from the f5 gap (2026-07-24): Claude Code's statusline JSON has NO per-model weekly window, while
+`/usage` shows e.g. Fable at 84%. The HUMAN reads the number there and declares it here; `tt statusline`
+renders it inside the lim block as `f5·~84%·3d` — the **`~` marks the % human-declared**, the countdown
+stays live (computed from the declared anchor), and the cluster **auto-drops once the reset passes**, so
+a stale declaration cannot outlive its window. Updating with a newer % (`limit set f5 91`) keeps the
+anchor. Store: `~/.claude/gs-limits.json` — GLOBAL, deliberately not per-session (account limits are
+account-global). Shared store logic lives in mainless `limitstore.scala` (the minijson pattern).
+Examples:
+```
+tt limit set f5 84 --resets-in 3d20h        # from the /usage paste
+tt limit set f5 91                          # newer banner, same window
+tt limit rm f5
+```
+
 ### doc — print a genscalator doc verbatim (PURE, read-only)
 ```
 doc <name>                # print docs/<name>(.txt|.md) to stdout, verbatim

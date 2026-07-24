@@ -374,6 +374,72 @@ class CliSuite extends munit.FunSuite:
     assertEquals(WhichTool.human(142_000_000L), "135.4M")
   }
 
+  // --- limit (human-DECLARED usage limits; born from the f5 gap 2026-07-24) ---
+  test("limit: set + list roundtrip via --file; ~ marks declared") {
+    val d = os.temp.dir()
+    try
+      val f = (d / "limits.json").toString
+      val (c1, out1, _) = run("limit", "--file", f, "set", "f5", "84", "--resets-in", "3d20h")
+      assertEquals(c1, 0)
+      assert(clue(out1).contains("declared f5 ~84%"))
+      val (c2, out2, _) = run("limit", "--file", f)
+      assertEquals(c2, 0)
+      assert(clue(out2).contains("f5"))
+      assert(clue(out2).contains("~84%"))
+      assert(clue(out2).contains("3d left"))
+    finally os.remove.all(d)
+  }
+  test("limit: update keeps the anchor; first set without --resets-in exits 2") {
+    val d = os.temp.dir()
+    try
+      val f = (d / "limits.json").toString
+      val (cFirst, _, errFirst) = run("limit", "--file", f, "set", "f5", "84")
+      assertEquals(cFirst, 2)                       // no anchor to keep yet
+      assert(clue(errFirst).contains("--resets-in"))
+      run("limit", "--file", f, "set", "f5", "84", "--resets-in", "2d")
+      val (cUpd, out, _) = run("limit", "--file", f, "set", "f5", "91") // newer banner, same window
+      assertEquals(cUpd, 0)
+      assert(clue(out).contains("~91%"))
+      assert(clue(out).contains("1d left"))          // anchor kept (2d minus epsilon rounds to 1d)
+    finally os.remove.all(d)
+  }
+  test("limit: rm removes; bad duration and bad label exit 2") {
+    val d = os.temp.dir()
+    try
+      val f = (d / "limits.json").toString
+      run("limit", "--file", f, "set", "f5", "84", "--resets-in", "1d")
+      val (cRm, _, _) = run("limit", "--file", f, "rm", "f5")
+      assertEquals(cRm, 0)
+      assert(clue(run("limit", "--file", f)._2).contains("no declared limits"))
+      assertEquals(run("limit", "--file", f, "set", "f5", "84", "--resets-in", "soon")._1, 2)
+      assertEquals(run("limit", "--file", f, "set", "F5!", "84", "--resets-in", "1d")._1, 2)
+    finally os.remove.all(d)
+  }
+  test("LimitStore.durToMs: parses compound durations, rejects junk (PURE)") {
+    assertEquals(LimitStore.durToMs("3d20h"), Some(3L * 86400_000L + 20L * 3600_000L))
+    assertEquals(LimitStore.durToMs("90m"), Some(90L * 60_000L))
+    assertEquals(LimitStore.durToMs("5h"), Some(5L * 3600_000L))
+    assertEquals(LimitStore.durToMs("soon"), None)
+    assertEquals(LimitStore.durToMs(""), None)
+  }
+  test("statusline: a declared limit renders as label·~P%·countdown in the lim block; expired DROPS") {
+    val d = os.temp.dir()
+    try
+      val now = 1_000_000_000_000L
+      val future = now + 3L * 86400_000L + 4L * 3600_000L
+      val past = now - 60_000L
+      os.write(d / "limits.json",
+        s"""{"f5":{"used_percentage":84,"resets_at_ms":$future,"declared_at_ms":$now},""" +
+        s""""dead":{"used_percentage":50,"resets_at_ms":$past,"declared_at_ms":$now}}""")
+      val (code, out, _) = run("statusline", "{}", "--now-ms", now.toString, "--limits-file", (d / "limits.json").toString)
+      assertEquals(code, 0)
+      assert(clue(out).contains("lim·%·res·"))       // declared alone lights the legend
+      assert(clue(out).contains("f5·~84%·3d"))       // ~ marks HUMAN-DECLARED; countdown live
+      assert(clue(out).contains("38;5;203mf5"))      // 84% >= warn 80 -> the declared cluster reds too
+      assert(!clue(out).contains("dead"))            // past its declared reset -> auto-dropped, cannot lie
+    finally os.remove.all(d)
+  }
+
   // --- skillcheck (SM070: expected-skill manifest from disk; warn on the silent skill outage) ---
   private def skillsFixture(): os.Path =
     val d = os.temp.dir()
@@ -1338,7 +1404,11 @@ class CliSuite extends munit.FunSuite:
     assert(clue(out).contains("w·14%·3d"))    // weekly cluster (wk->w): label·%·reset all middot-glued
   }
   test("statusline: missing rate_limits degrades gracefully (shows what's present, no crash)") {
-    val (code, out, _) = run("statusline", """{"model":{"id":"haiku"},"cost":{"total_cost_usd":0.5}}""")
+    // --limits-file to a nonexistent path: this test asserts lim-block ABSENCE, so it must be hermetic
+    // against the DEFAULT ~/.claude/gs-limits.json (a live `tt limit` declaration would light the block —
+    // caught by the buildnative parity run 2026-07-24, first live specimen of the leak).
+    val (code, out, _) = run("statusline", """{"model":{"id":"haiku"},"cost":{"total_cost_usd":0.5}}""",
+      "--limits-file", "/nonexistent/gs-limits.json")
     assertEquals(code, 0)
     assert(clue(out).contains("haiku"))
     assert(clue(out).contains("$0")) // 0.50 truncates to whole dollars -> $0

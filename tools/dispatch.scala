@@ -32,6 +32,7 @@ object Dispatch {
     "hangover"    -> (a => hangoverDetect(a*)),
     "harden"      -> (a => hardenScan(a*)),
     "htmltext"    -> (a => htmltext(a*)),
+    "limit"       -> (a => limit(a*)),
     "log"         -> (a => logAnalyze(a*)),
     "md-fmt"      -> (a => formatMarkdown(a*)),
     "mode"        -> (a => mode(a*)),

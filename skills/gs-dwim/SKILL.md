@@ -1,6 +1,6 @@
 ---
 name: gs-dwim
-description: Do-What-I-Mean in-session genscalator commands cued by a leading `gs`. Trigger whenever the user's message begins with `gs ` (or is a bare `gs`) — e.g. "gs help", "gs cues", "gs cue similar", "gs dances", "gs dance compact", "gs help tt", "gs help tt search text", "gs tt chrono", "gs status", "gs status line on", "gs where", "gs menu", "gs reqt", "gs term rot", "gs test", "gs allow", "gs help allow", "gs warm", "gs init", "gs new app todo ./my-app". ALSO trigger on a bare mode-toggle cue led by `+` or `-` on a mode label with NO `gs` prefix — e.g. "+afk", "-solo", "-afk -solo", "+dumb-zone?" — and run the matching `tt mode add|rm`. Interpret the intent do-what-I-mean style (nearest-in-meaning, "or similar"), not by exact string match, and perform the matching genscalator action.
+description: Do-What-I-Mean in-session genscalator commands cued by a leading `gs`. Trigger whenever the user's message begins with `gs ` (or is a bare `gs`) — e.g. "gs help", "gs cues", "gs cue similar", "gs dances", "gs dance compact", "gs help tt", "gs help tt search text", "gs tt chrono", "gs status", "gs status line on", "gs where", "gs menu", "gs reqt", "gs term rot", "gs test", "gs allow", "gs help allow", "gs warm", "gs init", "gs new app todo ./my-app", "gs f5 84" (declare a limit). ALSO trigger on a bare mode-toggle cue led by `+` or `-` on a mode label with NO `gs` prefix — e.g. "+afk", "-solo", "-afk -solo", "+dumb-zone?" — and run the matching `tt mode add|rm`. Interpret the intent do-what-I-mean style (nearest-in-meaning, "or similar"), not by exact string match, and perform the matching genscalator action.
 allowed-tools: Read Bash(tt text *) Bash(tt files *) Bash(tt log *) Bash(tt chrono *) Bash(tt statusline *) Bash(tt parsereqt *) Bash(tt gitinfo *) Bash(tt doc *) Bash(tt mode *) Bash(scala-cli test *)
 ---
 
@@ -266,6 +266,7 @@ real session; the rest are in the same spirit — accept anything that clearly m
 | seed an app | `gs new app <what> <dir>` | `gs seed app`, `gs make app`, `gs create app` ("seed" = the internal skill verb, "new" = user-facing) |
 | compact bing-bing | `gs compact notify on`/`off` | `bing-bing on`, `notify me on compact`, `chime when compaction done` |
 | re-hydrate reflexes | `gs warm` | `warm up`, `rehydrate`, `load the guard reflexes`, `wake the reflexes` |
+| declare a limit | `gs limit <label> <pct> [<dur>]` | `gs f5 84`, `gs f5 84 3d20h`, `fable is at 84%` → run `tt limit set <label> <pct> [--resets-in <dur>]`; bare `gs limits` lists; `gs limit rm f5` removes. The statusline then shows `f5·~84%·3d` (the `~` = human-declared; auto-drops past reset). First declaration of a label needs the duration (from /usage "resets ..."). |
 | update check | `gs update` | `am I up to date`, `is there a newer genscalator`, `check for updates` |
 | orient (dev) | `gs where` | `where are we`, `catch me up`, `what's the state` |
 | solo menu (dev) | `gs menu` | `safe solo menu`, `what can I run solo`, `afk menu` |
