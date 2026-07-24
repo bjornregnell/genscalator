@@ -168,71 +168,16 @@ Learned by running snippets through the REAL parser (`tt parsereqt parse FILE`),
 
 ### Roadmap
 
-The next real release is **v0.9.2** — v0.1.0–v0.9.1 have shipped (see PAST/IMPLEMENTED and `CHANGELOG.md`
-as ground truth; the v0.9.0/v0.9.1 PAST backfill is pending). The v0.9.2 section below is re-engineered
-from the actual `v0.9.1..HEAD` git range (2026-07-24): every Feature in it is implemented and tested on
-main, so cutting the release is a tag + changelog + release step (BR ships releases).
+v0.1.0–v0.9.2 have shipped (see PAST/IMPLEMENTED and `CHANGELOG.md` as ground truth; the v0.9.0/v0.9.1
+PAST backfill is pending). **v0.9.2 was the first release speced here BEFORE the cut** (its section was
+re-engineered from the real `v0.9.1..HEAD` range, then moved FUTURE → PAST the same day it shipped,
+2026-07-24). The next scheduled block is **v0.10.0** below; near-term pinned work outside any block:
+`tt forge release-create --gh/--gl` (SM207), per-session mode sets (SM208), release-all (SM196).
 
 > **Bootstrap note (2026-07-03):** this PRD was re-engineered retrospectively — we did NOT author reqT-lang
 > reqts before each release. To keep it realistic, PAST was reconstructed release-by-release from the
 > CHANGELOG *as if* each version's Features had been specified here first; FUTURE is what remains. All
 > reqT-lang here is validated with `tt parsereqt`.
-
-### Release v0.9.2 — native fast path, tt scala, tt which, statusline diet (next — READY TO CUT)
-
-> Scope note (2026-07-24): re-engineered from the real `v0.9.1..HEAD` range — every Feature below is
-> IMPLEMENTED, tested (CliSuite green incl. native parity mode) and pushed. Explicitly NOT in v0.9.2
-> (pinned, stays FUTURE): `tt forge release-create --gh/--gl` (SM207), per-session mode sets (SM208),
-> release-all across mirrors (SM196).
-
-* Feature: ttNativeFastPath has
-  * Gist: the tt launcher runs a GraalVM native-image dispatcher binary by default (roughly 10-30 ms per call vs 600 ms JVM startup), falling back to scala-cli when the binary is stale — degrades to slow, never to wrong.
-  * Spec: rebuild ONLY via the deploy/buildnative.sc ritual — build to tmp/tt-native.next, run the FULL CLI-contract suite THROUGH the candidate (parity mode), atomically swap on green; staleness is any tools/*.scala newer than the binary and routes back to scala-cli with a stderr note; opt out with TT_NATIVE=0.
-* Feature: ttNativeFastPath helps Goal: tokenEfficiency
-* Feature: ttNativeFastPath helps Goal: jointHumanAgentProductivity
-
-* Feature: ttScala has
-  * Gist: a typed driver over scala-cli — test/compile/run/package-js on a DIRECTORY target — so the blanket interpreter allow Bash(scala-cli *) can be deleted from settings.
-  * Spec: fixed verb enum, directory target (no -e eval, no arbitrary script path), argv built in a pure plan core with no shell and no arbitrary-flag passthrough (a leading-dash dir or -o value is rejected, closing flag injection), safe defaults baked (--server=false, jvm pin); each verb is narrowly per-verb allowlistable. The settings edit that deletes the blanket allow stays BR-only.
-* Feature: ttScala helps Goal: safeGeneration
-* Feature: ttScala helps Goal: avoidConfirmationFatigue
-* Feature: ttScala hurts Goal: controlHumanSystem
-
-* Feature: ttWhich has
-  * Gist: typed read-only "what is this command?" — every PATH hit in order with shadowing flagged, the symlink chain hop by hop, magic-byte kind (ELF, script with its shebang line, jar, text), size/mode/mtime, and bash-builtin honesty, in ONE call.
-  * Spec: absorbs the raw-shell reflex family command -v, which -a, type, file, readlink -f, ls -l; never EXECUTES the target (no --version probing) — the line that keeps it allowlistable; exit 0/2 makes it a scriptable existence check. Born from a live guard-stall specimen (wr-data 2026-07-24, a digest TABLE-MISS: the reflex table could not arm an alternative it did not contain).
-* Feature: ttWhich helps Goal: safeGeneration
-* Feature: ttWhich helps Goal: avoidConfirmationFatigue
-
-* Feature: statuslineSpaceDiet has
-  * Gist: the status line got leaner and meaner under a two-glue ruling — a middot joins a label to a STATE or LEVEL, the arrow stays exclusively the output-FLOW marker — and the limit block welds into one visual unit.
-  * Spec: silent and ctx middot-glue their values; rot? and tot weld into one segment by a dim middot; the legend lim-percent-res mirrors the full cluster shape label, used percent, countdown — dot for dot — welded to its clusters with a gray pipe between windows; wk shrinks to w; the cost label drops to a bare dollar figure; countdowns are largest-unit-only.
-* Feature: statuslineSpaceDiet helps Goal: jointHumanAgentProductivity
-
-* Feature: statuslineRawCapture has
-  * Gist: marker-gated raw capture of the Claude Code statusline stdin JSON — the recall-free way to confirm the feed's fields against a real invocation when a harness version changes.
-  * Spec: touch the gs-statusline-dump-on marker under ~/.claude and the next render tees its raw JSON to gs-statusline-last.json; remove the marker to stop. First use verified Claude Code 2.1.218 sends ONLY the five_hour and seven_day rate-limit windows — no per-model weekly — settling the f5-cluster feasibility question with data instead of guesses.
-* Feature: statuslineRawCapture helps Goal: safeGeneration
-
-* Feature: rateLimitFutureProof has
-  * Gist: any EXTRA rate_limits window a future Claude Code adds (e.g. a per-model weekly) renders in the limit block automatically with a compacted label — nothing shows until the harness ships the field.
-  * Spec: window words are dropped from the key (the countdown disambiguates) and model words compact like the model tag, so a seven_day_fable window renders as f5 with its percent and countdown; test-pinned via a simulated extra window. The per-model weekly number itself is an upstream ask (drafted 2026-07-24, BR files).
-* Feature: rateLimitFutureProof helps Goal: jointHumanAgentProductivity
-
-* Feature: forgeReadVerbsGh has
-  * Gist: tt forge grows issue, PR and branch-protection READ verbs plus a GitHub dialect, so mirror-state questions stop falling back to the raw gh reflex.
-* Feature: forgeReadVerbsGh helps Goal: safeGeneration
-* Feature: forgeReadVerbsGh hurts Goal: exfiltrateSecrets
-
-* Feature: serverlessSpaSeed has
-  * Gist: a client-only Scala.js plus Laminar todo seed (scala-cli, localStorage) — the zero-server sibling of crudWebAppSeed on the newcomer on-ramp.
-* Feature: serverlessSpaSeed helps Goal: jointHumanAgentProductivity
-
-* Feature: cliSuiteParityMode has
-  * Gist: the CLI-contract suite can run every test THROUGH the native binary — the golden identical-output net that gates the native swap — plus fail-fast on a stale or partial tools dir.
-* Feature: cliSuiteParityMode verifies Goal: verifiedTypedTools
-
-* Comment: also in this release window but repo shape rather than product Features: reqts/ born with insourced issues (issue-000), HUMANS.md built out as the extended README, deploy/ gathers transport, work/NOW.md as the tracked present, SECURITY-MODEL gains the run-generated-code section.
 
 ### Release v0.9.0 — HTTP + forge tooling, parser hardening, tool tests (SHIPPED across v0.9.0/v0.9.1 — PAST backfill pending)
 
@@ -679,5 +624,62 @@ spine it *would* have been had we specified reqts before each release (bootstrap
   * Gist: a shared human↔agent acronym vocabulary (BRB/AFK/WDYT/…) emitted + parsed WITHOUT expansion — a communication-bandwidth + TE lever.
   * Spec: a foundations.md glossary entry (4 groups) + an always-on AGENTS.md section (18 inline acronyms); plus the motor-cost research thread (lowercase-in / cased-out; mobile amplification).
 * Feature: commsShorthand helps Goal: tokenEfficiency
+
+#### Release v0.9.2 — native fast path, tt scala, tt which, statusline diet — SHIPPED 2026-07-24
+
+> Speced in FUTURE and moved here the SAME DAY it shipped (re-engineered from the real `v0.9.1..HEAD`
+> range before the cut) — the first non-post-hoc release section. Explicitly not in v0.9.2 (pinned,
+> stays FUTURE): `tt forge release-create --gh/--gl` (SM207), per-session mode sets (SM208),
+> release-all across mirrors (SM196). *(The v0.9.0/v0.9.1 PAST backfill from their FUTURE block above
+> remains pending — see the annotated heading in FUTURE.)*
+
+* Feature: ttNativeFastPath has
+  * Gist: the tt launcher runs a GraalVM native-image dispatcher binary by default (roughly 10-30 ms per call vs 600 ms JVM startup), falling back to scala-cli when the binary is stale — degrades to slow, never to wrong.
+  * Spec: rebuild ONLY via the deploy/buildnative.sc ritual — build to tmp/tt-native.next, run the FULL CLI-contract suite THROUGH the candidate (parity mode), atomically swap on green; staleness is any tools/*.scala newer than the binary and routes back to scala-cli with a stderr note; opt out with TT_NATIVE=0.
+* Feature: ttNativeFastPath helps Goal: tokenEfficiency
+* Feature: ttNativeFastPath helps Goal: jointHumanAgentProductivity
+
+* Feature: ttScala has
+  * Gist: a typed driver over scala-cli — test/compile/run/package-js on a DIRECTORY target — so the blanket interpreter allow Bash(scala-cli *) can be deleted from settings.
+  * Spec: fixed verb enum, directory target (no -e eval, no arbitrary script path), argv built in a pure plan core with no shell and no arbitrary-flag passthrough (a leading-dash dir or -o value is rejected, closing flag injection), safe defaults baked (--server=false, jvm pin); each verb is narrowly per-verb allowlistable. The settings edit that deletes the blanket allow stays BR-only.
+* Feature: ttScala helps Goal: safeGeneration
+* Feature: ttScala helps Goal: avoidConfirmationFatigue
+* Feature: ttScala hurts Goal: controlHumanSystem
+
+* Feature: ttWhich has
+  * Gist: typed read-only "what is this command?" — every PATH hit in order with shadowing flagged, the symlink chain hop by hop, magic-byte kind (ELF, script with its shebang line, jar, text), size/mode/mtime, and bash-builtin honesty, in ONE call.
+  * Spec: absorbs the raw-shell reflex family command -v, which -a, type, file, readlink -f, ls -l; never EXECUTES the target (no --version probing) — the line that keeps it allowlistable; exit 0/2 makes it a scriptable existence check. Born from a live guard-stall specimen (wr-data 2026-07-24, a digest TABLE-MISS: the reflex table could not arm an alternative it did not contain).
+* Feature: ttWhich helps Goal: safeGeneration
+* Feature: ttWhich helps Goal: avoidConfirmationFatigue
+
+* Feature: statuslineSpaceDiet has
+  * Gist: the status line got leaner and meaner under a two-glue ruling — a middot joins a label to a STATE or LEVEL, the arrow stays exclusively the output-FLOW marker — and the limit block welds into one visual unit.
+  * Spec: silent and ctx middot-glue their values; rot? and tot weld into one segment by a dim middot; the legend lim-percent-res mirrors the full cluster shape label, used percent, countdown — dot for dot — welded to its clusters with a gray pipe between windows; wk shrinks to w; the cost label drops to a bare dollar figure; countdowns are largest-unit-only.
+* Feature: statuslineSpaceDiet helps Goal: jointHumanAgentProductivity
+
+* Feature: statuslineRawCapture has
+  * Gist: marker-gated raw capture of the Claude Code statusline stdin JSON — the recall-free way to confirm the feed's fields against a real invocation when a harness version changes.
+  * Spec: touch the gs-statusline-dump-on marker under ~/.claude and the next render tees its raw JSON to gs-statusline-last.json; remove the marker to stop. First use verified Claude Code 2.1.218 sends ONLY the five_hour and seven_day rate-limit windows — no per-model weekly — settling the f5-cluster feasibility question with data instead of guesses.
+* Feature: statuslineRawCapture helps Goal: safeGeneration
+
+* Feature: rateLimitFutureProof has
+  * Gist: any EXTRA rate_limits window a future Claude Code adds (e.g. a per-model weekly) renders in the limit block automatically with a compacted label — nothing shows until the harness ships the field.
+  * Spec: window words are dropped from the key (the countdown disambiguates) and model words compact like the model tag, so a seven_day_fable window renders as f5 with its percent and countdown; test-pinned via a simulated extra window. The per-model weekly number itself is an upstream ask (drafted 2026-07-24, BR files).
+* Feature: rateLimitFutureProof helps Goal: jointHumanAgentProductivity
+
+* Feature: forgeReadVerbsGh has
+  * Gist: tt forge grows issue, PR and branch-protection READ verbs plus a GitHub dialect, so mirror-state questions stop falling back to the raw gh reflex.
+* Feature: forgeReadVerbsGh helps Goal: safeGeneration
+* Feature: forgeReadVerbsGh hurts Goal: exfiltrateSecrets
+
+* Feature: serverlessSpaSeed has
+  * Gist: a client-only Scala.js plus Laminar todo seed (scala-cli, localStorage) — the zero-server sibling of crudWebAppSeed on the newcomer on-ramp.
+* Feature: serverlessSpaSeed helps Goal: jointHumanAgentProductivity
+
+* Feature: cliSuiteParityMode has
+  * Gist: the CLI-contract suite can run every test THROUGH the native binary — the golden identical-output net that gates the native swap — plus fail-fast on a stale or partial tools dir.
+* Feature: cliSuiteParityMode verifies Goal: verifiedTypedTools
+
+* Comment: also in this release window but repo shape rather than product Features: reqts/ born with insourced issues (issue-000), HUMANS.md built out as the extended README, deploy/ gathers transport, work/NOW.md as the tracked present, SECURITY-MODEL gains the run-generated-code section. Release-day extras: origin repointed to GitHub (codeberg becomes a batched mirror per the new push policy), plugin.json homepage/repository follow.
 
 ### CANCELLED

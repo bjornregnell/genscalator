@@ -1,10 +1,10 @@
 {
   "name": "genscalator",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "description": "Power tools for agents: the typed `tt` Scala toolbox (compiler-checked tools that replace brittle bash/grep/awk/sed) plus a skill that teaches the habit.",
   "author": { "name": "Björn Regnell" },
-  "homepage": "https://codeberg.org/bjornregnell/genscalator",
-  "repository": "https://codeberg.org/bjornregnell/genscalator",
+  "homepage": "https://github.com/bjornregnell/genscalator",
+  "repository": "https://github.com/bjornregnell/genscalator",
   "license": "Apache-2.0",
   "keywords": ["scala", "scala-cli", "agent", "tooling", "safe-by-design"]
 }

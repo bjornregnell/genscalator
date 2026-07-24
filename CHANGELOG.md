@@ -6,6 +6,48 @@ All notable changes to genscalator. Versions follow the git tags (`vX.Y.Z`); the
 Updating genscalator is a **human-reviewed** step — see [`docs/updating.md`](docs/updating.md). Skim this
 file before adopting a new version: it changes the agent's operating rules, so review beats blind pull.
 
+## v0.9.2 — 2026-07-24 — native fast path, typed scala/which, statusline diet
+Speced in reqT-lang BEFORE the cut for once (see `reqts/PRD.md`, re-engineered from the real
+`v0.9.1..HEAD` range) — the first release where FUTURE → PAST is a same-day move, not archaeology.
+
+**New tools + capabilities:**
+- **Native fast path (tt-graalify), DEFAULT-ON** — the `tt` launcher runs a GraalVM native-image dispatcher
+  binary (~10–30 ms per call vs ~600 ms JVM startup) and falls back to scala-cli when the binary is stale
+  (degrades to slow, never to wrong). Rebuild only via the `deploy/buildnative.sc` ritual: build → the FULL
+  CLI-contract suite THROUGH the candidate (parity mode) → atomic swap. See `docs/native.md`.
+- **`tt scala`** — typed driver over scala-cli (`test`/`compile`/`run`/`package-js` on a DIRECTORY target;
+  no `-e` eval, no arbitrary script path, no flag passthrough) so the blanket `Bash(scala-cli *)` interpreter
+  allow can be deleted from settings; per-verb allowlistable. Paired with the new SECURITY-MODEL section
+  "When the tool's job is to run code".
+- **`tt which`** — typed read-only "what is this command?": every `$PATH` hit in order (shadowing flagged),
+  the symlink chain, magic-byte kind (ELF / script+shebang / jar / text), size/mode/mtime, bash-builtin
+  honesty — absorbing the `command -v`/`which`/`type`/`file`/`readlink -f` raw-shell reflex family in one
+  call that never executes the target.
+- **`tt forge`** issue / PR / branch-protection READ verbs + a GitHub dialect.
+- **`serverless-spa-seed`** — client-only Scala.js + Laminar todo seed (scala-cli, localStorage), the
+  zero-server sibling of the crud seed.
+
+**Statusline:**
+- **Space diet under a two-glue ruling**: `·` glues a label to a state/level (`silent·3s`, `ctx·41%`),
+  `↑` stays exclusively the output-flow marker (`rot?↑120k·tot↑180k`, now welded by a dim middot); the
+  limit block welds into one unit under a shape-mirroring legend — `lim·%·res·5h·30%·2h|w·14%·3d`; `wk`→`w`,
+  bare `$N` cost, countdowns largest-unit-only.
+- **Marker-gated raw capture** (`~/.claude/gs-statusline-dump-on`) — the recall-free way to confirm the CC
+  feed's fields against a real invocation. First use verified CC 2.1.218 sends only `five_hour`+`seven_day`.
+- **Future-proof extra limit windows** — if a CC version ever adds a per-model weekly window it renders
+  automatically with a compacted label (`f5·77%·3d`), test-pinned via simulation.
+
+**Testing:** CLI-suite native **parity mode** (`-Dtt.native.bin`) gates the native swap; fail-fast on a
+stale/partial tools dir; suite green (CliSuite 171).
+
+**Repo shape:** `reqts/` born with insourced issues (issue-000), `HUMANS.md` built out as the extended
+README, `deploy/` gathers transport, `work/NOW.md` as the tracked present.
+
+## v0.9.1 — 2026-07-21 — snapshot release *(entry backfilled 2026-07-24)*
+A plugin-snapshot release cut mid-stream (the changelog entry lagged; this is the honest backfill).
+Carried the quote-aware guardcheck, skills/docs accretion, and the wr-data/research growth of 2026-07-12
+→ 07-21; ground truth is the git range `v0.9.0..v0.9.1`.
+
 ## v0.9.0 — 2026-07-11 — the toolbox + onboarding release
 The biggest release yet: **~14 new `tt` tools**, a **web-app seed skill**, guardcheck's auto-firing **hook mode**, and
 a large docs/research/blog accretion. Operating rules touched (the `L → Z` rename, new dances, agentic-SE/RE terms) →
