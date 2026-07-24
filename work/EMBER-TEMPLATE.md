@@ -95,10 +95,10 @@ Before exiting, the writer checks:
 - [ ] every commit hash named exists in the repo it is claimed in;
 - [ ] every hold names its owner and release condition;
 - [ ] every state line and pre-authorized action carries a verify-mandate;
-- [ ] all work is committed AND pushed to the FULL routine push set (genscalator: origin +
-      github + coursegit + gitlab per CD13, plain fast-forward only — `mirror.sc` stays the
-      sole force path; work repo: origin + github + coursegit); a flapping remote is retried
-      next unit, never rewritten around;
+- [ ] all work is committed AND pushed to the FULL routine push set (genscalator: origin
+      (github) + gitlab + coursegit every unit, plain fast-forward only — `mirror.sc` stays the
+      sole force path; codeberg is a BATCHED mirror, release/sweep only; work repo: origin
+      (github) + gitlab + coursegit); a flapping remote is retried next unit, never rewritten around;
 - [ ] the file fits on roughly one screen;
 - [ ] timestamps are read from a clock, never guessed;
 - [ ] the ember was (re)written or re-stamped at THIS exit — an ember reused from an earlier
