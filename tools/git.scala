@@ -16,6 +16,10 @@
 //     READ-ONLY: print the file content at <ref> (byte-exact) to stdout, or write it to <file> with
 //     --out. This replaces the un-allowlistable shell pattern of redirecting `git show <ref>:<path>`
 //     into a file (redirect + general git surface), e.g. for PR review of a file at a base ref.
+//   tt git log --repo <dir> [--grep P] [--co-author P] [--author P] [--committer P] [--since D] [--limit N]
+//     READ-ONLY commit-log search: capped + tab-formatted (<short-sha>\t<author-email>\t<subject>), so it
+//     needs no `| head` and `Bash(tt git log *)` stays allowlist-safe. --co-author greps the Co-Authored-By
+//     trailer (forge contributor attribution). Retires the raw `git log --grep … | head` reflex (SM217).
 import scala.util.Try
 
 // Helpers scoped in this object so top-level names (fail/usage/run) don't collide with the other tools when
@@ -37,6 +41,10 @@ object Git {
       |  git fetch --repo <dir>          update remote-tracking refs (never the working tree)
       |  git show  --repo <dir> --ref <ref> --path <relpath> [--out <file>]
       |                                  print the file content at <ref> (or write to <file>)
+      |  git log   --repo <dir> [--grep P] [--co-author P] [--author P] [--committer P]
+      |            [--since D] [--limit N]
+      |                                  READ-ONLY commit-log search, capped + tab-formatted
+      |                                  (so no `| head` is ever needed)
       |Flags (commit):
       |  --repo <dir>                    the git repository to operate on (required)
       |  --message-file <path>           file holding the commit message (required, non-empty)
@@ -53,6 +61,18 @@ object Git {
       |bad ref or path it exits non-zero with git's error — never a partial/empty success.
       |It replaces the un-allowlistable shell pattern of redirecting git show ref:path
       |output into a file (the redirect plus git's general surface blocked allowlisting).
+      |Flags (log):
+      |  --repo <dir>                    the git repository to read from (required)
+      |  --grep P                        keep commits whose MESSAGE matches regex P
+      |  --co-author P                   keep commits whose Co-Authored-By trailer matches P
+      |                                  (what forges attribute contributors from)
+      |  --author P / --committer P      filter by author / committer (name or email regex)
+      |  --since D                       only commits more recent than D (e.g. 2026-07-01, "2 weeks ago")
+      |  --limit N                       cap the output at N commits (default 50)
+      |log is READ-ONLY. Output is one commit per line, <short-sha>TAB<author-email>TAB<subject>,
+      |then a `=== N commit(s)` line that flags when the --limit cap was hit (no silent truncation).
+      |Multiple message-patterns (--grep + --co-author) must ALL match. Because the tool caps and
+      |formats, it needs no `| head` — so `Bash(tt git log *)` stays allowlist-safe (SM217).
       |
       |Not on the tool, by design: reset, rebase, merge, --force, rm, clean — the
       |destructive/interactive verbs stay off entirely, so allowlisting `tt git` is safe.
@@ -73,7 +93,8 @@ object Git {
         |  tt git pull  --repo <dir>   (fast-forward only)
         |  tt git fetch --repo <dir>
         |  tt git show  --repo <dir> --ref <ref> --path <relpath> [--out <file>]   (read-only)
-        |safe subset: add/commit/push/pull(--ff-only)/fetch/show only (no reset/rebase/force/rm/clean/merge); message read from file.""".stripMargin)
+        |  tt git log   --repo <dir> [--grep P] [--co-author P] [--author P] [--committer P] [--since D] [--limit N]   (read-only search)
+        |safe subset: add/commit/push/pull(--ff-only)/fetch/show/log only (no reset/rebase/force/rm/clean/merge); message read from file.""".stripMargin)
     sys.exit(2)
 
   private def run(repo: os.Path, args: String*): (Int, String) =
@@ -89,6 +110,7 @@ object Git {
       case "pull"   :: rest => pull(rest)
       case "fetch"  :: rest => fetch(rest)
       case "show"   :: rest => show(rest)
+      case "log"    :: rest => log(rest)
       case _                => usage()
 
   private def commit(args: List[String]): Unit =
@@ -183,6 +205,49 @@ object Git {
       case None =>
         System.out.write(bytes)
         System.out.flush()
+
+  // log is READ-ONLY: search/scan the commit log with typed filters, CAPPED and tab-formatted so it never
+  // needs a `| head` pipe (which trips guardcheck) — the raw-git reflex a missing typed shape used to force
+  // (SM217). One commit per line: `<short-sha>\t<author-email>\t<subject>`; a trailing count line makes the
+  // cap visible (no silent truncation). --co-author greps the Co-Authored-By trailer (what forges attribute
+  // contributors from); multiple message-patterns (--grep/--co-author) must ALL match (git --all-match).
+  private def log(args: List[String]): Unit =
+    @annotation.tailrec
+    def parse(r: List[String], repo: Option[String], greps: Vector[String], author: Option[String],
+        committer: Option[String], since: Option[String], limit: Int)
+        : (String, Vector[String], Option[String], Option[String], Option[String], Int) =
+      r match
+        case Nil                     => (repo.getOrElse(fail("--repo required")), greps, author, committer, since, limit)
+        case "--repo" :: v :: t      => parse(t, Some(v), greps, author, committer, since, limit)
+        case "--grep" :: v :: t      => parse(t, repo, greps :+ v, author, committer, since, limit)
+        case "--co-author" :: v :: t => parse(t, repo, greps :+ s"[Cc]o-[Aa]uthored-[Bb]y:.*$v", author, committer, since, limit)
+        case "--author" :: v :: t    => parse(t, repo, greps, Some(v), committer, since, limit)
+        case "--committer" :: v :: t => parse(t, repo, greps, author, Some(v), since, limit)
+        case "--since" :: v :: t     => parse(t, repo, greps, author, committer, Some(v), limit)
+        case "--limit" :: v :: t     =>
+          v.toIntOption match
+            case Some(n) if n > 0 => parse(t, repo, greps, author, committer, since, n)
+            case _                => fail(s"--limit needs a positive integer, got '$v'")
+        case other :: _              => fail(s"unexpected/incomplete argument '$other' (usage: tt git log --repo <dir> [--grep P] [--co-author P] [--author P] [--committer P] [--since D] [--limit N])")
+    val (repoStr, greps, author, committer, since, limit) = parse(args, None, Vector.empty, None, None, None, 50)
+
+    val repo = os.Path(repoStr, os.pwd)
+    if !os.exists(repo / ".git") && run(repo, "rev-parse", "--git-dir")._1 != 0 then fail(s"not a git repo: $repo")
+
+    // %h short-sha, %x09 TAB, %ae author-email, %s subject — a stable machine-readable row per commit.
+    val gitArgs = Vector("log", "--format=%h%x09%ae%x09%s", s"--max-count=$limit") ++
+      (if greps.size > 1 then Vector("--all-match") else Vector.empty) ++
+      greps.map(g => s"--grep=$g") ++
+      author.map(a => s"--author=$a").toVector ++
+      committer.map(c => s"--committer=$c").toVector ++
+      since.map(s => s"--since=$s").toVector
+    val (c, out) = run(repo, gitArgs*)
+    if c != 0 then fail(s"git log failed:\n$out")
+    if out.isEmpty then println("(no matching commits)")
+    else
+      println(out)
+      val n = out.linesIterator.size
+      println(s"=== $n commit(s)" + (if n >= limit then s" (hit --limit $limit; there may be more)" else ""))
 }
 
 @main def gitCommitPush(args: String*): Unit = Git.dispatch(args*)

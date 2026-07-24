@@ -919,6 +919,104 @@ class CliSuite extends munit.FunSuite:
     assert(clue(out).contains("--ref"))
   }
 
+  // --- git log (read-only commit-log search, SM217) ---
+  /** Fixture: a repo with three commits — plain, one carrying a Co-Authored-By trailer, one by another author. */
+  private def gitLogFixture(d: os.Path): Unit =
+    def g(args: String*) = os.proc("git" +: "-C" +: d.toString +: args).call(stdout = os.Pipe, stderr = os.Pipe)
+    g("init", "-q")
+    g("config", "user.email", "test@example.org")
+    g("config", "user.name", "Test Fixture")
+    os.write(d / "a.txt", "a\n"); g("add", "a.txt"); g("commit", "-q", "-m", "add alpha")
+    os.write(d / "b.txt", "b\n"); g("add", "b.txt")
+    g("commit", "-q", "-m", "fix beta", "-m", "Co-authored-by: Robot Helper <robot@example.org>")
+    os.write(d / "c.txt", "c\n"); g("add", "c.txt")
+    g("commit", "-q", "--author", "Other Dev <other@example.org>", "-m", "add gamma")
+
+  test("git log: lists commits as sha TAB email TAB subject with a trailing count") {
+    val d = os.temp.dir()
+    try
+      gitLogFixture(d)
+      val (code, out, _) = run("git", "log", "--repo", d.toString)
+      assertEquals(code, 0)
+      assert(clue(out).contains("add alpha"))
+      assert(clue(out).contains("add gamma"))
+      assert(clue(out).contains("test@example.org"))
+      assert(clue(out).contains("\t")) // tab-separated columns
+      assert(clue(out).contains("=== 3 commit(s)"))
+    finally os.remove.all(d)
+  }
+  test("git log --grep filters by commit message") {
+    val d = os.temp.dir()
+    try
+      gitLogFixture(d)
+      val (code, out, _) = run("git", "log", "--repo", d.toString, "--grep", "beta")
+      assertEquals(code, 0)
+      assert(clue(out).contains("fix beta"))
+      assert(!clue(out).contains("add alpha"))
+      assert(clue(out).contains("=== 1 commit(s)"))
+    finally os.remove.all(d)
+  }
+  test("git log --co-author matches the Co-Authored-By trailer") {
+    val d = os.temp.dir()
+    try
+      gitLogFixture(d)
+      val (code, out, _) = run("git", "log", "--repo", d.toString, "--co-author", "Robot")
+      assertEquals(code, 0)
+      assert(clue(out).contains("fix beta")) // the only commit carrying the trailer
+      assert(clue(out).contains("=== 1 commit(s)"))
+    finally os.remove.all(d)
+  }
+  test("git log: multiple message-patterns must ALL match (--all-match)") {
+    val d = os.temp.dir()
+    try
+      gitLogFixture(d)
+      // 'fix beta' carries the Robot trailer → matches both; 'add alpha' has no trailer → must be excluded (AND, not OR)
+      val (code, out, _) = run("git", "log", "--repo", d.toString, "--grep", "beta", "--co-author", "Robot")
+      assertEquals(code, 0)
+      assert(clue(out).contains("fix beta"))
+      assert(clue(out).contains("=== 1 commit(s)"))
+      // AND semantics: a message-pattern with no co-author match yields nothing (OR would have matched 'add alpha')
+      val (_, out2, _) = run("git", "log", "--repo", d.toString, "--grep", "alpha", "--co-author", "Robot")
+      assert(clue(out2).contains("(no matching commits)"))
+    finally os.remove.all(d)
+  }
+  test("git log --author filters by author") {
+    val d = os.temp.dir()
+    try
+      gitLogFixture(d)
+      val (code, out, _) = run("git", "log", "--repo", d.toString, "--author", "other@example.org")
+      assertEquals(code, 0)
+      assert(clue(out).contains("add gamma"))
+      assert(!clue(out).contains("add alpha"))
+    finally os.remove.all(d)
+  }
+  test("git log --limit caps output and flags the cap in the count line") {
+    val d = os.temp.dir()
+    try
+      gitLogFixture(d)
+      val (code, out, _) = run("git", "log", "--repo", d.toString, "--limit", "1")
+      assertEquals(code, 0)
+      assertEquals(clue(out).linesIterator.count(_.contains("\t")), 1) // exactly one commit row
+      assert(clue(out).contains("hit --limit 1"))
+    finally os.remove.all(d)
+  }
+  test("git log: a bad --limit exits 2 before running git") {
+    val d = os.temp.dir()
+    try
+      gitLogFixture(d)
+      assertEquals(run("git", "log", "--repo", d.toString, "--limit", "0")._1, 2)
+      assertEquals(run("git", "log", "--repo", d.toString, "--limit", "x")._1, 2)
+    finally os.remove.all(d)
+  }
+  test("git log: no --repo exits 2") {
+    assertEquals(run("git", "log")._1, 2)
+  }
+  test("git --help mentions the log subcommand and --co-author") {
+    val (_, out, _) = run("git", "--help")
+    assert(clue(out).contains("log"))
+    assert(clue(out).contains("--co-author"))
+  }
+
   // --- guardcheck (the prosthetic habit as a tool: cmd/msg checks + the PreToolUse hook mode) ---
   test("guardcheck cmd: a clean typed command exits 0") {
     val (code, out, _) = run("guardcheck", "cmd", "tt git commit --repo /x --message-file /x/m.txt --add /x/f --push")
@@ -1735,6 +1833,23 @@ class CliSuite extends munit.FunSuite:
   }
 
   // --- forge issue/PR/protection READ verbs (arg contract; live reads need a network, so only arg errors here) ---
+  // --- forge contributors (SM217; --gh/--gl only — arg contract + the Gitea-default guard, no network) ---
+  test("forge contributors: the Gitea default exits 2 with a use-gh/gl message (no endpoint, no network)") {
+    val (code, _, err) = run("forge", "contributors", "foo/bar") // default dialect = Gitea/Codeberg
+    assertEquals(code, 2)
+    assert(clue(err).contains("--gh"))
+    assert(clue(err).contains("--gl"))
+  }
+  test("forge contributors: missing repo or bad --limit exits 2 before any network") {
+    assertEquals(run("forge", "contributors")._1, 2)                          // no repo
+    assertEquals(run("forge", "contributors", "foo/bar", "--gh", "--limit", "0")._1, 2)  // bad limit
+    assertEquals(run("forge", "contributors", "foo/bar", "--gl", "--limit", "x")._1, 2)  // non-numeric limit
+  }
+  test("forge --help mentions the contributors verb") {
+    val (_, out, _) = run("forge", "--help")
+    assert(clue(out).contains("contributors"))
+  }
+
   test("forge issues/prs/issue/pr/protection with missing or bad args exit 2 before any network") {
     assertEquals(run("forge", "issues")._1, 2)                    // no repo
     assertEquals(run("forge", "prs", "--state", "weird")._1, 2)   // bad --state value

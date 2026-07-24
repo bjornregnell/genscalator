@@ -21,6 +21,8 @@
 //   READ verbs for issues/PRs/branch protection (both dialects; --gh = GitHub, see GitHubApi below):
 //   tt forge issues <owner>/<repo> [--gh | --url BASE] [--state open|closed|all] [--limit N]
 //   tt forge prs    <owner>/<repo> [--gh | --url BASE] [--state open|closed|all] [--limit N]
+//   tt forge contributors <owner>/<repo> [--gh | --gl | --url BASE] [--limit N]   # GitHub login/contribs/type
+//                                                                                 # or GitLab name/email/commits
 //   tt forge issue  <owner>/<repo> <n> [--gh | --url BASE]           # body + comments
 //   tt forge pr     <owner>/<repo> <n> [--gh | --url BASE]           # merge state + body
 //   tt forge protection <owner>/<repo> <branch> [--gh | --url BASE]  # protection rule (needs a token)
@@ -41,6 +43,7 @@ object Forge {
       "  forge tags     <owner>/<repo> [--url BASE] [--limit N]\n" +
       "  forge issues <owner>/<repo> [--gh | --url BASE] [--state open|closed|all] [--limit N]\n" +
       "  forge prs    <owner>/<repo> [--gh | --url BASE] [--state open|closed|all] [--limit N]\n" +
+      "  forge contributors <owner>/<repo> [--gh | --gl | --url BASE] [--limit N]   (--gh/--gl only)\n" +
       "  forge issue  <owner>/<repo> <n> [--gh | --url BASE]             (body + comments)\n" +
       "  forge pr     <owner>/<repo> <n> [--gh | --url BASE]             (merge state + body)\n" +
       "  forge protection <owner>/<repo> <branch> [--gh | --url BASE]    (needs a token)\n" +
@@ -66,6 +69,9 @@ object Forge {
       |                                                          list issues   (READ)
       |  forge prs    <owner>/<repo> [--gh | --url BASE] [--state S] [--limit N]
       |                                                          list PRs, head branch in [brackets]
+      |  forge contributors <owner>/<repo> [--gh | --gl | --url BASE] [--limit N]
+      |                                                          list contributors (READ; --gh/--gl only —
+      |                                                          Gitea has no such endpoint)
       |  forge issue  <owner>/<repo> <n> [--gh | --url BASE]     show an issue + comments (READ)
       |  forge pr     <owner>/<repo> <n> [--gh | --url BASE]     show a PR: merge state + body (READ)
       |  forge protection <owner>/<repo> <branch> [--gh | --url BASE]
@@ -186,6 +192,7 @@ object Forge {
       case "tags" :: rest           => listTags(rest)
       case "issues" :: rest         => listIssues(rest)
       case "prs" :: rest            => listPrs(rest)
+      case "contributors" :: rest   => listContributors(rest)
       case "issue" :: rest          => showIssue(rest)
       case "pr" :: rest             => showPr(rest)
       case "protection" :: rest     => showProtection(rest)
@@ -306,6 +313,59 @@ object Forge {
       println(s"${itemLine(p)}\t[$head]")
     }
     println(s"=== ${arr.size} ${o.state} PRs")
+
+  // contributors — READ the repo's contributor list (the "who does the forge think contributed" verb; born
+  // from the SM217 investigation, where verifying it needed raw `tt web get` on the API). Reuses the SM207
+  // --gh/--gl dialect routing. GitHub prints login/contributions/type (type = User|Bot — the thing that
+  // answers "why is a bot on the list"); GitLab prints name/email/commits. The Gitea/Forgejo REST API has NO
+  // contributors endpoint (verified 2026-07-24: Codeberg returns 404), so the default dialect says so plainly
+  // rather than 404-ing cryptically. Anonymous read for GitLab (no token → no trusted-host surface); GitHub
+  // sends its token only to the fixed api.github.com root (ghHeaders), same no-redirect rule as the other reads.
+  private final case class ContribOpts(repo: Option[String], base: String, limit: Int, dialect: Dialect)
+
+  private def listContributors(args: List[String]): Unit =
+    @annotation.tailrec
+    def go(rest: List[String], o: ContribOpts): ContribOpts =
+      rest match
+        case Nil                 => o
+        case "--url" :: u :: t   => go(t, o.copy(base = u)) // base only; dialect stays as --gh/--gl set it (default Gitea)
+        case "--gh" :: t         => go(t, o.copy(dialect = Dialect.GitHub))
+        case "--gl" :: t         => go(t, o.copy(dialect = Dialect.GitLab))
+        case "--limit" :: n :: t =>
+          n.toIntOption match
+            case Some(v) if v > 0 => go(t, o.copy(limit = v))
+            case _                => die(s"--limit needs a positive integer, got '$n'")
+        case flag :: _ if flag.startsWith("--") => die(s"unknown/incomplete flag '$flag'")
+        case r :: t if o.repo.isEmpty            => go(t, o.copy(repo = Some(r)))
+        case other :: _                          => die(s"unexpected argument '$other'")
+    val o             = go(args, ContribOpts(None, DefaultBase, 50, Dialect.Gitea))
+    val (owner, repo) = splitRepo(o.repo.getOrElse(forgeUsage()))
+    o.dialect match
+      case Dialect.GitHub =>
+        val arr = Try(getJson(s"$GitHubApi/repos/$owner/$repo/contributors?per_page=${o.limit}", ghHeaders).arr)
+          .getOrElse(die("expected a JSON array of contributors"))
+        arr.foreach { c =>
+          val login = Try(c.obj("login").str).getOrElse("?")
+          val n     = Try(c.obj("contributions").num.toLong).getOrElse(0L)
+          val typ   = Try(c.obj("type").str).getOrElse("")
+          println(s"$login\t$n\t$typ")
+        }
+        println(s"=== ${arr.size} contributors")
+      case Dialect.GitLab =>
+        val base = if o.base == DefaultBase then "https://gitlab.com" else o.base // default gitlab.com, not codeberg
+        val proj = s"$owner%2F$repo" // GitLab wants the project path URL-encoded ('/' -> %2F)
+        val arr = Try(getJson(s"${base.stripSuffix("/")}/api/v4/projects/$proj/repository/contributors?per_page=${o.limit}").arr)
+          .getOrElse(die("expected a JSON array of contributors"))
+        arr.foreach { c =>
+          val name    = Try(c.obj("name").str).getOrElse("?")
+          val email   = Try(c.obj("email").str).getOrElse("")
+          val commits = Try(c.obj("commits").num.toLong).getOrElse(0L)
+          println(s"$name\t$email\t$commits")
+        }
+        println(s"=== ${arr.size} contributors")
+      case Dialect.Gitea =>
+        die("contributors is supported for --gh (GitHub) and --gl (GitLab) only; the Gitea/Forgejo REST API\n" +
+          "  has no contributors endpoint (Codeberg returns 404) — read the contributor graph from the web UI.")
 
   private final case class ItemOpts(repo: Option[String], item: Option[String], base: String)
 

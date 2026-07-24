@@ -385,6 +385,7 @@ forge releases <owner>/<repo> [--url BASE] [--limit N]    # list releases  (READ
 forge tags     <owner>/<repo> [--url BASE] [--limit N]    # list tags      (READ, no auth → allowlistable)
 forge issues <owner>/<repo> [--gh | --url BASE] [--state open|closed|all] [--limit N]   # list issues (READ)
 forge prs    <owner>/<repo> [--gh | --url BASE] [--state open|closed|all] [--limit N]   # list PRs    (READ)
+forge contributors <owner>/<repo> [--gh | --gl | --url BASE] [--limit N]   # list contributors (READ; --gh/--gl only)
 forge issue  <owner>/<repo> <n> [--gh | --url BASE]        # show an issue + comments   (READ)
 forge pr     <owner>/<repo> <n> [--gh | --url BASE]        # show a PR: merge state + body (READ)
 forge protection <owner>/<repo> <branch> [--gh | --url BASE]   # show the protection rule (needs token)
@@ -400,11 +401,15 @@ release stays a visible, confirmed op). **GitHub dialect:** `--gh` (or a github.
 shapes to the GitHub REST API, rooted at the fixed `api.github.com` — never derived from `--url`, so a token
 cannot be redirected. The GitHub token comes only from fixed env names (`GENSCALATOR_GITHUB_TOKEN`,
 `GITHUB_TOKEN`, `GH_TOKEN`); reads work anonymously (60/h rate limit), `protection` requires it (admin read).
-Example:
+**`contributors`** reads the repo's contributor list — `--gh` prints `login⇥contributions⇥type` (type = `User`/`Bot`,
+the field that answers "why is a bot on the list"), `--gl` prints `name⇥email⇥commits`; the Gitea/Forgejo REST API
+has no contributors endpoint (Codeberg 404s), so the default dialect says so plainly rather than erroring cryptically
+(SM217). Example:
 ```
 tt forge releases bjornregnell/genscalator --limit 5
 tt forge prs lunduniversity/introprog --gh                 # open PRs on a GitHub repo
 tt forge issue lunduniversity/introprog 951 --gh           # one issue with its comment thread
+tt forge contributors lunduniversity/introprog --gh        # who GitHub credits (login/contributions/type)
 tt forge release-create bjornregnell/genscalator v0.8.0 --name "v0.8.0: …" --body-file NOTES.md --prerelease
 ```
 
@@ -414,6 +419,7 @@ git commit --repo <dir> --message-file <path> [--add <pathspec>]... [--push]
 git pull   --repo <dir>                                  # fast-forward ONLY: FFs or fails loudly
 git fetch  --repo <dir>                                  # remote-tracking refs only, never the working tree
 git show   --repo <dir> --ref <ref> --path <relpath> [--out <file>]   # READ-ONLY: file content at a ref
+git log    --repo <dir> [--grep P] [--co-author P] [--author P] [--committer P] [--since D] [--limit N]  # READ-ONLY search
 ```
 Exposes ONLY the safe, non-destructive verbs — no reset/rebase/merge/rm/clean/`--force` — so `Bash(tt git *)`
 cannot become a data-loss vector. `commit` reads its message from a FILE, so prose with shell metacharacters
@@ -422,11 +428,16 @@ allowlist tripwire); `--add` stages only the listed paths (never an implicit add
 file's content at any commit-ish (HEAD, branch, tag, SHA) **byte-exact** to stdout or, with `--out`, to a file
 — the allowlist-clean replacement for redirecting raw `git show ref:path` output (the redirect plus git's
 general surface blocked allowlisting, e.g. when a PR-review sub-agent needs a file at the base ref). On a bad
-ref or path it exits non-zero with git's error — never a partial/empty success. Examples:
+ref or path it exits non-zero with git's error — never a partial/empty success. **`log`** is a READ-ONLY
+commit-log search: it caps (`--limit`, default 50) and tab-formats the output (`<short-sha>⇥<author-email>⇥<subject>`
+plus a `=== N commit(s)` line that flags when the cap was hit), so it needs no `| head` and `Bash(tt git log *)`
+stays allowlist-safe — `--co-author P` greps the `Co-Authored-By:` trailer forges attribute contributors from
+(SM217). Examples:
 ```
 tt git commit --repo /abs/repo --message-file tmp/msg.txt --add src/app.scala --push
 tt git show --repo /abs/repo --ref main --path src/app.scala
 tt git show --repo /abs/repo --ref v1.2 --path README.md --out tmp/old-readme.md
+tt git log  --repo /abs/repo --co-author Claude --limit 20    # commits with a Claude co-author trailer
 ```
 
 ### update — check whether genscalator is BEHIND its marketplace remote, and SUGGEST the manual update steps (EFFECTFUL: git fetch; read-only)
