@@ -5,7 +5,7 @@
 
 // statusline — format the Claude Code `statusLine` stdin JSON into ONE compact line (SM039).
 // Claude Code pipes a JSON object to the configured statusLine command's stdin each turn; this reads it and prints:
-//   genscalator 14:23:07 silent·42s  o4.8·1M  ctx·41%  lim·res·5h·30%·2h|w·14%·3d  $12
+//   genscalator 14:23:07 silent·42s  o4.8·1M  ctx·41%  rot?↑120k·tot↑180k  lim·%·res·5h·30%·2h|w·14%·3d  $12
 //   (leading HH:MM:SS wall clock; ANSI-coloured segments; two-space separators; ctx is a FILL gauge, 5h/w LIMITs;
 //   space diet 2026-07-24, BR: `·` is the universal label·value glue for states/levels (`↑` stays exclusively the
 //   rot?/tot output-flow marker), clock+silent fused by ONE space, ctx-fill->ctx, lim·reset->lim·res, wk->w, the
@@ -256,12 +256,17 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     // The `↑` marks these as OUTPUT-FLOW (agent tokens GENERATED), a different KIND of quantity from ctx's
     // window OCCUPANCY (%): a flow-count vs a level, decoupled, never expected to reconcile. The glyph stops a
     // glancer grouping `2k` with `4%` on one axis (wr-data 2026-07-17, confirmed against TranscriptStats).
-    rotTokens.foreach(r => segs += sgr(tokGauge(r, tokWarn, tokDanger), s"rot?↑${formatTokens(r)}"))
-    if showTot then totTokens.foreach(t => segs += sgr("38;5;245", s"tot↑${formatTokens(t)}"))
+    // rot?·tot welded into ONE segment by a dim middot (BR 2026-07-24): related gauges join with `·`,
+    // same move as the lim block. Each half keeps its own colour; either half absent -> no orphan dot.
+    val tokSegs = List(
+      rotTokens.map(r => sgr(tokGauge(r, tokWarn, tokDanger), s"rot?↑${formatTokens(r)}")),
+      (if showTot then totTokens else None).map(t => sgr("38;5;245", s"tot↑${formatTokens(t)}"))
+    ).flatten
+    if tokSegs.nonEmpty then segs += tokSegs.mkString(sgr("38;5;245", "·"))
     val rl = o.get("rate_limits").flatMap(_.obj)
     // Compact rate-limit cluster (BR 2026-07-17): factor the twice-repeated "lim"/"reset" words into ONE gray
-    // legend `lim·res` (dieted from `lim·reset` 2026-07-24), whose middot MIRRORS the value middot `P%·reset`
-    // — the legend IS the column header.
+    // legend `lim·%·res` (dieted+shaped from `lim·reset` 2026-07-24), whose middots MIRROR the cluster
+    // shape label·used%·countdown — the legend IS the column header.
     // (Separator changed '/'→'·' 2026-07-19, BR: the middot reads easier and '/' wrongly suggests division/"per";
     // same sweep across the model tag and the box line.) Each
     // window's whole cluster (`5h P%·reset`, `w P%·reset`) takes its own gauge colour, so a near-cap limit reds as
@@ -305,7 +310,8 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     // The whole lim block welds into ONE visual unit (BR 2026-07-24): legend middot-glued to the first
     // cluster, clusters joined by a legend-gray `|` (same width as the space it replaced, but connective)
     // while each window keeps its own hue as a clean block: lim·res·5h·14%·4h|w·42%·3d
-    if clusters.nonEmpty then segs += sgr("38;5;245", "lim·res·") + clusters.mkString(sgr("38;5;245", "|"))
+    // legend `lim·%·res` mirrors the FULL three-part cluster shape label·used%·countdown (BR 2026-07-24)
+    if clusters.nonEmpty then segs += sgr("38;5;245", "lim·%·res·") + clusters.mkString(sgr("38;5;245", "|"))
     // cost LAST (least interesting on a fixed monthly plan) + blue, un-graded (no threshold meaning here)
     o.get("cost").flatMap(_.obj).flatMap(_.get("total_cost_usd")).flatMap(_.num)
       .foreach(c => segs += sgr("38;5;39", s"$$${c.toLong}")) // whole dollars, TRUNCATED (cents are noise on a fixed monthly plan; never overstates); the "cost" label dropped 2026-07-24 — $ is self-labeling
@@ -471,11 +477,11 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       |                      the compact-dance trigger (0.8*Z), red at Z = dumb-zone (--ctx-warn).
       |                      NB the glue glyphs carry KIND: `·` joins a label to a state/level;
       |                      `↑` (rot?/tot only) marks an output-FLOW count — different axes
-      |  rot? N / tot N      rot? = agent tokens SINCE the last warp (compact/clear) = current-window rot,
+      |  rot?↑N·tot↑N        rot? = agent tokens SINCE the last warp (compact/clear) = current-window rot,
       |                      coloured by threshold (the `?` marks it an inferred proxy); tot = cumulative
       |                      lifetime tokens (dim; dropped if the terminal is narrow or --rot-only). Both from
       |                      the transcript; --no-tok skips the read entirely.
-      |  lim·res·5h·P%·R|w·P%·R   usage limits (Claude Pro/Max only), welded into one block:
+      |  lim·%·res·5h·P%·R|w·P%·R   usage limits (Claude Pro/Max only), welded into one block:
       |                      per window label·used%·reset-countdown, gray `|` between windows
       |                      (5h rolling / w weekly; countdowns largest-unit-only; the % anchors
       |                      the middle, so label reads before it, countdown after). Both the %

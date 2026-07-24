@@ -1332,7 +1332,7 @@ class CliSuite extends munit.FunSuite:
     assert(!clue(out).contains("$12.34")) // cents dropped
     assert(!clue(out).contains("cost")) // the "cost" label is gone ($ self-labels)
     assert(clue(out).contains("ctx·41%")) // dieted from ctx-fill + middot-glued 2026-07-24
-    assert(clue(out).contains("lim·res·"))  // the gray legend, middot-WELDED to its first cluster (2026-07-24)
+    assert(clue(out).contains("lim·%·res·"))  // the gray legend mirrors label·%·countdown, WELDED to its first cluster
     assert(!clue(out).contains("lim·reset")) // the old long legend must not come back
     assert(clue(out).contains("5h·30%"))       // 5h cluster (no resets_at provided here)
     assert(clue(out).contains("w·14%·3d"))    // weekly cluster (wk->w): label·%·reset all middot-glued
@@ -1343,7 +1343,7 @@ class CliSuite extends munit.FunSuite:
     assert(clue(out).contains("haiku"))
     assert(clue(out).contains("$0")) // 0.50 truncates to whole dollars -> $0
     assert(!clue(out).contains("w·")) // no rate_limits → no weekly cluster
-    assert(!clue(out).contains("lim·res")) // legend suppressed when neither limit is present
+    assert(!clue(out).contains("lim·")) // legend suppressed when neither limit is present
   }
   test("statusline: empty/invalid JSON prints an empty line at exit 0 (never breaks the prompt)") {
     val (code, out, _) = run("statusline", "not json at all")
@@ -1356,7 +1356,7 @@ class CliSuite extends munit.FunSuite:
     val json = s"""{"rate_limits":{"seven_day":{"used_percentage":50,"resets_at":$resetsMs}}}"""
     val (_, out, _) = run("statusline", json, "--now-ms", now.toString)
     assert(clue(out).contains("w·50%·2d")) // % and reset joined; MS resets_at auto-detected to 2d
-    assert(clue(out).contains("lim·res")) // legend present
+    assert(clue(out).contains("lim·%·res")) // legend present
   }
   test("statusline: five_hour resets_at counts down largest-unit-only (2026-07-24 diet; relResetFine retired)") {
     val now = 1_000_000_000_000L
