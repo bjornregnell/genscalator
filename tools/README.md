@@ -451,6 +451,50 @@ tt update --brief               # speak only if a newer release is available
 tt update --brief --throttle 24 # gs warm's call: check at most once a day, silent unless behind
 ```
 
+### statusline — format the Claude Code statusLine stdin JSON into ONE compact line (PURE: reads stdin, prints; SM039)
+Reads the JSON Claude Code pipes to the configured `statusLine` command each turn and prints one compact,
+colour-coded line — model, context-fill (the rot gauge), usage limits, cost — with optional `--mode-line`
+(line 2, the declared modes) and `--box-line` (line 3, measured box health). Full legend: `docs/statusline-manual.md`.
+
+### box — safe host + local box ops: health, and host-pinned remote ops for a known compute box (EFFECTFUL; SM181)
+Replaces the dual-use `ssh *` / `ps` / `pkill` reflexes with a narrow, allowlistable tool: a FIXED verb enum,
+no shell passthrough, a pinned default host. LOCAL health/kill shapes for this machine plus host-pinned REMOTE
+ops for the known compute box.
+
+### gitinfo — typed, READ-ONLY git status/overview (PURE, read-only)
+Branch, clean/dirty count, ahead/behind vs upstream, and the recent log in ONE call; `--remote <name>` also
+checks whether local HEAD is in sync with that remote's HEAD (via `ls-remote`). Retires raw
+`git -C … status/log/ls-remote`; only read-only git subcommands, never add/commit/checkout/fetch.
+
+### prd — read + navigate the genscalator PRD.md (PURE, read-only)
+See what the PRD says without re-emitting it token-by-token: `tt prd show` (whole file), `tt prd summarize`
+(a FUTURE-roadmap gist), `tt prd find <what>` (locate a term by its nearest heading). Complements
+`tt parsereqt` (which parses + lints the reqT-lang).
+
+### harden — Layer-1 deterministic secret scanner (PURE, read-only; SM042)
+Surfaces CANDIDATE secrets for semantic (Layer-2) triage. `tt harden repo <dir>` scans git-TRACKED text files
+(respects `.gitignore`); `tt harden egress <dir>` scans ALL files under a dir destined to LEAVE (a ZIP-staging
+or deploy bundle) — the higher-value half, since a secret safe at rest can leak on egress.
+
+### skillcheck — verify the genscalator skill set is active; catch the silent skill outage (PURE, read-only; SM070)
+The agent CANNOT feel a missing skill (no phenomenology of absence), so this prints the EXPECTED set (derived
+from the `skills/*/SKILL.md` dirs, so it never drifts) to diff against the live `/skills` list; feed the active
+names via `--active` for a machine-checked, exit-coded diff.
+
+### skillgrants — print what a skill GRANTS: its allowed-tools frontmatter, for informed consent (PURE, read-only; SM100)
+When the harness loads a skill it silently widens the auto-approved tool set by that skill's `allowed-tools`,
+but never shows the human WHICH tools at grant time. This is that read: name a skill (or list all) and see
+exactly which tools it opens.
+
+### bloop — targeted BloopServer control: status + restart (EFFECTFUL; SM146c)
+Bloop is a disposable compile daemon that respawns lazily, so "restart" is a targeted kill + lazy respawn. It
+uses `kill -9` deliberately: when bloop is wedged (the empirical villain, SM150) polite protocols hang and a
+signal is the reliable cure. Its RSS also surfaces on the statusline box line so regrowth is visible early.
+
+### wr — Workflow-Research utilities for the WR corpus itself (PURE, read-only)
+`tt wr stamp <project-dir> <regex> [--user|--human] [--limit N]` retrofits the REAL date-time of an utterance
+or event from the session `.jsonl` transcripts — the grounded-timestamp tool behind the WR-data discipline.
+
 ## Companion: scalex
 The `tt` tools are **textual** — grep/awk/cut over any file. For **Scala code structure** the companion
 is **[scalex](https://github.com/nguyenyou/scalex)**: "grep, but it understands Scala's AST." It parses
