@@ -1922,6 +1922,90 @@ class CliSuite extends munit.FunSuite:
     finally os.remove.all(d)
   }
 
+  // --- tsv (RT056 gap 5: the toolbox writes tmp/tt-perf.tsv on every call and could not read it) ---
+  private val tsvFixture = "key\tvalue\nsame\tsame\npå rad\tpå rad\nprogram\tprogram\nhej\thello\n"
+
+  test("tsv cols: names the columns and counts the data rows") {
+    val f = os.temp(contents = tsvFixture, suffix = ".tsv")
+    try
+      val (code, out, _) = run("tsv", "cols", f.toString)
+      assertEquals(code, 0)
+      assert(out.contains("key") && out.contains("value"), clue(out))
+      assert(out.contains("rows: 4"), clue(out))
+    finally os.remove(f)
+  }
+  test("tsv count: --same-as finds the key==value rows") {
+    val f = os.temp(contents = tsvFixture, suffix = ".tsv")
+    try assertEquals(run("tsv", "count", f.toString, "--col", "key", "--same-as", "value")._2, "3")
+    finally os.remove(f)
+  }
+  test("tsv count: ANDing --same-as with --matches is the introprog#960 predicate") {
+    val f = os.temp(contents = tsvFixture, suffix = ".tsv")
+    try
+      // identical AND Swedish -> only "på rad"; "program" is identical but must NOT be selected
+      val (_, out, _) = run("tsv", "count", f.toString,
+        "--col", "key", "--same-as", "value", "--col", "value", "--matches", "[åäöÅÄÖ]")
+      assertEquals(out, "1")
+    finally os.remove(f)
+  }
+  test("tsv rows: prints matches and honours --limit") {
+    val f = os.temp(contents = tsvFixture, suffix = ".tsv")
+    try
+      val (_, out, _) = run("tsv", "rows", f.toString, "--col", "key", "--same-as", "value", "--limit", "2")
+      assertEquals(out.linesIterator.size, 2)
+    finally os.remove(f)
+  }
+  test("tsv drop: writes the NON-matching rows to a new file and leaves the input untouched") {
+    val d = os.temp.dir()
+    try
+      val src = d / "in.tsv"
+      os.write(src, tsvFixture)
+      val out = d / "out.tsv"
+      val (code, msg, _) = run("tsv", "drop", src.toString, "--col", "key", "--same-as", "value", "--out", out.toString)
+      assertEquals(code, 0)
+      assert(msg.contains("dropped 3"), clue(msg))
+      assertEquals(os.read(src), tsvFixture, "the input file must be byte-identical afterwards")
+      val kept = os.read.lines(out)
+      assertEquals(kept.head, "key\tvalue")          // header preserved
+      assert(kept.exists(_.startsWith("hej")), kept.mkString("|"))
+    finally os.remove.all(d)
+  }
+  test("tsv drop: refuses an existing --out, and refuses to run with no filter") {
+    val d = os.temp.dir()
+    try
+      val src = d / "in.tsv"; os.write(src, tsvFixture)
+      val existing = d / "taken.tsv"; os.write(existing, "x")
+      val (c1, _, e1) = run("tsv", "drop", src.toString, "--col", "key", "--same-as", "value", "--out", existing.toString)
+      assertEquals(c1, 2); assert(e1.contains("already exists"), clue(e1))
+      val (c2, _, e2) = run("tsv", "drop", src.toString, "--out", (d / "new.tsv").toString)
+      assertEquals(c2, 2); assert(e2.contains("filter"), clue(e2))
+    finally os.remove.all(d)
+  }
+  test("tsv: unknown column, unknown verb and a missing file all exit 2") {
+    val f = os.temp(contents = tsvFixture, suffix = ".tsv")
+    try
+      assertEquals(run("tsv", "count", f.toString, "--col", "nope", "--eq", "x")._1, 2)
+      assertEquals(run("tsv", "frobnicate", f.toString)._1, 2)
+      assertEquals(run("tsv", "cols", "/no/such/file.tsv")._1, 2)
+    finally os.remove(f)
+  }
+
+  // --- guardcheck posthook (the only channel that reaches CLAUDE without stalling; SM230) ---
+  test("guardcheck posthook: a NOTE becomes additionalContext, with no permission decision") {
+    val json = """{"tool_name":"Bash","tool_input":{"command":"jq .a b.json"}}"""
+    val (code, out, _) = run("guardcheck", "posthook", json)
+    assertEquals(code, 0)
+    assert(clue(out).contains("PostToolUse"), "must be tagged as the PostToolUse event")
+    assert(clue(out).contains("additionalContext"), "this is the field Claude actually reads")
+    assert(!clue(out).contains("permissionDecision"), "post-hoc: there is no decision left to make")
+  }
+  test("guardcheck posthook: stays silent on a clean command and on HIGH/MED-only") {
+    assertEquals(run("guardcheck", "posthook", """{"tool_input":{"command":"tt chrono now"}}""")._2, "")
+    // HIGH already spoke pre-execution via deny; repeating it after the fact is noise
+    assertEquals(run("guardcheck", "posthook", """{"tool_input":{"command":"a && b"}}""")._2, "")
+    assertEquals(run("guardcheck", "posthook", """{"tool_input":{"command":"git log | head -5"}}""")._2, "")
+  }
+
   // --- bloop clean (reclaim .scala-build caches; DRY RUN unless --yes) ---
   // Every case here either refuses, or reports without deleting. No test may pass --yes.
   test("bloop clean: dry run finds a .scala-build dir, reports it, and deletes NOTHING") {

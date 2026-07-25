@@ -234,6 +234,37 @@ object Guardcheck {
               "permissionDecision" -> decision,
               "permissionDecisionReason" -> text)))
 
+  /** PURE: the PostToolUse counterpart, and the ONLY channel that can reach CLAUDE rather than the human.
+    *
+    * WHY a second mode exists at all (verified against the hook docs 2026-07-25, not assumed): a PreToolUse
+    * hook cannot whisper. `systemMessage` is "shown to you, not to Claude", and PreToolUse's
+    * `additionalContext` is "Ignored when permissionDecision is defer" — so the only pre-execution ways to
+    * reach the agent are `ask` (which STALLS an unattended run) or `allow` (forbidden: it would bypass the
+    * user's own permission rules). PostToolUse has no such coupling: it carries `additionalContext` with no
+    * decision to make, because the command has already run.
+    *
+    * The trade is explicit: this fires ONE TURN LATE. The interpreter call already happened. What it buys is
+    * that the agent LEARNS — "you just reached past a typed verb" — with no stall and no approval cost, which
+    * is exactly the combination an AFK run needs and the PreToolUse path cannot give.
+    *
+    * NOTE-ONLY by design. HIGH and MED already spoke pre-execution via deny/ask; repeating them here would be
+    * noise on a command the user already adjudicated. */
+  def postFromJson(stdinJson: String): String =
+    val command =
+      try ujson.read(stdinJson).obj.get("tool_input").flatMap(_.obj.get("command")).map(_.str).getOrElse("")
+      catch case _: Throwable => ""
+    if command.isEmpty then ""
+    else
+      val notes = cmdFindings(command).filter(_.severity == "NOTE")
+      if notes.isEmpty then ""
+      else
+        val text = notes.map(f => s"${f.name}: ${f.fix}").mkString("  |  ")
+        ujson.write(ujson.Obj(
+          "hookSpecificOutput" -> ujson.Obj(
+            "hookEventName" -> "PostToolUse",
+            "additionalContext" ->
+              s"guardcheck (tool-choice note, the command already ran): $text")))
+
   def usage(): Unit =
     println("""guardcheck — flag shell/commit-message patterns that trip the guard or are banned reflexes
       |  tt guardcheck cmd "<shell command>"    check a command (chaining, substitution, pipes, redirects, raw grep, /dev/stdin, heredoc)
@@ -258,6 +289,12 @@ object Guardcheck {
       |                                       on stdin (or as an arg, for testing) and emits a
       |                                       permission-decision JSON (deny on any HIGH finding,
       |                                       ask on MED-only, silent when clean)
+      |
+      |  guardcheck posthook [<json>]         Claude Code PostToolUse hook: emits NOTE findings as
+      |                                       additionalContext AFTER the command ran. One turn late,
+      |                                       but it reaches CLAUDE with no stall — the only channel
+      |                                       that does (PreToolUse additionalContext is ignored on a
+      |                                       defer, and systemMessage reaches the human, not Claude)
       |
       |Severities:
       |  HIGH / MED   shell SYNTAX problems — these carry a hook decision (deny / ask)
@@ -288,6 +325,11 @@ object Guardcheck {
       case "hook" :: rest =>
         val json = if rest.nonEmpty then rest.mkString(" ") else scala.io.Source.stdin.mkString
         val out = decideFromJson(json)
+        if out.nonEmpty then println(out)
+        sys.exit(0)
+      case "posthook" :: rest =>
+        val json = if rest.nonEmpty then rest.mkString(" ") else scala.io.Source.stdin.mkString
+        val out = postFromJson(json)
         if out.nonEmpty then println(out)
         sys.exit(0)
       case _ => usage(); sys.exit(2)

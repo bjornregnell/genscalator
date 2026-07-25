@@ -49,6 +49,7 @@ object Dispatch {
     "statusline"  -> (a => statusLine(a*)),
     "svg"         -> (a => renderSvgDiagram(a*)),
     "text"        -> (a => text(a*)),
+    "tsv"         -> (a => tsvRead(a*)),
     "typo"        -> (a => typoClassify(a*)),
     "update"      -> (a => checkGenscalatorUpdate(a*)),
     "verify"      -> (a => verifyCommand(a*)),
