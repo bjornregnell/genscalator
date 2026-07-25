@@ -33,7 +33,7 @@ object EnvTool {
       |
       |Usage:
       |  tt env list [regex]          variable NAMES only, never values (optional case-insensitive filter)
-      |  tt env has <NAME>            exit 0 if set, 1 if not; prints nothing
+      |  tt env has <NAME>            exit 0 if set AND non-blank, 1 otherwise; prints nothing
       |  tt env get <NAME>            one variable; value REDACTED if it looks like a credential
       |  tt env get <NAME> --reveal   print the real value, one variable, deliberately
       |
@@ -90,7 +90,12 @@ object EnvTool {
             System.err.println(s"tt env: ${names.size} name(s); values withheld by design — use `get <NAME>`")
             sys.exit(0)
 
-      case "has" :: name :: Nil => sys.exit(if env.contains(name) then 0 else 1)
+      // EMPTY COUNTS AS ABSENT, and that is not pedantry. A credential-helper export such as
+      // `export TOK="$(keyring get svc acct)"` yields an EMPTY string when the keyring is locked or the
+      // helper is missing — a silent failure. Reporting "set" there is false reassurance about exactly the
+      // setup this tool is meant to support. `tt forge` already treats blank as absent
+      // (`.map(_.trim).find(_.nonEmpty)`), so this matches it rather than inventing a second semantic.
+      case "has" :: name :: Nil => sys.exit(if env.get(name).exists(_.trim.nonEmpty) then 0 else 1)
       case "has" :: _           => fail("has takes exactly one <NAME>")
 
       case "get" :: name :: rest =>

@@ -1207,6 +1207,34 @@ class CliSuite extends munit.FunSuite:
     val (_, out, _) = run("guardcheck", "hook", json)
     assert(clue(out).contains("\"permissionDecision\":\"ask\""))
   }
+  // REGRESSION PIN (2026-07-25). The NOTE tier was built that morning for guard-invisible tool-choice
+  // mistakes and still missed a bare `printenv` that leaked two live tokens, because it listed
+  // interpreters rather than the class. These pin the class, and pin that the FIX is not flagged.
+  test("NOTE: bulk environment reads are flagged, and point at tt env") {
+    val f = Guardcheck.cmdFindings("printenv")
+    assert(clue(f).exists(_.severity == "NOTE"), "the exact shape that leaked must be caught")
+    assert(clue(f).exists(_.fix.contains("tt env")), "and it must name the replacement")
+    assert(Guardcheck.cmdFindings("env").exists(_.severity == "NOTE"), "a bare env dump")
+    assert(Guardcheck.cmdFindings("printenv GITHUB_TOKEN").exists(_.severity == "NOTE"))
+  }
+  test("NOTE: reading a credentials file is the same class") {
+    assert(Guardcheck.cmdFindings("cat /home/x/.netrc").exists(_.severity == "NOTE"))
+    assert(Guardcheck.cmdFindings("cat .env").exists(_.severity == "NOTE"))
+  }
+  test("NOTE: the FIX is never flagged, nor is a dir-scoped env run") {
+    assert(Guardcheck.cmdFindings("tt env list CLAUDE").isEmpty, "flagging tt env would be self-defeating")
+    assert(Guardcheck.cmdFindings("tt env get GITHUB_TOKEN").isEmpty)
+    assert(Guardcheck.cmdFindings("tt env has GITHUB_TOKEN").isEmpty)
+    // `env --chdir=<abs> <cmd>` is a legitimate dir-scoped run, not a dump
+    assert(Guardcheck.cmdFindings("env --chdir=/home/x sbt compile").forall(_.severity != "NOTE"))
+  }
+  test("a bulk env read still carries NO decision — it nudges, never blocks") {
+    val json = """{"tool_name":"Bash","tool_input":{"command":"printenv"}}"""
+    val (_, out, _) = run("guardcheck", "hook", json)
+    assert(clue(out).contains("systemMessage"))
+    assert(!clue(out).contains("permissionDecision"))
+  }
+
   test("rank orders HIGH before MED before NOTE") {
     assert(Guardcheck.rank("HIGH") < Guardcheck.rank("MED"))
     assert(Guardcheck.rank("MED") < Guardcheck.rank("NOTE"))

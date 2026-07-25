@@ -91,6 +91,20 @@ object Guardcheck {
       "reading or validating JSON through jq / python -m json.tool, where a typed verb exists",
       "use tt json check|get|keys|pretty (dot paths, numeric array indexes: permissions.allow.3)",
       has(raw"\bjq\b|\bpython3?\s+-m\s+json\.tool\b")),
+    // Added 2026-07-25 after the NOTE tier — built that same morning for guard-invisible tool-choice
+    // mistakes — failed to catch a bare `printenv` that dumped two live API tokens into a transcript.
+    // The original tier listed INTERPRETERS, i.e. the shape that had already bitten, rather than the
+    // class. This is the class: a bulk read of a credential-bearing surface. Read-only is not safe when
+    // the output lands in a durable, copied record.
+    Check("NOTE", "bulk read of a credential-bearing surface",
+      "dumping the whole environment (or a credentials file) into the transcript — read-only, but the " +
+        "output is durable and copied, so this is a DISCLOSURE act; it leaked two live tokens on 2026-07-25",
+      "use tt env list <regex> (names only), tt env has <NAME> (exit code only), or tt env get <NAME> " +
+        "(one value, redacted). Ask for the NAME you need, never for everything",
+      // Narrow on purpose. `printenv` always (it exists to print values), a BARE `env` with no arguments
+      // (the dump; `env --chdir=<abs> <cmd>` is a legitimate dir-scoped run and must not nag), and cats of
+      // credential files. `tt env …` must never match — flagging the fix would be self-defeating.
+      has(raw"(?<!tt )\bprintenv\b|(^|\s)env\s*$$|\bcat\s+\S*(\.env|\.netrc|\.git-credentials)\b")),
     Check("NOTE", "general-purpose interpreter",
       "reaching for a general-purpose interpreter — usually the signal that a typed verb is MISSING, " +
         "and the one gap class the guard cannot otherwise see (no cd, no pipe, no redirect to catch)",

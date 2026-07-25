@@ -81,6 +81,12 @@ class EnvSuite extends munit.FunSuite:
     assertEquals(EnvTool.renderGet("HOME", "/home/x", reveal = false), "HOME=/home/x")
   }
 
+  test("help documents that has treats blank as absent") {
+    // the credential-helper case: `export TOK="$(keyring get svc acct)"` yields "" when the keyring is
+    // locked, and reporting that as set is false reassurance
+    assert(EnvTool.Help.contains("non-blank"), EnvTool.Help)
+  }
+
   test("help states that no whole-environment dump exists, which is the safety property") {
     assert(EnvTool.Help.contains("NO verb that prints the whole environment"), EnvTool.Help)
   }

@@ -7,9 +7,12 @@
 // forge — typed client for a Forgejo/Gitea forge (default: Codeberg). Replaces hand-curling the REST API
 // (a dual-use `curl` carrying a token on the command line) with a narrow, effect-declared tool.
 //   READ verbs (releases, tags) need NO auth (public repos) → safe to allowlist (`Bash(tt forge releases *)`).
-//   The one EFFECTFUL verb (release-create) reads its token ONLY from a fixed set of human-set env vars
-//   (GENSCALATOR_CODEBERG_TOKEN, then CODEBERG_TOKEN, then FORGE_TOKEN) — NEVER a flag — so the agent cannot self-authorize (same trust-boundary rule as
-//   verify's TT_VERIFY_ALLOW / the configInArgsNotEnv PRD feature). It prints an [audit] line before acting,
+//   The one EFFECTFUL verb (release-create) reads its token from a fixed set of human-set env vars
+//   (GENSCALATOR_CODEBERG_TOKEN, then CODEBERG_TOKEN, then FORGE_TOKEN) and, failing those, from an OS
+//   credential helper (`keyring get` for Gitea, `gh auth token` for GitHub) — NEVER a flag, and never a
+//   source the AGENT can name, so it still cannot point the tool at an arbitrary secret. The helper
+//   fallback is a deliberate 2026-07-25 widening so the human need keep NO token in the environment at
+//   all; see the CREDENTIAL HELPERS note below for the full trade. It prints an [audit] line before acting,
 //   and is deliberately NOT blanket-allowlistable (creating a release should stay a visible, confirmed op).
 //   tt forge whoami   [--url BASE]                          # verify auth: print the token's login (never the token)
 //   tt forge releases <owner>/<repo> [--url BASE] [--limit N]
@@ -124,8 +127,74 @@ object Forge {
   // var (an agent-chosen var name + an agent-chosen --url would let it POST an arbitrary secret to an
   // arbitrary host = exfiltration). Fixed names keep the authorization a human boundary.
   private val TokenEnvNames = List("GENSCALATOR_CODEBERG_TOKEN", "CODEBERG_TOKEN", "FORGE_TOKEN")
-  private def token: Option[String] =
+  private def envToken: Option[String] =
     TokenEnvNames.iterator.flatMap(sys.env.get).map(_.trim).find(_.nonEmpty)
+
+  // ================================================================================================
+  // CREDENTIAL HELPERS — one deliberate trust-boundary change, covering every fallback below.
+  //
+  // ⚠ WHAT CHANGED (BR-authorized 2026-07-25, after the agent flagged the cost). Tokens used to come
+  // ONLY from fixed human-set env names, which meant the human's SHELL decided whether a running agent
+  // had forge credentials at all. These helpers let the tool obtain one itself, so an agent that can run
+  // `tt forge` can now act as the user without the user having exported anything. That is a real
+  // widening, written here rather than buried, because the rule it relaxes was previously absolute.
+  //
+  // WHY IT WAS ACCEPTED. It lets the human keep NO long-lived credential in the environment at all —
+  // BR's `.bashrc` now exports neither token. On 2026-07-25 a bare `printenv` put the then-ambient
+  // tokens into a durable transcript and forced a rotation of both. Ambient exposure is continuous and
+  // passive; a helper call is momentary and reachable only through this one audited tool.
+  //
+  // WHAT STILL HOLDS, so the widening stays bounded:
+  //   - env ALWAYS wins, so existing setups and CI are unaffected;
+  //   - the SOURCE is never agent-nameable — fixed env names, a fixed keyring key or one fixed env var
+  //     naming it, never a flag. An agent that could choose both the secret's source and the
+  //     destination could exfiltrate, which is the original reason for the fixed-names rule;
+  //   - each token still only ever travels to its fixed/trusted host, never one derived from --url;
+  //   - argv, never a shell;
+  //   - NEVER silent, and failure is soft.
+  //
+  // OPEN for the SM073 review: whether these fallbacks should require an explicit human opt-in rather
+  // than being the default. Argument for opt-in: the convenience is small and the boundary is not.
+  // Argument against: an opt-in nobody sets leaves the ambient token in place, which is the exposure
+  // this removes.
+  // ================================================================================================
+
+  /** Run a fixed argv and take its stdout as a token. Shared by every credential-helper fallback so they
+    * cannot drift on the properties that make them acceptable: argv (never a shell, so nothing is
+    * injectable), soft failure (a missing or locked helper yields None and read verbs keep working), and
+    * NEVER SILENT — a line on stderr, so a human reading a transcript can see that the agent obtained a
+    * credential rather than being handed one by the shell. */
+  private def helperToken(label: String, cmd: String*): Option[String] =
+    try
+      val p   = ProcessBuilder(cmd*).redirectErrorStream(false).start()
+      val out = String(p.getInputStream.readAllBytes, "UTF-8").trim
+      if p.waitFor() == 0 && out.nonEmpty then
+        Console.err.println(s"forge: no token in env; obtained one from $label")
+        Some(out)
+      else None
+    catch case _: Throwable => None
+
+  /** WHERE the keyring entry lives — a service/account pair. This is NOT a secret, so it is safe to
+    * export, which is the whole point: the machine says where to look and nothing stores the token but
+    * the OS keyring.
+    *
+    * ⛔ It must NOT be agent-nameable, and that is a security property rather than a style choice. An
+    * agent that could choose BOTH the keyring key and the destination could read any stored secret and
+    * ship it to a forge. So the key comes from one fixed env name or the built-in default, exactly as the
+    * token env names are a fixed list — never from a flag. */
+  private def keyringSpec: (String, String) =
+    sys.env.get("TT_FORGE_KEYRING").map(_.trim).filter(_.nonEmpty).map(_.split("/", 2)) match
+      case Some(Array(service, account)) if service.nonEmpty && account.nonEmpty => (service, account)
+      case _                                                                     => ("codeberg", "genscalator-token")
+
+  /** Gitea/Codeberg token from the OS keyring when no env var holds one. Same trust-boundary trade as
+    * ghCliToken below, and accepted for the same reason: it lets the human keep NO long-lived credential
+    * in the environment of every process, which is the exposure that leaked two tokens on 2026-07-25. */
+  private lazy val keyringToken: Option[String] =
+    val (service, account) = keyringSpec
+    helperToken(s"keyring get $service $account", "keyring", "get", service, account)
+
+  private def token: Option[String] = envToken.orElse(keyringToken)
 
   // The token may only be sent to a TRUSTED host — so the agent cannot redirect it to an attacker host via
   // --url. Default: codeberg.org. The HUMAN (not a flag) extends the set via env TT_FORGE_HOSTS (comma-sep).
@@ -147,47 +216,19 @@ object Forge {
   // rooted at the FIXED GitHubApi constant below — never derived from --url — so the GitHub token
   // can only ever travel to that one host (same no-redirect rule as trustedHosts for the Gitea token).
   // The token comes from fixed human-set env names FIRST and, failing that, from `gh auth token` — see
-  // the trust-boundary note on ghCliToken below, which is a deliberate widening, not an oversight.
+  // the CREDENTIAL HELPERS note above, a deliberate widening rather than an oversight.
   // READ verbs work without any token (60/h anonymous rate limit); `protection` requires one.
   private val GitHubApi       = "https://api.github.com"
   private val GhTokenEnvNames = List("GENSCALATOR_GITHUB_TOKEN", "GITHUB_TOKEN", "GH_TOKEN")
   private def envGhToken: Option[String] =
     GhTokenEnvNames.iterator.flatMap(sys.env.get).map(_.trim).find(_.nonEmpty)
 
-  /** ⚠ DELIBERATE TRUST-BOUNDARY CHANGE (BR-authorized 2026-07-25, after the agent flagged the cost).
-    *
-    * WHAT CHANGED. Until now the rule above was absolute: a GitHub token came only from a fixed env var,
-    * so the HUMAN'S SHELL decided whether a running agent had GitHub credentials at all. With this
-    * fallback the tool can obtain one itself, which means an agent that can run `tt forge` can now act on
-    * GitHub as BR without BR having exported anything. That is a real widening and it is written down
-    * here rather than buried, because the next reader deserves to know the rule is no longer absolute.
-    *
-    * WHY IT WAS ACCEPTED. It removes a long-lived credential from the ambient environment of EVERY
-    * process. On 2026-07-25 a bare `printenv` put that ambient token into a durable transcript and forced
-    * a rotation. Ambient exposure is continuous and passive; this fallback is momentary and only reachable
-    * through one audited tool.
-    *
-    * WHAT STILL HOLDS, so the widening is bounded:
-    *   - env ALWAYS wins, so nothing about existing setups changes;
-    *   - the token is still only ever paired with the FIXED GitHubApi constant, never a --url host, so it
-    *     cannot be redirected to an attacker;
-    *   - `gh` is invoked via argv with no shell, so nothing here is injectable;
-    *   - it is NEVER silent: using the fallback prints a line to stderr, so a human reading a transcript
-    *     can see that the agent minted a credential rather than being handed one;
-    *   - failure is soft (no gh, not logged in) -> None, and read verbs keep working anonymously.
-    *
-    * OPEN for the SM073 security review: whether this should be gated behind an explicit human opt-in
-    * (an env flag such as TT_FORGE_GH_CLI=1) rather than being the default fallback. */
+  /** GitHub token from the `gh` CLI when no env var holds one. `gh` is the right helper here rather than
+    * the keyring: it already owns the credential, refreshes it, and `gh auth token` needs no key name, so
+    * there is nothing for an agent to point elsewhere. See the CREDENTIAL HELPERS note above for the
+    * trust-boundary trade this shares with keyringToken. */
   private lazy val ghCliToken: Option[String] =
-    try
-      val p = ProcessBuilder("gh", "auth", "token").redirectErrorStream(false).start()
-      val out = String(p.getInputStream.readAllBytes, "UTF-8").trim
-      val ok  = p.waitFor() == 0 && out.nonEmpty
-      if ok then
-        Console.err.println("forge: no GitHub token in env; obtained one from `gh auth token` (see forge.scala ghCliToken)")
-        Some(out)
-      else None
-    catch case _: Throwable => None
+    helperToken("`gh auth token`", "gh", "auth", "token")
 
   private def ghToken: Option[String] = envGhToken.orElse(ghCliToken)
   private def isGitHub(base: String): Boolean =
