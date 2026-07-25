@@ -146,12 +146,50 @@ object Forge {
   // GitHub dialect. `--gh` (or a github.com --url) switches the path shapes to the GitHub REST API,
   // rooted at the FIXED GitHubApi constant below — never derived from --url — so the GitHub token
   // can only ever travel to that one host (same no-redirect rule as trustedHosts for the Gitea token).
-  // The token comes ONLY from fixed human-set env names; READ verbs work without it (60/h anonymous
-  // rate limit); `protection` requires it (admin-scoped read).
+  // The token comes from fixed human-set env names FIRST and, failing that, from `gh auth token` — see
+  // the trust-boundary note on ghCliToken below, which is a deliberate widening, not an oversight.
+  // READ verbs work without any token (60/h anonymous rate limit); `protection` requires one.
   private val GitHubApi       = "https://api.github.com"
   private val GhTokenEnvNames = List("GENSCALATOR_GITHUB_TOKEN", "GITHUB_TOKEN", "GH_TOKEN")
-  private def ghToken: Option[String] =
+  private def envGhToken: Option[String] =
     GhTokenEnvNames.iterator.flatMap(sys.env.get).map(_.trim).find(_.nonEmpty)
+
+  /** ⚠ DELIBERATE TRUST-BOUNDARY CHANGE (BR-authorized 2026-07-25, after the agent flagged the cost).
+    *
+    * WHAT CHANGED. Until now the rule above was absolute: a GitHub token came only from a fixed env var,
+    * so the HUMAN'S SHELL decided whether a running agent had GitHub credentials at all. With this
+    * fallback the tool can obtain one itself, which means an agent that can run `tt forge` can now act on
+    * GitHub as BR without BR having exported anything. That is a real widening and it is written down
+    * here rather than buried, because the next reader deserves to know the rule is no longer absolute.
+    *
+    * WHY IT WAS ACCEPTED. It removes a long-lived credential from the ambient environment of EVERY
+    * process. On 2026-07-25 a bare `printenv` put that ambient token into a durable transcript and forced
+    * a rotation. Ambient exposure is continuous and passive; this fallback is momentary and only reachable
+    * through one audited tool.
+    *
+    * WHAT STILL HOLDS, so the widening is bounded:
+    *   - env ALWAYS wins, so nothing about existing setups changes;
+    *   - the token is still only ever paired with the FIXED GitHubApi constant, never a --url host, so it
+    *     cannot be redirected to an attacker;
+    *   - `gh` is invoked via argv with no shell, so nothing here is injectable;
+    *   - it is NEVER silent: using the fallback prints a line to stderr, so a human reading a transcript
+    *     can see that the agent minted a credential rather than being handed one;
+    *   - failure is soft (no gh, not logged in) -> None, and read verbs keep working anonymously.
+    *
+    * OPEN for the SM073 security review: whether this should be gated behind an explicit human opt-in
+    * (an env flag such as TT_FORGE_GH_CLI=1) rather than being the default fallback. */
+  private lazy val ghCliToken: Option[String] =
+    try
+      val p = ProcessBuilder("gh", "auth", "token").redirectErrorStream(false).start()
+      val out = String(p.getInputStream.readAllBytes, "UTF-8").trim
+      val ok  = p.waitFor() == 0 && out.nonEmpty
+      if ok then
+        Console.err.println("forge: no GitHub token in env; obtained one from `gh auth token` (see forge.scala ghCliToken)")
+        Some(out)
+      else None
+    catch case _: Throwable => None
+
+  private def ghToken: Option[String] = envGhToken.orElse(ghCliToken)
   private def isGitHub(base: String): Boolean =
     Set("github.com", "www.github.com", "api.github.com").contains(hostOf(base))
   private def ghHeaders: Map[String, String] = // pair ONLY with GitHubApi-rooted URLs
