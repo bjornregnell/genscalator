@@ -1158,6 +1158,60 @@ class CliSuite extends munit.FunSuite:
     val (_, out, _) = run("guardcheck", "hook", json)
     assert(clue(out).contains("\"permissionDecision\":\"ask\""))
   }
+  // --- NOTE tier: tool choice, never a decision (SM230) ---
+  // The safety property is the point of these: a nudge must never cost an approval click and must never
+  // grant one. If a refactor ever makes a NOTE emit permissionDecision, these fail.
+  test("NOTE: reaching for jq or python json tooling is flagged, and named as tool choice") {
+    val jqF = Guardcheck.cmdFindings("jq .name package.json")
+    assert(clue(jqF).exists(f => f.severity == "NOTE" && f.name.contains("json")))
+    assert(clue(jqF).exists(_.fix.contains("tt json")))
+    assert(Guardcheck.cmdFindings("python3 -m json.tool settings.json").exists(_.severity == "NOTE"))
+  }
+  test("NOTE: the SM228 specimen itself is now caught") {
+    // the exact shape that tripped nothing and got reached around
+    val f = Guardcheck.cmdFindings("python3 -m json.tool /home/x/.claude/settings.local.json --indent 2")
+    assert(clue(f).exists(_.severity == "NOTE"), "the specimen must be flagged")
+    assert(!clue(f).exists(_.severity == "HIGH"), "and it is genuinely not a HIGH — no cd, pipe or redirect")
+  }
+  test("NOTE: general-purpose interpreters are flagged; the fix admits a one-off is legitimate") {
+    for cmd <- List("python3 script.py", "perl -pe s/a/b/", "ruby -e puts", "node build.js") do
+      assert(clue(Guardcheck.cmdFindings(cmd)).exists(_.severity == "NOTE"), cmd)
+    val fix = Guardcheck.cmdFindings("python3 script.py").find(_.severity == "NOTE").get.fix
+    assert(fix.contains("one-off"), fix) // not a prohibition — over-compliance is its own failure
+  }
+  test("NOTE scans the MASKED skeleton, so an interpreter NAME inside a quoted pattern does not nag") {
+    assert(Guardcheck.cmdFindings("""tt text grepr /d scala "python3|jq"""").forall(_.severity != "NOTE"))
+  }
+  test("NOTE never fires on ordinary tt usage, and node_modules is not `node`") {
+    assert(Guardcheck.cmdFindings("tt json check /a/b.json").isEmpty)
+    assert(Guardcheck.cmdFindings("tt files /a/node_modules js").isEmpty)
+  }
+  test("guardcheck hook: NOTE-only emits systemMessage and NO permissionDecision") {
+    val json = """{"tool_name":"Bash","tool_input":{"command":"jq .a b.json"}}"""
+    val (code, out, _) = run("guardcheck", "hook", json)
+    assertEquals(code, 0)
+    assert(clue(out).contains("systemMessage"), "the nudge must be visible")
+    // Precise, not a bare `contains("allow")`: the fix text legitimately says `permissions.allow.3`
+    // as an example dot-path, so the crude substring check fails on its own documentation.
+    assert(!clue(out).contains("permissionDecision"), "a NOTE must NEVER carry a decision")
+    assert(!clue(out).contains("\"permissionDecision\":\"allow\""),
+      "and must never emit allow — it may tighten, never loosen")
+  }
+  test("guardcheck hook: a NOTE alongside a HIGH does not downgrade the deny") {
+    val json = """{"tool_name":"Bash","tool_input":{"command":"jq .a b.json && rm x"}}"""
+    val (_, out, _) = run("guardcheck", "hook", json)
+    assert(clue(out).contains("\"permissionDecision\":\"deny\""))
+  }
+  test("guardcheck hook: a NOTE alongside a MED still asks") {
+    val json = """{"tool_name":"Bash","tool_input":{"command":"python3 x.py | head -5"}}"""
+    val (_, out, _) = run("guardcheck", "hook", json)
+    assert(clue(out).contains("\"permissionDecision\":\"ask\""))
+  }
+  test("rank orders HIGH before MED before NOTE") {
+    assert(Guardcheck.rank("HIGH") < Guardcheck.rank("MED"))
+    assert(Guardcheck.rank("MED") < Guardcheck.rank("NOTE"))
+  }
+
   test("guardcheck hook: a clean command emits nothing (allow)") {
     val json = """{"tool_name":"Bash","tool_input":{"command":"tt chrono now"}}"""
     val (code, out, _) = run("guardcheck", "hook", json)

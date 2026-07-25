@@ -24,6 +24,15 @@ GIT
   (commit-log SEARCH by grep/author/co-author trailer has no typed shape yet — SM217 gap;
    keep it a bare  git log --grep …  , NEVER piped to | head .)
 
+⚠ THE TRIPWIRE  — the one line to internalise, because it fires at the ACTION, not at an abstraction:
+  REACHING FOR python3 / jq / perl / node IS ITSELF THE SIGNAL that a typed verb is missing.
+  Not "notice that a shape does not exist" — you will not notice; the 2026-07-24 specimen had that
+  exact rule loaded and obeyed 4x in the same session, then broke it 30 min later. Notice the REACH.
+  When it happens:  is there a tt verb?  ->  does the need RECUR (then build one, named after the
+  noun)?  ->  else a one-off scratch or interpreter call is FINE — just SAY it was a one-off.
+  Over-compliance is its own failure: hand-rolling a Scala scratch (5-20s compile) for a genuine
+  one-liner is the WRONG trade. `tt guardcheck cmd "<cmd>"` now flags these as [NOTE].
+
 DATA / JSON      (never  python3 -m json.tool , never  jq , never a hand-rolled parser)
   tt json check <file>                      parse-or-fail            (exit 0 = well-formed)
   tt json get <file> <path>                 one scalar, unquoted     (permissions.allow.3)

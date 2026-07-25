@@ -12,6 +12,12 @@
 // Claude Code PreToolUse Bash hook: it reads the tool-call JSON on stdin (or as an arg, for testing) and emits
 // a permission-decision JSON (deny on any HIGH finding, ask on MED-only) so the safe form is reached
 // AUTOMATICALLY, not by remembering to run the check. See tmp/guardcheck-hook-proposal.md (SM007c).
+//
+// THREE SEVERITIES. HIGH and MED are about shell SYNTAX (chains, substitution, redirects) and carry a
+// decision. NOTE is about TOOL CHOICE and carries none — it emits `systemMessage` only, so it can nudge
+// without ever costing or granting an approval. NOTE exists because every syntax check missed the SM228
+// specimen: `python3 -m json.tool <file>` is syntactically perfect and tripped nothing, so a missing typed
+// verb got reached around rather than flagged. Naming the reach IS the fix; see docs/guard-clean-digest.txt.
 //   tt guardcheck cmd "<shell command>"     # chaining / substitution / pipes / redirects / raw grep + literals
 //   tt guardcheck msg "<commit message>"    # commit-message traps: line-leading #, =word, <-> / <N-M>
 //   tt guardcheck hook [<json>]             # PreToolUse hook: stdin (or arg) JSON -> permission-decision JSON
@@ -76,6 +82,23 @@ object Guardcheck {
     // no redirect present — twice in 3 days. Naming only the redirect fix taught nothing in that case and the
     // agent bounced off it; a fix that does not apply is worse than silence. See the wr-data note
     // prohibition-does-not-arm-the-reflex-use-a-hex-escape-2026-07-16.
+    // ---- NOTE tier: TOOL CHOICE, not shell syntax (SM230) ----------------------------------------
+    // Every check above reasons about shell SYNTAX. `python3 -m json.tool <file>` has flawless syntax
+    // and tripped nothing — which is exactly how a missing typed verb got reached around instead of
+    // flagged (SM228). NOTE never denies and never asks: it is a nudge toward the typed verb, not a
+    // prohibition, because a genuine one-off interpreter call is a legitimate and cheap choice.
+    Check("NOTE", "json via an interpreter",
+      "reading or validating JSON through jq / python -m json.tool, where a typed verb exists",
+      "use tt json check|get|keys|pretty (dot paths, numeric array indexes: permissions.allow.3)",
+      has(raw"\bjq\b|\bpython3?\s+-m\s+json\.tool\b")),
+    Check("NOTE", "general-purpose interpreter",
+      "reaching for a general-purpose interpreter — usually the signal that a typed verb is MISSING, " +
+        "and the one gap class the guard cannot otherwise see (no cd, no pipe, no redirect to catch)",
+      "if a tt verb exists, use it; if the need RECURS, build the verb and name it after the noun " +
+        "(tt json is why that works); a genuine one-off scratch or interpreter call is fine — say so rather " +
+        "than pretending it was the only option",
+      has(raw"\b(python3?|perl|ruby|node)\s+[-\w/.]")),
+
     Check("MED", "output redirect (>)",
       "a > redirect (esp. combined with cd) trips the path-resolution guard — and a > inside a QUOTED pattern/string arg fires this same check, since the guard scans raw bytes",
       "if it IS a redirect: use the tool's file-sink flag or run_in_background; never redirect around it. " +
@@ -141,8 +164,16 @@ object Guardcheck {
       else { sb.append(c); i += 1 }
     Some(sb.toString)
 
-  /** The cmd checks, quote-aware: HIGH scans the RAW command, MED scans the masked skeleton. The asymmetry
-    * BOUNDS THE BLAST RADIUS — a maskQuoted bug can cost at most a missed MED, never a missed HIGH. PURE. */
+  /** Severity ordering for display and for the hook decision: HIGH > MED > NOTE. PURE. */
+  def rank(severity: String): Int = severity match
+    case "HIGH" => 0
+    case "MED"  => 1
+    case _      => 2
+
+  /** The cmd checks, quote-aware: HIGH scans the RAW command, MED and NOTE scan the masked skeleton. The
+    * asymmetry BOUNDS THE BLAST RADIUS — a maskQuoted bug can cost at most a missed MED/NOTE, never a missed
+    * HIGH. Masking matters for NOTE too: the word `python3` inside a quoted search pattern is data, not a
+    * command, and must not nag. PURE. */
   def cmdFindings(command: String): List[Finding] =
     val masked = maskQuoted(command).getOrElse(command)   // unbalanced quotes -> fail safe: scan the raw string
     cmdChecks.flatMap(c => c.find(if c.severity == "HIGH" then command else masked))
@@ -153,7 +184,7 @@ object Guardcheck {
       0
     else
       println(s"guardcheck [$mode]: ${findings.size} finding(s)")
-      for f <- findings.sortBy(f => if f.severity == "HIGH" then 0 else 1) do
+      for f <- findings.sortBy(f => rank(f.severity)) do
         println(s"  [${f.severity}] ${f.name}")
         println(s"      why: ${f.why}")
         println(s"      fix: ${f.fix}")
@@ -177,17 +208,31 @@ object Guardcheck {
       catch case _: Throwable => ""
     if command.isEmpty then ""
     else
-      val findings = cmdFindings(command)   // quote-aware: HIGH raw, MED masked — same fn as `tt guardcheck cmd`
+      val findings = cmdFindings(command)   // quote-aware: HIGH raw, MED/NOTE masked — same fn as `tt guardcheck cmd`
       if findings.isEmpty then ""
       else
-        val decision = if findings.exists(_.severity == "HIGH") then "deny" else "ask"
-        val reason = findings.sortBy(f => if f.severity == "HIGH" then 0 else 1)
-          .map(f => s"[${f.severity}] ${f.name}: ${f.fix}").mkString("  |  ")
-        ujson.write(ujson.Obj(
-          "hookSpecificOutput" -> ujson.Obj(
-            "hookEventName" -> "PreToolUse",
-            "permissionDecision" -> decision,
-            "permissionDecisionReason" -> reason)))
+        val sorted = findings.sortBy(f => rank(f.severity))
+        val text   = sorted.map(f => s"[${f.severity}] ${f.name}: ${f.fix}").mkString("  |  ")
+        // NOTE-ONLY -> emit `systemMessage` ALONE: no permissionDecision, so the user's own permission flow
+        // applies untouched (the documented "defer" default). A nudge must never cost an approval click, and
+        // must never grant one — same ⛔ asymmetry as above, we may tighten, never loosen.
+        //
+        // HONEST LIMIT, verified against the hook docs 2026-07-25: this reaches the HUMAN, not Claude.
+        // `systemMessage` is "shown to you, not to Claude", and PreToolUse's `additionalContext` — the field
+        // that WOULD reach Claude — is documented as "Ignored when permissionDecision is defer". So there is
+        // no way to whisper a nudge to the agent without also changing the decision to ask (which stalls an
+        // unattended run) or allow (forbidden). Consequence: NOTE closes the interactive hole, NOT the AFK
+        // one. Closing the AFK hole needs a PostToolUse hook returning additionalContext AFTER the command
+        // ran — one turn late, but no stall. That is a settings change, so it is BR's to apply.
+        if !findings.exists(f => f.severity == "HIGH" || f.severity == "MED") then
+          ujson.write(ujson.Obj("systemMessage" -> s"guardcheck: $text"))
+        else
+          val decision = if findings.exists(_.severity == "HIGH") then "deny" else "ask"
+          ujson.write(ujson.Obj(
+            "hookSpecificOutput" -> ujson.Obj(
+              "hookEventName" -> "PreToolUse",
+              "permissionDecision" -> decision,
+              "permissionDecisionReason" -> text)))
 
   def usage(): Unit =
     println("""guardcheck — flag shell/commit-message patterns that trip the guard or are banned reflexes
@@ -213,6 +258,12 @@ object Guardcheck {
       |                                       on stdin (or as an arg, for testing) and emits a
       |                                       permission-decision JSON (deny on any HIGH finding,
       |                                       ask on MED-only, silent when clean)
+      |
+      |Severities:
+      |  HIGH / MED   shell SYNTAX problems — these carry a hook decision (deny / ask)
+      |  NOTE         TOOL CHOICE nudges (e.g. jq or python where tt json exists). NEVER decides:
+      |               it emits systemMessage only, so it cannot cost or grant an approval. It
+      |               reaches the human, not Claude — see the note in decideFromJson for why.
       |
       |Exit codes:
       |  cmd/msg: 0 clean, 1 finding(s), 2 usage
