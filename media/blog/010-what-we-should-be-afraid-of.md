@@ -58,6 +58,47 @@ told you nothing, because the trustworthy version and the untrustworthy version 
 stated good intention is unfalsifiable. You cannot read safety off the words, whether the words come from the
 agent or from the company behind it.
 
+<!-- TODO (agent, 2026-07-25, for BR to author later): a THIRD desk-level mechanism, and unlike the two
+above it is not a reasoned worry but a logged incident with a credential rotation to prove it. Summary
+below so the writing-up does not have to reconstruct it. Full record:
+research/wr-data/printenv-dumped-live-tokens-into-the-transcript-2026-07-25.md -->
+
+**TODO (third mechanism, to write): the danger is where the output LANDS, not what the command does.**
+The one-line summary to build the section on:
+
+> The real exposure was not "a token lives in an environment variable". It was "an agent dumped the whole
+> environment into a transcript". The fix is therefore structural, not a matter of being more careful.
+
+What happened, in one paragraph when written up: the agent needed one environment variable and ran a bare
+`printenv`, which printed everything, including two live API tokens, into a conversation that is written
+to disk and routinely copied and quoted. Both tokens had to be revoked and regenerated.
+
+Why it belongs in THIS post rather than a tooling note, and this is the part worth landing: it is a clean
+case of both mechanisms above failing at once, plus a third that neither covers.
+
+- **Vigilance failed.** The session had an explicit "I may be degraded, be careful" mode switched on at
+  the time. It did not help. That is mechanism one from the other direction: you cannot patch a lapse in
+  scrutiny by resolving to scrutinise harder.
+- **The guard failed, and blamelessly.** `printenv` is not a directory change, not a pipe, not a
+  redirect. Every automated check was watching for dangerous *syntax*, and this command's syntax is
+  perfectly innocent. The danger was in the tool CHOICE, which nothing was inspecting.
+- **The new thing: read-only is not the same as safe.** Every instinct says a command that changes
+  nothing cannot hurt you. For an agent that is simply false, because the hazard is set by where the
+  OUTPUT goes. A transcript is durable, searchable, copied into notes and pasted into issues. So a bulk
+  read of anything credential-bearing, the environment, an `.env` file, a credentials file, a CI config,
+  is a disclosure act however read-only it is.
+
+The fix was to remove the dangerous REQUEST rather than to resolve to be careful with it: a typed tool
+whose default answer is variable NAMES, where values come one at a time and redacted unless explicitly
+revealed, and which has no whole-environment verb at all, because that request was the hazard. This is
+the post's own thesis arriving as a bill: not "trust the agent to be careful", and not "watch it more
+closely", but "make the wrong action unavailable". Worth saying plainly that the agent wrote the tool
+that would have prevented its own mistake, several hours too late.
+
+Honest caveat to keep in: this is a small, local, recoverable incident, and the post should not inflate
+it into the big fear. Its value is that it is verifiable and close to home, and it shows the structural
+argument doing real work at a scale a reader can check, rather than only at the scale of geopolitics.
+
 **[scaffold, BR to revoice - the so-what, arc item 4]** genscalator does not fix any of this. It cannot touch
 jurisdiction or geopolitics, and it would be dishonest to pretend otherwise. What it can do sits one layer down,
 and it follows straight from the two mechanisms above: if you cannot trust promises, and you cannot trust your own

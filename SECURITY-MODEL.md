@@ -153,6 +153,44 @@ Being honest about the boundary is part of the model:
 
 Naming these keeps "safe by design" an honest claim rather than a slogan.
 
+## Credentials and tokens — TODO, policy not yet written
+
+> **This section is a placeholder, and its absence is itself a finding.** The model above is careful about
+> what an agent may *run* and says almost nothing about what an agent may *see*. On 2026-07-25 that gap
+> produced the first real incident: the agent wanted one environment variable, ran a bare `printenv`, and
+> put two live API tokens into a durable transcript, forcing a rotation of both. Nothing stopped it —
+> `printenv` is not a `cd`, not a pipe, not a redirect, so the guard saw nothing, and the tool-choice NOTE
+> tier added that same morning listed interpreters rather than bulk environment reads.
+
+The policy to write up, with the reasoning that is currently only in commit messages and WR data:
+
+1. **Read-only is not the same as safe.** For an agent, the hazard of a read is set by *where the output
+   lands*, not by whether the command mutates anything. A transcript is durable, copied and quoted, so a
+   bulk read of any credential-bearing surface — the environment, `~/.netrc`, `~/.git-credentials`, CI
+   config, `.env` files — is a **disclosure operation** however read-only it is. This principle belongs in
+   "Three foundations", not in a footnote.
+2. **Names are the default answer; values are opt-in and singular.** This is why `tt env` has `list`
+   (names only), `has` (exit code only) and `get <NAME>` (one variable, redacted unless `--reveal`), and
+   deliberately has *no* whole-environment verb. The shape of the tool is the policy.
+3. **One home for "does this look like a credential".** `secrets.scala` holds the detection and redaction
+   that `tt harden` and `tt env` share, so the two cannot drift on what a secret is.
+4. **Where tokens may come from, and who decides.** `tt forge` historically took tokens *only* from fixed
+   human-set env names, so the human's shell decided whether a running agent had credentials at all. On
+   2026-07-25 that was widened (BR-authorized, agent-flagged): with no env token, `tt forge --gh` falls
+   back to `gh auth token`. The trade is explicit — it removes a long-lived token from the ambient
+   environment of every process, at the cost of letting the tool mint one. **Open question for the SM073
+   review: should that fallback be gated behind an explicit human opt-in rather than being the default?**
+5. **Ambient versus momentary exposure.** A token exported in a shell rc file is visible to every child
+   process continuously; a token fetched at the point of use exists briefly inside one audited tool. State
+   the preference and the exceptions.
+6. **What to do after a leak.** Revoke before regenerating; find the export by *location* (`grep -l`) not
+   by value; edit rc files in an editor rather than via a shell command, because the shell history is
+   another durable record; and remember that a token derived as `$(gh auth token)` self-heals on re-auth
+   while a literal token in an rc file does not.
+
+Sources to fold in when writing this properly: `research/wr-data/printenv-dumped-live-tokens-into-the-transcript-2026-07-25.md`,
+`tools/secrets.scala`, `tools/env.scala`, and the trust-boundary note on `ghCliToken` in `tools/forge.scala`.
+
 ## Future work
 
 The tools on this page get their narrow authority by construction and review: a `tt` command exposes only the
