@@ -88,6 +88,34 @@ case of both mechanisms above failing at once, plus a third that neither covers.
   read of anything credential-bearing, the environment, an `.env` file, a credentials file, a CI config,
   is a disclosure act however read-only it is.
 
+**TODO (the same mechanism from the HUMAN side, BR 2026-07-25, and it is the more frightening half).**
+Same day, an hour later: BR runs several agent sessions at once and typed an instruction into the wrong
+one. It ended "go update and re-engineer the PRD", meaning a different project's requirements document
+entirely. It cost a minute, because the agent went to check the premise, found no such commits, and BR
+caught it first. His own reaction is the line to build the section on:
+
+> I could have told one claude what another one should only know.
+
+That is the sharper danger, and it is worth spelling out concretely when this is written up. Confidential
+material does not carry a label an agent can read. Sitting on this machine there is embargoed
+correspondence, copyrighted book material that may not leave a closed repository, and a private working
+repository, alongside a PUBLIC one that an agent commits and pushes to three remotes as a matter of
+routine. Paste the wrong paragraph into the wrong terminal and a helpful agent does exactly what it has
+been doing well all day, at speed, to a public remote. Unlike a wrong edit, that is not recoverable by
+reverting.
+
+Note that this is precisely the same failure as the environment dump, seen from the other end. In both
+cases something confidential landed in a durable record that outlives the moment: once because the agent
+put it there, once because the human did. The output side is now fixed by a tool. The input side has
+nothing at all.
+
+And the agent cannot help here, which is the part that should worry a reader. A misaddressed message is
+indistinguishable from a merely surprising one, so there is nothing to detect. Every terminal looks the
+same. The one person who can answer "which agent am I talking to, and what may it see" is the human, at
+the instant of pressing enter, with no support for the question. The proposed fix is small and boring, a
+visible session name in the status line so the answer is on screen before you type, and the smallness is
+itself the point: the exposure was never exotic, only unlabelled.
+
 The fix was to remove the dangerous REQUEST rather than to resolve to be careful with it: a typed tool
 whose default answer is variable NAMES, where values come one at a time and redacted unless explicitly
 revealed, and which has no whole-environment verb at all, because that request was the hazard. This is
