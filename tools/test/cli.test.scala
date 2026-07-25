@@ -1922,6 +1922,57 @@ class CliSuite extends munit.FunSuite:
     finally os.remove.all(d)
   }
 
+  // --- env (SM231: the typed printenv replacement, born from a real token leak 2026-07-25) ---
+  // The safety property under test: NO invocation of this tool can emit a credential value. If a future
+  // refactor adds a whole-environment verb, or stops redacting, these fail.
+  test("env list: prints names and NEVER a value") {
+    val (code, out, err) = run("env", "list", "PATH")
+    assertEquals(code, 0)
+    assert(clue(out).linesIterator.forall(l => !l.contains("=")), "a name listing must not contain values")
+    assert(clue(out).contains("PATH"), clue(out))
+    assert(clue(err).contains("withheld by design"), clue(err))
+  }
+  test("env has: silent, and signals only through the exit code") {
+    val (c1, o1, _) = run("env", "has", "PATH")
+    assertEquals(c1, 0); assertEquals(o1, "", "has must print nothing at all")
+    val (c2, o2, _) = run("env", "has", "NO_SUCH_VARIABLE_XYZZY")
+    assertEquals(c2, 1); assertEquals(o2, "")
+  }
+  test("env get: an ordinary variable prints plainly") {
+    val (code, out, _) = run("env", "get", "PATH")
+    assertEquals(code, 0)
+    assert(clue(out).startsWith("PATH="), clue(out))
+  }
+  test("env get: a credential-named variable is redacted (the leak this tool exists to prevent)") {
+    // set a fake secret in the child process env, then read it back through the tool
+    val fake = "gho_1111111111111111111111111111111111"
+    val r = os.proc("scala-cli", "run", (toolsDir / "env.scala").toString, "--", "get", "FAKE_GITHUB_TOKEN")
+      .call(check = false, stdout = os.Pipe, stderr = os.Pipe, env = Map("FAKE_GITHUB_TOKEN" -> fake))
+    assertEquals(r.exitCode, 0)
+    val out = r.out.text().trim
+    assert(!out.contains("1111111111111111111111111111111111"), s"VALUE LEAKED: $out")
+    assert(out.contains("redacted"), out)
+  }
+  test("env get --reveal: shows the value, but only when asked for that one variable") {
+    val fake = "gho_2222222222222222222222222222222222"
+    val r = os.proc("scala-cli", "run", (toolsDir / "env.scala").toString, "--", "get", "FAKE_GITHUB_TOKEN", "--reveal")
+      .call(check = false, stdout = os.Pipe, stderr = os.Pipe, env = Map("FAKE_GITHUB_TOKEN" -> fake))
+    assert(r.out.text().contains(fake), "an explicit --reveal must actually reveal")
+  }
+  test("env: there is no whole-environment dump verb, and asking for one is refused") {
+    for bad <- List("all", "dump", "printenv") do
+      val (code, out, err) = run("env", bad)
+      assertEquals(code, 2, s"'$bad' must not be a verb")
+      assertEquals(out, "", "a refused verb must print nothing to stdout")
+      assert(clue(err).contains("no whole-environment dump"), clue(err))
+    assertEquals(run("env")._1, 2)
+  }
+  test("env get: an unset variable is an error, not a silent empty value") {
+    val (code, _, err) = run("env", "get", "NO_SUCH_VARIABLE_XYZZY")
+    assertEquals(code, 2)
+    assert(clue(err).contains("not set"), clue(err))
+  }
+
   // --- tsv (RT056 gap 5: the toolbox writes tmp/tt-perf.tsv on every call and could not read it) ---
   private val tsvFixture = "key\tvalue\nsame\tsame\npå rad\tpå rad\nprogram\tprogram\nhej\thello\n"
 

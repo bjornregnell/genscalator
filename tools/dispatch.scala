@@ -22,6 +22,7 @@ object Dispatch {
     "box"         -> (a => boxOps(a*)),
     "chrono"      -> (a => chronoStopwatch(a*)),
     "doc"         -> (a => doc(a*)),
+    "env"         -> (a => envRead(a*)),
     "files"       -> (a => files(a*)),
     "find"        -> (a => find(a*)),
     "forge"       -> (a => forgeClient(a*)),

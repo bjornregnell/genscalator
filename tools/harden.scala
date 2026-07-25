@@ -1,6 +1,7 @@
 //> using scala 3.8.4
 //> using jvm 21
 //> using dep com.lihaoyi::os-lib:0.11.8
+//> using file secrets.scala
 
 // harden — Layer-1 deterministic secret scanner (SM042). Surfaces CANDIDATES for semantic (Layer-2) triage.
 //   tt harden repo   <dir>   scan git-TRACKED text files (respects .gitignore); falls back to a walk if not a repo
@@ -19,19 +20,9 @@ import scala.util.matching.Regex
 object Harden:
   final case class Finding(file: String, line: Int, kind: String, redacted: String, entropy: Double)
 
-  /** Shannon entropy (bits/char) of a string. PURE. */
-  def entropy(s: String): Double =
-    if s.isEmpty then 0.0
-    else
-      val n = s.length.toDouble
-      s.groupMapReduce(identity)(_ => 1.0)(_ + _).values.map { c =>
-        val p = c / n; -p * (math.log(p) / math.log(2))
-      }.sum
-
-  /** Redact a candidate value: first 4 chars + length only (4 chars of a real secret is not crackable, but reveals
-    * a placeholder like "your…" / a prefix like "AKIA…" for triage). PURE. */
-  def redact(v: String): String =
-    if v.length <= 4 then s"[redacted len=${v.length}]" else s"${v.take(4)}… [len=${v.length}]"
+  // Entropy + redaction now live in secrets.scala, so `tt harden` and `tt env` cannot drift apart on
+  // what a secret looks like or on how to show one safely. Kept as aliases so this file reads unchanged.
+  export Secrets.{entropy, redact}
 
   // (2) known-prefix signatures — specific enough to flag without an entropy gate.
   private val prefixSigs: Seq[(String, Regex)] = Seq(
