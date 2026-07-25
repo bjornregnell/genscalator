@@ -26,7 +26,7 @@ generalize-ready.** (You *propose*; the human reviews and ships — never push t
    that *look* like a hit but aren't (e.g. a "0 errors" tally). Prove no regressions and no false positives.
 6. **Follow toolbox conventions.** Apply the **scala-style** skill (pure/immutable/Safe-mode-ready, scoped
    imports). One allowlistable command, clean `===` output + a verdict, friendly errors not stack traces,
-   reuse `lib.scala`, the Scala version the toolbox pins (see `tools/README.md`).
+   reuse `lib.scala`, the latest-LTS Scala the toolbox pins, RCs included (see `tools/README.md`).
 7. **Strip project specifics.** No `/home/...`, hostnames, `$USER`, or single-project assumptions — it must
    read as project-agnostic.
 8. **Document, version, record.** Add a `tools/README.md` entry, a `CHANGELOG.md` line, and bump the version

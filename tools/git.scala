@@ -11,7 +11,11 @@
 //   tt git commit --repo <dir> --message-file <path> [--add <pathspec>]... [--push]
 //     --add PATHSPEC   stage this path before committing (repeatable). If none given, nothing is staged
 //                      (you stage separately) — the tool never runs `git add -A` implicitly.
-//     --push           push after a successful commit (plain `git push`, current branch upstream)
+//     --push           push after a successful commit (current branch upstream by default)
+//     --remote NAME    push to this remote instead of the upstream (repeatable, needs --push) —
+//                      a mirror set (github + gitlab + coursegit) is one call, not one raw `git push` each
+//   tt git push --repo <dir> [--remote <name>]...
+//     push already-committed work without making a commit first.
 //   tt git show --repo <dir> --ref <ref> --path <relpath> [--out <file>]
 //     READ-ONLY: print the file content at <ref> (byte-exact) to stdout, or write it to <file> with
 //     --out. This replaces the un-allowlistable shell pattern of redirecting `git show <ref>:<path>`
@@ -36,7 +40,10 @@ object Git {
       |command line.
       |
       |Usage:
-      |  git commit --repo <dir> --message-file <path> [--add <pathspec>]... [--push]
+      |  git commit --repo <dir> --message-file <path> [--add <pathspec>]... [--push] [--remote <name>]...
+      |  git push  --repo <dir> [--remote <name>]...
+      |                                  push already-committed work; repeat --remote for a
+      |                                  mirror set, omit it for the branch's upstream
       |  git pull  --repo <dir>          fast-forward only: either FFs or fails loudly
       |  git fetch --repo <dir>          update remote-tracking refs (never the working tree)
       |  git show  --repo <dir> --ref <ref> --path <relpath> [--out <file>]
@@ -50,7 +57,14 @@ object Git {
       |  --message-file <path>           file holding the commit message (required, non-empty)
       |  --add <pathspec>                stage this path before committing (repeatable);
       |                                  nothing is staged implicitly — never `git add -A`
-      |  --push                          push after a successful commit (plain `git push`)
+      |  --push                          push after a successful commit
+      |  --remote <name>                 push to this remote (repeatable, needs --push); with none
+      |                                  given the push goes to the branch's upstream as before.
+      |                                  Fails on the first remote that rejects, so a partially
+      |                                  pushed mirror set is reported, never swallowed. A branch
+      |                                  with no upstream in a single-remote repo is refused by git
+      |                                  itself (push.default simple) — set the upstream once with
+      |                                  git push -u; the tool never sets one behind your back.
       |Flags (show):
       |  --repo <dir>                    the git repository to read from (required)
       |  --ref <ref>                     any commit-ish: HEAD, a branch, a tag, a SHA (required)
@@ -79,6 +93,9 @@ object Git {
       |
       |Examples:
       |  tt git commit --repo /abs/repo --message-file tmp/msg.txt --add src/app.scala --push
+      |  tt git commit --repo /abs/repo --message-file tmp/msg.txt --add tools --push \
+      |    --remote origin --remote gitlab --remote coursegit      # one unit, three mirrors
+      |  tt git push --repo /abs/repo --remote gitlab --remote coursegit   # sync, no new commit
       |  tt git pull --repo /abs/repo    # fast-forward to upstream, or fail (no merge commit)
       |  tt git fetch --repo /abs/repo   # refresh remote-tracking refs only
       |  tt git show --repo /abs/repo --ref main --path src/app.scala             # to stdout
@@ -89,7 +106,8 @@ object Git {
   private def usage(): Nothing =
     System.err.println(
       """git: usage:
-        |  tt git commit --repo <dir> --message-file <path> [--add <pathspec>]... [--push]
+        |  tt git commit --repo <dir> --message-file <path> [--add <pathspec>]... [--push] [--remote <name>]...
+        |  tt git push  --repo <dir> [--remote <name>]...
         |  tt git pull  --repo <dir>   (fast-forward only)
         |  tt git fetch --repo <dir>
         |  tt git show  --repo <dir> --ref <ref> --path <relpath> [--out <file>]   (read-only)
@@ -107,6 +125,7 @@ object Git {
     if args.contains("--help") || args.contains("-h") then { println(Help); sys.exit(0) }
     args.toList match
       case "commit" :: rest => commit(rest)
+      case "push"   :: rest => push(rest)
       case "pull"   :: rest => pull(rest)
       case "fetch"  :: rest => fetch(rest)
       case "show"   :: rest => show(rest)
@@ -115,16 +134,18 @@ object Git {
 
   private def commit(args: List[String]): Unit =
     @annotation.tailrec
-    def parse(r: List[String], repo: Option[String], msg: Option[String], adds: Vector[String], push: Boolean)
-        : (String, String, Vector[String], Boolean) =
+    def parse(r: List[String], repo: Option[String], msg: Option[String], adds: Vector[String], push: Boolean, remotes: Vector[String])
+        : (String, String, Vector[String], Boolean, Vector[String]) =
       r match
-        case Nil                              => (repo.getOrElse(fail("--repo required")), msg.getOrElse(fail("--message-file required")), adds, push)
-        case "--repo" :: v :: t               => parse(t, Some(v), msg, adds, push)
-        case "--message-file" :: v :: t       => parse(t, repo, Some(v), adds, push)
-        case "--add" :: v :: t                => parse(t, repo, msg, adds :+ v, push)
-        case "--push" :: t                    => parse(t, repo, msg, adds, true)
+        case Nil                              => (repo.getOrElse(fail("--repo required")), msg.getOrElse(fail("--message-file required")), adds, push, remotes)
+        case "--repo" :: v :: t               => parse(t, Some(v), msg, adds, push, remotes)
+        case "--message-file" :: v :: t       => parse(t, repo, Some(v), adds, push, remotes)
+        case "--add" :: v :: t                => parse(t, repo, msg, adds :+ v, push, remotes)
+        case "--push" :: t                    => parse(t, repo, msg, adds, true, remotes)
+        case "--remote" :: v :: t             => parse(t, repo, msg, adds, push, remotes :+ v)
         case other :: _                       => fail(s"unexpected/incomplete argument '$other'")
-    val (repoStr, msgStr, adds, push) = parse(args, None, None, Vector.empty, false)
+    val (repoStr, msgStr, adds, push, remotes) = parse(args, None, None, Vector.empty, false, Vector.empty)
+    if remotes.nonEmpty && !push then fail("--remote needs --push (it names where to push)")
 
     val repo = os.Path(repoStr, os.pwd)
     if !os.exists(repo / ".git") && run(repo, "rev-parse", "--git-dir")._1 != 0 then fail(s"not a git repo: $repo")
@@ -141,10 +162,24 @@ object Git {
     val sha = run(repo, "rev-parse", "--short", "HEAD")._2
     println(s"committed $sha")
 
-    if push then
+    if push then pushTo(repo, remotes, Some(sha))
+
+  // Push to each named remote in turn, or to the branch's default upstream when none is named (the
+  // pre-SM232 behaviour, kept so existing `--push` calls are unchanged). A multi-remote project — genscalator
+  // mirrors to github + gitlab + coursegit — otherwise forces a bare `git -C <dir> push <remote>` per extra
+  // remote, which is exactly the raw-git reflex this tool exists to retire. Fails on the FIRST bad remote so a
+  // half-pushed set is reported, never silently swallowed. Still no --force: the safe subset is unchanged.
+  private def pushTo(repo: os.Path, remotes: Vector[String], sha: Option[String]): Unit =
+    val what = sha.map(s => s" $s").getOrElse("")
+    if remotes.isEmpty then
       val (pc, pout) = run(repo, "push")
       if pc != 0 then fail(s"git push failed:\n$pout")
-      println(s"pushed $sha")
+      println(s"pushed$what")
+    else
+      for r <- remotes do
+        val (pc, pout) = run(repo, "push", r)
+        if pc != 0 then fail(s"git push $r failed:\n$pout")
+        println(s"pushed$what to $r")
 
   private def repoArg(args: List[String], cmd: String): os.Path =
     args match
@@ -153,6 +188,30 @@ object Git {
         if !os.exists(r / ".git") && run(r, "rev-parse", "--git-dir")._1 != 0 then fail(s"not a git repo: $r")
         r
       case _ => fail(s"usage: tt git $cmd --repo <dir>")
+
+  /** Flag parsing for the `push` verb, PURE and public so the co-located tests can exercise it directly
+    * (an argv path that silently drops a remote would push less than the caller believes). Returns the repo
+    * (absent = the caller reports the missing --repo) and the remotes in the order given, duplicates kept:
+    * naming a remote twice is harmless, and de-duplicating would hide a typo in the caller's mirror set. */
+  def parsePushArgs(args: List[String]): (Option[String], Vector[String]) =
+    @annotation.tailrec
+    def go(r: List[String], repo: Option[String], remotes: Vector[String]): (Option[String], Vector[String]) =
+      r match
+        case Nil                  => (repo, remotes)
+        case "--repo" :: v :: t   => go(t, Some(v), remotes)
+        case "--remote" :: v :: t => go(t, repo, remotes :+ v)
+        case other :: _           => fail(s"unexpected/incomplete argument '$other' (usage: tt git push --repo <dir> [--remote <name>]...)")
+    go(args, None, Vector.empty)
+
+  // push as a standalone verb: send ALREADY-committed work to one or more remotes without making a commit
+  // first. Before this the only way to reach a push was `tt git commit --push`, so syncing a second remote
+  // meant raw git.
+  private def push(args: List[String]): Unit =
+    val (repoOpt, remotes) = parsePushArgs(args)
+    val repoStr = repoOpt.getOrElse(fail("--repo required"))
+    val repo = os.Path(repoStr, os.pwd)
+    if !os.exists(repo / ".git") && run(repo, "rev-parse", "--git-dir")._1 != 0 then fail(s"not a git repo: $repo")
+    pushTo(repo, remotes, None)
 
   // pull is FF-ONLY: it never creates a merge commit, runs merge hooks, or leaves conflicts — it either
   // fast-forwards or fails loudly, so it stays inside the safe (non-destructive, non-interactive) subset.

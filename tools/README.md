@@ -2,8 +2,9 @@
 
 Typed, compiler-checked, reusable Scala scratch tools that replace the brittle bash/grep/awk/python
 reflex. **Off-the-shelf: pick a tool, give args** — no re-deriving logic each time, no dynamic-shell
-surprises (the compiler catches mistakes before they run). Project-agnostic. Tracks the Scala version
-genscalator pins (now **3.9.0-RC4**, the coming LTS while still a release candidate; re-check per project).
+surprises (the compiler catches mistakes before they run). Project-agnostic. **Policy: track the latest LTS
+Scala, bleeding edge — a release candidate counts.** The pin is **3.9.0-RC4** (the coming 3.9.0 LTS, still
+in RC). This line is the single place the version is stated in prose; re-check it per project.
 
 ## Run
 ```
@@ -415,7 +416,8 @@ tt forge release-create bjornregnell/genscalator v0.8.0 --name "v0.8.0: …" --b
 
 ### git — safe git helper: commit-from-file, ff-pull, fetch, read-only show (EFFECTFUL, non-destructive)
 ```
-git commit --repo <dir> --message-file <path> [--add <pathspec>]... [--push]
+git commit --repo <dir> --message-file <path> [--add <pathspec>]... [--push] [--remote <name>]...
+git push   --repo <dir> [--remote <name>]...             # push committed work, no new commit
 git pull   --repo <dir>                                  # fast-forward ONLY: FFs or fails loudly
 git fetch  --repo <dir>                                  # remote-tracking refs only, never the working tree
 git show   --repo <dir> --ref <ref> --path <relpath> [--out <file>]   # READ-ONLY: file content at a ref
@@ -432,9 +434,18 @@ ref or path it exits non-zero with git's error — never a partial/empty success
 commit-log search: it caps (`--limit`, default 50) and tab-formats the output (`<short-sha>⇥<author-email>⇥<subject>`
 plus a `=== N commit(s)` line that flags when the cap was hit), so it needs no `| head` and `Bash(tt git log *)`
 stays allowlist-safe — `--co-author P` greps the `Co-Authored-By:` trailer forges attribute contributors from
-(SM217). Examples:
+(SM217). **`--remote <name>`** (repeatable, with `--push`) sends the unit to a MIRROR SET in one call instead of
+one raw `git push <remote>` per extra remote — genscalator pushes github + gitlab + coursegit every unit, and
+that gap was forcing the raw-git reflex this tool exists to retire (SM232). It fails on the first remote that
+rejects, so a half-pushed set is reported rather than swallowed, and **`push`** is the same thing standalone,
+for syncing a mirror without making a commit. A branch with no upstream in a single-remote repo is refused by
+git itself (`push.default simple`) — set it once with `git push -u`; the tool never sets one behind your back.
+Examples:
 ```
 tt git commit --repo /abs/repo --message-file tmp/msg.txt --add src/app.scala --push
+tt git commit --repo /abs/repo --message-file tmp/msg.txt --add tools --push \
+  --remote origin --remote gitlab --remote coursegit          # one unit, three mirrors
+tt git push --repo /abs/repo --remote gitlab --remote coursegit   # sync mirrors, no new commit
 tt git show --repo /abs/repo --ref main --path src/app.scala
 tt git show --repo /abs/repo --ref v1.2 --path README.md --out tmp/old-readme.md
 tt git log  --repo /abs/repo --co-author Claude --limit 20    # commits with a Claude co-author trailer
