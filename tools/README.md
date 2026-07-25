@@ -73,6 +73,26 @@ tt md-fmt notes/plan.md --line-width 82        # print reflowed at 82 cols (the 
 tt md-fmt notes/plan.md --line-width 82 --write  # ... and rewrite in place
 ```
 
+### sub — typed search-and-replace across files (EFFECTFUL; PREVIEW BY DEFAULT)
+```
+sub file <file> <regex> <replacement> [--write] [--literal]
+sub tree <dir> <ext[,ext2,...]> <regex> <replacement> [--write] [--literal]
+```
+The typed replacement for `sed -i` / a `python3` one-liner — the shape whose ABSENCE fires the raw-interpreter
+reflex (SM232: a Scala version bump touched 78 files with no typed tool for it). Deliberately **not** a verb on
+`text`, which documents itself as pure; a tool that rewrites files is an effectful driver and lives on its own.
+The safety property sed lacks: **nothing is written without `--write`** — the default run prints `path:line` with
+the old line then the new one, so the destructive step is always a second, deliberate act on a diff you have
+read. Patterns are Java regex matched **per line** (so `^`/`$` anchor to the line) and `$1` backrefs work in the
+replacement; `--literal` turns off regex AND backrefs on both sides for text containing a literal `$` or `\`.
+`tree` skips generated dirs (`.git .scala-build target node_modules .bloop .metals`), so a bulk rewrite can
+never corrupt a build cache, and line endings plus a missing final newline are preserved byte-for-byte.
+```
+tt sub tree /abs/repo/tools .scala 'using scala 3\.8\.4' 'using scala 3.9.0-RC4'          # preview
+tt sub tree /abs/repo/tools .scala 'using scala 3\.8\.4' 'using scala 3.9.0-RC4' --write  # apply
+tt sub file build.txt 'v1.2 (old)' 'v1.3' --literal --write
+```
+
 ### files — typed find / find|wc / grep -l replacement (PURE)
 ```
 files <dir> <ext>                    # count + list files under dir ending <ext>     (find)

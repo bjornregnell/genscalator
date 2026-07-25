@@ -48,6 +48,7 @@ object Dispatch {
     "skillgrants" -> (a => printSkillGrants(a*)),
     "ssg"         -> (a => staticSiteGen(a*)),
     "statusline"  -> (a => statusLine(a*)),
+    "sub"         -> (a => substituteText(a*)),
     "svg"         -> (a => renderSvgDiagram(a*)),
     "text"        -> (a => text(a*)),
     "tsv"         -> (a => tsvRead(a*)),
