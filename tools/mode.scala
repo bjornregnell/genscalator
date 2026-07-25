@@ -1,4 +1,4 @@
-//> using scala 3.8.4
+//> using scala 3.9.0-RC4
 //> using jvm 21
 
 // mode — record the DECLARED modes of the joint human<->agent state-of-mind (v0.10.0). A "mode" is a label

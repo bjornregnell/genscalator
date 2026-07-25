@@ -1,4 +1,4 @@
-//> using scala 3.8.4
+//> using scala 3.9.0-RC4
 //> using dep org.scalameta::munit::1.3.3
 
 // Unit tests for the md-fmt markdown reflow (md-fmt.scala). Like the other pure tools its logic lives in an

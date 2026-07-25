@@ -2,8 +2,8 @@
 
 Typed, compiler-checked, reusable Scala scratch tools that replace the brittle bash/grep/awk/python
 reflex. **Off-the-shelf: pick a tool, give args** — no re-deriving logic each time, no dynamic-shell
-surprises (the compiler catches mistakes before they run). Project-agnostic. Always uses the **latest
-stable Scala** (now 3.8.4; re-check per project).
+surprises (the compiler catches mistakes before they run). Project-agnostic. Tracks the Scala version
+genscalator pins (now **3.9.0-RC4**, the coming LTS while still a release candidate; re-check per project).
 
 ## Run
 ```

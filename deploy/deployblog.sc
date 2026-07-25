@@ -1,4 +1,4 @@
-//> using scala 3.8.4
+//> using scala 3.9.0-RC4
 
 // =============================================================================
 // deployblog.sc  -  deploy the rendered static site to bjornregnell.se (one.com SFTP)

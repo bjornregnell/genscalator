@@ -1,4 +1,4 @@
-//> using scala 3.8.4
+//> using scala 3.9.0-RC4
 //> using jvm 21
 
 // boxstats — SHARED helper (no @main, like lib.scala / seqspec.scala; see research/038): the box-health

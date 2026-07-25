@@ -1,4 +1,4 @@
-//> using scala 3.8.4
+//> using scala 3.9.0-RC4
 //> using file ../../tools/lib.scala
 //> using file ../../tools/mdparse.scala
 //> using file ../../tools/ssg.scala

@@ -1,4 +1,4 @@
-//> using scala 3.8.4
+//> using scala 3.9.0-RC4
 //> using jvm 21
 
 // Shared helpers for the Scala agent toolbox. PURE (no I/O effects except the explicitly-named file

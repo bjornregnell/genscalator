@@ -214,7 +214,7 @@ note proposes — braceless / braces-everywhere / common style — across edit-e
 
 ## Shape
 ```scala
-//> using scala 3.8.4
+//> using scala 3.9.0-RC4
 //> using jvm 21
 // pure tool: read → compute → print. @main name = what it DOES, globally unique (see §1), NOT `run`.
 @main def grepLatin1(path: String, pat: String): Unit =

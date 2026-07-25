@@ -1,6 +1,6 @@
 // Multi-project build: `common` (a pure cross-project shared by both sides) · `server` (JVM, JDK-only) ·
-// `client` (Scala.js + Laminar). sbt 1.x (sbt-scalajs is not on sbt 2.x yet). Scala 3.9.0-RC1 (the coming LTS).
-ThisBuild / scalaVersion := "3.9.0-RC1"
+// `client` (Scala.js + Laminar). sbt 1.x (sbt-scalajs is not on sbt 2.x yet). Scala 3.9.0-RC4 (the coming LTS).
+ThisBuild / scalaVersion := "3.9.0-RC4"
 ThisBuild / organization := "todo"
 
 lazy val common =

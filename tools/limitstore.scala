@@ -1,4 +1,4 @@
-//> using scala 3.8.4
+//> using scala 3.9.0-RC4
 //> using jvm 21
 
 // limitstore — the SHARED, MAINLESS store logic behind `tt limit` (writer/CLI) and `tt statusline`

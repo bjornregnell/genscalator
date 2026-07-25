@@ -28,7 +28,7 @@ A tool is a good fit when it is:
 - **Project-agnostic** — no hardcoded paths/hostnames or single-project assumptions; useful across repos.
 - **A reflex-replacer** — removes a common dynamic-shell habit (grep/awk/sed/find/wc/python one-offs) with
   a typed, compiler-checked tool.
-- **Convention-following** — latest stable Scala, reuses `lib.scala` helpers, pure where possible
+- **Convention-following** — the Scala version the toolbox pins (see `tools/README.md`), reuses `lib.scala` helpers, pure where possible
   (read → compute → print), clean `===` output, scaffolded from `tools/template.scala.txt` via `newtool`.
 - **Self-contained & safe** — pure tools use only the JDK; effectful drivers are separate and declare deps.
 

@@ -1,4 +1,4 @@
-//> using scala 3.8.4
+//> using scala 3.9.0-RC4
 //> using jvm 21
 
 // seqspec — the shared spec model + parser for the sequence-diagram tools (svg, ascii, gvdot). A shared helper with NO

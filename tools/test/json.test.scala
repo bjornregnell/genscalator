@@ -1,4 +1,4 @@
-//> using scala 3.8.4
+//> using scala 3.9.0-RC4
 //> using dep org.scalameta::munit::1.3.3
 
 // Unit tests for json.scala's PURE core: path parsing, navigation, scalar extraction, rendering.

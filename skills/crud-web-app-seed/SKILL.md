@@ -1,6 +1,6 @@
 ---
 name: crud-web-app-seed
-description: Seed a complete working Scala CRUD web app (JDK-only server + Scala.js/Laminar client, sbt 1.x, Scala 3.9.0-RC1) into a directory of the user's choice, for a smooth newcomer up-and-running experience.
+description: Seed a complete working Scala CRUD web app (JDK-only server + Scala.js/Laminar client, sbt 1.x, Scala 3.9.0-RC4) into a directory of the user's choice, for a smooth newcomer up-and-running experience.
 ---
 
 # crud-web-app-seed
@@ -24,15 +24,15 @@ datamodel), or a starting point to adapt to their own domain.
 3. Print the run steps from the README: `sbt client/fastLinkJS`, then `sbt server/run`, then open
    <http://localhost:8080>.
 
-## Stack (checked 2026-07-11)
-Scala **3.9.0-RC1** (coming LTS) · sbt **1.12.13** · Scala.js **1.22.0** · Laminar **17.2.1** · sbt-scalajs **1.22.0**
+## Stack (checked 2026-07-11; Scala re-pinned 2026-07-25)
+Scala **3.9.0-RC4** (coming LTS) · sbt **1.12.13** · Scala.js **1.22.0** · Laminar **17.2.1** · sbt-scalajs **1.22.0**
 + sbt-scalajs-crossproject **1.3.2**. NB sbt 2.x is released but sbt-scalajs has not migrated, so the seed pins sbt 1.x
 (revisit when sbt-scalajs ships an sbt-2.x plugin). Not only for Scala devs — the genscalator `tt` tools serve other
 stacks too.
 
-## Status (2026-07-11)
-**sbt build VERIFIED.** `sbt compile` (all modules, Scala 3.9.0-RC1) and `sbt client/fastLinkJS` (produces `main.js`)
-both pass with exit 0 via sbt 1.12.13 + sbt-scalajs 1.22.0. Sources also compile-verified via scala-cli (`common`
+## Status (2026-07-11; re-verified on RC4 2026-07-25)
+**sbt build VERIFIED.** `sbt compile` (all modules, Scala 3.9.0-RC4) and `sbt client/fastLinkJS` (produces `main.js`)
+both pass with exit 0 via sbt 1.12.13 + sbt-scalajs 1.22.0 — re-run on the RC4 bump, compile clean with no warnings. Sources also compile-verified via scala-cli (`common`
 round-trips its JSON on both platforms). The build test found and fixed one bug: the server's default client-JS path
 (`todo-client-fastopt`, from `name := "todo-client"`). Remaining human step: `sbt server/run` and open the browser to
 click through the CRUD. See `genscalator/research/sm049-crud-web-app-seed-feasibility.md`.

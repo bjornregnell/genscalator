@@ -27,12 +27,12 @@ datamodel), use `crud-web-app-seed` instead.
 3. Print the run steps from the README: `scala-cli package . --js -o main.js -f`, then serve over
    http (`tt serv`) and open the app in a browser.
 
-## Stack (checked 2026-07-23)
-Scala **3.9.0-RC1** · Scala.js **1.22.0** · Laminar **17.2.1** · scalajs-dom **2.8.1**, built with
+## Stack (checked 2026-07-23; Scala re-pinned 2026-07-25)
+Scala **3.9.0-RC4** · Scala.js **1.22.0** · Laminar **17.2.1** · scalajs-dom **2.8.1**, built with
 **scala-cli** (no sbt). Matches the crud seed's Scala/Scala.js/Laminar set, minus the server and sbt.
 
-## Status (2026-07-23)
+## Status (2026-07-23; re-verified on RC4 2026-07-25)
 **Link VERIFIED.** `scala-cli package template --js` compiles + links to `main.js` (exit 0, Scala
-3.9.0-RC1 / Scala.js 1.22.0). The linked script auto-runs `@main` on load (confirmed: it reaches
+3.9.0-RC4 / Scala.js 1.22.0). The linked script auto-runs `@main` on load (confirmed on RC1: it reaches
 `TodoApp.load` → `window.localStorage`). Browser click-through (add / tick / delete, reload
 persists) is the human step, as with the crud seed.

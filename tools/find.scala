@@ -1,4 +1,4 @@
-//> using scala 3.8.4
+//> using scala 3.9.0-RC4
 //> using jvm 21
 
 // find — typed, SAFE file enumeration (PURE, read-only): the allowlistable read-half of `find`. Walks the tree

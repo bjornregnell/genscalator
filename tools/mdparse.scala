@@ -1,4 +1,4 @@
-//> using scala 3.8.4
+//> using scala 3.9.0-RC4
 //> using jvm 21
 
 // mdparse — the SHARED markdown block parser for the toolbox (SM019 step 1). It lifts the block

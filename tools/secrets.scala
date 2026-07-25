@@ -1,4 +1,4 @@
-//> using scala 3.8.4
+//> using scala 3.9.0-RC4
 //> using jvm 21
 
 // secrets — the ONE home for "does this look like a credential, and how do I show it without leaking it".

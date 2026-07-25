@@ -44,7 +44,7 @@ A tiny **todo** CRUD app in **direct common style**, three parts:
 - **`server/`** — an HTTP server using **only the JDK** (`com.sun.net.httpserver`), no libraries. In-memory CRUD API.
 - **`client/`** — a **Scala.js + Laminar** single-page UI that talks to the server.
 
-Stack: Scala **3.9.0-RC1** (the coming LTS) · sbt **1.12.13** · Scala.js **1.22.0** · Laminar **17.2.1**.
+Stack: Scala **3.9.0-RC4** (the coming LTS) · sbt **1.12.13** · Scala.js **1.22.0** · Laminar **17.2.1**.
 
 ## Run it (two steps)
 

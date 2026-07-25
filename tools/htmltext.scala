@@ -1,4 +1,4 @@
-//> using scala 3.8.4
+//> using scala 3.9.0-RC4
 //> using jvm 21
 
 // htmltext — strip a saved HTML page down to readable body text: drop <head>/<script>/<style>/<noscript>/<svg>,

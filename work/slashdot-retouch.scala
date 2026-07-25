@@ -1,4 +1,4 @@
-//> using scala 3.8.4
+//> using scala 3.9.0-RC4
 // slashdot.scala — ONE-OFF (BR ask 2026-07-19): in the two media/img/awareness-*.png terminal
 // screenshots, replace every rendered '/' glyph in the footer with a '·', matching the statusline's
 // separator change, so the screenshots stay current without re-staging the fake tableaux.

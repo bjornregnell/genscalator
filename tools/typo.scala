@@ -1,4 +1,4 @@
-//> using scala 3.8.4
+//> using scala 3.9.0-RC4
 //> using jvm 21
 
 // typo — a keyboard-aware typo classifier for the human-fatigue gauge (BR's idea, 2026-07-02): the human's

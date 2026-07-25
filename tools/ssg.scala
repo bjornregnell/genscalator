@@ -1,4 +1,4 @@
-//> using scala 3.8.4
+//> using scala 3.9.0-RC4
 //> using jvm 21
 //> using file lib.scala
 //> using file mdparse.scala
@@ -464,7 +464,9 @@ object Ssg:
         println(s"ssg: --status-update $from -> $to  ($n post(s) updated, dated $date)")
         return
       case None => ()
-    val (sources, outDir, srcDir): (Vector[Path], Path, Path) = statusOpt match
+    // Scala 3.9 no longer allows a type ascription on a tuple pattern, so the type rides on a
+    // plain val and the destructuring happens after the match (same shape, still type-checked).
+    val sourceSelection: (Vector[Path], Path, Path) = statusOpt match
       case Some(sel) =>
         // status-selection (SM032): positional = the blog dir; render posts whose CURRENT status is in `sel`
         // (comma-separated), plus index.md always, one-pass into --out (so the figure-prune sees their union).
@@ -502,6 +504,7 @@ object Ssg:
                 else Vector(src)
               (srcs, Paths.get(od).toAbsolutePath.normalize, if Files.isDirectory(src) then src else src.getParent)
             case _ => System.err.println("ssg: bad arguments"); System.err.println(Usage); sys.exit(2)
+    val (sources, outDir, srcDir) = sourceSelection
     if sources.isEmpty then { System.err.println("ssg: no .md sources to render"); sys.exit(2) }
     val discovered = srcDir.resolve("_template.html")
     val template =

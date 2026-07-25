@@ -1,4 +1,4 @@
-//> using scala 3.8.4
+//> using scala 3.9.0-RC4
 
 // =============================================================================
 // buildnative.sc  -  the tt-graalify REBUILD RITUAL: build -> parity -> swap
