@@ -136,6 +136,7 @@ links check <absdir> [--ext <list>]                  # dangling markdown/html li
 links to <absdir> <path> [--ext <list>]              # which files reference <path>
 links reach <absdir> --root <rel> ...                # files reachable from the roots, transitively
 links reach <absdir> --root <rel> --unreachable      # the complement: what nothing points at
+links reach <absdir> --root <rel> --leaf <rel>       # <rel> is kept, but what it cites is not
 ```
 Answers the two questions every move or rename raises — *what is broken now?* and *what still points at
 this?* — mechanically instead of with a pile of greps, and it is re-runnable after the move.
@@ -148,6 +149,14 @@ the third, because there a **missed** reference is the expensive error and a fal
 file. For the same reason a `dir/prefix` citation (`research/052`) counts every file in that dir with that
 prefix. Site-absolute targets (`/genscalator/...`) are treated as external: they are URLs on the deployed
 site, not repo paths, so validating them here would report a false break on every page.
+
+**The mirror limit, and `--leaf`.** That same generosity misfires when the question is *may I DELETE
+this?*. An append-only archive — a raw research log, a minion log — mentions files **historically**,
+not because anything depends on them, so it silently pins whatever it ever named. Found 2026-07-26: a
+frozen audit log mentioned a draft blog post, which mentioned another, and both were kept three hops
+from anything alive. `--leaf <rel>` separates the two relations a plain walk conflates: a leaf is
+**kept** when something points at it, but its **own** citations are not followed. Repeatable, opt-in,
+and it cannot change a run that does not pass it.
 ```
 tt links check /abs/repo                                              # is anything broken right now?
 tt links to /abs/repo research/METHODOLOGY.md                         # who depends on this file?

@@ -25,7 +25,13 @@
 //
 //   tt links check <absdir> [--ext .md,.html]
 //   tt links to    <absdir> <repo-relative-path> [--ext ...]
-//   tt links reach <absdir> --root <rel> [--root <rel>]... [--ext ...] [--unreachable]
+//   tt links reach <absdir> --root <rel> [--root <rel>]... [--leaf <rel>]... [--ext ...] [--unreachable]
+//
+// ⚠ SECOND KNOWN LIMIT, the mirror of the one above and found the same way: reachability keeps whatever
+// is MENTIONED, and an append-only archive mentions things historically rather than depending on them.
+// So a frozen minion log naming a draft pinned that draft, and the draft pinned another — three hops
+// from anything alive. `--leaf` separates the two relations a plain walk conflates: a leaf is KEPT when
+// referenced, but does not itself keep others.
 import java.nio.file.{Files, Path}
 
 private val LinksHelp: String =
@@ -39,10 +45,15 @@ private val LinksHelp: String =
     |  links to <absdir> <path> [--ext <list>]        which files reference <path> (repo-relative)
     |  links reach <absdir> --root <rel> ...          files reachable from the roots, transitively
     |  links reach <absdir> --root <rel> --unreachable   the COMPLEMENT: what nothing public points at
+    |  links reach <absdir> --root <rel> --leaf <rel>    ... treating <rel> as reachable-but-not-propagating
     |
     |Flags:
     |  --ext <list>    comma-separated extensions to scan (default: .md,.html)
     |  --root <rel>    a repo-relative file or directory to start reachability from; repeatable
+    |  --leaf <rel>    a repo-relative file or directory that is KEPT when referenced but whose OWN
+    |                  citations are not followed; repeatable. For append-only archives (raw research
+    |                  logs, minion logs) that mention files historically rather than depend on them —
+    |                  without this, anything such an archive ever named is pinned forever.
     |  --unreachable   with `reach`, print what is NOT reachable (the move candidates)
     |
     |What counts as a reference:
@@ -153,6 +164,20 @@ object Links:
         if prefix.isEmpty || !dirs(dir) then Set.empty
         else known.filter(k => k.startsWith(dir + "/") && k.substring(dir.length + 1).startsWith(prefix))
 
+  /** True when `p` is at, or under, one of the leaf prefixes.
+    *
+    * A LEAF is REACHABLE-BUT-NON-PROPAGATING: something points at it, so it stays; but what IT cites is
+    * not kept on its account. The distinction exists because "is referenced" and "keeps others alive"
+    * are two different relations that a plain reachability walk conflates.
+    *
+    * Found 2026-07-26, tracing why an unpublished blog post survived a keep-set computation: a
+    * meta-minion log — a FROZEN RECORD of a past audit — mentioned another draft in passing, and that
+    * mention alone pinned both. Raw records cite things historically, not because anything depends on
+    * them, so an append-only archive otherwise acts as a permanent anchor for whatever it ever named.
+    * Marking such an archive a leaf keeps the archive and releases its mentions. PURE. */
+  def isLeaf(p: String, leaves: Vector[String]): Boolean =
+    leaves.exists(l => p == l || p.startsWith(l + "/"))
+
   // --- the effectful half: reads the tree. Kept INSIDE this object because a top-level `private def`
   // still lands in package scope, and `scanDir` / `inventory` are exactly the generic names that collide
   // when the whole toolbox compiles as one unit (scala-style §1).
@@ -200,8 +225,9 @@ object Links:
     a.sliding(2).collect { case List(f, v) if f == flag => v }.toVector
   val exts = optsOf("--ext").headOption.map(_.split(",").toVector.map(_.trim)).getOrElse(Vector(".md", ".html"))
   val roots = optsOf("--root")
+  val leaves = optsOf("--leaf")
   val unreachableOnly = a.contains("--unreachable")
-  val flagged = Set("--ext", "--root")
+  val flagged = Set("--ext", "--root", "--leaf")
   val consumed = scala.collection.mutable.Set.empty[Int]
   a.zipWithIndex.foreach { case (t, i) => if flagged(t) then { consumed += i; consumed += i + 1 } }
   val pos = a.zipWithIndex.collect { case (t, i) if !consumed(i) && !t.startsWith("--") => t }
@@ -264,7 +290,9 @@ object Links:
       val queue = scala.collection.mutable.Queue.from(seed)
       while queue.nonEmpty do
         val cur = queue.dequeue()
-        for next <- e.getOrElse(cur, Set.empty) if !seen(next) do { seen += next; queue.enqueue(next) }
+        // A leaf is kept (it is already in `seen`) but its own citations are not followed.
+        if !Links.isLeaf(cur, leaves) then
+          for next <- e.getOrElse(cur, Set.empty) if !seen(next) do { seen += next; queue.enqueue(next) }
       val reached = seen.toSet.filter(files)
       if unreachableOnly then
         val out = (files -- reached).toVector.sorted

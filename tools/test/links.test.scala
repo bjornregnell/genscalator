@@ -118,3 +118,27 @@ class LinksSuite extends munit.FunSuite:
     val dirs = Set("research")
     assertEquals(Links.referents("research", known, dirs), Set("research"))
   }
+
+  // --- leaves: reachable but non-propagating -------------------------------------------------------
+  // The real case, 2026-07-26: `minion-log/push-17.md` is a frozen record of a past audit. It MENTIONS
+  // blog 031, which mentions blog 001, so both drafts were kept three hops from anything alive. A
+  // mention in an archive is history, not a dependency.
+
+  test("a leaf matches itself and anything beneath it, and nothing else") {
+    val leaves = Vector("research/case-studies/action-research-meta-minion/minion-log")
+    assert(Links.isLeaf("research/case-studies/action-research-meta-minion/minion-log", leaves))
+    assert(Links.isLeaf("research/case-studies/action-research-meta-minion/minion-log/push-17.md", leaves))
+    assert(!Links.isLeaf("research/case-studies/action-research-meta-minion/long-lived-meta-minion.md", leaves))
+  }
+
+  test("a leaf prefix must end at a path boundary, so a sibling with a longer name is not swallowed") {
+    // `research/wr-data-closed` must not be caught by a `research/wr-data` leaf: prefix matching without
+    // the separator is the classic way a path rule quietly captures a neighbour.
+    val leaves = Vector("research/wr-data")
+    assert(Links.isLeaf("research/wr-data/x.md", leaves))
+    assert(!Links.isLeaf("research/wr-data-closed/x.md", leaves))
+  }
+
+  test("no leaves means nothing is a leaf — the flag is opt-in and cannot change an existing run") {
+    assert(!Links.isLeaf("research/wr-data/x.md", Vector.empty))
+  }

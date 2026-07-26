@@ -1244,6 +1244,26 @@ class CliSuite extends munit.FunSuite:
       assert(!clue(out).contains("c.md"), "a prose citation must keep a file OUT of the move list")
     finally os.remove.all(d)
   }
+  test("links reach: a --leaf is kept itself but stops propagating what it merely mentions") {
+    // The 2026-07-26 case in miniature: `archive.md` is a frozen record that MENTIONS `pinned.md`.
+    // Without --leaf the mention keeps pinned.md forever; with it, the archive stays and the mention
+    // is released. Guards the WIRING — the pure predicate is covered in LinksSuite, which is exactly
+    // the split that let an untested code path ship before (SM229).
+    val d = os.temp.dir()
+    try
+      os.write(d / "root.md", "see [archive](archive.md)\n")
+      os.write(d / "archive.md", "a past audit mentioned `pinned.md` in passing\n")
+      os.write(d / "pinned.md", "nothing alive depends on me\n")
+      val (c0, out0, _) = run("links", "reach", d.toString, "--root", "root.md", "--unreachable")
+      assertEquals(clue(c0), 0)
+      assert(!clue(out0).contains("pinned.md"), "without --leaf the archive's mention keeps it")
+      val (c1, out1, _) =
+        run("links", "reach", d.toString, "--root", "root.md", "--leaf", "archive.md", "--unreachable")
+      assertEquals(clue(c1), 0)
+      assert(clue(out1).contains("pinned.md"), "with --leaf the mention no longer keeps it")
+      assert(!clue(out1).contains("archive.md"), "the leaf itself is still KEPT, not orphaned")
+    finally os.remove.all(d)
+  }
 
   // REGRESSION PIN (2026-07-25). The NOTE tier was built that morning for guard-invisible tool-choice
   // mistakes and still missed a bare `printenv` that leaked two live tokens, because it listed
