@@ -151,7 +151,7 @@ done safely.
   single bad-typing message does not trip a false alarm; it is the *trend* that matters.
   - **Refinement — the gauge must be BASELINE-RELATIVE, not absolute (BR 2026-07-03).** BR reports a *standing*
     habit of **swapping letters** ("my bad keyboard typing"; this session alone: `gest`→`gets`, `habbit`,
-    `swappin`, plus the arrow-up double-post edits in `wr-data/harness-ux.md`). So a habitual swapper has a
+    `swappin`, plus the arrow-up double-post edits in `research/wr-data/harness-ux.md`). So a habitual swapper has a
     **non-zero baseline** typo rate — an *absolute*-threshold gauge would false-positive on them permanently
     while under-triggering for a normally-clean typist. The signal is therefore the **delta above the person's
     OWN rolling baseline**, not a global cutoff. Implication for a `tt restcheck`-style gauge: it needs a
@@ -304,7 +304,7 @@ Unpacking what happened refines the "the human holds the gauge" model from `006-
   trigger** in this family: it doesn't recover one action, it edits the agent's *future behaviour* through its
   **editable memory**. This is exactly the self-improvement loop the project rests on — *editable memory + a human
   willing to point at it* — and the structural cousin of the discrete event-catch above. Cross-ref
-  [[use-tt-grepr-not-raw-grep]] and `wr-data/genscalator-self-dev.md` (the grepr root-cause: intent-without-signature
+  [[use-tt-grepr-not-raw-grep]] and `research/wr-data/genscalator-self-dev.md` (the grepr root-cause: intent-without-signature
   in always-on context).
 - **Trigger refinement — a "bad" regression is NOT always rot; it may be the SUBSTRATE (BR 2026-07-03).** BR's rule:
   on **any** "bad" behavioural regression (however "bad" is judged), run the **Hardening dance** — do not just

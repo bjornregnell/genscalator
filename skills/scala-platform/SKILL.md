@@ -46,7 +46,7 @@ Java dependency forces your hand, not for raw leanness.
      the process allocates a bounded amount and exits; the OS reclaims on death).
    - **Blocked only by a SMALL `java.*` gap (not a real dependency)?** → **hand-roll the gap and KEEP Scala
      Native.** Do not escalate to Graal for a missing stdlib corner. `java.time` is the canonical case: SN
-     0.5.12 has not ported it (`research/052`), yet an ISO-8601→epoch-ms conversion or a local wall clock is a
+     0.5.12 has not ported it (`research/topics/RT052-scala-native-feasibility-blixten.md`), yet an ISO-8601→epoch-ms conversion or a local wall clock is a
      small, bounded, testable slice — the hand-roll sweet spot (`scala-style` §1). **Worked examples:**
      `tools/statusline.scala`'s `clock` and `isoToEpochMs`; both exist *purely* to keep the hot native target
      compiling. **Test the hand-roll against the JDK as an independent oracle** (the test runs on the JVM and

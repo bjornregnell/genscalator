@@ -47,4 +47,4 @@ a fix pass. This doc tracks **what the agent has done** vs **what still needs BR
 ## Notes
 - Cross-repo coupling (research notes → muntabot-synch / introprog files) is inventoried, no action — just a map.
 - Meta: a subagent reproduced the raw-`grep`/`for`-loop reflex during the audit → subagents also need the
-  bare-allowlist-matchable discipline in their prompts (logged in `wr-data/harness-ux.md`).
+  bare-allowlist-matchable discipline in their prompts (logged in `research/wr-data/harness-ux.md`).

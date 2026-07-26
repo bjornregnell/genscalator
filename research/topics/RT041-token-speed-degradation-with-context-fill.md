@@ -16,7 +16,7 @@
   fill is **expected by construction**; the open questions are its *shape*, its *size* on this harness, and whether
   it **leads** the quality signature. First datapoint: BR's subjective "much slower when the resume prompt emerged"
   + the harness spinner **45→51s** for one reply at **56% fill** (see
-  `wr-data/context-rot-before-after-2026-07-05.md`, **Q1**).
+  `research/wr-data/context-rot-before-after-2026-07-05.md`, **Q1**).
 
 ## The confound to defeat first
 The harness "thinking" clock (and any message-latency) is **total response latency = extended-thinking + decode**. A

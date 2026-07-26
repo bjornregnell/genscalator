@@ -29,7 +29,7 @@ Every SN build here also emits a harmless `ld` "executable stack / missing .note
 
 ## The finding — portability is gated at LINK time by `java.*`, not just by declared deps
 
-This **refines the `research/051` derived-default**: reading a tool's `//> using dep` (pure JDK → SN candidate) is
+This **refines the `research/topics/RT051-gs-native-tool-selection-and-consent.md` derived-default**: reading a tool's `//> using dep` (pure JDK → SN candidate) is
 **necessary but not sufficient**. A pure-JDK tool can still fail to link if it touches an **unported `java.*` API** —
 here `java.time`. The gate is *reachability at link time*, discovered only by attempting the SN compile.
 

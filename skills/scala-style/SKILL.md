@@ -71,7 +71,7 @@ black-and-white.
 - Latest **stable** Scala (re-check per project). Reach first for the **JDK + the `tt` toolbox** — they
   cover most needs.
 - **⚠️ Tier-1 caveat: a JDK API can silently cost you Scala Native.** SN has **not** ported all of `java.*`
-  (notably **`java.time`**, as of SN 0.5.12 — see `research/052`). Reaching for the JDK is still right by
+  (notably **`java.time`**, as of SN 0.5.12 — see `research/topics/RT052-scala-native-feasibility-blixten.md`). Reaching for the JDK is still right by
   default, but **if the file is (or may become) a native target, check the API first**: an innocuous
   `java.time.Instant.parse` will compile and pass every JVM test, then break the native build — a cost paid
   far from the line that caused it. **If the gap is small, bounded and paired-test-verifiable, HAND-ROLL it**

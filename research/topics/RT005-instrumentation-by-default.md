@@ -11,7 +11,7 @@
   whole category of friction never arises.
 - **Plan:** Distill the autotranslate (AT) case study, where two instruments proved decisive, into an
   authoring convention (and possibly a tiny helper/template) for genscalator tools.
-- **Status:** open — proposal drawn from the AT case study (`wr-data/introprog-autotranslate.md`).
+- **Status:** open — proposal drawn from the AT case study (`research/wr-data/introprog-autotranslate.md`).
 
 ## Findings
 
@@ -74,7 +74,7 @@ needs new `tt` tools, and the `tt` tools that remain should *themselves* follow 
     file + event log + compact summary; never make the caller grep your stdout";
   - optionally a tiny **helper/template** (a `Progress`/`EventLog` micro-utility, or a scratch-tool
     scaffold) so the three instruments come for free;
-  - cross-link from `wr-data/README.md` (the friction evidence) to this note (the design response).
+  - cross-link from `research/wr-data/README.md` (the friction evidence) to this note (the design response).
 - **Answer to "useful for both AT and WR?":** **Yes, both.** For **AT** it's already load-bearing — the
   instruments cracked the cascade bug and the safe runners keep an unattended grind from stalling on
   confirmation. For **WR** it's the *design-principle layer* of the thesis: the WR-data enumerates the

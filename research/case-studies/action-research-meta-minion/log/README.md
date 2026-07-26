@@ -13,7 +13,7 @@ findings part is the one thing this directory must not do** — and refusing it 
 result applied to its own filing:
 
 - **SM132's rule (2026-07-17): a claim's HOME is AUDIENCE-RELATIVE.** A finding about the *workflow* has the WR
-  programme as its audience ⇒ it belongs in `wr-data/`, where the whole corpus is searched. A record of *what this
+  programme as its audience ⇒ it belongs in `research/wr-data/`, where the whole corpus is searched. A record of *what this
   study did* has a reader-of-this-study as its audience ⇒ it belongs here.
 - **If both held findings, we would have built the exact defect we spent two days hunting**: two homes for one claim
   ⇒ they diverge ⇒ one becomes a **standing falsehood** nobody knows to correct. The retraction problem (SM133) is
@@ -24,7 +24,7 @@ result applied to its own filing:
 - **Protocol deviations** — anything off the protocol's §6 push triggers, logged as off-protocol.
 - **Push results** — the verdict, the attribution, the coding (per protocol §7); the minion's own words stay in
   `minion-log/`, unedited.
-- **An INDEX of the findings this study produced**, as **pointers** to `wr-data/` — never as summaries that can
+- **An INDEX of the findings this study produced**, as **pointers** to `research/wr-data/` — never as summaries that can
   drift from what they summarise.
 
 ### What does NOT go here
@@ -42,7 +42,7 @@ action-research-meta-minion/
 ├── long-lived-meta-minion.md   the PROTOCOL (incl. §10 the change log = the reliability instrument)
 ├── meta-minion-brief.md        the BRIEF — the minion's ONLY behavioural channel; a file so it survives a warp
 ├── minion-log/                 the MINION writes these, unedited by anyone else (push-N.md)
-└── log/                        THIS dir — the study's process record + an index of findings living in wr-data/
+└── log/                        THIS dir — the study's process record + an index of findings living in research/wr-data/
 ```
 
 ## 📌 Why this file exists before the directories did

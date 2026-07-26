@@ -1,6 +1,6 @@
 # RT052 — The human-throughput bottleneck and value-aligned spend in fast-agent collaboration (the super-harness's purpose)
 
-**Status:** open research topic, seeded 2026-07-08 from BR's brain-dump (`wr-data/br-throughput-and-token-stress-2026-07-08.md`).
+**Status:** open research topic, seeded 2026-07-08 from BR's brain-dump (`research/wr-data/br-throughput-and-token-stress-2026-07-08.md`).
 This is the **motivation topic** that SM016 (super-harness) + SM022 (dashboard) are the intervention for. Parent/sibling
 of RT049 (delegation dilemma), [[agent-affective-analogs]], and the PRD goal `avoidReviewOverload`.
 

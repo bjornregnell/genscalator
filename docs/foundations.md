@@ -812,7 +812,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   wins even when the super-agent already holds the context. Confound-safe for the longitudinal study (the
   studied subject is the super-agent, unchanged; sub-agents are workers). Sibling of the *solo* dance (which
   hands off **autonomy**) and the *compact* dance (which manages **context**). Memory: [[delegation-dance]];
-  deepened in `research/049-the-dilemma-of-delegation.md` (economics + briefing fidelity),
+  deepened in `research/topics/RT049-the-dilemma-of-delegation.md` (economics + briefing fidelity),
   `research/050-does-delegation-lower-context-rot.md` (the empirical rot study), blog **BP013**, figure
   `media/blog/figures/seq-delegation-dance.svg`. (BR 2026-07-07, name ratified.)
 

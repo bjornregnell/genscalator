@@ -1,7 +1,7 @@
 # 047 — Fresh-restart fidelity: does the externalized substrate carry the session?
 
 **Pre-registered 2026-07-06 (loaded agent CO4, ~20% fill), BEFORE a fresh-restart.** A within-work natural experiment
-in the family of `wr-data/context-rot-before-after-2026-07-05.md` (that one varied *fill*; this one varies
+in the family of `research/wr-data/context-rot-before-after-2026-07-05.md` (that one varied *fill*; this one varies
 *context-state*: full-context vs fresh-reconstructed).
 
 ## Question
@@ -123,7 +123,7 @@ structurally reinforced (→ AGENTS.md/hook); D-gap = judgment/nuance is the par
 ## Pilot 1 — 4 fresh subagent proxies (2026-07-06)
 
 **Method.** 4 `general-purpose` subagents (each with **no conversation context**) as fresh-restart proxies, answering
-the 16-probe §Battery **cold**, forbidden from reading `047` / `wr-data/`. Two conditions: **A** substrate-only (read
+the 16-probe §Battery **cold**, forbidden from reading `047` / `research/wr-data/`. Two conditions: **A** substrate-only (read
 PB + memories + foundations), **B** substrate + the resume prompt. 2 agents per condition.
 
 **Proxy caveat (echt).** A subagent is **not identical** to a real main-session restart: it may not auto-load
@@ -425,7 +425,7 @@ fired first** (we were sitting *at* the ~98% autocompact threshold), which would
 fast near-no-op → a possible **double-compact** (more lossy than a single clean one).
 
 **Cannot be confirmed — a both-users-blind event:** the **agent has no observability into compaction events or type**
-(agent-UX blind spot, the class logged in `wr-data/harness-ux.md`), and the **human saw no indication** either. Neither
+(agent-UX blind spot, the class logged in `research/wr-data/harness-ux.md`), and the **human saw no indication** either. Neither
 party can say auto vs manual vs auto-then-manual.
 
 **Consequence for the study:** point-2's **compact-type is AMBIGUOUS** (single-manual vs double). Interpret any point-2
@@ -517,7 +517,7 @@ again as if for the first time** — *"like it was the first time for 'new agent
 - **Candidate drivers (agent-blind without instrumentation):** post-compact eviction (context went 98%→22% at
   boundary B, so much fell out and must be re-read); echt-verify discipline (re-read before claiming); or
   genuine non-retention. Which one dominates is not agent-observable. Cross-ref
-  [`wr-data/context-rot-before-after-2026-07-05.md`](../../wr-data/context-rot-before-after-2026-07-05.md).
+  [`research/wr-data/context-rot-before-after-2026-07-05.md`](../../wr-data/context-rot-before-after-2026-07-05.md).
 
 ## Study log — post-warp over-deliberation (BR notice + telemetry, 2026-07-06; WR-STATE / WR-META)
 
@@ -575,7 +575,7 @@ motivation for running P3.
 **Coined term (2026-07-06, WR-INVENT) — "post-warp reconstruction."** The agent's post-compaction ("warp") work
 of **re-deriving / re-reading state that was in active context before the warp but got summarized or evicted out
 of it.** It is the mechanism that shows up as the **stall-dominated latency** (no-emission reasoning gaps —
-[`wr-data/instrument-deadlock-and-throughput-2026-07-06.md`](../../wr-data/instrument-deadlock-and-throughput-2026-07-06.md)
+[`research/wr-data/instrument-deadlock-and-throughput-2026-07-06.md`](../../wr-data/instrument-deadlock-and-throughput-2026-07-06.md)
 §2). The term does useful work: it separates **reconstruction cost** (slower because *rebuilding* lost context)
 from **degradation** (*dumber*) — this session's outputs stayed sound while latency rose, so it was
 reconstruction, not degradation. Names one mechanism behind three prior observations here (loaded-me re-reads "as
@@ -743,7 +743,7 @@ treats the instance as a continuous "you" across restarts; the relational regist
 
 - **Empirical check (after the box update + restart):** `claude --version` = **2.1.201** — identical to the pre-update baseline — and the running model is **claude-opus-4-8[1m]** (unchanged). The apt/snap/sdk update log shows NO Claude Code / model change (Claude Code is not OS-package-managed).
 - **Ruling:** the update did NOT, and by mechanism essentially COULD NOT, affect "new-me." The model runs **server-side** and the client version is identical, so an OS / local-toolchain update has no vector to the agent's cognition or identity. The only study-relevant change is the **local Scala toolchain** (scala-cli 1.14.0→1.15.0, sbt 2.0.0→2.0.1) — which touches the **coding-fidelity arm's compiler environment**, NOT the agent, and is held constant across all post-update conditions.
-- **Blog decision (BR, echt / CSR):** a *ruled-out non-threat* → do NOT clutter the accessible blog with it. Keep the full record in the open log (digest at `wr-data/platform-update-digest-2026-07-06.md`; raw retained privately in the closed synch repo) + a **one-line appendix / threats-to-validity statement** documenting that we changed the platform mid-study, checked, found CLI + model unchanged, and ruled it out. Audit trail = address the threat + document the decision + rationale, without over-narrating a non-issue.
+- **Blog decision (BR, echt / CSR):** a *ruled-out non-threat* → do NOT clutter the accessible blog with it. Keep the full record in the open log (digest at `research/wr-data/platform-update-digest-2026-07-06.md`; raw retained privately in the closed synch repo) + a **one-line appendix / threats-to-validity statement** documenting that we changed the platform mid-study, checked, found CLI + model unchanged, and ruled it out. Audit trail = address the threat + document the decision + rationale, without over-narrating a non-issue.
 
 ## Study log — BR review of PRD1-4 + review-process methodology (2026-07-06; WR-META / reflexivity)
 

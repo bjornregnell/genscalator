@@ -62,7 +62,7 @@ A benign but real coordination cost surfaced live: the agent was already **succe
 400'd) when the human, not yet seeing that, sent a **fallback offer** — *"or I can just paste it here? (but then
 no formatting)"*. The channel is **async**, so both parties worked the same subtask in parallel; the human spent
 keystrokes proposing an alternative the agent had already obviated. BR named it: *"we are racing."*
-- **It is the constructive cousin of the double-post race** (`wr-data/harness-ux.md`): there the duplication is
+- **It is the constructive cousin of the double-post race** (`research/wr-data/harness-ux.md`): there the duplication is
   a harness bug; here it is **inherent to async turn-taking** — nobody did anything wrong, the human just can't
   see the agent's in-flight work until it lands.
 - **Cost:** wasted human effort (a typed fallback) + a momentary two-track state the agent must reconcile

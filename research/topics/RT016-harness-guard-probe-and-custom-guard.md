@@ -31,7 +31,7 @@
      (b) proves `tt` commands safe. Explore **capture checking / Safe mode** (see `docs/foundations.md`:
      capture checking; the `scala-style` skill's "Safe-mode-ready") so effect-typed `tt` tools are
      *statically* safe → silent by construction.
-  3. **Measure** against the `wr-data/` confirmation ledger: does the custom guard eliminate real prompts
+  3. **Measure** against the `research/wr-data/` confirmation ledger: does the custom guard eliminate real prompts
      without admitting an unsafe action?
 - **Status:** open (proposed 2026-07-01, BR). Feasibility RESOLVED (2026-07-01): HIGH, but the *sensor* must be
   the Agent SDK `canUseTool` callback, NOT raw CLI stream-json (which blocks instead of emitting an event).
@@ -91,4 +91,4 @@ ship a **different env/guard**, obsoleting an introspection pinned to today's be
 Related: [[confirmation-guard-static-analysis]] (when/why the guard fires; sound-not-complete),
 [[instruction-adherence-decay]] (why exhortation fails → structural guard is the fix),
 [[inference-time-learning]] (structure > memory > instruction hierarchy), `docs/foundations.md`
-(safe by design, capture checking). Evidence source: [[README]] → `wr-data/`.
+(safe by design, capture checking). Evidence source: [[README]] → `research/wr-data/`.

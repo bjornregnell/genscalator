@@ -51,7 +51,7 @@ insight is not a failure, just one turn of the loop.
    **coupled-system capability** — capability belongs to *model × substrate × human*, and *"when we say 'the agent got
    smarter,' what improved is the pairing; the model's weights never changed."* So *"improve the **joint** workflow"*
    is the honest scope, and **BR's own workflow is inside it** — he has already put a specimen on the record himself
-   (the dropped scratchpad habit, `wr-data/br-reflection-dropped-scratchpad-habit-2026-07-16.md`). **A study that only
+   (the dropped scratchpad habit, `research/wr-data/br-reflection-dropped-scratchpad-habit-2026-07-16.md`). **A study that only
    ever finds agent faults is mis-scoped**, and that is a live risk here given who is writing it.
 3. **It aims the study straight at the live crack in its own thesis.** *"by substrate extends learning beyond training
    into inference"* is foundations' **extrinsic-volatile plasticity**: the weights never move, so the agent's learning
@@ -193,7 +193,7 @@ Propositions, not hypotheses. Not statistically tested; they exist so the outcom
 
 > **⚠️ FIRST, A FINDING ABOUT THE QUESTION ITSELF.** Our substrate **already answers sub-Q2 and most of sub-Q3** —
 > `research/reports/report015-en-masse-subagents.md` (shipped `88e9f2b`), [[cue-use-fleet]], and
-> `wr-data/super-sub-agent-chat-request-response-not-ambient-2026-07-14.md`. **Neither BR nor CO4 had it hot; CO4
+> `research/wr-data/super-sub-agent-chat-request-response-not-ambient-2026-07-14.md`. **Neither BR nor CO4 had it hot; CO4
 > found it only by grepping before answering.** That is *"carried ≠ armed"* firing on **both** members of the
 > pairing simultaneously, unprompted, in the middle of a study *about* that claim. **The knowledge was externalized
 > and inert until deliberately retrieved** — externalized ≠ effective (§0.3). Logged as data, not as a complaint:
@@ -207,7 +207,7 @@ Propositions, not hypotheses. Not statistically tested; they exist so the outcom
   results to files**, returning only a short pointer + summary — never thousands of tokens."*
 - **sub-Q1 — competing broad minions: a NEGATIVE already on record.** SM015 notes interactive/creative work *"doesn't
   decompose; a fleet returns N confident divergent [answers]"*. **Counter-specimen (positive):**
-  `wr-data/adversarial-subagent-catches-bugs-selftest-missed-2026-07-10.md` — an adversarial break *"caught what
+  `research/wr-data/adversarial-subagent-catches-bugs-selftest-missed-2026-07-10.md` — an adversarial break *"caught what
   neither did alone — coupled-system capability at the agent-fleet level."* ⇒ **redundancy pays for ADVERSARIAL
   breaking, not for opinion-gathering.**
 

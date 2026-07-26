@@ -76,7 +76,7 @@ concrete argument for design direction #1 (**Read the meter, don't predict by fe
    when a weekly cap could fire at any time.)
 
 ## Relation to other notes
-- `wr-data/` — the friction events that *waste* the budget (the thing to eliminate).
+- `research/wr-data/` — the friction events that *waste* the budget (the thing to eliminate).
 - `005-instrumentation-by-default.md` — make each tool cheap to use (spend less per action).
 - **This note** — the missing layer: *know* the budget across nested limits and *pace* to it, so efficiency
   becomes halt-avoidance, not just speed.

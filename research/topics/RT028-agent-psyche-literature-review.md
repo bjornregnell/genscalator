@@ -99,5 +99,5 @@ self-explanation`.
 - Map our terms → established ones honestly; where we're novel, say so plainly; where prior work exists, cite and build
   on it.
 
-Related: blogs 006 (agent psyche) / 008 (joint zone); `wr-data/harness-ux.md` `#agent-psyche` `#human-psyche`;
+Related: blogs 006 (agent psyche) / 008 (joint zone); `research/wr-data/harness-ux.md` `#agent-psyche` `#human-psyche`;
 `024-agent-affective-analogs.md`; foundations *echt*.

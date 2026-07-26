@@ -101,7 +101,7 @@ learned, stored where it actually changes behavior.
 Because the substrate is external and behavioral, learning is **measurable without touching the weights**:
 - **Regression-rate over time** for a given reflex (e.g. `cd`+git): count occurrences per session before the
   memory fix, after the memory fix, and after a structural hook. If #3 drops it to ~0 while #2 only dented it,
-  that quantifies the hierarchy. The `wr-data/` ledger + `RAW-DATA.md` + a `tt session-metrics` miner are the
+  that quantifies the hierarchy. The `research/wr-data/` ledger + `RAW-DATA.md` + a `tt session-metrics` miner are the
   measurement substrate (METHODOLOGY §4).
 - **Tool-choice ratio drift** (typed-tool vs shell-reflex) across sessions as the toolbox accretes — does the
   environment getting richer pull behavior toward the typed tools? That is cumulative inference-time learning

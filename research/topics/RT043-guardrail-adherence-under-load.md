@@ -5,7 +5,7 @@
 [`041-token-speed-degradation-with-context-fill.md`](RT041-token-speed-degradation-with-context-fill.md) (fill as a stressor),
 [`024-agent-affective-analogs.md`](RT024-agent-affective-analogs.md) (calm-vs-alarm prompting / over-response),
 [`016-harness-guard-probe-and-custom-guard.md`](RT016-harness-guard-probe-and-custom-guard.md) (`guardcheck` — the auto-grader),
-and `wr-data/context-rot-before-after-2026-07-05.md` (O12 = the absorption-regression this note tries to pin down).*
+and `research/wr-data/context-rot-before-after-2026-07-05.md` (O12 = the absorption-regression this note tries to pin down).*
 
 ## The phenomenon (observed, not yet controlled)
 The agent commits via the disciplined path (`tt git`, never `cd repo && git`) reliably at **low fill / low absorption**,

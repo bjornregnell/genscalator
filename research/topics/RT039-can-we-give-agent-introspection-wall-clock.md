@@ -51,7 +51,7 @@ elapsed on a trivial command ≈ "that stalled on a guard"). This closes the bli
 complementing the human-side detection. Concrete first prototype candidate, promoted by this datapoint:
 a `tt` tool the agent calls that returns current time + elapsed-since-last-mark, cheap and allowlisted.
 Ties to the structure-over-willpower argument in [[guard-stall-invisible-to-agent-2026-07-07]] and to the
-substrate-steering question in `research/048-substrate-content-power-over-tool-discipline.md`.
+substrate-steering question in `research/topics/RT048-substrate-content-power-over-tool-discipline.md`.
 
 ## Related
 - `tools/chrono.scala`, `research/007-token-budget-awareness.md`, `research/wr-data/harness-ux.md` (the crunch
