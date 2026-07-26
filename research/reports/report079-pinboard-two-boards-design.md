@@ -3,7 +3,7 @@
 **Status:** agent-authored DESIGN NOTE, 2026-07-14 (SM079), for BR to develop. NOT a rewrite — the actual
 migration is JOINT (BR's board is his window, so he co-owns the split). Model: Opus 4.8 (1M). Ties
 [[humans-md-agent-sole-writer]], RT052, the `reqt-lang` skill, the `toolbox-single-dispatcher` arch, the
-asymmetry study (`research/asymmetry/asymmetry-study-plan.md`).
+asymmetry study (`research/case-studies/asymmetry/asymmetry-study-plan.md`).
 
 ## 1. The problem: the pinboard is a blob because it serves two readers at once
 

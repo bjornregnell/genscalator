@@ -109,7 +109,7 @@ dated and justified (constant comparison, audit trail).
    as two separate sub-case studies. (A signal-density rate, if ever wanted, belongs to the RQ1 sub-study, not here.)
 2. **Freeze v0 scheme** - only after BR approves this plan.
 3. **Code each specimen** -> (categories, subcodes, metadata, a one-line rationale, source anchor),
-   written to an **append-only coding log** (`research/asymmetry/coding.tsv` or `.md`).
+   written to an **append-only coding log** (`research/case-studies/asymmetry/coding.tsv` or `.md`).
 4. **Capture emergent codes** as they arise; version the scheme.
 5. **Human-audit** (section 6).
 6. **Analyse -> abstract -> report** into blog 021 (section 5).
@@ -159,7 +159,7 @@ real threat. The table is that internal checklist; the blog is its plain-languag
 
 ## 8. Artifacts & where they live
 
-- Home (**BR approved**): a new **`research/asymmetry/`** dir (manifest, frozen scheme, append-only coding
+- Home (**BR approved**): a new **`research/case-studies/asymmetry/`** dir (manifest, frozen scheme, append-only coding
   log, emergent-codes list, analysis notes).
 - Optionally a `research/NNN.md` study file with a running **Study log**.
 
@@ -167,7 +167,7 @@ real threat. The table is that internal checklist; the blog is its plain-languag
 
 1. **Human-audit:** a **fixed N = 10** specimens (absolute, not a percentage; ~30 min of blind coding, ~3 min
    each), drawn at random, blind; plain percent-agreement. A pragmatic sanity check, not a formal study.
-2. **Artifact home:** a new **`research/asymmetry/`** dir.
+2. **Artifact home:** a new **`research/case-studies/asymmetry/`** dir.
 3. **Category D (negative/null):** kept and **weighted equally** (the confirmation-bias guard).
 4. **Form:** **accessible, not academic** - no formal case-study protocol / checklist scaffolding.
 5. **Validity vocabulary:** the four CSR categories are an **internal checklist only**; the public account uses
