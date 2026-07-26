@@ -12,8 +12,9 @@ replace a brittle bash/grep/awk reflex, and — if it turns out to be generally 
 genscalator tracks issues **inside the repository**, under [`reqts/issues/`](reqts/issues/README.md),
 so they travel with the code to every mirror (forge-independent by design). The short form:
 
-- **One-time reporter?** File on any forge tracker as usual; a maintainer
-  transcribes it in-repo with credit. See the pinned "Issue Zero" on the tracker.
+- **One-time reporter?** File on any forge tracker as usual; a maintainer transcribes it in-repo with credit.
+  The how-and-why is "Issue Zero":
+  [`issue-000-how-to-make-issues-on-genscalator.md`](reqts/issues/open/issue-000-how-to-make-issues-on-genscalator.md).
 - **Contributor?** Add a file `reqts/issues/open/issue-NNN-your-chosen-issue-name.md` (next free
   three-digit number) and open a PR with it.
 - The identity scheme, open/closed rules, and file syntax live in ONE place:
@@ -64,11 +65,12 @@ Using AI agents in your contribution is fine, if applied responsibly. Two rules:
 - **Disclose in the PR.** In the pull request thread, add a short, honest note on what you used an agent for and
   what you did yourself. Or say plainly that you used none.
 
-## Submitting 
-1. **Fork** https://github.com/bjornregnell/genscalator 
+## Submitting
+1. **Fork** https://github.com/bjornregnell/genscalator
 2. **Branch** from `main`, add the tool under `tools/` (+ a `tools/README.md` cheat-sheet entry), commit.
-3. **Open an issue** under issues/open and describe the tool: the bash/grep habit it replaces, why it's general, how it fits.
-4. **Open a PR** from your fork's branch, linking the issue. 
+3. **Open an issue** by adding a file under [`reqts/issues/open/`](reqts/issues/open/) describing the tool: the
+   bash/grep habit it replaces, why it's general, how it fits.
+4. **Open a PR** from your fork's branch, linking the issue.
 
 ## Checklist
 - [ ] Project-agnostic (no `/home/...`, hostnames, or single-project assumptions)
@@ -86,8 +88,12 @@ The test suite is **co-located with the tools** it covers, under [`tools/test/`]
 for the shared `tools/lib.scala` helpers). Run the whole toolbox plus its tests from the repo root:
 
 ```
-scala-cli test tools
+tt scala test tools
 ```
+
+Run it **from the repo root**: several suites locate the toolbox by walking up from the current directory, so
+from anywhere else they resolve a *different* `tools/` and fail in ways that look like real defects. If you must
+run from elsewhere, say which toolbox you mean: `tt scala test <abs>/tools --prop tt.tools=<abs>/tools`.
 
 The `*.test.scala` files compile in scala-cli's **test scope**, which *extends* the toolbox's main scope — so the
 tests see the tool sources without any `//> using file` wiring, and a plain `scala-cli compile tools` still builds
@@ -95,24 +101,13 @@ tests see the tool sources without any `//> using file` wiring, and a plain `sca
 
 ## Roadmap
 
-What's shipped so far, per release: [`CHANGELOG.md`](CHANGELOG.md).
-For the toolbox-specific roadmap (new/extended `tt` tools), see [`tools/README.md`](tools/README.md#roadmap).
-For general goals and requirements see the [Product Requirements Document](reqts/PRD.md)
+Where to look, by question:
 
-**Planned, not yet built - roughly cheapest-to-build first:**
-- **Update awareness** — an *inform-only* update skill + a read-only version-check (compare the installed
-  version against upstream `marketplace.json`) so staleness is visible. It hands the human the update
-  commands but **never self-updates the operating rules** — adopting new rules stays a human-reviewed step
-  (see [`docs/updating.md`](docs/updating.md)).
-- **One-command install** of genscalator + companions (scalex + Metals MCP) for newcomers who want
-  everything at once — as a **reviewable, version-pinned installer script you read before running**, not
-  a blind `curl … | bash` (that opaque-pipe pattern is exactly the confirmation-fatigue / RCE risk
-  genscalator argues against).
-- Native compilation.
-- Tool safety flags: `--safe-mode`, `--sandboxed`, `--audit`.
-- Capture-Checking **Safe-mode** PoC → pure tools safe by default.
-- **Cross-tool packaging:** an MCP server so the tools are first-class in Codex/opencode too. (The
-  Claude Code plugin already ships — see the *Using the Claude Code plugin* section of the README.)
+- **When does it land?** → [`reqts/ROADMAP.md`](reqts/ROADMAP.md) — the single source of truth for the
+  version-by-version plan. Kept there, not duplicated here, so it cannot drift.
+- **What shipped already?** → [`CHANGELOG.md`](CHANGELOG.md), per release.
+- **Toolbox-specific plans** (new/extended `tt` tools) → [`tools/README.md`](tools/README.md#roadmap).
+- **Goals and requirements** → the [Product Requirements Document](reqts/PRD.md).
 
 ## Copyright
 

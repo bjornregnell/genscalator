@@ -35,7 +35,10 @@ Blocking:
 Also in scope for alpha:
 
 - Onboarding smoothness: install and getting-started path, and `tt init` / `gs init` (designed, not
-  built).
+  built). Includes a one-command install of genscalator plus its companions, scalex and the Metals MCP,
+  for newcomers who want everything at once. It must be a reviewable, version-pinned script the human
+  reads before running, never a blind curl-into-shell pipe: that opaque pattern is the exact
+  confirmation-fatigue and remote-execution risk genscalator argues against.
 - Write the credentials-and-tokens section of `SECURITY-MODEL.md`, which is currently an explicit TODO
   in a document testers read.
 - PRD consistency pass: make it describe what was actually built.
@@ -54,6 +57,11 @@ Tentative plan after alpha release.
 - bloop upstream work (can we contribute with reproducable bloop memory hogging)
 - the toolbox and infrastructure wishlist.
 - semantic versioning scheme
+- Tool safety flags: `--safe-mode`, `--sandboxed`, `--audit`.
+- Capture-checking Safe-mode proof of concept, so pure tools are safe by default and purity stops being
+  a convention the reader has to trust.
+- Cross-tool packaging: an MCP server, so the tools are first-class in Codex and opencode too. The Claude
+  Code plugin already ships; see the plugin section of the README.
 - ...
 
 ### v1.0.0 Personal Agentic Software Engineering with genscalator
