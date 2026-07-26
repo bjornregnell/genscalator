@@ -146,8 +146,10 @@ Markdown `[text](target)`, html `href=`/`src=`, and **a bare or backticked repo-
 which is how most shipped skills cite research files. So `check`, the pass/fail gate, uses the first two
 only, where a dangling target is unambiguous; `to` and `reach`, which answer *may I move this?*, also count
 the third, because there a **missed** reference is the expensive error and a false positive merely keeps a
-file. For the same reason a `dir/prefix` citation (`research/052`) counts every file in that dir with that
-prefix. Site-absolute targets (`/genscalator/...`) are treated as external: they are URLs on the deployed
+file. For the same reason a `dir/prefix` citation (`research/topics/RT052`) counts every file in that dir
+with that prefix. ⚠ That generosity hides a real trap when numbers are NOT unique: two files shared the
+`052` prefix, so one ambiguous citation kept BOTH, and making it precise (2026-07-26) revealed the other
+had no reference of its own. **A prefix citation can mask unreachability — prefer the full filename.** Site-absolute targets (`/genscalator/...`) are treated as external: they are URLs on the deployed
 site, not repo paths, so validating them here would report a false break on every page.
 
 **The mirror limit, and `--leaf`.** That same generosity misfires when the question is *may I DELETE
