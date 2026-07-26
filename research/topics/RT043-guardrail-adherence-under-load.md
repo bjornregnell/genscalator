@@ -1,10 +1,10 @@
 # 043 - Guardrail adherence under load (and priming as a lever)
 
 *Stub, 2026-07-05. Seeded by two WR-data points from the context-rot study's dinner-run follow-up (BR). Sibling notes:
-[`008-instruction-adherence-decay.md`](RT008-instruction-adherence-decay.md) (why the agent regresses to the raw path),
-[`041-token-speed-degradation-with-context-fill.md`](RT041-token-speed-degradation-with-context-fill.md) (fill as a stressor),
-[`024-agent-affective-analogs.md`](RT024-agent-affective-analogs.md) (calm-vs-alarm prompting / over-response),
-[`016-harness-guard-probe-and-custom-guard.md`](RT016-harness-guard-probe-and-custom-guard.md) (`guardcheck` — the auto-grader),
+[`RT008-instruction-adherence-decay.md`](RT008-instruction-adherence-decay.md) (why the agent regresses to the raw path),
+[`RT041-token-speed-degradation-with-context-fill.md`](RT041-token-speed-degradation-with-context-fill.md) (fill as a stressor),
+[`RT024-agent-affective-analogs.md`](RT024-agent-affective-analogs.md) (calm-vs-alarm prompting / over-response),
+[`RT016-harness-guard-probe-and-custom-guard.md`](RT016-harness-guard-probe-and-custom-guard.md) (`guardcheck` — the auto-grader),
 and `research/wr-data/context-rot-before-after-2026-07-05.md` (O12 = the absorption-regression this note tries to pin down).*
 
 ## The phenomenon (observed, not yet controlled)
@@ -17,7 +17,7 @@ top of the resume prompt). So the clean run is **confounded**, not evidence the 
 ## Section A - where to put the "primed guardrail" (the placement question)
 **WR-data (BR):** *"the correct path was primed in-context"* apparently helped - so **where** should that priming live
 to be reliable? Candidate surfaces (this is an instruction-surface question, cf.
-[`003-instruction-surfaces-precedence.md`](RT003-instruction-surfaces-precedence.md)):
+[`RT003-instruction-surfaces-precedence.md`](RT003-instruction-surfaces-precedence.md)):
 1. **Resume / compact-dance prompt** (what happened here) - salient, but only present right after a compact; decays as
    the conversation grows and the prompt scrolls out of the smart zone.
 2. **Every AFK-dance handoff** - re-primes at each autonomy boundary; cheap; but only covers AFK entry points.

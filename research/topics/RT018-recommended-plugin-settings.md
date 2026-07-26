@@ -41,8 +41,8 @@
   rm-rf) so low-friction users still can't foot-gun? Likely yes.
 
 ## Relation to other threads
-Directly serves [`013-confirmation-guard-static-analysis.md`](RT013-confirmation-guard-static-analysis.md) (§4: a `tt`
+Directly serves [`RT013-confirmation-guard-static-analysis.md`](RT013-confirmation-guard-static-analysis.md) (§4: a `tt`
 command should be provable-safe → silent) and the BHH threat model (never trade safety for a quieter prompt).
-The sub-agent propagation question ([`019-subagent-genscalator-propagation.md`](RT019-subagent-genscalator-propagation.md))
+The sub-agent propagation question ([`RT019-subagent-genscalator-propagation.md`](RT019-subagent-genscalator-propagation.md))
 is the delegation-side sibling: settings are how the *human* grants trust; sub-agent config is how *that trust
 plus the methodology* reaches delegated work.

@@ -109,4 +109,4 @@ so an SVG diagram generator is a natural sibling upstream. **Gate: only contribu
 CLI-contract + well-formed-XML tests are the start of earning that. Note the design boundary this tool already
 established (reqT is conceptually a *bag* — requirement order isn't semantic, even though reqT-lang preserves source
 order; a sequence's order IS its meaning) — an upstream contribution should either add an ordered/interaction
-concept to reqT or keep the sequence spec as a companion notation, not lean on reqT's incidental element order. Track with the reqT-lang relationship in [`015-reqt-lang-review.md`](RT015-reqt-lang-review.md).
+concept to reqT or keep the sequence spec as a companion notation, not lean on reqT's incidental element order. Track with the reqT-lang relationship in [`RT015-reqt-lang-review.md`](RT015-reqt-lang-review.md).
