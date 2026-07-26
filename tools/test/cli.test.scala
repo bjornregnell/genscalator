@@ -1221,6 +1221,30 @@ class CliSuite extends munit.FunSuite:
     assert(Guardcheck.cmdFindings("cat /home/x/.netrc").exists(_.severity == "NOTE"))
     assert(Guardcheck.cmdFindings("cat .env").exists(_.severity == "NOTE"))
   }
+  // WIDENING PIN (2026-07-26). The 07-25 cut listed printenv, a bare `env` and three credential files.
+  // Probed live before widening: `set`, `export -p` and a read of ~/.aws/credentials all came back CLEAN,
+  // i.e. the check written to cover the class still under-covered it. Each case below was a real miss.
+  test("NOTE: the other whole-environment dumps are the same class") {
+    for cmd <- List("set", "export -p", "declare -x", "declare -p", "typeset -x") do
+      assert(clue(Guardcheck.cmdFindings(cmd)).exists(_.severity == "NOTE"), cmd)
+  }
+  test("NOTE: an env dump is still a dump when piped or redirected somewhere") {
+    assert(Guardcheck.cmdFindings("env | grep TOKEN").exists(_.severity == "NOTE"))
+    assert(Guardcheck.cmdFindings("env > /home/x/e.txt").exists(_.severity == "NOTE"))
+  }
+  test("NOTE: more credential files, and more ways to read one") {
+    for cmd <- List("cat /home/x/.aws/credentials", "head /home/x/.pgpass", "base64 /home/x/.ssh/id_rsa",
+                    "cat /home/x/.npmrc", "less /home/x/.kube/config", "cat -n /home/x/.env") do
+      assert(clue(Guardcheck.cmdFindings(cmd)).exists(_.severity == "NOTE"), cmd)
+  }
+  test("NOTE: the dump forms anchor at the command start, so ordinary commands never nag") {
+    // `set` and friends ARE the dump only as the whole command; as a trailing word they are data.
+    assert(Guardcheck.cmdFindings("tt mode set").forall(_.severity != "NOTE"), "a trailing word 'set'")
+    assert(Guardcheck.cmdFindings("set -euo pipefail").forall(_.severity != "NOTE"), "a shell option")
+    assert(Guardcheck.cmdFindings("export GITHUB_TOKEN=x").forall(_.severity != "NOTE"), "a plain export")
+    // a PUBLIC key is not a secret; a nag people learn to ignore is worse than no nag
+    assert(Guardcheck.cmdFindings("cat /home/x/.ssh/id_rsa.pub").forall(_.severity != "NOTE"))
+  }
   test("NOTE: the FIX is never flagged, nor is a dir-scoped env run") {
     assert(Guardcheck.cmdFindings("tt env list CLAUDE").isEmpty, "flagging tt env would be self-defeating")
     assert(Guardcheck.cmdFindings("tt env get GITHUB_TOKEN").isEmpty)

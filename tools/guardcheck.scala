@@ -39,6 +39,30 @@ object Guardcheck {
   /** any whitespace-separated token starts with `=` (zsh equals-expansion; robust vs a variable-length lookbehind) */
   def hasLeadingEqualsWord: String => Boolean = t => t.split("\\s+").exists(w => w.length >= 2 && w.startsWith("="))
 
+  /** Files whose CONTENT is credentials by construction. Reading one is a disclosure act however
+    * read-only the command is (SM231). A `.ssh` PUBLIC key is deliberately excluded: it is not a secret,
+    * and a nag people learn to ignore is worse than no nag at all. ⚠ That exclusion is a LOOKAHEAD over
+    * the whole token, not a trailing lookbehind: a lookbehind after `\S*` is defeated by backtracking,
+    * because the star simply shrinks until the lookbehind is happy and the match succeeds anyway. The
+    * first cut had exactly that bug and the negative test caught it. */
+  val credentialFileRx: String =
+    raw"(\.env\b|\.netrc\b|\.git-credentials\b|\.pgpass\b|\.npmrc\b|\.pypirc\b|\.aws/credentials\b" +
+      raw"|\.kube/config\b|\.docker/config\.json\b|\.ssh/id_(?!\S*\.pub\b)\S*)"
+
+  /** The bulk-credential-surface detector, spelled out in parts because each part has its own reason to
+    * exist and its own false positive to avoid. WIDENED 2026-07-26: the first cut listed printenv, a bare
+    * `env`, and three credential files, and live probes showed `set`, `export -p` and a read of
+    * `~/.aws/credentials` all coming back CLEAN — the class was still under-covered by the very check
+    * written to cover the class. The dump forms anchor at the START of the command, because that is the
+    * only position where they ARE the dump: `tt mode set` and `set -euo pipefail` must never nag. */
+  val bulkCredentialReadRx: String = List(
+    raw"(?<!tt )\bprintenv\b",                       // exists to print VALUES, targeted or not
+    raw"^\s*env\s*($$|[|>])",                        // the dump, incl. piped/redirected; `env --chdir=<abs> <cmd>` must not nag
+    raw"^\s*set\s*$$",                               // bash `set` with no args prints every variable and function
+    raw"^\s*(export|declare|typeset)\s+-[px]\s*$$",  // the same dump under three other names
+    raw"\b(cat|head|tail|less|more|strings|xxd|od|base64|grep)\b.*" + credentialFileRx
+  ).mkString("|")
+
   // ---- command checks (a shell command about to run) ----
   val cmdChecks: List[Check] = List(
     Check("HIGH", "&& command chain",
@@ -101,10 +125,9 @@ object Guardcheck {
         "output is durable and copied, so this is a DISCLOSURE act; it leaked two live tokens on 2026-07-25",
       "use tt env list <regex> (names only), tt env has <NAME> (exit code only), or tt env get <NAME> " +
         "(one value, redacted). Ask for the NAME you need, never for everything",
-      // Narrow on purpose. `printenv` always (it exists to print values), a BARE `env` with no arguments
-      // (the dump; `env --chdir=<abs> <cmd>` is a legitimate dir-scoped run and must not nag), and cats of
-      // credential files. `tt env …` must never match — flagging the fix would be self-defeating.
-      has(raw"(?<!tt )\bprintenv\b|(^|\s)env\s*$$|\bcat\s+\S*(\.env|\.netrc|\.git-credentials)\b")),
+      // Detector + its false-positive reasoning live in `bulkCredentialReadRx` above. `tt env …` must
+      // never match — flagging the fix would be self-defeating.
+      has(bulkCredentialReadRx)),
     Check("NOTE", "general-purpose interpreter",
       "reaching for a general-purpose interpreter — usually the signal that a typed verb is MISSING, " +
         "and the one gap class the guard cannot otherwise see (no cd, no pipe, no redirect to catch)",
