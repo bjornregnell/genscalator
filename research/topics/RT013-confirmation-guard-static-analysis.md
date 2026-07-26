@@ -7,8 +7,8 @@
   safe with tt and at the same time avoid actually unnecessary confirmations."
 - **Why it matters:** directly serves the human's **no-CF** goal and the **BHH** threat model (never widen the
   attack surface to cut a prompt). The whole `tt` thesis is *safe-by-design AND statically provable -> no prompt*
-  (the #6266 `$TT`-vs-literal-`tt` insight, generalized). See [`008-instruction-adherence-decay.md`](008-instruction-adherence-decay.md),
-  [`012-inference-time-learning.md`](012-inference-time-learning.md), and the `wr-data/` ledger.
+  (the #6266 `$TT`-vs-literal-`tt` insight, generalized). See [`008-instruction-adherence-decay.md`](RT008-instruction-adherence-decay.md),
+  [`012-inference-time-learning.md`](RT012-inference-time-learning.md), and the `wr-data/` ledger.
 - **Status:** open, foundational (new 2026-06-30, from the accumulating guard-fire evidence).
 
 ## 1. What the guard is

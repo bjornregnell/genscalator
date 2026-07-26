@@ -165,7 +165,7 @@ black-and-white.
 "identical" parsers that quietly diverge is a *false-echt* correctness risk — so **when you notice real repetition,
 treat it as a trigger to investigate a refactor:** extract the shared thing into one typed, tested definition (e.g.
 `tools/seqspec.scala`, the sequence-diagram parser shared by `svg`, `ascii` + `gvdot`; see the shared-helper-file pattern,
-[`../../research/038-tt-shared-helper-file-pattern.md`](../../research/038-tt-shared-helper-file-pattern.md)). One
+[`../../research/038-tt-shared-helper-file-pattern.md`](../../research/topics/RT038-tt-shared-helper-file-pattern.md)). One
 greppable, compiler-checked source beats copies that silently disagree.
 
 **But DRY is a heuristic, not a law — some repetition is deliberately better.** Extracting a shared unit **creates a

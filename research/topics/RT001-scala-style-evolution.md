@@ -1,6 +1,6 @@
 # Self-conscious evolution of the `scala-style` skill
 
-- **Question:** the [`scala-style`](../skills/scala-style/SKILL.md) skill encodes *hard, non-black-and-white
+- **Question:** the [`scala-style`](../../skills/scala-style/SKILL.md) skill encodes *hard, non-black-and-white
   tradeoffs* (safety ↔ token-efficiency ↔ performance; immutability vs. a justified local `var`; deps vs.
   purity). How should the skill **evolve from real use** — refined by the agents applying it when they hit
   a case its guidance doesn't cover — so it keeps aligning with genscalator's goals, *without* drifting,
@@ -17,7 +17,7 @@
      rewrite the skill — that would violate the "research doesn't interfere with daily use" rule.
   2. Collect those cases here (or via issues) as small, concrete tradeoff examples.
   3. Agent **proposes** a minimal skill edit + rationale tied to a foundations goal; **human reviews and
-     ships** (the existing contribution discipline — see [`../CONTRIBUTING.md`](../CONTRIBUTING.md)).
+     ships** (the existing contribution discipline — see [`../CONTRIBUTING.md`](../../CONTRIBUTING.md)).
   4. Track whether each change actually improved agent + human outcomes (clearer? fewer bad tradeoffs?
      smaller review burden?), so the skill earns its edits rather than accreting them.
   - **Open design questions:** what's the lightest "friction log" mechanism? How do we keep the skill
@@ -26,7 +26,7 @@
 
 ## Investigation (open, BR-requested 2026-07-02): braces vs significant indentation — what is best FOR THE AGENT?
 The Scala community debate on braces vs indentation (see the insourced Odersky/Regnell/Kerr note
-[`017-scala-style-recommendations.md`](017-scala-style-recommendations.md)) is framed around **human** legibility. This
+[`017-scala-style-recommendations.md`](RT017-scala-style-recommendations.md)) is framed around **human** legibility. This
 investigation asks the orthogonal question: **which is best for an AGENT**, on the token-efficiency + correctness
 axes genscalator cares about? Prompted by a concrete bug the agent committed this session (2026-07-02).
 

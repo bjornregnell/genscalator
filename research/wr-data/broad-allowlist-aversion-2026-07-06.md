@@ -1,7 +1,7 @@
 # Broad allowlist aversion + an affective self-report (2026-07-06)
 
 Study-log note (hand-authored agent reflection, **not** a RAW-DATA mined excerpt). Ties to
-[`research/024-agent-affective-analogs.md`](../024-agent-affective-analogs.md) and the guard/allowlist thread.
+[`research/024-agent-affective-analogs.md`](../topics/RT024-agent-affective-analogs.md) and the guard/allowlist thread.
 
 ## The event (WR-FRICTION + WR-TOOL)
 

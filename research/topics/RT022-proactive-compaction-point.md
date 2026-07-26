@@ -8,8 +8,8 @@ we call it? And a notation aside: is **Z** the right symbol for "smart-zone ceil
 Parked from a 2026-07-03 session where BR ran `/compact` at **34% fill** (not forced) "to see how much lower
 we got" → **336.6k → 46.1k** (34% → 5%). That single data point is what seeded these questions.
 
-Related: [`006-smart-zone-ceiling.md`](006-smart-zone-ceiling.md) (defines Z + the reactive brake),
-[`007-token-budget-awareness.md`](007-token-budget-awareness.md), [`002-communication-bandwidth.md`](002-communication-bandwidth.md),
+Related: [`006-smart-zone-ceiling.md`](RT006-smart-zone-ceiling.md) (defines Z + the reactive brake),
+[`007-token-budget-awareness.md`](RT007-token-budget-awareness.md), [`002-communication-bandwidth.md`](RT002-communication-bandwidth.md),
 and the *compact dance* / *exit-resume dance* memories.
 
 ---

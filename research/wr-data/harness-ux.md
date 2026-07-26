@@ -4,8 +4,8 @@
 the human↔agent *communication channel* — as distinct from [`genscalator-self-dev.md`](genscalator-self-dev.md)
 (dynamic-shell / tool friction). These are things genscalator cannot fix (we don't own the harness), but they
 are real costs on joint productivity and belong in the WR corpus as upstream asks + agent-side mitigations.
-Cross-ref [`../002-communication-bandwidth.md`](../002-communication-bandwidth.md) (channel bandwidth),
-[`../011-human-state-and-joint-zone.md`](../011-human-state-and-joint-zone.md) (perception gap / relayed signals).
+Cross-ref [`../002-communication-bandwidth.md`](../topics/RT002-communication-bandwidth.md) (channel bandwidth),
+[`../011-human-state-and-joint-zone.md`](../topics/RT011-human-state-and-joint-zone.md) (perception gap / relayed signals).
 
 ---
 
@@ -78,7 +78,7 @@ expected, the guess revises downward ("more"/"still") — which reads, wrongly, 
 the human as if it came *from* the agent. Sibling of the agent's context-usage blindness (the agent can't see its
 own fill; the human relays it) — here **inverted**: the human sees a progress signal the *agent* can't see, and
 misreads it as self-report. In both, a status indicator's **provenance** (harness vs model) is unmarked, so the
-human mis-attributes it. Cross-ref [`../011-human-state-and-joint-zone.md`](../011-human-state-and-joint-zone.md)
+human mis-attributes it. Cross-ref [`../011-human-state-and-joint-zone.md`](../topics/RT011-human-state-and-joint-zone.md)
 (perception gap / relayed signals) and the context-usage-blindness thread in `006-smart-zone-ceiling.md`.
 
 **Upstream ask.** Mark provenance: harness-generated status should avoid first-person-sounding phrasing ("almost
@@ -148,7 +148,7 @@ input was focused when the key was pressed, not when it was processed. **Agent-s
 drive confirmation frequency toward zero — use `Read`/`tt` typed tools instead of `sed`/`grep`/`awk` bash-hacks, and
 bare single commands instead of metachar/compound ones, so the review gate only ever appears for actions that
 genuinely warrant a human decision. Cross-ref [`genscalator-self-dev.md`](genscalator-self-dev.md) and
-[`../011-human-state-and-joint-zone.md`](../011-human-state-and-joint-zone.md) (perception/attention gaps under long runs).
+[`../011-human-state-and-joint-zone.md`](../topics/RT011-human-state-and-joint-zone.md) (perception/attention gaps under long runs).
 
 **Reinforcement — the AGENT-INITIATED variant (2026-07-03, same session, BR-reported twice).** The mirror image of
 the above: an **agent-triggered modal** (an `AskUserQuestion` popup with options) appeared **while BR was mid-typing
@@ -393,7 +393,7 @@ summarize (fingers crossed for no context rot, risk of memory loss on compact)."
 **The resolution is the thesis.** The content he wanted was **already externalized to a committed file** (blog 008's
 stub), so it survived independent of both chat-scrollback and compaction — retrievable by *file read*, not chat scroll.
 **Rule this sharpens:** externalize discussion *outcomes* into committed artifacts *as they land*, so retrieval is a
-`grep`/file-open, not a scroll or a re-ask — the [inference-time-learning](../012-inference-time-learning.md) substrate
+`grep`/file-open, not a scroll or a re-ask — the [inference-time-learning](../topics/RT012-inference-time-learning.md) substrate
 serves the **human's** retrieval too, not only the agent's. **Harness asks:** conversation **search** / jump-to-topic;
 a larger or spill-to-disk scrollback; a "what did we decide about X" recall that reads durable notes, not the raw
 transcript. Sibling of the `/context`-while-busy and the FleetView cases: the human's cheapest way to *find* past

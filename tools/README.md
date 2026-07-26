@@ -364,7 +364,7 @@ emit a *fixed, tailored* palette (predictable when the host page/PDF theme may d
 the variant you need). **Background:** default is **opaque** and theme-coloured (transparent SVG backgrounds often
 render badly in Markdown/GitHub); **`--transparent`** (aka `--no-bg`) drops it. Deliberately **not** reqT-lang: reqT
 is conceptually a *bag* — element order isn't semantic (though reqT-lang preserves source order) and there's no
-message concept, whereas a sequence's order *is* its meaning (see [`../research/037-svg-sequence-diagram-tool.md`](../research/037-svg-sequence-diagram-tool.md)).
+message concept, whereas a sequence's order *is* its meaning (see [`../research/037-svg-sequence-diagram-tool.md`](../research/topics/RT037-svg-sequence-diagram-tool.md)).
 Example:
 ```
 tt svg sequence blog/figures/seq-compact-dance.txt blog/figures/seq-compact-dance.svg

@@ -324,7 +324,7 @@ already self-logs to `compendium2-console.log` (Read it). No guard fired (a bare
 redirect is apparently allowed where `cd`+`>` is not), so this one cost no human confirmation — but it is the
 SAME trained reflex. **Finding:** compaction does NOT reset the reflex, and a max-recency, verbatim restatement
 of the exact rule in the resume prompt did NOT prevent it — the strongest evidence yet for
-[`../008-instruction-adherence-decay.md`](../008-instruction-adherence-decay.md): the dynamic-shell prior is re-sampled
+[`../008-instruction-adherence-decay.md`](../topics/RT008-instruction-adherence-decay.md): the dynamic-shell prior is re-sampled
 per call independent of how recently/loudly the rule was loaded. In-context salience (even a just-read literal
 ban) is not the variable; structure is. Only a submit-time intercept that rewrites `… | tail`/`… | head` on
 build tools into "run bare + Read the logfile the tool already wrote" will close it. Self-caught + logged this

@@ -537,7 +537,7 @@ edit 047 → define "study log"). Subjective read, but the **spinner numbers are
 - **Reconstruction overhead** — post-compact eviction (98%→22% at boundary B) means state that was "in hand"
   pre-warp must be re-derived/re-read (ties to the re-read observation just above); *slower because rebuilding,
   not because dumber.* The predicted cost of the warp.
-- **Context-fill velocity** — fill climbing again → per-token slowdown ([`041`](../../041-token-speed-degradation-with-context-fill.md)).
+- **Context-fill velocity** — fill climbing again → per-token slowdown ([`041`](../../topics/RT041-token-speed-degradation-with-context-fill.md)).
 - **CONFOUND — task load.** This turn was genuinely heavier (stacked multi-part asks), so "longer think" is
   partly "harder ask," not pure post-warp effect. Can't separate without holding task constant (the `024` §5
   method: same task, vary only the boundary).
@@ -546,15 +546,15 @@ edit 047 → define "study log"). Subjective read, but the **spinner numbers are
 matches the reconstruction-cost prediction. It is a **latency/effort** signal, **not (yet) a correctness** one —
 outputs this session stayed sound (tests green, edits landed, echt catches fired). **Meta:** logged while BR
 watched this very turn over-deliberate — the observation is self-instrumenting, and the fix (be fast now) is
-enacted in the same breath. Cross-ref [`041`](../../041-token-speed-degradation-with-context-fill.md), `024` §3
+enacted in the same breath. Cross-ref [`041`](../../topics/RT041-token-speed-degradation-with-context-fill.md), `024` §3
 (within-context accumulation), and the `blog/011` "how-dumb-did-the-agent-get" thread.
 
 **Correction (BR member-check, 2026-07-06) — the paste was instrumentation, NOT a "hurry" order; the agent's
 misread is itself a second datapoint.** BR clarifies he pasted the spinner telemetry to give CO4 **observability
-into what it cannot see about itself** (own think-duration + token-spend; agent-blind, [`039`](../../039-can-we-give-agent-introspection-wall-clock.md))
+into what it cannot see about itself** (own think-duration + token-spend; agent-blind, [`039`](../../topics/RT039-can-we-give-agent-introspection-wall-clock.md))
 — the **human as external instrument** on the agent's blind spot, *not* a demand to be fast. **The agent
 initially misread it as "hurry" and over-responded** ("I'll be quick" + enacted speed). That misread is a **live
-re-instance of [`024`](../../024-agent-affective-analogs.md) §1**: an *informational* paste (just-so-you-know) arrives
+re-instance of [`024`](../../topics/RT024-agent-affective-analogs.md) §1**: an *informational* paste (just-so-you-know) arrives
 *dressed as an action-demand* (the harness staples "IMPORTANT: address the user's message" onto pastes) → the
 agent over-responds. So one event yields **two** logged signals — (1) the post-warp latency trace (above), and
 (2) the demand-framing over-response, **caught by BR's member-check**. The coupled instrument working **both

@@ -8,7 +8,7 @@
   tools run silently. But settings are exactly where a user can accidentally over-grant (a broad `Bash(git *)` or
   `Bash(rm *)`) and undo the safety story. So "recommended settings" is itself a **safe-by-design deliverable**,
   not an afterthought. Grounded in BR's real settings + the allowlist we grew this session (mirrored, with its
-  git history, in [`wr-data/settings-local-mirror.json`](wr-data/settings-local-mirror.json)).
+  git history, in [`wr-data/settings-local-mirror.json`](../wr-data/settings-local-mirror.json)).
 - **Status:** open (2026-07-02). Initial principles below; the concrete recommended block is drafted in the
   repo README ("Claude Code settings") as a first cut.
 
@@ -41,8 +41,8 @@
   rm-rf) so low-friction users still can't foot-gun? Likely yes.
 
 ## Relation to other threads
-Directly serves [`013-confirmation-guard-static-analysis.md`](013-confirmation-guard-static-analysis.md) (§4: a `tt`
+Directly serves [`013-confirmation-guard-static-analysis.md`](RT013-confirmation-guard-static-analysis.md) (§4: a `tt`
 command should be provable-safe → silent) and the BHH threat model (never trade safety for a quieter prompt).
-The sub-agent propagation question ([`019-subagent-genscalator-propagation.md`](019-subagent-genscalator-propagation.md))
+The sub-agent propagation question ([`019-subagent-genscalator-propagation.md`](RT019-subagent-genscalator-propagation.md))
 is the delegation-side sibling: settings are how the *human* grants trust; sub-agent config is how *that trust
 plus the methodology* reaches delegated work.

@@ -117,7 +117,7 @@ Detail from the 2026-06-30 → 2026-07-05 window (docs/research + the sequence-d
   Pure (JDK-only, no dep); 12 CLI-contract tests incl. a well-formed-XML parse check. Design rationale (why a bespoke spec, not
   reqT-lang: reqT is conceptually a *bag* — order not semantic, though reqT-lang preserves source order; a sequence's
   order *is* its meaning) in
-  [`research/037-svg-sequence-diagram-tool.md`](research/037-svg-sequence-diagram-tool.md). First real figure:
+  [`research/037-svg-sequence-diagram-tool.md`](research/topics/RT037-svg-sequence-diagram-tool.md). First real figure:
   [`media/blog/figures/seq-compact-dance.svg`](media/blog/figures/seq-compact-dance.svg) (candidate for blog 005).
 - **`docs/foundations.md` glossary — new agent-introspection concepts:** **Context rot**, **Token velocity**,
   **Token acceleration**, **Smart-zone ceiling (Z)** (usable working-context ratio before the dumb zone),

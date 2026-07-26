@@ -146,7 +146,7 @@ corpus measures — shell-reflex relapse rate, guard-trip frequency, typed-path 
 *itself* model-dependent, so swapping the model mid-study confounds every before/after comparison. **Decision (BR
 2026-07-02): stay on Opus 4.8 for the first paper's collection window; a model change is a deliberate, logged A/B
 EVENT (date + turn), never a silent drift.** The mirror-image experiment — hold the *substrate* constant and vary
-the *model* — is its own research topic ([`020-model-capability-and-leverage.md`](020-model-capability-and-leverage.md)):
+the *model* — is its own research topic ([`020-model-capability-and-leverage.md`](topics/RT020-model-capability-and-leverage.md)):
 how a more vs less capable model leverages the same genscalator tools.
 
 3. **Queue-then-harvest (the concurrent-editing safeguard).** When a `WR data` flag arrives *while the human is

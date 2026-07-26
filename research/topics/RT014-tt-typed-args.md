@@ -5,7 +5,7 @@ tt-owned typed-arg layer, flags/subcommands/validators, one-line friendly errors
 design note**, because it was never a separate topic — it's the *input seam* of the one-dispatcher architecture (the
 dispatcher owns parsing, so tools become typed-IN and typed-OUT).
 
-➡ **See [`../tools/DESIGN-single-dispatcher.md`](../tools/DESIGN-single-dispatcher.md)** — sections *"The typed
+➡ **See [`../tools/DESIGN-single-dispatcher.md`](../../tools/DESIGN-single-dispatcher.md)** — sections *"The typed
 contract"* (the `RawArgs` + per-tool typed record + combinator-layer split) and *"The typed-arg layer"* (when `@main`
 typed params fit, when to use the tt layer, validators, safe-mode flags, the graduate-into-scala-style rule).
 

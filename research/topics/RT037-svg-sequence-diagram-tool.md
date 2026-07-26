@@ -1,7 +1,7 @@
 # `tt svg --sequence-diagram` — a textual-spec to SVG renderer
 
-Status: **shipped v1** (2026-07-05). Tool: [`../tools/svg.scala`](../tools/svg.scala); tests in
-[`../tools/test/cli.test.scala`](../tools/test/cli.test.scala) (7 CLI-contract cases). BR's idea (2026-07-05): a `tt svg *`
+Status: **shipped v1** (2026-07-05). Tool: [`../tools/svg.scala`](../../tools/svg.scala); tests in
+[`../tools/test/cli.test.scala`](../../tools/test/cli.test.scala) (7 CLI-contract cases). BR's idea (2026-07-05): a `tt svg *`
 tool focused on `--sequence-diagram`, input a textual representation, output "nice SVG to be used in blogs and
 also in other reports to human", useful "in advanced debugging or when we talk about design decisions when we
 code together".
@@ -86,7 +86,7 @@ tools get it. `ascii` defaults to Unicode box-drawing glyphs for looks, with `--
 
 1. **Blog figures** (blog-assistant §7 wants *real* figures): render an actual protocol — the compact dance, the
    note→pin pipeline, a confirmation-guard round — as a crisp diagram instead of a wall of prose. First real
-   artifact: [`../media/blog/figures/seq-compact-dance.svg`](../media/blog/figures/seq-compact-dance.svg) (source spec
+   artifact: [`../media/blog/figures/seq-compact-dance.svg`](../../media/blog/figures/seq-compact-dance.svg) (source spec
    alongside it, so it is regenerable). Candidate figure for blog 005 (*dancing with agents*).
 2. **Design discussions while coding together** — sketch a proposed message flow in a few lines, render, look at
    it, argue about it. Cheaper than a whiteboard and it version-controls.
@@ -109,4 +109,4 @@ so an SVG diagram generator is a natural sibling upstream. **Gate: only contribu
 CLI-contract + well-formed-XML tests are the start of earning that. Note the design boundary this tool already
 established (reqT is conceptually a *bag* — requirement order isn't semantic, even though reqT-lang preserves source
 order; a sequence's order IS its meaning) — an upstream contribution should either add an ordered/interaction
-concept to reqT or keep the sequence spec as a companion notation, not lean on reqT's incidental element order. Track with the reqT-lang relationship in [`015-reqt-lang-review.md`](015-reqt-lang-review.md).
+concept to reqT or keep the sequence spec as a companion notation, not lean on reqT's incidental element order. Track with the reqT-lang relationship in [`015-reqt-lang-review.md`](RT015-reqt-lang-review.md).

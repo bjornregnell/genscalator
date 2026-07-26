@@ -188,5 +188,5 @@ DILUTION, not raw token pressure.**
 - **Testable (agent-affective, sibling to the indent-vs-braces harness):** a **rot gauge** =
   contradiction/re-read/confabulation events per 100k tokens as fill grows; and an A/B of *repetitive-filler* vs
   *dense-unique* context of equal token count on a fixed probe task — turns "difficult to measure" into a number.
-  Cross-ref [`011-human-state-and-joint-zone.md`](011-human-state-and-joint-zone.md), memory
+  Cross-ref [`011-human-state-and-joint-zone.md`](RT011-human-state-and-joint-zone.md), memory
   `propose-compact-dance-at-trigger`.
