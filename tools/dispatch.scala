@@ -37,6 +37,7 @@ object Dispatch {
     "htmltext"    -> (a => htmltext(a*)),
     "json"        -> (a => jsonRead(a*)),
     "limit"       -> (a => limit(a*)),
+    "links"       -> (a => resolveLinks(a*)),
     "log"         -> (a => logAnalyze(a*)),
     "md-fmt"      -> (a => formatMarkdown(a*)),
     "mode"        -> (a => mode(a*)),

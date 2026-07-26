@@ -130,6 +130,30 @@ tt find docs --name 'SM*.md'                # docs named SM*.md
 tt find . --type d --max-depth 1            # immediate sub-directories
 ```
 
+### links — link + reference analysis across a repo (PURE, read-only)
+```
+links check <absdir> [--ext <list>]                  # dangling markdown/html links; exit 1 if any
+links to <absdir> <path> [--ext <list>]              # which files reference <path>
+links reach <absdir> --root <rel> ...                # files reachable from the roots, transitively
+links reach <absdir> --root <rel> --unreachable      # the complement: what nothing points at
+```
+Answers the two questions every move or rename raises — *what is broken now?* and *what still points at
+this?* — mechanically instead of with a pile of greps, and it is re-runnable after the move.
+
+**The design point, and it is not obvious:** references come in three shapes, and only the first is a link.
+Markdown `[text](target)`, html `href=`/`src=`, and **a bare or backticked repo-relative path in prose** —
+which is how most shipped skills cite research files. So `check`, the pass/fail gate, uses the first two
+only, where a dangling target is unambiguous; `to` and `reach`, which answer *may I move this?*, also count
+the third, because there a **missed** reference is the expensive error and a false positive merely keeps a
+file. For the same reason a `dir/prefix` citation (`research/052`) counts every file in that dir with that
+prefix. Site-absolute targets (`/genscalator/...`) are treated as external: they are URLs on the deployed
+site, not repo paths, so validating them here would report a false break on every page.
+```
+tt links check /abs/repo                                              # is anything broken right now?
+tt links to /abs/repo research/METHODOLOGY.md                         # who depends on this file?
+tt links reach /abs/repo --root README.md --root skills --unreachable # safe-to-move candidates
+```
+
 ### which — what is this command? (PURE, read-only)
 ```
 which <name> [<name> ...]            # PATH hits in order, symlink chain, kind, size/mode/mtime

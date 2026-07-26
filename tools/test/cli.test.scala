@@ -1207,6 +1207,44 @@ class CliSuite extends munit.FunSuite:
     val (_, out, _) = run("guardcheck", "hook", json)
     assert(clue(out).contains("\"permissionDecision\":\"ask\""))
   }
+  // links: the CLI contract, end to end through the launcher path. Per SM229 a new tool is covered by
+  // NOTHING until it has a case here — the whole-directory suite can stay green while the single-file
+  // path is broken, which is exactly how json.scala shipped a missing include.
+  test("links check: reports a dangling link, stays quiet about a good one, exits 1") {
+    val d = os.temp.dir()
+    try
+      os.write(d / "a.md", "[fine](b.md) and [broken](nope.md)\n")
+      os.write(d / "b.md", "hi\n")
+      val (code, out, _) = run("links", "check", d.toString)
+      assertEquals(code, 1)
+      assert(clue(out).contains("nope.md"))
+      assert(!clue(out).contains("-> b.md"), "a resolving link must not be reported")
+    finally os.remove.all(d)
+  }
+  test("links check: a clean tree exits 0") {
+    val d = os.temp.dir()
+    try
+      os.write(d / "a.md", "[fine](b.md)\n")
+      os.write(d / "b.md", "hi\n")
+      val (code, out, _) = run("links", "check", d.toString)
+      assertEquals(clue(code), 0)
+      assert(clue(out).contains("0 dangling"))
+    finally os.remove.all(d)
+  }
+  test("links reach: --unreachable names what no root points at") {
+    val d = os.temp.dir()
+    try
+      os.write(d / "root.md", "see [b](b.md)\n")
+      os.write(d / "b.md", "and `c.md` in prose\n")
+      os.write(d / "c.md", "reached only through prose\n")
+      os.write(d / "orphan.md", "nobody links here\n")
+      val (code, out, _) = run("links", "reach", d.toString, "--root", "root.md", "--unreachable")
+      assertEquals(clue(code), 0)
+      assert(clue(out).contains("orphan.md"))
+      assert(!clue(out).contains("c.md"), "a prose citation must keep a file OUT of the move list")
+    finally os.remove.all(d)
+  }
+
   // REGRESSION PIN (2026-07-25). The NOTE tier was built that morning for guard-invisible tool-choice
   // mistakes and still missed a bare `printenv` that leaked two live tokens, because it listed
   // interpreters rather than the class. These pin the class, and pin that the FIX is not flagged.
