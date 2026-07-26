@@ -6,6 +6,15 @@ All notable changes to genscalator. Versions follow the git tags (`vX.Y.Z`); the
 Updating genscalator is a **human-reviewed** step — see [`docs/updating.md`](docs/updating.md). Skim this
 file before adopting a new version: it changes the agent's operating rules, so review beats blind pull.
 
+## Unreleased
+- **`research/RAW-DATA.md` and `research/RawData.scala` moved to the closed work repo.** The raw ledger is
+  verbatim excerpts from live sessions, so the raw corpus is now kept private, and its miner goes with it.
+  What stays public is the layer that is readable without the transcripts: `research/METHODOLOGY.md`, the
+  coded `research/wr-data/` notes, and the research topics. Pointers in `research/README.md`,
+  `docs/foundations.md` and `skills/research-methods/SKILL.md` now say where the ledger lives. Dated
+  accounts of the earlier `L → Z` sweep (the v0.8.0 entry below, and `research/topics/RT022-…`) keep their
+  old paths on purpose: they record what was true then, and are not living pointers.
+
 ## v0.9.2 — 2026-07-24 — native fast path, typed scala/which, statusline diet
 Speced in reqT-lang BEFORE the cut for once (see `reqts/PRD.md`, re-engineered from the real
 `v0.9.1..HEAD` range) — the first release where FUTURE → PAST is a same-day move, not archaeology.
