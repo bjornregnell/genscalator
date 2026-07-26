@@ -88,7 +88,7 @@ own safety rail, which is strictly worse than the stall it avoids.
 BR asked: *"so we need to make you not forget to use hex escapes? (which could regress after a warp?)"* — and the
 honest answer is **yes, the agent will forget, and yes, a warp makes it worse.**
 
-Generalise it: **a fix that lives INSIDE the agent — this skill, a memory, a resume-prompt line — only works if it
+Generalise it: **a fix that lives INSIDE the agent — this skill, a memory, an ember line — only works if it
 is loaded AND hot at the instant of action. So it rots.** Anything routed through agent recall is willpower wearing
 a structural costume. That is the whole lesson of the `| tail` family: 5 mechanical slips in one session, one of
 them while `+rot-vigil` was explicitly ACTIVE.

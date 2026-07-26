@@ -434,8 +434,14 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   [[live-edit-dance]] confirm-on-ambiguity). Related: **Compact dance**, **Token-usage dance**, **Session-limit dance**.
 - **Ember (warp ember; formerly baton)** — the file the agent writes **before** a warp so that the agent on the
   other side can pick the work up: modes, what is committed, the menu, the anti-regression list. Currently
-  implemented as `tmp/resume-prompt.md` (the *implementation detail*, deliberately not the name — BR: *"a mouthful
-  to type"*). **Named for the smith's banked fire: at exit the session rakes ash over the coals so an ember
+  implemented as **`EMBER.md` at the repo root** (the *implementation detail*, deliberately not the name — BR: *"a
+  mouthful to type"*). *(Relocated 2026-07-26 on BR's call, out of the gitignored `tmp/resume-prompt.md` via a brief
+  stop at `notes/warp-ember.md`. Root, because that is where a cold agent actually looks — beside the other
+  load-bearing substrate, `PIN-BOARD.md` and `HUMANS.md`, which share its agent-sole-writer convention — and because
+  the name pairs legibly with `work/EMBER-TEMPLATE.md`. It is also a convention that PORTS to any repo you warp in,
+  where `notes/warp-ember.md` assumed a `notes/` dir. **One rider: root means tracked, so `EMBER.md` belongs at the
+  root of a CLOSED repo only.** An ember routinely names holds, embargoes, and half-rotated credentials; in a public
+  repo it stays gitignored, or does not exist.)* **Named for the smith's banked fire: at exit the session rakes ash over the coals so an ember
   survives the night; the fresh agent blows it back into flame.** The metaphor carries the discontinuity too: the
   post-warp agent is not the same agent — the fire dies, only the ember crosses. It also sits at home in the forge
   vocabulary (`tt forge`, the smithy). *(Naming history: agent coinage 2026-07-17 as "carrier"; BR settled "baton"
@@ -457,10 +463,17 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   distrust the file; it makes you FEEL that you have** (the *well-formed summary produces closure* mechanism, one
   level up). **An ember must be AUDITED, and an audit is a TASK, not a resolution** — the only thing that has ever
   armed a check here is giving it a tool call to execute in.
-  ⚠️ **It is gitignored, so it has NO HISTORY** — which means **a claim about what an ember previously said cannot be
-  verified** (the meta-minion hit exactly this: *"tmp/resume-prompt.md is untracked, no history"* ⇒ `CANNOT VERIFY`).
-  A file whose whole job is to be checked against reality is the one file with no audit trail. **Open, and it is a
-  real gap.** *(Pre-rename raw record — wr-data specimens, minion-log pushes, the published example's verbatim
+  ⚠️ ~~**It is gitignored, so it has NO HISTORY**~~ ⇒ **CLOSED 2026-07-26 by the relocation to a tracked `EMBER.md`.**
+  The gap was real and is worth keeping on the record: while the ember lived in gitignored `tmp/`, **a claim about what
+  an ember previously said could not be verified** (the meta-minion hit exactly this: *"tmp/resume-prompt.md is
+  untracked, no history"* ⇒ `CANNOT VERIFY`) — the file whose whole job is to be checked against reality was the one
+  file with no audit trail. Tracked at the root, it now has the history an audit needs.
+  ⭐ **And the datum that closed it came from the failure mode itself.** On 2026-07-26 a fresh session was handed the
+  **two-day-old** `tmp/` copy while the tracked ember sat six minutes old — because the exit dance had come to
+  re-stamp one carrier and not the other. The stale copy carried an **expired overnight AFK-solo mandate to drain a
+  work queue unattended**; only a timestamp check caught it. ⇒ **two carriers is one too many**, and **a stale ember is
+  worse than an absent one, because absent fails loudly while stale fails silently and persuasively.** The duplicate is
+  retired. *(Pre-rename raw record — wr-data specimens, minion-log pushes, the published example's verbatim
   section — keeps saying "baton"; that is deliberate: raw stays raw, see
   `research/wr-data/rename-baton-to-warp-ember-2026-07-20.md`.)* Cf. *Compact dance*, *Post-warp dissection*,
   *Warp*, *Dangling pointer*.

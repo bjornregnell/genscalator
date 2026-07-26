@@ -190,8 +190,8 @@ variants, this absorbs the bare ones.
 **Tier 2 (genscalator contributors / dogfooding mode) — assume the gs dev substrate; degrade gracefully if absent:**
 
 - **`gs where`** — orient: a SHORT current-state snapshot so the user (or a returning agent) re-syncs fast.
-  Read from whatever current-state substrate the project keeps — a pin board's `## NOW` section, a
-  `tmp/resume-prompt.md`, and the recent `git log` (`tt gitinfo` / `tt log`) — and summarise: what shipped
+  Read from whatever current-state substrate the project keeps — a pin board's `## NOW` section, an
+  `EMBER.md` at the repo root, and the recent `git log` (`tt gitinfo` / `tt log`) — and summarise: what shipped
   recently, what is in flight, what awaits the human. Keep it to a screen; link the sources for detail.
   **Ground it in the files, do not recall.** If the project keeps no such substrate, say so and fall back to
   the recent git log.

@@ -32,6 +32,15 @@ real specimen it generalizes: [EMBER-EXAMPLE.md](EMBER-EXAMPLE.md).
 5. **Exit order.** Commit and push ALL work first, then write the ember, then exit. An ember written
    before the final commits points at a moving target.
 6. **English**, even if the working chat is not: the reader may be any future agent.
+7. **One carrier, one path: write it to `EMBER.md` at the repo root, and nowhere else.** Root, because
+   that is where a cold agent actually looks; tracked, because an ember's whole job is to be audited and
+   an untracked one yields `CANNOT VERIFY`. **Never leave a second copy.** Learned the hard way on
+   2026-07-26: a fresh session was handed a **two-day-old** duplicate from gitignored `tmp/` while the
+   real ember sat six minutes old, because the exit dance re-stamped one and not the other — and the
+   stale one carried an expired overnight AFK-solo mandate to work unattended. **A stale ember is worse
+   than an absent one: absent fails loudly, stale fails silently and persuasively.** ⚠ Root means
+   tracked, so this rule is for a **CLOSED** repo; in a public one the ember stays gitignored or absent,
+   since it routinely names holds, embargoes, and half-rotated credentials.
 
 ## The skeleton (section order is part of the design)
 

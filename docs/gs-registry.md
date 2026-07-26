@@ -55,7 +55,7 @@ of truth). For the full prose on any entry, follow it back to foundations.
 | status-line: frozen clock | the agent's turn is running (the ballgame signal). |
 | status-line: red ctx-fill | fill is past the dumb-zone ceiling Z; brake / compact. |
 | status-line: red limit % + reset | near a 5h / weekly usage cap. |
-| staleness flag | the agent flags a stale PB NOW / resume-prompt before trusting it. |
+| staleness flag | the agent flags a stale PB NOW / ember before trusting it — check its stamp against `tt chrono now`. |
 | WDYT deferral | the agent holds an owed opinion for a lull rather than interrupt flow. |
 | propose the rest dance | the agent detects fatigue or over-trust and proposes `:Z`. |
 | "did you mean: ..." | on genuine ambiguity the agent offers the nearest candidate readings to pick from, instead of an open-ended question. |
@@ -66,7 +66,7 @@ of truth). For the full prose on any entry, follow it back to foundations.
 
 | Dance | Goal |
 |---|---|
-| **Compact dance** | hand off across a `/compact` without losing state; refresh the resume-prompt + PB first; self-measure with chrono stamps. |
+| **Compact dance** | hand off across a `/compact` without losing state; refresh the ember + PB first; self-measure with chrono stamps. |
 | **Context dance** | the umbrella: assess how full + how rotted the context is, then choose the response. |
 | **Exit-resume dance** | exit + `claude --resume` to inherit a fresh process env / token (a warp *between* sessions). |
 | **Rest dance (`:Z`)** | conserve the human; take rot-vigilance, checkpoint, steer to a safe stop. |
