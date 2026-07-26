@@ -83,7 +83,7 @@ Conventions that keep benign commands provable, derived from observed guard fire
 - **don't `rm` gitignored scratch** - `tmp/` is disposable-in-place, so leave it (overwritten next run). If a
   cleanup is genuinely wanted, add a **scoped** allow-rule (`Bash(rm -f <repo>/tmp/*)`), never a broad `rm`.
   (This is a TRUE-positive gate the human relaxes deliberately for a proven-safe path - like the AFK
-  git-loosening - not a false-positive re-notation. See the settings mirror `wr-data/settings-local-mirror.json`.)
+  git-loosening - not a false-positive re-notation. See the settings mirror `settings-mirror/settings.local.json`.)
 - **wait for async work with `run_in_background` + END TURN** (the harness push-notifies on completion), or the
   `Monitor` tool - never a `while/until … do … done` poll or a foreground `sleep`-poll (a blocking shell loop).
 - **no body line starts with `#`** inside a quoted arg (commit messages etc.); write `- #N` or `turn N` -

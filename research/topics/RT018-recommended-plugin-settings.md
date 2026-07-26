@@ -8,7 +8,7 @@
   tools run silently. But settings are exactly where a user can accidentally over-grant (a broad `Bash(git *)` or
   `Bash(rm *)`) and undo the safety story. So "recommended settings" is itself a **safe-by-design deliverable**,
   not an afterthought. Grounded in BR's real settings + the allowlist we grew this session (mirrored, with its
-  git history, in [`wr-data/settings-local-mirror.json`](../wr-data/settings-local-mirror.json)).
+  git history, in [`settings-mirror/settings.local.json`](../settings-mirror/settings.local.json)).
 - **Status:** open (2026-07-02). Initial principles below; the concrete recommended block is drafted in the
   repo README ("Claude Code settings") as a first cut.
 

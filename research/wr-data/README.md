@@ -62,18 +62,22 @@ confirmation causes* — turning the WR log itself into input for prioritising w
   case study (its own working session writes here).
 - [`genscalator-self-dev.md`](genscalator-self-dev.md) — WR entries from developing genscalator itself
   (dogfooding: building the toolbox surfaces the friction it exists to remove).
-- [`settings-local-mirror.json`](settings-local-mirror.json) — a **committed mirror of the live
-  `.claude/settings.local.json`** permission allowlist (which is gitignored, so its evolution would otherwise
-  leave no trace). See below.
+- **The permission-allowlist mirror MOVED OUT of this directory (2026-07-26).** It now lives in
+  [`../settings-mirror/`](../settings-mirror/) as `settings.local.json` — one living file whose git history is
+  the dataset. The copy that used to sit here, `settings-local-mirror.json`, was the EARLIER SEGMENT of that
+  same trail (last synced 2026-07-19; `settings-mirror/` took over 2026-07-21) and was deleted rather than
+  kept, because git retains it and a frozen duplicate beside a live file is a trap. To read the pre-2026-07-21
+  history: `git log -p -- research/wr-data/settings-local-mirror.json`.
 
-## The permission-allowlist mirror (`settings-local-mirror.json`) — data + update rule
+## The permission-allowlist mirror — data + update rule (now in `../settings-mirror/`)
 The live `.claude/settings.local.json` in the working repo holds the **permission allowlist** — the exact set
 of tool calls the human has trusted enough to run without a confirmation prompt. That file is **gitignored**
 (local, machine-specific), so the *evolution of the human↔agent trust boundary* — arguably the single most
 important WR signal (each added rule = a friction the human chose to design away or trust) — would otherwise be
-invisible to the research. So we **mirror it here** and let **git history of this one file** be the dataset:
-each commit is a snapshot of the trust boundary at a point in time; `git log -p settings-local-mirror.json`
-replays how the allowlist grew (and why, via commit messages).
+invisible to the research. So we **mirror it** and let **git history of that one file** be the dataset:
+each commit is a snapshot of the trust boundary at a point in time; `git log -p -- research/settings-mirror/settings.local.json`
+replays how the allowlist grew (and why, via commit messages) — plus the earlier segment under the old
+wr-data path, per the note above.
 
 **Update rule (for the working session / agent):**
 1. **The human still approves all real settings changes.** The agent does NOT widen `.claude/settings.local.json`
