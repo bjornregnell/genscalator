@@ -295,5 +295,5 @@ Genscalator is developed as a liberally licensed open source software project th
 
 ## 8. Mirrors and digital sovereignty
 
-The genscalator repo is mirrored from [GitHub](https://github.com/bjornregnell/genscalator) to [Codeberg](https://codeberg.org/bjornregnell/genscalator) and [GitLab](https://gitlab.com/bjornregnell/genscalator) in the spirit of [digital sovereignty](https://en.wikipedia.org/wiki/Digital_sovereignty). See also [here](https://codeberg.org/bjornregnell/digital-sovereignty).
+The genscalator repo is mirrored from [GitHub](https://github.com/bjornregnell/genscalator) — the source of truth — to [Codeberg](https://codeberg.org/bjornregnell/genscalator), [GitLab](https://gitlab.com/bjornregnell/genscalator) and coursegit at LTH, in the spirit of [digital sovereignty](https://en.wikipedia.org/wiki/Digital_sovereignty): the point is that an EU-hosted copy exists independently of any single forge. Mirrors are verbatim and disposable; `deploy/mirror.sc` pushes them, one-directionally, and never pulls from a mirror. See also [here](https://codeberg.org/bjornregnell/digital-sovereignty).
 

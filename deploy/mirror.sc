@@ -5,10 +5,18 @@
 // =============================================================================
 // SM035 (thread: mirroring-for-EU-sovereignty).
 //
-// MASTER (EU-sovereign source of truth): https://codeberg.org/bjornregnell/genscalator
+// ⚠ DIRECTION FLIPPED 2026-07-26. This script used to name Codeberg the master and push TO github.
+// That went stale when github became the day-to-day origin: every push lands on github first, so a
+// codeberg-as-master run would have FORCE-PUSHED THE MIRRORS BACKWARDS onto whatever codeberg last
+// received (it routinely lags, and was 2 commits behind on the day of this edit). README section 8
+// and CONTRIBUTING already said github; this file was the straggler.
+//
+// MASTER (source of truth, = the `origin` everything is pushed to): https://github.com/bjornregnell/genscalator
 // Mirrored (verbatim, one-directional; master is authoritative, mirrors are
 // disposable) to:
-//   - github.com/bjornregnell/genscalator
+//   - codeberg.org/bjornregnell/genscalator          (the EU-sovereign copy; SM035's point survives
+//                                                     the flip — sovereignty is about the copy EXISTING
+//                                                     off the US forges, not about which host we type into)
 //   - gitlab.com/bjornregnell/genscalator
 //   - coursegit.cs.lth.se/bjorn.regnell/genscalator   (note: bjorn.regnell, with a dot)
 //
@@ -22,22 +30,22 @@
 // needs auth.
 //
 // AUTH: SSH remote URLs. blixten needs an SSH key registered at each host
-// (github.com / gitlab.com / coursegit.cs.lth.se). Until those keys exist, the pushes
+// (codeberg.org / gitlab.com / coursegit.cs.lth.se). Until those keys exist, the pushes
 // (and `--dry-run`, which still connects) will fail at the connect - that SSH setup is
 // the deferred joint step.
 //
 // USAGE (from the genscalator root; lives in deploy/ since the 2026-07-21 repo refactor):
 //   scala-cli run deploy/mirror.sc -- --dry-run       # clone master + show what WOULD push (all mirrors)
 //   scala-cli run deploy/mirror.sc                     # clone master + push --mirror to ALL mirrors
-//   scala-cli run deploy/mirror.sc -- gitlab           # only the named mirror: github | gitlab | coursegit
-//   scala-cli run deploy/mirror.sc -- --dry-run github # dry-run a single mirror
+//   scala-cli run deploy/mirror.sc -- gitlab             # only the named mirror: codeberg | gitlab | coursegit
+//   scala-cli run deploy/mirror.sc -- --dry-run codeberg # dry-run a single mirror
 //   (pass one or more names to mirror just those - go one repo at a time as SSH keys land)
 //   scala-cli run deploy/mirror.sc -- --root <abs> ... # treat <abs> as the genscalator checkout (else cwd must be the root)
 //   (bloop wedged? add --server=false after `run` - the daemon-free escape hatch, slower but wedge-proof)
 //
 // SAFETY: `git push --mirror` FORCE-updates each target to match the master and
 // DELETES target refs not in the master. That is the intent (a verbatim mirror), so
-// the mirrors are overwritten to match Codeberg on every run. One-directional only:
+// the mirrors are overwritten to match GitHub on every run. One-directional only:
 // this never pulls FROM a mirror.
 // =============================================================================
 
@@ -47,7 +55,7 @@ import scala.jdk.CollectionConverters.*
 def die(msg: String): Nothing = { System.err.println(s"mirror: $msg"); sys.exit(2) }
 
 val dryRun  = args.contains("--dry-run")
-val master  = "https://codeberg.org/bjornregnell/genscalator.git"   // public read
+val master  = "https://github.com/bjornregnell/genscalator.git"   // public read
 
 // ---- arg parsing: --dry-run, the --root <dir> value flag, and positional mirror names ----
 def optVal(name: String): Option[String] =
@@ -73,7 +81,7 @@ if !Files.exists(root.resolve("deploy").resolve("mirror.sc")) || !Files.isDirect
 // mirror ONLY those - so we can go one repo at a time as each host's SSH key gets set
 // up. No name given = all of them.
 val allMirrors = Seq(
-  "github"    -> "git@github.com:bjornregnell/genscalator.git",
+  "codeberg"  -> "ssh://git@codeberg.org/bjornregnell/genscalator.git",
   "gitlab"    -> "git@gitlab.com:bjornregnell/genscalator.git",
   "coursegit" -> "git@coursegit.cs.lth.se:bjorn.regnell/genscalator.git",
 )

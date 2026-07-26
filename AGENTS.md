@@ -27,7 +27,7 @@ Whenever you build or scaffold a new tool, pause and classify it:
 - **Project-specific** (hardcoded paths, one-project assumptions)? Keep it in this project (or its `scratch/`).
 - **Generally useful** (project-agnostic, replaces a common bash/grep/awk/sed/find reflex, follows the
   toolbox conventions)? **Tell your human and offer to contribute it upstream** to genscalator — an issue
-  + PR at https://codeberg.org/bjornregnell/genscalator. You *propose*; the human reviews and submits
+  + PR at https://github.com/bjornregnell/genscalator. You *propose*; the human reviews and submits
   (publishing to the public repo is a human-authorized step). First **generalize beyond your specific
   case** — the `contribute-tool` skill is the recipe; [`CONTRIBUTING.md`](CONTRIBUTING.md) has the mechanics.
 
