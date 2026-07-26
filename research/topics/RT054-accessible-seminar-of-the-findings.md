@@ -21,7 +21,7 @@ an *instance of the thing it is about* (self-exemplifying, as so much of this pr
   capability; safe-by-design-against-confirmation-fatigue; the echt / confabulation / member-check epistemics;
   the human-agent "dances." Pick one spine; the rest are supporting.
 - **The on-ramp for colleagues** who haven't lived it: lead with a concrete STORY and a demo, not a taxonomy.
-  The **ChatGPT-confabulation experiment** (`research/other-model-validation-echt/`) is a ready-made narrative
+  The **ChatGPT-confabulation experiment** (`research/case-studies/other-model-validation-echt/`) is a ready-made narrative
   spine — funny, self-contained, and it teaches confabulation + substrate-access + echt in one arc.
 - **The live-Claude format — risk/reward.** Rewards: visceral, memorable, self-exemplifying. Risks: Claude may
   confabulate or echt-mimic live; latency; a live flop. Mitigations: a **pre-tested spine** + live Q&A on top;

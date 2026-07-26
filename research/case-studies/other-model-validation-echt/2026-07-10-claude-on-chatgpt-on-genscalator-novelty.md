@@ -2,7 +2,7 @@
 
 **2026-07-10.** CO4's deep reflection after reading ChatGPT's answers
 (`2026-07-10-chat-gpt-on-genscalator-novelty.md`) to BR's two questions. Written AFTER CO4 committed its own
-answers (`../reports/report040-...`), so the contrast is honest, not retrofitted. Input for the CF5
+answers (`../../reports/report040-...`), so the contrast is honest, not retrofitted. Input for the CF5
 deep-synthesis (SM040 step 2).
 
 ## Headline finding: ChatGPT answered about a different project than genscalator

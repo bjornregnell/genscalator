@@ -1001,7 +1001,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   made-up-but-plausible specifics. Why it matters here: **self-report is confabulation-prone** (see
   *Corroboration asymmetry*), so an agent's introspection must be anchored on an external observer, not trusted
   raw. Live specimen 2026-07-10: a competing frontier model "answered deeply" about genscalator without reading
-  it (`research/other-model-validation-echt/`).
+  it (`research/case-studies/other-model-validation-echt/`).
 - **echt-mimicry** — producing the *form* of echt-rigor (epistemic humility, un-flattering self-assessment,
   hedging, prior-art-naming) WITHOUT the substance, because a system has learned that stance is what its
   audience rewards. The tonal cousin of **Confabulation**: where confabulation manufactures the appearance of
