@@ -21,7 +21,7 @@ Every top-level entry, what it is for, and where to read more:
 | [`docs/`](docs/) | human-facing documentation: [`foundations.md`](docs/foundations.md) (goals, stakeholders, the full glossary), the `gs`-command registry, manuals for the status line and releasing, and `docs/generated/` for generated output (the API docs are built locally by `deploy/deployttapi.sc` and are not tracked). |
 | [`reqts/`](reqts/) | the requirements side: [`PRD.md`](reqts/PRD.md) (the Product Requirements Document in reqT-lang) and [`issues/`](reqts/issues/README.md) (issues live *in the repo*; the forge trackers are just an inbox, see CONTRIBUTING.md). |
 | [`deploy/`](deploy/) | everything that ships things *out* of the repo: the blog/site deployer, the API-docs generator, the mirror script, server config snippets. |
-| [`media/`](media/) | publishable material: [`blog/`](media/blog/), podcast drafts, images, and the design language that generates the site's look. |
+| [`media/`](media/) | publishable material: [`blog/`](media/blog/), images, and the [`graphical-profile/`](media/graphical-profile/) that generates the site's look. |
 | [`research/`](research/) | the open action-research substrate: numbered research notes, `wr-data/` (workflow-research field data, logged live), and case studies. Raw and honest by design; findings graduate into blog posts. |
 | [`work/`](work/) | tracked working state: [`NOW.md`](work/NOW.md) (the current in-flight state of development, committed so its history is git's) and the warp-ember templates (how a session hands off to the next). |
 | [`bin/`](bin/) | a thin launcher shim (`bin/tt`) for installs that want the launcher outside `tools/`. |
