@@ -96,10 +96,13 @@ object Links:
     val t = target.trim
     t.isEmpty || t.startsWith("#") || t.startsWith("/") || t.startsWith("mailto:") || t.contains("://")
 
-  /** Drop a #fragment / ?query and any trailing punctuation a sentence left behind. PURE. */
+  /** Drop a #fragment / ?query and any trailing punctuation a sentence left behind — INCLUDING a trailing
+    * slash, because prose writes a directory as `research/experiments/indent-vs-braces/` while the
+    * inventory holds it without one. Missing that made a cited experiment directory read as unreferenced,
+    * which is the expensive direction of error for a migration. PURE. */
   def normalizeTarget(target: String): String =
     val cut = target.takeWhile(c => c != '#' && c != '?')
-    cut.reverse.dropWhile(c => c == '.' || c == ',' || c == ')' || c == ';' || c == ':').reverse
+    cut.reverse.dropWhile(c => c == '.' || c == ',' || c == ')' || c == ';' || c == ':' || c == '/').reverse
 
   /** Tokens in prose that LOOK like a path: either they contain a slash, or they carry an extension and
     * may name a SIBLING of the citing file. Split on every character a path cannot contain, so backticks,
@@ -131,7 +134,14 @@ object Links:
     * every file in research/ whose name starts with 052); then the token as a directory. PURE. */
   def referents(token: String, known: Set[String], dirs: Set[String]): Set[String] =
     if known(token) then Set(token)
-    else if dirs(token) then Set(token)
+    else if dirs(token) then
+      // A cited DIRECTORY means one of two things, and depth tells them apart (BR's ruling, 2026-07-26).
+      // A NESTED dir names an ARTIFACT whose contents are the thing — `research/experiments/
+      // indent-vs-braces/` is cited by blog 002 and the research-methods skill, and citing it plainly
+      // keeps its probes and tasks. A TOP-LEVEL dir names a LOCATION: `HUMANS.md` and `docs/foundations.md`
+      // both link bare `research/` as a repo-map entry, and expanding that would mark all 464 files
+      // referenced and make any migration a no-op. So: expand nested, do not expand top-level.
+      if token.contains('/') then known.filter(_.startsWith(token + "/")) + token else Set(token)
     else
       val i = token.lastIndexOf('/')
       if i <= 0 then Set.empty

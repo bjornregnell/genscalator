@@ -52,6 +52,17 @@ class LinksSuite extends munit.FunSuite:
     assertEquals(Links.normalizeTarget("docs/x.md?v=2"), "docs/x.md")
     assertEquals(Links.normalizeTarget("docs/x.md,"), "docs/x.md")
     assertEquals(Links.normalizeTarget("docs/x.md)."), "docs/x.md")
+    // prose writes a directory with a trailing slash; the inventory holds it without one
+    assertEquals(Links.normalizeTarget("research/experiments/indent-vs-braces/"), "research/experiments/indent-vs-braces")
+  }
+
+  test("a directory cited with a trailing slash resolves, and keeps its contents") {
+    // the real citation: skills/research-methods writes `research/experiments/indent-vs-braces/`
+    val known = Set("research/experiments/indent-vs-braces/probe.scala")
+    val dirs = Set("research", "research/experiments", "research/experiments/indent-vs-braces")
+    val token = Links.normalizeTarget("research/experiments/indent-vs-braces/")
+    assertEquals(Links.referents(token, known, dirs),
+      Set("research/experiments/indent-vs-braces", "research/experiments/indent-vs-braces/probe.scala"))
   }
 
   test("prose path tokens survive backticks, quotes and parens") {
@@ -84,8 +95,18 @@ class LinksSuite extends munit.FunSuite:
     assertEquals(Links.referents("research/999", known, dirs), Set.empty[String])
   }
 
-  test("a citation of a directory counts as referencing the directory") {
-    val known = Set("research/wr-data/a.md")
-    val dirs = Set("research", "research/wr-data")
-    assertEquals(Links.referents("research/wr-data", known, dirs), Set("research/wr-data"))
+  test("a NESTED directory citation names an artifact, so it keeps the contents") {
+    val known = Set("research/experiments/ivb/probe.scala", "research/experiments/ivb/task.md", "research/x.md")
+    val dirs = Set("research", "research/experiments", "research/experiments/ivb")
+    val got = Links.referents("research/experiments/ivb", known, dirs)
+    assert(clue(got).contains("research/experiments/ivb/probe.scala"))
+    assert(clue(got).contains("research/experiments/ivb/task.md"))
+    assert(!clue(got).contains("research/x.md"), "only the cited directory's own contents")
+  }
+
+  test("a TOP-LEVEL directory citation names a location, so it does NOT keep everything") {
+    // HUMANS.md links bare `research/` as a repo-map entry; expanding that would make a migration a no-op
+    val known = Set("research/a.md", "research/b.md")
+    val dirs = Set("research")
+    assertEquals(Links.referents("research", known, dirs), Set("research"))
   }
