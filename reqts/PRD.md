@@ -453,7 +453,7 @@ example of expressing already-built work as reqT-lang requirements for Agentic R
 ### Session 2026-07-15 — update-awareness, native provisioning, settings, and the echt mode grammar
 
 A dated block reflecting one session's work: Features SHIPPED (marked) and Features PINNED as coming (SMnnn).
-Grounded in `research/anthropic-builtin-tools-vs-genscalator-2026-07-15.md`, the `research/wr-data/` rot/mode notes,
+Grounded in `research/057-anthropic-builtin-tools-vs-genscalator.md`, the `research/wr-data/` rot/mode notes,
 and the session pin board. The through-line is a new general goal, sovereigntyOfCapability.
 
 * Goal: sovereigntyOfCapability has
