@@ -405,7 +405,7 @@ example of expressing already-built work as reqT-lang requirements for Agentic R
 
 > STUB (BR pin 2026-07-08): a goal-level placeholder to complete the super-harness for a v2.0 release, to be
 > elaborated in reqT-lang from goal-level down (the reqt-lang skill + the dashboard section). See the CC-clamp /
-> capability-harness thread in `research/047-*` and the SM016 / SM022 work items.
+> capability-harness thread in `research/case-studies/will-i-lose-you/` and the SM016 / SM022 work items.
 
 * Goal: completeSuperHarness has
   * Gist: a pure-Scala capability harness (the "CC-clamp") the super-agent drives by injecting a WHITELISTED slash-command enum; capture-checking makes non-whitelisted injection impossible (the enum membership IS the security boundary). Umbrella for the live joint dashboard, the session-log tap, and the idle/context signals the model cannot self-read.

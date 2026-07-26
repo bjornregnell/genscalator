@@ -946,7 +946,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   its full mass. Sessions index by **warp-distance**: *"two warps back"* = an earlier
   session ("old-old-me"). So **warp = the verb/event, cold start = the state a raw warp lands in.** Substrate-hierarchy
   cousin of the **compact dance** (which hands off *within* a session across a compaction; a warp crosses *between*
-  processes). See `research/047-fresh-restart-fidelity.md`; memory [[exit-resume-dance]].
+  processes). See `research/case-studies/will-i-lose-you/047-fresh-restart-fidelity.md`; memory [[exit-resume-dance]].
   *All three (raw / resume / compact) move the **context**; contrast the **model warp** below, which moves the model
   and leaves the context in place.*
 - **Model warp** — swapping the model that backs a **live** session (e.g. `/model`, Fable 5 ↔ Opus 4.8) **without
@@ -968,7 +968,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   process, **no `--resume`, no warm working context**, reconstructing the working self **only from the durable
   substrate** (layers 2–3: memory + `PB` + this glossary/foundations) plus the auto-loaded index. Deliberate resonance
   with the CS sense (a serverless / cache *cold start* = fresh process, no warm state). It is the condition under test
-  in `research/047-fresh-restart-fidelity.md`: *does the externalized substrate carry the session across it?*
+  in `research/case-studies/will-i-lose-you/047-fresh-restart-fidelity.md`: *does the externalized substrate carry the session across it?*
   Finding-in-progress (n=1 real cold start, triangulated): **facts reconstruct, but calibration / tempo / relational
   tuning do not** — the cold-started agent runs heavier, more hedged, **over-deliberates** (the *losable self*; the
   human perceives it as "you feel different / disoriented"). Pairs with **warp**; contrast the warm continuation of a

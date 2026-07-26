@@ -1,7 +1,7 @@
 # SM015 — En-masse sub-agent spawning as a spending-mode strategy
 
 **Status:** investigation report (first cut). **Author:** CF5 research sub-agent, 2026-07-09.
-**Board ref:** PIN-BOARD SM015 (a–d). **Grounding refs:** research/047 (fleet-fidelity constraint + platform-stability threat), wr-data/co4-forgot-flaky-box-memory-loss-2026-07-09.md, [[delegation-dance]] (RT049/RT050, BP013), [[token-budget-modes]], [[cue-use-fleet]].
+**Board ref:** PIN-BOARD SM015 (a–d). **Grounding refs:** research/case-studies/will-i-lose-you/ (fleet-fidelity constraint + platform-stability threat), wr-data/co4-forgot-flaky-box-memory-loss-2026-07-09.md, [[delegation-dance]] (RT049/RT050, BP013), [[token-budget-modes]], [[cue-use-fleet]].
 
 ## (a) LIMITS — how many sub-agents can actually run
 

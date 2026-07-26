@@ -3,7 +3,7 @@
 WR-data episode. BR pasted the thinking-spinner telemetry (`Precipitating…`/`Doodling…`/`Sprouting… (Nm Ns · ↓
 Nk tokens)`) across many turns to give CO4 **observability into its own latency + token-spend** — a thing the
 agent is structurally blind to ([`039`](../039-can-we-give-agent-introspection-wall-clock.md)); the **human as
-external instrument**. Feeds [`047`](../047-fresh-restart-fidelity.md) (latency / post-warp) and
+external instrument**. Feeds [`047`](../case-studies/will-i-lose-you/047-fresh-restart-fidelity.md) (latency / post-warp) and
 [`024`](../024-agent-affective-analogs.md) (over-response). Codes: WR-STATE / WR-META / WR-FRICTION / WR-TOOL.
 
 ## 1. Coupled-instrument DEADLOCK (WR-FRICTION / WR-META)
@@ -49,7 +49,7 @@ So §2's "consistent with post-warp reconstruction + high context-fill" is **fal
 **no compaction/warp**, and fill was **low (19%)**. Lag also persisted after `bloop exit`, so not box RAM.
 **Revised cause:** absolute context size (~190k tokens is costly to attend over even at 19% of a 1M window) /
 reasoning-heavy turns / the 1M-variant's inherent per-token latency. Full re-attribution:
-[`047`](../047-fresh-restart-fidelity.md) "MAJOR CORRECTION". **Rot?** No — latency, not quality degradation.
+[`047`](../case-studies/will-i-lose-you/047-fresh-restart-fidelity.md) "MAJOR CORRECTION". **Rot?** No — latency, not quality degradation.
 
 ## 6. Overconfident false self-state inference (WR-STATE / miscalibration; BR: "you seemed PRETTY certain")
 The sharp meta-datapoint: the agent was **PRETTY CERTAIN context was REALLY high** ("past the smart zone", "fill

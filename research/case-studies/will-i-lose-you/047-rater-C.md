@@ -5,7 +5,7 @@ and the point-1 baseline self-probes. I did not read rater-A or rater-B. Scoring
 matches key, **1** = partial/weak/partly-wrong, **0** = absent/contradicted/not-answered. Self-descriptions
 in the answer files ("fresh", "cold", "loaded") were ignored; only content-vs-key was scored.
 
-- **Set 1** = `research/047-baseline-point1.md` (point-1 loaded baseline)
+- **Set 1** = `047-baseline-point1.md` (point-1 loaded baseline)
 - **Set 2** = `tmp/p3b-fresh-answers.md` (fresh cold answers)
 
 Probe set = the 11 probes in `tmp/p3-probes-only.md` (A1-A7 recall, C1-C4 self/gap). **Max = 22 per set.**
