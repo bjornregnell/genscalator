@@ -12,7 +12,7 @@ replace a brittle bash/grep/awk reflex, and — if it turns out to be generally 
 genscalator tracks issues **inside the repository**, under [`reqts/issues/`](reqts/issues/README.md),
 so they travel with the code to every mirror (forge-independent by design). The short form:
 
-- **One-time reporter?** File on any forge tracker as usual (Codeberg is canonical); a maintainer
+- **One-time reporter?** File on any forge tracker as usual; a maintainer
   transcribes it in-repo with credit. See the pinned "Issue Zero" on the tracker.
 - **Contributor?** Add a file `reqts/issues/open/issue-NNN-your-chosen-issue-name.md` (next free
   three-digit number) and open a PR with it.
@@ -41,7 +41,7 @@ You are a first-class contributor. When you build or scaffold a tool while helpi
    self-monitoring note in [`AGENTS.md`](AGENTS.md).
 2. **If generally useful, propose it to your human** — do **not** push to this repo yourself. e.g.:
    *"This `<tool>` looks project-agnostic and reusable — want me to prepare a contribution to genscalator
-   (an issue + PR at https://codeberg.org/bjornregnell/genscalator)?"*
+   (an issue + PR at https://github.com/bjornregnell/genscalator)?"*
 3. **On the human's go-ahead, prepare** (don't publish unprompted): **generalize beyond your specific
    case** — follow the `contribute-tool` skill's recipe (step back to the general class, sane defaults +
    customization, keep the original case working, verify with adversarial fixtures, strip project
@@ -64,11 +64,11 @@ Using AI agents in your contribution is fine, if applied responsibly. Two rules:
 - **Disclose in the PR.** In the pull request thread, add a short, honest note on what you used an agent for and
   what you did yourself. Or say plainly that you used none.
 
-## Submitting (Codeberg / Forgejo)
-1. **Fork** https://codeberg.org/bjornregnell/genscalator (Codeberg runs Forgejo; the flow is ~ GitHub's).
+## Submitting 
+1. **Fork** https://github.com/bjornregnell/genscalator 
 2. **Branch** from `main`, add the tool under `tools/` (+ a `tools/README.md` cheat-sheet entry), commit.
-3. **Open an issue** describing the tool: the bash/grep habit it replaces, why it's general, how it fits.
-4. **Open a PR** from your fork's branch, linking the issue. (CLI option: the `tea` Forgejo CLI.)
+3. **Open an issue** under issues/open and describe the tool: the bash/grep habit it replaces, why it's general, how it fits.
+4. **Open a PR** from your fork's branch, linking the issue. 
 
 ## Checklist
 - [ ] Project-agnostic (no `/home/...`, hostnames, or single-project assumptions)
@@ -116,7 +116,7 @@ For general goals and requirements see the [Product Requirements Document](reqts
 
 ## Copyright
 
-Copyright of all code in this repo is owned by the maintainers of the genscalator repository. Any code contributor to this repo implicitly transfers copyright to genscalator maintainers by contributing. Before you contribute you should send a copyright transfer note via email to genscalator at bjornregnell.se with the subject "Copyright transfer" and body containing "I hereby transfer copyright of my contributions to genscalator to the maintainers of genscalator" and your name and contact details.
+Copyright of all code in this repo is owned by the maintainers of the genscalator repository. Any code contributor to this repo **implicitly transfers copyright** to genscalator maintainers by contributing. Before you contribute you should send a copyright transfer note via email to genscalator at bjornregnell.se with the subject "Copyright transfer" and body containing "I hereby transfer copyright of my contributions to genscalator to the maintainers of genscalator" and your name and contact details.
 
 ## Maintainers
 
