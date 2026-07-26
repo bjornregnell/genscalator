@@ -16,7 +16,7 @@ calls instead.
 ## The personal why
 
 I am an old software engineering professor approaching emeritus status (i.e. the freedom of being retired). I
-have had some bad, bad luck on research funding over the last years (many of my colleagues agree with me that
+have had some bad luck on research funding over the last years (many of my colleagues agree with me that
 the Swedish research funding system is broken). Instead I have, during the last decade, had *great* fun together
 with all my students and colleagues at Lund University (Sweden) doing a great deal of course development and
 teaching in introductory programming and advanced-level software requirements engineering and research
