@@ -1,7 +1,7 @@
 /* genscalator media — shared stylesheet for the landing + security pages.
    Single source of truth for LAYOUT: both pages link this (index.html: style.css, security/index.html: ../style.css).
    COLORS come from the design language (SM155): every page links
-   /genscalator/design-language/design.css BEFORE this file and consumes its semantic vars
+   /genscalator/graphical-profile/design.css BEFORE this file and consumes its semantic vars
    (--bg --fg --head --link --rule --logo-fg --logo-gs --code-bg --code-fg --border --th-bg),
    which the theme dropdown (design.js, <select id="theme-select">) flips per theme.
    Paths here are relative to THIS file (media/), so one @font-face serves both pages. */
@@ -67,7 +67,7 @@ body {
   color: var(--logo-fg);   /* the wordmark follows each theme's ratified logo color */
   letter-spacing: 0.02em; margin-bottom: 0.35em;
 }
-/* The design-language h1 seam under the hero wordmark (tried + ratified by BR eye 2026-07-20: "better!").
+/* The graphical-profile h1 seam under the hero wordmark (tried + ratified by BR eye 2026-07-20: "better!").
    width: fit-content keeps the line at text width, not overlay width. */
 .overlay .name { width: fit-content; border-bottom: 4px solid var(--rule); padding-bottom: 0.12em; }
 .tagline {

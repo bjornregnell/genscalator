@@ -189,7 +189,7 @@ val mirrorOpts = Seq(
   if pull then "" else "-R",              // -R = reverse = UPLOAD (local -> remote); omit for --pull (DOWNLOAD remote -> local)
   if doDelete && !pull then "--delete" else "",  // --delete never applies on a pull -- it would delete LOCAL files; pull is additive
   if dryRun then "--dry-run" else "",
-  // scala-cli build caches are never web content: excluded so a source dir (e.g. media/design-language,
+  // scala-cli build caches are never web content: excluded so a source dir (e.g. media/graphical-profile,
   // where DesignLang.scala runs in place) can be mirrored directly. Deliberately NOT a blanket dotfile
   // exclude -- .htaccess uploads (the SM140 redirect) must keep working.
   "-x ^\\.scala-build/ -x ^\\.bsp/",
