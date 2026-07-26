@@ -12,7 +12,7 @@ from the bug. The graded-quality design also checks out: on M2/M3/H1/H2/H3 the b
 edge-case test and passes the easy ones, yielding the partial scores (e.g. 2/3) the pilot's knee-finding needs
 rather than a blunt pass/fail.
 
-Companion to [`sm045-te-efficiency-pilot-plan.md`](sm045-te-efficiency-pilot-plan.md). The harness contract is
+Companion to [`report045-te-efficiency-pilot-plan.md`](report045-te-efficiency-pilot-plan.md). The harness contract is
 plan §5 (a `te-pilot.scala` that, per `(tier, item, rep)`, sends the model the buggy `input.scala` + the gold
 `test.scala`, writes back the patched file, runs `scala-cli test`, and records **quality = fraction of that item's
 tests passing**). This doc is only the **inputs** to that harness.

@@ -32,7 +32,7 @@ gracefully). The per-command behaviour is specified below.
   optimization (which silently fails when tool-output is hidden; observed live 2026-07-13). **This applies to
   every gs command that shows `tt` output** (`gs help tt`, `gs tt <tool>`, `gs status`, ...): run the tool AND
   paste the result. Keep `docs/gs-help.txt` current when commands change. Fuller welcome content:
-  `research/sm-investigations/SM056-welcome-content-draft.md`.
+  `research/reports/report056-welcome-content-draft.md`.
 - **`gs help tt`** — list every `tt` tool with a one-line description. Source of truth: the `## Tools`
   section of `tools/README.md` (each `### <tool>` heading + its tagline). Present as a compact table.
 - **`gs help tt <what>`** — pick the tool **nearest in meaning** to `<what>` (e.g. "search text" → `tt

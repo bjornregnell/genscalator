@@ -69,6 +69,6 @@ yields silence and exit 0. This tool is never worth breaking a session start ove
 ## See also
 
 - `tools/hangover.scala` — the tool (the pure core plus this hook surface).
-- `research/sm-investigations/` — the transcript probe grounding the timestamp and `compact_boundary` facts.
+- `research/reports/` — the transcript probe grounding the timestamp and `compact_boundary` facts.
 - `docs/compact-bing-bing.md` — the sibling hook, which calls the *human* back after a compact. This one tells
   the *agent* it was gone. Together they cover both sides of the same blackout.

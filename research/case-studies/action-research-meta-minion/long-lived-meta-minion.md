@@ -192,7 +192,7 @@ Propositions, not hypotheses. Not statistically tested; they exist so the outcom
 > exchange information?"*
 
 > **⚠️ FIRST, A FINDING ABOUT THE QUESTION ITSELF.** Our substrate **already answers sub-Q2 and most of sub-Q3** —
-> `research/sm-investigations/SM015-en-masse-subagents.md` (shipped `88e9f2b`), [[cue-use-fleet]], and
+> `research/reports/report015-en-masse-subagents.md` (shipped `88e9f2b`), [[cue-use-fleet]], and
 > `wr-data/super-sub-agent-chat-request-response-not-ambient-2026-07-14.md`. **Neither BR nor CO4 had it hot; CO4
 > found it only by grepping before answering.** That is *"carried ≠ armed"* firing on **both** members of the
 > pairing simultaneously, unprompted, in the middle of a study *about* that claim. **The knowledge was externalized

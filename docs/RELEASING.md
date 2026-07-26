@@ -21,7 +21,7 @@ but kept a doc for now (a rarely-fired skill would bloat the skill listing; see 
 4. **Release notes** (`tmp/vX.Y.Z-release-notes.md`, the `--body-file`): **MUST link to the CHANGELOG**, and
    **check CHANGELOG ↔ release-notes are consistent** (same set of shipped items) before the cut. (BR pin.)
 5. **WELCOME version banner** — update the `Version vX.Y.Z - ready for alpha testers` line in the welcome content
-   (`research/sm-investigations/SM056-welcome-content-draft.md`, later the shipped welcome) to the release being
+   (`research/reports/report056-welcome-content-draft.md`, later the shipped welcome) to the release being
    cut. (BR pin — a forgettable step.)
 6. **PRD.md** — add reqT Features for anything shipped-but-unspecified; move the released block FUTURE →
    PAST/IMPLEMENTED. Verify: `tt parsereqt parse reqts/PRD.md` and `tt parsereqt lint reqts/PRD.md` (clean, at/under the

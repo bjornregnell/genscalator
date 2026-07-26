@@ -35,4 +35,4 @@ stacks too.
 both pass with exit 0 via sbt 1.12.13 + sbt-scalajs 1.22.0 — re-run on the RC4 bump, compile clean with no warnings. Sources also compile-verified via scala-cli (`common`
 round-trips its JSON on both platforms). The build test found and fixed one bug: the server's default client-JS path
 (`todo-client-fastopt`, from `name := "todo-client"`). Remaining human step: `sbt server/run` and open the browser to
-click through the CRUD. See `genscalator/research/sm049-crud-web-app-seed-feasibility.md`.
+click through the CRUD. See `genscalator/research/reports/report049-crud-web-app-seed-feasibility.md`.
