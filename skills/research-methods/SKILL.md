@@ -95,7 +95,7 @@ The two books use slightly different four-sets — use the right one for the str
 - **Report the null** — a preregistered null is a real result (blog/003). Honest DV, no post-hoc story-fitting.
 - **Blind/automated grading** where the researcher is also a subject (self-subject bias — our own risk; [CS] flags
   observer bias).
-- **Triangulate** ([CS] §2.3.3) and **log raw data append-only** (`research/RAW-DATA.md`) so the chain from data →
+- **Triangulate** ([CS] §2.3.3) and **log raw data append-only** (`RAW-DATA.md`, in the closed work repo) so the chain from data →
   claim is auditable.
 
 ## 5. Using the books in practice

@@ -82,7 +82,7 @@ Not a friction event — a **vocabulary + data-integrity** decision, logged here
 BR's instruction to *"note a new WR-DATA note that we changed the name"* rather than patch the raw log. The
 smart-zone ceiling symbol **L** was renamed **Z** ("smart-**Z**one ceiling"; BR's rationale: there are two
 zones, and a lone `Z` *stands out* and reads as sitting **between** smart and dumb, where a lone `L` was noise).
-Applied repo-wide — **except [`RAW-DATA.md`](../RAW-DATA.md)**, which BR simultaneously declared **append-only**:
+Applied repo-wide — **except `RAW-DATA.md`**, which BR simultaneously declared **append-only**:
 raw datapoints are **never** retro-edited or "fixed"; a change of mind is logged as **new** data, because
 *"humans change their mind and that's also data."* Clean statement of a research-integrity invariant to keep:
 **the raw log is immutable; corrections are forward-only.** Meta worth keeping: the agent's reflex was *"just

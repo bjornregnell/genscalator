@@ -65,6 +65,11 @@ messages) is durable. **Methodological rule: if it isn't committed, it isn't dat
    `shared-file-editing-protocol`, `smart-zone-ceiling`, `communication-bandwidth`, …) — the theorized
    generalizations; METHODOLOGY.md is the meta-layer over them.
 
+**Where the raw corpus lives (2026-07-26).** The append-only ledger `RAW-DATA.md` and its miner `RawData.scala`
+are held in the **closed work repo** (`research-closed/`), because every entry is a verbatim session excerpt.
+This method, the coded `wr-data/` layer, and the research notes stay public. Where the sections below name
+`RAW-DATA.md` or `RawData.scala` they refer to those instruments, not to paths in this repo.
+
 ## 4. The coding scheme — extend "WR data" into a small taxonomy
 **[BR asked]** *"we should develop more codes like 'WR data'."* Proposed in-situ codes (grounded-theory style,
 kept few + memorable so they can be typed mid-chat):

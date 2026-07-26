@@ -192,7 +192,9 @@ research method the rest of this folder runs under.)*
 - [`wr-data/`](wr-data/) — **WR** (Workflow Research) log of confirmation/approval events from real sessions that
   are candidates for elimination by a new safe-by-design `tt` tool. The raw evidence behind the confirmation-fatigue
   thesis; feeds *which tool to build next*.
-- [`RAW-DATA.md`](RAW-DATA.md) — the **append-only** raw ledger (never retro-edited: a changed mind is new data).
-  The auditable chain from observation → claim.
+- `RAW-DATA.md` — the **append-only** raw ledger (never retro-edited: a changed mind is new data). The auditable
+  chain from observation → claim. **Held in the closed work repo** (`research-closed/`), together with its miner
+  `RawData.scala`: its entries are verbatim session excerpts, so the raw corpus stays private while the coded
+  `wr-data/` layer and the method in `METHODOLOGY.md` stay public.
 - [`032-substrate-consistency-check-2026-07-04.md`](topics/RT032-substrate-consistency-check-2026-07-04.md) — a dated
   agent-run consistency sweep of the substrate (agent-done vs BR-needed); a reusable report shape.

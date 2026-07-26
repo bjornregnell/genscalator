@@ -113,7 +113,8 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   acronym everywhere and shouldn't have to guess.
 - **WR — Workflow Research** — the project's **empirical study of the human↔agent workflow itself**: friction events,
   reflexes, habits, dances, and design principles, **logged live during real work** as "**WR data**" into
-  `research/wr-data/` (verbatim excerpt + labelled reflection) and curated append-only into `research/RAW-DATA.md`. It
+  `research/wr-data/` (verbatim excerpt + labelled reflection) and curated append-only into `RAW-DATA.md` (the raw
+  ledger itself is held in the closed work repo; see `research/README.md`). It
   is how genscalator's claims earn an evidence base rather than resting on assertion (see `METHODOLOGY.md`); "WR data"
   in chat is BR flagging an episode for that log.
 - **SSG — static site generator** — a **separate work strand** (like WR and AT): the planned pipeline that renders the
@@ -829,7 +830,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   sweep-rule **plus** a `tt rename`/stale-ref **tool** — and note the store lives *outside* the repo (in
   `~/.claude/…`), so repo guards/tools don't reach it by default: a **structural blind spot**, not just a
   discipline lapse. **Contrast — append-only raw data:** *living* memory is kept **current** (edit it to match
-  truth); the **raw research log** (`research/RAW-DATA.md`) is **immutable** (never retro-edit — a change of
+  truth); the **raw research log** (`RAW-DATA.md`, held in the closed work repo) is **immutable** (never retro-edit — a change of
   mind is logged as *new* data). Same goal (an honest record), opposite mechanism: one tracks the *present*,
   the other preserves the *past*.
 - **Index rot** — the **persistent-substrate cousin of context rot**: an index / pointer structure (a README's
@@ -933,7 +934,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   bare stronger model still wins an isolated **raw-capability spike** (substrate amplifies and directs capability,
   it doesn't manufacture reasoning that isn't there). Since *strongest × richest* always wins, the leverage is
   **model-agnostic** — the bet does not depend on models plateauing. See the capability + stove-reflex excerpts
-  in `research/RAW-DATA.md`.
+  in `RAW-DATA.md` (closed work repo).
 - **Warp** — the **action / event** of crossing a session boundary: the human **exits one Claude Code process and
   starts another**, crossing the context boundary (BR's coinage: *"warping into outer space"*). Two kinds: a **raw
   warp** (no `--resume`) starts a fresh process that lands in a **cold start** (substrate-only, no warm context); a
