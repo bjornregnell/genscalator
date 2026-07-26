@@ -1,4 +1,4 @@
-//> using scala 3.9.0-RC4
+//> using file ../project.scala
 //> using dep org.scalameta::munit::1.3.3
 
 // Unit tests for the shared SeqSpec parser/emitter (seqspec.scala). Like lib.scala it has NO @main, so it sits on the

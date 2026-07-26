@@ -1,3 +1,5 @@
+//> using file project.scala
+
 // dispatch — the SINGLE DISPATCHER (SM178 tt-graalify; unparks the parked one-@main design; grew
 // from and supersedes the SM146/T4 monolith-probe seed): ONE entry point mapping every tool verb
 // (= tool FILE stem, the launcher's contract) to its entry function, so the whole toolbox can ship

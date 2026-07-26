@@ -1,4 +1,4 @@
-//> using scala 3.9.0-RC4
+//> using file project.scala
 //> using jvm 21
 
 // serv — a tiny local static-file preview server (SM020). EFFECTFUL: opens a socket on LOOPBACK ONLY

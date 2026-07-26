@@ -1,5 +1,5 @@
-//> using scala 3.9.0-RC4
 //> using jvm 21
+// (no version include: mainless helper — inherits it from its includer; see project.scala)
 
 // secrets — the ONE home for "does this look like a credential, and how do I show it without leaking it".
 // PURE; no @main, so tools can `//> using file secrets.scala` (the minijson.scala / limitstore.scala

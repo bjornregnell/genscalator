@@ -1,5 +1,5 @@
-//> using scala 3.9.0-RC4
 //> using jvm 21
+// (no version include: mainless helper — inherits it from its includer; see project.scala)
 
 // minijson — a tiny, dependency-free JSON reader (SM112 de-dep). PURE; no @main (a shared helper like lib.scala,
 // seqspec.scala). WHY it exists: it lets hot, JDK-light tools drop the ujson dependency and become PURE-JDK — the

@@ -1,4 +1,4 @@
-//> using scala 3.9.0-RC4
+//> using file project.scala
 //> using jvm 21
 
 // tsv — READ and FILTER a tab-separated file: what columns are there, how many rows match, show me those

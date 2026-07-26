@@ -1,5 +1,5 @@
-//> using scala 3.9.0-RC4
 //> using jvm 21
+// (no version include: mainless helper — inherits it from its includer; see project.scala)
 
 // limitstore — the SHARED, MAINLESS store logic behind `tt limit` (writer/CLI) and `tt statusline`
 // (reader/renderer). Split out like minijson.scala: a tool file with a @main cannot be `using file`-

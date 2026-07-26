@@ -1,4 +1,4 @@
-//> using scala 3.9.0-RC4
+//> using file ../project.scala
 //> using dep org.scalameta::munit::1.3.3
 //> using dep com.lihaoyi::os-lib:0.11.8
 

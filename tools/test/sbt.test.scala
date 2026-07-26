@@ -1,4 +1,4 @@
-//> using scala 3.9.0-RC4
+//> using file ../project.scala
 //> using dep org.scalameta::munit::1.3.3
 
 // Unit tests for sbt.scala's PURE argv planner. No sbt process is touched here — what is pinned is

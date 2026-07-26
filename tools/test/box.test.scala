@@ -1,4 +1,4 @@
-//> using scala 3.9.0-RC4
+//> using file ../project.scala
 //> using dep org.scalameta::munit::1.3.3
 
 // Unit tests for box.scala's SM181 LOCAL shapes — the PURE core only: /proc stat/meminfo parsing,

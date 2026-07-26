@@ -3,8 +3,10 @@
 Typed, compiler-checked, reusable Scala scratch tools that replace the brittle bash/grep/awk/python
 reflex. **Off-the-shelf: pick a tool, give args** — no re-deriving logic each time, no dynamic-shell
 surprises (the compiler catches mistakes before they run). Project-agnostic. **Policy: track the latest LTS
-Scala, bleeding edge — a release candidate counts.** The pin is **3.9.0-RC4** (the coming 3.9.0 LTS, still
-in RC). This line is the single place the version is stated in prose; re-check it per project.
+Scala, bleeding edge — a release candidate counts**; re-check it per project. The version itself is stated
+ONCE, in [`project.scala`](project.scala) — every tool carries `//> using file project.scala`
+instead of naming a version, so a bump is one edit there rather than one per tool. This line is the single
+place the *policy* is stated in prose; deliberately no version number is repeated here.
 
 ## Run
 ```
@@ -586,7 +588,8 @@ diagnostics, refactors). Full guide: [`../docs/tool-selection.md`](../docs/tool-
 - `git.scala` — safe git helper: commit-from-file, ff-only pull, fetch, read-only show (effectful; os-lib).
 - `update.scala` — update-awareness: is genscalator behind its marketplace remote? (effectful: git fetch; read-only; os-lib).
 - `newtool.scala` — the generator.
-- `template.scala.txt` — starter template (latest Scala header, lib include, dispatch skeleton).
+- `template.scala.txt` — starter template (version + lib includes, dispatch skeleton).
+- `project.scala` — the single source of the Scala version (no code, no `@main`); every tool includes it.
 
 ## Conventions
 - **Pure tools** (read → compute → print): keep them pure; later default to **Capture-Checking Safe

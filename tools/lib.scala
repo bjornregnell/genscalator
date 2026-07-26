@@ -1,5 +1,5 @@
-//> using scala 3.9.0-RC4
 //> using jvm 21
+// (no version include: mainless helper — inherits it from its includer; see project.scala)
 
 // Shared helpers for the Scala agent toolbox. PURE (no I/O effects except the explicitly-named file
 // readers). Project-agnostic — destined for an open Codeberg repo. Uses only the JDK (no deps) so pure

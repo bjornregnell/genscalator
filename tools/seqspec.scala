@@ -1,5 +1,5 @@
-//> using scala 3.9.0-RC4
 //> using jvm 21
+// (no version include: mainless helper — inherits it from its includer; see project.scala)
 
 // seqspec — the shared spec model + parser for the sequence-diagram tools (svg, ascii, gvdot). A shared helper with NO
 // @main (like lib.scala), so both tools `//> using file seqspec.scala` and reuse ONE grammar / parser — the spec is

@@ -1,5 +1,5 @@
-//> using scala 3.9.0-RC4
 //> using jvm 21
+// (no version include: mainless helper — inherits it from its includer; see project.scala)
 
 // boxstats — SHARED helper (no @main, like lib.scala / seqspec.scala; see research/038): the box-health
 // gatherers behind the SM163 box line AND `tt bloop` (T3). Extracted from statusline.scala the moment a

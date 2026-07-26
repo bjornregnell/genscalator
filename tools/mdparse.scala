@@ -1,5 +1,5 @@
-//> using scala 3.9.0-RC4
 //> using jvm 21
+// (no version include: mainless helper — inherits it from its includer; see project.scala)
 
 // mdparse — the SHARED markdown block parser for the toolbox (SM019 step 1). It lifts the block
 // classification + gathering that used to live inside md-fmt's reflow loop into ONE reusable `parse(md) ->

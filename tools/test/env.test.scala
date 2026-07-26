@@ -1,4 +1,4 @@
-//> using scala 3.9.0-RC4
+//> using file ../project.scala
 //> using dep org.scalameta::munit::1.3.3
 
 // Unit tests for env.scala + secrets.scala. The redaction cases are the point: this tool exists because

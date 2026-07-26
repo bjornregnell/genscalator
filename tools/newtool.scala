@@ -1,4 +1,4 @@
-//> using scala 3.9.0-RC4
+//> using file project.scala
 //> using jvm 21
 
 // Generator: scaffold a new pure tool from template.scala.txt.
