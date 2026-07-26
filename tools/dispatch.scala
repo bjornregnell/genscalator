@@ -40,6 +40,7 @@ object Dispatch {
     "links"       -> (a => resolveLinks(a*)),
     "log"         -> (a => logAnalyze(a*)),
     "md-fmt"      -> (a => formatMarkdown(a*)),
+    "memory"      -> (a => memorySnapshotSync(a*)),
     "mode"        -> (a => mode(a*)),
     "newtool"     -> (a => newtoolEntry(a)),
     "parsereqt"   -> (a => requirementsMarkdownParser(a*)),
