@@ -135,13 +135,16 @@ object Links:
   def referents(token: String, known: Set[String], dirs: Set[String]): Set[String] =
     if known(token) then Set(token)
     else if dirs(token) then
-      // A cited DIRECTORY means one of two things, and depth tells them apart (BR's ruling, 2026-07-26).
-      // A NESTED dir names an ARTIFACT whose contents are the thing — `research/experiments/
-      // indent-vs-braces/` is cited by blog 002 and the research-methods skill, and citing it plainly
-      // keeps its probes and tasks. A TOP-LEVEL dir names a LOCATION: `HUMANS.md` and `docs/foundations.md`
-      // both link bare `research/` as a repo-map entry, and expanding that would mark all 464 files
-      // referenced and make any migration a no-op. So: expand nested, do not expand top-level.
-      if token.contains('/') then known.filter(_.startsWith(token + "/")) + token else Set(token)
+      // A cited DIRECTORY means one of two things, and DEPTH tells them apart (BR's ruling, 2026-07-26,
+      // refined the same day against real counts).
+      //   ARTIFACT dir, 3+ components — `research/experiments/indent-vs-braces/` is cited by blog 002 and
+      //     the research-methods skill, and its probes and tasks ARE the thing cited. Citing it keeps them.
+      //   GROUPING dir, 1-2 components — `research/`, `research/wr-data/`, `research/theory/`. These name
+      //     a LOCATION. `HUMANS.md` links bare `research/` as a repo-map entry, and 27 files cite
+      //     `research/wr-data/` as "the logs"; expanding either would keep hundreds of files on one
+      //     generic mention and make a migration a no-op (measured: 271 movable files fell to ~22).
+      // So expand at depth 3 and deeper only.
+      if token.count(_ == '/') >= 2 then known.filter(_.startsWith(token + "/")) + token else Set(token)
     else
       val i = token.lastIndexOf('/')
       if i <= 0 then Set.empty

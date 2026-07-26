@@ -104,6 +104,14 @@ class LinksSuite extends munit.FunSuite:
     assert(!clue(got).contains("research/x.md"), "only the cited directory's own contents")
   }
 
+  test("a GROUPING directory citation names a location, so it does NOT keep its contents") {
+    // 27 files cite `research/wr-data/` as "the logs"; expanding that kept all 218 and made the
+    // migration a no-op. Two components is a grouping, three is an artifact.
+    val known = Set("research/wr-data/a.md", "research/wr-data/b.md")
+    val dirs = Set("research", "research/wr-data")
+    assertEquals(Links.referents("research/wr-data", known, dirs), Set("research/wr-data"))
+  }
+
   test("a TOP-LEVEL directory citation names a location, so it does NOT keep everything") {
     // HUMANS.md links bare `research/` as a repo-map entry; expanding that would make a migration a no-op
     val known = Set("research/a.md", "research/b.md")
