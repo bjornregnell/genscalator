@@ -112,7 +112,13 @@ jobs:
         run: |
           mkdir -p dist
           name="genscalator-${{ matrix.platform }}"
-          (cd staging && zip -qr "../dist/$name.zip" .)
+          # ⚠ `zip` is NOT on the Windows runners — Git Bash ships no zip binary, so this step died with
+          # "zip: command not found" (exit 127) on the FIRST run where everything before it succeeded.
+          # 7-Zip IS preinstalled there. The ARCHIVE FORMAT stays zip on every platform regardless: D3
+          # picks zip because the JDK reads it via java.util.zip, so the installer needs neither a
+          # library nor a subprocess. Only the writer differs, never the format.
+          if command -v zip >/dev/null; then (cd staging && zip -qr "../dist/$name.zip" .)
+          else (cd staging && 7z a -tzip -bso0 -bsp0 "../dist/$name.zip" .); fi
           cd dist
           if command -v sha256sum >/dev/null; then sha256sum "$name.zip" > "$name.zip.sha256"
           else shasum -a 256 "$name.zip" > "$name.zip.sha256"; fi
