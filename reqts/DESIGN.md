@@ -220,3 +220,77 @@ the JVM, the compiler artifacts and the GraalVM that scala-cli fetches for nativ
 cold leg, paid six times per run. It is a speed decision and correctness-neutral by construction: a cold
 cache builds the same binary, more slowly. It is recorded here only so that a future reader does not
 mistake it for something the build depends on for correctness and hesitate to remove it.
+
+## D7 - how `tt update --native` gets its code, and how it replaces a running binary
+
+**Status: BOTH DECIDED by BR 2026-07-27, after being raised as open. The analysis below is kept because
+it is why the answers are what they are; the decisions are stated at the end of each part.**
+
+The entry was written while deliberately stopping short of both, because each is an architecture call
+whose failure mode lands on a user's machine and neither could be verified from this developer box.
+
+Everything else that verb needs now exists and is proven end to end: `Lib.releasePlatform` resolves the
+asset name (and returns None rather than guessing for the two unpublished platforms),
+`tt forge release-download --verify` fetches and checksums, `tt zip check` validates every CRC, and
+`tt zip extract --exec` writes a tree whose `bin/tt` actually runs — verified by running it. What is left
+is precisely these two questions.
+
+**D7a - how does `tt update --native` reach the download code?** The verb needs "fetch the latest
+release's asset for this platform", which is exactly `tt forge release-download`, whose helpers are all
+`private` inside `Forge`. Three options, none obviously right: (1) promote a single public entry point on
+`Forge` and call it in-process, which couples `update` to `forge` but keeps one HTTP path; (2) shell out
+to `tt forge release-download`, which keeps the tools decoupled but makes a toolbox verb depend on a
+subprocess reach of exactly the kind this project argues against; (3) duplicate the request code, which is
+the SM247 sibling-miss trap and should be rejected outright.
+
+✅ **DECIDED: option (3) — a NEW SHARED MODULE that both tools include**, not the public-entry-point
+option this entry was leaning toward. The reasoning that changed it: the toolbox's dependency graph is
+FLAT today — 44 tools, none calling another's code, all sharing only `lib.scala` — and option (1) would
+have spent that property to save a file. A shared module keeps neither tool dependent on the other and
+gives the shared code one narrow documented API, which is how `lib.scala` and `reqt-vendored` already
+work. ⚠ It cannot live in `lib.scala` itself: that file is deliberately JDK-only so pure text tools
+compile fast, while download-and-verify needs `requests` and `os-lib`. So it is a new file (working name
+`releaselib.scala`) carrying those deps, and `forge` moves its download/verify internals into it rather
+than exposing them. More churn now, no coupling debt later.
+
+**D7b - how is a RUNNING binary replaced?** This is the sharp one. `tt update --native` installs over
+`GENSCALATOR_HOME` (default `~/.genscalator`), and the file it replaces may be the very binary executing
+the update. Writing through it with `Files.copy(REPLACE_EXISTING)` truncates the inode in place and can
+corrupt the running process. The POSIX answer is an ATOMIC rename, which unlinks the old inode and leaves
+the running process holding it safely. **Windows cannot replace a running executable at all** — the
+standard trick is to rename the running `tt.exe` aside (permitted) and move the new one in, then clean up
+the old on next start. ⚠ **That Windows path cannot be tested from here**, and Windows is now a PROVEN
+distribution target, so shipping an unverified self-replace there risks leaving a tester with no working
+`tt` at all — the worst possible outcome for a verb whose purpose is keeping `tt` current. Options:
+implement POSIX-atomic and refuse on Windows with a clear message (honest, incomplete, and bad for a
+platform we just made green); implement both and mark the Windows path experimental until someone runs it
+on a real box; or stage the new tree and have the human perform the final move.
+
+⭐ **A candidate answer to D7b that needs NO platform branch, found while writing this entry and worth
+checking before anyone accepts the options above.** The Windows-specific difficulty is replacing a running
+executable, but Windows *does* permit RENAMING one. So the sequence "move the current binary aside, then
+move the new one into place" — two `Files.move(..., ATOMIC_MOVE)` calls — is correct on BOTH families for
+different reasons: on POSIX because rename unlinks the old inode while the running process keeps it, and
+on Windows because renaming a live image is allowed even though overwriting it is not. That is ONE code
+path, testable on Linux, and correct on Windows by construction of the same primitive rather than by a
+branch nobody can exercise. The only genuinely Windows-shaped residue is deleting the leftover `tt.old`,
+which can be a best-effort sweep on next start and whose failure is cosmetic.
+⚠ Stated as a CANDIDATE, not a decision: it rests on the claim that Windows permits renaming a running
+image, which is true to the best of this author's knowledge and has NOT been verified on a Windows box.
+Verify that one fact and D7b likely stops being a fork.
+
+✅ **DECIDED for D7b: VERIFY ON WINDOWS CI FIRST, then implement the single branch-free path.** The
+candidate above is adopted *conditionally* rather than on reasoning alone, which is the whole point of the
+decision: the `windows-latest` leg already runs the full toolbox suite, so a test that launches a small
+executable and renames it while running settles the question on real Windows for the cost of one CI
+round-trip. If it passes, rename-aside ships as ONE path for every platform and this stops being a fork.
+If it fails, we learn that here instead of from a tester with no working `tt`.
+
+⇒ **The order of work this fixes:** (1) write the rename-a-running-executable test; (2) let CI answer it
+on Windows; (3) only then implement the swap. Note what this makes the test: not a regression test for
+code that exists, but an EXPERIMENT whose result selects the design — so it must stay in the suite
+afterwards, because the design it selected depends on its claim remaining true.
+
+**Why both were written down rather than chosen unilaterally.** A wrong answer here does not fail a test,
+it bricks an install. Both questions wanted the human who owns the distribution decision, and one of them
+wanted a Windows machine — or, as it turned out, one verified fact instead of a machine.
