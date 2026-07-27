@@ -19,7 +19,7 @@ file states **when**. Detail and open questions live in those documents, not her
   search and replace, preview by default), `tt git --remote` and `tt git push` (one unit to a whole
   mirror set in one call).
 
-## v0.9.3 - OPEN QUESTION: does this release exist at all?
+## v0.9.3 - SKIPPED. Decided by BR 2026-07-27; this release does not exist
 
 Investigate what is actually left for one more release before the alpha, and decide whether it earns
 being a release. The alternative is to skip it and go straight to v0.10.0.
@@ -52,6 +52,16 @@ like **yes, there is real user-facing material, and it is not merely alpha work*
 Windows fixes are better framed as v0.9.3 or folded into the alpha, since they serve the alpha's own
 gate.
 
+✅ **DECIDED 2026-07-27 by BR: SKIP v0.9.3, go straight to v0.10.0.** Recorded with the tension intact,
+because the decision went AGAINST the evidence above rather than following it, and a later reader
+should not have to reconstruct why. The evidence said the material is real; BR's call was that real
+material does not by itself earn a release when the sub-question above resolves the other way — the
+Windows fixes serve the alpha's own gate, so they ARE alpha content rather than a separate shipment.
+**Nothing on the list is dropped: the list stays because it is now the answer to "what does the alpha
+ship beyond its blocking items", which is a question the release notes will have to answer anyway.**
+⚠ The cost BR accepted explicitly: a Windows tester's three hard failures now ship no sooner than the
+alpha, and the alpha is gated behind `tt zip extract`, a security design task (see v0.10.0 below).
+
 ## v0.10.0 - alpha, coming next
 
 **Gate:** a tester on their own machine can install and run the toolbox without a wedge. Everything else is polish or velocity.
@@ -68,7 +78,14 @@ Blocking:
   experimental, because it never failed, it never STARTED — a perpetually-queued leg holds `publish`
   hostage via `needs: build`, and `continue-on-error` does not fix queuing. Run 30292345970 then
   demonstrated that distinction empirically: `windows-aarch64` FAILED and `publish` ran anyway.
-- Decide how alpha is distributed: release-asset binaries, or build on the tester's box.
+- ~~Decide how alpha is distributed: release-asset binaries, or build on the tester's box.~~
+  ✅ **DECIDED 2026-07-27 by BR: release-asset binaries for the four PROVEN platforms**
+  (`linux-x86_64`, `linux-aarch64`, `macos-aarch64`, `windows-x86_64`), **with building from source
+  DOCUMENTED as the supported route for the two that are not proven** (Intel macOS, and
+  `windows-aarch64` while no `aarch64-pc-win32` scala-cli build exists upstream). So an unusual-platform
+  tester is slower, never unsupported. This is what the workflow comments already assumed; it is now a
+  decision rather than an assumption. ⚠ **It is also what makes extraction necessary** — see the
+  `tt update --native` item below, whose blocker exists only because this went the assets way.
   **Still BR's decision, but no longer un-evidenced:** the release-asset path was proven end to end on
   2026-07-27 — `publish` executed for the first time ever (6s), attaching 4 platform zips + 4 sha256,
   and a full round trip was verified from the tester's side: download, sha256 match, then every CRC32
@@ -81,6 +98,15 @@ Blocking:
   path-containment guard designed on purpose with its own tests. ⇒ **`tt zip extract` is the real next
   blocker, and it is a security design task, not plumbing.** It also writes executables onto a user's
   machine, so it wants a human at the wheel.
+  ✅ **DECIDED 2026-07-27 by BR: BUILD `tt zip extract` with a containment guard.** The alternative
+  offered and declined was to skip extraction entirely and have `tt update --native` download, verify,
+  then PRINT the install command for the human to run — which is what `tt update` already does today
+  ("It updates nothing itself... the human is the actuator") and would have added no zip-slip surface.
+  BR chose the real extractor, accepting a security design task on the alpha's critical path in
+  exchange for a genuine one-command update. **Guard rules the extractor must enforce, and each wants
+  a hostile-entry test rather than a comment claiming it holds:** reject any entry whose RESOLVED
+  target escapes the destination directory; reject absolute paths and Windows drive letters; reject
+  symlink entries; and apply a stated overwrite policy rather than an accidental one.
 - `gs native`, consent-gated provisioning, depends on the same.
 
 Also in scope for alpha:
@@ -92,6 +118,22 @@ Also in scope for alpha:
   confirmation-fatigue and remote-execution risk genscalator argues against.
 - Write the credentials-and-tokens section of `SECURITY-MODEL.md`, which is currently an explicit TODO
   in a document testers read.
+  ✅ **POLICY DECIDED 2026-07-27 by BR: MOMENTARY-FIRST.** A credential helper consulted at the point of
+  use is the preferred route; an exported token in a shell rc file is DISCOURAGED, because it is
+  continuously readable by every child process for the life of the shell, while a token fetched at the
+  moment of use exists briefly inside one audited tool and self-heals on re-auth. This ratifies where
+  the code already went (`4cfe96b`, and the `gh auth token` fallback of 2026-07-25) rather than
+  inventing a stance.
+  ⚠ **The section must ARGUE this position explicitly, not merely state it, and the reason is a
+  coherence problem a reader will otherwise spot unaided:** the accepted cost is that an agent can
+  self-authorize whenever the human is already logged in to `gh` — observed live on 2026-07-27, where
+  `tt forge` printed "no token in env; obtained one from `gh auth token`" on essentially every call,
+  including while BR was AFK. Read beside a self-updating native installer (the decision two items up),
+  both choices trade human ACTUATION for audit-plus-brevity-of-exposure. That is a defensible stance
+  and it is now the project's de facto one, so the document must name **audit and short exposure as the
+  control**, instead of leaving a reader to infer that human-in-the-loop was quietly abandoned. The
+  alternative BR declined was human-gated-only: tokens solely from fixed human-set env names, no helper
+  fallback, so an agent could never obtain a credential it was not handed.
 - PRD consistency pass: make it describe what was actually built.
 - Public-surface hygiene, including moving research and unpublished media that reads as cruft to the
   closed work repo, with a link-consistency sweep afterwards.
