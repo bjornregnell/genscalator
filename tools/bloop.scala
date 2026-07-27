@@ -74,7 +74,12 @@ object BloopTool:
     val slashed  = root.replace('\\', '/')
     val trimmed  = if slashed.length > 1 && slashed.endsWith("/") then slashed.dropRight(1) else slashed
     val parts    = trimmed.split("/").filter(_.nonEmpty).toList
-    val segments = parts.length
+    // ⚠ The drive letter is a ROOT, not a path segment. Counting it would make the shallowness guard
+    // one level laxer on Windows than on POSIX: "C:\Users" is the moral equivalent of "/home", but it
+    // splits to TWO parts and would have been accepted while "/home" is correctly refused as one.
+    // Caught by the Windows-spelling tests below, which is why they exist.
+    val pathParts = if parts.headOption.exists(_.endsWith(":")) then parts.tail else parts
+    val segments  = pathParts.length
     val home     = Option(System.getProperty("user.home")).getOrElse("").replace('\\', '/')
     // A home directory is refused whoever owns it, not just the caller's: /home/<name> is somebody's
     // whole life, and a recursive sweep rooted there is a mistake regardless of which account it is.
