@@ -1,4 +1,5 @@
 //> using file project.scala
+//> using file lib.scala
 //> using jvm 21
 //> using dep com.lihaoyi::requests:0.9.3
 //> using dep com.lihaoyi::ujson:4.4.3
@@ -33,6 +34,7 @@
 //   tt forge protection <owner>/<repo> <branch> [--gh | --url BASE]  # protection rule (needs a token)
 //   BASE defaults to https://codeberg.org
 import scala.util.Try
+import agenttools.Lib
 
 // Helpers (die/token/hostOf/getJson/splitRepo/… and the opts types) scoped in this object so their generic
 // names don't collide with other tools when the toolbox compiles together. Only the @main entry is top-level.
@@ -854,11 +856,10 @@ object Forge {
   private def assetsOf(rel: ujson.Value): List[ujson.Value] =
     rel.obj.get("assets").toList.flatMap(a => Try(a.arr.toList).getOrElse(Nil))
 
-  /** Tiny `*`-only glob. Documented as such: anything richer would invite a caller to assume full
-    * shell globbing and get a silently-empty result, which is the SM242 failure shape.
+  /** Tiny `*`-only glob — now ONE definition in `Lib`, because `tt zip extract --exec` needed the same
+    * predicate hours after this one was written, which is exactly when a second copy appears and drifts.
     */
-  private def globMatches(glob: String, name: String): Boolean =
-    name.matches(glob.split("\\*", -1).map(java.util.regex.Pattern.quote).mkString(".*"))
+  private def globMatches(glob: String, name: String): Boolean = Lib.globMatches(glob, name)
 
   private def sha256Hex(p: os.Path): String = // JDK only, no dependency
     java.security.MessageDigest.getInstance("SHA-256")

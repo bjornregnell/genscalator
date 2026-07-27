@@ -33,6 +33,48 @@ object Lib:
   def isAbsolutePath(p: String): Boolean =
     p.startsWith("/") || p.startsWith("""\\""") || p.matches("""^[A-Za-z]:[/\\].*""")
 
+  /** Map an os/arch pair to the platform token in a release asset name (`genscalator-<token>.zip`), or
+    * None when this project publishes no binary for that combination.
+    *
+    * Takes its inputs as PARAMETERS rather than reading `os.name`/`os.arch`, so the whole distribution
+    * matrix is unit-testable from any host — the same reason `isAbsolutePath` is a string predicate.
+    *
+    * ⚠ None is a real answer and must not be turned into a guess. It encodes BR's distribution decision
+    * of 2026-07-27: assets for the four PROVEN platforms, source build documented for the rest. Intel
+    * macOS and Windows-on-ARM deliberately return None — the first has never produced an artifact, and
+    * the second is published EXPERIMENTAL and currently fails because VirtusLab ships no
+    * `aarch64-pc-win32` scala-cli build. Guessing a nearby token there would download a binary that
+    * cannot run, which is a worse outcome than being told to build from source.
+    */
+  def releasePlatform(osName: String, osArch: String): Option[String] =
+    val os = osName.toLowerCase
+    val arch = osArch.toLowerCase match
+      case "amd64" | "x86_64" | "x64"      => Some("x86_64")
+      case "aarch64" | "arm64"             => Some("aarch64")
+      case _                               => None
+    val family =
+      if os.contains("linux") then Some("linux")
+      else if os.contains("mac") || os.contains("darwin") then Some("macos")
+      else if os.contains("windows") then Some("windows")
+      else None
+    (family, arch) match
+      case (Some("linux"), Some(a))           => Some(s"linux-$a")       // both linux arches are published
+      case (Some("macos"), Some("aarch64"))   => Some("macos-aarch64")   // Apple Silicon
+      case (Some("windows"), Some("x86_64"))  => Some("windows-x86_64")
+      case _                                  => None                    // incl. Intel mac + win-aarch64
+
+  /** Match a name against a `*`-only glob. `*` matches any run of characters; every other character is
+    * literal, so a name containing regex metacharacters cannot smuggle a pattern in.
+    *
+    * ⚠ It lives HERE for the same reason `isAbsolutePath` does. It was written private inside `tt forge`
+    * for `release-download --pattern`, and `tt zip extract --exec` needed exactly the same predicate
+    * hours later — the moment at which a second copy usually appears and then drifts. Deliberately
+    * `*`-only and documented as such: anything richer invites a caller to assume full shell globbing and
+    * get a silently-empty result instead of an error.
+    */
+  def globMatches(glob: String, name: String): Boolean =
+    name.matches(glob.split("\\*", -1).map(java.util.regex.Pattern.quote).mkString(".*"))
+
   // --- toolbox location ---
   /** Locate the tools dir (cwd-independent): the -Dtt.tools property the `tt` launcher passes, else walk up
     * from the cwd for a `tools/tt`. The ONE shared definition — doc / prd / skillcheck / skillgrants all use

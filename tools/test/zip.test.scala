@@ -104,6 +104,71 @@ class ZipSuite extends munit.FunSuite:
     }
   }
 
+  // ---- the containment guard ----------------------------------------------------------------
+  //
+  // These are the tests that matter. `resolveEntry` is pure on purpose, so hostile names can be fired
+  // at it directly with no filesystem and no archive, and the verdict is identical on every host —
+  // which is the only way a guard's tests are worth anything. A guard whose tests only ever feed it
+  // WELL-BEHAVED names proves nothing at all.
+
+  private val root = Path.of("/tmp/dest").toAbsolutePath.normalize
+
+  test("an ordinary nested entry is allowed, and lands under the destination") {
+    val got = Zip.resolveEntry(root, "bin/tt")
+    assertEquals(got.map(_.toString), Right(root.resolve("bin/tt").toString))
+  }
+
+  test("a name containing a space is ALLOWED — the control-char check must not eat ordinary names") {
+    assert(Zip.resolveEntry(root, "docs/My File.md").isRight)
+  }
+
+  test("dot-dot escape is rejected, however deeply buried") {
+    List(
+      "../evil",
+      "../../../../etc/passwd",
+      "bin/../../evil",
+      "a/b/c/../../../../../evil",
+      "./../evil",
+    ).foreach: name =>
+      val got = Zip.resolveEntry(root, name)
+      assert(got.isLeft, s"MUST reject '$name' but got $got")
+      assert(got.left.exists(_.contains("escapes")), s"wrong reason for '$name': $got")
+  }
+
+  test("BACKSLASH separators are folded first, so a Windows-shaped escape cannot slip past normalize") {
+    // On POSIX, Path.of would treat this as ONE innocent filename that normalize cannot collapse, while
+    // Windows would read it as an escape. Folding makes the verdict identical on both.
+    val got = Zip.resolveEntry(root, """..\..\evil""")
+    assert(got.isLeft, s"backslash escape must be rejected, got $got")
+  }
+
+  test("absolute names are rejected on every host: POSIX, drive letter and UNC alike") {
+    List("/etc/passwd", """C:\Windows\evil""", "C:/Windows/evil", """\\server\share\evil""").foreach: name =>
+      val got = Zip.resolveEntry(root, name)
+      assert(got.isLeft, s"MUST reject absolute '$name' but got $got")
+      assert(got.left.exists(_.contains("absolute")), s"wrong reason for '$name': $got")
+  }
+
+  test("an empty name, a control character, and the destination itself are all rejected") {
+    assert(Zip.resolveEntry(root, "").isLeft)
+    assert(Zip.resolveEntry(root, "a\u0000b").left.exists(_.contains("control character")))
+    assert(Zip.resolveEntry(root, ".").left.exists(_.contains("destination itself")))
+  }
+
+  test("a name that merely LOOKS like an escape but stays inside is allowed") {
+    // Guarding must not be so blunt that it rejects legitimate archives: `..` as a substring of a
+    // filename, and a traversal that resolves back inside, are both fine.
+    assert(Zip.resolveEntry(root, "a..b/c").isRight)
+    assert(Zip.resolveEntry(root, "a/../b").isRight)
+  }
+
+  test("a sibling directory sharing a prefix is NOT treated as inside the destination") {
+    // The classic startsWith bug: /tmp/destevil is a string-prefix match on /tmp/dest but is a
+    // different directory. Path.startsWith compares name elements, and this pins that it stays that way.
+    val got = Zip.resolveEntry(root, "../destevil/x")
+    assert(got.isLeft, s"prefix-sibling escape must be rejected, got $got")
+  }
+
   test("methodName names the two real methods and does not lie about an unknown one") {
     assertEquals(Zip.methodName(ZipEntry.STORED), "stored")
     assertEquals(Zip.methodName(ZipEntry.DEFLATED), "deflated")

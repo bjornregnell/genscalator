@@ -11,6 +11,58 @@ import agenttools.Lib
 
 class LibSuite extends munit.FunSuite:
 
+  // --- releasePlatform ---
+  // Pins BR's distribution decision of 2026-07-27 as executable fact rather than prose: assets for the
+  // four proven platforms, None (build from source) for the rest.
+  test("releasePlatform maps the four PUBLISHED platforms") {
+    assertEquals(Lib.releasePlatform("Linux", "amd64"), Some("linux-x86_64"))
+    assertEquals(Lib.releasePlatform("Linux", "aarch64"), Some("linux-aarch64"))
+    assertEquals(Lib.releasePlatform("Mac OS X", "aarch64"), Some("macos-aarch64"))
+    assertEquals(Lib.releasePlatform("Windows 11", "amd64"), Some("windows-x86_64"))
+  }
+  test("releasePlatform returns None for the two platforms with NO published asset") {
+    // Not an oversight: Intel mac never produced an artifact, and windows-aarch64 is experimental and
+    // failing. A near-miss guess here would install a binary that cannot run.
+    assertEquals(Lib.releasePlatform("Mac OS X", "x86_64"), None)
+    assertEquals(Lib.releasePlatform("Windows 11", "aarch64"), None)
+  }
+  test("releasePlatform is case-insensitive and knows the arch aliases") {
+    assertEquals(Lib.releasePlatform("LINUX", "X86_64"), Some("linux-x86_64"))
+    assertEquals(Lib.releasePlatform("linux", "arm64"), Some("linux-aarch64"))
+    assertEquals(Lib.releasePlatform("Darwin", "arm64"), Some("macos-aarch64"))
+  }
+  test("releasePlatform refuses an unknown os or arch rather than guessing") {
+    assertEquals(Lib.releasePlatform("SunOS", "sparc"), None)
+    assertEquals(Lib.releasePlatform("Linux", "riscv64"), None)
+    assertEquals(Lib.releasePlatform("", ""), None)
+  }
+
+  // --- globMatches ---
+  // Shared by `tt forge release-download --pattern` and `tt zip extract --exec`. The second consumer
+  // arrived hours after the first, which is the moment a private copy would have been duplicated and
+  // then drifted; these tests pin the ONE definition instead.
+  test("globMatches: a bare name matches only itself") {
+    assert(Lib.globMatches("bin/tt", "bin/tt"))
+    assert(!Lib.globMatches("bin/tt", "bin/tt.exe"))
+    assert(!Lib.globMatches("bin/tt", "sbin/tt"))
+  }
+  test("globMatches: a trailing star matches a prefix, including the empty remainder") {
+    assert(Lib.globMatches("bin/*", "bin/tt"))
+    assert(Lib.globMatches("bin/*", "bin/"))
+    assert(!Lib.globMatches("bin/*", "docs/tt"))
+  }
+  test("globMatches: a star matches across separators, and several stars work") {
+    assert(Lib.globMatches("*.zip", "genscalator-linux-x86_64.zip"))
+    assert(Lib.globMatches("genscalator-*.zip*", "genscalator-linux-x86_64.zip.sha256"))
+    assert(Lib.globMatches("*/*", "a/b"))
+  }
+  test("globMatches: regex metacharacters in the NAME are literal, not a pattern") {
+    // The whole reason the glob is quoted per-segment: a name carrying `.` or `+` must not act as regex.
+    assert(!Lib.globMatches("a.c", "abc"))
+    assert(Lib.globMatches("a.c", "a.c"))
+    assert(Lib.globMatches("v1+2", "v1+2"))
+  }
+
   // --- histogram ---
   test("histogram sorts descending by count and shows keys + counts") {
     val h = Lib.histogram(Map("apple" -> 3, "pear" -> 1))
