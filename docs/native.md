@@ -2,7 +2,7 @@
 
 > **What this is.** The working notes for compiling the whole `tt` toolbox into ONE
 > GraalVM native-image binary — why, how, what is proven, and what remains before
-> `gs native` (the consent-gated provisioning DWIM, PRD SM112) can ship it to users.
+> `gs native` (the consent-gated provisioning DWIM specified in the PRD) can ship it to users.
 > Status as of 2026-07-23 evening: **built, parity-proven and DEFAULT-ON on linux-x64
 > in this repo's launcher** (`TT_NATIVE=0` opts out; a checkout without a built binary
 > silently uses scala-cli as before). Plugin users get the new launcher at the next
@@ -55,7 +55,7 @@ the launcher 2026-07-23 (BR): `time TT_NATIVE=1 tt chrono now` → 0.032 s real 
 mtime newer than binary; conservative by design (any edit disarms the fast path until a
 rebuild).
 
-## What remains toward default-on and `gs native` (SM112)
+## What remains toward default-on and `gs native`
 
 1. **Default-flip: DONE 2026-07-23** (BR's "flip it"): native-when-fresh is the default,
    `TT_NATIVE=0` the opt-out.
@@ -64,17 +64,17 @@ rebuild).
    failure changes nothing, parity failure keeps the candidate for inspection and the
    live binary untouched. Free-memory floor 6 GB. Run BR-present from the repo root:
    `scala-cli run deploy/buildnative.sc`. *(Script written 2026-07-23; **PROVEN on
-   linux-x64 2026-07-24** — the SM220 post-transfer rebuild from the hub clone swapped
+   linux-x64 2026-07-24** — the post-transfer rebuild from the hub clone swapped
    the live binary, and the script swaps only on a green parity run, so the swap is
    itself the evidence: `tmp/tt-native`, 39.8 MB, mtime 2026-07-24 20:42.)*
 3. **Platform matrix**: macOS + Windows binaries (CI build matrix — the alpha-tester
-   long pole named in the SM146 distance report). Once `buildnative.sc` is proven green
+   long pole). Once `buildnative.sc` is proven green
    on both, the ritual promotes to a typed `tt update --native` verb —
    `reqts/issues/open/issue-003-tt-update-native-verb.md` (BR-gated on exactly that).
-4. **`gs native` DWIM** (PRD SM112): detect toolchain (gcc, free mem), consent-gated
+4. **`gs native` DWIM** (specified in the PRD): detect toolchain (gcc, free mem), consent-gated
    build/install, never forcing native on anyone; suggests, not surprises.
-5. **Distribution question**: ship binaries per release (forge release assets — SM196
-   release-all would carry them) vs build-on-box. Undecided.
+5. **Distribution question**: ship binaries per release (forge release assets, which a
+   release-all verb would carry) vs build-on-box. Undecided.
 
-*Ties: SM146 (native = no-bloop endgame), SM112/PRD provisioning, SM196, the scala-platform
+*Ties: native as the no-bloop endgame, the PRD's provisioning spec, the scala-platform
 skill (JVM vs SN vs Graal decision guide), CliSuite parity mode (tools/test/cli.test.scala).*

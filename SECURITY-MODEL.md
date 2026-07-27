@@ -178,8 +178,8 @@ The policy to write up, with the reasoning that is currently only in commit mess
    human-set env names, so the human's shell decided whether a running agent had credentials at all. On
    2026-07-25 that was widened (BR-authorized, agent-flagged): with no env token, `tt forge --gh` falls
    back to `gh auth token`. The trade is explicit — it removes a long-lived token from the ambient
-   environment of every process, at the cost of letting the tool mint one. **Open question for the SM073
-   review: should that fallback be gated behind an explicit human opt-in rather than being the default?**
+   environment of every process, at the cost of letting the tool mint one. **Open question for the next
+   settings review: should that fallback be gated behind an explicit human opt-in rather than the default?**
 5. **Ambient versus momentary exposure.** A token exported in a shell rc file is visible to every child
    process continuously; a token fetched at the point of use exists briefly inside one audited tool. State
    the preference and the exceptions.

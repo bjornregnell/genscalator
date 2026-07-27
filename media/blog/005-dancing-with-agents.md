@@ -183,14 +183,13 @@ checking. **They are prose that executes.** (That thread has its own post: 022.)
 command actually *did*: every single one was **read-only** (list a pull request, view a diff, copy a file), during a
 session where the whole point was to answer an external contributor quickly. The picture makes the argument on its
 own: **we tooled the writing lane, because that is where the danger was, and left the reading lane to raw commands.
-So committing never interrupts me and reviewing interrupts me constantly.** Source: `research/wr-data/` (2026-07-17)
-and PB SM137.
+So committing never interrupts me and reviewing interrupts me constantly.** Source: `research/wr-data/` (2026-07-17).
 
 *(Note for me: the honest caveat belongs in the post. All of this is a story about behaviour, not about the agent's
 inner life. The agent cannot see its own retrieval and says so. What we have is a day of episodes with a consistent
 split, and one prediction we can actually lose: if a future agent ever catches itself reaching for a raw command
 **by remembering a note**, this whole theory is wrong. Ties: `research/wr-data/` 2026-07-17,
-`SECURITY-MODEL.md` §3.1, PB SM137/SM138.)*
+`SECURITY-MODEL.md` §3.1.)*
 
 ## TODO: how to support the claim of their utility EMPIRICALLY?
 

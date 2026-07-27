@@ -68,7 +68,7 @@ Reflows prose / list-item / blockquote blocks while PRESERVING structure: headin
 `---` rules, blank lines, blockquote `>` prefixes, list markers + the author's continuation indent. Never
 breaks inside `` `inline code` `` or `[links](url)`. Idempotent. A content-preservation guard REFUSES any
 result (and any `--write`) that would change the text beyond whitespace + `>` — so it can only re-flow, never
-re-word. (SM012 first cut; deferred: fuzzy/semantic-line-break modes, post-edit-hook wiring, `:shortcode:`
+re-word. (First cut; deferred: fuzzy/semantic-line-break modes, post-edit-hook wiring, `:shortcode:`
 emoji.) Examples:
 ```
 tt md-fmt notes/plan.md --line-width 82        # print reflowed at 82 cols (the PB width)
@@ -81,7 +81,7 @@ sub file <file> <regex> <replacement> [--write] [--literal]
 sub tree <dir> <ext[,ext2,...]> <regex> <replacement> [--write] [--literal]
 ```
 The typed replacement for `sed -i` / a `python3` one-liner — the shape whose ABSENCE fires the raw-interpreter
-reflex (SM232: a Scala version bump touched 78 files with no typed tool for it). Deliberately **not** a verb on
+reflex (a Scala version bump touched 78 files with no typed tool for it). Deliberately **not** a verb on
 `text`, which documents itself as pure; a tool that rewrites files is an effectful driver and lives on its own.
 The safety property sed lacks: **nothing is written without `--write`** — the default run prints `path:line` with
 the old line then the new one, so the destructive step is always a second, deliberate act on a diff you have
@@ -122,7 +122,7 @@ Exposes ONLY name/ext/type/depth — no `-exec`, no arbitrary predicates, no `-d
 where raw `find` (a general file-executor) cannot. Hidden dot-entries (`.git`, `.scala-build`) are skipped by
 default — whole subtree and all — so a repo scan stays clean and fast; `--all` includes them. Symlinks are not
 followed. The guarded write-half (`--prune`,
-confined + dry-run-by-default) is a separate, later step (SM031). Sibling of `files` (which adds a content-regex).
+confined + dry-run-by-default) is a separate, later step. Sibling of `files` (which adds a content-regex).
 Examples:
 ```
 tt find src --ext .scala                    # every .scala file under src
@@ -293,7 +293,7 @@ scala package-js <dir> -o <out> [--prop k=v]... # link Scala.js to <out>
 An **effectful driver** (os-lib) that runs `scala-cli` on a validated **directory** — never `-e` inline
 eval, never an arbitrary script path — with the argv built here (no shell, no arbitrary-flag passthrough)
 and `--server=false` baked (the no-bloop path). This is what lets the blanket `Bash(scala-cli *)` allow be
-retired (SM205): each verb is per-verb allowlistable (`Bash(tt scala test *)`) while bare `scala-cli` stays
+retired: each verb is per-verb allowlistable (`Bash(tt scala test *)`) while bare `scala-cli` stays
 off the allowlist. It does **not** make running code safe — tests and `@main` run real code (SECURITY-MODEL,
 "When the tool's job is to run code"); it removes the *surplus* a broad allow grants. `--prop k=v` becomes
 `--java-prop` (e.g. `--prop tt.tools=<abs-tools>` for the toolbox suite). Prints an audit line (argv, exit,
@@ -342,7 +342,7 @@ time: the "hangover" of a blackout the agent cannot perceive from inside (guard 
 box crash). Detects THAT you were out, not the cause; a `compact_boundary` among the recent records names it a
 compact.
 
-`hook` is the SM121 surface (BR's decision): wired as a **SessionStart** hook it fires on all four boundaries
+`hook` is the hangover-detector surface (BR's decision): wired as a **SessionStart** hook it fires on all four boundaries
 and gets a `source` (`startup`/`resume`/`clear`/`compact`) that NAMES the seam a bare gap cannot tell apart.
 Silent unless there is a hangover (its output is injected into context on every session start), fail-soft and
 always exit 0 (a session start must never break on this). Wiring: `docs/hangover-hook.md` (human-gated).
@@ -433,7 +433,7 @@ bold/italic (incl. `*italic*` inside `**bold**` and intraword-underscore safety)
 `<autolinks>`, `![images]`, fenced code (a `language-*` class), GFM tables, and bullet/ordered lists. Template
 resolution: `--template F`, else `<srcdir>/_template.html`, else a minimal builtin; slots are `{{TITLE}}` (first
 h1) and `{{CONTENT}}`. A sibling `figures/` dir is copied so relative images resolve. Preview with `tt serv`.
-Deferred (SM019 refinement): nested lists (rendered flat), footnotes, reference links, syntax highlighting.
+Deferred to a later refinement: nested lists (rendered flat), footnotes, reference links, syntax highlighting.
 Example: `tt ssg blog/002-....md tmp/site` then `tt serv tmp/site` and open the URL.
 
 ### forge — Forgejo/Gitea forge client, default Codeberg (EFFECTFUL: network; create needs env token)
@@ -461,8 +461,8 @@ cannot be redirected. The GitHub token comes only from fixed env names (`GENSCAL
 `GITHUB_TOKEN`, `GH_TOKEN`); reads work anonymously (60/h rate limit), `protection` requires it (admin read).
 **`contributors`** reads the repo's contributor list — `--gh` prints `login⇥contributions⇥type` (type = `User`/`Bot`,
 the field that answers "why is a bot on the list"), `--gl` prints `name⇥email⇥commits`; the Gitea/Forgejo REST API
-has no contributors endpoint (Codeberg 404s), so the default dialect says so plainly rather than erroring cryptically
-(SM217). Example:
+has no contributors endpoint (Codeberg 404s), so the default dialect says so plainly rather than erroring cryptically.
+Example:
 ```
 tt forge releases bjornregnell/genscalator --limit 5
 tt forge prs lunduniversity/introprog --gh                 # open PRs on a GitHub repo
@@ -490,10 +490,10 @@ general surface blocked allowlisting, e.g. when a PR-review sub-agent needs a fi
 ref or path it exits non-zero with git's error — never a partial/empty success. **`log`** is a READ-ONLY
 commit-log search: it caps (`--limit`, default 50) and tab-formats the output (`<short-sha>⇥<author-email>⇥<subject>`
 plus a `=== N commit(s)` line that flags when the cap was hit), so it needs no `| head` and `Bash(tt git log *)`
-stays allowlist-safe — `--co-author P` greps the `Co-Authored-By:` trailer forges attribute contributors from
-(SM217). **`--remote <name>`** (repeatable, with `--push`) sends the unit to a MIRROR SET in one call instead of
+stays allowlist-safe — `--co-author P` greps the `Co-Authored-By:` trailer forges attribute contributors from.
+**`--remote <name>`** (repeatable, with `--push`) sends the unit to a MIRROR SET in one call instead of
 one raw `git push <remote>` per extra remote — genscalator pushes github + gitlab + coursegit every unit, and
-that gap was forcing the raw-git reflex this tool exists to retire (SM232). It fails on the first remote that
+that gap was forcing the raw-git reflex this tool exists to retire. It fails on the first remote that
 rejects, so a half-pushed set is reported rather than swallowed, and **`push`** is the same thing standalone,
 for syncing a mirror without making a commit. A branch with no upstream in a single-remote repo is refused by
 git itself (`push.default simple`) — set it once with `git push -u`; the tool never sets one behind your back.
@@ -530,12 +530,12 @@ tt update --brief               # speak only if a newer release is available
 tt update --brief --throttle 24 # gs warm's call: check at most once a day, silent unless behind
 ```
 
-### statusline — format the Claude Code statusLine stdin JSON into ONE compact line (PURE: reads stdin, prints; SM039)
+### statusline — format the Claude Code statusLine stdin JSON into ONE compact line (PURE: reads stdin, prints)
 Reads the JSON Claude Code pipes to the configured `statusLine` command each turn and prints one compact,
 colour-coded line — model, context-fill (the rot gauge), usage limits, cost — with optional `--mode-line`
 (line 2, the declared modes) and `--box-line` (line 3, measured box health). Full legend: `docs/statusline-manual.md`.
 
-### box — safe host + local box ops: health, and host-pinned remote ops for a known compute box (EFFECTFUL; SM181)
+### box — safe host + local box ops: health, and host-pinned remote ops for a known compute box (EFFECTFUL)
 Replaces the dual-use `ssh *` / `ps` / `pkill` reflexes with a narrow, allowlistable tool: a FIXED verb enum,
 no shell passthrough, a pinned default host. LOCAL health/kill shapes for this machine plus host-pinned REMOTE
 ops for the known compute box.
@@ -550,24 +550,24 @@ See what the PRD says without re-emitting it token-by-token: `tt prd show` (whol
 (a FUTURE-roadmap gist), `tt prd find <what>` (locate a term by its nearest heading). Complements
 `tt parsereqt` (which parses + lints the reqT-lang).
 
-### harden — Layer-1 deterministic secret scanner (PURE, read-only; SM042)
+### harden — Layer-1 deterministic secret scanner (PURE, read-only)
 Surfaces CANDIDATE secrets for semantic (Layer-2) triage. `tt harden repo <dir>` scans git-TRACKED text files
 (respects `.gitignore`); `tt harden egress <dir>` scans ALL files under a dir destined to LEAVE (a ZIP-staging
 or deploy bundle) — the higher-value half, since a secret safe at rest can leak on egress.
 
-### skillcheck — verify the genscalator skill set is active; catch the silent skill outage (PURE, read-only; SM070)
+### skillcheck — verify the genscalator skill set is active; catch the silent skill outage (PURE, read-only)
 The agent CANNOT feel a missing skill (no phenomenology of absence), so this prints the EXPECTED set (derived
 from the `skills/*/SKILL.md` dirs, so it never drifts) to diff against the live `/skills` list; feed the active
 names via `--active` for a machine-checked, exit-coded diff.
 
-### skillgrants — print what a skill GRANTS: its allowed-tools frontmatter, for informed consent (PURE, read-only; SM100)
+### skillgrants — print what a skill GRANTS: its allowed-tools frontmatter, for informed consent (PURE, read-only)
 When the harness loads a skill it silently widens the auto-approved tool set by that skill's `allowed-tools`,
 but never shows the human WHICH tools at grant time. This is that read: name a skill (or list all) and see
 exactly which tools it opens.
 
-### bloop — targeted BloopServer control: status + restart (EFFECTFUL; SM146c)
+### bloop — targeted BloopServer control: status + restart (EFFECTFUL)
 Bloop is a disposable compile daemon that respawns lazily, so "restart" is a targeted kill + lazy respawn. It
-uses `kill -9` deliberately: when bloop is wedged (the empirical villain, SM150) polite protocols hang and a
+uses `kill -9` deliberately: when bloop is wedged (the empirical villain) polite protocols hang and a
 signal is the reliable cure. Its RSS also surfaces on the statusline box line so regrowth is visible early.
 
 ### wr — Workflow-Research utilities for the WR corpus itself (PURE, read-only)

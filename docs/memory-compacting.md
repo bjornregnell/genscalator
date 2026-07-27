@@ -1,4 +1,4 @@
-# Compacting the agent memory index (MEMORY.md) — the safe procedure (SM068)
+# Compacting the agent memory index (MEMORY.md) — the safe procedure
 
 The agent's memory **index** (`MEMORY.md`, one line per memory) has a harness **read limit** (~24.4KB); a
 PostToolUse hook nudges compaction as it approaches. This is the **agent-authored** compaction (a Read + Write
@@ -36,10 +36,10 @@ invariant: total size under the read limit, WITH HEADROOM; topic-file CONTENT un
   unreadable → the recall system sees no hooks → **total recall failure**. So compaction trades a small
   recall-precision risk for avoiding a total-index-read failure. Not compacting is the bigger risk.
 
-## Empirical angle (SM068, if we study it)
+## Empirical angle (if we study it)
 - **Efficiency** = bytes saved per pass (target: well under the read limit, with headroom for growth).
 - **Effectiveness** = recall precision PRESERVED — do the shortened hooks still surface the right memories? (A
   before/after recall-probe set would measure this.)
 
 Source + risk analysis: `research/wr-data/memory-index-compaction-read-limit-and-loss-risk-2026-07-13.md`.
-Ties: SM068, the substrate-over-mechanism thesis, SM069 (skill vs doc — this stays a doc for now).
+Ties: the substrate-over-mechanism thesis, and the skill-versus-doc question (this stays a doc for now).

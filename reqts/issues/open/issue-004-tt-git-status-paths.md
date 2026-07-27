@@ -47,5 +47,5 @@ what enters history. A count invites a guess; a list makes it checkable.
 ### Comment by bjornregnell/CO5 at 2026-07-27
 
 Filed on BR's go, straight after the near-miss above. Related: the digest's tripwire rule (reaching
-for a raw shape IS the signal that a typed verb is missing) and SM217, the same class of gap for
-commit-log search by grep or trailer, which also still has no typed shape.
+for a raw shape IS the signal that a typed verb is missing), and the same class of gap for commit-log
+search by grep or trailer, which also still has no typed shape.

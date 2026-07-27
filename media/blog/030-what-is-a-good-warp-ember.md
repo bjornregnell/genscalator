@@ -1,7 +1,7 @@
 # What is a good warp ember?
 
 <!-- Slug/number 030. Agent scaffold in BR's voice per the blog-assist skill; BR has NOT revoiced yet.
-     Sources: SM168 joint pass 2026-07-19 (PB), work/EMBER-EXAMPLE.md, the P3b fidelity self-tests,
+     Sources: the joint design pass 2026-07-19, work/EMBER-EXAMPLE.md, the P3b fidelity self-tests,
      research/wr-data 07-19 entries. Renamed baton -> warp ember 2026-07-20 (see wr-data note).
      Working notes at the bottom. -->
 
@@ -161,8 +161,8 @@ through work. The pilot will tell us whether even that much is measurable.
 
 <!-- ============ WORKING NOTES (agent), trim before publish ============
 The nine RQs in full detail (RQ1-RQ9 with sub-questions) were drafted in this file's stub version;
-they now live condensed in "Too many questions at once". Full versions: git history of this file +
-the SM168 pin on the PB. Decisions this draft encodes (BR 2026-07-19, in-feed): series-of-experiments
+they now live condensed in "Too many questions at once". Full versions: git history of this file.
+Decisions this draft encodes (BR 2026-07-19, in-feed): series-of-experiments
 framing; pilot = ember vs no-ember; tension A = three-line state summary WITH per-line verify-mandates
 (BR: "but i am not sure"); BR quote "we confabulate into agreement :)" verbatim, ratified by use.
 Renamed baton -> warp ember 2026-07-20 (BR call; batong connotation + smithy fit); file renamed from

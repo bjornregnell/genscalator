@@ -172,7 +172,7 @@ v0.1.0–v0.9.2 have shipped (see PAST/IMPLEMENTED and `CHANGELOG.md` as ground 
 PAST backfill is pending). **v0.9.2 was the first release speced here BEFORE the cut** (its section was
 re-engineered from the real `v0.9.1..HEAD` range, then moved FUTURE → PAST the same day it shipped,
 2026-07-24). The next scheduled block is **v0.10.0** below; near-term pinned work outside any block:
-`tt forge release-create --gh/--gl` (SM207), per-session mode sets (SM208), release-all (SM196).
+`tt forge release-create --gh/--gl`, per-session mode sets, release-all.
 
 > **Bootstrap note (2026-07-03):** this PRD was re-engineered retrospectively — we did NOT author reqT-lang
 > reqts before each release. To keep it realistic, PAST was reconstructed release-by-release from the
@@ -405,7 +405,7 @@ example of expressing already-built work as reqT-lang requirements for Agentic R
 
 > STUB (BR pin 2026-07-08): a goal-level placeholder to complete the super-harness for a v2.0 release, to be
 > elaborated in reqT-lang from goal-level down (the reqt-lang skill + the dashboard section). See the CC-clamp /
-> capability-harness thread in `research/case-studies/will-i-lose-you/` and the SM016 / SM022 work items.
+> capability-harness thread in `research/case-studies/will-i-lose-you/` and the related work items.
 
 * Goal: completeSuperHarness has
   * Gist: a pure-Scala capability harness (the "CC-clamp") the super-agent drives by injecting a WHITELISTED slash-command enum; capture-checking makes non-whitelisted injection impossible (the enum membership IS the security boundary). Umbrella for the live joint dashboard, the session-log tap, and the idle/context signals the model cannot self-read.
@@ -493,36 +493,36 @@ and the session pin board. The through-line is a new general goal, sovereigntyOf
 * Feature: ttWebTrace relatesTo Feature: ttWeb
 
 * Feature: gsNative has
-  * Gist: (pinned SM112) a gs DWIM command that detects the user's toolchain, installs with consent only the missing native prerequisites, then native-compiles the tt tools that benefit — Scala Native for hot dependency-light tools, GraalVM native-image when a JDK or Java dependency must come along.
+  * Gist: a gs DWIM command that detects the user's toolchain, installs with consent only the missing native prerequisites, then native-compiles the tt tools that benefit — Scala Native for hot dependency-light tools, GraalVM native-image when a JDK or Java dependency must come along.
   * Spec: keeps the lean scala-cli plus JDK prerequisite intact and never forces gcc or clang on everyone; the target choice follows the noop-race findings (blog 025) — hot and dependency-light goes to Scala Native, hot and needs-a-Java-dep goes to GraalVM native-image, rare or long-running stays on the JVM; the native binaries coexist with the JVM launcher, which dispatches to a native build when one is present.
 * Feature: gsNative helps Goal: sovereigntyOfCapability
 * Feature: gsNative helps Goal: tokenEfficiency
 * Feature: gsNative helps Goal: jointHumanAgentProductivity
 
 * Feature: gsSettings has
-  * Gist: (pinned SM115) a genscalator settings story — one discovered gs config file for the many tweakable knobs (statusline thresholds and colours, mode labels, allowlist preferences, safe-delete legit places for tt rm (SM147 addendum 2026-07-20), grepr defaults, notification branding, native-compile tool selection) with a DWIM gs config editor.
+  * Gist: a genscalator settings story — one discovered gs config file for the many tweakable knobs (statusline thresholds and colours, mode labels, allowlist preferences, safe-delete legit places for tt rm, grepr defaults, notification branding, native-compile tool selection) with a DWIM gs config editor.
   * Spec: the north star is configureAllTheThings — expose every meaningful knob with sane defaults so the file stays OPTIONAL; keep a clean boundary versus the Claude Code settings.local.json (harness permissions and hooks stay there, genscalator-specific knobs here) with precedence defaults then settings-file then env then flags; extends ttConfigFile.
 * Feature: gsSettings requires Feature: ttConfigFile
 * Feature: gsSettings helps Goal: dwim
 
 * Feature: userLevelSettings has
-  * Gist: (SM115, deferred 2026-07-15 — future work; project-only settings ship first) a user-level settings layer under ~/.config/genscalator/ beneath the project genscalator.json, so a preference can be set once and apply across all projects.
+  * Gist: (deferred 2026-07-15 — future work; project-only settings ship first) a user-level settings layer under ~/.config/genscalator/ beneath the project genscalator.json, so a preference can be set once and apply across all projects.
   * Spec: precedence becomes defaults then user-level then project then env then flags; runtime-state files (the update-check stamp, the mode file) stay separate and do NOT move into either settings layer.
 * Feature: userLevelSettings relatesTo Feature: gsSettings
 
 * Feature: dwimSynonymDocs has
-  * Gist: (pinned SM113) document the gs do-what-i-mean synonym space — the canonical plain form per command plus the accepted synonyms that steer even when the phrasing is not spot-on — so the human never has to remember exact syntax.
+  * Gist: document the gs do-what-i-mean synonym space — the canonical plain form per command plus the accepted synonyms that steer even when the phrasing is not spot-on — so the human never has to remember exact syntax.
 * Feature: dwimSynonymDocs helps Goal: dwim
 * Feature: dwimSynonymDocs relatesTo Feature: dwimCommands
 
 * Goal: echtModeAwareness has
-  * Gist: (pinned SM116 SM117 SM118) the joint mode line reflects REAL, measurable, correctly-attributed state instead of always-on wallpaper, so that a lit mode actually carries information.
+  * Gist: the joint mode line reflects REAL, measurable, correctly-attributed state instead of always-on wallpaper, so that a lit mode actually carries information.
   * Why: a mode that is never off carries no information (the same failure as a stale afk or solo declaration left standing); the fix is measurable-proxy triggers plus an honest inferred-versus-confirmed distinction.
 * Goal: echtModeAwareness helps Goal: jointHumanAgentProductivity
 * Goal: echtModeAwareness relatesTo Goal: retainUserTrust
 
 * Feature: rotFatigueGauges has
-  * Gist: (pinned SM117) status-line gauges for the two parties' state — an AGENT rot gauge (cumulative tokens summed from the session transcript, shown as tok) and an INTERNAL human fatigue gauge (cumulative chars typed) that feeds a tired nudge but is NOT displayed, because showing the human their own count stresses them.
+  * Gist: status-line gauges for the two parties' state — an AGENT rot gauge (cumulative tokens summed from the session transcript, shown as tok) and an INTERNAL human fatigue gauge (cumulative chars typed) that feeds a tired nudge but is NOT displayed, because showing the human their own count stresses them.
   * Spec: feasibility confirmed — the Claude Code statusline stdin JSON provides a transcript_path, so tt statusline can parse the JSONL for cumulative tokens and human char-count; agent rot tracks processing VOLUME (tokens are the reliable measure, message-count a cheap proxy, wall-clock noisy); a display asymmetry shows the agent gauge and hides the human's own; plus a compact model display such as lower-case o4.8 slash 1M.
 * Feature: rotFatigueGauges helps Goal: echtModeAwareness
 * Feature: rotFatigueGauges relatesTo Feature: ttStatusline
@@ -530,24 +530,24 @@ and the session pin board. The through-line is a new general goal, sovereigntyOf
 * Feature: rotFatigueGauges relatesTo Feature: superHarnessDashboard
 
 * Feature: inferredConfirmedModeGrammar has
-  * Gist: (pinned SM118) every mode can carry a trailing question-mark meaning INFERRED from a measurable proxy crossing a configurable threshold, while no question-mark means CONFIRMED — the question-mark is an honesty marker, since a proxy is never certainty.
+  * Gist: every mode can carry a trailing question-mark meaning INFERRED from a measurable proxy crossing a configurable threshold, while no question-mark means CONFIRMED — the question-mark is an honesty marker, since a proxy is never certainty.
   * Spec: confirmation is ASYMMETRIC — the human is the authority on their own interior so a cue like the tired-cue clears the inferred tired mode to a confirmed one, but the agent must NOT self-clear its own inferred dumb-zone mode (introspection is unreliable) and clears only via external evidence; an inferred afk mode is read from silence and does NOT grant AFK-strict autonomy (only a declared afk does), so the question-mark also gates behaviour; the measurable human proxies are char-count, sent-text typos, off-topic-count and message cadence, because keystroke dynamics are invisible to the agent.
 * Feature: inferredConfirmedModeGrammar helps Goal: echtModeAwareness
 * Feature: inferredConfirmedModeGrammar requires Feature: rotFatigueGauges
 
 * Feature: rotVigilanceThreshold has
-  * Gist: (pinned SM116) rot-vigilance engages past a token threshold rather than being always-on — a concrete measurable trigger and the agent-side instance of the inferred-versus-confirmed grammar.
+  * Gist: rot-vigilance engages past a token threshold rather than being always-on — a concrete measurable trigger and the agent-side instance of the inferred-versus-confirmed grammar.
 * Feature: rotVigilanceThreshold helps Goal: echtModeAwareness
 * Feature: rotVigilanceThreshold requires Feature: inferredConfirmedModeGrammar
 
 * Goal: humanWellbeing has
-  * Gist: (pinned SM124) the human stays healthy and sustainable — not too tired, not too sucked into agentic SE; the joint work protects the human's mental health and real-life balance.
+  * Gist: the human stays healthy and sustainable — not too tired, not too sucked into agentic SE; the joint work protects the human's mental health and real-life balance.
   * Why: a rotted or over-engaged human makes worse and riskier decisions (the human-rotted axis of the BHH threat model), and the pair's productivity is bounded by the human's sustainability, not just the agent's.
 * Goal: humanWellbeing helps Goal: jointHumanAgentProductivity
 * Goal: humanWellbeing relatesTo Goal: retainUserTrust
 
 * Feature: agentHelpHumanNotForget has
-  * Gist: (pinned SM124) the agent proactively helps the human remember AND step away — timers, reminders and break-nudges (for example a kayak-prep reminder set via the scheduler), complementing the tired nudge.
+  * Gist: the agent proactively helps the human remember AND step away — timers, reminders and break-nudges (for example a kayak-prep reminder set via the scheduler), complementing the tired nudge.
   * Spec: the aid works at REQUEST time, not only at fire time — the act of asking the agent to remind you already helps you not forget, because externalising the intention is itself a memory aid, so the value lands even before the reminder fires.
 * Feature: agentHelpHumanNotForget helps Goal: humanWellbeing
 * Feature: agentHelpHumanNotForget relatesTo Feature: rotFatigueGauges
@@ -629,8 +629,8 @@ spine it *would* have been had we specified reqts before each release (bootstrap
 
 > Speced in FUTURE and moved here the SAME DAY it shipped (re-engineered from the real `v0.9.1..HEAD`
 > range before the cut) — the first non-post-hoc release section. Explicitly not in v0.9.2 (pinned,
-> stays FUTURE): `tt forge release-create --gh/--gl` (SM207), per-session mode sets (SM208),
-> release-all across mirrors (SM196). *(The v0.9.0/v0.9.1 PAST backfill from their FUTURE block above
+> stays FUTURE): `tt forge release-create --gh/--gl`, per-session mode sets,
+> release-all across mirrors. *(The v0.9.0/v0.9.1 PAST backfill from their FUTURE block above
 > remains pending — see the annotated heading in FUTURE.)*
 
 * Feature: ttNativeFastPath has

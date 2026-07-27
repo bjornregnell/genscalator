@@ -1,4 +1,4 @@
-# EMBER for sub-agents (SM186)
+# EMBER for sub-agents
 
 > **What this is.** The standard warming block for every delegated sub-agent brief in genscalator
 > land. A sub-agent inherits NONE of the caller's skills, memories, or reflexes — only its brief

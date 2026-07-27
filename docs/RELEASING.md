@@ -1,11 +1,11 @@
-# Releasing genscalator — the release checklist (SM067)
+# Releasing genscalator — the release checklist
 
 A step-by-step so **no manual step is forgotten** (research 047 flagged *"repeated manual-step omissions in our
 release process"*). The **cut itself is BR's hand** — outward-facing and token-gated. This is a checklist to
 follow AND to refine; **verify each item against the actual repo** before a cut (paths/anchors may drift).
 
-Draft (SM067, 2026-07-13); candidate to wire later as a `release-genscalator` skill or a `gs release` command —
-but kept a doc for now (a rarely-fired skill would bloat the skill listing; see SM069).
+Draft (2026-07-13); candidate to wire later as a `release-genscalator` skill or a `gs release` command —
+but kept a doc for now, because a rarely-fired skill would bloat the skill listing.
 
 ## Before the cut
 1. **All committed + pushed**, both trees clean; the full toolbox **suite green**:
@@ -42,5 +42,6 @@ but kept a doc for now (a rarely-fired skill would bloat the skill listing; see 
 13. Ensure the PRD `## PAST / ### IMPLEMENTED` release block mirrors the CHANGELOG entry.
 14. Reset `## Unreleased` afresh for the next cycle.
 
-Ties: SM067, research `047` (the manual-step-omission pain), `genscalator-released-v020` (tt forge +
-`GENSCALATOR_CODEBERG_TOKEN`), the v0.9.0 release-prep plan (the process this generalises), SM069 (skill vs doc).
+Ties: research `047` (the manual-step-omission pain), `genscalator-released-v020` (tt forge +
+`GENSCALATOR_CODEBERG_TOKEN`),
+the v0.9.0 release-prep plan (the process this generalises), and the skill-versus-doc question above.

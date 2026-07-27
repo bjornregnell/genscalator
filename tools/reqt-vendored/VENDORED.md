@@ -51,4 +51,4 @@ Copy `src/main/scala/*.scala` from the reqT-lang baseline into this dir, then de
 Vendoring is temporary scaffolding. When reqT-lang is released and depended on as a library
 (`io.github.reqt` :: `reqt-lang`), this directory is deleted and `tt` depends on the published
 artifact — Quper / `scala-xml` return for free as a transitive dep, and the upstream warnings
-become reqT's concern. Tracked as SM222 (BR: cut a reqT-lang release, then de-vendor).
+become reqT's concern. Tracked internally (BR: cut a reqT-lang release, then de-vendor).

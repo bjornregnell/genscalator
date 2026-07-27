@@ -1,6 +1,6 @@
 # The hangover hook (naming an agent blackout on resume)
 
-A **SessionStart** hook that tells the agent it was out, and for how long, the moment it comes back (SM121).
+A **SessionStart** hook that tells the agent it was out, and for how long, the moment it comes back.
 
 ## The problem it fixes
 

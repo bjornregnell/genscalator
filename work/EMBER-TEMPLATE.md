@@ -12,7 +12,7 @@ harness, not in committed files) and the routine push set grew to include the gi
 (CD13). v0.1: operational updates from
 live guard-stall specimens plus the ColdStart-clearing revert, and the baton→ember rename. Still
 PRE-EXPERIMENT: no pilot has run; these refinements move the thing-to-beat, they are not results.
-This is the best-*reasoned* ember template from the SM168 joint pass - written down BEFORE any
+This is the best-*reasoned* ember template from a joint human-agent design pass - written down BEFORE any
 measurement, as the thing for the pilot experiment to beat (see blog post
 [030](../media/blog/030-what-is-a-good-warp-ember.md)). It is a seed, not a result: the pilot
 (ember vs no ember) and the follow-up experiments (per-ingredient) may change any part of it. The
@@ -69,7 +69,7 @@ FORBIDDEN → ALLOWED:
 - cold start: declare `-RotVigil +ColdStart +SmartZone`
   (fresh = un-rotted but un-calibrated and demonstrably at low fill; ColdStart clearing is
   the HUMAN's call — the hygiene-done self-clear stance was tried and reverted 2026-07-20;
-  the clear-condition is an open SM118 question)
+  the clear-condition is still an open question)
 - modes live in the HARNESS state (`tt mode`), never in a committed file: budget modes like
   TokSpend persist across the warp there. Verify with `tt mode`; do not hunt modes in
   NOW.md. (Phrasing fixed after meta-minion push-17 caught "rides the state file".)

@@ -214,8 +214,8 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   to the pair, and the task unparks only on the human's go. In the PB the convention is the `JOINT 🤝` tag on the
   pin header, and joint pins are **excluded from every AFK/solo menu by construction** ([[cue-go-afk]]). Distinct
   from `(go)` (proceed solo on a scoped plan) and from *BR-gated* (the agent does the work, the human ships one
-  gate at the end): joint means the **work itself is shared**, not just its shipping. Long in live use (SM184,
-  SM185, SM189, SM190 are specimens); named as a cue 2026-07-21 (BR: *"pin 'joint task' as cue-joint-task"*).
+  gate at the end): joint means the **work itself is shared**, not just its shipping. Long in live use before it
+  had a name; named as a cue 2026-07-21 (BR: *"pin 'joint task' as cue-joint-task"*).
   Memory: [[cue-joint-task]].
 - **Edit vs clarification cues (`edit:` / `clarification:`)** — two human message-correction cues, prepended when
   amending a just-sent message, distinguished by the human's **own risk assessment**. **`edit:`** = a low-stakes
@@ -347,7 +347,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   guessed*, so a lit mode carries information. Under the emerging **`?`-mode grammar** a trailing `?` marks a mode
   *inferred from a measurable proxy* (uncertain — e.g. `Tired?`, `Afk?`) vs a confirmed one; confirmation is
   asymmetric (the human self-confirms their own state, the agent needs external evidence). See the echt-mode-grammar
-  work (SM116–118). Cf. *Introspection line* (the first line), *Harvest-hot-context mode*, the *Dances* below.
+  work. Cf. *Introspection line* (the first line), *Harvest-hot-context mode*, the *Dances* below.
 - **Silent** (`silent Ns`, *Introspection line*) — the **measured** feed inactivity: `now − the last timestamped
   transcript record`. **COUNTED, not inferred**, so it carries **no `?`** (cf. `rot?`, a proxy, which keeps its one);
   and it is a **READOUT, not a gauge** — no threshold, no colour, never hidden, so it can never cry wolf.
@@ -373,15 +373,15 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   (impossible on the current harness — Anthropic does not surface the stall event) but a **hangover** reading: on
   *resume*, re-read the real clock and compare to the last action's stamp to detect the elapsed gap and rebind the
   clock (the gap tells you *that* you were out, not the *cause* — stall vs human-idle vs a long command). Ties the
-  guard-stall-invisibility findings, the felt-time / clock-rebind habit, SM118, and the blackout-hangover detector idea. (BR coinage, 2026-07-16.)
+  guard-stall-invisibility findings, the felt-time / clock-rebind habit, and the blackout-hangover detector idea. (BR coinage, 2026-07-16.)
 - **Hangover (blackout hangover)** — the *detectable after-effect* of an *Agent blackout*. You can never sense the
   blackout *during* it (no running observer), but on **resume** you can detect that you were just out by reading the
   **transcript timestamp jump** (the gap between your last action and now). The hangover is what makes the blackout
   *manageable* — it turns an unknowable event into an after-effect you can respond to. The response is
   **cause-independent** (rebind the clock, re-ground in substrate, treat continuity as suspect, distrust stale
   confidence); what matters is detection + **severity** (gap size — a huge gap flags the worst case, e.g. a box hard
-  crash → verify commits + substrate actually survived), not the cause. Cf. *Agent blackout*, SM121 (the hangover
-  detector). (BR coinage, 2026-07-16.)
+  crash → verify commits + substrate actually survived), not the cause. Cf. *Agent blackout*, and the hangover
+  detector in `docs/hangover-hook.md`. (BR coinage, 2026-07-16.)
 ### Dances and handoffs
 *Human↔agent protocols — each has **≥2 interlocking steps** (≥1 human, ≥1 agent), else it's just a cue. The **compact trigger** and **consolidation point** below are the timing rules for the compact dance.*
 - **Me-go-pee dance** *(BR 2026-07-13)* — a **short, unplanned human bio-interrupt** handoff (a specialization of
@@ -418,7 +418,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   and BEFORE the cap: throttle, checkpoint (commit + save state), or defer heavy compute sized to what is left.
   Related to the **usage dance** and [[token-budget-modes]]. Origin: 2026-07-12 we hit the session cap mid-workflow,
   unobserved (`research/wr-data/hit-session-limit-unobserved-2026-07-12.md`); the estimate-and-warn belongs in the
-  super-harness + `tt statusline` (SM022/SM039).
+  super-harness + `tt statusline`.
 - **Weekly-limit dance** *(STUB, BR 2026-07-12)* — the same for the **weekly usage limit** (resets weekly, e.g. Tue
   9am). Longer horizon: **pre-caution = estimate** the remaining weekly headroom against days-to-reset and pace
   spend across the week (do not burn it too fast early; do not leave it unused near reset — use-it-or-lose-it).
@@ -448,9 +448,9 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   vocabulary (`tt forge`, the smithy). *(Naming history: agent coinage 2026-07-17 as "carrier"; BR settled "baton"
   the same day; renamed **ember** 2026-07-20 on BR's call — Swedish *batong* means police club, connotations we do
   not want, and both English senses (conductor's stick, truncheon) point wrong; coined terms stay mutable until
-  first deploy, and the SM168 experiments had not yet run. In prose the full term is* warp ember*; files are
+  first deploy, and the ember experiments had not yet run. In prose the full term is* warp ember*; files are
   `EMBER-*.md`. BR may type `embr`/`amber`; understood and normalised silently.)*
-  ⭐ **THE HAZARD IS NOT FADING — IT IS BEING WRONG AND BELIEVED.** SM132 audited one (`2ad9ef5`): it carried a false
+  ⭐ **THE HAZARD IS NOT FADING — IT IS BEING WRONG AND BELIEVED.** An audit of one (`2ad9ef5`) found it carried a false
   orphan, a wrong count, and a broken experimental control into a fresh agent that **believed all three, for eleven
   hours**. It did not fail by being forgotten. **It was read perfectly.** ⇒ **`carried ≠ still true`**: an ember rots
   **on disk while the world moves**, not in anyone's memory. Its named orphan had been homed **39 minutes before the
@@ -588,7 +588,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 - **Guard stall** (adj. *guard-stall-safe*) — the agent's work is **halted** when a harness guardrail fires: a
   not-yet-allowlisted command triggers an allow/deny **confirmation** that waits for the human. Because answering it
   is a **confirmation-fatigue-risky** interaction, in **AFK / overnight solo mode** it can silently **stall the whole
-  job** until the human returns to release it (the SM016a specimen: a background sub-agent's un-allowlisted probe
+  job** until the human returns to release it (one recorded specimen: a background sub-agent's un-allowlisted probe
   stalled ~11h, invisibly). It is exactly the failure that *prompt-race-free* / *AFK-safe* prevents (see *Solo-safe*):
   run only **bare allowlist-matchable** commands so no guard fires. **Structural sharpening** — prefer a typed tool
   with a **uniform allowlist surface** (e.g. `tt text`, allowlisted as a whole) over a raw shell whose allowlist is

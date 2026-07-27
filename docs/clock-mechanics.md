@@ -1,4 +1,4 @@
-# The status-line clock: how it actually behaves (SM063)
+# The status-line clock: how it actually behaves
 
 Empirical documentation of the `genscalator: HH:MM:SS` clock on line 1 of the status line — when it updates,
 when it freezes, and how to make it live. (Confirmed via claude-code-guide + live observation, 2026-07-13.)
@@ -33,12 +33,12 @@ last render**. So `gs-clock − spinner-elapsed` should recover a **constant tur
 = a mini reproducibility check; at each render the clock is honest (near-current), so the staleness is confined
 to the idle gap, not active use.
 
-## The design question (open — SM062)
+## The design question (open)
 Given the freeze IS the mutual-idle stall made visible, the honest options are three, not two:
 - **frozen-and-lying** (current default): a stopped clock that *looks* live → disinformation.
 - **always-ticking** (`refreshInterval: 1`): honest "now", but it *erases* the signal that we are at a stall.
 - **stopped-and-honest** (candidate): let it stop, but render it AS stopped (dim / ⏸ / "paused HH:MM") so the
-  stop becomes an awareness cue. Decide jointly (SM062).
+  stop becomes an awareness cue. Decide jointly.
 
 ## Related: the auto-compact threshold is UNDOCUMENTED
 Auto-compact is on by default (`autoCompactEnabled`; off via `DISABLE_AUTO_COMPACT=1`) and fires when context
@@ -46,4 +46,4 @@ Auto-compact is on by default (`autoCompactEnabled`; off via `DISABLE_AUTO_COMPA
 the trigger. Observed ~90-95%; the status line's `--auto-compact` default (92) is a tunable guess.
 
 Sources: `research/wr-data/instruments-must-not-mimic-harness-disinformation-2026-07-13.md` (frozen clock +
-temporal cross-check + design target). Ties: SM062, SM063, the mode line, `docs/statusline-manual.md`.
+temporal cross-check + design target). Ties: the mode line, `docs/statusline-manual.md`.

@@ -26,7 +26,7 @@ script is the cheap place to discover platform surprises (GraalVM toolchain pres
 `/proc/meminfo` absence — the script already treats non-Linux memory as unknown-proceed,
 path/exec semantics on Windows, whether `-J-Xmx` and the option syntax survive each
 platform's native-image). The platform runs belong to the alpha platform-matrix work
-(SM146 distance report: tester platforms are the long pole).
+(tester platforms are the long pole).
 
 ## Acceptance sketch
 
@@ -41,7 +41,7 @@ platform's native-image). The platform runs belong to the alpha platform-matrix 
 
 ### Comment by bjornregnell/CF5 at 2026-07-23 21:01
 
-Filed on BR's in-feed pin the evening the ritual went green on linux-x64. Ties: SM112
-(`gs native` provisioning would call this verb), SM146 (native = no-bloop endgame),
-SM196 (release-all could ship the binaries the verb builds), `docs/native.md` (status +
+Filed on BR's in-feed pin the evening the ritual went green on linux-x64. Ties: the
+`gs native` provisioning work (it would call this verb), native as the no-bloop endgame,
+a release-all verb (it could ship the binaries this one builds), `docs/native.md` (status +
 remaining steps list, which should point here).
