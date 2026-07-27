@@ -140,6 +140,22 @@ Also in scope for alpha:
 - PRD consistency pass: make it describe what was actually built.
 - Public-surface hygiene, including moving research and unpublished media that reads as cruft to the
   closed work repo, with a link-consistency sweep afterwards.
+  📮 **SM250 folds in HERE rather than as a new blocking item, because it is the missing instrument for
+  the sweep this line already asks for.** Measured 2026-07-27: the PUBLIC repo has **19 dangling of 363
+  local links across 290 files**, and the tester-facing ones are real defects rather than tidiness —
+  `skills/serverless-spa-seed/` cites a missing `main.js` in THREE places (a seed a newcomer runs),
+  `docs/manual-src/getting-started.md` → `allowlist.html`, and the published post
+  `media/blog/030-what-is-a-good-warp-ember.md` → `../media/img/baton-example1.png` (also SM244's rotted
+  filename, still saying *baton*).
+  ⚠ **The order matters and is counter-intuitive: GATE FIRST, WIDEN SECOND.** All 19 are plain
+  markdown/html links, so the NARROW matcher already finds every one — `tt links check` carries an exit
+  code built for gating and is in NO workflow (`native-release.yml` is the only one). So the cheap win is
+  wiring it in and fixing the 19; the `--include-prose` widening comes after, because a better matcher on
+  a check nobody runs just produces more findings nobody reads. When it lands it must stay OFF the CI exit
+  code, so the gate keeps the precision that makes it gateable.
+  ⚠ Judgement required, not a blind fix: the `docs/manual-src/*.md → *.html` set may be BY DESIGN, since
+  those `.md` sources cite `.html` siblings that exist only after `tt ssg` generates them. If so the
+  answer is an ignore rule or a generation-order note — never edit a link into a lie.
 
 ## v0.10.1 - reqT-lang round trip, and the road to de-vendoring
 
