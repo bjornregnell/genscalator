@@ -74,7 +74,7 @@ private def headingAt(lines: Vector[String], i: Int): String =
   val consumed = if prdIdx >= 0 then Set(prdIdx, prdIdx + 1) else Set.empty[Int]
   val prdPath: Path =
     (if prdIdx >= 0 && prdIdx + 1 < a.size then Some(Path.of(a(prdIdx + 1))) else None)
-      .orElse(Lib.toolsDir().map(_.getParent.resolve("reqts").resolve("PRD.md")))
+      .orElse(Lib.rootDir().map(_.resolve("reqts").resolve("PRD.md")))
       .getOrElse:
         Console.err.println("prd: cannot locate reqts/PRD.md (pass --prd <file>, or set -Dtt.tools=<dir>)")
         sys.exit(2)

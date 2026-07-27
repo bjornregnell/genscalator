@@ -60,7 +60,7 @@ private def expectedSkills(skillsDir: Path): Vector[String] =
   val consumed = if skillsIdx >= 0 then Set(skillsIdx, skillsIdx + 1) else Set.empty[Int]
   val skillsDir: Path =
     (if skillsIdx >= 0 && skillsIdx + 1 < a.size then Some(Path.of(a(skillsIdx + 1))) else None)
-      .orElse(Lib.toolsDir().map(_.getParent.resolve("skills")))
+      .orElse(Lib.rootDir().map(_.resolve("skills")))
       .getOrElse:
         Console.err.println("skillcheck: cannot locate skills/ (pass --skills <dir>, or set -Dtt.tools=<dir>)")
         sys.exit(2)

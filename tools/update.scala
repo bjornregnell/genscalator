@@ -54,7 +54,7 @@ object Update:
   private def resolveRepo(args: List[String]): Option[os.Path] =
     args match
       case "--repo" :: v :: _ => Some(os.Path(v, os.pwd))
-      case _                  => Lib.toolsDir().map(td => os.Path(td.toAbsolutePath.normalize) / os.up)
+      case _                  => Lib.rootDir().map(r => os.Path(r.toAbsolutePath.normalize))
 
   def dispatch(args: List[String]): Unit =
     if args.contains("--help") || args.contains("-h") then { println(Help); sys.exit(0) }

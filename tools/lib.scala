@@ -28,6 +28,26 @@ object Lib:
         Iterator.iterate(Path.of("").toAbsolutePath)(p => p.getParent).takeWhile(_ != null).take(8)
           .find(d => Files.exists(d.resolve("tools").resolve("tt"))).map(_.resolve("tools"))
 
+  /** Locate the genscalator ROOT — the directory holding `docs/`, `skills/`, `reqts/`. This, not
+    * `toolsDir`, is what the runtime verbs actually want: `doc`, `prd`, `skillcheck`, `skillgrants`
+    * and `update` each read a SIBLING of `tools/`, never `tools/` itself.
+    *
+    * Two installations must both resolve:
+    *   - a CONTRIBUTOR's git clone, found via `-Dtt.tools` or the cwd walk-up (both land on `tools/`,
+    *     whose parent is the root);
+    *   - a USER's binary install under `GENSCALATOR_HOME` (default `~/.genscalator`), which has NO
+    *     `tools/` at all — it ships the data those verbs read, not the sources.
+    *
+    * Order matters: an explicit `GENSCALATOR_HOME` wins, then the clone (so a contributor working in
+    * a checkout gets THAT checkout, not a stale installed copy), then the default install location.
+    * Ordering the default install ahead of the walk-up would silently shadow the repo you are editing. */
+  def rootDir(): Option[java.nio.file.Path] =
+    import java.nio.file.{Files, Path}
+    def dir(p: Path): Option[Path] = Option.when(Files.isDirectory(p))(p)
+    sys.env.get("GENSCALATOR_HOME").map(Path.of(_)).flatMap(dir)
+      .orElse(toolsDir().map(_.getParent))
+      .orElse(dir(Path.of(sys.props.getOrElse("user.home", "."), ".genscalator")))
+
   // --- JSON ---
   /** Encode a string as a JSON string literal, quotes included, per RFC 8259. Pure, dependency-free.
     * Escapes the mandatory set (" \ and the C0 controls via \b \f \n \r \t or \uXXXX); passes other

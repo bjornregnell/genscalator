@@ -40,7 +40,7 @@ private val DocHelp: String =
     val i = a.indexOf(flag); if i >= 0 && i + 1 < a.size then Some(a(i + 1)) else None
   val docsDir: Path =
     optOf("--docs").map(Path.of(_))
-      .orElse(Lib.toolsDir().map(_.getParent.resolve("docs")))
+      .orElse(Lib.rootDir().map(_.resolve("docs")))
       .getOrElse:
         Console.err.println("doc: cannot locate docs/ (pass --docs <dir>, or set -Dtt.tools=<dir>)")
         sys.exit(2)
