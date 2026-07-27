@@ -417,6 +417,38 @@ example of expressing already-built work as reqT-lang requirements for Agentic R
   * Gist: humans don't want the bings to become concentration-hurting noise; the audio channel stays tailorable and quiet by default so it aids focus rather than wrecking it.
 * Goal: noCacophony helps Goal: jointHumanAgentProductivity
 
+* Goal: sharedOrderedTimeline has
+  * Gist: both parties can tell WHAT was said, in WHAT ORDER, and WHERE it came from. Today the agent receives content only — never the channel, never the timing, never whether the human typed the words, edited them, or accepted them from a suggestion.
+  * Why: the feed is treated by both parties as a record of what happened in what order, and it is not one. Three failures of the same shape, all observed 2026-07-27: `!` and `/` input executed out of typed position, so the human reported a kill that had not run; a suggested prompt the human accepted arrived indistinguishable from a considered decision; and a confirmation stall folded the human's keystrokes back into the feed at an unpredictable point (2026-07-17), once routing them to a sub-agent entirely. In a workflow where "stop" means different things before and after the last message, ORDER IS MEANING.
+  * Spec: STUB — elaborate from goal-level down. The tap is LOCAL and sovereign (see `Risk: typingTapIsSurveillance`); it records provenance and ordering, not merely content.
+* Goal: sharedOrderedTimeline helps Goal: completeSuperHarness
+* Goal: sharedOrderedTimeline helps Goal: jointHumanAgentProductivity
+* Goal: sharedOrderedTimeline helps Goal: safeGeneration
+
+* Feature: inputProvenanceTap has
+  * Gist: the super-harness input tap surfaces, to the agent, WHERE each message came from — typed by the human, edited from a suggestion, accepted verbatim from a suggestion, or injected by the harness — and WHEN it entered relative to everything else.
+  * Spec: STUB. Provenance is a LABEL on the message, not a judgement: the agent must not guess it (guessing is worse than the honest rule of treating everything as human-authored). Minimum viable: a distinguishable marker for harness-suggested-and-accepted text, and a stable ordering key so out-of-band input (`!`, `/`, stall answers) lands where it happened.
+* Feature: inputProvenanceTap helps Goal: sharedOrderedTimeline
+* Feature: inputProvenanceTap helps Goal: completeSuperHarness
+* Feature: inputProvenanceTap relatesTo Feature: superHarnessDashboard
+
+* Feature: agentProposedPreprompt has
+  * Gist: the AGENT can offer the human a suggested next message, the way the harness does today — turning a one-way suggestion channel into a two-way one.
+  * Why: the harness already writes text into the human's mouth, and does it without knowing the state of the work: on 2026-07-27 it proposed "commit and push it" while a verification suite was still running, and the human had to add the precondition by hand. The party that knows whether the tests are green is the agent, so the agent is the party that should be able to offer the sentence.
+  * Spec: STUB. A proposal is INERT until the human sends it — never self-accepting, never auto-firing. A proposal naming a hard-to-reverse action carries its precondition in the text ("commit and push when the suite is green"), which is exactly the discipline the harness's own suggestion lacked.
+* Feature: agentProposedPreprompt helps Goal: sharedOrderedTimeline
+* Feature: agentProposedPreprompt helps Goal: completeSuperHarness
+* Feature: agentProposedPreprompt helps Goal: avoidConfirmationFatigue
+* Feature: agentProposedPreprompt requires Feature: inputProvenanceTap
+
+* Risk: typingTapIsSurveillance has
+  * Gist: a tap that lets the agent see what the human types is, mechanically, a keylogger. The capability that fixes the ordering problem is the same capability an adversary would most like to have.
+  * Why: named here rather than discovered later. It is the sharpest instance of the tension `superHarnessDashboard` already carries: the data that makes the pair legible to each other is the data that must never leave the box. Local-only and on-box is not a nice-to-have for this feature, it is the precondition for building it at all.
+  * Spec: STUB. Same data-sovereignty rule as the dashboard — nothing leaves the user's control, no remote sink, the human can read and delete the record. Retention should be the minimum the ordering problem needs, which is plausibly far less than full keystroke capture: an ordering key and a provenance label may suffice without storing the text at all.
+* Risk: typingTapIsSurveillance impacts Feature: inputProvenanceTap
+* Risk: typingTapIsSurveillance helps Goal: controlHumanSystem
+* Risk: typingTapIsSurveillance helps Goal: exfiltrateSecrets
+
 * Feature: superHarnessDashboard has
   * Gist: a live localhost dashboard (served by `tt serv`, loopback-only) of agent-side introspection metrics and human-side behavioral proxies — a shared mirror for joint rot-vigilance, NOT surveillance.
   * Spec: STUB. DATA-SOVEREIGNTY — no data leaves the user's control (all local / on-box); the "not psychiatrists" disclaimer is VISIBLE in the human-psyche visualization; human metrics are member-checked proxies, never clinical diagnoses. Keep the data out of BHH hands.
