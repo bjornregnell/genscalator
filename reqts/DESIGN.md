@@ -243,8 +243,13 @@ to `tt forge release-download`, which keeps the tools decoupled but makes a tool
 subprocess reach of exactly the kind this project argues against; (3) duplicate the request code, which is
 the SM247 sibling-miss trap and should be rejected outright.
 
-✅ **DECIDED: option (3) — a NEW SHARED MODULE that both tools include**, not the public-entry-point
-option this entry was leaning toward. The reasoning that changed it: the toolbox's dependency graph is
+✅ **DECIDED: a NEW SHARED MODULE that both tools include — which is NONE OF THE THREE options above**,
+and in particular not the public-entry-point one this entry was leaning toward.
+⚠ *This paragraph read "option (3)" until 2026-07-27, which pointed at the very option the list rejects
+outright ("duplicate the request code"). The prose always described the shared module, so nothing was
+built wrong, but the label would have sent a reader implementing it straight into the SM247 trap. Fixed
+by naming the decision instead of numbering it — a decision that outgrew its own option list should stop
+borrowing that list's numbering.* The reasoning that changed it: the toolbox's dependency graph is
 FLAT today — 44 tools, none calling another's code, all sharing only `lib.scala` — and option (1) would
 have spent that property to save a file. A shared module keeps neither tool dependent on the other and
 gives the shared code one narrow documented API, which is how `lib.scala` and `reqt-vendored` already

@@ -1,5 +1,6 @@
 //> using file project.scala
 //> using file lib.scala
+//> using file releaselib.scala
 //> using jvm 21
 //> using dep com.lihaoyi::requests:0.9.3
 //> using dep com.lihaoyi::ujson:4.4.3
@@ -34,7 +35,7 @@
 //   tt forge protection <owner>/<repo> <branch> [--gh | --url BASE]  # protection rule (needs a token)
 //   BASE defaults to https://codeberg.org
 import scala.util.Try
-import agenttools.Lib
+import agenttools.{Lib, ReleaseLib}
 
 // Helpers (die/token/hostOf/getJson/splitRepo/… and the opts types) scoped in this object so their generic
 // names don't collide with other tools when the toolbox compiles together. Only the @main entry is top-level.
@@ -141,119 +142,32 @@ object Forge {
       |
       |Full reference: tools/README.md""".stripMargin
 
-  // Token comes ONLY from a FIXED set of human-set env-var names — never a flag, and never an agent-nameable
-  // var (an agent-chosen var name + an agent-chosen --url would let it POST an arbitrary secret to an
-  // arbitrary host = exfiltration). Fixed names keep the authorization a human boundary.
-  private val TokenEnvNames = List("GENSCALATOR_CODEBERG_TOKEN", "CODEBERG_TOKEN", "FORGE_TOKEN")
-  private def envToken: Option[String] =
-    TokenEnvNames.iterator.flatMap(sys.env.get).map(_.trim).find(_.nonEmpty)
-
   // ================================================================================================
-  // CREDENTIAL HELPERS — one deliberate trust-boundary change, covering every fallback below.
+  // The release client. Credential acquisition, the trusted-host guard, the dialect logic and the whole
+  // download/verify path MOVED to `releaselib.scala` on 2026-07-27 (D7a), because `tt update --native`
+  // needs exactly the same machinery and the toolbox's dependency graph is deliberately FLAT — tools
+  // depend on shared libs, never on each other.
   //
-  // ⚠ WHAT CHANGED (BR-authorized 2026-07-25, after the agent flagged the cost). Tokens used to come
-  // ONLY from fixed human-set env names, which meant the human's SHELL decided whether a running agent
-  // had forge credentials at all. These helpers let the tool obtain one itself, so an agent that can run
-  // `tt forge` can now act as the user without the user having exported anything. That is a real
-  // widening, written here rather than buried, because the rule it relaxes was previously absolute.
-  //
-  // WHY IT WAS ACCEPTED. It lets the human keep NO long-lived credential in the environment at all —
-  // BR's `.bashrc` now exports neither token. On 2026-07-25 a bare `printenv` put the then-ambient
-  // tokens into a durable transcript and forced a rotation of both. Ambient exposure is continuous and
-  // passive; a helper call is momentary and reachable only through this one audited tool.
-  //
-  // WHAT STILL HOLDS, so the widening stays bounded:
-  //   - env ALWAYS wins, so existing setups and CI are unaffected;
-  //   - the SOURCE is never agent-nameable — fixed env names, a fixed keyring key or one fixed env var
-  //     naming it, never a flag. An agent that could choose both the secret's source and the
-  //     destination could exfiltrate, which is the original reason for the fixed-names rule;
-  //   - each token still only ever travels to its fixed/trusted host, never one derived from --url;
-  //   - argv, never a shell;
-  //   - NEVER silent, and failure is soft.
-  //
-  // OPEN for the SM073 review: whether these fallbacks should require an explicit human opt-in rather
-  // than being the default. Argument for opt-in: the convenience is small and the boundary is not.
-  // Argument against: an opt-in nobody sets leaves the ambient token in place, which is the exposure
-  // this removes.
+  // What remains below are FORWARDERS, not second definitions: the same move `globMatches` already made
+  // to `Lib`. They exist so this file's ~40 existing call sites keep reading the way they did, while
+  // there is exactly ONE definition of each security-relevant rule, in one reviewable place.
   // ================================================================================================
+  private val rl = ReleaseLib.Client("forge")
 
-  /** Run a fixed argv and take its stdout as a token. Shared by every credential-helper fallback so they
-    * cannot drift on the properties that make them acceptable: argv (never a shell, so nothing is
-    * injectable), soft failure (a missing or locked helper yields None and read verbs keep working), and
-    * NEVER SILENT — a line on stderr, so a human reading a transcript can see that the agent obtained a
-    * credential rather than being handed one by the shell. */
-  private def helperToken(label: String, cmd: String*): Option[String] =
-    try
-      val p   = ProcessBuilder(cmd*).redirectErrorStream(false).start()
-      val out = String(p.getInputStream.readAllBytes, "UTF-8").trim
-      if p.waitFor() == 0 && out.nonEmpty then
-        Console.err.println(s"forge: no token in env; obtained one from $label")
-        Some(out)
-      else None
-    catch case _: Throwable => None
+  private def TokenEnvNames   = rl.TokenEnvNames
+  private def GhTokenEnvNames = rl.GhTokenEnvNames
+  private def token           = rl.token
+  private def ghToken         = rl.ghToken
+  private def trustedHosts    = rl.trustedHosts
+  private def ghHeaders       = rl.ghHeaders
+  private def isGitHub(base: String)  = rl.isGitHub(base)
+  private def hostOf(url: String)     = ReleaseLib.hostOf(url)
+  private def apiBase(url: String)    = ReleaseLib.apiBase(url)
+  private def splitRepo(s: String)    = rl.splitRepo(s)
 
-  /** WHERE the keyring entry lives — a service/account pair. This is NOT a secret, so it is safe to
-    * export, which is the whole point: the machine says where to look and nothing stores the token but
-    * the OS keyring.
-    *
-    * ⛔ It must NOT be agent-nameable, and that is a security property rather than a style choice. An
-    * agent that could choose BOTH the keyring key and the destination could read any stored secret and
-    * ship it to a forge. So the key comes from one fixed env name or the built-in default, exactly as the
-    * token env names are a fixed list — never from a flag. */
-  private def keyringSpec: (String, String) =
-    sys.env.get("TT_FORGE_KEYRING").map(_.trim).filter(_.nonEmpty).map(_.split("/", 2)) match
-      case Some(Array(service, account)) if service.nonEmpty && account.nonEmpty => (service, account)
-      case _                                                                     => ("codeberg", "genscalator-token")
-
-  /** Gitea/Codeberg token from the OS keyring when no env var holds one. Same trust-boundary trade as
-    * ghCliToken below, and accepted for the same reason: it lets the human keep NO long-lived credential
-    * in the environment of every process, which is the exposure that leaked two tokens on 2026-07-25. */
-  private lazy val keyringToken: Option[String] =
-    val (service, account) = keyringSpec
-    helperToken(s"keyring get $service $account", "keyring", "get", service, account)
-
-  private def token: Option[String] = envToken.orElse(keyringToken)
-
-  // The token may only be sent to a TRUSTED host — so the agent cannot redirect it to an attacker host via
-  // --url. Default: codeberg.org. The HUMAN (not a flag) extends the set via env TT_FORGE_HOSTS (comma-sep).
-  private def trustedHosts: Set[String] =
-    val extra = sys.env.getOrElse("TT_FORGE_HOSTS", "").split(",").iterator.map(_.trim).filter(_.nonEmpty).toSet
-    Set("codeberg.org") ++ extra
-
-  private def hostOf(url: String): String =
-    Try(Option(java.net.URI(url).getHost)).toOption.flatten.getOrElse("")
-
-  private def splitRepo(s: String): (String, String) =
-    s.split("/") match
-      case Array(o, r) if o.nonEmpty && r.nonEmpty => (o, r)
-      case _                                       => die(s"expected <owner>/<repo>, got '$s'")
-
-  private def apiBase(url: String): String = url.stripSuffix("/") + "/api/v1"
-
-  // GitHub dialect. `--gh` (or a github.com --url) switches the path shapes to the GitHub REST API,
-  // rooted at the FIXED GitHubApi constant below — never derived from --url — so the GitHub token
-  // can only ever travel to that one host (same no-redirect rule as trustedHosts for the Gitea token).
-  // The token comes from fixed human-set env names FIRST and, failing that, from `gh auth token` — see
-  // the CREDENTIAL HELPERS note above, a deliberate widening rather than an oversight.
-  // READ verbs work without any token (60/h anonymous rate limit); `protection` requires one.
-  private val GitHubApi       = "https://api.github.com"
-  private val GhTokenEnvNames = List("GENSCALATOR_GITHUB_TOKEN", "GITHUB_TOKEN", "GH_TOKEN")
-  private def envGhToken: Option[String] =
-    GhTokenEnvNames.iterator.flatMap(sys.env.get).map(_.trim).find(_.nonEmpty)
-
-  /** GitHub token from the `gh` CLI when no env var holds one. `gh` is the right helper here rather than
-    * the keyring: it already owns the credential, refreshes it, and `gh auth token` needs no key name, so
-    * there is nothing for an agent to point elsewhere. See the CREDENTIAL HELPERS note above for the
-    * trust-boundary trade this shares with keyringToken. */
-  private lazy val ghCliToken: Option[String] =
-    helperToken("`gh auth token`", "gh", "auth", "token")
-
-  private def ghToken: Option[String] = envGhToken.orElse(ghCliToken)
-  private def isGitHub(base: String): Boolean =
-    Set("github.com", "www.github.com", "api.github.com").contains(hostOf(base))
-  private def ghHeaders: Map[String, String] = // pair ONLY with GitHubApi-rooted URLs
-    Map("Accept" -> "application/vnd.github+json") ++
-      ghToken.map(t => "Authorization" -> s"Bearer $t")
+  // The GitHub REST root — a FIXED constant, never derived from --url, so the GitHub token can only ever
+  // travel to that one host (the same no-redirect rule trustedHosts enforces for the Gitea token).
+  private def GitHubApi = rl.GitHubApi
 
   // GitLab dialect. Unlike GitHub, GitLab has self-managed instances (git.cs.lth.se, …), so the base URL IS
   // configurable via --url — which means the trusted-host guard matters here exactly as it does for the Gitea
@@ -278,16 +192,9 @@ object Forge {
     val updated = Try(v.obj("updated_at").str).getOrElse("")
     s"#$num\t$updated\t${userLogin(v)}\t$title"
 
-  // ONE predicate for "a JSON string field I can live without", because the naive shape
-  // `obj.get(k).map(_.str).getOrElse(d)` is WRONG against a forge and reads as right: GitHub sends
-  // key-present-with-NULL (every draft's `published_at`, any unnamed release's `name`), so `.get`
-  // returns Some(Null), `.str` throws, and `getOrElse` never fires because the key IS there.
-  // Found by the release rehearsal 2026-07-27: `tt forge releases` crashed on the first draft it
-  // ever saw. Absent and present-but-null must collapse to the same answer, in one place.
-  private def strOr(v: Option[ujson.Value], default: String): String =
-    v.flatMap(x => Try(x.str).toOption).getOrElse(default)
-
-  private def strOrEmpty(v: Option[ujson.Value]): String = strOr(v, "")
+  // See ReleaseLib.strOr for WHY this predicate exists — it is the null-vs-absent trap a forge walks into.
+  private def strOr(v: Option[ujson.Value], default: String) = ReleaseLib.strOr(v, default)
+  private def strOrEmpty(v: Option[ujson.Value])             = ReleaseLib.strOrEmpty(v)
 
   def dispatch(args: String*): Unit =
     if args.contains("--help") || args.contains("-h") then { println(Help); sys.exit(0) }
@@ -597,7 +504,11 @@ object Forge {
   // Which forge dialect release-create/edit speaks. Gitea (default, --url) posts the Gitea payload with an
   // `Authorization: token` header to a trustedHosts host; GitHub (--gh) posts to the FIXED api.github.com root;
   // GitLab (--gl) posts the /api/v4 payload with a `PRIVATE-TOKEN` header to a gitlabTrustedHosts host.
-  private enum Dialect { case Gitea, GitHub, GitLab }
+  //
+  // Defined in ReleaseLib because it appears in the shared download signatures; aliased here so every
+  // `Dialect.Gitea` in this file still reads the same. ONE enum, two tools.
+  private type Dialect = ReleaseLib.Dialect
+  private val Dialect  = ReleaseLib.Dialect
 
   private final case class CreateOpts(repo: Option[String], tag: Option[String], name: Option[String],
       body: Option[String], bodyFile: Option[String], prerelease: Boolean, draft: Boolean,
@@ -804,136 +715,31 @@ object Forge {
         case other :: _                 => die(s"unexpected argument '$other'")
     go(args, AssetOpts(None, None, DefaultBase, Dialect.Gitea, None, ".", false, false, false))
 
-  /** Find a release by tag, INCLUDING drafts.
-    *
-    * Deliberately LISTS and filters instead of GET /releases/tags/<tag>. That endpoint cannot see a
-    * draft at all — a draft has no tag yet, which is why a fresh draft's html_url reads
-    * `untagged-<hash>` — so it is blind to exactly the releases these verbs most need to reach: the
-    * half-finished one you want to inspect or throw away. `release-edit` was switched onto this
-    * lookup 2026-07-27 for exactly that reason — it previously used the by-tag endpoint alone and so
-    * could not edit a draft at all.
-    */
-  /** Like getJson but returns None on any failure instead of exiting.
-    *
-    * ⚠ Needed because `getJson` reports a non-200 through `die`, i.e. `sys.exit` — which NO `Try` can
-    * catch. A fallback written as `Try(getJson(a)).orElse(Try(getJson(b)))` would therefore terminate
-    * the process on a's 404 and never reach b, while LOOKING like a fallback.
-    */
-  private def getJsonOpt(url: String, headers: Map[String, String] = Map.empty): Option[ujson.Value] =
-    Try(requests.get(url, headers = headers, check = false, readTimeout = 30000, connectTimeout = 10000))
-      .toOption.filter(_.statusCode == 200).flatMap(r => Try(ujson.read(r.text())).toOption)
-
-  /** Read headers for a release lookup. A Gitea/Forgejo DRAFT is invisible without auth, so the token
-    * is attached when one exists — and the trusted-host guard applies exactly as it does on the write
-    * verbs, because this is the same token going over the same wire.
-    */
-  private def findHeaders(dialect: Dialect, base: String): Map[String, String] =
-    if dialect == Dialect.GitHub then ghHeaders
-    else
-      token match
-        case None => Map.empty
-        case Some(t) =>
-          val host = hostOf(base)
-          if !trustedHosts.contains(host) then die(
-            s"refusing to send the token to untrusted host '$host'. Trusted: ${trustedHosts.toVector.sorted.mkString(", ")}.")
-          Map("Authorization" -> s"token $t")
+  // ------------------------------------------------------------------------------------------------
+  // Release lookup + download: ONE definition, in ReleaseLib, shared with `tt update --native`.
+  // Forwarders below keep this file's call sites unchanged. See releaselib.scala for the WHY of each —
+  // the draft-vs-by-tag complementarity, the die-cannot-be-caught reason getJsonOpt exists, and the
+  // trusted-host guard that is now written once instead of three times.
+  // ------------------------------------------------------------------------------------------------
+  private def getJsonOpt(url: String, headers: Map[String, String] = Map.empty) = rl.getJsonOpt(url, headers)
+  private def findHeaders(dialect: Dialect, base: String)                        = rl.findHeaders(dialect, base)
+  private def assetsOf(rel: ujson.Value)                                         = ReleaseLib.assetsOf(rel)
+  private def globMatches(glob: String, name: String)                            = Lib.globMatches(glob, name)
+  private def sha256Hex(p: os.Path)                                              = ReleaseLib.sha256Hex(p)
+  private def writeHeaders(o: AssetOpts, verb: String)                           = rl.writeHeaders(o.dialect, o.base, verb)
+  private def verifyChecksums(files: List[os.Path]): Unit                        = rl.verifyChecksums(files)
 
   private def findRelease(owner: String, repo: String, tag: String, dialect: Dialect, base: String): ujson.Value =
-    val root = if dialect == Dialect.GitHub then s"$GitHubApi/repos/$owner/$repo"
-               else s"${apiBase(base)}/repos/$owner/$repo"
-    val hdrs    = findHeaders(dialect, base)
-    val listUrl = if dialect == Dialect.GitHub then s"$root/releases?per_page=100" else s"$root/releases?limit=100"
-    val listed = getJsonOpt(listUrl, hdrs).toList
-      .flatMap(v => Try(v.arr.toList).getOrElse(Nil))
-      .find(r => strOrEmpty(r.obj.get("tag_name")) == tag)
-    // Then the by-tag endpoint as a FALLBACK, because the two are complementary rather than ranked:
-    // listing is the only thing that can see a DRAFT, but it is capped, so a published release older
-    // than the newest 100 is reachable only by tag. Using either alone loses real cases.
-    listed.orElse(getJsonOpt(s"$root/releases/tags/$tag", hdrs)).getOrElse(die(
-      s"no release for tag '$tag' — absent from the newest 100 (the only view that shows DRAFTS)\n" +
-        "  and from the by-tag endpoint (which reaches further back but never shows a draft)."))
-
-  private def assetsOf(rel: ujson.Value): List[ujson.Value] =
-    rel.obj.get("assets").toList.flatMap(a => Try(a.arr.toList).getOrElse(Nil))
-
-  /** Tiny `*`-only glob — now ONE definition in `Lib`, because `tt zip extract --exec` needed the same
-    * predicate hours after this one was written, which is exactly when a second copy appears and drifts.
-    */
-  private def globMatches(glob: String, name: String): Boolean = Lib.globMatches(glob, name)
-
-  private def sha256Hex(p: os.Path): String = // JDK only, no dependency
-    java.security.MessageDigest.getInstance("SHA-256")
-      .digest(os.read.bytes(p)).map(b => String.format("%02x", Byte.box(b))).mkString
-
-  private def writeHeaders(o: AssetOpts, verb: String): Map[String, String] =
-    if o.dialect == Dialect.GitHub then
-      val tok = ghToken.getOrElse(die(
-        s"$verb --gh needs a token — the HUMAN sets one of env ${GhTokenEnvNames.mkString(", ")} (never a flag)."))
-      Map("Accept" -> "application/vnd.github+json", "Authorization" -> s"Bearer $tok")
-    else
-      val host = hostOf(o.base)
-      if !trustedHosts.contains(host) then die(
-        s"refusing to send the token to untrusted host '$host'. Trusted: ${trustedHosts.toVector.sorted.mkString(", ")}.")
-      val tok = token.getOrElse(die(
-        s"$verb needs a token — the HUMAN sets one of env ${TokenEnvNames.mkString(", ")} (never a flag)."))
-      Map("Authorization" -> s"token $tok")
+    rl.findRelease(owner, repo, tag, dialect, base)
 
   private def releaseDownload(args: List[String]): Unit =
     val o             = parseAsset(args, "release-download")
     val (owner, repo) = splitRepo(o.repo.getOrElse(forgeUsage()))
     val tag           = o.tag.getOrElse(forgeUsage())
     val rel           = findRelease(owner, repo, tag, o.dialect, o.base)
-    val all           = assetsOf(rel)
-    if all.isEmpty then die(s"release '$tag' carries no assets")
-    val wanted = o.pattern match
-      case Some(p) => all.filter(a => globMatches(p, strOrEmpty(a.obj.get("name"))))
-      case None    => all
-    if wanted.isEmpty then
-      die(s"no asset of '$tag' matches --pattern '${o.pattern.getOrElse("")}' " +
-        s"(present: ${all.map(a => strOr(a.obj.get("name"), "?")).mkString(", ")})")
-    val outDir = os.Path(o.dir, os.pwd)
-    os.makeDir.all(outDir)
-    // The API asset url with Accept: application/octet-stream, NOT browser_download_url: the browser
-    // URL 404s for a DRAFT's assets because no public release page exists yet, and a draft is the
-    // main thing this verb is for. ghHeaders supplies auth when a token is obtainable.
-    val hdrs = (if o.dialect == Dialect.GitHub then ghHeaders else writeHeaders(o, "release-download")) ++
-      Map("Accept" -> "application/octet-stream")
-    val written = wanted.map { a =>
-      val name = strOr(a.obj.get("name"), "asset")
-      val aUrl = strOrEmpty(a.obj.get("url"))
-      if aUrl.isEmpty then die(s"asset '$name' has no api url")
-      val r = Try(requests.get(aUrl, headers = hdrs, check = false,
-        readTimeout = 300000, connectTimeout = 10000)).getOrElse(die(s"request failed for '$name'"))
-      if r.statusCode != 200 then die(s"GET asset '$name' -> ${r.statusCode} ${r.statusMessage}")
-      val target = outDir / name
-      os.write.over(target, r.bytes)
-      println(s"downloaded $name (${r.bytes.length} B) -> $target")
-      target
-    }
+    val written       = rl.downloadAssets(rel, o.pattern, os.Path(o.dir, os.pwd), o.dialect, o.base, "release-download")
     if o.verify then verifyChecksums(written)
     else println("(no --verify: bytes downloaded but NOT checked against a .sha256)")
-
-  /** Check each payload against a downloaded sibling `<name>.sha256` — the same digest CI writes and
-    * the installer checks. A payload with no sibling prints UNVERIFIED, never "ok": "nothing to
-    * check" and "checked and correct" must not render identically, which is the SM241 Class-B rule.
-    */
-  private def verifyChecksums(files: List[os.Path]): Unit =
-    val shaOf    = files.filter(_.last.endsWith(".sha256")).map(p => p.last.stripSuffix(".sha256") -> p).toMap
-    val payloads = files.filterNot(_.last.endsWith(".sha256"))
-    if payloads.isEmpty then die("--verify: nothing but .sha256 files were downloaded, so there is nothing to verify")
-    val outcomes = payloads.map { p =>
-      val expected = shaOf.get(p.last).map(f => os.read(f).trim.split("\\s+").head.toLowerCase)
-      (p, expected, sha256Hex(p))
-    }
-    outcomes.foreach {
-      case (p, Some(exp), act) if exp == act => println(s"ok         ${p.last}  sha256 $act")
-      case (p, Some(exp), act)               => println(s"MISMATCH   ${p.last}\n  expected $exp\n  actual   $act")
-      case (p, None, act)                    => println(s"UNVERIFIED ${p.last}  sha256 $act  (no sibling .sha256 downloaded)")
-    }
-    val bad = outcomes.count((_, exp, act) => exp.exists(_ != act))
-    val ok  = outcomes.count((_, exp, act) => exp.contains(act))
-    if bad > 0 then die(s"$bad of ${outcomes.size} payload(s) FAILED the checksum — the download is not intact")
-    println(s"verified $ok/${outcomes.size} payload(s) against a downloaded .sha256")
 
   private def releaseDelete(args: List[String]): Unit =
     val o             = parseAsset(args, "release-delete")
