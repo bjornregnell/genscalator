@@ -133,3 +133,27 @@ class BloopCleanSuite extends munit.FunSuite:
   test("isRemovable handles a root given with a trailing slash") {
     assert(BloopTool.isRemovable("/a/b/.scala-build", "/a/b/"))
   }
+
+  // WINDOWS. Both halves of this predicate were broken on backslash paths, in opposite directions: the
+  // prefix test compared a backslash candidate against a root ending in "/", and split("/") on a
+  // backslash path returns ONE element, so the name never equalled ".scala-build". `tt bloop clean`
+  // therefore reported "no .scala-build directories" on a tree that had one - the last Windows failure
+  // standing, and the sibling of the unsafeRoot separator fix in the same file.
+  //
+  // These pin BOTH directions. Accepting the right dir is only half the contract; a predicate that
+  // guards a DELETE must still refuse the root itself and a prefix-sharing sibling once separators are
+  // normalised, or the fix for a false negative quietly buys a false positive.
+  test("isRemovable accepts a Windows .scala-build below the root") {
+    val root = """C:\Users\someone\proj"""
+    assert(BloopTool.isRemovable(root + """\.scala-build""", root))
+    assert(BloopTool.isRemovable(root + """\sub\deep\.scala-build""", root))
+    assert(BloopTool.isRemovable("C:/Users/someone/proj/.scala-build", root)) // mixed spellings agree
+  }
+
+  test("isRemovable still refuses the root itself and near-misses, in the Windows spelling") {
+    val root = """C:\Users\someone\proj"""
+    assert(!BloopTool.isRemovable(root, root))                       // the root is never removable
+    assert(!BloopTool.isRemovable(root + """\scala-build""", root))  // no leading dot
+    assert(!BloopTool.isRemovable(root + """\.scala-build-old""", root))
+    assert(!BloopTool.isRemovable("""C:\Users\someone\proj-other\.scala-build""", root)) // prefix sibling
+  }

@@ -114,8 +114,20 @@ object BloopTool:
   /** PURE: is this a directory `clean` may remove? Name must be exactly `.scala-build`, and it must lie
     * strictly BELOW the root — never the root itself. */
   def isRemovable(candidate: String, root: String): Boolean =
-    val r = if root.endsWith("/") then root else root + "/"
-    candidate.startsWith(r) && candidate.split("/").lastOption.contains(".scala-build")
+    // ⚠ NORMALISE SEPARATORS, for the same reason unsafeRoot does. Both halves of this test were broken
+    // on Windows and in OPPOSITE directions, which is why it failed CLOSED rather than open: the prefix
+    // check compared a backslash candidate against a root ending in "/", and split("/") on a backslash
+    // path returns the whole string as one element, so the name never equalled ".scala-build". The tool
+    // reported "no .scala-build directories" on a tree that had one.
+    //
+    // Failing closed is why this was the LAST Windows failure standing and not a data-loss bug: the verb
+    // deleted nothing rather than deleting the wrong thing. That is luck, not design. It is a sibling of
+    // the unsafeRoot fix in this same file, missed on the first pass because fixing one function makes
+    // the file look done.
+    val c = candidate.replace('\\', '/')
+    val rootSlashed = root.replace('\\', '/')
+    val r = if rootSlashed.endsWith("/") then rootSlashed else rootSlashed + "/"
+    c.startsWith(r) && c.split("/").lastOption.contains(".scala-build")
 
   private def dirSizeKb(p: java.nio.file.Path): Long =
     var total = 0L
