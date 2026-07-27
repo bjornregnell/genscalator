@@ -72,27 +72,69 @@ if !Files.isRegularFile(dispatchSrc) || !Files.readString(dispatchSrc).contains(
       "propagated tools SUBSET, not the canonical genscalator toolbox. Pass --root <genscalator-root>.")
 
 // ---- step 0: free-memory floor (native-image measured peak 3.3 GB; floor 6 GB) ----
-def availableGb: Long =
-  val memLine = Files.readAllLines(Paths.get("/proc/meminfo")).stream()
-    .filter(_.startsWith("MemAvailable:")).findFirst()
-  if !memLine.isPresent then -1L  // non-Linux: unknown, proceed (the build will tell)
-  else memLine.get.split("\\s+")(1).toLong / (1024L * 1024L)
+// ⚠ The "non-Linux: unknown, proceed" intent below was NEVER REACHED before 2026-07-27. Files
+// .readAllLines THROWS NoSuchFileException on a missing path rather than returning empty, so on any
+// box without /proc/meminfo this died instead of proceeding. It read as handled and was not, and it
+// only ever ran on Linux, so nothing contradicted the comment. The first macOS runner crashed here,
+// in the step whose entire job is to decide whether it is safe to START.
+//
+// LAYERED, and the layers are NOT interchangeable. Linux MemAvailable is the kernel's estimate of
+// what a new process could actually get, INCLUDING reclaimable page cache. The JDK's figure is
+// genuinely-free RAM, which on a box that has been up a while is far smaller, because the kernel
+// deliberately fills RAM with cache.
+//
+// MEASURED on blixten 2026-07-27, same box, same second: MemAvailable 18 GB, JDK free 5 GB. The JDK
+// number sits BELOW the 6 GB floor, so had the portable metric been made primary, that build would
+// have been REFUSED while 18 GB was genuinely available. The ordering below is therefore evidence,
+// not taste: best metric first, portable metric second, unknown only if neither answers.
+
+/** Linux only: MemAvailable, the metric that actually predicts whether a big allocation succeeds. */
+def memAvailableGbLinux: Option[Long] =
+  scala.util.Try {
+    val memLine = Files.readAllLines(Paths.get("/proc/meminfo")).stream()
+      .filter(_.startsWith("MemAvailable:")).findFirst()
+    Option.when(memLine.isPresent)(memLine.get.split("\\s+")(1).toLong / (1024L * 1024L))
+  }.toOption.flatten   // Try guards the missing file; the inner Option guards a missing line
+
+/** Cross-platform fallback: free physical RAM via the JDK's extended OS bean. Conservative against
+  * MemAvailable, since it does not count reclaimable cache, which is why it is second and not first.
+  * com.sun.management is a JDK extension rather than java.*, present on OpenJDK and GraalVM. */
+def freeMemoryGbJdk: Option[Long] =
+  scala.util.Try {
+    java.lang.management.ManagementFactory.getOperatingSystemMXBean match
+      case os: com.sun.management.OperatingSystemMXBean => Some(os.getFreeMemorySize / (1024L * 1024L * 1024L))
+      case _                                            => None
+  }.toOption.flatten
+
+/** GB the build may plausibly use, with the source that produced it. -1 means nobody could answer. */
+def availableGb: (gb: Long, source: String) =
+  memAvailableGbLinux.map(g => (gb = g, source = "MemAvailable"))
+    .orElse(freeMemoryGbJdk.map(g => (gb = g, source = "JDK free physical, conservative")))
+    .getOrElse((gb = -1L, source = "unknown"))
 
 // --mem-floor <gb|off>: the 6 GB floor is RIGHT on a dev box, where an OOM takes the desktop with it,
-// and WRONG on a CI runner, where MemAvailable is not a reliable proxy for what the job may use. So it
-// is overridable, never deleted. NB the floor is Linux-only either way: availableGb reads /proc/meminfo
-// and returns -1 elsewhere, so macOS and Windows runners never hit it.
+// and WRONG on a CI runner, where neither metric is a reliable proxy for what the job may use. So it
+// is overridable, never deleted. Since 2026-07-27 the floor applies on macOS and Windows too, via the
+// JDK fallback above; before that those platforms were not merely unchecked, they crashed.
 val memFloorGb: Option[Long] = optVal("--mem-floor") match
   case None                                => Some(6L)
   case Some("off")                         => None
   case Some(v) if v.toLongOption.isDefined => Some(v.toLong)
   case Some(v)                             => die(s"--mem-floor expects GB as a number, or 'off' - got '$v'")
 
-val gb = availableGb
+// Not merely unused when the floor is off: NOT EVALUATED. --mem-floor off must mean "do not consult
+// the memory at all", or a probe that cannot run on this platform still gets to fail the build.
+val mem = memFloorGb.fold((gb = -1L, source = "not consulted"))(_ => availableGb)
 memFloorGb.foreach: floor =>
-  if gb >= 0 && gb < floor then
-    die(s"only $gb GB available (floor $floor) - close things or retry later; nothing was changed")
-val memNote = if gb < 0 then "unknown, non-Linux" else s"$gb GB available"
+  if mem.gb >= 0 && mem.gb < floor then
+    die(s"only ${mem.gb} GB available via ${mem.source} (floor $floor) - close things or retry " +
+        "later; nothing was changed")
+// Name the SOURCE, not just the number: the two metrics differ by a lot on Linux, so a refusal
+// that reports 3 GB is only interpretable if you know whether that was MemAvailable or free RAM.
+val memNote =
+  if memFloorGb.isEmpty then "not consulted"
+  else if mem.gb < 0 then "unknown: no /proc/meminfo, and no JDK OS bean either"
+  else s"${mem.gb} GB via ${mem.source}"
 println(s"buildnative: memory check ${if memFloorGb.isEmpty then "SKIPPED (--mem-floor off)" else "ok"} ($memNote)")
 
 def run(label: String, cmd: String*): Long =

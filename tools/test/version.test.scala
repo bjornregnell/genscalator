@@ -22,7 +22,7 @@ class VersionSuite extends munit.FunSuite:
         .find(d => os.exists(d / "tools" / "tt"))
         .getOrElse(throw IllegalStateException(s"cannot locate the repo root (pass -Dtt.tools=<dir>); cwd=${os.pwd}"))
 
-  private lazy val version: String = os.read(root / "VERSION").trim
+  private lazy val version: String = os.read(root / "VERSION.txt").trim
 
   /** Every `"version": "..."` value in a json file, at ANY path. Deliberately not a path lookup:
     * the two plugin files keep the number at different paths (root in plugin.json, nested under

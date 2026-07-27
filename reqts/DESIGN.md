@@ -81,7 +81,7 @@ POSIX assumptions remain a contributor-experience problem, which is a much small
 
 **Consequence: git is a contributor dependency only.** `tt update` today resolves the repo root and runs
 a git ahead/behind check. A user install has no clone, and may have no `git` binary either. So `tt update`
-needs a second mode that compares `VERSION` against the latest published release over HTTPS. This is on
+needs a second mode that compares `VERSION.txt` against the latest published release over HTTPS. This is on
 the critical path, not polish, because plugin update-awareness is built on it (see D4).
 
 **Rejected alternative: ship sources to users, protected somehow.** Considered marking a shipped
@@ -94,7 +94,7 @@ source drop without git would be both unhackable and uncontributable.
 ## D3 - the user install is one self-contained archive per platform
 
 **Decision.** Six release assets, `genscalator-<os>-<arch>.zip`, each containing `bin/tt` (`tt.exe` on
-Windows), `docs/`, `reqts/PRD.md` and `VERSION`. The installer verifies a published SHA-256, aborts on
+Windows), `docs/`, `reqts/PRD.md` and `VERSION.txt`. The installer verifies a published SHA-256, aborts on
 mismatch, extracts into `GENSCALATOR_HOME`, and puts `~/.genscalator/bin` on PATH. No symlink.
 
 **No `tools/*.scala` in the archive, which is the opposite of the obvious assumption.** Checked

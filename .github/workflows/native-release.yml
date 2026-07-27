@@ -60,14 +60,16 @@ jobs:
         # prompt sets up. Without this the build fails late and cryptically.
 
       - name: Build and prove
-        shell: bash
-        run: |
-          scala-cli run deploy/buildnative.sc -- \
-            --root "$PWD" \
-            --out "staging/bin/tt${{ matrix.exe }}" \
-            --mem-floor off
+        run: scala-cli run deploy/buildnative.sc -- --out "staging/bin/tt${{ matrix.exe }}" --mem-floor off
+        # NO `shell:` and NO line continuations, ON PURPOSE. scala-cli-setup installs scala-cli.bat on
+        # Windows, and Git Bash does not do PATHEXT resolution, so `shell: bash` there gave
+        # "scala-cli: command not found" and exit 127 (run 30253863769). Letting each OS use its
+        # default shell fixes it, which in turn means the command must contain no shell-specific
+        # syntax: hence one line, and no --root, since buildnative.sc already defaults to the cwd and
+        # Actions runs steps in the workspace root.
+        #
         # --mem-floor off: the 6 GB floor is right on a dev box and wrong on a runner, where
-        # MemAvailable is not a good proxy for what a job may use. It is Linux-only either way.
+        # MemAvailable is not a good proxy for what a job may use. It is Linux-only regardless.
         # The build -> parity -> swap ritual is otherwise the SAME one a human runs locally, so
         # there is no second build path to keep honest.
 
@@ -76,7 +78,7 @@ jobs:
         run: |
           cp -r docs staging/docs
           mkdir -p staging/reqts && cp reqts/PRD.md staging/reqts/PRD.md
-          echo "${{ github.event.release.tag_name || inputs.tag || 'dev' }}" > staging/VERSION
+          echo "${{ github.event.release.tag_name || inputs.tag || 'dev' }}" > staging/VERSION.txt
           # NO tools/*.scala: checked 2026-07-27, not one runtime verb reads it (DESIGN D3).
           # NO skills/: the Claude Code plugin owns those, and shipping a second copy here is the
           # drift failure D4 exists to prevent.
