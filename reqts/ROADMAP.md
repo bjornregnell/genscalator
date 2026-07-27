@@ -53,13 +53,21 @@ Tentative plan after alpha release.
 
 - Substrate re-architecture
 - investigation of hangs and regressions from captured data, to harden tt tools
-- the meta-minion study, 
-- bloop upstream work (can we contribute with reproducable bloop memory hogging)
+- the meta-minion study, can/should we offer a meta-minion skill for continuos echt-checking in TokSpend mode or similar?  
+- bloop upstream work (can we contribute with reproducable bloop memory hogging; we have native builds but when contributors work on tools it fall back to slow scala-cli/bloop mem-hogging stuff)
 - the toolbox and infrastructure wishlist.
 - semantic versioning scheme
 - Tool safety flags: `--safe-mode`, `--sandboxed`, `--audit`.
 - Capture-checking Safe-mode proof of concept, so pure tools are safe by default and purity stops being
   a convention the reader has to trust.
+- prepare for use in other harnesses not only Claude Code, investigate and decide scope of beta release on tailored support for harnesses and editors (pros/cons/tradeoffs) preferring open source targets, candidates:
+  * codex
+  * open code
+  * vs code
+  * kilo
+  * cursor
+  * ...
+
 - Cross-tool packaging: an MCP server, so the tools are first-class in Codex and opencode too. The Claude
   Code plugin already ships; see the plugin section of the README.
 - ...
