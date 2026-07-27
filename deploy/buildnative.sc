@@ -137,6 +137,14 @@ val memNote =
   else s"${mem.gb} GB via ${mem.source}"
 println(s"buildnative: memory check ${if memFloorGb.isEmpty then "SKIPPED (--mem-floor off)" else "ok"} ($memNote)")
 
+// ⚠ Windows needs the .bat name EXPLICITLY. PATHEXT resolution is a SHELL feature, and neither Git
+// Bash nor Java's ProcessBuilder does it: the launcher installs scala-cli.bat, so a bare "scala-cli"
+// dies with CreateProcess error=2. This is the SAME defect at two layers — the workflow step hit it
+// first (exit 127, fixed by letting Windows use its default shell), and then THIS script hit it from
+// inside, spawning its own subprocess. Fixing one layer just exposed the next.
+val scalaCli =
+  if System.getProperty("os.name", "").toLowerCase.contains("win") then "scala-cli.bat" else "scala-cli"
+
 def run(label: String, cmd: String*): Long =
   println(s"buildnative: [$label] ${cmd.mkString(" ")}")
   val t0 = System.nanoTime
@@ -151,7 +159,7 @@ def run(label: String, cmd: String*): Long =
 Files.createDirectories(liveBin.getParent)
 Files.deleteIfExists(nextBin)
 val buildSecs = run("build",
-  "scala-cli", "--power", "package", "--native-image", toolsDir.toString,
+  scalaCli, "--power", "package", "--native-image", toolsDir.toString,
   "--main-class", "dispatchTypedTools", "-o", nextBin.toString,
   "--", "--no-fallback", "--enable-url-protocols=https,http", "-J-Xmx6g")
 if !Files.isRegularFile(nextBin) then die(s"build reported success but $nextBin is missing")
@@ -159,7 +167,7 @@ val sizeMb = Files.size(nextBin) / (1024 * 1024)
 
 // ---- step 2: the golden net, THROUGH the candidate (parity mode) ----
 val paritySecs = run("parity",
-  "scala-cli", "test", toolsDir.toString,
+  scalaCli, "test", toolsDir.toString,
   "--java-prop", s"tt.tools=$toolsDir",
   "--java-prop", s"tt.native.bin=$nextBin")
 
