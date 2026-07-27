@@ -1,0 +1,116 @@
+# Builds the tt native-image dispatcher on every supported platform, proves each binary with the
+# FULL CLI-contract suite run THROUGH that binary, packages a self-contained archive per platform,
+# and attaches the archives plus checksums to a GitHub release.
+#
+# Design record: reqts/DESIGN.md D3 (the per-platform archive) and D4 (why skills/ is not in it).
+#
+# DELIBERATELY NOT triggered by push. A release build is an act, not a side effect.
+
+name: native-release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing release tag to attach assets to (blank = build only, attach nothing)"
+        required: false
+  release:
+    types: [published]
+
+permissions:
+  contents: read                # the publish job re-declares write; build jobs never need it
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false          # one platform failing must never mask the others' results
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux-x86_64
+          - os: ubuntu-24.04-arm
+            platform: linux-aarch64
+          - os: macos-13          # last Intel image
+            platform: macos-x86_64
+          - os: macos-latest      # Apple Silicon
+            platform: macos-aarch64
+          - os: windows-latest
+            platform: windows-x86_64
+            exe: .exe
+          - os: windows-11-arm
+            platform: windows-aarch64
+            exe: .exe
+            experimental: true
+            # Shipped EXPERIMENTAL on purpose (DESIGN D3): newest, least-proven runner, published so
+            # an unusual-platform tester can try it and report. Must be labelled experimental in the
+            # release notes, or a published asset reads as a supported one.
+
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental == true }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: VirtusLab/scala-cli-setup@v1
+        # scala-cli fetches its own GraalVM, so there is no separate GraalVM provisioning step.
+
+      - name: MSVC environment (Windows only)
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+        # native-image shells out to the MSVC linker and expects the environment a "x64 Native Tools"
+        # prompt sets up. Without this the build fails late and cryptically.
+
+      - name: Build and prove
+        shell: bash
+        run: |
+          scala-cli run deploy/buildnative.sc -- \
+            --root "$PWD" \
+            --out "staging/bin/tt${{ matrix.exe }}" \
+            --mem-floor off
+        # --mem-floor off: the 6 GB floor is right on a dev box and wrong on a runner, where
+        # MemAvailable is not a good proxy for what a job may use. It is Linux-only either way.
+        # The build -> parity -> swap ritual is otherwise the SAME one a human runs locally, so
+        # there is no second build path to keep honest.
+
+      - name: Stage the self-contained payload
+        shell: bash
+        run: |
+          cp -r docs staging/docs
+          mkdir -p staging/reqts && cp reqts/PRD.md staging/reqts/PRD.md
+          echo "${{ github.event.release.tag_name || inputs.tag || 'dev' }}" > staging/VERSION
+          # NO tools/*.scala: checked 2026-07-27, not one runtime verb reads it (DESIGN D3).
+          # NO skills/: the Claude Code plugin owns those, and shipping a second copy here is the
+          # drift failure D4 exists to prevent.
+
+      - name: Archive and checksum
+        shell: bash
+        run: |
+          mkdir -p dist
+          name="genscalator-${{ matrix.platform }}"
+          (cd staging && zip -qr "../dist/$name.zip" .)
+          cd dist
+          if command -v sha256sum >/dev/null; then sha256sum "$name.zip" > "$name.zip.sha256"
+          else shasum -a 256 "$name.zip" > "$name.zip.sha256"; fi
+        # zip, not tar.gz: the JDK reads zip with java.util.zip and no dependency, so the installer
+        # needs neither a library nor a subprocess (DESIGN D3). The installer verifies this digest
+        # and aborts on mismatch.
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: genscalator-${{ matrix.platform }}
+          path: dist/*
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    if: github.event_name == 'release' || inputs.tag != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write           # narrowest scope that can attach release assets
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { path: dist, merge-multiple: true }
+      - name: Attach to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag || github.event.release.tag_name }}
+        run: gh release upload "$TAG" dist/* --clobber --repo "$GITHUB_REPOSITORY"
