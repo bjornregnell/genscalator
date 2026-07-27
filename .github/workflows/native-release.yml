@@ -30,8 +30,20 @@ jobs:
             platform: linux-x86_64
           - os: ubuntu-24.04-arm
             platform: linux-aarch64
-          - os: macos-13          # last Intel image
-            platform: macos-x86_64
+          # ⚠ macos-13 (Intel) was REMOVED from this matrix on 2026-07-27, and NOT by marking it
+          # experimental. That distinction is the point: `continue-on-error` excuses a leg that FAILS,
+          # and this one never failed — it never STARTED. Two runs sat queued 2h30m+ waiting for an
+          # Intel runner and were cancelled unfinished. Since `publish` has `needs: build`, which waits
+          # for every leg to reach a terminal state, one perpetually-queued leg holds the whole release
+          # hostage. Marking it experimental would have looked like a fix and changed nothing.
+          #
+          # Nothing shipped is lost: this leg has NEVER produced an artifact, not once. Apple Silicon is
+          # covered by macos-latest below, and an Intel Mac can still build from source.
+          #
+          # The way back, when someone wants Intel coverage again: give it its OWN job that `publish`
+          # does not depend on. That means the build steps must first be extracted into a composite
+          # action, because copying them is the drift failure D4 exists to prevent — which is exactly
+          # why it was not done as a quick fix here.
           - os: macos-latest      # Apple Silicon
             platform: macos-aarch64
           - os: windows-latest
