@@ -51,6 +51,10 @@ val root: Path =
 val toolsDir  = root.resolve("tools")
 val tmpDir    = root.resolve("tmp")
 
+// ONE Windows predicate for the whole script. Windows has now bitten this build at three
+// separate layers, so the test lives in exactly one place rather than being re-spelled at each.
+val isWindows = System.getProperty("os.name", "").toLowerCase.contains("win")
+
 // --out <path>: where the PROVEN binary lands. Default tmp/tt-native, which is the path the launcher
 // looks at, so a local rebuild refreshes the binary `tt` actually runs. CI passes a per-platform name
 // (and Windows needs the .exe suffix). A relative path resolves against --root, never the cwd, so the
@@ -60,7 +64,16 @@ val liveBin   =
 
 // The candidate is always written BESIDE its target, so step 3 stays a same-filesystem ATOMIC_MOVE.
 // Deriving it (rather than hardcoding tmp/) is what keeps that guarantee true for any --out.
-val nextBin   = liveBin.resolveSibling(liveBin.getFileName.toString + ".next")
+// ⚠ On Windows, native-image APPENDS .exe unless the -o name ALREADY ends in it. Appending
+// ".next" to "tt.exe" gave "tt.exe.next", so the build wrote "tt.exe.next.exe" and the
+// existence check below failed on a binary that HAD been produced. Insert ".next" BEFORE the
+// extension instead. Third layer of the same Windows story: the workflow step (exit 127), then
+// this script's own subprocess (CreateProcess error=2), and now the output NAME.
+val nextBin   =
+  val fileName = liveBin.getFileName.toString
+  if isWindows && fileName.endsWith(".exe")
+  then liveBin.resolveSibling(fileName.stripSuffix(".exe") + ".next.exe")
+  else liveBin.resolveSibling(fileName + ".next")
 
 // Fail fast if the resolved tools dir is a propagated SUBSET (no dispatcher) rather than the
 // canonical toolbox — else the native build dies late with a cryptic "Main entry point class
@@ -142,8 +155,7 @@ println(s"buildnative: memory check ${if memFloorGb.isEmpty then "SKIPPED (--mem
 // dies with CreateProcess error=2. This is the SAME defect at two layers — the workflow step hit it
 // first (exit 127, fixed by letting Windows use its default shell), and then THIS script hit it from
 // inside, spawning its own subprocess. Fixing one layer just exposed the next.
-val scalaCli =
-  if System.getProperty("os.name", "").toLowerCase.contains("win") then "scala-cli.bat" else "scala-cli"
+val scalaCli = if isWindows then "scala-cli.bat" else "scala-cli"
 
 def run(label: String, cmd: String*): Long =
   println(s"buildnative: [$label] ${cmd.mkString(" ")}")
