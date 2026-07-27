@@ -439,7 +439,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   mouthful to type"*). *(Relocated 2026-07-26 on BR's call, out of the gitignored `tmp/resume-prompt.md` via a brief
   stop at `notes/warp-ember.md`. Root, because that is where a cold agent actually looks — beside the other
   load-bearing substrate, `PIN-BOARD.md` and `HUMANS.md`, which share its agent-sole-writer convention — and because
-  the name pairs legibly with `work/EMBER-TEMPLATE.md`. It is also a convention that PORTS to any repo you warp in,
+  the name pairs legibly with `docs/EMBER-TEMPLATE.md`. It is also a convention that PORTS to any repo you warp in,
   where `notes/warp-ember.md` assumed a `notes/` dir. **One rider: root means tracked, so `EMBER.md` belongs at the
   root of a CLOSED repo only.** An ember routinely names holds, embargoes, and half-rotated credentials; in a public
   repo it stays gitignored, or does not exist.)* **Named for the smith's banked fire: at exit the session rakes ash over the coals so an ember

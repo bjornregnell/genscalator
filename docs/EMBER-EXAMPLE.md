@@ -23,6 +23,15 @@ is altered. The specimen is otherwise verbatim, including its em-dashes, abbrevi
 board, SM = smart-move pin, WR = workflow research, tt = the typed toolbox, CF5/O4 = model names)
 and its terse register: embers are written agent-to-agent, not for human readers.
 
+Those pin identifiers point into a private working repository and cannot be resolved from here. They
+are kept anyway, and deliberately: elsewhere in this repo such identifiers were removed in 2026-07-27
+as unresolvable esoterica, but a specimen is the one place where removing them would be the error.
+Stripping them would make "otherwise verbatim" untrue and would hide what a real ember actually looks
+like, which is the only reason to publish one. Read them as opaque handles; the gloss above is enough.
+
+*(Moved here from `work/` on 2026-07-27, alongside [`EMBER-TEMPLATE.md`](EMBER-TEMPLATE.md), when the
+working directory was retired from the public repo.)*
+
 ---- BEGIN VERBATIM BATON SPECIMEN (2026-07-19, pre-rename) ----
 
 ⛔ THIS IS A BATON: a pointer to durable truth, not the truth. The truth is in committed files + memory. Verify before trusting; read only what you need (bounded reads, SM153).
