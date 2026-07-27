@@ -7,7 +7,7 @@ file states **when**. Detail and open questions live in those documents, not her
 > **Status: stub.** Started 2026-07-26. The version-planning material now in `PRD.md` is to be migrated
 > here; that migration is pending.
 
-## v0.9.2 - current, in progress on `main`
+## v0.9.2 - RELEASED 2026-07-24
 
 - Single dispatcher: the whole toolbox ships as one native image, one entry point, `tt <tool> <args>`
   unchanged.
@@ -29,17 +29,58 @@ BEFORE the alpha, and that is not itself alpha work? If everything on the list i
 or invisible to a tester, then v0.9.3 is ceremony and the honest move is to skip it. Deliberately NOT
 in this release either way: the reqT-lang round-trip work, which moved out (see v0.10.1).
 
+**Evidence gathered 2026-07-27, decision still BR's.** ⚠ Scope caveat: read from a `--since 2026-07-24`
+log window (95 commits), which is a SUPERSET of post-tag work because v0.9.2 was tagged at 11:17 that
+day — so the list below is what a reader should verify, not a certified post-tag set. The answer looks
+like **yes, there is real user-facing material, and it is not merely alpha work**:
+
+- **Three hard failures a WINDOWS tester hits on v0.9.2**, all fixed since: `tt sbt --dir` and
+  `tt bloop clean --dir` rejected every path a Windows user could type (`e74e184`, `19b311e`), and
+  `tt env has PATH` reported ABSENT on every Windows box because `sys.env` is case-sensitive and the
+  key there is `Path` (`6bab0d5`), plus the broader charset/line-ending/path pass (`641fe77`). This
+  bears directly on the alpha gate, which is *a tester on their own machine* — so it is arguably
+  alpha-blocking rather than separate from it.
+- **Two `tt forge` bugs that made the tool wrong rather than merely limited:** `releases` and `tags`
+  accepted `--gh` and then silently ignored it (`00aba1d`), and `releases` crashed outright on any repo
+  with a draft release (`27d88c0`).
+- **New verbs a user can see:** `tt links`, `tt memory`, `tt tsv`, `tt json`, `tt sbt`,
+  `tt bloop clean`, `tt git push --tags`, and `tt zip` + `tt forge release-download` /
+  `release-delete`. (`tt env`, `tt sub` and `tt git push` are NOT in this set — the v0.9.2 section
+  above already claims them, which is the kind of double-count this caveat exists to prevent.)
+
+⇒ So the honest reading is that v0.9.3 would **not** be ceremony. The open sub-question is whether the
+Windows fixes are better framed as v0.9.3 or folded into the alpha, since they serve the alpha's own
+gate.
+
 ## v0.10.0 - alpha, coming next
 
 **Gate:** a tester on their own machine can install and run the toolbox without a wedge. Everything else is polish or velocity.
 
 Blocking:
 
-- Cross-platform native build matrix, macOS and Windows. Linux x86-64 is alpha-ready today; the other
-  two platforms have never been built. Candidate route: GitHub Actions, since scala-cli fetches its own
-  GraalVM and needs no separate provisioning on a runner.
+- ~~Cross-platform native build matrix, macOS and Windows.~~ **DONE 2026-07-27** (this text said "have
+  never been built", which stopped being true that day). Run 30287100766 was the first fully green
+  `native-release`: **linux-x86_64, linux-aarch64, macos-aarch64, windows-x86_64**, each binary proved
+  by the full CLI-contract suite run THROUGH it. The route taken was the candidate one, GitHub Actions
+  with scala-cli fetching its own GraalVM. Two deliberate exclusions, both recorded in the workflow
+  itself: `windows-aarch64` ships EXPERIMENTAL and currently fails, because VirtusLab publishes no
+  `aarch64-pc-win32` scala-cli build; and `macos-13` (Intel) was REMOVED rather than marked
+  experimental, because it never failed, it never STARTED — a perpetually-queued leg holds `publish`
+  hostage via `needs: build`, and `continue-on-error` does not fix queuing. Run 30292345970 then
+  demonstrated that distinction empirically: `windows-aarch64` FAILED and `publish` ran anyway.
 - Decide how alpha is distributed: release-asset binaries, or build on the tester's box.
+  **Still BR's decision, but no longer un-evidenced:** the release-asset path was proven end to end on
+  2026-07-27 — `publish` executed for the first time ever (6s), attaching 4 platform zips + 4 sha256,
+  and a full round trip was verified from the tester's side: download, sha256 match, then every CRC32
+  in the archive validated (36 entries, 44,287,305 B) with `bin/tt` and a correct `VERSION.txt` inside.
 - `tt update --native`, explicitly gated on the build matrix being green on both platforms first.
+  **The gate is now open, and a SECOND dependency surfaced 2026-07-27 that this line did not know
+  about:** the pieces it needs are download (`tt forge release-download`, built) and checksum verify
+  (`--verify`, built) and **extraction, which does not exist and was deliberately not built.** A zip
+  entry name can contain `../` or an absolute path (zip-slip), so a safe extractor needs a
+  path-containment guard designed on purpose with its own tests. ⇒ **`tt zip extract` is the real next
+  blocker, and it is a security design task, not plumbing.** It also writes executables onto a user's
+  machine, so it wants a human at the wheel.
 - `gs native`, consent-gated provisioning, depends on the same.
 
 Also in scope for alpha:
