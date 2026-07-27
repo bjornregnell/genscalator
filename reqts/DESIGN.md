@@ -190,3 +190,33 @@ results out, and streaming, are still a plan. Tools take `String*` today. That n
 record carries only what was decided and built. Its status header claimed "not started" for three weeks
 after the dispatcher shipped, which is worth recording as its own small lesson: a status line is a claim,
 and an uncorrected one misleads exactly the reader who trusts the document most.
+
+## D6 - the release pipeline pins every action it depends on
+
+**Decision.** `.github/workflows/native-release.yml` pins each third-party action to a release tag, not to
+a moving branch. `VirtusLab/scala-cli-setup@v1`, `coursier/cache-action@v6`, `actions/checkout@v4`,
+`ilammy/msvc-dev-cmd@v1`. The upstream scala-cli documentation shows `scala-cli-setup@main`; this project
+deliberately does not follow it there.
+
+**Why.** This workflow does not run tests, it produces the binaries a person downloads and executes. A
+moving branch means the toolchain that built today's asset is not the toolchain that builds tomorrow's,
+so a green run stops being evidence about the artifact a user actually has. It is the same argument the
+install path already makes in D2 and D3: a reviewable, version-pinned thing the human reads before
+running, never a blind fetch of whatever is current. Pinning inside CI and arguing for pinning in the
+installer would otherwise be inconsistent.
+
+**The cost, stated.** Pinning means upstream fixes do not arrive on their own; a human bumps the tag. That
+is the intended trade. The failure mode of a stale pin is visible and boring; the failure mode of a moving
+branch is an artifact that changed for reasons nobody recorded.
+
+**Evidence that `@main` would not have helped anyway.** The one leg where the setup action fails is
+`windows-aarch64`, which 404s. Checked against VirtusLab's published release assets on 2026-07-27: there
+is `scala-cli-x86_64-pc-win32` in `.msi`, `.zip` and `-sdk.zip`, and no `aarch64-pc-win32` build of any
+kind. No action version conjures an asset upstream does not publish, so that leg stays `experimental`
+until it does.
+
+**What the cache action is and is not.** `coursier/cache-action@v6` caches the coursier cache, which holds
+the JVM, the compiler artifacts and the GraalVM that scala-cli fetches for native-image - the bulk of a
+cold leg, paid six times per run. It is a speed decision and correctness-neutral by construction: a cold
+cache builds the same binary, more slowly. It is recorded here only so that a future reader does not
+mistake it for something the build depends on for correctness and hesitate to remove it.
