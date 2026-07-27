@@ -15,8 +15,8 @@
 //   all; see the CREDENTIAL HELPERS note below for the full trade. It prints an [audit] line before acting,
 //   and is deliberately NOT blanket-allowlistable (creating a release should stay a visible, confirmed op).
 //   tt forge whoami   [--url BASE]                          # verify auth: print the token's login (never the token)
-//   tt forge releases <owner>/<repo> [--url BASE] [--limit N]
-//   tt forge tags     <owner>/<repo> [--url BASE] [--limit N]
+//   tt forge releases <owner>/<repo> [--gh | --url BASE] [--limit N]   # lists asset names too
+//   tt forge tags     <owner>/<repo> [--gh | --url BASE] [--limit N]
 //   tt forge release-create <owner>/<repo> <tag> [--name S] [--body S | --body-file F]
 //                           [--prerelease] [--draft] [--target COMMITISH] [--url BASE]
 //   tt forge release-edit   <owner>/<repo> <tag> [--name S] [--body S | --body-file F] [--prerelease] [--draft] [--url BASE]
@@ -42,8 +42,8 @@ object Forge {
   private def forgeUsage(): Nothing = die(
     "usage:\n" +
       "  forge whoami   [--url BASE]                              (verify auth: prints the token's login)\n" +
-      "  forge releases <owner>/<repo> [--url BASE] [--limit N]\n" +
-      "  forge tags     <owner>/<repo> [--url BASE] [--limit N]\n" +
+      "  forge releases <owner>/<repo> [--gh | --url BASE] [--limit N]\n" +
+      "  forge tags     <owner>/<repo> [--gh | --url BASE] [--limit N]\n" +
       "  forge issues <owner>/<repo> [--gh | --url BASE] [--state open|closed|all] [--limit N]\n" +
       "  forge prs    <owner>/<repo> [--gh | --url BASE] [--state open|closed|all] [--limit N]\n" +
       "  forge contributors <owner>/<repo> [--gh | --gl | --url BASE] [--limit N]   (--gh/--gl only)\n" +
@@ -66,8 +66,10 @@ object Forge {
       |Usage:
       |  forge whoami   [--url BASE]                             verify auth: print the token's
       |                                                          login (never the token itself)
-      |  forge releases <owner>/<repo> [--url BASE] [--limit N]  list releases (READ, no auth)
-      |  forge tags     <owner>/<repo> [--url BASE] [--limit N]  list tags     (READ, no auth)
+      |  forge releases <owner>/<repo> [--gh | --url BASE] [--limit N]
+      |                                                          list releases, with each release's
+      |                                                          asset names indented under it (READ)
+      |  forge tags     <owner>/<repo> [--gh | --url BASE] [--limit N]  list tags (READ)
       |  forge issues <owner>/<repo> [--gh | --url BASE] [--state S] [--limit N]
       |                                                          list issues   (READ)
       |  forge prs    <owner>/<repo> [--gh | --url BASE] [--state S] [--limit N]
@@ -335,7 +337,14 @@ object Forge {
   private def listReleases(args: List[String]): Unit =
     val o             = parseRead(args)
     val (owner, repo) = splitRepo(o.repo.getOrElse(forgeUsage()))
-    val arr = Try(getJson(s"${apiBase(o.base)}/repos/$owner/$repo/releases?limit=${o.limit}").arr)
+    // --gh sets base to github.com, but this verb used to build a Gitea path against it regardless,
+    // producing https://github.com/api/v1/... -> 410 Gone. Route on the dialect like every other
+    // dual-dialect read verb does. GitHub spells the page size per_page, Gitea limit.
+    val gh = isGitHub(o.base)
+    val url =
+      if gh then s"$GitHubApi/repos/$owner/$repo/releases?per_page=${o.limit}"
+      else s"${apiBase(o.base)}/repos/$owner/$repo/releases?limit=${o.limit}"
+    val arr = Try(getJson(url, if gh then ghHeaders else Map.empty).arr)
       .getOrElse(die("expected a JSON array of releases"))
     if arr.isEmpty then println("(no releases)")
     else
@@ -347,12 +356,24 @@ object Forge {
         val pub   = rel.obj.get("published_at").map(_.str).getOrElse("")
         val flags = (if draft then " [draft]" else "") + (if pre then " [prerelease]" else "")
         println(s"$tag\t$pub$flags\t$name")
+        // Asset names, indented under their release. Both dialects expose `assets`, and this is
+        // what makes "which platforms does that release actually ship?" answerable here instead
+        // of by hand-curling the API — the gap that sent a caller back to a raw forge client.
+        val assets = rel.obj.get("assets").toList.flatMap(a => Try(a.arr.toList).getOrElse(Nil))
+        assets.foreach { a =>
+          val an = a.obj.get("name").map(_.str).getOrElse("?")
+          println(s"\t  $an")
+        }
       }
 
   private def listTags(args: List[String]): Unit =
     val o             = parseRead(args)
     val (owner, repo) = splitRepo(o.repo.getOrElse(forgeUsage()))
-    val arr = Try(getJson(s"${apiBase(o.base)}/repos/$owner/$repo/tags?limit=${o.limit}").arr)
+    val gh = isGitHub(o.base) // same dialect bug as releases had; see the note there
+    val url =
+      if gh then s"$GitHubApi/repos/$owner/$repo/tags?per_page=${o.limit}"
+      else s"${apiBase(o.base)}/repos/$owner/$repo/tags?limit=${o.limit}"
+    val arr = Try(getJson(url, if gh then ghHeaders else Map.empty).arr)
       .getOrElse(die("expected a JSON array of tags"))
     if arr.isEmpty then println("(no tags)")
     else
