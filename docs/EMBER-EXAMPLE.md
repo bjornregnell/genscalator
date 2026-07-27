@@ -18,10 +18,14 @@ instance, which reconstructed the working state from it with zero human re-expla
 the stale mode label, verified pushes on both remotes, confirmed box health, and correctly kept a
 held work queue on hold. In other words: this ember is published because it *worked*.
 
-**Redaction note:** one colleague's name is replaced with `[colleague]` throughout; nothing else
-is altered. The specimen is otherwise verbatim, including its em-dashes, abbreviations (PB = pin
-board, SM = smart-move pin, WR = workflow research, tt = the typed toolbox, CF5/O4 = model names)
-and its terse register: embers are written agent-to-agent, not for human readers.
+**Redaction note:** two changes, and no others. One colleague's name is replaced with `[colleague]`
+throughout, and the one absolute home-directory path is shortened to `<home>` (2026-07-27) — it named a
+local checkout of [`lunduniversity/introprog`](https://github.com/lunduniversity/introprog), whose GitHub
+location is given here instead. The path could not simply be swapped for that URL: `env --chdir=` takes a
+filesystem path, and the whole point of the line is that an absolute local path was what the situation
+demanded. The specimen is otherwise verbatim, including its em-dashes, abbreviations (PB = pin board,
+SM = smart-move pin, WR = workflow research, tt = the typed toolbox, CF5/O4 = model names) and its terse
+register: embers are written agent-to-agent, not for human readers.
 
 Those pin identifiers point into a private working repository and cannot be resolved from here. They
 are kept anyway, and deliberately: elsewhere in this repo such identifiers were removed in 2026-07-27
@@ -46,7 +50,7 @@ FORBIDDEN → ALLOWED:
 - `cd repo && git` → `tt git commit --repo <abs> --message-file <f> --add <p> --push`; fallback push `git -C <repo> push github`
 - compound `a && b` / `a; b` → ONE bare command per call; metachars OUT of quoted args
 - mode toggles: **`tt mode add/rm <label>`**, NEVER Write-tool on ~/.claude/gs-modes (guard-stalls; 2nd tt-first-drift specimen 07-19)
-- introprog sbt: **`env --chdir=/home/bjornr/git/hub/lunduniversity/introprog sbt --client "<task>"`** (bare `cd` is blocked; SM167 = future `tt sbt --repo`)
+- introprog sbt: **`env --chdir=<home>/git/hub/lunduniversity/introprog sbt --client "<task>"`** (bare `cd` is blocked; SM167 = future `tt sbt --repo`)
 - kill a JVM: **`jps` → `kill -9 <pid>`** (`pkill -f BloopServer` MISSES — cmdline lacks the class)
 - Swedish in artifacts/commits/sub-agents → ENGLISH (chat may be Swedish)
 - NEVER blanket-allow rm/curl/interpreters/settings-self-edit. Commit+push every unit.

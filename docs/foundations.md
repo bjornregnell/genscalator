@@ -122,6 +122,18 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   research (WR) or the translation (AT). Today the site is a shallow placeholder that needs design love; the generator
   choice + deployment order are open (`media/blog/README.md` "Deployment"), and the blog `deployed`/`updated` status states
   exist to track what's live once SSG ships.
+- **published / deployed** — two states people collapse, because ordinary English uses one word for both.
+  **Published** = it has entered the **open repo**, so anyone can read it. **Deployed** = it has reached
+  **bjornregnell.se**. Publishing is a commit; deploying is a transport step, and the gap between them is
+  real: a published post can sit unbuilt for weeks, and a `deployed` post that is later `updated` has gone
+  stale against the live site until a redeploy lands. So *"is it public?"* and *"is it live?"* are different
+  questions with different answers. (BR's rule, 2026-07-27.)
+  ⚠ **The blog's own status field is narrower than this.** In `media/blog/README.md` the post lifecycle runs
+  `drafted → published → deployed`, where `published` means *approved as text*, and `tt ssg --status
+  published,deployed` selects the deploy set on exactly that meaning. So a scaffold sitting in the open repo
+  is **published in this glossary's sense and NOT `published` as a status**. Both readings are in live use;
+  when it matters, say which you mean. Specimen worth remembering: an agent conflated *deployed* with
+  *published* and built a decision on it, having itself gathered the contradicting evidence an hour earlier.
 - **to ape** (v.) — the **agent's** move: to imitate human-ness (our language, our behaviour). An LLM is trained to
   sound like us, so it apes us. Swedish cognate *att efterapa* (*efter* + *apa* = "ape after"), the same
   imitate-slavishly sense.
