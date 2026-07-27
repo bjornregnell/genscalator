@@ -75,6 +75,23 @@ object EnvTool {
     System.err.println(s"tt env: $msg")
     sys.exit(2)
 
+  /** Look a name up the way the HOST means it.
+    *
+    * `sys.env` is a case-SENSITIVE Map built from `System.getenv()`, but Windows environment names are
+    * case-insensitive by OS convention and the real key is `Path`, not `PATH`. So `tt env has PATH`
+    * exited 1 (ABSENT) and `tt env get PATH` exited 2 (not set) on every Windows box — found by the
+    * first CI run that reached the suite there, 2026-07-27. Exact match wins first, so POSIX keeps its
+    * exact semantics, where `FOO` and `foo` really are two different variables; the fallback is Windows
+    * only. Deliberately not `System.getenv(name)`, which IS case-insensitive on Windows: that would
+    * reach the live environment and bypass the `env` map this function is given, which the tests
+    * substitute.
+    */
+  private val isWindows = System.getProperty("os.name", "").toLowerCase.contains("win")
+
+  private def lookup(env: Map[String, String], name: String): Option[String] =
+    env.get(name).orElse:
+      if isWindows then env.collectFirst { case (k, v) if k.equalsIgnoreCase(name) => v } else None
+
   def dispatch(args: String*): Unit =
     if args.contains("--help") || args.contains("-h") then
       println(Help); sys.exit(0)
@@ -95,13 +112,13 @@ object EnvTool {
       // helper is missing — a silent failure. Reporting "set" there is false reassurance about exactly the
       // setup this tool is meant to support. `tt forge` already treats blank as absent
       // (`.map(_.trim).find(_.nonEmpty)`), so this matches it rather than inventing a second semantic.
-      case "has" :: name :: Nil => sys.exit(if env.get(name).exists(_.trim.nonEmpty) then 0 else 1)
+      case "has" :: name :: Nil => sys.exit(if lookup(env, name).exists(_.trim.nonEmpty) then 0 else 1)
       case "has" :: _           => fail("has takes exactly one <NAME>")
 
       case "get" :: name :: rest =>
         val reveal = rest.contains("--reveal")
         rest.find(a => a.startsWith("--") && a != "--reveal").foreach(o => fail(s"unknown option '$o'"))
-        env.get(name) match
+        lookup(env, name) match
           case Some(v) => println(renderGet(name, v, reveal)); sys.exit(0)
           case None    => fail(s"not set: $name")
       case "get" :: Nil => fail("get needs a <NAME>")

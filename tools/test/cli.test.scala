@@ -46,6 +46,29 @@ class CliSuite extends munit.FunSuite:
           .call(check = false, stdout = os.Pipe, stderr = os.Pipe)
     (r.exitCode, normalizeEol(r.out.text()), normalizeEol(r.err.text()))
 
+  /** Run a tool with its payload on STDIN, which is how the real caller feeds it.
+    *
+    * ⚠ Why this exists. statusline and guardcheck also accept their JSON as a positional argument, an
+    * affordance their headers describe as "for testing", and the tests used it. That does not survive
+    * Windows: a process there receives ONE command-line string, not an argv vector, so a payload
+    * containing both spaces (`"Opus 4.8"`) and embedded double quotes has to be quoted and escaped on
+    * the way out and re-split on the way in. It came back mangled, both tools degraded exactly as
+    * designed — empty line, exit 0 — and that read as 21 unrelated assertion failures.
+    *
+    * The deeper point is not the quoting. It is that the tests were exercising a path the production
+    * caller never takes: Claude Code pipes this JSON to stdin. The suite disagreed with reality and
+    * only Windows charged for it. Feeding stdin fixes the platform bug and closes that gap at once.
+    */
+  private def runStdin(tool: String, stdinText: String, args: String*): (Int, String, String) =
+    val r = nativeBin match
+      case Some(bin) =>
+        os.proc(bin.toString, tool, args)
+          .call(check = false, stdin = stdinText, stdout = os.Pipe, stderr = os.Pipe)
+      case None =>
+        os.proc(ScalaCli, "run", (toolsDir / s"$tool.scala").toString, "--", args)
+          .call(check = false, stdin = stdinText, stdout = os.Pipe, stderr = os.Pipe)
+    (r.exitCode, normalizeEol(r.out.text()), normalizeEol(r.err.text()))
+
   // Announce the resolved tools dir ONCE, and fail fast on a stale/partial one. The ember records a
   // 6-file copy resolved via cwd walk-up that produced ~123 phantom failures; this turns that whole
   // confusing class into ONE clear message before any test runs (beforeAll throwing aborts the suite).
@@ -1158,14 +1181,14 @@ class CliSuite extends munit.FunSuite:
   }
   test("guardcheck hook: HIGH finding → deny decision JSON") {
     val json = """{"tool_name":"Bash","tool_input":{"command":"tt git commit --message-file /dev/stdin"}}"""
-    val (code, out, _) = run("guardcheck", "hook", json)
+    val (code, out, _) = runStdin("guardcheck", json, "hook")
     assertEquals(code, 0)
     assert(clue(out).contains("\"permissionDecision\":\"deny\""))
     assert(clue(out).contains("PreToolUse"))
   }
   test("guardcheck hook: MED-only finding → ask decision JSON") {
     val json = """{"tool_name":"Bash","tool_input":{"command":"grep -A4 foo file"}}"""
-    val (_, out, _) = run("guardcheck", "hook", json)
+    val (_, out, _) = runStdin("guardcheck", json, "hook")
     assert(clue(out).contains("\"permissionDecision\":\"ask\""))
   }
   // --- NOTE tier: tool choice, never a decision (SM230) ---
@@ -1198,7 +1221,7 @@ class CliSuite extends munit.FunSuite:
   }
   test("guardcheck hook: NOTE-only emits systemMessage and NO permissionDecision") {
     val json = """{"tool_name":"Bash","tool_input":{"command":"jq .a b.json"}}"""
-    val (code, out, _) = run("guardcheck", "hook", json)
+    val (code, out, _) = runStdin("guardcheck", json, "hook")
     assertEquals(code, 0)
     assert(clue(out).contains("systemMessage"), "the nudge must be visible")
     // Precise, not a bare `contains("allow")`: the fix text legitimately says `permissions.allow.3`
@@ -1209,12 +1232,12 @@ class CliSuite extends munit.FunSuite:
   }
   test("guardcheck hook: a NOTE alongside a HIGH does not downgrade the deny") {
     val json = """{"tool_name":"Bash","tool_input":{"command":"jq .a b.json && rm x"}}"""
-    val (_, out, _) = run("guardcheck", "hook", json)
+    val (_, out, _) = runStdin("guardcheck", json, "hook")
     assert(clue(out).contains("\"permissionDecision\":\"deny\""))
   }
   test("guardcheck hook: a NOTE alongside a MED still asks") {
     val json = """{"tool_name":"Bash","tool_input":{"command":"python3 x.py | head -5"}}"""
-    val (_, out, _) = run("guardcheck", "hook", json)
+    val (_, out, _) = runStdin("guardcheck", json, "hook")
     assert(clue(out).contains("\"permissionDecision\":\"ask\""))
   }
   // links: the CLI contract, end to end through the launcher path. Per SM229 a new tool is covered by
@@ -1322,7 +1345,7 @@ class CliSuite extends munit.FunSuite:
   }
   test("a bulk env read still carries NO decision — it nudges, never blocks") {
     val json = """{"tool_name":"Bash","tool_input":{"command":"printenv"}}"""
-    val (_, out, _) = run("guardcheck", "hook", json)
+    val (_, out, _) = runStdin("guardcheck", json, "hook")
     assert(clue(out).contains("systemMessage"))
     assert(!clue(out).contains("permissionDecision"))
   }
@@ -1334,7 +1357,7 @@ class CliSuite extends munit.FunSuite:
 
   test("guardcheck hook: a clean command emits nothing (allow)") {
     val json = """{"tool_name":"Bash","tool_input":{"command":"tt chrono now"}}"""
-    val (code, out, _) = run("guardcheck", "hook", json)
+    val (code, out, _) = runStdin("guardcheck", json, "hook")
     assertEquals(code, 0)
     assertEquals(out, "")
   }
@@ -1662,7 +1685,7 @@ class CliSuite extends munit.FunSuite:
     val json = s"""{"model":{"display_name":"Opus 4.8","id":"opus"},"cost":{"total_cost_usd":12.34},""" +
       s""""context_window":{"used_percentage":41},"rate_limits":{"five_hour":{"used_percentage":30},""" +
       s""""seven_day":{"used_percentage":14,"resets_at":$resetsSec}}}"""
-    val (code, out, _) = run("statusline", json, "--now-ms", now.toString)
+    val (code, out, _) = runStdin("statusline", json, "--now-ms", now.toString)
     assertEquals(code, 0)
     assert(clue(out).contains("genscalator")) // brand prefix
     assert(clue(out).contains("o4.8")) // model label compacted: Opus 4.8 -> o4.8 (lower-case o, no ctx here)
@@ -1679,7 +1702,7 @@ class CliSuite extends munit.FunSuite:
     // --limits-file to a nonexistent path: this test asserts lim-block ABSENCE, so it must be hermetic
     // against the DEFAULT ~/.claude/gs-limits.json (a live `tt limit` declaration would light the block —
     // caught by the buildnative parity run 2026-07-24, first live specimen of the leak).
-    val (code, out, _) = run("statusline", """{"model":{"id":"haiku"},"cost":{"total_cost_usd":0.5}}""",
+    val (code, out, _) = runStdin("statusline", """{"model":{"id":"haiku"},"cost":{"total_cost_usd":0.5}}""",
       "--limits-file", "/nonexistent/gs-limits.json")
     assertEquals(code, 0)
     assert(clue(out).contains("haiku"))
@@ -1688,7 +1711,7 @@ class CliSuite extends munit.FunSuite:
     assert(!clue(out).contains("lim·")) // legend suppressed when neither limit is present
   }
   test("statusline: empty/invalid JSON prints an empty line at exit 0 (never breaks the prompt)") {
-    val (code, out, _) = run("statusline", "not json at all")
+    val (code, out, _) = runStdin("statusline", "not json at all")
     assertEquals(code, 0)
     assertEquals(out, "")
   }
@@ -1696,7 +1719,7 @@ class CliSuite extends munit.FunSuite:
     val now = 1_000_000_000_000L
     val resetsMs = now + 2 * 86400_000L // 2 days later, already in MS (> 1e12)
     val json = s"""{"rate_limits":{"seven_day":{"used_percentage":50,"resets_at":$resetsMs}}}"""
-    val (_, out, _) = run("statusline", json, "--now-ms", now.toString)
+    val (_, out, _) = runStdin("statusline", json, "--now-ms", now.toString)
     assert(clue(out).contains("w·50%·2d")) // % and reset joined; MS resets_at auto-detected to 2d
     assert(clue(out).contains("lim·%·res")) // legend present
   }
@@ -1704,7 +1727,7 @@ class CliSuite extends munit.FunSuite:
     val now = 1_000_000_000_000L
     val resetSec = now / 1000L + (2 * 3600 + 34 * 60) // 2h34m later, in SECONDS
     val json = s"""{"rate_limits":{"five_hour":{"used_percentage":68,"resets_at":$resetSec}}}"""
-    val (_, out, _) = run("statusline", json, "--now-ms", now.toString)
+    val (_, out, _) = runStdin("statusline", json, "--now-ms", now.toString)
     assert(clue(out).contains("5h·68%·2h")) // largest unit only, like the weekly cluster
     assert(!clue(out).contains("2h34m"))    // the fine h+m form is retired
   }
@@ -1715,7 +1738,7 @@ class CliSuite extends munit.FunSuite:
     val resetsSec = now / 1000L + 3 * 86400
     val json = s"""{"rate_limits":{"seven_day":{"used_percentage":41,"resets_at":$resetsSec},""" +
       s""""seven_day_fable":{"used_percentage":77,"resets_at":$resetsSec}}}"""
-    val (_, out, _) = run("statusline", json, "--now-ms", now.toString)
+    val (_, out, _) = runStdin("statusline", json, "--now-ms", now.toString)
     assert(clue(out).contains("w·41%·3d"))  // the known weekly cluster still renders
     assert(clue(out).contains("f5·77%·3d")) // the unknown window: window words dropped, model word compacted
   }
@@ -1723,50 +1746,50 @@ class CliSuite extends munit.FunSuite:
     val now = 1_000_000_000_000L
     val resetSec = now / 1000L + 3600 // 1h later
     val json = s"""{"rate_limits":{"five_hour":{"used_percentage":85,"resets_at":$resetSec}}}"""
-    val (_, out, _) = run("statusline", json, "--now-ms", now.toString)
+    val (_, out, _) = runStdin("statusline", json, "--now-ms", now.toString)
     assert(clue(out).contains("38;5;203m5h·85%·1h")) // % AND reset sit inside ONE red span (reset reddens with its limit)
   }
   test("statusline: --warn makes the threshold configurable (85% stays non-red under --warn 90)") {
     val now = 1_000_000_000_000L
     val resetSec = now / 1000L + 3600
     val json = s"""{"rate_limits":{"five_hour":{"used_percentage":85,"resets_at":$resetSec}}}"""
-    val (_, out, _) = run("statusline", json, "--now-ms", now.toString, "--warn", "90")
+    val (_, out, _) = runStdin("statusline", json, "--now-ms", now.toString, "--warn", "90")
     assert(clue(out).contains("38;5;214m5h·85%·1h")) // 85% is orange (>=70) but NOT red under --warn 90; reset shares the hue
     assert(!clue(out).contains("38;5;203m5h"))       // the 5h cluster (incl its reset) is not red
   }
   test("statusline: ctx reds at the dumb-zone threshold (Z, default 30%), oranges at 0.8*Z, green below") {
     val now = 1_000_000_000_000L
-    val (_, outHi, _)  = run("statusline", """{"context_window":{"used_percentage":35}}""", "--now-ms", now.toString)
+    val (_, outHi, _)  = runStdin("statusline", """{"context_window":{"used_percentage":35}}""", "--now-ms", now.toString)
     assert(clue(outHi).contains("38;5;203mctx·35%"))  // 35% >= 30% (Z) -> red (dumb-zone risk)
-    val (_, outMid, _) = run("statusline", """{"context_window":{"used_percentage":26}}""", "--now-ms", now.toString)
+    val (_, outMid, _) = runStdin("statusline", """{"context_window":{"used_percentage":26}}""", "--now-ms", now.toString)
     assert(clue(outMid).contains("38;5;214mctx·26%")) // 26% >= 24% (0.8*Z compact trigger) -> orange
-    val (_, outLo, _)  = run("statusline", """{"context_window":{"used_percentage":15}}""", "--now-ms", now.toString)
+    val (_, outLo, _)  = runStdin("statusline", """{"context_window":{"used_percentage":15}}""", "--now-ms", now.toString)
     assert(clue(outLo).contains("38;5;114mctx·15%"))  // 15% -> healthy green (well inside the smart zone)
     assert(!clue(outLo).contains("38;5;203mctx"))      // and not red at 90%-style thresholds
   }
   test("statusline: --ctx-warn makes the dumb-zone threshold configurable (35% non-red under --ctx-warn 40)") {
     val now = 1_000_000_000_000L
-    val (_, out, _) = run("statusline", """{"context_window":{"used_percentage":35}}""", "--now-ms", now.toString, "--ctx-warn", "40")
+    val (_, out, _) = runStdin("statusline", """{"context_window":{"used_percentage":35}}""", "--now-ms", now.toString, "--ctx-warn", "40")
     assert(!clue(out).contains("38;5;203mctx")) // 35% < 40% raised threshold -> not red
   }
   test("statusline: ctx past dumb-zone (75%) -> bold bright-red + dumb-zone flag") {
-    val (_, out, _) = run("statusline", """{"context_window":{"used_percentage":80}}""", "--now-ms", "1000000000000")
+    val (_, out, _) = runStdin("statusline", """{"context_window":{"used_percentage":80}}""", "--now-ms", "1000000000000")
     assert(clue(out).contains("1;38;5;196mctx·80% dumb-zone"))
   }
   test("statusline: ctx past auto-compact (92%) -> bold reverse-red + auto-compact flag (supersedes dumb-zone)") {
-    val (_, out, _) = run("statusline", """{"context_window":{"used_percentage":95}}""", "--now-ms", "1000000000000")
+    val (_, out, _) = runStdin("statusline", """{"context_window":{"used_percentage":95}}""", "--now-ms", "1000000000000")
     assert(clue(out).contains("7;1;38;5;196mctx·95% auto-compact!"))
     assert(!clue(out).contains("dumb-zone"))
   }
   test("statusline: --dumb-zone / --auto-compact thresholds are configurable") {
-    val (_, out, _) = run("statusline", """{"context_window":{"used_percentage":65}}""", "--now-ms", "1000000000000", "--dumb-zone", "60")
+    val (_, out, _) = runStdin("statusline", """{"context_window":{"used_percentage":65}}""", "--now-ms", "1000000000000", "--dumb-zone", "60")
     assert(clue(out).contains("ctx·65% dumb-zone"))
   }
   test("statusline: prepends a HH:MM:SS wall clock, and abbreviates the model label") {
-    val (_, out, _) = run("statusline", """{"model":{"display_name":"Fable 5 (1M context)"}}""", "--now-ms", "1000000000000")
+    val (_, out, _) = runStdin("statusline", """{"model":{"display_name":"Fable 5 (1M context)"}}""", "--now-ms", "1000000000000")
     assert("""\d\d:\d\d:\d\d""".r.findFirstIn(out).isDefined, clue(out)) // a HH:MM:SS clock is present
     assert(clue(out).contains("f5·1M")) // Fable 5 (1M context) -> f5·1M (compact SM117 form; middot 2026-07-19)
-    val (_, out2, _) = run("statusline",
+    val (_, out2, _) = runStdin("statusline",
       """{"model":{"display_name":"Fable 5"},"context_window":{"used_percentage":11,"context_window_size":1000000}}""",
       "--now-ms", "1000000000000")
     assert(clue(out2).contains("f5·1M")) // measured context_window_size feeds the suffix even with a bare name (2026-07-19)
@@ -1904,10 +1927,10 @@ class CliSuite extends munit.FunSuite:
     java.nio.file.Files.writeString(tmp,
       """{"type":"assistant","isSidechain":false,"message":{"usage":{"output_tokens":1500000}}}""" + "\n")
     val json = s"""{"context_window":{"used_percentage":20},"transcript_path":"${tmp.toString}"}"""
-    val (code, out, _) = run("statusline", json, "--now-ms", "1000000000000")
+    val (code, out, _) = runStdin("statusline", json, "--now-ms", "1000000000000")
     assertEquals(code, 0)
     assert(clue(out).contains("rot?↑1.5M")) // since-warp == cumulative here (no compact_boundary in this transcript)
-    val (_, rotOnly, _) = run("statusline", json, "--now-ms", "1000000000000", "--rot-only")
+    val (_, rotOnly, _) = runStdin("statusline", json, "--now-ms", "1000000000000", "--rot-only")
     assert(clue(rotOnly).contains("rot?↑1.5M"))
     assert(!clue(rotOnly).contains("tot"))
     java.nio.file.Files.deleteIfExists(tmp)
@@ -1918,9 +1941,9 @@ class CliSuite extends munit.FunSuite:
     java.nio.file.Files.writeString(tmp,
       """{"type":"user","message":{"content":"aaaaaaaaaa"}}""" + "\n") // 10 human chars
     val json = s"""{"transcript_path":"${tmp.toString}"}"""
-    val (_, off, _) = run("statusline", json, "--now-ms", "1000000000000")
+    val (_, off, _) = runStdin("statusline", json, "--now-ms", "1000000000000")
     assert(!clue(off).contains("tired?")) // off without a threshold
-    val (_, on, _) = run("statusline", json, "--now-ms", "1000000000000", "--tired-chars", "5")
+    val (_, on, _) = runStdin("statusline", json, "--now-ms", "1000000000000", "--tired-chars", "5")
     assert(clue(on).contains("tired?")) // 10 >= 5 -> gentle nudge
     java.nio.file.Files.deleteIfExists(tmp)
   }
@@ -2164,7 +2187,7 @@ class CliSuite extends munit.FunSuite:
   // --- guardcheck posthook (the only channel that reaches CLAUDE without stalling; SM230) ---
   test("guardcheck posthook: a NOTE becomes additionalContext, with no permission decision") {
     val json = """{"tool_name":"Bash","tool_input":{"command":"jq .a b.json"}}"""
-    val (code, out, _) = run("guardcheck", "posthook", json)
+    val (code, out, _) = runStdin("guardcheck", json, "posthook")
     assertEquals(code, 0)
     assert(clue(out).contains("PostToolUse"), "must be tagged as the PostToolUse event")
     assert(clue(out).contains("additionalContext"), "this is the field Claude actually reads")
