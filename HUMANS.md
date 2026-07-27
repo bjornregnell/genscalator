@@ -26,6 +26,23 @@ Every top-level entry, what it is for, and where to read more:
 | [`bin/`](bin/) | a thin launcher shim (`bin/tt`) for installs that want the launcher outside `tools/`. |
 | [`.claude-plugin/`](.claude-plugin/) | the Claude Code plugin + marketplace manifests (name, version). |
 
+> **Why more than one file is called `tt`.** `tt` is the name of a **role**, not of an implementation:
+> whatever answers `tt <tool> <args>` on your PATH. Three things can fill it, and which one you get
+> depends on how genscalator reached your machine.
+>
+> - [`tools/tt`](tools/tt) — the **canonical launcher** (bash). Used by contributors working in a clone.
+>   Its real job is the staleness guard: if any `tools/*.scala` is newer than the built binary, it falls
+>   back to scala-cli, so editing a tool degrades to slow and never to wrong.
+> - [`bin/tt`](bin/) — a 13-line **PATH shim**. The plugin puts `bin/` on PATH, so this finds the bundled
+>   `tools/` and hands off to the canonical launcher. No logic of its own, deliberately.
+> - **the native binary** — for someone who *installed* genscalator rather than cloning it, `tt` simply
+>   IS the compiled dispatcher. No bash involved, which is why an install needs no POSIX shell.
+>
+> The name is fixed because the allowlist matches on it: an entry like `Bash(tt text *)` is what makes a
+> tool call run without a confirmation prompt. Renaming any of these would break that, so they share one
+> name on purpose. See [`reqts/DESIGN.md`](reqts/DESIGN.md) D2 for the two-audiences decision and
+> [`docs/native.md`](docs/native.md) for the binary-versus-scala-cli mechanics.
+
 ## 2. Important terminology
 
 The full glossary lives in [`docs/foundations.md`](docs/foundations.md); these one-liners are just enough to read this repo's documents, each pointing there for depth:

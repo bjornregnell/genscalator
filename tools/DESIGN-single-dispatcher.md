@@ -1,4 +1,4 @@
-# Design: one sole `@main` dispatcher + typed args in / typed result out + streaming + a native `tt` binary
+# Design: the tt-toolbox refactor — dispatcher and native binary (SHIPPED), typed args in / typed result out / streaming (PLANNED)
 
 Status: **PARTLY SHIPPED — seam 1 is live, seams 2-4 are still a plan.** (Corrected 2026-07-27: this header said
 "not started" for three weeks after the dispatcher shipped, which is exactly the stale-carrier failure this repo

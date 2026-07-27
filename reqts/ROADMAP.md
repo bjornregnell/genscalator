@@ -19,6 +19,16 @@ file states **when**. Detail and open questions live in those documents, not her
   search and replace, preview by default), `tt git --remote` and `tt git push` (one unit to a whole
   mirror set in one call).
 
+## v0.9.3 - OPEN QUESTION: does this release exist at all?
+
+Investigate what is actually left for one more release before the alpha, and decide whether it earns
+being a release. The alternative is to skip it and go straight to v0.10.0.
+
+The question to answer, not to assume: is there anything shipped since v0.9.2 that a user would want
+BEFORE the alpha, and that is not itself alpha work? If everything on the list is either alpha-blocking
+or invisible to a tester, then v0.9.3 is ceremony and the honest move is to skip it. Deliberately NOT
+in this release either way: the reqT-lang round-trip work, which moved out (see v0.10.1).
+
 ## v0.10.0 - alpha, coming next
 
 **Gate:** a tester on their own machine can install and run the toolbox without a wedge. Everything else is polish or velocity.
@@ -44,6 +54,37 @@ Also in scope for alpha:
 - PRD consistency pass: make it describe what was actually built.
 - Public-surface hygiene, including moving research and unpublished media that reads as cruft to the
   closed work repo, with a link-consistency sweep afterwards.
+
+## v0.10.1 - reqT-lang round trip, and the road to de-vendoring
+
+Deliberately AFTER the alpha, not before it. The alpha gate is that a tester can install and run
+without a wedge; round-tripping touches none of that, so putting it earlier would insert work no
+tester can see between us and the alpha.
+
+* Goal: nonDestructiveRoundTrip has
+  * Gist: parsing then unparsing a document never loses anything a human wrote
+  * Spec: Two properties, and the weaker one alone is not enough. LOSSLESS means unparse(parse(x)) equals x byte for byte. IDEMPOTENT means norm(norm(x)) equals norm(x), where norm is unparse after parse, so the result reaches a fixed point. A parser can be perfectly idempotent and still destructive: destroy on the first pass, then stay stable forever. The name of this goal is therefore the strong property, not the weak one.
+  * Why: a document a human also edits must survive being read and written by a tool. Losing an emphasis marker once is data loss even if it never happens again. Measured 2026-07-27, today's round trip is neither: it consumes one emphasis marker per pass, so the damage compounds. See reqts/issues/open/issue-005.
+* Target: proseSurvivesByteForByte verifies Goal: nonDestructiveRoundTrip
+* Target: renderedFragmentsReachAFixedPoint verifies Goal: nonDestructiveRoundTrip
+
+The two targets are won by different means, which is the useful part: prose losslessly, by preserving
+the original bytes of non-reqT spans rather than by perfecting the renderer; fragments idempotently,
+because rendered reqT legitimately normalises and that is fine so long as it stabilises after one pass.
+
+Also in scope, because the cascade is the real constraint:
+
+- Keep the existing rendering functions and ADD the preserving ones under a different name, so the
+  change is additive for everyone downstream. Name them for the guarantee (`toMarkdownPreserving`) or
+  for what they do (`applyTo(original)`), NOT for idempotence, which is the weaker property again.
+- Note the signature cannot be a drop-in: a `Model` does not carry the original bytes, so either the
+  parser adds source spans to the model, or the new function takes the document as an argument. The
+  source-span route is the bigger change and the more enabling one, since a fragments mode and
+  line-accurate lint errors both need it.
+- Write the migration note for the reqT Swing desktop tool: what its API consumption must change, and
+  what it may keep. Publishing the fix without that note is what makes a cascade hurt.
+
+Then de-vendor `tools/reqt-vendored/` and depend on a released reqT-lang, before the beta.
 
 ## Future
 
