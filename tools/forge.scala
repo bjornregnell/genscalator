@@ -262,8 +262,16 @@ object Forge {
     val updated = Try(v.obj("updated_at").str).getOrElse("")
     s"#$num\t$updated\t${userLogin(v)}\t$title"
 
-  private def strOrEmpty(v: Option[ujson.Value]): String = // JSON bodies may be null, not just absent
-    v.flatMap(x => Try(x.str).toOption).getOrElse("")
+  // ONE predicate for "a JSON string field I can live without", because the naive shape
+  // `obj.get(k).map(_.str).getOrElse(d)` is WRONG against a forge and reads as right: GitHub sends
+  // key-present-with-NULL (every draft's `published_at`, any unnamed release's `name`), so `.get`
+  // returns Some(Null), `.str` throws, and `getOrElse` never fires because the key IS there.
+  // Found by the release rehearsal 2026-07-27: `tt forge releases` crashed on the first draft it
+  // ever saw. Absent and present-but-null must collapse to the same answer, in one place.
+  private def strOr(v: Option[ujson.Value], default: String): String =
+    v.flatMap(x => Try(x.str).toOption).getOrElse(default)
+
+  private def strOrEmpty(v: Option[ujson.Value]): String = strOr(v, "")
 
   def dispatch(args: String*): Unit =
     if args.contains("--help") || args.contains("-h") then { println(Help); sys.exit(0) }
@@ -349,11 +357,11 @@ object Forge {
     if arr.isEmpty then println("(no releases)")
     else
       arr.foreach { rel =>
-        val tag   = rel.obj.get("tag_name").map(_.str).getOrElse("?")
-        val name  = rel.obj.get("name").map(_.str).getOrElse("")
+        val tag   = strOr(rel.obj.get("tag_name"), "?")
+        val name  = strOrEmpty(rel.obj.get("name"))
         val pre   = rel.obj.get("prerelease").exists(_.bool)
         val draft = rel.obj.get("draft").exists(_.bool)
-        val pub   = rel.obj.get("published_at").map(_.str).getOrElse("")
+        val pub   = strOrEmpty(rel.obj.get("published_at"))
         val flags = (if draft then " [draft]" else "") + (if pre then " [prerelease]" else "")
         println(s"$tag\t$pub$flags\t$name")
         // Asset names, indented under their release. Both dialects expose `assets`, and this is
@@ -361,7 +369,7 @@ object Forge {
         // of by hand-curling the API — the gap that sent a caller back to a raw forge client.
         val assets = rel.obj.get("assets").toList.flatMap(a => Try(a.arr.toList).getOrElse(Nil))
         assets.foreach { a =>
-          val an = a.obj.get("name").map(_.str).getOrElse("?")
+          val an = strOr(a.obj.get("name"), "?")
           println(s"\t  $an")
         }
       }
@@ -378,8 +386,8 @@ object Forge {
     if arr.isEmpty then println("(no tags)")
     else
       arr.foreach { t =>
-        val name = t.obj.get("name").map(_.str).getOrElse("?")
-        val sha  = t.obj.get("commit").flatMap(_.obj.get("sha")).map(_.str).getOrElse("").take(10)
+        val name = strOr(t.obj.get("name"), "?")
+        val sha  = Try(t.obj("commit").obj("sha").str).getOrElse("").take(10)
         println(s"$name\t$sha")
       }
 
