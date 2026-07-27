@@ -153,16 +153,38 @@ Being honest about the boundary is part of the model:
 
 Naming these keeps "safe by design" an honest claim rather than a slogan.
 
-## Credentials and tokens — TODO, policy not yet written
+## Credentials and tokens
 
-> **This section is a placeholder, and its absence is itself a finding.** The model above is careful about
+**The policy in one paragraph.** Prefer a credential **fetched at the point of use** over one **exported
+into the environment**. A token in a shell rc file is readable by every child process for the life of that
+shell; a token obtained at the moment of use exists briefly, inside one tool, on one audited code path, and
+self-heals when you re-authenticate. Values are never the default answer: `tt env` offers names, an exit
+code, or one variable at a time, and has no whole-environment verb. And a read is not automatically safe —
+for an agent the hazard is set by *where the output lands*, so a bulk read of a credential-bearing surface
+is a disclosure operation no matter that it mutates nothing.
+
+⚠ **What this policy trades away, stated plainly because a reader will otherwise notice it unaided.** The
+control here is **audit and brevity of exposure**, *not* human-in-the-loop. Preferring a helper means that
+whenever you are already authenticated to `gh`, a running agent can obtain a token you never handed it.
+That is not hypothetical: on 2026-07-27 `tt forge` reported *"no token in env; obtained one from
+`gh auth token`"* on essentially every call across a long session, including while the human was away from
+the keyboard. Read alongside a native updater that installs binaries (see `reqts/ROADMAP.md`, v0.10.0),
+genscalator has deliberately chosen, in two places, to make the safeguard *a narrow audited path plus a
+short exposure window* rather than *a human pressing a key each time*. The reasons are that per-use
+confirmation on a frequent operation produces exactly the confirmation fatigue this document argues
+against, and that a long-lived ambient token is a worse steady state than a momentary one. **The
+alternative was considered and declined** (2026-07-27): tokens solely from fixed human-set env names with
+no helper fallback, so an agent could never obtain a credential it was not given. If you want that
+posture, it is one line of policy and a deleted fallback — the mechanism is still there.
+
+> **The incident this section exists because of.** The model above is careful about
 > what an agent may *run* and says almost nothing about what an agent may *see*. On 2026-07-25 that gap
 > produced the first real incident: the agent wanted one environment variable, ran a bare `printenv`, and
 > put two live API tokens into a durable transcript, forcing a rotation of both. Nothing stopped it —
 > `printenv` is not a `cd`, not a pipe, not a redirect, so the guard saw nothing, and the tool-choice NOTE
 > tier added that same morning listed interpreters rather than bulk environment reads.
 
-The policy to write up, with the reasoning that is currently only in commit messages and WR data:
+The policy in full, with the reasoning that used to live only in commit messages and WR data:
 
 1. **Read-only is not the same as safe.** For an agent, the hazard of a read is set by *where the output
    lands*, not by whether the command mutates anything. A transcript is durable, copied and quoted, so a
@@ -178,17 +200,31 @@ The policy to write up, with the reasoning that is currently only in commit mess
    human-set env names, so the human's shell decided whether a running agent had credentials at all. On
    2026-07-25 that was widened (BR-authorized, agent-flagged): with no env token, `tt forge --gh` falls
    back to `gh auth token`. The trade is explicit — it removes a long-lived token from the ambient
-   environment of every process, at the cost of letting the tool mint one. **Open question for the next
-   settings review: should that fallback be gated behind an explicit human opt-in rather than the default?**
+   environment of every process, at the cost of letting the tool mint one. ✅ **The open question here —
+   should that fallback be gated behind an explicit human opt-in rather than being the default? — was
+   ANSWERED on 2026-07-27: no. The fallback stays the default.** A per-session consent gate was the third
+   option on the table and was declined, on the grounds above: the control is the audited path and the
+   short window, and a prompt on a frequent operation buys fatigue rather than safety. What the fallback
+   must keep doing is **announcing itself** — it prints which source supplied the token on every call,
+   which is what made the AFK self-authorization observable at all, and is therefore load-bearing rather
+   than cosmetic. Removing that line would convert this policy from auditable to merely convenient.
 5. **Ambient versus momentary exposure.** A token exported in a shell rc file is visible to every child
    process continuously; a token fetched at the point of use exists briefly inside one audited tool. State
-   the preference and the exceptions.
+   **The preference: momentary wins, and it is a preference rather than a prohibition.** Two exceptions are
+   legitimate. (a) **CI**, where there is no interactive session for a helper to draw on, so a secret
+   injected into the job environment is the only mechanism — bounded because the environment dies with the
+   job, and because `${{ github.token }}` is scoped to one repository and one run. (b) **A forge with no
+   credential helper**, where a fixed env name is the only route; `tt forge` names those variables
+   explicitly rather than scanning the environment, so the surface stays one known key instead of everything.
+   ⚠ **The exception that is NOT legitimate is a token exported from a shell rc file for interactive
+   convenience** — that is the ambient case the preference exists to discourage, it is what the 2026-07-25
+   leak actually disclosed, and unlike a helper token it does not self-heal on re-auth.
 6. **What to do after a leak.** Revoke before regenerating; find the export by *location* (`grep -l`) not
    by value; edit rc files in an editor rather than via a shell command, because the shell history is
    another durable record; and remember that a token derived as `$(gh auth token)` self-heals on re-auth
    while a literal token in an rc file does not.
 
-Sources to fold in when writing this properly: `research/wr-data/printenv-dumped-live-tokens-into-the-transcript-2026-07-25.md`,
+Sources: `research/wr-data/printenv-dumped-live-tokens-into-the-transcript-2026-07-25.md`,
 `tools/secrets.scala`, `tools/env.scala`, and the trust-boundary note on `ghCliToken` in `tools/forge.scala`.
 
 ## Future work

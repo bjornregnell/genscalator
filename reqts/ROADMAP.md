@@ -116,8 +116,11 @@ Also in scope for alpha:
   for newcomers who want everything at once. It must be a reviewable, version-pinned script the human
   reads before running, never a blind curl-into-shell pipe: that opaque pattern is the exact
   confirmation-fatigue and remote-execution risk genscalator argues against.
-- Write the credentials-and-tokens section of `SECURITY-MODEL.md`, which is currently an explicit TODO
-  in a document testers read.
+- ~~Write the credentials-and-tokens section of `SECURITY-MODEL.md`, which is currently an explicit TODO
+  in a document testers read.~~ **WRITTEN 2026-07-27.** The section is no longer a placeholder: it leads
+  with the policy in one paragraph, names what the policy trades away, closes point 4's open question,
+  and gives point 5 its preference plus the two legitimate exceptions (CI, and a forge with no helper)
+  and the one illegitimate one (an rc-file export for interactive convenience).
   ✅ **POLICY DECIDED 2026-07-27 by BR: MOMENTARY-FIRST.** A credential helper consulted at the point of
   use is the preferred route; an exported token in a shell rc file is DISCOURAGED, because it is
   continuously readable by every child process for the life of the shell, while a token fetched at the
