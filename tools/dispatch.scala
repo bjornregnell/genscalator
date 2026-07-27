@@ -62,6 +62,7 @@ object Dispatch {
     "web"         -> (a => webFetch(a*)),
     "which"       -> (a => which(a*)),
     "wr"          -> (a => workflowResearch(a*)),
+    "zip"         -> (a => inspectZipArchive(a*)),
   )
 
   val verbs: Vector[Verb] = entries.map(_._1)

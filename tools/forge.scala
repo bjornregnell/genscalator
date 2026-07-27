@@ -20,6 +20,8 @@
 //   tt forge release-create <owner>/<repo> <tag> [--name S] [--body S | --body-file F]
 //                           [--prerelease] [--draft] [--target COMMITISH] [--url BASE]
 //   tt forge release-edit   <owner>/<repo> <tag> [--name S] [--body S | --body-file F] [--prerelease] [--draft] [--url BASE]
+//   tt forge release-download <owner>/<repo> <tag> [--gh | --url BASE] [--pattern GLOB] [--dir D] [--verify]
+//   tt forge release-delete <owner>/<repo> <tag> [--gh | --url BASE] [--yes] [--allow-published]
 //                           # PATCH an existing release (look up by tag); sends ONLY the provided fields
 //   READ verbs for issues/PRs/branch protection (both dialects; --gh = GitHub, see GitHubApi below):
 //   tt forge issues <owner>/<repo> [--gh | --url BASE] [--state open|closed|all] [--limit N]
@@ -52,6 +54,8 @@ object Forge {
       "  forge protection <owner>/<repo> <branch> [--gh | --url BASE]    (needs a token)\n" +
       "  forge release-create <owner>/<repo> <tag> [--gh | --gl | --url BASE] [--name S] [--body S | --body-file F] [--prerelease] [--draft] [--target C]\n" +
       "  forge release-edit   <owner>/<repo> <tag> [--name S] [--body S | --body-file F] [--prerelease] [--draft] [--url BASE]\n" +
+      "  forge release-download <owner>/<repo> <tag> [--gh | --url BASE] [--pattern GLOB] [--dir D] [--verify]   (finds DRAFTS too; --verify checks the .sha256)\n" +
+      "  forge release-delete <owner>/<repo> <tag> [--gh | --url BASE] [--yes] [--allow-published]   (PREVIEWS by default; never deletes the git tag)\n" +
       "  Dialects for release-create: default = Gitea/Forgejo (--url BASE, default https://codeberg.org); --gh = GitHub (fixed api.github.com); --gl = GitLab (--url BASE, default https://gitlab.com).\n" +
       "  Tokens come ONLY from fixed env names (never a flag): Gitea = CODEBERG_TOKEN/FORGE_TOKEN, GitHub = GITHUB_TOKEN/GH_TOKEN, GitLab = GITLAB_TOKEN (GENSCALATOR_-prefixed variants win first)."
   )
@@ -88,6 +92,16 @@ object Forge {
       |  forge release-edit   <owner>/<repo> <tag> [--name S] [--body S | --body-file F]
       |                       [--prerelease] [--draft] [--url BASE]
       |                       (PATCH an existing Gitea release; sends ONLY the provided fields)
+      |  forge release-download <owner>/<repo> <tag> [--gh | --url BASE]
+      |                       [--pattern GLOB] [--dir D] [--verify]
+      |                       (download release assets; finds DRAFTS too, which the tags
+      |                        endpoint cannot; --verify checks each payload against its
+      |                        downloaded .sha256 and says UNVERIFIED when there is none)
+      |  forge release-delete <owner>/<repo> <tag> [--gh | --url BASE]
+      |                       [--yes] [--allow-published]
+      |                       (DESTRUCTIVE: previews by default like `tt sub`, applies only
+      |                        with --yes; a PUBLISHED release additionally needs
+      |                        --allow-published; the git TAG is never deleted)
       |Flags:
       |  --url BASE        forge base URL (Gitea default https://codeberg.org; GitLab default https://gitlab.com)
       |  --limit N         max items for releases/tags (default 50)
@@ -287,6 +301,8 @@ object Forge {
       case "protection" :: rest     => showProtection(rest)
       case "release-create" :: rest => releaseCreate(rest)
       case "release-edit" :: rest   => releaseEdit(rest)
+      case "release-download" :: rest => releaseDownload(rest)
+      case "release-delete" :: rest => releaseDelete(rest)
       case _                        => forgeUsage()
 
   // whoami — authenticated READ (GET /user) to verify the token inherits + is valid. Prints only the login and
@@ -736,8 +752,10 @@ object Forge {
     if o.setPrerelease then payload("prerelease") = true
     if o.setDraft then payload("draft") = true
     if payload.obj.isEmpty then die("nothing to edit — provide --body/--body-file, --name, --prerelease, or --draft")
-    // look up the release id by tag (unauthenticated GET; getJson dies on non-200)
-    val relJson = getJson(s"${apiBase(o.base)}/repos/$owner/$repo/releases/tags/$tag")
+    // Look up the release id via findRelease, which LISTS first and so can see a DRAFT. The previous
+    // by-tag-only lookup made this verb structurally unable to edit a draft — the state you are most
+    // likely to be editing, since a draft is by definition unfinished.
+    val relJson = findRelease(owner, repo, tag, Dialect.Gitea, o.base)
     val id      = Try(relJson.obj("id").num.toLong).getOrElse(die(s"no release id found for tag '$tag'"))
     val url     = s"${apiBase(o.base)}/repos/$owner/$repo/releases/$id"
     System.err.println(s"forge: [audit] PATCH $url  tag=$tag fields=${payload.obj.keys.mkString(",")}")
@@ -750,6 +768,210 @@ object Forge {
         println(s"edited release $tag  $html")
       case 404 => die(s"release for tag '$tag' not found (404)")
       case c   => die(s"PATCH $url -> $c ${r.statusMessage}\n${r.text().take(500)}")
+
+  // ---- release ASSETS: download (+ integrity) and delete -------------------------------------
+  //
+  // WHY these exist: the release-asset lifecycle was the one part of shipping that had no typed
+  // verb, so every "does that release actually carry a binary?" and every cleanup went out as a
+  // raw `gh` call the guard cannot inspect. Built 2026-07-27 during the first release rehearsal,
+  // where the missing shapes were hit twice within minutes of each other.
+
+  private final case class AssetOpts(repo: Option[String], tag: Option[String], base: String,
+      dialect: Dialect, pattern: Option[String], dir: String, verify: Boolean, yes: Boolean,
+      allowPublished: Boolean)
+
+  private def parseAsset(args: List[String], verb: String): AssetOpts =
+    @annotation.tailrec
+    def go(rest: List[String], o: AssetOpts): AssetOpts =
+      rest match
+        case Nil                        => o
+        case "--pattern" :: p :: t      => go(t, o.copy(pattern = Some(p)))
+        case "--dir" :: d :: t          => go(t, o.copy(dir = d))
+        case "--verify" :: t            => go(t, o.copy(verify = true))
+        case "--yes" :: t               => go(t, o.copy(yes = true))
+        case "--allow-published" :: t   => go(t, o.copy(allowPublished = true))
+        case "--url" :: u :: t          => go(t, o.copy(base = u))
+        case "--gh" :: t                => go(t, o.copy(dialect = Dialect.GitHub))
+        case "--gl" :: _                => die(
+          s"$verb is not implemented for GitLab: GitLab releases carry LINKS to external artifacts\n" +
+            "  rather than uploaded assets, so the same flags would mean something different there.\n" +
+            "  Stated rather than faked — use --gh or the default Gitea/Forgejo dialect.")
+        case flag :: _ if flag.startsWith("--") => die(s"unknown/incomplete flag '$flag'")
+        case r :: t if o.repo.isEmpty   => go(t, o.copy(repo = Some(r)))
+        case tg :: t if o.tag.isEmpty   => go(t, o.copy(tag = Some(tg)))
+        case other :: _                 => die(s"unexpected argument '$other'")
+    go(args, AssetOpts(None, None, DefaultBase, Dialect.Gitea, None, ".", false, false, false))
+
+  /** Find a release by tag, INCLUDING drafts.
+    *
+    * Deliberately LISTS and filters instead of GET /releases/tags/<tag>. That endpoint cannot see a
+    * draft at all — a draft has no tag yet, which is why a fresh draft's html_url reads
+    * `untagged-<hash>` — so it is blind to exactly the releases these verbs most need to reach: the
+    * half-finished one you want to inspect or throw away. `release-edit` was switched onto this
+    * lookup 2026-07-27 for exactly that reason — it previously used the by-tag endpoint alone and so
+    * could not edit a draft at all.
+    */
+  /** Like getJson but returns None on any failure instead of exiting.
+    *
+    * ⚠ Needed because `getJson` reports a non-200 through `die`, i.e. `sys.exit` — which NO `Try` can
+    * catch. A fallback written as `Try(getJson(a)).orElse(Try(getJson(b)))` would therefore terminate
+    * the process on a's 404 and never reach b, while LOOKING like a fallback.
+    */
+  private def getJsonOpt(url: String, headers: Map[String, String] = Map.empty): Option[ujson.Value] =
+    Try(requests.get(url, headers = headers, check = false, readTimeout = 30000, connectTimeout = 10000))
+      .toOption.filter(_.statusCode == 200).flatMap(r => Try(ujson.read(r.text())).toOption)
+
+  /** Read headers for a release lookup. A Gitea/Forgejo DRAFT is invisible without auth, so the token
+    * is attached when one exists — and the trusted-host guard applies exactly as it does on the write
+    * verbs, because this is the same token going over the same wire.
+    */
+  private def findHeaders(dialect: Dialect, base: String): Map[String, String] =
+    if dialect == Dialect.GitHub then ghHeaders
+    else
+      token match
+        case None => Map.empty
+        case Some(t) =>
+          val host = hostOf(base)
+          if !trustedHosts.contains(host) then die(
+            s"refusing to send the token to untrusted host '$host'. Trusted: ${trustedHosts.toVector.sorted.mkString(", ")}.")
+          Map("Authorization" -> s"token $t")
+
+  private def findRelease(owner: String, repo: String, tag: String, dialect: Dialect, base: String): ujson.Value =
+    val root = if dialect == Dialect.GitHub then s"$GitHubApi/repos/$owner/$repo"
+               else s"${apiBase(base)}/repos/$owner/$repo"
+    val hdrs    = findHeaders(dialect, base)
+    val listUrl = if dialect == Dialect.GitHub then s"$root/releases?per_page=100" else s"$root/releases?limit=100"
+    val listed = getJsonOpt(listUrl, hdrs).toList
+      .flatMap(v => Try(v.arr.toList).getOrElse(Nil))
+      .find(r => strOrEmpty(r.obj.get("tag_name")) == tag)
+    // Then the by-tag endpoint as a FALLBACK, because the two are complementary rather than ranked:
+    // listing is the only thing that can see a DRAFT, but it is capped, so a published release older
+    // than the newest 100 is reachable only by tag. Using either alone loses real cases.
+    listed.orElse(getJsonOpt(s"$root/releases/tags/$tag", hdrs)).getOrElse(die(
+      s"no release for tag '$tag' — absent from the newest 100 (the only view that shows DRAFTS)\n" +
+        "  and from the by-tag endpoint (which reaches further back but never shows a draft)."))
+
+  private def assetsOf(rel: ujson.Value): List[ujson.Value] =
+    rel.obj.get("assets").toList.flatMap(a => Try(a.arr.toList).getOrElse(Nil))
+
+  /** Tiny `*`-only glob. Documented as such: anything richer would invite a caller to assume full
+    * shell globbing and get a silently-empty result, which is the SM242 failure shape.
+    */
+  private def globMatches(glob: String, name: String): Boolean =
+    name.matches(glob.split("\\*", -1).map(java.util.regex.Pattern.quote).mkString(".*"))
+
+  private def sha256Hex(p: os.Path): String = // JDK only, no dependency
+    java.security.MessageDigest.getInstance("SHA-256")
+      .digest(os.read.bytes(p)).map(b => String.format("%02x", Byte.box(b))).mkString
+
+  private def writeHeaders(o: AssetOpts, verb: String): Map[String, String] =
+    if o.dialect == Dialect.GitHub then
+      val tok = ghToken.getOrElse(die(
+        s"$verb --gh needs a token — the HUMAN sets one of env ${GhTokenEnvNames.mkString(", ")} (never a flag)."))
+      Map("Accept" -> "application/vnd.github+json", "Authorization" -> s"Bearer $tok")
+    else
+      val host = hostOf(o.base)
+      if !trustedHosts.contains(host) then die(
+        s"refusing to send the token to untrusted host '$host'. Trusted: ${trustedHosts.toVector.sorted.mkString(", ")}.")
+      val tok = token.getOrElse(die(
+        s"$verb needs a token — the HUMAN sets one of env ${TokenEnvNames.mkString(", ")} (never a flag)."))
+      Map("Authorization" -> s"token $tok")
+
+  private def releaseDownload(args: List[String]): Unit =
+    val o             = parseAsset(args, "release-download")
+    val (owner, repo) = splitRepo(o.repo.getOrElse(forgeUsage()))
+    val tag           = o.tag.getOrElse(forgeUsage())
+    val rel           = findRelease(owner, repo, tag, o.dialect, o.base)
+    val all           = assetsOf(rel)
+    if all.isEmpty then die(s"release '$tag' carries no assets")
+    val wanted = o.pattern match
+      case Some(p) => all.filter(a => globMatches(p, strOrEmpty(a.obj.get("name"))))
+      case None    => all
+    if wanted.isEmpty then
+      die(s"no asset of '$tag' matches --pattern '${o.pattern.getOrElse("")}' " +
+        s"(present: ${all.map(a => strOr(a.obj.get("name"), "?")).mkString(", ")})")
+    val outDir = os.Path(o.dir, os.pwd)
+    os.makeDir.all(outDir)
+    // The API asset url with Accept: application/octet-stream, NOT browser_download_url: the browser
+    // URL 404s for a DRAFT's assets because no public release page exists yet, and a draft is the
+    // main thing this verb is for. ghHeaders supplies auth when a token is obtainable.
+    val hdrs = (if o.dialect == Dialect.GitHub then ghHeaders else writeHeaders(o, "release-download")) ++
+      Map("Accept" -> "application/octet-stream")
+    val written = wanted.map { a =>
+      val name = strOr(a.obj.get("name"), "asset")
+      val aUrl = strOrEmpty(a.obj.get("url"))
+      if aUrl.isEmpty then die(s"asset '$name' has no api url")
+      val r = Try(requests.get(aUrl, headers = hdrs, check = false,
+        readTimeout = 300000, connectTimeout = 10000)).getOrElse(die(s"request failed for '$name'"))
+      if r.statusCode != 200 then die(s"GET asset '$name' -> ${r.statusCode} ${r.statusMessage}")
+      val target = outDir / name
+      os.write.over(target, r.bytes)
+      println(s"downloaded $name (${r.bytes.length} B) -> $target")
+      target
+    }
+    if o.verify then verifyChecksums(written)
+    else println("(no --verify: bytes downloaded but NOT checked against a .sha256)")
+
+  /** Check each payload against a downloaded sibling `<name>.sha256` — the same digest CI writes and
+    * the installer checks. A payload with no sibling prints UNVERIFIED, never "ok": "nothing to
+    * check" and "checked and correct" must not render identically, which is the SM241 Class-B rule.
+    */
+  private def verifyChecksums(files: List[os.Path]): Unit =
+    val shaOf    = files.filter(_.last.endsWith(".sha256")).map(p => p.last.stripSuffix(".sha256") -> p).toMap
+    val payloads = files.filterNot(_.last.endsWith(".sha256"))
+    if payloads.isEmpty then die("--verify: nothing but .sha256 files were downloaded, so there is nothing to verify")
+    val outcomes = payloads.map { p =>
+      val expected = shaOf.get(p.last).map(f => os.read(f).trim.split("\\s+").head.toLowerCase)
+      (p, expected, sha256Hex(p))
+    }
+    outcomes.foreach {
+      case (p, Some(exp), act) if exp == act => println(s"ok         ${p.last}  sha256 $act")
+      case (p, Some(exp), act)               => println(s"MISMATCH   ${p.last}\n  expected $exp\n  actual   $act")
+      case (p, None, act)                    => println(s"UNVERIFIED ${p.last}  sha256 $act  (no sibling .sha256 downloaded)")
+    }
+    val bad = outcomes.count((_, exp, act) => exp.exists(_ != act))
+    val ok  = outcomes.count((_, exp, act) => exp.contains(act))
+    if bad > 0 then die(s"$bad of ${outcomes.size} payload(s) FAILED the checksum — the download is not intact")
+    println(s"verified $ok/${outcomes.size} payload(s) against a downloaded .sha256")
+
+  private def releaseDelete(args: List[String]): Unit =
+    val o             = parseAsset(args, "release-delete")
+    val (owner, repo) = splitRepo(o.repo.getOrElse(forgeUsage()))
+    val tag           = o.tag.getOrElse(forgeUsage())
+    val rel           = findRelease(owner, repo, tag, o.dialect, o.base)
+    val id            = Try(rel.obj("id").num.toLong).getOrElse(die(s"no numeric release id for tag '$tag'"))
+    val isDraft       = rel.obj.get("draft").exists(_.bool)
+    val nAssets       = assetsOf(rel).size
+    val what          = s"$tag (id $id, ${if isDraft then "draft" else "PUBLISHED"}, $nAssets asset(s))"
+    // PREVIEW BY DEFAULT — the same contract as `tt sub`, and for the same reason: the cheapest way
+    // to destroy the wrong release is a mistyped tag, and a preview costs one extra keystroke.
+    if !o.yes then
+      println(s"would DELETE release $what")
+      println("  assets: " + (if nAssets == 0 then "(none)" else assetsOf(rel).map(a => strOr(a.obj.get("name"), "?")).mkString(", ")))
+      println("  the git TAG is NOT touched — deleting a release and deleting its tag are different acts")
+      // Tell the caller what will ACTUALLY work. Saying "--yes" for a published release would promise
+      // something the next step refuses — a preview that misdescribes its own follow-up is the same
+      // class of defect as a stale comment (SM243), and it is worse here because the verb is destructive.
+      println(
+        if isDraft then "  re-run with --yes to apply"
+        else "  re-run with --yes --allow-published to apply (a PUBLISHED release needs BOTH flags)")
+    else if !isDraft && !o.allowPublished then
+      die(s"refusing to delete a PUBLISHED release ('$tag'): its notes are public and its asset URLs\n" +
+        "  may already be in someone's install script. Pass --allow-published if that is truly intended.\n" +
+        "  A draft needs no such flag, which is the case this verb was built for.")
+    else
+      val url  = if o.dialect == Dialect.GitHub then s"$GitHubApi/repos/$owner/$repo/releases/$id"
+                 else s"${apiBase(o.base)}/repos/$owner/$repo/releases/$id"
+      val hdrs = writeHeaders(o, "release-delete")
+      System.err.println(s"forge: [audit] DELETE $url  tag=$tag draft=$isDraft assets=$nAssets")
+      val r = Try(requests.delete(url, headers = hdrs, check = false,
+        readTimeout = 30000, connectTimeout = 10000)).getOrElse(die("request failed"))
+      r.statusCode match
+        case 204 | 200 =>
+          println(s"deleted release $what")
+          println("  the git tag, if one existed, is untouched (tag deletion is out of scope here)")
+        case 404 => die(s"release id $id not found (404) — it may already be gone")
+        case c   => die(s"DELETE $url -> $c ${r.statusMessage}\n${r.text().take(500)}")
 }
 
 @main def forgeClient(args: String*): Unit = Forge.dispatch(args*)
