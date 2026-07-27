@@ -286,8 +286,23 @@ executable and renames it while running settles the question on real Windows for
 round-trip. If it passes, rename-aside ships as ONE path for every platform and this stops being a fork.
 If it fails, we learn that here instead of from a tester with no working `tt`.
 
-⇒ **The order of work this fixes:** (1) write the rename-a-running-executable test; (2) let CI answer it
-on Windows; (3) only then implement the swap. Note what this makes the test: not a regression test for
+✅✅ **VERIFIED 2026-07-27, and the claim HOLDS. The candidate is now the design, not a candidate.**
+`RunningBinaryRenameSuite` (`tools/test/rename.test.scala`) ran inside the buildnative parity pass on
+BOTH families and passed:
+- **Linux**, locally: `0 failed, 0 ignored, 1 total`.
+- **Windows**, CI run **30301424616**, job **90095042530** (`windows-latest`, 5m48s, run SUCCESS):
+  `RunningBinaryRenameSuite finished: 0 failed, 0 ignored, 1 total`.
+⚠ **The `0 ignored` is the load-bearing number, not the `0 failed`.** The test is guarded on
+`-Dtt.native.bin`, so a skip would have printed `1 ignored` and the JOB would still be green — a passing
+job proves nothing on its own here. The log line was read directly rather than inferred from the job
+status, which is the only way this evidence means anything.
+⇒ So: renaming a RUNNING executable succeeds on Windows, the process survives it, and the vacated path
+accepts a new binary. `tt update --native` gets ONE branch-free swap path for every platform genscalator
+ships, and the residual Windows-shaped work is only the best-effort cleanup of a leftover `tt.old`, whose
+failure is cosmetic.
+
+⇒ **The order of work this fixed:** (1) write the rename-a-running-executable test; (2) let CI answer it
+on Windows; (3) only then implement the swap. Steps 1 and 2 are DONE; step 3 is what remains. Note what this makes the test: not a regression test for
 code that exists, but an EXPERIMENT whose result selects the design — so it must stay in the suite
 afterwards, because the design it selected depends on its claim remaining true.
 
