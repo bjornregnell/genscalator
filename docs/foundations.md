@@ -132,8 +132,10 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   `drafted → published → deployed`, where `published` means *approved as text*, and `tt ssg --status
   published,deployed` selects the deploy set on exactly that meaning. So a scaffold sitting in the open repo
   is **published in this glossary's sense and NOT `published` as a status**. Both readings are in live use;
-  when it matters, say which you mean. Specimen worth remembering: an agent conflated *deployed* with
-  *published* and built a decision on it, having itself gathered the contradicting evidence an hour earlier.
+  when it matters, say which you mean. Why any such post is in the open repo at all is a deliberate,
+  bounded exception, recorded where it belongs: `media/blog/README.md`, "Where a post lives". Specimen
+  worth remembering: an agent conflated *deployed* with *published* and built a decision on it, having
+  itself gathered the contradicting evidence an hour earlier.
 - **to ape** (v.) — the **agent's** move: to imitate human-ness (our language, our behaviour). An LLM is trained to
   sound like us, so it apes us. Swedish cognate *att efterapa* (*efter* + *apa* = "ape after"), the same
   imitate-slavishly sense.

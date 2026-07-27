@@ -35,6 +35,27 @@ in order, and the final one repeats:
 Each status is stamped with its date — e.g. *Status: drafted 2026-07-03*, or after release
 *Status: published 2026-08-01; deployed 2026-08-02; updated 2026-09-15*. A post never silently changes state.
 
+### Where a post lives, and one deliberate exception
+
+**The rule, from 2026-07-27 onward: a draft lives in the closed work repo until it is ready.** A post
+appearing in *this* directory is therefore public by that act alone — visible to anyone browsing the repo,
+whether or not it has reached the site. That is the sense of *published* used in
+[`docs/foundations.md`](../../docs/foundations.md)'s glossary: **published = in the open repo, deployed =
+on bjornregnell.se.**
+
+**The exception: a few posts predating that rule remain here at `drafted` or scaffold status.** They are
+not moved, deliberately, because inbound references point at them and relocating them would break those
+refs to no benefit — the cure would cost more than the condition. They are harmless to have public: the
+status banner at the top of each says plainly that the prose is unrevised, so a reader is not misled about
+what they are reading. New drafts do not get this treatment; they start closed.
+
+Which posts these are is deliberately **not listed here** — a list would go stale as they graduate, and a
+stale list is worse than none. **Each post's own status banner is the source of truth.**
+
+⚠ Note the collision this creates, since both readings are in live use: such a post is *published* in the
+glossary sense (it is in the open repo) while its status field still says `drafted`. When it matters, say
+which sense you mean.
+
 ## Audience
 Each post's banner also names its **Audience** — *who may want to read this?* — right after the Status line, so
 a reader can tell at a glance whether the post is for them, and so drafting stays reader-focused.
