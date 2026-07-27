@@ -19,11 +19,13 @@ here when the PRD leans on them):
   Read it first if a term here is unfamiliar (smart zone / **Z** ceiling, confirmation fatigue, the compact /
   rest / AFK dances, **BHH**/BadGoal, safe-by-design …).
 - [`CHANGELOG.md`](../CHANGELOG.md) — the shipped history; the PRD's **PAST** section mirrors it in requirements form.
-- `research/` — the investigations behind the requirements: e.g. `001-scala-style-evolution.md` /
-  `017-scala-style-recommendations.md`, `006-smart-zone-ceiling.md`, `011-human-state-and-joint-zone.md`,
-  `022-proactive-compaction-point.md`, `015-reqt-lang-review.md`, `METHODOLOGY.md`.
+- `research/topics/` — the investigations behind the requirements: e.g. `RT001-scala-style-evolution.md` /
+  `RT017-scala-style-recommendations.md`, `RT006-smart-zone-ceiling.md`, `RT011-human-state-and-joint-zone.md`,
+  `RT022-proactive-compaction-point.md`, `RT015-reqt-lang-review.md`, plus `research/METHODOLOGY.md`.
+  (The numbered topics gathered into `topics/` as `RTnnn` on 2026-07-26; every bare `research/NNN-*.md`
+  path in this document was dead until 2026-07-27 and is now corrected.)
 - `research/wr-data/` — the raw **evidence** (Workflow-Research friction logs) the requirements are grounded in.
-- `blog/` — the narrative, outside-reader versions of these ideas.
+- `media/blog/` — the narrative, outside-reader versions of these ideas. (There is no top-level `blog/`.)
 - [`README.md`](../README.md) — what the product is and how to run `tt`.
 
 **Role split** (keeps this document focused): **PRD = requirements spine · `research/` = investigations ·
@@ -41,7 +43,7 @@ Using a **parseable requirements language** for genscalator is not incidental �
 
 1. **Shared vocabulary** for human↔agent requirement-talk (ENT/REL/ATTR is small and memorable, like the WR-* codes / smart-zone terms — *vocabulary as infrastructure*).
 2. **Traceability the agent can follow** — `Feature requires Feature`, `Goal has Spec` let an agent check completeness, find orphans, and order work deterministically instead of re-reading prose.
-3. **"Safe by design" as checkable relations** — the threat model (below) stops being hand-wavy once `Feature mitigates BadGoal` and `Metric verifies Goal` are actual links.
+3. **"Safe by design" as checkable relations** — the threat model (below) stops being hand-wavy once `Feature hurts BadGoal` and `Metric verifies Goal` are actual links. ⚠ Note the relation: `hurts`, not `mitigates`. There is no `Mitigates` in reqT's `RelType`, and `BadGoal` is not an entity type either — it is a *naming convention* for a `Goal` an attacker holds (see `docs/foundations.md`), so the checkable form is `Feature hurts Goal: exfiltrateSecrets`. This paragraph said `mitigates` until 2026-07-27 while §"minimal subset" below had already rejected it, which is why the two now agree.
 
 The complexity risk ("too much machinery") is real **only** if we import the whole reqT meta-model or formalize every fleeting idea. Mitigations: keep the **minimal subset** (below); scope reqT-lang to **stable, cross-cutting** requirements while fleeting ideas stay in `research/` + `wr-data/`; and remember the **agent-payoff needs a parser** (the `reqTParser` feature) — until then this is "structured prose" (already useful for humans and as a spine, but the agent-leverage lands with the tool). Roles to prevent drift: **PRD = requirements spine · research/ = investigations · wr-data = evidence · memory = agent ops.**
 
@@ -76,7 +78,7 @@ The complexity risk ("too much machinery") is real **only** if we import the who
   - ENT: Goal, Feature, Function, Stakeholder, ...
   - REL: has, requires, ...
   - ATTR: Spec, ...
-* **Mapping to reqT's existing vocabulary (agent review 2026-07-01 → `research/015-reqt-lang-review.md`; MAP not FORK).** Almost everything we need already exists in reqT's meta-model with the standard KAOS/i*/GRL semantics — so we use those rather than invent:
+* **Mapping to reqT's existing vocabulary (agent review 2026-07-01 → `research/topics/RT015-reqt-lang-review.md`; MAP not FORK).** Almost everything we need already exists in reqT's meta-model with the standard KAOS/i*/GRL semantics — so we use those rather than invent:
   - anti-goal ("BadGoal") → a **`Goal` owned by an adversarial stakeholder that our Features `hurt`** (BR decision 2026-07-01: model as *Goal-we-Hurt*, NOT a new `BadGoal` concept, NOT `Barrier`).
   - `mitigates` / `conflictsWith` → **`Hurts`** ("negative influence; a goal hinders another"); positive contribution → **`Helps`**.
   - `verifies` → **`Verifies`** ✅ ("a test verifies a feature"); `Rationale` → **`Why`** ✅; `Metric` → **`Target`** / **`Quality`** (+ `Min`/`Max`/`Value`).
@@ -85,7 +87,7 @@ The complexity risk ("too much machinery") is real **only** if we import the who
   - `Status` → the FUTURE/PAST headings already encode lifecycle (or `Deprecated`); no new attr.
 
 *TAP:* To Agent Plan: investigate what more entities, relations, attributes agent thinks we need from the reqT-lang meta model
-  *(agent review done → `research/015-reqt-lang-review.md`: MAP not FORK — reqT already has what we need. Only open item: whether an explicit `Antigoal` EntType is worth adding upstream; BR chose to model anti-goals as Goal-we-Hurt for now, so NO new concept. reqT-lang parser feedback filed as issue reqT/reqT-lang#15.)*
+  *(agent review done → `research/topics/RT015-reqt-lang-review.md`: MAP not FORK — reqT already has what we need. Only open item: whether an explicit `Antigoal` EntType is worth adding upstream; BR chose to model anti-goals as Goal-we-Hurt for now, so NO new concept. reqT-lang parser feedback filed as issue reqT/reqT-lang#15.)*
 
 **reqT-lang language specification:**
 
@@ -97,9 +99,9 @@ The complexity risk ("too much machinery") is real **only** if we import the who
   - Syntax: https://github.com/reqT/reqT-lang/blob/main/src/main/scala/05-MarkdownParser.scala
 
 
-### reqT-lang syntax rules the agent MUST follow (empirically verified via `tt parsereqt`; → future reqt-lang skill)
+### reqT-lang syntax rules the agent MUST follow (empirically verified via `tt parsereqt`; also in the `reqt-lang` skill)
 
-Learned by running snippets through the REAL parser (`tt parsereqt parse FILE`), not by guessing. Belongs in the reqt-lang skill; kept here for now.
+Learned by running snippets through the REAL parser (`tt parsereqt parse FILE`), not by guessing. ⚠ The `reqt-lang` skill now EXISTS (`skills/reqt-lang/SKILL.md`, loaded as `genscalator:reqt-lang`), so this is no longer "→ future skill / kept here for now" as it read until 2026-07-27. These rules are duplicated between the two, which is a real single-source question for the PRD consistency pass: the skill is what an agent actually loads, so it is the better home, and this section should shrink to a pointer once someone confirms the skill covers every rule below.
 
 1. **Relations bind two entities — NEVER list a relation under `has`.** A bullet like `* requires: Feature: X` placed *inside* a `Feature: Y has` block does NOT create a relation: the parser turns it into an inert `StrAttr(Text, "requires: Feature: X")` and the relation is SILENTLY LOST. And because `requires`/`verifies`/`helps` are lowercase, `lint`'s `^[A-Z]` concept-like check does NOT flag them. Verified: buggy snippet parsed to `...Has,Model(...,StrAttr(Text,"  requires: Feature: dep"),...)`.
 2. **Write a relation as its own top-level clause: an `ENT REL` line whose indented children are the target(s).** A relation binds its owner to ONE OR MORE sub-elements — exactly the way `has` binds many attrs/entities (rule 3). Short single-target form: `* Feature: ttConfigFile requires Feature: configInArgsNotEnv` → `Rel(...,Requires,Model(Ent(Feature,configInArgsNotEnv)))`. Multi-target form: a `* Feature: cfg requires` bullet with indented `* Feature: dep1` and `* Feature: dep2` children → `Rel(...,Requires,Model(Ent(Feature,dep1),Ent(Feature,dep2)))` (BOTH bound). Both verified.
@@ -123,7 +125,7 @@ Learned by running snippets through the REAL parser (`tt parsereqt parse FILE`),
   * Goal: exfiltrateSecrets
 * Stakeholder: agentHarnessProvider has
   * Gist: the company or community that offer the agent harness, e.g. Anthropic (Claude Code) — and other CLI/IDE/agent runtimes.
-  * Comment: the stakeholder who alone can build the L3 "substrate signals" (attention, compaction-discard manifest, true usage) behind a real context-rot meter (see `research/006-smart-zone-ceiling.md`); we cannot force it, so genscalator builds the L0/L1/L2 slice (Feature: contextRotMeter) itself and files L3 as an upstream ask.
+  * Comment: the stakeholder who alone can build the L3 "substrate signals" (attention, compaction-discard manifest, true usage) behind a real context-rot meter (see `research/topics/RT006-smart-zone-ceiling.md`); we cannot force it, so genscalator builds the L0/L1/L2 slice (Feature: contextRotMeter) itself and files L3 as an upstream ask.
   * Goal: retainUserTrust
   * Goal: maximizeUsefulAutonomy
   * Goal: manageInferenceCost
@@ -199,10 +201,11 @@ re-engineered from the real `v0.9.1..HEAD` range, then moved FUTURE → PAST the
 
 * Feature: reqTParser has
   * Gist: write a typed tool for parsing reqT-lang reqts
-  * Spec: A `tt parsereqt` tool that parses the reqT-lang markdown subset (this PRD's ENT/REL/ATTR bullet grammar) into a typed model, validates it (well-formed ids in camelCase, known ENT/REL/ATTR or a clear "unknown term" error), and answers queries the agent needs: list goals/features, trace `requires`/`refines`, find orphans, and check every `BadGoal` is `mitigates`-linked by some `Feature`. Be inspired by / reuse the reqT-lang Scala parser (`05-MarkdownParser.scala`) rather than re-inventing the grammar; typed args per `research/014-tt-typed-args.md`; one-line friendly errors, never a stack trace.
+  * Spec: A `tt parsereqt` tool that parses the reqT-lang markdown subset (this PRD's ENT/REL/ATTR bullet grammar) into a typed model, validates it (well-formed ids in camelCase, known ENT/REL/ATTR or a clear "unknown term" error), and answers queries the agent needs: list goals/features, trace `requires`/`refines`, find orphans, and check every attacker-held `Goal` is `hurts`-linked by some `Feature` (NOT `mitigates`/`BadGoal` — neither exists in reqT's `RelType`/entity types; corrected 2026-07-27). Be inspired by / reuse the reqT-lang Scala parser (`05-MarkdownParser.scala`) rather than re-inventing the grammar; typed args per `research/topics/RT014-tt-typed-args.md`; one-line friendly errors, never a stack trace.
+  * Spec: ⚠ STATUS CORRECTED 2026-07-27 — the query surface described above is NOT in `tt parsereqt`, which offers only `parse FILE` and `lint FILE`. Queries live in a DIFFERENT tool this entity does not mention, `tt prd [show | summarize | find <what>]`, and no orphan/trace query exists anywhere yet. So "REMAINING = native strict mode + source positions" understates what is open; the query half is unbuilt and unspecified as to its home.
   * Spec: **Baseline / ground truth** — feed THIS `PRD.md` to the reqT-lang parser and treat the model it yields as the acceptance fixture; resolve each divergence as EITHER a PRD fix OR a proposed upstream reqT-lang improvement. **CORE IMPLEMENTED** as `tt parsereqt` (vendored parser) — it authored + validates THIS PRD. REMAINING for a numbered release: native in-parser strict mode + source positions (reqT/reqT-lang#15).
 * Feature: reqTParser requires Function: reqtLangGrammar
-* Comment: reqT-lang parser review DONE → filed as reqT/reqT-lang#15 (strict/lint mode + source positions + id-handling); see research/015-reqt-lang-review.md. Working model: the vendored parser is the `tt parsereqt` tool.
+* Comment: reqT-lang parser review DONE → filed as reqT/reqT-lang#15 (strict/lint mode + source positions + id-handling); see `research/topics/RT015-reqt-lang-review.md`. Working model: the vendored parser is the `tt parsereqt` tool.
 
 * Goal: verifiedTypedTools has
   * Gist: every typed tool is covered by tests — static types catch TYPE errors, mUnit tests catch LOGIC errors; a tool without tests is unverified.
@@ -210,11 +213,11 @@ re-engineered from the real `v0.9.1..HEAD` range, then moved FUTURE → PAST the
   * Design: testTooling has
     * Gist: use [mUnit](https://docs.scala-lang.org/toolkit/testing-intro.html) for test suites
     * Why: it's a curated part of the Scala toolbox
-  * Spec: extend coverage to `tt web` + `tt forge` (offline usage/arg-error paths), matching the htmltext/chrono pattern — a parked AGENT-owned task.
+  * Spec: ~~extend coverage to `tt web` + `tt forge` (offline usage/arg-error paths), matching the htmltext/chrono pattern — a parked AGENT-owned task.~~ **DONE, unparked 2026-07-27:** `tools/test/web.test.scala` exists and `tt forge` offline arg-error paths are covered in `tools/test/cli.test.scala`.
 * Feature: typedToolsTestSuite verifies Goal: verifiedTypedTools
 * Goal: verifiedTypedTools helps Goal: safeGeneration
 * Goal: verifiedTypedTools helps Goal: jointHumanAgentProductivity
-* Comment: (agent) suggest linking these — `Feature: typedToolsTestSuite verifies Goal: verifiedTypedTools`, and `verifiedTypedTools helps safeGeneration + jointHumanAgentProductivity`. Rationale: typed tools are only HALF the safety story — static types catch TYPE errors, mUnit tests catch LOGIC errors; a tool without tests is unverified. Bonus: the suites double as the AGENT's own self-verification / regression signal before it ships a tool change (012-inference-time-learning.md §7). mUnit is the right pick (Scala Toolkit, zero-config with scala-cli via `//> using test.dep org.scala-lang::munit`). Prune the links if undesired.
+* Comment: (agent) suggest linking these — `Feature: typedToolsTestSuite verifies Goal: verifiedTypedTools`, and `verifiedTypedTools helps safeGeneration + jointHumanAgentProductivity`. Rationale: typed tools are only HALF the safety story — static types catch TYPE errors, mUnit tests catch LOGIC errors; a tool without tests is unverified. Bonus: the suites double as the AGENT's own self-verification / regression signal before it ships a tool change (`research/topics/RT012-inference-time-learning.md` §7). mUnit is the right pick (Scala Toolkit, zero-config with scala-cli via `//> using test.dep org.scala-lang::munit`). Prune the links if undesired.
 
 * Feature: outputShapingFlags has
   * Gist: typed tools absorb the common output-shaping shell pipes (head/tail/wc/sort, grep -C) as native flags, so the agent never needs a downstream pipe to shape a tool's output.
@@ -226,7 +229,7 @@ re-engineered from the real `v0.9.1..HEAD` range, then moved FUTURE → PAST the
 * Feature: greprRegexLint has
   * Gist: the regex-taking text subcommands lint the pattern for grep-BRE metacharacters and warn, because the engine is Java regex (ERE) and a silent empty result otherwise hides the mismatch.
   * Spec: `tt text grepr` (and the sibling regex takers context/match/freq) compile the pattern with Scala `String.r` = Java `Pattern` (full ERE), so alternation is `|` NOT grep's `\|` (Java reads `\|` as a LITERAL pipe, silently matching nothing). On a pattern containing grep-BRE-isms (`\|`, `\(`, `\)`, `\{`, `\}`, `\+`, `\?`) emit a one-line stderr warning ("looks like grep BRE syntax: grepr uses Java regex, use `|` not `\|`") without altering the exit code; optionally also warn on a zero-match result so "genuinely absent" is distinguishable from "bad pattern". Same prosthetic-perception shape as `guardcheck`.
-  * Why: WR-TOOL. The agent, on grep muscle-memory, passed `foo\|bar` to grepr twice, got a silent empty, and read it as "absent" (a wrong conclusion). A silent empty on a syntactically-suspicious pattern is a footgun; a lint at the SOURCE, not exhortation, is the structural fix. Evidence: research/wr-data grepr-alternation-silent-empty event (2026-07-05).
+  * Why: WR-TOOL. The agent, on grep muscle-memory, passed `foo\|bar` to grepr twice, got a silent empty, and read it as "absent" (a wrong conclusion). A silent empty on a syntactically-suspicious pattern is a footgun; a lint at the SOURCE, not exhortation, is the structural fix. Evidence: the grepr-alternation silent-empty event of 2026-07-05, recorded in `research/wr-data/` — ⚠ no file of that NAME exists, so the pointer is to the corpus and the date, not to a filename (a citation asserting a filename that does not resolve is worse than one that admits it; corrected 2026-07-27).
 * Feature: greprRegexLint helps Goal: safeGeneration
 * Feature: greprRegexLint helps Goal: tokenEfficiency
 * Feature: greprRegexLint relatesTo Feature: outputShapingFlags
@@ -374,9 +377,10 @@ example of expressing already-built work as reqT-lang requirements for Agentic R
 * Feature: textStreamEditor hurts Goal: controlHumanSystem
 
 * Feature: ttGit has
-  * Gist: a typed wrapper over git's SAFE verbs (commit / add / status / log / diff / branch / push-non-force) that passes the commit message and args as DATA — never as a shell-tokenized string — killing the glob false-positive + quoting footguns of git-over-bash, while keeping the effectful path auditable.
-  * Spec: VERBS — read/safe (`status`, `log`, `diff`, `branch`) + effectful-non-destructive (`add`, `commit -m <msg>`, `push`). The message and paths are handed to git as an explicit **argv list** (`os.proc(...)`, not a shell string), so prose metacharacters (`<->`, `*`, backticks, `{a,b}`, `$`) cannot glob, expand, or mangle — the exact false positive logged in `research/wr-data/genscalator-self-dev.md` (bash analyzer flagged a `<->` in a commit message as a zsh numeric-range glob).
-  * Spec: SAFETY — destructive verbs/flags are NOT exposed and are statically rejected: `rm`, `reset --hard`, `push --force`/`-f`, `clean -f`. This mirrors the settings global-deny model (see `research/wr-data/settings-local-mirror.*`): the human runs destructive git; the tool cannot. `push` is included because non-force push is effectful-but-not-destructive and the commit+push atomic unit is the core workflow; `--audit` prints what ran. NOT a general `git` passthrough — a passthrough would re-admit the destructive surface and defeat the point.
+  * Comment: ⚠ SUPERSEDED DESIGN, and a DUPLICATE ENTITY — flagged 2026-07-27, not yet resolved. `Feature: ttGit has` also appears earlier in this document (the shipped description), so reqT merges both blocks into ONE entity and this stale one silently contributes its attributes. Removing or renaming a duplicate id is a structural edit to the model, so it is deferred to the PRD consistency pass rather than done here. What IS corrected below is the verb list, which asserted things the shipped tool does not do.
+  * Gist: a typed wrapper over git's SAFE verbs that passes the commit message and args as DATA — never as a shell-tokenized string — killing the glob false-positive + quoting footguns of git-over-bash, while keeping the effectful path auditable.
+  * Spec: VERBS — ⚠ AS SHIPPED (corrected 2026-07-27; this line previously claimed `status`, `log`, `diff`, `branch` + `add`, `commit -m <msg>`, `push`): `commit --repo --message-file [--add ...] [--push] [--remote ...] [--tags]`, `push`, `pull` (ff-only), `fetch`, and read-only `show --ref --path` + `log --grep/--author/--co-author/--committer/--since/--limit`. There is NO `status`, NO `diff` and NO `branch` verb — those are `tt gitinfo`, a separate tool. And `-m <msg>` is deliberately NOT offered: the message comes from a FILE, so prose never crosses a shell boundary. The message and paths are handed to git as an explicit **argv list** (`os.proc(...)`, not a shell string), so prose metacharacters (`<->`, `*`, backticks, `{a,b}`, `$`) cannot glob, expand, or mangle — the exact false positive logged in `research/wr-data/genscalator-self-dev.md` (bash analyzer flagged a `<->` in a commit message as a zsh numeric-range glob).
+  * Spec: SAFETY — destructive verbs/flags are NOT exposed and are statically rejected: `rm`, `reset --hard`, `push --force`/`-f`, `clean -f`. This mirrors the settings global-deny model (see `research/settings-mirror/README.md` + `settings.local.json` — NOT `research/wr-data/settings-local-mirror.*`, which never existed): the human runs destructive git; the tool cannot. `push` is included because non-force push is effectful-but-not-destructive and the commit+push atomic unit is the core workflow; `--audit` prints what ran. NOT a general `git` passthrough — a passthrough would re-admit the destructive surface and defeat the point.
   * Spec: IN-SESSION DIFF REPORT — every effectful run SURFACES what it changed back into the session, so the human sees the actual mutation inline without a separate `git show`/`git diff` round-trip. `commit` prints the committed diffstat + the diff (bounded by a `--max-lines` cap so a huge change does not flood context, full diff behind `--show`); `add` prints the staged diffstat; `push` prints the ref update (`old..new` + the commit subjects pushed). This is the same mutation-monitor property as Feature: textStreamEditor (the tool holds both sides of the change, so it can always report the delta) — instrumentation-by-default extended to version control: the tool that makes the change is the tool that shows it.
   * Why: doing git THROUGH bash feeds prose + structured intent through a shell tokenizer and glob-safety analyzer — spurious "looks like a glob" flags at best, silent quoting mangling at worst. A typed wrapper passes them as data, declares the effect for audit, and stays allowlistable BY VERB (`Bash(tt git *)`) without blanket-approving destructive git.
   * Comment: scope discipline — the value is precisely that it is NARROWER than `git`; if it ever grows a `--` escape hatch to raw git, that hatch must exclude the four destructive verbs or the safe-by-construction property is lost.
@@ -393,7 +397,7 @@ example of expressing already-built work as reqT-lang requirements for Agentic R
 
 * Feature: contextRotMeter has
   * Gist: an instrument for the QUALITY axis of context (rot / chaos), complementing the token-usage QUANTITY gauge — surfaces "am I degrading?" so the agent or human can prune/compact before drift, not after.
-  * Spec: LAYERED (design in `research/006-smart-zone-ceiling.md`, sub-RQ b). L0 (solo, passive): count degradation signatures in the transcript — self-contradiction, repetition, tool-retry, redone work, instruction-forgetting. L1 (solo, externally anchored): a durable ground-truth file of decisions + planted canaries; a periodic re-read diffs live beliefs against it (the file does not rot → the external reference frame). L2 (collaborative): a human↔agent protocol — the human, an undegraded observer, flags lapses and relays `/context`. L3 (harness ask, not buildable by us): expose substrate signals (attention entropy, what compaction discarded, true usage).
+  * Spec: LAYERED (design in `research/topics/RT006-smart-zone-ceiling.md`, sub-RQ b). L0 (solo, passive): count degradation signatures in the transcript — self-contradiction, repetition, tool-retry, redone work, instruction-forgetting. L1 (solo, externally anchored): a durable ground-truth file of decisions + planted canaries; a periodic re-read diffs live beliefs against it (the file does not rot → the external reference frame). L2 (collaborative): a human↔agent protocol — the human, an undegraded observer, flags lapses and relays `/context`. L3 (harness ask, not buildable by us): expose substrate signals (attention entropy, what compaction discarded, true usage).
   * Spec: BUILDABLE SLICE for genscalator = L0 + L1 as a pure, read-only typed tool (candidate `tt rotcheck`) — counters + canary-diff over supplied files, no self-authorization surface. L2 is a skill/AGENTS protocol; L3 is upstream/platform.
   * Why: rot is a QUALITY failure that can occur at LOW usage (chaos) or be absent at HIGH usage — usage% is a weak proxy, so a separate meter is warranted; and self-measurement from inside a degrading system is unreliable (a rotted agent measures with a rotted instrument), so the meter must anchor on an external reference — a file (weak) then a human (strong).
   * Comment: MEASUREMENT-FROM-WITHIN — reliable detection is human-gated until L3 exists; the mirror of agent-as-stabilizer (agent steadies the tiring human; human detects the rotting agent — each the other's external frame).
@@ -486,7 +490,7 @@ example of expressing already-built work as reqT-lang requirements for Agentic R
 ### Session 2026-07-15 — update-awareness, native provisioning, settings, and the echt mode grammar
 
 A dated block reflecting one session's work: Features SHIPPED (marked) and Features PINNED as coming (SMnnn).
-Grounded in `research/057-anthropic-builtin-tools-vs-genscalator.md`, the `research/wr-data/` rot/mode notes,
+Grounded in `research/topics/RT057-anthropic-builtin-tools-vs-genscalator.md`, the `research/wr-data/` rot/mode notes,
 and the session pin board. The through-line is a new general goal, sovereigntyOfCapability.
 
 * Goal: sovereigntyOfCapability has
@@ -527,7 +531,7 @@ and the session pin board. The through-line is a new general goal, sovereigntyOf
 
 * Feature: gsNative has
   * Gist: a gs DWIM command that detects the user's toolchain, installs with consent only the missing native prerequisites, then native-compiles the tt tools that benefit — Scala Native for hot dependency-light tools, GraalVM native-image when a JDK or Java dependency must come along.
-  * Spec: keeps the lean scala-cli plus JDK prerequisite intact and never forces gcc or clang on everyone; the target choice follows the noop-race findings (blog 025) — hot and dependency-light goes to Scala Native, hot and needs-a-Java-dep goes to GraalVM native-image, rare or long-running stays on the JVM; the native binaries coexist with the JVM launcher, which dispatches to a native build when one is present.
+  * Spec: keeps the lean scala-cli plus JDK prerequisite intact and never forces gcc or clang on everyone; the target choice follows the noop-race startup findings (⚠ NOT "blog 025": there is no post 025 in `media/blog/`, and the write-up is an unpublished draft in the closed work repo, so a public document must not cite it as if a reader could follow it — corrected 2026-07-27; the finding itself stands and the `scala-platform` skill carries the decision rule) — hot and dependency-light goes to Scala Native, hot and needs-a-Java-dep goes to GraalVM native-image, rare or long-running stays on the JVM; the native binaries coexist with the JVM launcher, which dispatches to a native build when one is present.
 * Feature: gsNative helps Goal: sovereigntyOfCapability
 * Feature: gsNative helps Goal: tokenEfficiency
 * Feature: gsNative helps Goal: jointHumanAgentProductivity
