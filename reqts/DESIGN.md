@@ -165,3 +165,28 @@ installer's own Claude Code check: if Claude Code is absent it says so and links
 
 **Deferred.** Whether the same integration is worth building for opencode, Codex and similar harnesses
 is an open question, not a decision.
+
+## D5 - one dispatcher owns the verb table, and a test owns the dispatcher
+
+**Decision.** The toolbox has exactly one entry point. `tools/dispatch.scala` maps every verb to its entry
+function in a single table, and `@main dispatchTypedTools` is the native image's only main class. The
+per-file `@main`s are deliberately KEPT rather than deleted, because they are the scala-cli fallback path.
+
+**Why one table.** Before this, `tt <tool>` meant "run the file named `<tool>.scala`", so the set of verbs
+was whatever happened to be on disk. That is unnameable: nothing could state what the toolbox offers, and
+nothing could be compiled against it. The table makes the verb set a value, so `usage` derives from it
+instead of restating it, and a native image has something to route.
+
+**The load-bearing part is the test, not the table.** A hand-maintained table drifts from the file set the
+moment someone adds a tool and forgets a line, and it drifts SILENTLY: the new tool still runs under
+scala-cli, so nothing looks broken until the native binary is asked for a verb it has never heard of.
+`DispatchSuite` asserts the table covers exactly the files carrying a top-level `@main`, currently 43, so
+the drift fails a test instead of surfacing as a missing verb weeks later. Same shape as D1: the mechanism
+exists because the failure it prevents is quiet.
+
+**Scope, stated honestly.** Only the structural seam shipped, in v0.9.2. The design note this came from,
+`tools/DESIGN-single-dispatcher.md`, describes four seams; the other three, typed arguments in, typed
+results out, and streaming, are still a plan. Tools take `String*` today. That note carries the plan; this
+record carries only what was decided and built. Its status header claimed "not started" for three weeks
+after the dispatcher shipped, which is worth recording as its own small lesson: a status line is a claim,
+and an uncorrected one misleads exactly the reader who trusts the document most.

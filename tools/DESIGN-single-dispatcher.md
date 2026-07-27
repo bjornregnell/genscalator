@@ -1,9 +1,20 @@
 # Design: one sole `@main` dispatcher + typed args in / typed result out + streaming + a native `tt` binary
 
-Status: **PLAN (consolidated 2026-07-04), not started.** This is now the *single* design note for the tt-toolbox
-refactor — it absorbs the former arg-parsing note `../research/014-tt-typed-args.md` (left as a pointer stub). Needs a
-joint BR+agent go-ahead on sequencing before any code moves. Raised by BR 2026-07-03 during the object-scoping
-refactor (the stepping stone below); typed contract + streaming type settled 2026-07-04.
+Status: **PARTLY SHIPPED — seam 1 is live, seams 2-4 are still a plan.** (Corrected 2026-07-27: this header said
+"not started" for three weeks after the dispatcher shipped, which is exactly the stale-carrier failure this repo
+keeps finding. An agent reading it concluded the work had not begun.)
+
+- **Seam 1, structure: SHIPPED in v0.9.2.** `tools/dispatch.scala` routes `tt <tool> <args>` through one
+  `@main dispatchTypedTools`, the whole toolbox ships as one GraalVM native image, and `DispatchSuite` asserts the
+  verb table covers exactly the tool files carrying a top-level `@main` — currently 43. Per-file `@main`s were NOT
+  deleted: they remain the scala-cli fallback path, which is why `ScalaVersionSuite` still guards them.
+- **Seams 2-4, typed args in / typed result out / streaming: NOT started.** Tools still take `String*`. This is
+  the live content of the rest of this note.
+
+This is the *single* design note for the tt-toolbox refactor — it absorbs the former arg-parsing note, now
+`../research/topics/RT014-tt-typed-args.md` (left as a pointer stub). Raised by BR 2026-07-03 during the
+object-scoping refactor (the stepping stone below); typed contract + streaming type settled 2026-07-04.
+The decision itself is recorded as D5 in `../reqts/DESIGN.md`; this note holds the plan for what remains.
 
 ## Where we are now (after the 2026-07-03 stepping-stone refactor)
 Each `tools/<name>.scala` is `object <Name> { def dispatch(args: String*) }` plus a thin top-level
