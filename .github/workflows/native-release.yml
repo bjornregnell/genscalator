@@ -50,8 +50,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: coursier/cache-action@v6
+        # Caches the coursier cache, which is where scala-cli puts the JVM, the compiler artifacts AND
+        # the GraalVM it fetches for native-image. That download is the bulk of a cold leg, and it is
+        # paid SIX times per run. Recommended by the scala-cli docs alongside the setup action below.
+        # Correctness-neutral: a cold cache builds exactly the same binary, only slower.
+
       - uses: VirtusLab/scala-cli-setup@v1
         # scala-cli fetches its own GraalVM, so there is no separate GraalVM provisioning step.
+        #
+        # Pinned to @v1, NOT the @main the docs show. A moving branch in a release-artifact pipeline
+        # means the thing that built today's binary is not the thing that builds tomorrow's, and this
+        # workflow produces assets people install. @main would also not help the one leg that fails
+        # here: windows-aarch64 404s because VirtusLab publishes no aarch64-pc-win32 build at all
+        # (checked against the release assets, 2026-07-27), and no action version conjures one.
 
       - name: MSVC environment (Windows only)
         if: runner.os == 'Windows'
