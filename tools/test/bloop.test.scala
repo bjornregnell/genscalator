@@ -54,6 +54,38 @@ class BloopCleanSuite extends munit.FunSuite:
     assertEquals(BloopTool.unsafeRoot("/srv/thing"), None)
   }
 
+  // WINDOWS. `tt bloop clean --dir` used to demand a leading "/", so it refused every Windows path and
+  // this whole guard was dead code there. Accepting those paths WIDENS what reaches a destructive verb,
+  // so each refusal is pinned in the Windows spelling too — the guards split on "/", and without
+  // separator normalisation `C:\Users\bjornr` is ONE segment and slips past both the too-shallow and
+  // the home-directory refusal. These cases fail loudly if that normalisation is ever removed.
+  test("a Windows project path is ACCEPTED, in either separator spelling") {
+    assertEquals(BloopTool.unsafeRoot("""C:\git\proj"""), None)
+    assertEquals(BloopTool.unsafeRoot("C:/git/proj"), None)
+    assertEquals(BloopTool.unsafeRoot("""\\server\share\proj\sub"""), None)
+  }
+
+  test("a Windows drive root is refused, like / is") {
+    assert(BloopTool.unsafeRoot("""C:\""").isDefined)
+    assert(BloopTool.unsafeRoot("C:/").isDefined)
+  }
+
+  test("a Windows user profile directory is refused, like /home/<name> is") {
+    assert(BloopTool.unsafeRoot("""C:\Users\bjornr""").isDefined)
+    assert(BloopTool.unsafeRoot("C:/Users/bjornr").isDefined)
+    assert(BloopTool.unsafeRoot("""C:\Users\bjornr\""").isDefined)
+  }
+
+  test("a Windows top-level directory is still too shallow") {
+    assert(BloopTool.unsafeRoot("""C:\Users""").isDefined)
+    assert(BloopTool.unsafeRoot("""D:\temp""").isDefined)
+  }
+
+  test("a Windows path with .. is refused, in either spelling") {
+    assert(BloopTool.unsafeRoot("""C:\git\proj\..\..\Windows""").isDefined)
+    assert(BloopTool.unsafeRoot("C:/git/proj/../../Windows").isDefined)
+  }
+
   test("planClean defaults to a DRY RUN — deletion is never the default") {
     assertEquals(BloopTool.planClean(List("--dir", "/home/someone/git/proj")),
       Right(BloopTool.CleanPlan("/home/someone/git/proj", apply = false)))

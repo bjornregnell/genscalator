@@ -9,25 +9,38 @@
 class GitPushSuite extends munit.FunSuite:
 
   test("parsePushArgs reads --repo and keeps every --remote in order") {
-    val (repo, remotes) = Git.parsePushArgs(List("--repo", "/r", "--remote", "origin", "--remote", "gitlab"))
-    assertEquals(repo, Some("/r"))
-    assertEquals(remotes, Vector("origin", "gitlab"))
+    val p = Git.parsePushArgs(List("--repo", "/r", "--remote", "origin", "--remote", "gitlab"))
+    assertEquals(p.repo, Some("/r"))
+    assertEquals(p.remotes, Vector("origin", "gitlab"))
   }
 
   test("parsePushArgs with no --remote yields an empty set (push to upstream)") {
-    val (repo, remotes) = Git.parsePushArgs(List("--repo", "/r"))
-    assertEquals(repo, Some("/r"))
-    assertEquals(remotes, Vector.empty)
+    val p = Git.parsePushArgs(List("--repo", "/r"))
+    assertEquals(p.repo, Some("/r"))
+    assertEquals(p.remotes, Vector.empty)
   }
 
   test("parsePushArgs keeps a repeated remote (a typo must not be silently de-duplicated)") {
-    val (_, remotes) = Git.parsePushArgs(List("--repo", "/r", "--remote", "gitlab", "--remote", "gitlab"))
-    assertEquals(remotes, Vector("gitlab", "gitlab"))
+    val p = Git.parsePushArgs(List("--repo", "/r", "--remote", "gitlab", "--remote", "gitlab"))
+    assertEquals(p.remotes, Vector("gitlab", "gitlab"))
   }
 
   test("parsePushArgs reports a missing --repo as absent rather than defaulting") {
-    val (repo, _) = Git.parsePushArgs(List("--remote", "origin"))
-    assertEquals(repo, None)
+    val p = Git.parsePushArgs(List("--remote", "origin"))
+    assertEquals(p.repo, None)
+  }
+
+  // --tags. OFF unless asked: a tag is a near-permanent published ref, so pushing one must be a
+  // decision the caller typed, never a side effect of an ordinary push.
+  test("parsePushArgs leaves tags OFF by default") {
+    assertEquals(Git.parsePushArgs(List("--repo", "/r", "--remote", "origin")).tags, false)
+  }
+
+  test("parsePushArgs reads --tags, in any position among the remotes") {
+    assertEquals(Git.parsePushArgs(List("--repo", "/r", "--tags")).tags, true)
+    val p = Git.parsePushArgs(List("--repo", "/r", "--remote", "origin", "--tags", "--remote", "codeberg"))
+    assertEquals(p.tags, true)
+    assertEquals(p.remotes, Vector("origin", "codeberg"))  // --tags must not swallow a following remote
   }
 
   // End-to-end: one work repo, two bare remotes, one commit pushed to BOTH by a single call.
@@ -94,5 +107,67 @@ class GitPushSuite extends munit.FunSuite:
       assertEquals(after, before, "push must not create a commit")
       assertEquals(os.proc("git", "rev-parse", "main").call(cwd = alpha).out.trim(),
                    os.proc("git", "rev-parse", "HEAD").call(cwd = repo).out.trim())
+    finally TestFs.removeAllForce(work)
+  }
+
+  // END-TO-END tag push against real bare remotes. The parse tests above prove a flag is READ; only
+  // this proves a tag ARRIVES. Both tag kinds are exercised on purpose: --follow-tags (the tempting
+  // choice) would push the annotated one and silently skip the lightweight one, and a test that used
+  // only annotated tags would have called that a pass.
+  test("push --tags lands BOTH lightweight and annotated tags, on every remote") {
+    val work = os.temp.dir(prefix = "ttgit-")
+    try
+      val alpha = work / "alpha.git"
+      val beta  = work / "beta.git"
+      val repo  = work / "repo"
+      for bare <- List(alpha, beta) do
+        os.makeDir.all(bare)
+        os.proc("git", "init", "--bare", "--initial-branch=main", bare.toString).call(cwd = work)
+      os.makeDir.all(repo)
+      os.proc("git", "init", "--initial-branch=main").call(cwd = repo)
+      os.proc("git", "config", "user.email", "test@example.com").call(cwd = repo)
+      os.proc("git", "config", "user.name", "Test").call(cwd = repo)
+      os.proc("git", "remote", "add", "alpha", alpha.toString).call(cwd = repo)
+      os.proc("git", "remote", "add", "beta", beta.toString).call(cwd = repo)
+      os.write(repo / "a.txt", "hello\n")
+      os.proc("git", "add", "a.txt").call(cwd = repo)
+      os.proc("git", "commit", "-m", "seed").call(cwd = repo)
+      os.proc("git", "tag", "v0.1.0").call(cwd = repo)                            // LIGHTWEIGHT
+      os.proc("git", "tag", "-a", "v0.2.0", "-m", "annotated").call(cwd = repo)   // ANNOTATED
+
+      Git.dispatch("push", "--repo", repo.toString, "--remote", "alpha", "--remote", "beta", "--tags")
+
+      for bare <- List(alpha, beta) do
+        val tags = os.proc("git", "tag", "-l").call(cwd = bare).out.trim().linesIterator.toSet
+        assert(tags.contains("v0.1.0"), s"lightweight tag missing from $bare: $tags")
+        assert(tags.contains("v0.2.0"), s"annotated tag missing from $bare: $tags")
+    finally TestFs.removeAllForce(work)
+  }
+
+  test("push without --tags leaves tags at home") {
+    val work = os.temp.dir(prefix = "ttgit-")
+    try
+      val alpha = work / "alpha.git"
+      val repo  = work / "repo"
+      os.makeDir.all(alpha)
+      os.proc("git", "init", "--bare", "--initial-branch=main", alpha.toString).call(cwd = work)
+      os.makeDir.all(repo)
+      os.proc("git", "init", "--initial-branch=main").call(cwd = repo)
+      os.proc("git", "config", "user.email", "test@example.com").call(cwd = repo)
+      os.proc("git", "config", "user.name", "Test").call(cwd = repo)
+      os.proc("git", "remote", "add", "alpha", alpha.toString).call(cwd = repo)
+      os.write(repo / "a.txt", "hello\n")
+      os.proc("git", "add", "a.txt").call(cwd = repo)
+      os.proc("git", "commit", "-m", "seed").call(cwd = repo)
+      // Set the upstream first, as the standalone-push test above does: with a single remote and no
+      // upstream git refuses the push outright, which would fail this test BEFORE it ever reached the
+      // tag question it exists to ask.
+      os.proc("git", "push", "-u", "alpha", "main").call(cwd = repo)
+      os.proc("git", "tag", "v9.9.9").call(cwd = repo)
+
+      Git.dispatch("push", "--repo", repo.toString, "--remote", "alpha")
+
+      assertEquals(os.proc("git", "tag", "-l").call(cwd = alpha).out.trim(), "",
+        "an ordinary push must not publish tags as a side effect")
     finally TestFs.removeAllForce(work)
   }

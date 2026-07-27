@@ -17,6 +17,22 @@ object Lib:
   def readUtf8(path: String): String =
     String(java.nio.file.Files.readAllBytes(java.nio.file.Path.of(path)), "UTF-8")
 
+  // --- paths ---
+  /** Absolute in the POSIX sense ("/..."), the Windows drive sense ("C:\..." or "C:/"), or UNC
+    * ("\\server\share"). PURE: it inspects the STRING, touching no filesystem.
+    *
+    * Deliberately NOT `java.nio.Paths.get(_).isAbsolute`, whose answer is host-dependent in BOTH
+    * directions — on Windows "/x" is not absolute, on Linux "C:\x" is not — while the callers are pure
+    * functions whose tests must give the same answer on every host.
+    *
+    * ⚠ It lives HERE, in one place, because it did not. `tt sbt` and `tt bloop` each had their own
+    * `startsWith("/")`, so both refused every path a Windows user could type. `tt sbt` was fixed first
+    * and `tt bloop` kept failing, because a fix applied to one instance of a duplicated predicate looks
+    * complete from inside that file. Same reason `toolsDir` below is shared.
+    */
+  def isAbsolutePath(p: String): Boolean =
+    p.startsWith("/") || p.startsWith("""\\""") || p.matches("""^[A-Za-z]:[/\\].*""")
+
   // --- toolbox location ---
   /** Locate the tools dir (cwd-independent): the -Dtt.tools property the `tt` launcher passes, else walk up
     * from the cwd for a `tools/tt`. The ONE shared definition — doc / prd / skillcheck / skillgrants all use

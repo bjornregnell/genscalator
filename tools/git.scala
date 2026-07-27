@@ -14,7 +14,9 @@
 //     --push           push after a successful commit (current branch upstream by default)
 //     --remote NAME    push to this remote instead of the upstream (repeatable, needs --push) —
 //                      a mirror set (github + gitlab + coursegit) is one call, not one raw `git push` each
-//   tt git push --repo <dir> [--remote <name>]...
+//     --tags           also push tags, to every named remote (needs --push). See pushTags for why this
+//                      is --tags and not --follow-tags, and why tag CREATION stays out of scope.
+//   tt git push --repo <dir> [--remote <name>]... [--tags]
 //     push already-committed work without making a commit first.
 //   tt git show --repo <dir> --ref <ref> --path <relpath> [--out <file>]
 //     READ-ONLY: print the file content at <ref> (byte-exact) to stdout, or write it to <file> with
@@ -40,8 +42,8 @@ object Git {
       |command line.
       |
       |Usage:
-      |  git commit --repo <dir> --message-file <path> [--add <pathspec>]... [--push] [--remote <name>]...
-      |  git push  --repo <dir> [--remote <name>]...
+      |  git commit --repo <dir> --message-file <path> [--add <pathspec>]... [--push] [--remote <name>]... [--tags]
+      |  git push  --repo <dir> [--remote <name>]... [--tags]
       |                                  push already-committed work; repeat --remote for a
       |                                  mirror set, omit it for the branch's upstream
       |  git pull  --repo <dir>          fast-forward only: either FFs or fails loudly
@@ -65,6 +67,14 @@ object Git {
       |                                  with no upstream in a single-remote repo is refused by git
       |                                  itself (push.default simple) — set the upstream once with
       |                                  git push -u; the tool never sets one behind your back.
+      |  --tags                          also push tags, as a second push per remote (needs --push).
+      |                                  --tags, NOT --follow-tags: --follow-tags sends only ANNOTATED
+      |                                  tags, and this project's own tags are mixed (v0.8.0/v0.9.0/
+      |                                  v0.9.1 lightweight, v0.9.2 annotated), so it would push some
+      |                                  releases and silently skip others. Never --force: git refuses
+      |                                  to MOVE an existing remote tag, so this can only ADD refs.
+      |                                  Creating tags is out of scope — this sends tags you already
+      |                                  made locally.
       |Flags (show):
       |  --repo <dir>                    the git repository to read from (required)
       |  --ref <ref>                     any commit-ish: HEAD, a branch, a tag, a SHA (required)
@@ -134,18 +144,22 @@ object Git {
 
   private def commit(args: List[String]): Unit =
     @annotation.tailrec
-    def parse(r: List[String], repo: Option[String], msg: Option[String], adds: Vector[String], push: Boolean, remotes: Vector[String])
-        : (String, String, Vector[String], Boolean, Vector[String]) =
+    def parse(r: List[String], repo: Option[String], msg: Option[String], adds: Vector[String], push: Boolean, remotes: Vector[String], tags: Boolean)
+        : (String, String, Vector[String], Boolean, Vector[String], Boolean) =
       r match
-        case Nil                              => (repo.getOrElse(fail("--repo required")), msg.getOrElse(fail("--message-file required")), adds, push, remotes)
-        case "--repo" :: v :: t               => parse(t, Some(v), msg, adds, push, remotes)
-        case "--message-file" :: v :: t       => parse(t, repo, Some(v), adds, push, remotes)
-        case "--add" :: v :: t                => parse(t, repo, msg, adds :+ v, push, remotes)
-        case "--push" :: t                    => parse(t, repo, msg, adds, true, remotes)
-        case "--remote" :: v :: t             => parse(t, repo, msg, adds, push, remotes :+ v)
+        case Nil                              => (repo.getOrElse(fail("--repo required")), msg.getOrElse(fail("--message-file required")), adds, push, remotes, tags)
+        case "--repo" :: v :: t               => parse(t, Some(v), msg, adds, push, remotes, tags)
+        case "--message-file" :: v :: t       => parse(t, repo, Some(v), adds, push, remotes, tags)
+        case "--add" :: v :: t                => parse(t, repo, msg, adds :+ v, push, remotes, tags)
+        case "--push" :: t                    => parse(t, repo, msg, adds, true, remotes, tags)
+        case "--remote" :: v :: t             => parse(t, repo, msg, adds, push, remotes :+ v, tags)
+        case "--tags" :: t                    => parse(t, repo, msg, adds, push, remotes, true)
         case other :: _                       => fail(s"unexpected/incomplete argument '$other'")
-    val (repoStr, msgStr, adds, push, remotes) = parse(args, None, None, Vector.empty, false, Vector.empty)
+    val (repoStr, msgStr, adds, push, remotes, tags) = parse(args, None, None, Vector.empty, false, Vector.empty, false)
     if remotes.nonEmpty && !push then fail("--remote needs --push (it names where to push)")
+    // Same rule as --remote, same reason: a flag that names HOW to push is meaningless without a push,
+    // and accepting it silently would report success for tags that never left the machine.
+    if tags && !push then fail("--tags needs --push (it names what else to push)")
 
     val repo = os.Path(repoStr, os.pwd)
     if !os.exists(repo / ".git") && run(repo, "rev-parse", "--git-dir")._1 != 0 then fail(s"not a git repo: $repo")
@@ -162,24 +176,57 @@ object Git {
     val sha = run(repo, "rev-parse", "--short", "HEAD")._2
     println(s"committed $sha")
 
-    if push then pushTo(repo, remotes, Some(sha))
+    if push then pushTo(repo, remotes, Some(sha), tags)
 
   // Push to each named remote in turn, or to the branch's default upstream when none is named (the
   // pre-SM232 behaviour, kept so existing `--push` calls are unchanged). A multi-remote project — genscalator
   // mirrors to github + gitlab + coursegit — otherwise forces a bare `git -C <dir> push <remote>` per extra
   // remote, which is exactly the raw-git reflex this tool exists to retire. Fails on the FIRST bad remote so a
   // half-pushed set is reported, never silently swallowed. Still no --force: the safe subset is unchanged.
-  private def pushTo(repo: os.Path, remotes: Vector[String], sha: Option[String]): Unit =
+  private def pushTo(repo: os.Path, remotes: Vector[String], sha: Option[String], tags: Boolean = false): Unit =
     val what = sha.map(s => s" $s").getOrElse("")
     if remotes.isEmpty then
       val (pc, pout) = run(repo, "push")
       if pc != 0 then fail(s"git push failed:\n$pout")
       println(s"pushed$what")
+      if tags then pushTags(repo, None)
     else
       for r <- remotes do
         val (pc, pout) = run(repo, "push", r)
         if pc != 0 then fail(s"git push $r failed:\n$pout")
         println(s"pushed$what to $r")
+        if tags then pushTags(repo, Some(r))
+
+  /** Push tags as a SEPARATE invocation, and say which ones went.
+    *
+    * WHY --tags and not --follow-tags. The instinct is --follow-tags, which sends only ANNOTATED tags
+    * reachable from what was just pushed, so a caller cannot sling unrelated local scratch tags at a
+    * remote. That instinct is wrong here, and checking beats reasoning: this repo's own tags are
+    * MIXED — v0.1.0..v0.7.0 annotated, v0.8.0/v0.9.0/v0.9.1 lightweight, v0.9.2 annotated again
+    * (`git for-each-ref --format='%(objecttype)' refs/tags`, 2026-07-27). --follow-tags would push
+    * some releases and silently skip others, reporting success either way, and which ones it skipped
+    * would depend on how that release happened to be tagged months ago. --tags is PREDICTABLE.
+    *
+    * WHY a second invocation. `git push <remote> --tags` pushes tags and NOT the branch, so it cannot
+    * replace the branch push above; it has to follow it.
+    *
+    * Still no --force, under any flag combination. Without it git REFUSES to move an existing remote
+    * tag, which is the property that keeps a tag push inside the safe subset: it can only ADD refs.
+    * Tag CREATION (`git tag -a`) is deliberately NOT in scope here — this sends tags that already
+    * exist locally, and inventing them is a separate decision with its own naming and signing
+    * questions.
+    */
+  private def pushTags(repo: os.Path, remote: Option[String]): Unit =
+    val args = remote.toList :+ "--tags"
+    val (tc, tout) = run(repo, ("push" :: args)*)
+    val where = remote.map(r => s" to $r").getOrElse("")
+    if tc != 0 then fail(s"git push${where.replace(" to ", " ")} --tags failed:\n$tout")
+    // Report what git actually did rather than a bare "ok": "Everything up-to-date" and "pushed two new
+    // tags" are different outcomes, and a caller who tagged and saw silence would assume the first.
+    val detail = tout.trim
+    if detail.isEmpty || detail.contains("Everything up-to-date")
+    then println(s"tags$where: already up to date")
+    else println(s"tags$where:\n$detail")
 
   private def repoArg(args: List[String], cmd: String): os.Path =
     args match
@@ -193,25 +240,31 @@ object Git {
     * (an argv path that silently drops a remote would push less than the caller believes). Returns the repo
     * (absent = the caller reports the missing --repo) and the remotes in the order given, duplicates kept:
     * naming a remote twice is harmless, and de-duplicating would hide a typo in the caller's mirror set. */
-  def parsePushArgs(args: List[String]): (Option[String], Vector[String]) =
+  /** Parsed `push` arguments. A case class, not a tuple: the flag set is open-ended now, and a tuple
+    * that grew a slot would silently re-bind every existing destructuring rather than failing to
+    * compile. */
+  final case class PushArgs(repo: Option[String], remotes: Vector[String], tags: Boolean)
+
+  def parsePushArgs(args: List[String]): PushArgs =
     @annotation.tailrec
-    def go(r: List[String], repo: Option[String], remotes: Vector[String]): (Option[String], Vector[String]) =
+    def go(r: List[String], repo: Option[String], remotes: Vector[String], tags: Boolean): PushArgs =
       r match
-        case Nil                  => (repo, remotes)
-        case "--repo" :: v :: t   => go(t, Some(v), remotes)
-        case "--remote" :: v :: t => go(t, repo, remotes :+ v)
-        case other :: _           => fail(s"unexpected/incomplete argument '$other' (usage: tt git push --repo <dir> [--remote <name>]...)")
-    go(args, None, Vector.empty)
+        case Nil                  => PushArgs(repo, remotes, tags)
+        case "--repo" :: v :: t   => go(t, Some(v), remotes, tags)
+        case "--remote" :: v :: t => go(t, repo, remotes :+ v, tags)
+        case "--tags" :: t        => go(t, repo, remotes, true)
+        case other :: _           => fail(s"unexpected/incomplete argument '$other' (usage: tt git push --repo <dir> [--remote <name>]... [--tags])")
+    go(args, None, Vector.empty, false)
 
   // push as a standalone verb: send ALREADY-committed work to one or more remotes without making a commit
   // first. Before this the only way to reach a push was `tt git commit --push`, so syncing a second remote
   // meant raw git.
   private def push(args: List[String]): Unit =
-    val (repoOpt, remotes) = parsePushArgs(args)
-    val repoStr = repoOpt.getOrElse(fail("--repo required"))
+    val parsed = parsePushArgs(args)
+    val repoStr = parsed.repo.getOrElse(fail("--repo required"))
     val repo = os.Path(repoStr, os.pwd)
     if !os.exists(repo / ".git") && run(repo, "rev-parse", "--git-dir")._1 != 0 then fail(s"not a git repo: $repo")
-    pushTo(repo, remotes, None)
+    pushTo(repo, parsed.remotes, None, parsed.tags)
 
   // pull is FF-ONLY: it never creates a merge commit, runs merge hooks, or leaves conflicts — it either
   // fast-forwards or fails loudly, so it stays inside the safe (non-destructive, non-interactive) subset.

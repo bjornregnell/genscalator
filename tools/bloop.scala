@@ -1,4 +1,5 @@
 //> using file project.scala
+//> using file lib.scala
 //> using jvm 21
 //> using file boxstats.scala
 
@@ -65,17 +66,30 @@ object BloopTool:
   /** Roots too broad to accept, whatever the caller intended. A recursive delete rooted at the home
     * directory or a two-segment path is a mistake even when every individual removal is "only a cache". */
   def unsafeRoot(root: String): Option[String] =
-    val trimmed = if root.length > 1 && root.endsWith("/") then root.dropRight(1) else root
-    val segments = trimmed.split("/").filter(_.nonEmpty).length
-    val home = Option(System.getProperty("user.home")).getOrElse("")
+    // ⚠ NORMALISE SEPARATORS FIRST, and note WHY the order matters. Every guard below reasons about
+    // "/" segments. Accepting Windows paths without normalising would widen what gets IN while leaving
+    // the guards blind to it: `C:\Users\bjornr` splits to ONE segment on "/", so the too-shallow and
+    // home-directory refusals would both miss the exact case they exist for, on a verb that deletes.
+    // Normalising is what keeps the guard as strong on Windows as it is on POSIX.
+    val slashed  = root.replace('\\', '/')
+    val trimmed  = if slashed.length > 1 && slashed.endsWith("/") then slashed.dropRight(1) else slashed
+    val parts    = trimmed.split("/").filter(_.nonEmpty).toList
+    val segments = parts.length
+    val home     = Option(System.getProperty("user.home")).getOrElse("").replace('\\', '/')
     // A home directory is refused whoever owns it, not just the caller's: /home/<name> is somebody's
     // whole life, and a recursive sweep rooted there is a mistake regardless of which account it is.
-    val isSomeonesHome = trimmed.split("/").filter(_.nonEmpty).toList match
-      case "home" :: _ :: Nil => true
-      case _                  => false
-    if !trimmed.startsWith("/") then Some(s"--dir must be an ABSOLUTE path (got '$root')")
+    // Both spellings count: /home/<name> on POSIX, C:/Users/<name> on Windows.
+    val isSomeonesHome = parts match
+      case "home" :: _ :: Nil                              => true
+      case drive :: "Users" :: _ :: Nil if drive.endsWith(":") => true
+      case _                                               => false
+    // A bare drive root ("C:") is the Windows spelling of "/" and is refused for the same reason.
+    val isDriveRoot = parts match
+      case drive :: Nil if drive.endsWith(":") => true
+      case _                                   => false
+    if !agenttools.Lib.isAbsolutePath(root) then Some(s"--dir must be an ABSOLUTE path (got '$root')")
     else if trimmed.contains("/..") then Some(s"--dir must not contain '..' (got '$root')")
-    else if trimmed == "/" then Some("refusing to walk the filesystem root")
+    else if trimmed == "/" || isDriveRoot then Some("refusing to walk the filesystem root")
     else if trimmed == home || isSomeonesHome then
       Some(s"refusing to walk a whole home directory ('$root') — name a project dir inside it")
     else if segments < 2 then Some(s"--dir '$root' is too shallow — name a project dir, not a top-level one")

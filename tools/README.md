@@ -473,8 +473,8 @@ tt forge release-create bjornregnell/genscalator v0.8.0 --name "v0.8.0: …" --b
 
 ### git — safe git helper: commit-from-file, ff-pull, fetch, read-only show (EFFECTFUL, non-destructive)
 ```
-git commit --repo <dir> --message-file <path> [--add <pathspec>]... [--push] [--remote <name>]...
-git push   --repo <dir> [--remote <name>]...             # push committed work, no new commit
+git commit --repo <dir> --message-file <path> [--add <pathspec>]... [--push] [--remote <name>]... [--tags]
+git push   --repo <dir> [--remote <name>]... [--tags]    # push committed work, no new commit
 git pull   --repo <dir>                                  # fast-forward ONLY: FFs or fails loudly
 git fetch  --repo <dir>                                  # remote-tracking refs only, never the working tree
 git show   --repo <dir> --ref <ref> --path <relpath> [--out <file>]   # READ-ONLY: file content at a ref
@@ -497,12 +497,21 @@ that gap was forcing the raw-git reflex this tool exists to retire. It fails on 
 rejects, so a half-pushed set is reported rather than swallowed, and **`push`** is the same thing standalone,
 for syncing a mirror without making a commit. A branch with no upstream in a single-remote repo is refused by
 git itself (`push.default simple`) — set it once with `git push -u`; the tool never sets one behind your back.
+**`--tags`** (with `--push`) sends tags too, as a second push per remote, closing the loop with
+`tt forge release-create`: that verb needs a tag that already exists on the remote, so the toolbox could
+create a release against a tag it had no way to push. It is **`--tags`, not `--follow-tags`** — the tempting
+choice sends only ANNOTATED tags, and this project's own are mixed (`v0.8.0`/`v0.9.0`/`v0.9.1` lightweight,
+`v0.9.2` annotated), so it would publish some releases and silently skip others depending on how each was
+tagged. Still never `--force`: without it git REFUSES to move an existing remote tag, so a tag push can only
+ADD refs, which is what keeps it inside the safe subset. Off unless asked — an ordinary push never publishes
+a tag as a side effect. Creating tags (`git tag -a`) stays out of scope: this sends tags you already made.
 Examples:
 ```
 tt git commit --repo /abs/repo --message-file tmp/msg.txt --add src/app.scala --push
 tt git commit --repo /abs/repo --message-file tmp/msg.txt --add tools --push \
   --remote origin --remote gitlab --remote coursegit          # one unit, three mirrors
 tt git push --repo /abs/repo --remote gitlab --remote coursegit   # sync mirrors, no new commit
+tt git push --repo /abs/repo --remote origin --remote codeberg --tags   # branch + tags, both mirrors
 tt git show --repo /abs/repo --ref main --path src/app.scala
 tt git show --repo /abs/repo --ref v1.2 --path README.md --out tmp/old-readme.md
 tt git log  --repo /abs/repo --co-author Claude --limit 20    # commits with a Claude co-author trailer
