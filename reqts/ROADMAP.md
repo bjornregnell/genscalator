@@ -51,7 +51,12 @@ Tentative plan after alpha release.
 
 ### v0.11.0 - beta
 
-- Substrate re-architecture
+* Feature: SubstrateReArchitecture has
+  * Gist: avoid substrate strain
+  * Why: a substrate that grows without bound is eagerly read at every cold start, which raises context fill and with it the risk of rot. Measured 2026-07-27: PIN-BOARD.md is 4300 lines, up from the 4096 that first surfaced the strain, and MEMORY.md has already hit its read limit once.
+  * Spec: Split genscalator/work into a HUMAN side (readable, no markdown blobs) and an AGENT side written in a restricted markdown subset that gives handles to hold. Then move history OFF the eagerly-read surface, into work/agent/history and work/human/history, so the warp ember reads only a bounded CURRENT surface and history becomes opt-in. Keep a hard size bound on the current surface, plus an explicit pointer saying how to reach history, so that lazy does not become lost.
+  * Comment: Decided direction 2026-07-19. This was originally one item covering both issue intake and the substrate itself; the intake half shipped as reqts/issues, and this is what remains. Bounding the cold-start read by construction rather than by discipline also removes a separately-observed failure where a session hangs while eagerly reading an unbounded surface, so two problems close together. Deliberately NOT alpha-blocking, but worth pulling forward if the drag starts to hurt.
+
 - investigation of hangs and regressions from captured data, to harden tt tools
 - the meta-minion study, can/should we offer a meta-minion skill for continuos echt-checking in TokSpend mode or similar?  
 - bloop upstream work (can we contribute with reproducable bloop memory hogging; we have native builds but when contributors work on tools it fall back to slow scala-cli/bloop mem-hogging stuff)
