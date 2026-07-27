@@ -36,6 +36,19 @@ class CliSuite extends munit.FunSuite:
     * suite is written with \n. Done at the ONE capture point rather than in 243 assertions. */
   private def normalizeEol(s: String): String = s.replace("\r\n", "\n").trim
 
+  /** Escape a string for embedding inside a JSON string literal in a test payload.
+    *
+    * ⚠ Needed for PATHS. A Windows temp path is `C:\Users\RUNNER~1\AppData\...`, and dropping that raw
+    * into `"transcript_path":"..."` produces JSON whose `\U`, `\A`, `\T` are not valid escapes. The
+    * failure is quiet rather than loud: the surrounding object still parses, so the statusline renders
+    * its other segments and only the PATH comes out mangled — the transcript file is never found and
+    * the rot?/tired? segment simply does not appear, which reads as a broken tool rather than a broken
+    * fixture.
+    *
+    * Same shape as `runStdin` above: the test was constructing input in a way the real caller never
+    * does — Claude Code builds this JSON with an encoder, so production was never affected. */
+  private def jsonEscape(s: String): String = s.replace("\\", "\\\\").replace("\"", "\\\"")
+
   /** Run a tool as a subprocess (scala-cli, or the native binary in parity mode); return (exit, stdout, stderr). */
   private def run(tool: String, args: String*): (Int, String, String) =
     val r = nativeBin match
@@ -1926,7 +1939,7 @@ class CliSuite extends munit.FunSuite:
     val tmp = java.nio.file.Files.createTempFile("tt-transcript", ".jsonl")
     java.nio.file.Files.writeString(tmp,
       """{"type":"assistant","isSidechain":false,"message":{"usage":{"output_tokens":1500000}}}""" + "\n")
-    val json = s"""{"context_window":{"used_percentage":20},"transcript_path":"${tmp.toString}"}"""
+    val json = s"""{"context_window":{"used_percentage":20},"transcript_path":"${jsonEscape(tmp.toString)}"}"""
     val (code, out, _) = runStdin("statusline", json, "--now-ms", "1000000000000")
     assertEquals(code, 0)
     assert(clue(out).contains("rot?↑1.5M")) // since-warp == cumulative here (no compact_boundary in this transcript)
@@ -1940,7 +1953,7 @@ class CliSuite extends munit.FunSuite:
     val tmp = java.nio.file.Files.createTempFile("tt-transcript2", ".jsonl")
     java.nio.file.Files.writeString(tmp,
       """{"type":"user","message":{"content":"aaaaaaaaaa"}}""" + "\n") // 10 human chars
-    val json = s"""{"transcript_path":"${tmp.toString}"}"""
+    val json = s"""{"transcript_path":"${jsonEscape(tmp.toString)}"}"""
     val (_, off, _) = runStdin("statusline", json, "--now-ms", "1000000000000")
     assert(!clue(off).contains("tired?")) // off without a threshold
     val (_, on, _) = runStdin("statusline", json, "--now-ms", "1000000000000", "--tired-chars", "5")
