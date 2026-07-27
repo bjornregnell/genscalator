@@ -89,4 +89,19 @@ object Dispatch {
   }
 }
 
-@main def dispatchTypedTools(args: String*): Unit = Dispatch.dispatch(args)
+/** ⚠ Force UTF-8 on the way OUT, before any tool prints. On Windows System.out follows the console
+  * code page, so `ö` went out as one cp1252 byte and `→` degraded to a literal `?` — mojibake in
+  * every tool that prints a non-ASCII glyph (the statusline legend, ascii diagrams, prd gists).
+  * Reading is already UTF-8 (JDK 18+ defaults file.encoding), so this is the whole of the fix.
+  *
+  * A deliberate EFFECT in a driver, not a library: the native binary cannot take a -D at run time,
+  * so the JVM path gets `javaOpt -Dstdout.encoding` from project.scala and the native path gets
+  * this. On Linux and macOS both are already UTF-8 and this changes nothing.
+  */
+private def forceUtf8Out(): Unit =
+  System.setOut(java.io.PrintStream(java.io.FileOutputStream(java.io.FileDescriptor.out), true, "UTF-8"))
+  System.setErr(java.io.PrintStream(java.io.FileOutputStream(java.io.FileDescriptor.err), true, "UTF-8"))
+
+@main def dispatchTypedTools(args: String*): Unit =
+  forceUtf8Out()
+  Dispatch.dispatch(args)

@@ -22,7 +22,7 @@ class SsgSelectionSuite extends munit.FunSuite:
       assert(os.exists(out / "a.html"), "a.html missing")
       assert(os.exists(out / "b.html"), "b.html missing")
       assert(os.read(out / "a.html").contains("alpha"))
-    finally os.remove.all(work)
+    finally TestFs.removeAllForce(work)
   }
 
   test("legacy arm: a single .md file source renders just that page") {
@@ -32,7 +32,7 @@ class SsgSelectionSuite extends munit.FunSuite:
       os.write(src, "# Only\n\nsolo\n")
       staticSiteGen(src.toString, out.toString)
       assert(os.exists(out / "only.html"), "only.html missing")
-    finally os.remove.all(work)
+    finally TestFs.removeAllForce(work)
   }
 
   test("list arm: --out <dir> renders exactly the listed files") {
@@ -45,7 +45,7 @@ class SsgSelectionSuite extends munit.FunSuite:
       staticSiteGen("--out", out.toString, (src / "a.md").toString)
       assert(os.exists(out / "a.html"), "a.html missing")
       assert(!os.exists(out / "b.html"), "b.html should not be rendered when not listed")
-    finally os.remove.all(work)
+    finally TestFs.removeAllForce(work)
   }
 
   test("status arm: --status selects by current status and always keeps index") {
@@ -60,7 +60,7 @@ class SsgSelectionSuite extends munit.FunSuite:
       assert(os.exists(out / "live.html"), "published post missing")
       assert(os.exists(out / "index.html"), "index is always rendered")
       assert(!os.exists(out / "wip.html"), "drafted post must not be rendered")
-    finally os.remove.all(work)
+    finally TestFs.removeAllForce(work)
   }
 
   test("set render prunes a stale page the current set no longer contains") {
@@ -73,5 +73,5 @@ class SsgSelectionSuite extends munit.FunSuite:
       staticSiteGen("--out", out.toString, (src / "a.md").toString)
       assert(os.exists(out / "a.html"), "a.html missing")
       assert(!os.exists(out / "gone.html"), "stale page should be pruned from a set render")
-    finally os.remove.all(work)
+    finally TestFs.removeAllForce(work)
   }

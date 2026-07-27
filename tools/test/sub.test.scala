@@ -67,7 +67,7 @@ class SubToolSuite extends munit.FunSuite:
       assertEquals(os.read(f), "colour\n", "preview must not write")
       substituteText("file", f.toString, "colour", "color", "--write")
       assertEquals(os.read(f), "color\n", "--write must apply the change")
-    finally os.remove.all(work)
+    finally TestFs.removeAllForce(work)
   }
 
   test("tree mode rewrites only the named extensions, and only with --write") {
@@ -85,5 +85,5 @@ class SubToolSuite extends munit.FunSuite:
       assertEquals(os.read(work / "a.scala"), "val v = 2\n")
       assertEquals(os.read(work / "b.md"), "val v = 1\n", "other extensions untouched")
       assertEquals(os.read(work / "target" / "c.scala"), "val v = 1\n", "build dir untouched")
-    finally os.remove.all(work)
+    finally TestFs.removeAllForce(work)
   }

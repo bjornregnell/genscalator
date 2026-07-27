@@ -49,13 +49,23 @@ object SbtTool {
       |
       |Exit: passes sbt's exit code through (0 = success); 2 = usage / bad directory.""".stripMargin
 
+  /** Absolute in the POSIX sense ("/..."), the Windows drive sense ("C:\..." or "C:/..."), or UNC
+    * ("\\server\share"). Deliberately NOT java.nio Paths.get(_).isAbsolute: that answer is
+    * host-dependent in BOTH directions — on Windows "/x" is not absolute, on Linux "C:\x" is not —
+    * and `plan` is a PURE function whose tests must give the same answer on every host. Before this,
+    * the check was startsWith("/"), so every Windows path was refused (found by the first CI run
+    * that ever reached the suite on Windows: "--dir must be an ABSOLUTE path (got 'C:\Users\...')").
+    */
+  def isAbsolutePath(p: String): Boolean =
+    p.startsWith("/") || p.startsWith("""\\""") || p.matches("""^[A-Za-z]:[/\\].*""")
+
   /** PURE: validate args and build the sbt argv. No filesystem, no process. */
   def plan(args: Seq[String]): Either[String, Plan] =
     args.toList match
       case Nil            => Left("usage: tt sbt --dir <abs-dir> [sbt-args...]  (tt sbt --help)")
       case "--dir" :: Nil => Left("--dir needs an absolute directory argument")
       case "--dir" :: dir :: rest =>
-        if !dir.startsWith("/") then
+        if !isAbsolutePath(dir) then
           Left(s"--dir must be an ABSOLUTE path (got '$dir'); the working directory is explicit by design")
         else Right(Plan(dir, "sbt" +: rest))
       case first :: _ =>

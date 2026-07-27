@@ -26,15 +26,25 @@ class CliSuite extends munit.FunSuite:
   private lazy val nativeBin: Option[os.Path] =
     sys.props.get("tt.native.bin").map(os.Path(_, os.pwd)).filter(os.exists)
 
+  // ⚠ Windows: PATHEXT resolution is a SHELL feature and Java's ProcessBuilder does not do it, so a
+  // bare "scala-cli" dies with CreateProcess error=2. The launcher installs scala-cli.bat. Same defect
+  // deploy/buildnative.sc hit; this suite is simply the next process boundary to reach it.
+  private val isWindows = System.getProperty("os.name", "").toLowerCase.contains("win")
+  private val ScalaCli  = if isWindows then "scala-cli.bat" else "scala-cli"
+
+  /** Normalise captured subprocess output: Windows println emits \r\n, and every expectation in this
+    * suite is written with \n. Done at the ONE capture point rather than in 243 assertions. */
+  private def normalizeEol(s: String): String = s.replace("\r\n", "\n").trim
+
   /** Run a tool as a subprocess (scala-cli, or the native binary in parity mode); return (exit, stdout, stderr). */
   private def run(tool: String, args: String*): (Int, String, String) =
     val r = nativeBin match
       case Some(bin) =>
         os.proc(bin.toString, tool, args).call(check = false, stdout = os.Pipe, stderr = os.Pipe)
       case None =>
-        os.proc("scala-cli", "run", (toolsDir / s"$tool.scala").toString, "--", args)
+        os.proc(ScalaCli, "run", (toolsDir / s"$tool.scala").toString, "--", args)
           .call(check = false, stdout = os.Pipe, stderr = os.Pipe)
-    (r.exitCode, r.out.text().trim, r.err.text().trim)
+    (r.exitCode, normalizeEol(r.out.text()), normalizeEol(r.err.text()))
 
   // Announce the resolved tools dir ONCE, and fail fast on a stale/partial one. The ember records a
   // 6-file copy resolved via cwd walk-up that produced ~123 phantom failures; this turns that whole
@@ -85,7 +95,7 @@ class CliSuite extends munit.FunSuite:
       val (_, out, _) = run("text", "grepr", d.toString, ".scala", "target")
       assert(clue(out).contains("hit.scala"))
       assert(!clue(out).contains("skip.txt"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   // --- doc ---
   test("doc: prints a doc verbatim by name (tries .txt/.md)") {
@@ -95,7 +105,7 @@ class CliSuite extends munit.FunSuite:
       val (code, out, _) = run("doc", "--docs", d.toString, "hello")
       assertEquals(code, 0)
       assertEquals(out, "line one\nline two")
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("doc: bare (no name) lists md/txt docs, skips others") {
     val d = os.temp.dir()
@@ -108,7 +118,7 @@ class CliSuite extends munit.FunSuite:
       assert(clue(out).contains("a.md"))
       assert(clue(out).contains("b.txt"))
       assert(!clue(out).contains("skip.log"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("doc: unknown name exits 2 with a message") {
     val d = os.temp.dir()
@@ -116,7 +126,7 @@ class CliSuite extends munit.FunSuite:
       val (code, _, err) = run("doc", "--docs", d.toString, "nope")
       assertEquals(code, 2)
       assert(clue(err).contains("no such doc"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("doc: rejects a traversal / path name") {
     val d = os.temp.dir()
@@ -124,7 +134,7 @@ class CliSuite extends munit.FunSuite:
       val (code, _, err) = run("doc", "--docs", d.toString, "../secret")
       assertEquals(code, 2)
       assert(clue(err).contains("invalid"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
 
   // --- mode (declared joint state-of-mind) ---
@@ -138,7 +148,7 @@ class CliSuite extends munit.FunSuite:
       val (code, out, _) = run("mode", "--file", f)
       assertEquals(code, 0)
       assertEquals(out, "hot-harvest\ntoken-spend")
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("mode: rm removes one label; clear empties") {
     val d = os.temp.dir()
@@ -152,7 +162,7 @@ class CliSuite extends munit.FunSuite:
       run("mode", "--file", f, "clear")
       val (_, out2, _) = run("mode", "--file", f)
       assertEquals(out2, "(no active modes)")
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("mode: invalid label (spaces) exits 2") {
     val d = os.temp.dir()
@@ -160,7 +170,7 @@ class CliSuite extends munit.FunSuite:
       val (code, _, err) = run("mode", "--file", (d / "modes").toString, "add", "has space")
       assertEquals(code, 2)
       assert(clue(err).contains("invalid label"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
 
   // --- statusline mode line ---
@@ -174,7 +184,7 @@ class CliSuite extends munit.FunSuite:
       assert(clue(out).contains("gs mode set"))
       assert(clue(out).contains("hot-harvest"))
       assert(!clue(out).contains(" & ")) // one mode -> no separator
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("statusline: no --mode-line means no mode line") {
     val (code, out, _) = run("statusline", "{}")
@@ -212,7 +222,7 @@ class CliSuite extends munit.FunSuite:
       val (_, _, err) = run("text", "grepr", d.toString, ".scala", "alpha\\|beta") // grep-BRE `\|`
       assert(clue(err).contains("grep-BRE"))
       assert(clue(err).contains("Java regex"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("text count reads UTF-8 (Swedish å/ä/ö not mangled) — regression for the latin1 bug") {
     val f = os.temp(contents = "Björn\nRegnell\n", suffix = ".txt")
@@ -239,7 +249,7 @@ class CliSuite extends munit.FunSuite:
       os.write(d / "c.txt", "z")
       val (_, out, _) = run("files", d.toString, ".scala", "--count")
       assert(clue(out).contains("2 files"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("files with content regex: filters by body match") {
     val d = os.temp.dir()
@@ -249,7 +259,7 @@ class CliSuite extends munit.FunSuite:
       val (_, out, _) = run("files", d.toString, ".scala", "NEEDLE")
       assert(clue(out).contains("1 files"))
       assert(clue(out).contains("yes.scala"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
 
   // --- find (typed safe enumeration, read-half) ---
@@ -270,7 +280,7 @@ class CliSuite extends munit.FunSuite:
       assert(!clue(out).contains("a.scala"))            // --count suppresses the path list
       val (_, out2, _) = run("find", d.toString, "--count")
       assert(clue(out2).contains("4 matches"))          // every regular file: a, b, c.txt, sub/deep
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("find --name: filters by filename glob") {
     val d = findFixture()
@@ -280,21 +290,21 @@ class CliSuite extends munit.FunSuite:
       assert(clue(out).contains("deep.scala"))
       val (_, out2, _) = run("find", d.toString, "--name", "a.scala", "--count")
       assert(clue(out2).contains("1 matches"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("find --type d: lists directories including the root") {
     val d = findFixture()
     try
       val (_, out, _) = run("find", d.toString, "--type", "d", "--count")
       assert(clue(out).contains("2 matches"))           // root + sub
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("find --max-depth: bounds the descent") {
     val d = findFixture()
     try
       val (_, out, _) = run("find", d.toString, "--ext", ".scala", "--max-depth", "1", "--count")
       assert(clue(out).contains("2 matches"))           // sub/deep.scala (depth 2) is excluded
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("find on a nonexistent root: exit 2, no such path") {
     val d = findFixture()
@@ -302,7 +312,7 @@ class CliSuite extends munit.FunSuite:
       val (code, _, err) = run("find", (d / "nope").toString)
       assertEquals(code, 2)
       assert(clue(err).contains("no such path"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("find --help: elaborate help, exit 0") {
     val (code, out, _) = run("find", "--help")
@@ -321,7 +331,7 @@ class CliSuite extends munit.FunSuite:
       assert(clue(out).contains("1 matches"))         // only visible.scala (hidden dir + dotfile skipped)
       val (_, outAll, _) = run("find", d.toString, "--ext", ".scala", "--all", "--count")
       assert(clue(outAll).contains("3 matches"))       // + .hidden/buried.scala + .dotfile.scala
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
 
   // --- which (typed "what is this command?"; born from the command -v guard stall 2026-07-24) ---
@@ -344,7 +354,7 @@ class CliSuite extends munit.FunSuite:
       assertEquals(code, 0)
       assert(clue(out).contains("script"))
       assert(clue(out).contains("#!/usr/bin/env bash"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("which --help: elaborate help, exit 0") {
     val (code, out, _) = run("which", "--help")
@@ -366,7 +376,7 @@ class CliSuite extends munit.FunSuite:
       java.nio.file.Files.createSymbolicLink((d / "link").toNIO, java.nio.file.Path.of("real"))
       assertEquals(WhichTool.chainOf((d / "link").toNIO).map(_.toString), Vector((d / "real").toString))
       assertEquals(WhichTool.chainOf((d / "real").toNIO), Vector.empty) // not a link -> no hops
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("WhichTool.human: size formatting") {
     assertEquals(WhichTool.human(512L), "512B")
@@ -387,7 +397,7 @@ class CliSuite extends munit.FunSuite:
       assert(clue(out2).contains("f5"))
       assert(clue(out2).contains("~84%"))
       assert(clue(out2).contains("3d left"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("limit: update keeps the anchor; first set without --resets-in exits 2") {
     val d = os.temp.dir()
@@ -401,7 +411,7 @@ class CliSuite extends munit.FunSuite:
       assertEquals(cUpd, 0)
       assert(clue(out).contains("~91%"))
       assert(clue(out).contains("1d left"))          // anchor kept (2d minus epsilon rounds to 1d)
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("limit: rm removes; bad duration and bad label exit 2") {
     val d = os.temp.dir()
@@ -413,7 +423,7 @@ class CliSuite extends munit.FunSuite:
       assert(clue(run("limit", "--file", f)._2).contains("no declared limits"))
       assertEquals(run("limit", "--file", f, "set", "f5", "84", "--resets-in", "soon")._1, 2)
       assertEquals(run("limit", "--file", f, "set", "F5!", "84", "--resets-in", "1d")._1, 2)
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("LimitStore.durToMs: parses compound durations, rejects junk (PURE)") {
     assertEquals(LimitStore.durToMs("3d20h"), Some(3L * 86400_000L + 20L * 3600_000L))
@@ -437,7 +447,7 @@ class CliSuite extends munit.FunSuite:
       assert(clue(out).contains("f5·~84%·3d"))       // ~ marks HUMAN-DECLARED; countdown live
       assert(clue(out).contains("38;5;203mf5"))      // 84% >= warn 80 -> the declared cluster reds too
       assert(!clue(out).contains("dead"))            // past its declared reset -> auto-dropped, cannot lie
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
 
   // --- skillcheck (SM070: expected-skill manifest from disk; warn on the silent skill outage) ---
@@ -457,7 +467,7 @@ class CliSuite extends munit.FunSuite:
       assert(clue(out).contains("alpha"))
       assert(clue(out).contains("beta"))
       assert(!clue(out).contains("notaskill"))            // no SKILL.md → not an expected skill
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("skillcheck --active with all expected present: OK, exit 0") {
     val d = skillsFixture()
@@ -465,7 +475,7 @@ class CliSuite extends munit.FunSuite:
       val (code, out, _) = run("skillcheck", "--skills", d.toString, "--active", "alpha", "beta")
       assertEquals(code, 0)
       assert(clue(out).contains("OK: all 2 expected"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("skillcheck --active reports an unexpected active skill as info, still exit 0") {
     val d = skillsFixture()
@@ -474,7 +484,7 @@ class CliSuite extends munit.FunSuite:
       assertEquals(code, 0)
       assert(clue(out).contains("active but not in the genscalator set"))
       assert(clue(out).contains("gamma"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("skillcheck --active missing one: WARNING naming the missing skill, exit 1") {
     val d = skillsFixture()
@@ -483,7 +493,7 @@ class CliSuite extends munit.FunSuite:
       assertEquals(code, 1)                               // the silent-outage signal, made loud
       assert(clue(err).contains("NOT active"))
       assert(clue(err).contains("beta"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("skillcheck --active with NONE active (the /skills said 'No skills found' case): exit 1, all missing") {
     val d = skillsFixture()
@@ -492,7 +502,7 @@ class CliSuite extends munit.FunSuite:
       assertEquals(code, 1)
       assert(clue(err).contains("alpha"))
       assert(clue(err).contains("beta"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("skillcheck --help: elaborate help, exit 0") {
     val (code, out, _) = run("skillcheck", "--help")
@@ -545,7 +555,7 @@ class CliSuite extends munit.FunSuite:
       assert(clue(out).contains("### Release v2.0.0 — later"))
       assert(!clue(out).contains("oldTool"))               // PAST is excluded
       assert(!clue(out).contains("some detail about foo"))  // Spec lines are not gists
-    finally os.remove.all(f / os.up)
+    finally TestFs.removeAllForce(f / os.up)
   }
   test("prd find: case-insensitive line match tagged with the nearest heading") {
     val f = prdFixture()
@@ -554,7 +564,7 @@ class CliSuite extends munit.FunSuite:
       assertEquals(code, 0)
       assert(clue(out).contains("does baz"))
       assert(clue(out).contains("Release v2.0.0"))          // heading context
-    finally os.remove.all(f / os.up)
+    finally TestFs.removeAllForce(f / os.up)
   }
   test("prd find: no match exits 1") {
     val f = prdFixture()
@@ -562,7 +572,7 @@ class CliSuite extends munit.FunSuite:
       val (code, out, _) = run("prd", "--prd", f.toString, "find", "zzznotthere")
       assertEquals(code, 1)
       assert(clue(out).contains("no line matches"))
-    finally os.remove.all(f / os.up)
+    finally TestFs.removeAllForce(f / os.up)
   }
   test("prd show: prints the whole PRD verbatim") {
     val f = prdFixture()
@@ -572,7 +582,7 @@ class CliSuite extends munit.FunSuite:
       assert(clue(out).contains("## FUTURE"))
       assert(clue(out).contains("## PAST"))
       assert(clue(out).contains("shipped already"))
-    finally os.remove.all(f / os.up)
+    finally TestFs.removeAllForce(f / os.up)
   }
   test("prd: unknown verb and bare invocation error with exit 2") {
     val f = prdFixture()
@@ -583,7 +593,7 @@ class CliSuite extends munit.FunSuite:
       val (c2, _, e2) = run("prd", "--prd", f.toString)
       assertEquals(c2, 2)
       assert(clue(e2).contains("usage"))
-    finally os.remove.all(f / os.up)
+    finally TestFs.removeAllForce(f / os.up)
   }
   test("prd --help: elaborate help, exit 0") {
     val (code, out, _) = run("prd", "--help")
@@ -607,9 +617,9 @@ class CliSuite extends munit.FunSuite:
 
   /** Run a tool subprocess with an explicit cwd (newtool writes tools/<name>.scala RELATIVE to cwd). */
   private def runIn(cwd: os.Path, tool: String, args: String*): (Int, String, String) =
-    val r = os.proc("scala-cli", "run", (toolsDir / s"$tool.scala").toString, "--", args)
+    val r = os.proc(ScalaCli, "run", (toolsDir / s"$tool.scala").toString, "--", args)
       .call(cwd = cwd, check = false, stdout = os.Pipe, stderr = os.Pipe)
-    (r.exitCode, r.out.text().trim, r.err.text().trim)
+    (r.exitCode, normalizeEol(r.out.text()), normalizeEol(r.err.text()))
 
   // --- parsereqt (reqT-lang parse + lint over the vendored parser) ---
   // Fixtures use verified reqT-lang syntax; behaviors were confirmed against `tt parsereqt` before encoding here.
@@ -707,7 +717,7 @@ class CliSuite extends munit.FunSuite:
       assert(os.exists(made))
       assert(clue(os.read(made)).contains("mytool"))
       assert(!clue(os.read(made)).contains("__NAME__")) // placeholder substituted
-    finally os.remove.all(work)
+    finally TestFs.removeAllForce(work)
   }
   test("newtool: refuses to overwrite an existing tool file (exit 1)") {
     val work = os.temp.dir()
@@ -718,7 +728,7 @@ class CliSuite extends munit.FunSuite:
       val (code, _, err) = runIn(work, "newtool", "dup")
       assertEquals(code, 1)
       assert(clue(err).contains("refusing"))
-    finally os.remove.all(work)
+    finally TestFs.removeAllForce(work)
   }
   test("newtool: rejects a non-identifier tool name") {
     val work = os.temp.dir()
@@ -728,7 +738,7 @@ class CliSuite extends munit.FunSuite:
       val (code, _, err) = runIn(work, "newtool", "9bad")
       assert(clue(code) != 0)
       assert(clue(err).contains("bad tool name"))
-    finally os.remove.all(work)
+    finally TestFs.removeAllForce(work)
   }
 
   // --- guardcheck (flags guard-trip / banned-reflex patterns; the "prosthetic perception" of guard feedback) ---
@@ -867,7 +877,7 @@ class CliSuite extends munit.FunSuite:
       val (code, out, _) = run("git", "show", "--repo", d.toString, "--ref", "HEAD", "--path", "f.txt")
       assertEquals(code, 0)
       assertEquals(out, "hello at ref") // run() trims; exactness incl. newline is the --out test below
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("git show: --out writes the byte-exact content to the given file") {
     val d = os.temp.dir()
@@ -879,7 +889,7 @@ class CliSuite extends munit.FunSuite:
       assertEquals(code, 0)
       assert(clue(out).contains("wrote"))
       assertEquals(os.read(outFile), "# Title\n\nBjörn läser åäö.\n") // byte-exact incl. trailing newline + UTF-8
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("git show: a bad ref exits non-zero with a clear error (no empty success)") {
     val d = os.temp.dir()
@@ -889,7 +899,7 @@ class CliSuite extends munit.FunSuite:
       assert(clue(code) != 0)
       assertEquals(out, "") // nothing on stdout — never a partial/empty success
       assert(clue(err).contains("nosuchref"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("git show: a bad path exits non-zero and does not create the --out file") {
     val d = os.temp.dir()
@@ -901,7 +911,7 @@ class CliSuite extends munit.FunSuite:
       assert(clue(code) != 0)
       assert(clue(err).contains("missing.txt"))
       assert(!os.exists(outFile))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("git show: missing required flags exit non-zero with guidance") {
     val d = os.temp.dir()
@@ -910,7 +920,7 @@ class CliSuite extends munit.FunSuite:
       val (code, _, err) = run("git", "show", "--repo", d.toString, "--ref", "HEAD") // no --path
       assert(clue(code) != 0)
       assert(clue(err).contains("--path"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("git --help mentions the show subcommand") {
     val (code, out, _) = run("git", "--help")
@@ -943,7 +953,7 @@ class CliSuite extends munit.FunSuite:
       assert(clue(out).contains("test@example.org"))
       assert(clue(out).contains("\t")) // tab-separated columns
       assert(clue(out).contains("=== 3 commit(s)"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("git log --grep filters by commit message") {
     val d = os.temp.dir()
@@ -954,7 +964,7 @@ class CliSuite extends munit.FunSuite:
       assert(clue(out).contains("fix beta"))
       assert(!clue(out).contains("add alpha"))
       assert(clue(out).contains("=== 1 commit(s)"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("git log --co-author matches the Co-Authored-By trailer") {
     val d = os.temp.dir()
@@ -964,7 +974,7 @@ class CliSuite extends munit.FunSuite:
       assertEquals(code, 0)
       assert(clue(out).contains("fix beta")) // the only commit carrying the trailer
       assert(clue(out).contains("=== 1 commit(s)"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("git log: multiple message-patterns must ALL match (--all-match)") {
     val d = os.temp.dir()
@@ -978,7 +988,7 @@ class CliSuite extends munit.FunSuite:
       // AND semantics: a message-pattern with no co-author match yields nothing (OR would have matched 'add alpha')
       val (_, out2, _) = run("git", "log", "--repo", d.toString, "--grep", "alpha", "--co-author", "Robot")
       assert(clue(out2).contains("(no matching commits)"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("git log --author filters by author") {
     val d = os.temp.dir()
@@ -988,7 +998,7 @@ class CliSuite extends munit.FunSuite:
       assertEquals(code, 0)
       assert(clue(out).contains("add gamma"))
       assert(!clue(out).contains("add alpha"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("git log --limit caps output and flags the cap in the count line") {
     val d = os.temp.dir()
@@ -998,7 +1008,7 @@ class CliSuite extends munit.FunSuite:
       assertEquals(code, 0)
       assertEquals(clue(out).linesIterator.count(_.contains("\t")), 1) // exactly one commit row
       assert(clue(out).contains("hit --limit 1"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("git log: a bad --limit exits 2 before running git") {
     val d = os.temp.dir()
@@ -1006,7 +1016,7 @@ class CliSuite extends munit.FunSuite:
       gitLogFixture(d)
       assertEquals(run("git", "log", "--repo", d.toString, "--limit", "0")._1, 2)
       assertEquals(run("git", "log", "--repo", d.toString, "--limit", "x")._1, 2)
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("git log: no --repo exits 2") {
     assertEquals(run("git", "log")._1, 2)
@@ -1219,7 +1229,7 @@ class CliSuite extends munit.FunSuite:
       assertEquals(code, 1)
       assert(clue(out).contains("nope.md"))
       assert(!clue(out).contains("-> b.md"), "a resolving link must not be reported")
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("links check: a clean tree exits 0") {
     val d = os.temp.dir()
@@ -1229,7 +1239,7 @@ class CliSuite extends munit.FunSuite:
       val (code, out, _) = run("links", "check", d.toString)
       assertEquals(clue(code), 0)
       assert(clue(out).contains("0 dangling"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("links reach: --unreachable names what no root points at") {
     val d = os.temp.dir()
@@ -1242,7 +1252,7 @@ class CliSuite extends munit.FunSuite:
       assertEquals(clue(code), 0)
       assert(clue(out).contains("orphan.md"))
       assert(!clue(out).contains("c.md"), "a prose citation must keep a file OUT of the move list")
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("links reach: a --leaf is kept itself but stops propagating what it merely mentions") {
     // The 2026-07-26 case in miniature: `archive.md` is a frozen record that MENTIONS `pinned.md`.
@@ -1262,7 +1272,7 @@ class CliSuite extends munit.FunSuite:
       assertEquals(clue(c1), 0)
       assert(clue(out1).contains("pinned.md"), "with --leaf the mention no longer keeps it")
       assert(!clue(out1).contains("archive.md"), "the leaf itself is still KEPT, not orphaned")
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
 
   // REGRESSION PIN (2026-07-25). The NOTE tier was built that morning for guard-invisible tool-choice
@@ -1346,7 +1356,7 @@ class CliSuite extends munit.FunSuite:
       assert(clue(out).contains("2026-07-06T16:48:35.656Z"))
       assert(clue(out).contains("[user]"))
       assert(clue(out).contains("abc12345"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("wr stamp: --user skips non-user entries (exit 1 when only an assistant matches)") {
     val d = os.temp.dir()
@@ -1355,7 +1365,7 @@ class CliSuite extends munit.FunSuite:
       val (code, out, _) = run("wr", "stamp", d.toString, "noted", "--user")
       assertEquals(code, 1)
       assert(clue(out).toLowerCase.contains("no match"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("wr stamp: sorts matches earliest-first") {
     val d = os.temp.dir()
@@ -1365,7 +1375,7 @@ class CliSuite extends munit.FunSuite:
         "{\"type\":\"user\",\"timestamp\":\"2026-07-06T09:00:00Z\",\"message\":{\"content\":\"alpha marker\"}}\n")
       val (_, out, _) = run("wr", "stamp", d.toString, "marker")
       assert(clue(out).indexOf("09:00:00") < clue(out).indexOf("10:00:00"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("wr stamp --human keeps a genuine human-typed string line") {
     val d = os.temp.dir()
@@ -1376,7 +1386,7 @@ class CliSuite extends munit.FunSuite:
       assertEquals(code, 0)
       assert(clue(out).contains("2026-07-06T09:00:00Z"))
       assert(clue(out).contains("[user]"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("wr stamp --human DROPS a tool_result echo (type==user but has toolUseResult) that --user would keep") {
     val d = os.temp.dir()
@@ -1390,7 +1400,7 @@ class CliSuite extends munit.FunSuite:
       assert(clue(outH.toLowerCase).contains("no match"))
       // the coarse --user WOULD keep it (the very footgun --human fixes)
       assertEquals(run("wr", "stamp", d.toString, "ECHOMARK", "--user")._1, 0)
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("wr stamp --human drops isMeta chrome and <command-name> wrappers") {
     val d = os.temp.dir()
@@ -1400,7 +1410,7 @@ class CliSuite extends munit.FunSuite:
           "{\"type\":\"user\",\"timestamp\":\"2026-07-06T09:01:00Z\",\"message\":{\"role\":\"user\",\"content\":\"<command-name>/context</command-name> CMDMARK\"}}\n")
       assertEquals(run("wr", "stamp", d.toString, "METAMARK", "--human")._1, 1) // meta dropped
       assertEquals(run("wr", "stamp", d.toString, "CMDMARK", "--human")._1, 1)  // command wrapper dropped
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("wr stamp --human keeps an array text block (image+text style paste)") {
     val d = os.temp.dir()
@@ -1410,7 +1420,7 @@ class CliSuite extends munit.FunSuite:
       val (code, out, _) = run("wr", "stamp", d.toString, "ARRTEXTMARK", "--human")
       assertEquals(code, 0)
       assert(clue(out).contains("[user]"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("wr with no args prints usage and exits 2") {
     val (code, out, _) = run("wr")
@@ -1478,7 +1488,7 @@ class CliSuite extends munit.FunSuite:
       assert(clue(out).contains("wrote auto/opaque sequence diagram"))
       assert(os.exists(outp))
       assert(clue(os.read(outp)).contains("<svg"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("svg with no args prints usage and exits 2") {
     val (code, out, _) = run("svg")
@@ -1496,7 +1506,7 @@ class CliSuite extends munit.FunSuite:
       assertEquals(code, 0)
       assert(clue(out).contains("2 lifelines")) // A and B only, not a phantom "B:"
       assert(clue(os.read(outp)).contains(":Z cue tired")) // the colon-led text still renders
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("svg --dark emits a fixed dark palette and no media query") {
     val f = os.temp(contents = "A -> B: x\n", suffix = ".txt")
@@ -1583,7 +1593,7 @@ class CliSuite extends munit.FunSuite:
       assertEquals(code, 0)
       assert(clue(out).contains("wrote"))
       assert(os.exists(outp))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("ascii with no args prints usage and exits 2") {
     val (code, out, _) = run("ascii")
@@ -1642,7 +1652,7 @@ class CliSuite extends munit.FunSuite:
       assert(clue(out).contains("wrote svg via graphviz dot"))
       assert(os.exists(outp))
       assert(clue(os.size(outp)) > 0L)
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
 
   // --- statusline (format the CC statusLine stdin JSON into one line; SM039) ---
@@ -2029,7 +2039,7 @@ class CliSuite extends munit.FunSuite:
       val (code, _, err) = run("sbt", "--dir", d.toString)
       assertEquals(code, 2)
       assert(err.contains("not an sbt build"), clue(err))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
 
   // --- env (SM231: the typed printenv replacement, born from a real token leak 2026-07-25) ---
@@ -2056,16 +2066,16 @@ class CliSuite extends munit.FunSuite:
   test("env get: a credential-named variable is redacted (the leak this tool exists to prevent)") {
     // set a fake secret in the child process env, then read it back through the tool
     val fake = "gho_1111111111111111111111111111111111"
-    val r = os.proc("scala-cli", "run", (toolsDir / "env.scala").toString, "--", "get", "FAKE_GITHUB_TOKEN")
+    val r = os.proc(ScalaCli, "run", (toolsDir / "env.scala").toString, "--", "get", "FAKE_GITHUB_TOKEN")
       .call(check = false, stdout = os.Pipe, stderr = os.Pipe, env = Map("FAKE_GITHUB_TOKEN" -> fake))
     assertEquals(r.exitCode, 0)
-    val out = r.out.text().trim
+    val out = normalizeEol(r.out.text())
     assert(!out.contains("1111111111111111111111111111111111"), s"VALUE LEAKED: $out")
     assert(out.contains("redacted"), out)
   }
   test("env get --reveal: shows the value, but only when asked for that one variable") {
     val fake = "gho_2222222222222222222222222222222222"
-    val r = os.proc("scala-cli", "run", (toolsDir / "env.scala").toString, "--", "get", "FAKE_GITHUB_TOKEN", "--reveal")
+    val r = os.proc(ScalaCli, "run", (toolsDir / "env.scala").toString, "--", "get", "FAKE_GITHUB_TOKEN", "--reveal")
       .call(check = false, stdout = os.Pipe, stderr = os.Pipe, env = Map("FAKE_GITHUB_TOKEN" -> fake))
     assert(r.out.text().contains(fake), "an explicit --reveal must actually reveal")
   }
@@ -2129,7 +2139,7 @@ class CliSuite extends munit.FunSuite:
       val kept = os.read.lines(out)
       assertEquals(kept.head, "key\tvalue")          // header preserved
       assert(kept.exists(_.startsWith("hej")), kept.mkString("|"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("tsv drop: refuses an existing --out, and refuses to run with no filter") {
     val d = os.temp.dir()
@@ -2140,7 +2150,7 @@ class CliSuite extends munit.FunSuite:
       assertEquals(c1, 2); assert(e1.contains("already exists"), clue(e1))
       val (c2, _, e2) = run("tsv", "drop", src.toString, "--out", (d / "new.tsv").toString)
       assertEquals(c2, 2); assert(e2.contains("filter"), clue(e2))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("tsv: unknown column, unknown verb and a missing file all exit 2") {
     val f = os.temp(contents = tsvFixture, suffix = ".tsv")
@@ -2180,7 +2190,7 @@ class CliSuite extends munit.FunSuite:
       assert(out.contains("would remove"), clue(out))
       assert(out.contains("DRY RUN"), clue(out))
       assert(os.exists(cache), "dry run must not delete anything")
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("bloop clean: reports plainly when there is nothing to reclaim") {
     val d = os.temp.dir()
@@ -2188,7 +2198,7 @@ class CliSuite extends munit.FunSuite:
       val (code, out, _) = run("bloop", "clean", "--dir", d.toString)
       assertEquals(code, 0)
       assert(out.contains("no .scala-build"), clue(out))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("bloop clean: refuses a relative dir, the filesystem root, and a too-shallow dir") {
     assertEquals(run("bloop", "clean", "--dir", "relative")._1, 2)
@@ -2221,7 +2231,7 @@ class CliSuite extends munit.FunSuite:
       assert(clue(out).contains("AKIA")) // redacted prefix shown
       assert(!clue(out).contains("AKIAIOSFODNN7EXAMPLE")) // the RAW secret is NEVER printed
       assert(!clue(out).contains("your-placeholder")) // low-entropy placeholder gated out
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("harden egress: a clean dir reports 0 candidates at exit 0 (the word 'password' in prose is not a hit)") {
     val d = os.temp.dir()
@@ -2230,7 +2240,7 @@ class CliSuite extends munit.FunSuite:
       val (code, out, _) = run("harden", "egress", d.toString)
       assertEquals(code, 0)
       assert(clue(out).toLowerCase.contains("clean"))
-    finally os.remove.all(d)
+    finally TestFs.removeAllForce(d)
   }
   test("harden with no args prints usage and exits 2") {
     val (code, out, _) = run("harden")

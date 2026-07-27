@@ -31,7 +31,7 @@ class ServSuite extends munit.FunSuite:
       os.makeDir(root / "sub")
       os.write(root / "sub" / "index.html", "sub index")
       body(root, Path.of(root.toString))
-    finally os.remove.all(root)
+    finally TestFs.removeAllForce(root)
 
   test("resolveSafe serves a file, maps a directory to its index.html, and strips the query string") {
     withRoot { (osRoot, root) =>

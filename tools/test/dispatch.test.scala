@@ -39,10 +39,13 @@ class DispatchSuite extends munit.FunSuite:
   test("subprocess golden: text count through the single entry point") {
     val f = os.temp(contents = "foo\nbar\nfoo baz foo\n", suffix = ".txt")
     try
-      val r = os.proc("scala-cli", "run", toolsDir.toString,
+      // scala-cli.bat on Windows: ProcessBuilder does no PATHEXT resolution (see cli.test.scala).
+      val scalaCli = if System.getProperty("os.name", "").toLowerCase.contains("win")
+                     then "scala-cli.bat" else "scala-cli"
+      val r = os.proc(scalaCli, "run", toolsDir.toString,
           "--main-class", "dispatchTypedTools", "--", "text", "count", f.toString, "foo")
         .call(check = false, stdout = os.Pipe, stderr = os.Pipe)
       assertEquals(r.exitCode, 0)
-      assertEquals(r.out.text().trim, "3")
+      assertEquals(r.out.text().replace("\r\n", "\n").trim, "3")
     finally os.remove(f)
   }

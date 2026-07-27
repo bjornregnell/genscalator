@@ -57,7 +57,7 @@ class GitPushSuite extends munit.FunSuite:
       for bare <- Seq(alpha, beta) do
         val remoteHead = os.proc("git", "rev-parse", "main").call(cwd = bare).out.trim()
         assertEquals(remoteHead, local, s"$bare did not receive the commit")
-    finally os.remove.all(work)
+    finally TestFs.removeAllForce(work)
   }
 
   // The standalone verb exists so syncing a remote needs no new commit — the real shape it serves is an
@@ -94,5 +94,5 @@ class GitPushSuite extends munit.FunSuite:
       assertEquals(after, before, "push must not create a commit")
       assertEquals(os.proc("git", "rev-parse", "main").call(cwd = alpha).out.trim(),
                    os.proc("git", "rev-parse", "HEAD").call(cwd = repo).out.trim())
-    finally os.remove.all(work)
+    finally TestFs.removeAllForce(work)
   }
