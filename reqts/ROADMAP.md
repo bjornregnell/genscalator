@@ -107,6 +107,18 @@ Blocking:
   a hostile-entry test rather than a comment claiming it holds:** reject any entry whose RESOLVED
   target escapes the destination directory; reject absolute paths and Windows drive letters; reject
   symlink entries; and apply a stated overwrite policy rather than an accidental one.
+  🔨 **BUILT 2026-07-28, and the shape of the work was not what this item predicted.** `tt zip extract`
+  landed as forecast, but implementing the verb surfaced a dependency NEITHER this line nor DESIGN.md's
+  D7a saw: both halves it needs — download-and-verify, and extraction — lived inside OTHER TOOLS
+  (`tt forge`, `tt zip`), and tools depend on shared libs rather than on each other. So the real work was
+  two extractions into shared modules, `releaselib.scala` and `ziplib.scala`, before a line of the verb
+  could be written. Recorded as **D7c** in DESIGN.md. The payoff is that ZipSuite's 15 hostile-entry tests
+  now guard the code the self-updater actually runs, instead of one of two copies of it.
+  ⚠ **NOT YET RUN END TO END, and that is deliberate rather than unfinished.** A live run needs network
+  egress and replaces a real install, so it wants a human at the wheel — the same discipline D7b used.
+  What is verified: the full suite is green, and the pure parts are unit-tested (the asset glob, and the
+  rule that staging and retired must be SIBLINGS of the install). ⇒ **The remaining alpha work on this
+  item is one supervised live run**, not more code.
 - `gs native`, consent-gated provisioning, depends on the same.
 
 Also in scope for alpha:

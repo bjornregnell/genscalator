@@ -1,7 +1,11 @@
 //> using file project.scala
 //> using jvm 21
 //> using dep com.lihaoyi::os-lib:0.11.8
+//> using dep com.lihaoyi::requests:0.9.3
+//> using dep com.lihaoyi::ujson:4.4.3
 //> using file lib.scala
+//> using file releaselib.scala
+//> using file ziplib.scala
 
 // update — check whether the installed genscalator is BEHIND its git marketplace remote, and SUGGEST the
 // manual update steps. Two facts from Anthropic's docs shape this (see SM-K / blog 026):
@@ -15,10 +19,12 @@
 //     --brief   speak ONLY when a newer release is available (silent otherwise) — for `gs warm` to call
 //               behind a throttle, so warm gains update-awareness without becoming chatty.
 
-import agenttools.Lib
+import agenttools.{Lib, ReleaseLib, ZipLib}
 import scala.util.Try
 
 object Update:
+
+  private def die(msg: String): Nothing = { System.err.println(s"update: $msg"); sys.exit(2) }
   // The steps the human runs in Claude Code (the tool cannot drive the harness itself).
   private val ManualSteps =
     """  To update, run these in Claude Code:
@@ -56,8 +62,159 @@ object Update:
       case "--repo" :: v :: _ => Some(os.Path(v, os.pwd))
       case _                  => Lib.rootDir().map(r => os.Path(r.toAbsolutePath.normalize))
 
+  // ================================================================================================
+  // --native — replace the INSTALLED native toolbox with the latest published release.
+  //
+  // This is the sharpest verb in the toolbox: the file it replaces may be the very binary executing it.
+  // D7b settled how (reqts/DESIGN.md), and the answer needs no platform branch. Renaming a RUNNING
+  // executable is permitted on both families — on POSIX because rename unlinks the old inode while the
+  // running process keeps it, and on Windows because renaming a live image is allowed even though
+  // OVERWRITING it is not. So the swap is two renames, never a write-through:
+  //     move the current install aside, then move the staged one in.
+  // That claim was not taken on reasoning alone: RunningBinaryRenameSuite verified it on real Windows
+  // (CI run 30301424616, job 90095042530) with `0 ignored` read from the log, because a guarded test
+  // that SKIPS leaves the job green and proves nothing.
+  //
+  // PREVIEW BY DEFAULT, applying only with --write — the same contract as `tt sub`, `tt zip extract` and
+  // `tt forge release-delete`. Nothing is downloaded to a permanent place and nothing is moved without it.
+  // ================================================================================================
+
+  private val DefaultReleaseRepo = "bjornregnell/genscalator"
+
+  /** The asset pair for a platform — payload AND its sibling checksum — as one `*`-only glob, so the
+    * download cannot fetch the zip while silently missing the .sha256 that makes verification possible. */
+  def assetPattern(platform: String): String = s"genscalator-$platform.zip*"
+
+  /** Where the new tree is staged, and where the outgoing one is retired to.
+    *
+    * SIBLINGS of the install rather than children, and that is structural rather than stylistic: the swap
+    * renames the install directory itself, and a staging dir INSIDE the directory being renamed would move
+    * with it. Pure, so the naming is unit-testable without touching a filesystem. */
+  def swapPaths(home: os.Path, nowMs: Long): (staging: os.Path, retired: os.Path) =
+    val parent = home / os.up
+    (staging = parent / s"${home.last}-new-$nowMs", retired = parent / s"${home.last}-old-$nowMs")
+
+  /** The install to replace: an explicit --home, else GENSCALATOR_HOME, else ~/.genscalator.
+    *
+    * ⚠ Deliberately NOT `Lib.rootDir()`, which also falls back to a CONTRIBUTOR'S GIT CLONE via the cwd
+    * walk-up. That is right for the read-only verbs that share it and catastrophic here: this verb would
+    * cheerfully rename someone's working checkout aside and drop a release tree in its place. The guard
+    * below refuses a git checkout outright, because resolving to one is a mistake no message can undo. */
+  private def resolveHome(explicit: Option[String]): os.Path =
+    val home = explicit.map(os.Path(_, os.pwd))
+      .orElse(sys.env.get("GENSCALATOR_HOME").filter(_.trim.nonEmpty).map(s => os.Path(s.trim, os.pwd)))
+      .getOrElse(os.Path(System.getProperty("user.home")) / ".genscalator")
+    if os.exists(home / ".git") then die(
+      s"refusing: $home is a git checkout, not a binary install.\n" +
+        "  Update a checkout with git and rebuild from source; --native replaces an INSTALLED tree.\n" +
+        "  Pass --home <dir> or set GENSCALATOR_HOME to target a real install.")
+    home
+
+  /** The tag recorded inside an installed tree, as CI wrote it (see native-release.yml). */
+  private def installedVersion(home: os.Path): Option[String] =
+    Try(os.read(home / "VERSION.txt").trim).toOption.filter(_.nonEmpty)
+
+  private def nativeUpdate(args: List[String]): Unit =
+    def flagVal(name: String): Option[String] =
+      val i = args.indexOf(name)
+      if i >= 0 && i + 1 < args.size then Some(args(i + 1)) else None
+
+    val write = args.contains("--write")
+
+    // None is a REAL answer here and must not become a guess: Intel macOS and Windows-on-ARM publish no
+    // asset, and downloading a nearby platform's binary would install something that cannot run — worse
+    // than being told to build from source. See Lib.releasePlatform.
+    val platform = Lib
+      .releasePlatform(sys.props.getOrElse("os.name", ""), sys.props.getOrElse("os.arch", ""))
+      .getOrElse(die(
+        s"no published binary for this platform (${sys.props.getOrElse("os.name", "?")} " +
+          s"${sys.props.getOrElse("os.arch", "?")}).\n" +
+          "  Build from source instead — that is the supported route for the unproven platforms,\n" +
+          "  and it is documented rather than a workaround."))
+
+    val home  = resolveHome(flagVal("--home"))
+    val rl    = ReleaseLib.Client("update")
+    val (owner, repo) = rl.splitRepo(flagVal("--repo").getOrElse(DefaultReleaseRepo))
+    val dialect       = ReleaseLib.Dialect.GitHub
+    val base          = "https://github.com"
+
+    val (rel, tag) = flagVal("--tag") match
+      case Some(t) => (rl.findRelease(owner, repo, t, dialect, base), t)
+      case None    => rl.latestRelease(owner, repo, dialect, base)
+
+    val installed = installedVersion(home)
+    println(s"platform:  $platform")
+    println(s"install:   $home  (${installed.getOrElse("no VERSION.txt — not a genscalator install?")})")
+    println(s"available: $tag")
+    if installed.contains(tag) && flagVal("--tag").isEmpty then
+      println("already up to date; nothing to do.")
+      sys.exit(0)
+
+    // Staging lives beside the install so the swap is two renames. Everything below happens in staging
+    // until the very last step, so a failure at any point leaves the running install untouched.
+    val nowMs              = System.currentTimeMillis
+    val (staging, retired) = swapPaths(home, nowMs)
+    val dl                 = staging / "download"
+    val tree               = staging / "tree"
+
+    val got = rl.downloadAssets(rel, Some(assetPattern(platform)), dl, dialect, base, "update --native")
+    // INSIST on verification rather than reporting it: this writes an executable that will run as the
+    // user. verifyChecksums returns the count it actually checked, so "no sibling .sha256 was published"
+    // cannot pass as "verified" — which is precisely the confusion the SM241 Class-B rule exists to stop.
+    val verified = rl.verifyChecksums(got)
+    if verified < 1 then die(
+      "refusing: nothing was verified against a published .sha256, so the payload is unproven.\n" +
+        "  --native will not install bytes it cannot check.")
+
+    val zips = got.filter(_.last.endsWith(".zip"))
+    val zip  = if zips.sizeIs == 1 then zips.head else die(
+      s"expected exactly one .zip for $platform, got ${zips.size}: ${zips.map(_.last).mkString(", ")}")
+
+    // Every CRC32 validated before a single byte is unpacked: a sha256 proves the bytes arrived as sent,
+    // a CRC pass proves the archive is internally sound. Different questions, and a self-updater wants both.
+    val bad = ZipLib.failures(zip.toNIO)
+    if bad.nonEmpty then
+      bad.foreach((n, err) => println(s"FAILED  $n  $err"))
+      die(s"${bad.size} entry/entries failed to decompress; the archive is not sound")
+
+    val plan = Try(ZipLib.planExtraction(zip.toNIO, tree.toNIO)).fold(t => die(t.getMessage), identity)
+
+    if !write then
+      println(s"would install $tag over $home")
+      println(s"  ${plan.planned.size} file(s), ${plan.total} B, every CRC32 valid, $verified payload(s) sha256-verified")
+      println(s"  swap: $home -> $retired, then the staged tree -> $home  (two renames, no write-through)")
+      println("  re-run with --write to apply")
+      Try(os.remove.all(staging))
+      sys.exit(0)
+
+    // ExecGlob: java.util.zip restores no permission bits, so without this the installed launcher exits
+    // 126 on its first use — the exact wall a tester hits following the documented install path.
+    ZipLib.extract(zip.toNIO, tree.toNIO, plan, Some("bin/*"))
+
+    // THE SWAP. Two renames, in this order, so the window in which no install exists is one syscall wide.
+    val hadInstall = os.exists(home)
+    if hadInstall then os.move(home, retired, atomicMove = true)
+    Try(os.move(tree, home, atomicMove = true)).fold(
+      t =>
+        // Put it back rather than leaving the user with nothing: this is the one failure that would
+        // otherwise remove a working toolbox and replace it with an error message.
+        if hadInstall then Try(os.move(retired, home, atomicMove = true))
+        die(s"the swap failed (${t.getMessage}); the previous install was restored"),
+      identity)
+
+    println(s"installed $tag -> $home")
+    if hadInstall then
+      // Best-effort, and its failure is cosmetic: the tree is already replaced. On Windows a leftover
+      // directory whose files are open cannot be removed until the next start, which is the only genuinely
+      // Windows-shaped residue of this design.
+      if Try(os.remove.all(retired)).isFailure then
+        println(s"  note: could not remove the previous install at $retired — remove it when convenient")
+    Try(os.remove.all(staging))
+    println("  run `tt --version` (or any verb) to confirm; the binary you just replaced kept running.")
+
   def dispatch(args: List[String]): Unit =
     if args.contains("--help") || args.contains("-h") then { println(Help); sys.exit(0) }
+    if args.contains("--native") then { nativeUpdate(args); sys.exit(0) }
     // --throttle <hours>: only actually check once per window (stamp-file gated); implies --brief and a short
     // fetch timeout, so `gs warm` gains update-awareness without ever hanging or nagging.
     val throttleHours: Option[Double] =
@@ -135,6 +292,24 @@ object Update:
       |                      without hanging or nagging
       |
       |Exit is 0 in all normal cases (an informational check). Degrades gracefully when offline, when
-      |there is no upstream branch, or when genscalator is not a git checkout.""".stripMargin
+      |there is no upstream branch, or when genscalator is not a git checkout.
+      |
+      |  tt update --native [--home <dir>] [--repo <owner/repo>] [--tag <tag>] [--write]
+      |                      replace an INSTALLED native toolbox with the latest published release.
+      |
+      |PREVIEWS by default like `tt sub` and `tt zip extract`; --write applies. Downloads the asset for
+      |THIS platform, verifies its published sha256, validates every CRC32 in the archive, unpacks to a
+      |staging dir beside the install, and only then swaps — by renaming the old install aside and the new
+      |one in. Two renames, never a write-through: replacing a RUNNING executable by overwriting it can
+      |corrupt the live process on POSIX and is refused outright on Windows, while RENAMING one is
+      |permitted on both. One code path, no platform branch (D7b, verified on Windows CI).
+      |
+      |It REFUSES rather than guesses in three places, each of which would otherwise brick an install:
+      |a platform with no published binary (build from source — the documented route), a --home that is a
+      |git checkout rather than a binary install, and an archive whose payload had no published .sha256
+      |to check it against.
+      |
+      |--home defaults to GENSCALATOR_HOME, then ~/.genscalator. Deliberately NOT the repo self-locate the
+      |other verbs use, which can resolve to a contributor's git clone.""".stripMargin
 
 @main def checkGenscalatorUpdate(args: String*): Unit = Update.dispatch(args.toList)

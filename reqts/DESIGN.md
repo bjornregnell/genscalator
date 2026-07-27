@@ -314,3 +314,34 @@ afterwards, because the design it selected depends on its claim remaining true.
 **Why both were written down rather than chosen unilaterally.** A wrong answer here does not fail a test,
 it bricks an install. Both questions wanted the human who owns the distribution decision, and one of them
 wanted a Windows machine — or, as it turned out, one verified fact instead of a machine.
+
+## D7c - the SECOND shared module D7a did not see coming
+
+**Status: DECIDED and BUILT 2026-07-28, under the rule BR restated that day ("tools depend on lib and not
+on each other").** D7a scoped one shared module, `releaselib.scala`, for download-and-verify. Implementing
+it surfaced a sibling immediately: `tt update --native` must also UNPACK what it downloaded, and the
+extractor — including the whole zip-slip containment guard — lived inside `tt zip`, a TOOL. So the same
+argument applied a second time, to code that is if anything more dangerous.
+
+⇒ **`ziplib.scala`**, carrying `entriesOf`, `failures`, `resolveEntry`, `realParentInside`, the zip-bomb
+cap, and extraction split into `planExtraction` (adjudicate every entry, throw if any fails) and `extract`
+(write an adjudicated plan). `zip.scala` keeps flags, preview rendering and exit codes, and forwards.
+
+**The property that makes this safe rather than merely tidy:** ZipSuite's hostile-entry tests were written
+against `Zip.resolveEntry` and still call it — through a forwarder — so they now guard the code
+`tt update --native` actually runs. Had `update` grown its own extractor instead, those 15 tests would
+have kept passing while covering only one of the two copies. That is the SM247 sibling-miss, and it is the
+specific failure this split prevents.
+
+⚠ **It deliberately does NOT live in `lib.scala`**, even though it is JDK-only and would compile there.
+`lib.scala` is included by every pure text tool; putting the toolbox's most destructive capability in the
+file that `tt text` includes would widen a lot of blast radii to save a file. Same reasoning as
+`releaselib.scala`, arrived at from the opposite direction (that one was excluded from `lib.scala` for its
+DEPS, this one for its BLAST RADIUS).
+
+⇒ **D7's step 3 is now implemented** — `tt update --native` exists, previews by default, and applies with
+`--write`. ⚠ **It has NOT been run end to end.** Doing so requires network egress and would replace a real
+install, so the first live run wants a human present; that is the same discipline D7b used rather than an
+oversight. What IS verified: the toolbox suite is green with the pure parts unit-tested (the asset glob,
+and the rule that staging and retired must be SIBLINGS of the install — a staging dir inside the directory
+being renamed would move with it and the second rename would target a path that no longer exists).
