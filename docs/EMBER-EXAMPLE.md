@@ -1,5 +1,25 @@
 # EMBER-EXAMPLE: a real warp ember, verbatim
 
+> **Status: dated specimen, captured 2026-07-19. FROZEN BY DESIGN — do not update it.**
+> **Audience:** anyone reading [blog post 030](../media/blog/030-what-is-a-good-warp-ember.md), which is
+> itself a **draft** awaiting BR's revoice, plus anyone adopting
+> [`EMBER-TEMPLATE.md`](EMBER-TEMPLATE.md) and wanting to see a real one first.
+>
+> **This is an OLD example and it already lags current practice.** Since it was captured: the artifact was
+> renamed *baton* → *warp ember* (so the banner below still says BATON); the live ember moved to `EMBER.md`
+> at the work repo's root; and the template gained rule 7, *one carrier, one path*, after a stale duplicate
+> injected an expired authorization into a fresh session. Read it as **evidence of what an ember looked
+> like on that date**, not as a model to copy.
+>
+> **Why it is not simply refreshed.** A specimen is evidence. Editing it to match today would destroy the
+> thing that makes it worth publishing at all — that it is a real artifact that really worked, unretouched.
+> Same reason its private pin identifiers stay (see the redaction note below), and the same reason the raw
+> research log is append-only. **If this stops representing current practice well enough, the fix is to
+> capture a NEWER specimen beside it and point post 030 at that — never to rewrite this one.**
+>
+> **Revisit trigger:** when post 030 is revoiced, decide whether this is still the right exhibit. That is a
+> choice about *which* specimen to show, not a licence to alter *this* one.
+
 This is a real specimen of the **warp ember** artifact from the genscalator exit+resume dance: a
 short file the outgoing agent writes just before session exit, and the incoming agent reads at cold
 start. An ember is deliberately a *pointer to durable truth* (committed files, memory, the pin
