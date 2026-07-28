@@ -38,7 +38,7 @@ look, which reflexes to re-install, and what NOT to start doing on its own.
 
 ## The specimen that worked
 
-<img src="../media/img/baton-example1.png" alt="Terminal screenshot: the fresh agent's session opening on the real warp ember - the pointer-not-truth header and the anti-regression checklist" width="900">
+<img src="../img/baton-example1.png" alt="Terminal screenshot: the fresh agent's session opening on the real warp ember - the pointer-not-truth header and the anti-regression checklist" width="900">
 
 *Above: a real warp ember, exactly as a fresh agent received it after a machine reboot - from before
 the rename, so its banner still says "baton". First the warning that it is a pointer, not the truth;
