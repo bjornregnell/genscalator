@@ -18,7 +18,7 @@
 //       blog/                         <- media/blog (published + deployed only)
 //       img/                          <- media/img
 //       graphical-profile/            <- media/graphical-profile
-//       docs/api/                     <- scaladoc (see NOT YET WIRED, below)
+//       api/                          <- scaladoc (see NOT YET WIRED, below)
 //
 // Why site-mirroring: a blog post's `../img/x.png` resolves because out/blog -> out/img is the real
 // on-site relationship; and the manual's sibling links (`foundations.html` from `index.html`) resolve
@@ -30,17 +30,21 @@
 // dangle here, and that is CORRECT rather than a regression: they are genuinely broken for a reader,
 // because those trees are not published. Fix them at the source, or point them at a public URL.
 //
-// ⚠⚠ NOT YET WIRED: `out/docs/api/`. Held deliberately; tracked as a JOINT task on the pin board.
+// ⚠⚠ NOT YET WIRED: `out/api/`. Held deliberately; tracked as a JOINT task on the pin board.
 //
-// The DESTINATION IS DECIDED (BR, 2026-07-28): the api site lives at
-// `https://bjornregnell.se/genscalator/docs/api`, so inside this tree it is `out/docs/api/` - the path
-// under `out/` is just the site URL with the domain and the `/genscalator` prefix removed, which is the
-// whole benefit of mirroring the site rather than the repo.
+// The DESTINATION IS DECIDED (BR, 2026-07-28): `https://bjornregnell.se/genscalator/api`, so inside this
+// tree it is `out/api/` - the path under `out/` is just the site URL with the domain and the
+// `/genscalator` prefix removed, which is the whole benefit of mirroring the site rather than the repo.
 //
-// ⚠ Note the asymmetry that creates, so nobody "fixes" it by accident: the MANUAL pages render flat at
-// the site root (`/genscalator/foundations.html`) while the api sits one level down under `docs/`. That
-// is what the URLs say today. If the manual should move under `docs/` too, that is a separate decision
-// about published URLs (and would break existing links), not a tidy-up to do in passing.
+// The alternative considered and REJECTED was `/genscalator/docs/api`, and the reason is worth keeping
+// because it will come up again: `/genscalator/docs/` would be a level containing NOTHING BUT `api`,
+// since the actual docs (foundations, tool-selection, getting-started) render flat at the site ROOT. A
+// reader who trims that URL gets a 404, and every other section here is exactly one level down
+// (`blog/`, `img/`, `graphical-profile/`), so `api/` matches the shape the site already has. It also
+// keeps the repo's internal `docs/` directory name out of public URLs.
+// ⇒ If the whole manual ever moves under `/genscalator/docs/`, move the api there IN THE SAME CHANGE -
+// doing the api first is what creates the orphaned level, and moving the manual later breaks every
+// existing inbound link.
 //
 // WHY THE WIRING IS HELD: `deployttapi.sc` generates into `docs/generated/api/` and CLEARS that
 // directory under a path-pinned safety check. Getting a directory-clearing path wrong is the one mistake
