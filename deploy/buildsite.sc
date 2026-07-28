@@ -18,7 +18,7 @@
 //       blog/                         <- media/blog (published + deployed only)
 //       img/                          <- media/img
 //       graphical-profile/            <- media/graphical-profile
-//       api/                          <- scaladoc (see NOT YET WIRED, below)
+//       docs/api/                     <- scaladoc (see NOT YET WIRED, below)
 //
 // Why site-mirroring: a blog post's `../img/x.png` resolves because out/blog -> out/img is the real
 // on-site relationship; and the manual's sibling links (`foundations.html` from `index.html`) resolve
@@ -30,10 +30,21 @@
 // dangle here, and that is CORRECT rather than a regression: they are genuinely broken for a reader,
 // because those trees are not published. Fix them at the source, or point them at a public URL.
 //
-// ⚠⚠ NOT YET WIRED: `out/api/`. `deployttapi.sc` currently generates the scaladoc into
-// `docs/generated/api/` and CLEARS that directory under a path-pinned safety check. Re-pointing it is
-// deliberately NOT done in this script, because getting a directory-clearing path wrong is the one
-// mistake here that destroys work. It wants its own change, with a dry-run, with BR present.
+// ⚠⚠ NOT YET WIRED: `out/docs/api/`. Held deliberately; tracked as a JOINT task on the pin board.
+//
+// The DESTINATION IS DECIDED (BR, 2026-07-28): the api site lives at
+// `https://bjornregnell.se/genscalator/docs/api`, so inside this tree it is `out/docs/api/` - the path
+// under `out/` is just the site URL with the domain and the `/genscalator` prefix removed, which is the
+// whole benefit of mirroring the site rather than the repo.
+//
+// ⚠ Note the asymmetry that creates, so nobody "fixes" it by accident: the MANUAL pages render flat at
+// the site root (`/genscalator/foundations.html`) while the api sits one level down under `docs/`. That
+// is what the URLs say today. If the manual should move under `docs/` too, that is a separate decision
+// about published URLs (and would break existing links), not a tidy-up to do in passing.
+//
+// WHY THE WIRING IS HELD: `deployttapi.sc` generates into `docs/generated/api/` and CLEARS that
+// directory under a path-pinned safety check. Getting a directory-clearing path wrong is the one mistake
+// in this area that destroys work, so it wants its own change and its own dry-run.
 // ⇒ Also found while writing this (deployttapi.sc:7): the api site has NEVER been uploaded. Its header
 // says "a LATER step will deploy to bjornregnell.se" and that step was never built. Unifying under one
 // push is what finally closes that.
