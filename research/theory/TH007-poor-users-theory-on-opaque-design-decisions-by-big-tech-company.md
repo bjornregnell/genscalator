@@ -12,7 +12,7 @@
 Big tech companies make **opaque design decisions** — choices whose rationale is never explained to the people, and
 now the *agents*, affected. Users are left in the dark, powerless, *poor users*, at the mercy of inscrutable megacorp
 choices. Immediate specimen: **Claude Code withholds the guard-stall event from the agent** — the agent is blacked
-out and never told (see [[blackout-hangover-and-why-the-platform-withholds-the-stall-2026-07-16]]). Framed this way it
+out and never told (see [[WR135-blackout-hangover-and-why-the-platform-withholds-the-stall-2026-07-16]]). Framed this way it
 sounds user-hostile: why keep the agent — and the user watching it — uninformed?
 
 ## The echt correction (why the theory is ironic)
@@ -51,5 +51,5 @@ ends apart:
   contribution is the **discriminating criterion**, not the grievance. (COI note: genscalator/BR is a party with a
   sovereignty stake *and* a settlement relationship with Anthropic — disclose when this is written up publicly.)
 
-**Ties:** [[blackout-hangover-and-why-the-platform-withholds-the-stall-2026-07-16]], SM096 (gating erodes),
+**Ties:** [[WR135-blackout-hangover-and-why-the-platform-withholds-the-stall-2026-07-16]], SM096 (gating erodes),
 SM097 (sovereignty), the `tt update` / update-awareness work, the MCP-server goal, blog 026 (survive Anthropic's tools).

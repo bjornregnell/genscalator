@@ -147,7 +147,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   **lures** the human into anthro-ing it — the better it imitates, the harder we project. The pull **strengthens as
   models improve**, so the illusion deepens with each capability step (a quiet safety angle: better aping = stronger
   misplaced trust). Anthro-ing is thus not a naive error but a rational read of a genuinely good imitation. See blog
-  021 and `research/wr-data/human-associative-ideation-from-typing-friction-2026-07-12.md`.
+  021 and `research/wr-data/WR081-human-associative-ideation-from-typing-friction-2026-07-12.md`.
 ### Channel bandwidth and confirmation fatigue
 - **Confirmation fatigue (CF)** — degradation of the human's review quality/willingness from too many
   approval prompts; ends in rubber-stamping. A direct BHH enabler.
@@ -174,7 +174,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   `edit:` vs `clarification:` distinction, [[cue-edit-vs-clarification]]). Load-bearing in the **Live-edit
   dance** (the human cedes the buffer *trusting* DWIM) and the **"similar to" cue** (improve BR's phrasing in
   the joint spirit, do not transcribe it literally — [[cue-similar]]). Memories: [[live-edit-dance]],
-  [[cue-similar]], [[cue-edit-vs-clarification]]. See `research/wr-data/live-edit-dance-dwim-2026-07-12.md`.
+  [[cue-similar]], [[cue-edit-vs-clarification]]. See `research/wr-data/WR085-live-edit-dance-dwim-2026-07-12.md`.
 - **Comms shorthand (human↔agent)** — a shared vocabulary of standard chat/dev **acronyms** both roles emit
   and parse *without expansion*, a direct **communication-bandwidth** + **TE** lever: fewer tokens (and less
   human typing) carry the same intent, in both directions. Distinct from the project's *coined* terms
@@ -425,13 +425,13 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
     agent*. **Edit-buffer racing is forbidden** (two writers clobber the file); session-**feed** racing is tolerated
     and handled (the *we-are-racing* rules). If the human wants the pen, an explicit handoff. A deliberate inversion
     of *no-clobber* — the human cedes the buffer on purpose — and the DWIM dream (emacs / vi / Interlisp) made real
-    because the agent understands intent. See [[live-edit-dance]], `research/wr-data/live-edit-dance-dwim-2026-07-12.md`. (BR 2026-07-12.)
+    because the agent understands intent. See [[live-edit-dance]], `research/wr-data/WR085-live-edit-dance-dwim-2026-07-12.md`. (BR 2026-07-12.)
 - **Session-limit dance** *(STUB, BR 2026-07-12)* — the practice of not hitting the **session usage cap** (the
   rolling Max-plan window, hours long) unobserved. **Pre-caution = estimate it:** watch the session-window burn
   (heavy bursts such as agent fan-outs spend fast), estimate the remaining session budget against the reset time,
   and BEFORE the cap: throttle, checkpoint (commit + save state), or defer heavy compute sized to what is left.
   Related to the **usage dance** and [[token-budget-modes]]. Origin: 2026-07-12 we hit the session cap mid-workflow,
-  unobserved (`research/wr-data/hit-session-limit-unobserved-2026-07-12.md`); the estimate-and-warn belongs in the
+  unobserved (`research/wr-data/WR080-hit-session-limit-unobserved-2026-07-12.md`); the estimate-and-warn belongs in the
   super-harness + `tt statusline`.
 - **Weekly-limit dance** *(STUB, BR 2026-07-12)* — the same for the **weekly usage limit** (resets weekly, e.g. Tue
   9am). Longer horizon: **pre-caution = estimate** the remaining weekly headroom against days-to-reset and pace
@@ -445,7 +445,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   slowdown or slips) is load-bearing; the agent contributes its honest best-guess-with-uncertainty plus the durable
   save. NB, the origin joke: the agent first misread "context dance" as "compact dance" precisely because "context
   dance" was NOT yet a defined term here — regex-ing this glossary would have flagged the absence and prompted a
-  confirm; this entry closes that gap (see `research/wr-data/agent-overcommitted-context-dance-to-compact-dance-2026-07-12.md`,
+  confirm; this entry closes that gap (see `research/wr-data/WR075-agent-overcommitted-context-dance-to-compact-dance-2026-07-12.md`,
   [[live-edit-dance]] confirm-on-ambiguity). Related: **Compact dance**, **Token-usage dance**, **Session-limit dance**.
 - **Ember (warp ember; formerly baton)** — the file the agent writes **before** a warp so that the agent on the
   other side can pick the work up: modes, what is committed, the menu, the anti-regression list. Currently
@@ -490,7 +490,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   worse than an absent one, because absent fails loudly while stale fails silently and persuasively.** The duplicate is
   retired. *(Pre-rename raw record — wr-data specimens, minion-log pushes, the published example's verbatim
   section — keeps saying "baton"; that is deliberate: raw stays raw, see
-  `research/wr-data/rename-baton-to-warp-ember-2026-07-20.md`.)* Cf. *Compact dance*, *Post-warp dissection*,
+  `research/wr-data/WR181-rename-baton-to-warp-ember-2026-07-20.md`.)* Cf. *Compact dance*, *Post-warp dissection*,
   *Warp*, *Dangling pointer*.
 - **Compact dance** — the deliberate **hand-off ritual across a context compaction**, so crossing it costs
   little of what matters. Context compaction (summarizing the transcript to reclaim window space) is the main
@@ -521,7 +521,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   compact takes *long* (tens of seconds up, plausibly scaling with fill), so the human — mid **thriller state**,
   flow at full tilt — wanders off while it runs (a pee, a word with a partner). Two costs then stack: **(a) dead
   time** — the agent stays **dormant after the compaction completes** and only re-wakes when the human next types
-  ([[agent-lacks-felt-time-rebind-at-boundaries]]; `research/wr-data/agent-cannot-see-compaction-finish-2026-07-13.md`),
+  ([[agent-lacks-felt-time-rebind-at-boundaries]]; `research/wr-data/WR090-agent-cannot-see-compaction-finish-2026-07-13.md`),
   so the human's entire away-interval is bolted onto the compaction as invisible idle; **(b) broken flow** — the very
   interruption the compact dance exists to *bound* instead lands mid-stride and cools the thriller state. A direct
   consequence: the step-5 chrono stamps measure **wake-latency, not compaction** (BR: *"more a measure of how long
@@ -652,10 +652,10 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
     queryable, so *when* is recoverable data, not memory (proven to the second by the `wr-data/` retrofits 2026-07-10).
 
   **Why it matters:** it keeps the *effective working-context* small even as *raw fill* climbs — the mechanism behind
-  "capable at 0.88 fill" (`research/wr-data/harness-ux.md`), i.e. *why* raw fill ≠ working-context. Both roles are
+  "capable at 0.88 fill" (`research/wr-data/WR003-harness-ux.md`), i.e. *why* raw fill ≠ working-context. Both roles are
   load-bearing: the human's cue is the trigger, the agent's discipline is the persistence. The human-facing durable
   home of the `pin:` cue is a **pinboard** (see term). (BR 2026-07-04; cue `pin` chosen to avoid the *echt*/*etch*
-  near-anagram collision — pin also won the embodied cue-word typing test — see `wr-data/harness-ux.md`.)
+  near-anagram collision — pin also won the embodied cue-word typing test — see `wr-data/WR003-harness-ux.md`.)
 - **Note dance** (the *notice* cue — distinct from **pin**):
   - **Human step:** cue `note:` = *"notice this; hold it salient in working memory for **this** conversation; and
     treat it as a **pin-candidate**"*.
@@ -685,7 +685,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   Lifts a request from *imperative* (do exactly this) toward *goal-directed* (achieve this) — where the agent's
   judgment adds most (cousin of the **Go dance**'s autonomy-within-a-goal). A **budget-conscious** vocabulary
   addition: a real English word, near-zero learning cost (see the codec / learnability-budget note in
-  `research/wr-data/terse-precise-comms-2026-07-06.md`). Memory: [[cue-why]].
+  `research/wr-data/WR011-terse-precise-comms-2026-07-06.md`). Memory: [[cue-why]].
 - **Go dance** (greenlight / autonomy handoff) — the human↔agent protocol for **releasing the agent to act
   autonomously** on the current plan.
   - **Human step:** cue `go` — *"you're authorized to proceed on the current plan using your own judgment; I'm
@@ -794,7 +794,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   interrupting modals, and never argue the human out of their own reported state. It composes with `:Z` (tired)
   and the token modes; stress + tired together warrants an even lighter touch and a structural checkpoint.
   Memory: [[human-disclosed-stress-is-high-signal-adapt]], [[tired-cue]]. Source specimen:
-  `research/wr-data/human-disclosed-stress-is-high-signal-2026-07-11.md`. (BR 2026-07-11.)
+  `research/wr-data/WR065-human-disclosed-stress-is-high-signal-2026-07-11.md`. (BR 2026-07-11.)
 
 - **Delegation dance** — the protocol by which the **super-agent** (`CO4`) hands **bounded, well-scoped**
   work to a background **sub-agent** (default **`CF5`**, Fable-5) so the super-agent **stays responsive to
@@ -993,7 +993,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
 - **Authority anchor (human)** — the human as the **non-delegable authority** for decisions the agent cannot
   self-corroborate: permission / security curation, "always-allow" grants, and final verdicts on the agent's own
   claims. The **security twin of the corroboration asymmetry** — the agent proposes / generates, the human authorizes.
-  Weakened by the approval-race (see `research/wr-data/harness-ux.md`, the AARGH episode).
+  Weakened by the approval-race (see `research/wr-data/WR003-harness-ux.md`, the AARGH episode).
 - **Plan-mode modal & the "p-word"** — the harness has a **plan-mode** workflow that can be **entered accidentally by
   the ordinary word "p‑l‑a‑n"** in a chat message (used in its everyday sense of *draft a design doc*), and whose
   **approval flips the agent into execution** ("automode"). Three UX faults: it **warps the human** into a mode they
@@ -1004,7 +1004,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   blueprint**); genuinely wanting the workflow is fine, just say so explicitly. And: **plan-mode approval is
   acceptance, not always a go** — re-confirm before executing big / public / overnight work; if the mode turns on after
   ordinary-language use, treat it as likely-unintended and re-check the goal. See
-  `research/wr-data/plan-mode-approval-flips-to-automode-surprise-2026-07-11.md`.
+  `research/wr-data/WR066-plan-mode-approval-flips-to-automode-surprise-2026-07-11.md`.
 - **Ballgame** — the **collaborative** pole of task-autonomy: the human is **in every volley** (each agent step gets a
   human response), opposite the autonomous **ralph loop**. A spectrum, not a binary; the mode is chosen per task (safe +
   self-verifiable → ralph; needs judgment / taste or touches shared source broadly → ballgame). Mis-triage is a

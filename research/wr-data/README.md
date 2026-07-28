@@ -12,7 +12,7 @@ tool so the prompt never needs to appear again. Background:
 
 **Scope has grown.** The CF / tool-candidate framing above was the *seed*; WR data now records the whole
 **human↔agent workflow** empirically — both parties' **psyche** (agent reflexes / introspection; human fear /
-fatigue), **harness & UX friction**, the **dances**, and tool candidates. See [`harness-ux.md`](harness-ux.md) (the
+fatigue), **harness & UX friction**, the **dances**, and tool candidates. See [`WR003-harness-ux.md`](WR003-harness-ux.md) (the
 session UX + psyche log) alongside the case-study files below.
 
 ## Tags
@@ -58,9 +58,9 @@ welcome (e.g. a TSV), so a `tt text freq` / `tt text cols` tool can later histog
 confirmation causes* — turning the WR log itself into input for prioritising which tool to build next.
 
 ## Files
-- [`introprog-autotranslate.md`](introprog-autotranslate.md) — WR entries from the introprog/autotranslate
+- [`WR001-introprog-autotranslate.md`](WR001-introprog-autotranslate.md) — WR entries from the introprog/autotranslate
   case study (its own working session writes here).
-- [`genscalator-self-dev.md`](genscalator-self-dev.md) — WR entries from developing genscalator itself
+- [`WR002-genscalator-self-dev.md`](WR002-genscalator-self-dev.md) — WR entries from developing genscalator itself
   (dogfooding: building the toolbox surfaces the friction it exists to remove).
 - **The permission-allowlist mirror MOVED OUT of this directory (2026-07-26).** It now lives in
   [`../settings-mirror/`](../settings-mirror/) as `settings.local.json` — one living file whose git history is

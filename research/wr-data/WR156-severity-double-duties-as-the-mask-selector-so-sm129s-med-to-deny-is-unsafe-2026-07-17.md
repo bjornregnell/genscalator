@@ -1,5 +1,7 @@
 # `severity` double-duties as the mask selector, so SM129's MED→deny green light is WRONG
 
+> **WR156** · episode 2026-07-17 · first commit 2026-07-17 · previously `severity-double-duties-as-the-mask-selector-so-sm129s-med-to-deny-is-unsafe-2026-07-17.md`
+
 **2026-07-17 11:16** (`tt chrono now`). Found SOLO, post-compact, ~20 min into a `tt stalls` (SM129) build.
 **Recorded BEFORE the meta-minion's push-2 verdict on the same question landed** — deliberately, so the two
 observations stay independent (RQ4: convergence only counts as evidence if neither observer saw the other first).
@@ -142,5 +144,5 @@ defect found in the NEW one, ~20 min after it was believed.)
 SM129 (the green light this corrects) · SM131 (`SECURITY-MODEL.md` §3.1 tighten-never-loosen; §3.2 a false positive
 is a BUG not a margin — **this is a false positive that DENIES**) · SM133 (the fan-out failure, here in our own
 tools) · SM134 #7 (the toolbox lint; `tt newtool --help` **throws** — found the same hour) ·
-`post-compact-is-highest-risk-window-for-mechanical-bash-regression-2026-07-16.md` ·
-`prohibition-does-not-arm-the-reflex-use-a-hex-escape-2026-07-16.md` (the note that produced the now-stale fix text).
+`WR144-post-compact-is-highest-risk-window-for-mechanical-bash-regression-2026-07-16.md` ·
+`WR145-prohibition-does-not-arm-the-reflex-use-a-hex-escape-2026-07-16.md` (the note that produced the now-stale fix text).

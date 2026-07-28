@@ -1,7 +1,7 @@
 # RT049 — The dilemma of delegation (delegation economics in agent orchestration)
 
 **Status:** open research topic, seeded 2026-07-07 (BR idea + the delegation dance, see
-`research/wr-data/delegation-dance-and-dilemma-2026-07-07.md`). Sibling of RT048 (substrate-content-power over
+`research/wr-data/WR015-delegation-dance-and-dilemma-2026-07-07.md`). Sibling of RT048 (substrate-content-power over
 tool-discipline), RT001 (context rot), and the indent-vs-braces edit-cost harness.
 
 ## The question

@@ -15,7 +15,7 @@ commands that never *need* the confirmation. Structure over willpower.
 **Why a skill and not just memories:** these are fine-grained learned overrides. Across a compaction they
 **regress to base-model defaults** (the model reaches for `grep`, for `| tail`) because memory files are not
 auto-injected into the fresh window — but a skill's description **is** re-listed every session. So this skill
-is the compaction-surviving carrier of the reflexes. ([[compaction-regresses-fine-grained-reflexes-2026-07-13]].)
+is the compaction-surviving carrier of the reflexes. ([[WR098-compaction-regresses-fine-grained-reflexes-2026-07-13]].)
 
 ## Delegating? The reflexes don't travel
 
@@ -24,8 +24,8 @@ spawning ANY sub-agent (cold worker or steerable minion), assemble the brief per
 `docs/EMBER-for-sub-agents.md` (print with `tt doc EMBER-for-sub-agents`): the `tt doc guard-clean-digest`
 output VERBATIM + the ember's delta rules VERBATIM + the task payload with an explicit tool-lane.
 Paraphrase loses sibling rules — measured, not hypothetical (wr-data
-`sm186-subagent-ember-ab-2026-07-21`: the unwarmed arm ran a raw `find`; three earlier specimens in
-`subagents-need-the-ember-s0-checklist`). For a LONG-lived minion the reflexes also fade within its own
+`WR189-sm186-subagent-ember-ab-2026-07-21`: the unwarmed arm ran a raw `find`; three earlier specimens in
+`WR212-subagents-need-the-ember-s0-checklist`). For a LONG-lived minion the reflexes also fade within its own
 window: instruct it to re-run `tt doc guard-clean-digest` at phase boundaries (self-re-warm), and when a
 steering message changes work lane (read-only → committing), paste the relevant digest block into that
 message.
@@ -38,7 +38,7 @@ message.
 | `... \| tail` / `\| head` / `\| wc` | "pipe to head/tail/wc" | run the command with **`run_in_background: true`** (harness captures output; Read the tail from the output file). If the tool has one, use its own `--limit` / `--tail` / `--count` flag. |
 | `... > file` (output redirect) | "output redirect" | **run_in_background** (harness captures stdout), or for creating a file use the **Write tool**, never a shell redirect. |
 | `cd <dir> && <cmd>` / compound `;` | "command chain" / cd+redirect path-bypass | **one bare command per call**, absolute paths. For git, `tt git ... --repo <dir>` [[commit-via-tt-git-not-raw-cd-git]]. |
-| a shell metachar (`\|` `>` `<` backtick `&`) **inside a quoted pattern** | the guard scans raw bytes, not the unquoted skeleton — a **false positive** | **write the metachar as a Java-regex hex escape** — `tt text` patterns are Java regex, so `\x3E`=`>`, `\x7C`=pipe, `\x3C`=`<`, `\x26`=`&`, `\x3B`=`;`, `\x60`=backtick. It matches identically and the character never appears in the command string, so the guard **cannot** fire. VERIFIED 2026-07-16: `"^//\x3E using file"` returned the same 18 hits as the `>` form that stalled. Prefer this over the old "just keep patterns metachar-free" advice: a **prohibition does not arm the motor reflex** (this tripped again 3 days after being logged + skilled), whereas an escape gives the moment of action something to *reach for*. **But be honest about its limit (BR, 2026-07-16): this is a BETTER prohibition, NOT a structural fix** — it still needs recall at the instant you type, which is the thing that fails, and a warp can leave this skill cold. Expect to forget it; the guard is the backstop that does not. See "Where the fix must live" below. Fallbacks: anchor on plain terms, split searches, or Read. (Placeholders like `\x3Clabel\x3E` carry literal angles.) [[guardcheck-false-positive-gt-inside-quoted-regex-2026-07-13]] |
+| a shell metachar (`\|` `>` `<` backtick `&`) **inside a quoted pattern** | the guard scans raw bytes, not the unquoted skeleton — a **false positive** | **write the metachar as a Java-regex hex escape** — `tt text` patterns are Java regex, so `\x3E`=`>`, `\x7C`=pipe, `\x3C`=`<`, `\x26`=`&`, `\x3B`=`;`, `\x60`=backtick. It matches identically and the character never appears in the command string, so the guard **cannot** fire. VERIFIED 2026-07-16: `"^//\x3E using file"` returned the same 18 hits as the `>` form that stalled. Prefer this over the old "just keep patterns metachar-free" advice: a **prohibition does not arm the motor reflex** (this tripped again 3 days after being logged + skilled), whereas an escape gives the moment of action something to *reach for*. **But be honest about its limit (BR, 2026-07-16): this is a BETTER prohibition, NOT a structural fix** — it still needs recall at the instant you type, which is the thing that fails, and a warp can leave this skill cold. Expect to forget it; the guard is the backstop that does not. See "Where the fix must live" below. Fallbacks: anchor on plain terms, split searches, or Read. (Placeholders like `\x3Clabel\x3E` carry literal angles.) [[WR106-guardcheck-false-positive-gt-inside-quoted-regex-2026-07-13]] |
 | `2>/dev/null` / stderr suppression | "let the tool self-report" | drop it; tolerate benign stderr, or let the tool write a file and Read it. |
 | interpreter one-liners (`python3 -c`, `bash -c`) | blank-shell / TOCTOU | never allowlist interpreters; use an audited tool (`tt`, `scala-cli`) [[never-allowlist-interpreters]]. |
 | files under `/tmp` for scratch | path-bypass surface | use the in-repo `tmp/` (allowlisted `rm -f .../tmp/*`) [[prefer-inrepo-tmp-over-slash-tmp]]. |

@@ -24,17 +24,17 @@ Concrete, dated observations a theory has to account for:
 1. **Lazy firing → cold-start regression.** On 2026-07-13, with `avoid-guard-stall` *installed and active*, the
    agent still emitted brittle bash (`find … 2>/dev/null`, `ls … | head`) in the FIRST bash calls of a fresh
    session. An active skill is dormant until its trigger fires; cold-start moves happen in that gap.
-   (`../wr-data/active-skill-still-cold-starts-dormant-reflexes-regress-2026-07-13.md`)
+   (`../wr-data/WR089-active-skill-still-cold-starts-dormant-reflexes-regress-2026-07-13.md`)
 2. **Silent inactivity.** An entire earlier session ran with ALL genscalator skills OFF (plugin not installed);
-   no error fired. (`../wr-data/guardrail-skills-silently-inactive-all-session-2026-07-13.md`)
+   no error fired. (`../wr-data/WR107-guardrail-skills-silently-inactive-all-session-2026-07-13.md`)
 3. **No phenomenology of absence.** The agent cannot *feel* a missing or dormant skill; an inactive skill is
    indistinguishable from the inside from an active one it simply failed to apply. The only external signal is
-   behavioural regression. (`../wr-data/agent-has-no-phenomenology-of-absence-2026-07-13.md`)
+   behavioural regression. (`../wr-data/WR092-agent-has-no-phenomenology-of-absence-2026-07-13.md`)
 4. **Capability rides on substrate access, not harness activation.** When skills were off, reading the SKILL.md
    files from disk re-armed the reflexes manually.
-   (`../wr-data/capability-rides-on-substrate-access-not-harness-activation-2026-07-13.md`)
+   (`../wr-data/WR097-capability-rides-on-substrate-access-not-harness-activation-2026-07-13.md`)
 5. **Compaction regresses fine-grained reflexes to base-model defaults** unless re-surfaced.
-   (`../wr-data/compaction-regresses-fine-grained-reflexes-2026-07-13.md`)
+   (`../wr-data/WR098-compaction-regresses-fine-grained-reflexes-2026-07-13.md`)
 
 The unifying reading: **a skill's guidance is a learned OVERRIDE of the base-model prior; the override only wins
 while it is in salient context. Remove it from salient context and the prior reasserts.** Activation is not

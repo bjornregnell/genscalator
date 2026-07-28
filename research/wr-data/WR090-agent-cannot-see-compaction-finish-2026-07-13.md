@@ -1,5 +1,7 @@
 # WR specimen: the agent cannot see when compaction finishes (2026-07-13)
 
+> **WR090** · episode 2026-07-13 · first commit 2026-07-13 · previously `agent-cannot-see-compaction-finish-2026-07-13.md`
+
 **Observation (BR, live).** BR triggered `/compact`, then walked away. The compaction finished while he was
 gone. The agent did NOT stamp `post:` at that moment — it stayed dormant. Only when BR came back and typed a
 message did the harness re-invoke the agent, which then ran its first tool call (`tt chrono now`) and wrote the

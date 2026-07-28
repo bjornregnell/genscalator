@@ -45,5 +45,5 @@ Auto-compact is on by default (`autoCompactEnabled`; off via `DISABLE_AUTO_COMPA
 "approaches the limit" — **no published %**. The 90% "Context is 90% full" message is a separate *alert*, not
 the trigger. Observed ~90-95%; the status line's `--auto-compact` default (92) is a tunable guess.
 
-Sources: `research/wr-data/instruments-must-not-mimic-harness-disinformation-2026-07-13.md` (frozen clock +
+Sources: `research/wr-data/WR109-instruments-must-not-mimic-harness-disinformation-2026-07-13.md` (frozen clock +
 temporal cross-check + design target). Ties: the mode line, `docs/statusline-manual.md`.

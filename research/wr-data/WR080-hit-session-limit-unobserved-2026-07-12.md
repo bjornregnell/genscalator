@@ -1,5 +1,7 @@
 # WR specimen: hit the session limit unobserved (2026-07-12)
 
+> **WR080** · episode 2026-07-12 · first commit 2026-07-12 · previously `hit-session-limit-unobserved-2026-07-12.md`
+
 **Event.** After a long, hard-pushing session (many commits, a live-edit-dance marathon on blog 021, then a
 78-agent RQ0 workflow), we hit the **Max-5x SESSION limit** mid-workflow: "You've hit your session limit, resets
 9pm". The RQ0 sweep's verification + synthesis phases died on it (62 of 78 agents failed). Weekly budget was fine

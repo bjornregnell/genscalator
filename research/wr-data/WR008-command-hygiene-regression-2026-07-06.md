@@ -1,5 +1,7 @@
 # WR data — command-hygiene regression (live study specimen), 2026-07-06
 
+> **WR008** · episode 2026-07-06 · first commit 2026-07-06 · previously `command-hygiene-regression-2026-07-06.md`
+
 **Event.** The agent ran `cd /home/.../genscalator 2>/dev/null; grep -n ... research/047-PLAN.md` — a **compound** command (`cd` + `;`), violating the standing command-hygiene discipline (one bare allowlist-matchable command; no `cd`/`&&`/pipe/redirect; memories `prefer-inrepo-tmp-over-slash-tmp`, `guard-against-forced-confirmations`). Side effect: the harness reported "Shell cwd was reset". Correct form: a bare `grep -n <pattern> <absolute-path>` (no `cd`). Command-hygiene is **dim 11 in the fixed instrument** (`047-instrument.md`).
 
 **BR caught it and asked (WR data): regression due to warp / compact / context-rot?**
@@ -64,4 +66,4 @@ specimens 1-4 (a habitual raw shell tool beating the disciplined path), but with
 the stall was invisible to the agent** — an approved-later prompt returns normal output and the agent has no
 clock between calls, so it never registered any of the five stalls; only BR saw them. Full write-up +
 implications (joint-vigilance blind spot, a third structure-over-willpower argument, agent time/stall-
-blindness) in **`guard-stall-invisible-to-agent-2026-07-07.md`**.
+blindness) in **`WR016-guard-stall-invisible-to-agent-2026-07-07.md`**.

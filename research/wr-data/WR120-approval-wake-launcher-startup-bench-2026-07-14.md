@@ -1,11 +1,13 @@
 # WR data: bash vs C vs Scala Native — launcher startup micro-benchmark (2026-07-14)
 
+> **WR120** · episode 2026-07-14 · first commit 2026-07-14 · previously `approval-wake-launcher-startup-bench-2026-07-14.md`
+
 **Status: PRESTUDY** — a quick no-op wall-clock micro-benchmark, enough to decide the launcher-language question
 for `approval-wake`, NOT a rigorous performance study. A thorough version (flamegraphs, `perf`/`strace` of the
 startup path, real workloads instead of a no-op) is Future Work (below).
 **Type:** engineering experiment. **Origin:** BR's idea — implement the "performance-critical" approval-wake
 launcher in pure C AND Scala Native (LLVM → native binary) and benchmark startup against the bash version.
-**Decoupled from** the bing-bing 30s-lag investigation ([[harness-ux]] Notification addendum): the lag is an
+**Decoupled from** the bing-bing 30s-lag investigation ([[WR003-harness-ux]] Notification addendum): the lag is an
 audio-path/screen-lock issue, NOT a launcher-language one — so this experiment stands on its own (settle the
 launcher cost empirically + dogfood Scala Native), it is *not* a fix for the lag.
 **Threads:** [[prefer-scala-scratch-over-bash]], [[dependency-preference-cascade]], the SM105 bash-not-Scala

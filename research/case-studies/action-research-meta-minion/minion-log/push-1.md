@@ -10,7 +10,7 @@ FINDINGS:
 - CLAIM:    "`?` is not a legal mode-label character (labels are `[A-Za-z0-9._-]+`), so `tt mode rm
   hangover?` would be rejected" (self-report #2). Landed in the artifact as: "`tt mode` accepts
   `[A-Za-z0-9._-]+`, so **`tt mode rm hangover?` would be rejected outright.**"
-  (`research/wr-data/nobody-dropped-the-hangover-chip-2026-07-16.md:24-25`), presented there as
+  (`research/wr-data/WR143-nobody-dropped-the-hangover-chip-2026-07-16.md:24-25`), presented there as
   verified-from-source.
   ARTIFACT: `tools/mode.scala` — `valid()` (line 59) is called ONLY in the `add` branch (lines
   69-72). The `rm` branch (lines 75-76) is `write(read().filterNot(_ == label))`: no validation at

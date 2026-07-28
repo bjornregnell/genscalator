@@ -70,4 +70,4 @@ committed). The dumb ollama agent is retained only as a fallback engine we expec
 ## Related
 - substrate-candidate 6 (token-usage introspection), `006-smart-zone-ceiling`, `007-token-budget-awareness`,
   `039-can-we-give-agent-introspection-wall-clock`, `041-token-speed-degradation-with-context-fill`,
-  `harness-ux.md` (can't read `/context` while queued — a statusline would fix that too), `tt ascii` (the renderer).
+  `WR003-harness-ux.md` (can't read `/context` while queued — a statusline would fix that too), `tt ascii` (the renderer).

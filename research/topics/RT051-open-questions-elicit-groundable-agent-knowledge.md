@@ -2,7 +2,7 @@
 
 **Status:** open research topic, seeded 2026-07-08 (BR reflection + AHA). Child/sibling of RT048 (substrate-content
 power), RT049/RT050 (delegation), [[agent-affective-analogs]]; the human-side complement to the agent-side
-[[echt-effort-especially-self-generated]] discipline. Empirical arm: `research/wr-data/dep-surface-ease-introspection-2026-07-08.md`.
+[[echt-effort-especially-self-generated]] discipline. Empirical arm: `research/wr-data/WR027-dep-surface-ease-introspection-2026-07-08.md`.
 
 ## The spark (the concrete event)
 Designing `tt serv` (SM020), BR offered cask / Jetty / just-JDK and, instead of directing, asked an **open**

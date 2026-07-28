@@ -1,5 +1,7 @@
 # WR-data — deliberate terse-precise comms via the developed vocabulary (2026-07-06)
 
+> **WR011** · episode 2026-07-06 · first commit 2026-07-06 · previously `terse-precise-comms-2026-07-06.md`
+
 **Episode.** During the SM006 numbering-refactor planning, BR flagged (verbatim, lightly cleaned):
 
 > "meta: WR data: I have been trying to use our developed terminology and cues and numbers now to stay very terse and
@@ -126,7 +128,7 @@ be re-negotiated each session — the terse-precise codec extended to *control* 
 - **Human boxes need bookkeeping too.** BR: "all humans need to bookkeep their boxes now and then" (sys-update +
   restart). The **exit-resume dance** is the session-continuity wrapper around a *human-substrate* maintenance event —
   the human's machine is part of the joint substrate, and its upkeep is a periodic cost (the human-side cousin of
-  memory hygiene / index rot). Pairs with the mouse-mode + font-resize quirks (harness-ux) as human-side friction.
+  memory hygiene / index rot). Pairs with the mouse-mode + font-resize quirks (WR003-harness-ux) as human-side friction.
 - **Three token-budget modes (BR named 2026-07-06).** Joint work runs in **token-spending / normal / token-saving**,
   set by weekly-limit headroom + reset proximity. The weekly reset (Tue 9 AM) makes unused budget
   **use-it-or-lose-it** → in spending-mode "eat tokens on value" (thorough reviews, bg-tasks); in saving-mode favour

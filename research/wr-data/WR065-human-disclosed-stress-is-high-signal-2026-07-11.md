@@ -1,5 +1,7 @@
 # A human deliberately disclosing their state-of-mind ("I'm stressed") is high-value data (2026-07-11)
 
+> **WR065** · episode 2026-07-11 · first commit 2026-07-11 · previously `human-disclosed-stress-is-high-signal-2026-07-11.md`
+
 BR-flagged, meta. When a human **deliberately** tells the agent their affective/cognitive state — *"BR is stressed"*,
 *"pin it for later when BR less stressed"*, *"a couple of minutes before afk"* — that is **important information for
 the agent's understanding of the human's state of mind**, to be treated as high-signal, not incidental.

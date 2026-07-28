@@ -2,7 +2,7 @@
 
 Task: CONSISTENCY REVIEW of the baton → warp-ember rename sweep (genscalator `707fd54`; work repo
 `0b4e861`/`5d7897a`), not a handover audit. Reviewed against the decision + sweep record
-`research/wr-data/rename-baton-to-warp-ember-2026-07-20.md` and the sanctioned raw-keeps-baton list
+`research/wr-data/WR181-rename-baton-to-warp-ember-2026-07-20.md` and the sanctioned raw-keeps-baton list
 supplied in the push prompt. Method: `tt text grepr` over both repos, ext md/txt/scala, patterns
 `baton`/`Baton`/`BATON` plus old-path patterns; every hit read in context where classification was
 not obvious; file existence verified by Read (error = absent).
@@ -35,7 +35,7 @@ honest NULLs below.
   CONFIDENCE: high.
 
 - **F4 — SWEEP-RECORD COMPLETENESS GAP (story vs substrate).**
-  `research/wr-data/rename-baton-to-warp-ember-2026-07-20.md:35-44` claims "living docs updated"
+  `research/wr-data/WR181-rename-baton-to-warp-ember-2026-07-20.md:35-44` claims "living docs updated"
   including "work-repo PB active pins", and its NOT-touched list names wr-data, minion-log,
   sm-investigations, the png, and BR's cold-claude.sc. The record accounts for neither the F1
   half-missed pin line nor the F2/F3 `tools/*.scala` surface (in either list). The sweep record

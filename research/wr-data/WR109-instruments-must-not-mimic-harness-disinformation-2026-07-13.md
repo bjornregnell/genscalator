@@ -1,9 +1,11 @@
 # WR data: awareness instruments must NOT mimic harness disinformation (2026-07-13)
 
+> **WR109** · episode 2026-07-13 · first commit 2026-07-13 · previously `instruments-must-not-mimic-harness-disinformation-2026-07-13.md`
+
 **Type:** WR data — a DIFFICULT design tradeoff, flagged by BR as *"critical to awareness to get it right"*.
 **Status:** CAPTURED; the design decision is deferred to **SM062** (BR: *"too difficult to decide now"*).
-**Threads:** [[joint-clock-two-party-progress-stalls-2026-07-13]], the disinfo-survives-compact WR line,
-[[echt-effort-especially-self-generated]], [[status-plus-mode-line-prototype-2026-07-13]] (declared-not-derived),
+**Threads:** [[WR110-joint-clock-two-party-progress-stalls-2026-07-13]], the disinfo-survives-compact WR line,
+[[echt-effort-especially-self-generated]], [[WR115-status-plus-mode-line-prototype-2026-07-13]] (declared-not-derived),
 [[cue-bare-auto-compact]], blog 004 (why Claude UX sometimes sucks), the awareness/observability strand (blog 020).
 
 ## The tradeoff (BR's words)
@@ -30,7 +32,7 @@ Mid-conversation the status-line clock **froze at `15:55:21`** and BR flagged *"
 Cause (confirmed via claude-code-guide): the `statusLine` command is **event-driven, not timed** — re-invoked
 after each assistant message, after `/compact`, on mode/vim changes, debounced ~300ms during activity — and
 **goes quiet at idle**. So the clock shows *last-activity* time but *looks like* now = disinformation, and it
-freezes at exactly the mutual-idle stall of [[joint-clock-two-party-progress-stalls-2026-07-13]].
+freezes at exactly the mutual-idle stall of [[WR110-joint-clock-two-party-progress-stalls-2026-07-13]].
 
 ### This instance IS fixable (but the fix has a cost — the tradeoff in miniature)
 The `statusLine` object takes a **`refreshInterval`** field (minimum **1 second**); with `"refreshInterval": 1`
@@ -50,7 +52,7 @@ thinking hard the both of us."* So the goal is **not** simply to paper over the 
   quiescence stall.
 - **stopped-and-honest** (the candidate target): let the clock stop, but **render it AS stopped** — dim/greyed,
   a ⏸ marker, or reframed "paused HH:MM (idle)" — so the very act of stopping becomes an *awareness-supporting
-  cue*: you can SEE the joint clock has stopped at mutual idle ([[joint-clock-two-party-progress-stalls-2026-07-13]]).
+  cue*: you can SEE the joint clock has stopped at mutual idle ([[WR110-joint-clock-two-party-progress-stalls-2026-07-13]]).
   This turns the disinformation liability into an honest indicator of the two-party stall.
 A live clock and a stall-indicator are not mutually exclusive — e.g. a ticking clock during activity that
 switches to a visibly-paused state at idle. The exact rendering is for SM062 to decide jointly. The principle:
@@ -139,7 +141,7 @@ can happen"). Consequences:
   irreducible staleness window.
 - This is *why* the bing-bing and the afk-mode exist at all: presence cannot be assumed, so the system is built
   to detect departure/return rather than trust a standing "here". It is also the human side of the joint clock
-  ([[joint-clock-two-party-progress-stalls-2026-07-13]]): a bio-interrupt is an **unplanned quiescence** — the
+  ([[WR110-joint-clock-two-party-progress-stalls-2026-07-13]]): a bio-interrupt is an **unplanned quiescence** — the
   human's clock stops without notice.
 - Human-factors truth, stated plainly: the human is a *body*; interrupts are involuntary and unannounced. A
   robust collaboration is built to tolerate that, not to assume a declared "here" stays true.
@@ -173,7 +175,7 @@ freezes ONLY in a *true* idle gap (no events between renders). So "frozen at idl
 **Why it matters.** (1) It **validates the instrument**: at each render the clock is honest (near-current), so
 the disinfo risk is confined to the idle gap, not active use. (2) Methodologically, the live spinner and the
 event-rendered clock **triangulate** the same timeline — two independent time sources agreeing is a mini
-reproducibility check on the harness's own timekeeping. Ties: [[joint-clock-two-party-progress-stalls-2026-07-13]].
+reproducibility check on the harness's own timekeeping. Ties: [[WR110-joint-clock-two-party-progress-stalls-2026-07-13]].
 
 ## The COST of declared-field hygiene: each mutation is an agent TURN (2026-07-13)
 BR, watching an `afk`-clear take "✻ Worked for 15s": **mode-label mutation is not free.** The `tt mode add/rm`

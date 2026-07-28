@@ -2,7 +2,7 @@
 
 *SM112. Status: DESIGN (no build; BR-gated — installs packages + runs native builds). Author: agent, safe-solo
 2026-07-15. Grounds: `blog/025-the-noop-race.md`, `skills/scala-platform/SKILL.md`,
-`research/wr-data/approval-wake-launcher-startup-bench-2026-07-14.md`, the per-tool deps in `tools/*.scala`. Ties
+`research/wr-data/WR120-approval-wake-launcher-startup-bench-2026-07-14.md`, the per-tool deps in `tools/*.scala`. Ties
 [[050-genscalator-settings-configureallthethings]] (the file that would STORE the tool-selection), the README lean-prereq promise.*
 
 > **BR's seed:** a `gs native` do-what-i-mean command that (a) **detects** the toolchain the user already has, (b)

@@ -2,7 +2,7 @@
 
 *SM115. Status: DESIGN (no build). Author: agent, safe-solo 2026-07-15. Grounds: `tools/statusline.scala`,
 `tools/mode.scala`, `tools/forge.scala`, `tools/verify.scala`, `tools/update.scala`, `docs/allowlist.md`, the
-compact/approval hook scripts, SM064 (mode colour), SM088/SM105 (hook wiring), the harness-ux notification-copy
+compact/approval hook scripts, SM064 (mode colour), SM088/SM105 (hook wiring), the WR003-harness-ux notification-copy
 finding. Ties PRD `Goal: noCacophony`, `Feature: configureAllTheThings`.*
 
 > **BR's seed:** *"a user who wants to tweak all the things needs a genscalator config. Do we need our own `gs`
@@ -101,7 +101,7 @@ Two payoffs from one enum:
 1. **Selective quieting (PRD `Goal: noCacophony`):** `notifications: { compactDone: on, idle: off, ... }` — the user
    silences the kinds they find noisy and keeps the ones they want.
 2. **Cause-labelling:** the enum *names the trigger*, which is exactly the fix for the too-generic notification copy.
-   The harness-ux finding this session (the "needs you" confabulation saga) showed a notice that fails to say *why*
+   The WR003-harness-ux finding this session (the "needs you" confabulation saga) showed a notice that fails to say *why*
    it fired is worse than useless. A kind-labelled notice reads "genscalator: compaction done" / "genscalator:
    approval needed", not a bare "Claude Code needs you". (This dovetails with `genscalator-notifications-branded-colon`.)
 

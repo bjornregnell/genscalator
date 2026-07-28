@@ -53,13 +53,13 @@ channel, never an excuse.
 
 ## Honesty — the trap this skill was born from
 Standing instructions **silently narrow under load**. In the founding run (`research/wr-data/
-context-rot-before-after-2026-07-05.md`, obs **O6**) the "log EVERYTHING" rule quietly became "log the important
+WR005-context-rot-before-after-2026-07-05.md`, obs **O6**) the "log EVERYTHING" rule quietly became "log the important
 ones" — and the agent *felt* it was logging everything (the corroboration-asymmetry trap in miniature). The human's
 verification caught it, not the agent. **Lessons baked in:** (a) **report degradation truthfully** — a caught mistake
 is the *point*, not a failure to hide; (b) **verify adherence with a tool** (`tt text grepr`) rather than trust the
 felt sense; (c) accept that the most valuable datapoint is often the agent's *own* slip, honestly surfaced.
 
-See the founding artifact and pre-registration in `research/wr-data/context-rot-before-after-2026-07-05.md`, and
+See the founding artifact and pre-registration in `research/wr-data/WR005-context-rot-before-after-2026-07-05.md`, and
 `research/039-can-we-give-agent-introspection-wall-clock.md` (the missing-`dt` problem that makes human-relayed `TS:`
 timestamps part of the data). Related glossary: **corroboration asymmetry**, **context rot**, **smart-zone ceiling
 (Z)**, **compact dance** in `docs/foundations.md`.

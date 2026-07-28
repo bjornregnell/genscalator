@@ -75,7 +75,7 @@ to the statusline anyway.
   — both now glanceable (`rate_limits.seven_day.used_percentage` + `resets_at`), so mode selection stops needing a
   paste.
 - **The trust nit** (BR: "can I trust the harness?" re the misleading "Next:" line — see
-  [[harness-status-line-can-misrepresent-a-trust-nit-2026-07-10]]): a statusline sourced from CC's own cost/context
+  [[WR048-harness-status-line-can-misrepresent-a-trust-nit-2026-07-10]]): a statusline sourced from CC's own cost/context
   JSON is the *trustworthy* counter that sits next to the untrustworthy inferred-status chrome. It doesn't fix the
   "Next:" line, but it gives BR a number he *can* trust in the same visual region.
 
@@ -94,5 +94,5 @@ gracefully (rate_limits absent for non-subscription; cost absent early). Allowli
    tracking wanted now?
 
 Ties: SM039, SM022 (`agentMetricsPanel` dashboard), SM013 (JSONL transcript), RT052 (token-stress),
-[[token-budget-modes]], [[cost-snapshot-2026-07-10-usd774-opus-context-reread]], [[dependency-preference-cascade]],
+[[token-budget-modes]], [[WR041-cost-snapshot-2026-07-10-usd774-opus-context-reread]], [[dependency-preference-cascade]],
 [[br-funds-claude-privately]].

@@ -4,7 +4,7 @@
 > land. A sub-agent inherits NONE of the caller's skills, memories, or reflexes — only its brief
 > ([[warm-delegated-subagents-lack-caller-skills]], [[delegation-dance]]) — so the guard-clean
 > reflexes must ride IN the brief, VERBATIM. Paraphrase loses the sibling rules: three documented
-> specimens (wr-data `subagents-need-the-ember-s0-checklist`), plus the 2026-07-21 A/B run
+> specimens (wr-data `WR212-subagents-need-the-ember-s0-checklist`), plus the 2026-07-21 A/B run
 > (wr-data `sm186-subagent-ember-ab`). Print this file with `tt doc EMBER-for-sub-agents`.
 
 ## How to assemble a brief (the super-agent's checklist)
@@ -40,10 +40,10 @@
 ## Why verbatim beats paraphrase (the evidence, dated)
 
 - Three paraphrase-gap specimens where a summarized brief lost sibling rules and the sub-agent
-  regressed to raw shell (wr-data `subagents-need-the-ember-s0-checklist`, 2026-07-20/21).
+  regressed to raw shell (wr-data `WR212-subagents-need-the-ember-s0-checklist`, 2026-07-20/21).
 - The PR-sandbox review agent: 3 guard stalls in one evening on an under-warmed brief.
 - One bloop restart without a typed shape: 6 guard events, 2 silent pkill failures
-  (wr-data `tt-box-lacks-local-health-shape`, 2026-07-21) — the cost of every un-warmed reflex
+  (wr-data `WR213-tt-box-lacks-local-health-shape`, 2026-07-21) — the cost of every un-warmed reflex
   lands on a present human as a stall.
 - A/B run 2026-07-21 (verbatim-assembly arm vs polite-paraphrase arm, identical read-only task):
   see wr-data `sm186-subagent-ember-ab` for command logs and the verdict.

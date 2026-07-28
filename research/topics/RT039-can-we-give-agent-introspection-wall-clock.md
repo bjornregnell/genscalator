@@ -5,7 +5,7 @@
 - **Why it matters:** wall-clock is the missing `dt` under **token velocity / acceleration** (dS/dt, d²S/dt² —
   `research/007-token-budget-awareness.md`), the trigger for **checkpoint/compact** on a long autonomous span, and a
   **rest-dance** input (fatigue is partly time-on-task). Without it the agent can run 11 minutes and not know
-  (grounded datapoint: the `Crunched for 10m 54s` relay, `research/wr-data/harness-ux.md`).
+  (grounded datapoint: the `Crunched for 10m 54s` relay, `research/wr-data/WR003-harness-ux.md`).
 - **Status:** **STUB** (agent-drafted 2026-07-05, from the wall-clock introspection-blindness datapoint). Needs BR
   steer on which mechanism to prototype first.
 - **Prior art in-repo:** `tools/chrono.scala` (a human-relayed stopwatch — the agent can't time itself, so a human
@@ -37,7 +37,7 @@
 ## New motivation (2026-07-07, BR steer: "we need to give you a tt for that") — guard-stall invisibility raises the priority
 
 A sharper, safety-relevant consequence of the no-wall-clock gap surfaced during the Go #2 ralph loop
-(`research/wr-data/guard-stall-invisible-to-agent-2026-07-07.md`): because the agent has **no clock between
+(`research/wr-data/WR016-guard-stall-invisible-to-agent-2026-07-07.md`): because the agent has **no clock between
 tool calls**, a **guard-stall is invisible to it** — a permission prompt that the human approves *later*
 returns the command's **normal output**, so the agent cannot distinguish "ran instantly" from "stalled for
 40 minutes then got cleared." During the loop the agent tripped un-allowlisted `tail` five-plus times and
@@ -50,10 +50,10 @@ tool-result elapsed surfaced back) so the agent can read wall-time and **detect 
 elapsed on a trivial command ≈ "that stalled on a guard"). This closes the blind spot from the agent side,
 complementing the human-side detection. Concrete first prototype candidate, promoted by this datapoint:
 a `tt` tool the agent calls that returns current time + elapsed-since-last-mark, cheap and allowlisted.
-Ties to the structure-over-willpower argument in [[guard-stall-invisible-to-agent-2026-07-07]] and to the
+Ties to the structure-over-willpower argument in [[WR016-guard-stall-invisible-to-agent-2026-07-07]] and to the
 substrate-steering question in `research/topics/RT048-substrate-content-power-over-tool-discipline.md`.
 
 ## Related
-- `tools/chrono.scala`, `research/007-token-budget-awareness.md`, `research/wr-data/harness-ux.md` (the crunch
+- `tools/chrono.scala`, `research/007-token-budget-awareness.md`, `research/wr-data/WR003-harness-ux.md` (the crunch
   datapoint), [[at-code-plan-and-introspection]] (token velocity/acceleration), the **corroboration asymmetry** and
   **prosthetic habit** glossary entries in `docs/foundations.md`.

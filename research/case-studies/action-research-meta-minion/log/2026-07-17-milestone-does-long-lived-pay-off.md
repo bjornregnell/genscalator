@@ -61,7 +61,7 @@ produced it.**
 
 ## Ties
 
-[[three-swings-only-the-code-running-ones-were-accurate-source-reading-gives-confidence-not-truth-2026-07-17]]
+[[WR167-three-swings-only-the-code-running-ones-were-accurate-source-reading-gives-confidence-not-truth-2026-07-17]]
 (the fresh minion's payoff, kept separate) · **cycle-2 log** (the full process record; this file is the *milestone
-assessment*, it POINTS) · `long-lived-meta-minion.md` (the protocol) · [[code-beats-prose-a-rule-fires-only-when-it-governs-the-object-of-attention-2026-07-17]]
+assessment*, it POINTS) · `long-lived-meta-minion.md` (the protocol) · [[WR150-code-beats-prose-a-rule-fires-only-when-it-governs-the-object-of-attention-2026-07-17]]
 (why the "name the code path" countermeasure will not arm from prose).

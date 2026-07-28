@@ -1,5 +1,7 @@
 # WR data — a guard-stall is structurally INVISIBLE to the agent (only the human sees it), 2026-07-07
 
+> **WR016** · episode 2026-07-07 · first commit 2026-07-07 · previously `guard-stall-invisible-to-agent-2026-07-07.md`
+
 **Context.** During the Go #2 autonomous ralph loop (BR asleep/AFK), BR observed that the loop had been
 **halted by a guard prompt** and asked which command and when. Investigation (reading the active allowlist
 `.claude/settings.local.json`) found the culprit.
@@ -76,5 +78,5 @@ Retrofitted via `tt wr stamp` on the muntabot project dir (append-only; the comm
   MEASURABLE by the same method — not fully enumerated here (lower marginal value than the first-tail confirmation),
   flagged as a cheap follow-up if the 047/blog writeup wants a per-command duration chart.
 - Method caveat (why "measured" beats "felt"): transcript timestamps are UTC; +02:00 gives CEST. Perishable under
-  `cleanupPeriodDays` — done now while the session file survives. Ties: [[wr-stamp-dogfood-transcript-format-2026-07-10]],
+  `cleanupPeriodDays` — done now while the session file survives. Ties: [[WR061-wr-stamp-dogfood-transcript-format-2026-07-10]],
   [[raw-data-append-only]].

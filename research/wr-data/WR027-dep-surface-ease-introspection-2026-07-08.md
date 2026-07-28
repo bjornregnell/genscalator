@@ -1,5 +1,7 @@
 # WR data: what was "easiest" to design — JDK vs cask vs Jetty (echt introspection + investigation seed, 2026-07-08)
 
+> **WR027** · episode 2026-07-08 · first commit 2026-07-08 · previously `dep-surface-ease-introspection-2026-07-08.md`
+
 ## The question (BR)
 For `tt serv` (SM020) BR offered cask / Jetty / just-JDK and asked which is *easiest for the agent*. He then
 asked for the **echt** answer — "what did you actually think, as a data point" — and whether the broader

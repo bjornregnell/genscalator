@@ -1,5 +1,7 @@
 # WR data: BR reflection - the human-throughput bottleneck + token-economics stress (the super-harness's actual purpose, 2026-07-08)
 
+> **WR023** · episode 2026-07-08 · first commit 2026-07-08 · previously `br-throughput-and-token-stress-2026-07-08.md`
+
 ## The brain-dump (BR, near-verbatim)
 CO4 is SO fast that:
 1. **BR cannot "eat all his tokens"** — he cannot find things fast enough for CO4 to do that he *knows* advance the
@@ -74,4 +76,4 @@ Retrofitted via `tt wr stamp` on the muntabot project dir (append-only; the day-
   `attachment` entry (the send moment), which precedes the `type:user` processing entry and is what `--user`/`--human`
   would skip — so the retrofit rule "earliest hit across all entry types" (Mode.All), not just `--human`, gives the
   truest send time. Anchors this RT052 motivation statement on the session timeline (mid-morning UTC, the token-reset
-  topic it is literally about). Ties: [[wr-stamp-dogfood-transcript-format-2026-07-10]], [[raw-data-append-only]].
+  topic it is literally about). Ties: [[WR061-wr-stamp-dogfood-transcript-format-2026-07-10]], [[raw-data-append-only]].

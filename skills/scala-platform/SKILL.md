@@ -26,7 +26,7 @@ speed you would win is frequently *unspendable* (below the real bottleneck) whil
 | **GraalVM native-image** | **~3.05 ms** (AOT, JVM→native) | **~12.25 MiB** (fat) | **Java deps OK** with reflection config; no JIT | native startup while KEEPING JVM-ecosystem deps you can't drop |
 
 (Numbers are the genscalator prestudy — a *no-op* micro-benchmark, enough to rank the targets, not a rigorous
-profile; see `research/wr-data/approval-wake-launcher-startup-bench-2026-07-14.md`. For reference: C = ~0.76 ms /
+profile; see `research/wr-data/WR120-approval-wake-launcher-startup-bench-2026-07-14.md`. For reference: C = ~0.76 ms /
 15.8 KiB, bash = ~1.59 ms.)
 
 **Surprise worth knowing: Scala Native beats GraalVM native-image on BOTH startup (~1.85 vs ~3.05 ms) AND size
@@ -97,5 +97,5 @@ The `tt` toolbox pays JVM startup on **every** call (~0.5 s, most of a `tt files
 the **hot, JDK-light, pure** tools this is the prime candidate for a native build — a per-tool decision, not a
 toolbox-wide switch, because the JDK-heavy tools (`reqt-vendored`, `ProcessBuilder` drivers) and any
 Java-dep-using tools do not port for free. The prestudy that grounds all of the above:
-`research/wr-data/approval-wake-launcher-startup-bench-2026-07-14.md` (bash vs C vs SN vs GraalVM vs JVM).
+`research/wr-data/WR120-approval-wake-launcher-startup-bench-2026-07-14.md` (bash vs C vs SN vs GraalVM vs JVM).
 Rigorous profiling (flamegraphs, real workloads) is future work there.

@@ -1,7 +1,7 @@
 # v0.9.0 tools — allow / ask / deny triage (SM041 subset; per-tool release-hygiene)
 
 Per the finding that we should **triage `allow`/`deny`/`ask` per new tool** (see
-`research/wr-data/effectful-verb-ask-overrides-auto-authorization-layers-2026-07-11.md`). The v0.9.0 `tt` surface
+`research/wr-data/WR064-effectful-verb-ask-overrides-auto-authorization-layers-2026-07-11.md`). The v0.9.0 `tt` surface
 classified by effect. Propose-only — the settings edit is BR's hand.
 
 **Current settings model:** `Bash(tt *)` blanket-**allows** every `tt` tool, with per-verb **ask** overrides for the

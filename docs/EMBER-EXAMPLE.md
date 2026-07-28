@@ -30,7 +30,7 @@ only what it needs.
 renamed *warp ember* on 2026-07-20 (Swedish *batong* means police club — connotations we did not
 want — and the smithy metaphor fits the forge vocabulary: the exit banks the fire, the fresh agent
 blows the ember back into flame). The specimen below keeps its original wording verbatim: raw stays
-raw. See `../research/wr-data/rename-baton-to-warp-ember-2026-07-20.md`.
+raw. See `../research/wr-data/WR181-rename-baton-to-warp-ember-2026-07-20.md`.
 
 **Provenance:** written 2026-07-19 by the outgoing agent immediately before a planned machine
 update and reboot (the box was memory-swamped). Consumed the same evening by a fresh agent

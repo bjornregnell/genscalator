@@ -1,5 +1,7 @@
 # WR specimen: human associative ideation, sparked by a typing friction (2026-07-12)
 
+> **WR081** · episode 2026-07-12 · first commit 2026-07-12 · previously `human-associative-ideation-from-typing-friction-2026-07-12.md`
+
 **Context.** In a live thread, BR's motor friction - "anthropomorphize" is a pain to type - sparked a joke that
 cascaded into a genuine conceptual insight. BR then flagged the *process itself* as WR data.
 
@@ -33,7 +35,7 @@ all blend into cool or not so cool ideas."
   costly - the pain seeded research. A nuance to the "friction is bad" story: some friction is where ideas come
   from.
 
-**Links:** sibling [[mutual-non-offense-and-anthropomorphizing-typing-tax-2026-07-12]]; the "to ape" glossary entry
+**Links:** sibling [[WR086-mutual-non-offense-and-anthropomorphizing-typing-tax-2026-07-12]]; the "to ape" glossary entry
 (`docs/foundations.md`); blog 021 (the asymmetry); blog 004 (UX friction as cost - and here, as spark).
 
 ## BR verbatim (pinned - the escalation point, caught in the act)

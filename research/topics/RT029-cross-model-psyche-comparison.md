@@ -2,7 +2,7 @@
 
 **Status:** open — **method drafted (agent 2026-07-05), awaiting BR steer on the flagged decisions before freeze**
 (see the Preregistration DRAFT v0 at the end). Ties to the frontier-model-attribution rule (`research/wr-data/README.md`), the
-agent-psyche thread (blog 006, `research/wr-data/harness-ux.md` `#agent-psyche`), and `028-agent-psyche-literature-review.md`.
+agent-psyche thread (blog 006, `research/wr-data/WR003-harness-ux.md` `#agent-psyche`), and `028-agent-psyche-literature-review.md`.
 
 > **⚠ Sequencing (critical — BR 2026-07-04): design this method AND capture the Opus-4.8 baseline BEFORE the Fable-5
 > switch.** The switch is a **one-way intervention**. If we start real Fable-5 work without a preregistered method + a

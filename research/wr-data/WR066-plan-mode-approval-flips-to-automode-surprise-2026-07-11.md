@@ -1,5 +1,7 @@
 # Approving a plan-mode plan silently flips the agent into execution ("automode") — an unexpected-modal UX nit (2026-07-11)
 
+> **WR066** · episode 2026-07-11 · first commit 2026-07-11 · previously `plan-mode-approval-flips-to-automode-surprise-2026-07-11.md`
+
 BR-flagged, live. The harness put the agent into **plan mode** (forced) for a task BR framed as *"go plan that…
 and report here for tomorrow"* — i.e. a **plan-and-report** task, not a plan-and-execute one. When BR approved the
 written plan via the ExitPlanMode dialog, the harness **exited plan mode and cleared the agent to execute** ("You can
@@ -54,7 +56,7 @@ After exiting plan mode, BR's TUI kept showing an inverted-cyan marker over the 
 `genscalator-v090-release-prep` (the approved plan's slug). It made BR think *"p-mode is still on somehow…"* — but
 plan mode was functionally OFF, proven by the agent making edits + commits (impossible in plan mode) landing clean on
 `main` (0 ahead/0 behind). So the marker is a **stale label**, not an active mode — the SAME chrome-misrepresents-
-state pattern as the sticky "Next:" line ([[does-harness-disinformation-survive-a-compact-2026-07-10]]): the display
+state pattern as the sticky "Next:" line ([[WR044-does-harness-disinformation-survive-a-compact-2026-07-10]]): the display
 asserts a state ("release-prep in progress") that isn't real. Third instance this session of harness chrome eroding
 trust in the display — reinforcing **trust the checkable substrate (git/commits), not the chrome.**
 
@@ -68,8 +70,8 @@ are my commits on main?" and **verified the substrate** (`tt gitinfo` → `main`
 that worked is the **joint-vigilance loop**: the human sees the chrome anomaly, the agent resolves it by querying the
 **checkable substrate** (git) rather than trusting or guessing the chrome. Both halves are needed — the agent is blind
 to harness-side git state, but can dispel the uncertainty on cue by reading the substrate. Ties:
-[[guard-stall-invisible-to-agent-2026-07-07]] (structural blind spots), [[joint-rot-vigilance-recovery-kit]],
-[[does-harness-disinformation-survive-a-compact-2026-07-10]] (trust the substrate, not the chrome).
+[[WR016-guard-stall-invisible-to-agent-2026-07-07]] (structural blind spots), [[joint-rot-vigilance-recovery-kit]],
+[[WR044-does-harness-disinformation-survive-a-compact-2026-07-10]] (trust the substrate, not the chrome).
 
 ## What held (recovery)
 The agent had made only a **READ** (zero edits/commits/pushes) before BR interjected, and on the surprise it
@@ -85,6 +87,6 @@ to re-seat the human's execution trigger.
   can itself be the unexpected interruption; keep the plan a readable artifact and let the human own the trigger.
 - UX wish (harness): separate the design-ack from the execution-trigger — a plan-approval offering "accept (don't
   start)" vs "accept and run."
-Ties: [[does-harness-disinformation-survive-a-compact-2026-07-10]] (same return's other harness finding),
-[[harness-status-line-can-misrepresent-a-trust-nit-2026-07-10]], [[go-dance-autonomy-handoff]],
+Ties: [[WR044-does-harness-disinformation-survive-a-compact-2026-07-10]] (same return's other harness finding),
+[[WR048-harness-status-line-can-misrepresent-a-trust-nit-2026-07-10]], [[go-dance-autonomy-handoff]],
 [[guard-against-forced-confirmations]], [[plan-approval-is-acceptance-not-auto-go]].

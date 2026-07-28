@@ -1,11 +1,13 @@
 # BR reflection on his OWN work: the dropped scratchpad habit (2026-07-16 22:54:33)
 
+> **WR137** · episode 2026-07-16 · first commit 2026-07-16 · previously `br-reflection-dropped-scratchpad-habit-2026-07-16.md`
+
 **Type:** WR data — **BR's own reflection, pinned VERBATIM at his explicit instruction** (*"pin dont correct typos
 no nuthin"*, *"you dont need to say anything about them"*). **Not edited, not spell-corrected, not commented on by
 the agent.** Typos and phrasing are part of the datum ([[br-bad-speller-fix-in-publications]]: fix spelling in
 PUBLICATIONS, leave it in internal/raw data; [[raw-data-append-only]]).
 **Stamp:** `tt chrono now` → **2026-07-16 22:54:33** (read, not guessed).
-**Sibling:** [[br-reflection-agent-itchy-personality-shift-2026-07-16]] (the observation this proposes a cause for).
+**Sibling:** [[WR136-br-reflection-agent-itchy-personality-shift-2026-07-16]] (the observation this proposes a cause for).
 **Threads:** [[br-personal-scratchpad]], [[cue-we-are-racing]], [[live-edit-dance]],
 [[human-disclosed-stress-is-high-signal-adapt]], [[hold-human-intent-uncertainty-like-fact]].
 **BR: to be picked up later** — *"I will think more about this and bring it up later when the new clear-context

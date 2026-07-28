@@ -1,5 +1,7 @@
 # Rename: baton → warp ember (2026-07-20)
 
+> **WR181** · episode 2026-07-20 · first commit 2026-07-20 · previously `rename-baton-to-warp-ember-2026-07-20.md`
+
 **Decision (BR, 2026-07-20 ~14:30):** the warp handover artifact formerly called *baton* is renamed
 **warp ember** (short form *ember*; files `EMBER-*.md`). The term had been BR's settle on 2026-07-17
 over the agent's coinage "carrier"; both renames happened while the artifact's SM168 experiments were

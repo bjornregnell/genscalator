@@ -53,7 +53,7 @@ environment. This is precisely why "breaking the barrier" mis-describes it — a
 ## Naming — RESOLVED (2026-07-04): the split into `note` + `pin`
 The durable write-op is the **pin dance** (cue `pin:`). It was briefly named *etch*, but *etch* is a near-anagram of our
 core quality term *echt* — a confusability trap — so it was renamed to **pin** (which also won the embodied cue-word
-typing test on ergonomics; see `research/wr-data/harness-ux.md`). The overloaded "note:" was split off into the **note dance**
+typing test on ergonomics; see `research/wr-data/WR003-harness-ux.md`). The overloaded "note:" was split off into the **note dance**
 (cue `note:` = notice / keep-fluent-this-conversation + pin-candidate) — the attention stage that *feeds* the pin. So
 inference-time learning has a two-cue front end mapping onto the two-stage memory model: `note:` (encode) → `pin:`
 (consolidate). See [[cue-note-vs-pin]] and `docs/foundations.md`.

@@ -12,7 +12,7 @@
 pin offload points and the compaction at ~90% — showing *raw fill* climbing while capability holds (the "capable
 at 0.88 fill" datapoint): the empirical hook for the *how-to-support-the-claim* TODO below. Companion/alternative: a
 **two-lane choreography diagram** (human steps ‖ agent steps) for each named dance. Source:
-`research/wr-data/harness-ux.md`, `research/006-smart-zone-ceiling.md`.
+`research/wr-data/WR003-harness-ux.md`, `research/006-smart-zone-ceiling.md`.
 
 ## What a "dance" is `[for BR to voice]`
 

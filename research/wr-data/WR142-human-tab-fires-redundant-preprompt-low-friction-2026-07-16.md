@@ -1,5 +1,7 @@
 # Human TAB-fires a redundant preprompt — low-friction accidental action (2026-07-16)
 
+> **WR142** · episode 2026-07-16 · first commit 2026-07-16 · previously `human-tab-fires-redundant-preprompt-low-friction-2026-07-16.md`
+
 **Type:** WR data — a **human-side** attention/friction specimen + an open UX question BR raised. Benign here
 (the fired action was idempotent). BR flagged it live: *"preprompt was redundant but just pressed TAB and fired
 it... specimen of uncareful reading by human (here unproblematic). BUT i'm not sure if i like those preprompts...

@@ -1,5 +1,7 @@
 # Instrument deadlock + throughput measurement (2026-07-06)
 
+> **WR009** · episode 2026-07-06 · first commit 2026-07-06 · previously `instrument-deadlock-and-throughput-2026-07-06.md`
+
 WR-data episode. BR pasted the thinking-spinner telemetry (`Precipitating…`/`Doodling…`/`Sprouting… (Nm Ns · ↓
 Nk tokens)`) across many turns to give CO4 **observability into its own latency + token-spend** — a thing the
 agent is structurally blind to ([`039`](../topics/RT039-can-we-give-agent-introspection-wall-clock.md)); the **human as

@@ -1,5 +1,7 @@
 # Log-rehydration reconstitutes a minion's cross-push PATTERN across a compact (2026-07-17)
 
+> **WR152** · episode 2026-07-17 · first commit 2026-07-17 · previously `log-rehydration-reconstitutes-the-cross-push-pattern-across-a-compact-2026-07-17.md`
+
 **The cycle-3 result, and the strongest thing the meta-minion study has produced about longevity.**
 
 ## What happened

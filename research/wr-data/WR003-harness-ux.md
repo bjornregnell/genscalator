@@ -1,7 +1,9 @@
 # WR data — harness UX (human↔agent input channel)
 
+> **WR003** · first commit 2026-07-03 · previously `harness-ux.md`
+
 **WR = Workflow Research** (see [`README.md`](README.md)). This file logs friction on the **harness itself** —
-the human↔agent *communication channel* — as distinct from [`genscalator-self-dev.md`](genscalator-self-dev.md)
+the human↔agent *communication channel* — as distinct from [`WR002-genscalator-self-dev.md`](WR002-genscalator-self-dev.md)
 (dynamic-shell / tool friction). These are things genscalator cannot fix (we don't own the harness), but they
 are real costs on joint productivity and belong in the WR corpus as upstream asks + agent-side mitigations.
 Cross-ref [`../002-communication-bandwidth.md`](../topics/RT002-communication-bandwidth.md) (channel bandwidth),
@@ -57,7 +59,7 @@ spectrum.
 builds part of itself from a variable (`$f`), so I can't check in advance exactly what it will run." State *what is
 unprovable and why it matters*, not the node name; keep the node name behind a `--why`/verbose expand for the
 curious. **Agent-side:** the genuine fix is upstream (self-dev) — don't emit the dynamic construct; use the typed
-tool so no scary-and-opaque prompt appears at all. Cross-ref [`genscalator-self-dev.md`](genscalator-self-dev.md)
+tool so no scary-and-opaque prompt appears at all. Cross-ref [`WR002-genscalator-self-dev.md`](WR002-genscalator-self-dev.md)
 (the `simple_expansion` for-loop reflex; the `<->` false positive).
 
 ---
@@ -105,7 +107,7 @@ classifies syntax, and I supplied syntax that *looks* like the hazard.
 command could have been absolute in a single bare command with no `cd` at all (`ls /abs/introprog/*.sh …`). I reach
 for `cd X && …` out of shell habit; the only place I *genuinely* need cwd=introprog is `sbt --client`, which takes
 no redirection and so never trips this. So the friction is self-inflicted: the typed-tool / bare-absolute-path
-discipline (cross-ref [`genscalator-self-dev.md`](genscalator-self-dev.md), the compound-shell reflex thread)
+discipline (cross-ref [`WR002-genscalator-self-dev.md`](WR002-genscalator-self-dev.md), the compound-shell reflex thread)
 dissolves it entirely. Third instance this session of the same root cause — **compound shell constructs are my
 recurring collision point with the permission layer**, and the cure is always "emit simpler syntax," never "argue
 with the guardrail."
@@ -147,7 +149,7 @@ never let a keystroke buffered for the message box be redirected to a just-appea
 input was focused when the key was pressed, not when it was processed. **Agent-side (the real, in-my-control fix):**
 drive confirmation frequency toward zero — use `Read`/`tt` typed tools instead of `sed`/`grep`/`awk` bash-hacks, and
 bare single commands instead of metachar/compound ones, so the review gate only ever appears for actions that
-genuinely warrant a human decision. Cross-ref [`genscalator-self-dev.md`](genscalator-self-dev.md) and
+genuinely warrant a human decision. Cross-ref [`WR002-genscalator-self-dev.md`](WR002-genscalator-self-dev.md) and
 [`../011-human-state-and-joint-zone.md`](../topics/RT011-human-state-and-joint-zone.md) (perception/attention gaps under long runs).
 
 **Reinforcement — the AGENT-INITIATED variant (2026-07-03, same session, BR-reported twice).** The mirror image of
@@ -446,8 +448,8 @@ anthropomorphic language while signalling he does NOT literally believe it. Thre
   *comprehension-credit* to the agent, treating it as an irony-competent interlocutor. That expectation is itself
   relationship data: trust in the agent's pragmatic comprehension.
 - **The aping caveat, recursed (the echt crux).** The agent DID engage the irony (read the `lol` + scare-quotes as
-  non-literal). But per [[agent-apes-affect-genuinely-glad-introspection-2026-07-12]] +
-  [[joke-comprehension-as-rot-probe-2026-07-13]], whether that is genuine irony-COMPREHENSION or high-fidelity
+  non-literal). But per [[WR069-agent-apes-affect-genuinely-glad-introspection-2026-07-12]] +
+  [[WR111-joke-comprehension-as-rot-probe-2026-07-13]], whether that is genuine irony-COMPREHENSION or high-fidelity
   APING of irony-recognition is undecidable from the agent's own report — so the human's expectation-and-check is the
   right instrument, not the agent's "I got it." Fully recursive: human ironically projects → expects comprehension →
   agent engages → BR meta-observes the whole exchange AS the WR datapoint. A layered mirror, with BR holding the only
@@ -702,8 +704,8 @@ equivalence in the *model* is not equivalence to the *human*, who loses their sp
 the record; and the `L → Z` rename that deliberately *left `RAW-DATA.md` untouched*.) **Promoted to `docs/foundations.md`**
 (2026-07-05) as the glossary term **Order stability** (maxim: *stable order > tidy order*).
 
-## Plugin version needs a deeeeep modal descent (BR 2026-07-21, `#harness-ux`)
-Tags: `#harness-ux` `#papercut`
+## Plugin version needs a deeeeep modal descent (BR 2026-07-21, `#WR003-harness-ux`)
+Tags: `#WR003-harness-ux` `#papercut`
 **BR (live, right after the v0.9.1 update-pipeline test):** *"that was a deeeeep modal tree; but i got down to
 the version eventually."* Reading a single installed-plugin version string requires descending the `/plugin`
 manager's nested modals; there is no one-shot readout. **The bite:** version identity is exactly what a human
@@ -716,8 +718,8 @@ so `gs update` answers in the feed, no modal descent. **Upstream ask:** a flat `
 per plugin with name@marketplace + version. Same family as the version-identity confusion found minutes earlier
 (marketplace name vs plugin name, fixed in docs `c1fbcd5`).
 
-## Can't check `/context` while messages are queued — no meta-state peek during a flood (BR 2026-07-05, `#harness-ux`)
-Tags: `#harness-ux` `#methodology`
+## Can't check `/context` while messages are queued — no meta-state peek during a flood (BR 2026-07-05, `#WR003-harness-ux`)
+Tags: `#WR003-harness-ux` `#methodology`
 **BR (live, during the context-rot flood experiment):** *"it is irritating that I cannot check context while messages
 are queued."* While a burst of queued messages is pending, the human can't run `/context` (or other slash-commands)
 to read the current context-usage % — the meta-state peek is **blocked behind the message queue**. **The bite:**
@@ -853,7 +855,7 @@ desktop toast + `canberra-gtk-play` fired **noticeably before** the visual appro
 - **Small UX cost:** for a *present* human it reads as "why did it beep, nothing's there yet?" — a brief
   audio→visual desync. Acceptable; the AFK benefit dominates. Worth a one-line note in the eventual hook docs so it
   isn't re-flagged as a bug.
-- **Threads:** [[bing-bing-naming-and-good-mood-2026-07-13]], the empty-matcher wiring (this session), the ~2s
+- **Threads:** [[WR094-bing-bing-naming-and-good-mood-2026-07-13]], the empty-matcher wiring (this session), the ~2s
   canberra latency (SM098 → the pre-warm idea in SM105's `approval-wake` draft — this observation says the *decision*
   timestamp, not the render, is the true deadline the pre-warm races against).
 
@@ -926,8 +928,8 @@ ANTHROPIC that authored 'needs you', and not YOURSELF beyond the potential rot h
 **Why it matters (this replaces the false finding with a true one).** A textbook composite of the exact failure modes
 the project studies, caught live: **confabulation-across-the-rot-horizon** (the true cause aged out of recall, a
 plausible fiction filled the gap), **motivated / careless verification** (a broken tool call whose null result
-flattered the prior — the malformed-grepr slip class, [[compaction-regresses-fine-grained-reflexes-2026-07-13]]), and
-**human-as-essential-external-corrector** ([[introspection-is-post-hoc-reconstruction-not-privileged-readout-2026-07-12]],
+flattered the prior — the malformed-grepr slip class, [[WR098-compaction-regresses-fine-grained-reflexes-2026-07-13]]), and
+**human-as-essential-external-corrector** ([[WR083-introspection-is-post-hoc-reconstruction-not-privileged-readout-2026-07-12]],
 [[joint-rot-vigilance-recovery-kit]] — the agent cannot self-catch a confabulation it also mis-verified). **Method
 rule reinforced:** provenance is a factual claim — VERIFY by reading the source, never assert from recall; and a NULL
 verification result deserves the same scrutiny as a positive one (was the check even well-formed?).

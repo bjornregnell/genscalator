@@ -1,5 +1,7 @@
 # SM129's probe counted BR's PASTES, not stalls — the agent is structurally BLIND to its own asks
 
+> **WR157** · episode 2026-07-17 · first commit 2026-07-17 · previously `sm129s-probe-counted-brs-pastes-not-stalls-the-agent-is-blind-to-its-own-asks-2026-07-17.md`
+
 **2026-07-17 11:25** (`tt chrono now`). Found SOLO while building `tt stalls`, the tool SM129 specifies.
 **This retracts SM129's central empirical claim.** The claim was mine, the probe was mine, and BR believed it.
 
@@ -106,7 +108,7 @@ the ONLY visible class.** A deny is recorded verbatim, with its command, because
 3. ⭐ **Re-run `Guardcheck.cmdFindings` on that command and report which denies were FALSE POSITIVES** — a finding
    that vanishes under `maskQuoted` was a quoted false positive. **This turns SM129's "precision FIRST" ordering
    constraint from a judgment call into a measured number**, which is exactly what
-   [[severity-double-duties-as-the-mask-selector-so-sm129s-med-to-deny-is-unsafe-2026-07-17]] says is missing.
+   [[WR156-severity-double-duties-as-the-mask-selector-so-sm129s-med-to-deny-is-unsafe-2026-07-17]] says is missing.
 4. **Re-run TODAY's checks over an OLD transcript** ⇒ which historical stalls the current guard would no longer
    fire. This measures a fix's value **retroactively**, e.g. `eb0cd14` vs the 2 redirect asks.
 5. **Say loudly that ASKS CANNOT BE COUNTED**, and why. An instrument that silently reports only denies would
@@ -180,7 +182,7 @@ RETRACTED CLAIM**: it says *"SM129's probe shows stalls ARE countable + attribut
 watch the approval series"* — **the canary as conceived may be unbuildable**, since approvals leave no trace; it
 would have to watch *denies* (which the human never sees) or *gaps* (ambiguous). **SM130 needs re-deciding, not
 re-wording.** · **SM121** (the gap method, wrongly retired — now the only route) · **SM134 #9** (today's 2 stalls,
-invisible to the instrument) · [[severity-double-duties-as-the-mask-selector-so-sm129s-med-to-deny-is-unsafe-2026-07-17]]
+invisible to the instrument) · [[WR156-severity-double-duties-as-the-mask-selector-so-sm129s-med-to-deny-is-unsafe-2026-07-17]]
 (the sibling found 10 min earlier: precision is unmeasured AND the green light is wrong) ·
 [[keep-the-ball-game-retract-by-annotating]] · **SM133** — this retraction has **at least four homes** (SM129,
 SM130, the carrier's menu item 1, this note). **Fan-out is now a live obligation, not a research topic.**

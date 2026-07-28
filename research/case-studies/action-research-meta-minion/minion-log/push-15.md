@@ -74,8 +74,8 @@ mislabeled "(clock-read)"; every repo-state claim I checked is TRUE, including "
   "ONE deliberate untracked file" is exact (authorship not verifiable from git; mtime 13:20
   pre-warp, consistent).
 - Today's 4 wr-data notes tracked (`ls-files research/wr-data`): sandbox-clone-has-no-guard-
-  clean-shape-tt-git-lacks-clone, subagents-need-the-ember-s0-checklist, verify-writers-
-  before-advising-file-edits, tt-box-lacks-local-health-shape. All four present.
+  clean-shape-tt-git-lacks-clone, WR212-subagents-need-the-ember-s0-checklist, verify-writers-
+  before-advising-file-edits, WR213-tt-box-lacks-local-health-shape. All four present.
 - introprog: HEAD `76f45c7e` = `origin/master`, tree clean. `35fc9912` = "Merge pull request
   #949" in history; `6c950c66` present; review batch matches item-for-item (ca23dbb2
   Compilation concept, 26715775 + 76f45c7e cache, 5e367d9c workflows, a141d44d regen).

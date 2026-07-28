@@ -1,5 +1,7 @@
 # Warming the minion covered the TOOL, not the QUOTING — and CO4 mis-diagnosed it twice (2026-07-17)
 
+> **WR168** · episode 2026-07-17 · first commit 2026-07-17 · previously `warming-covered-the-tool-not-the-quoting-2026-07-17.md`
+
 **Context:** meta-minion push 3 (re-hydrated fable `general-purpose` sub-agent). CO4's push payload **warmed**
 the minion with reflexes, including *"Search: `tt text grepr <ABS-dir> <ext> <regex>` … NEVER raw grep"* and
 *"Bash: ONE bare command, no pipes."*

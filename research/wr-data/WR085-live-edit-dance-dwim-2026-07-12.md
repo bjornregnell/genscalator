@@ -1,5 +1,7 @@
 # WR specimen: the live-edit dance (do-what-I-mean, agent holds the pen) - 2026-07-12
 
+> **WR085** · episode 2026-07-12 · first commit 2026-07-12 · previously `live-edit-dance-dwim-2026-07-12.md`
+
 **Context.** Reviewing blog 021, BR stopped opening the file to edit it and instead threw a stream of review
 comments and new text fragments into the CHAT feed - often cue-less, not even naming the doc - and the agent
 applied each edit **live** to the file while BR watched it update. BR, delighted: "the text emerges in my flow of

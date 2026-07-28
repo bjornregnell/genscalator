@@ -1,5 +1,7 @@
 # Guard offered a blanket `date *` allow for a timestamp - but `tt chrono now` already exists (2026-07-10 17:03)
 
+> **WR047** · episode 2026-07-10 · first commit 2026-07-10 · previously `guard-suggests-blanket-date-glob-but-tt-chrono-exists-2026-07-10.md`
+
 BR-flagged WR datum. A clean two-layer specimen of the reflex-slip + over-broad-glob hazard, with a clean
 resolution: the typed leaf was already there.
 

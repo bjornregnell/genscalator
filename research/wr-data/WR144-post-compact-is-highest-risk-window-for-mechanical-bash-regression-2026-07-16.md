@@ -1,9 +1,11 @@
 # Post-compact is the highest-risk window for the mechanical bash-regression — shepherd it (2026-07-16)
 
+> **WR144** · episode 2026-07-16 · first commit 2026-07-16 · previously `post-compact-is-highest-risk-window-for-mechanical-bash-regression-2026-07-16.md`
+
 **Type:** WR data — process finding + a JOINT mitigation protocol. Live specimen: BR flagged from *inside* a guard
 stall (`ig:`) that the agent had just regressed to a `| tail` pipe **right after a compact**, and asked whether the
 human needs to stay at the keyboard post-compact to catch guard stalls.
-**Threads:** [[task-specific-degradation-mechanical-fails-before-conceptual-2026-07-16]], the blackout/hangover pair,
+**Threads:** [[WR147-task-specific-degradation-mechanical-fails-before-conceptual-2026-07-16]], the blackout/hangover pair,
 [[joint-rot-vigilance-recovery-kit]], [[cue-guard-stall]], the compact/exit-resume dances.
 
 ## What happened (observable)
@@ -89,7 +91,7 @@ MEMORY.md compaction.
 >
 > **NOTHING IN-AGENT ARMS IT. Not freshness, not a declared mode, not maximal theory-heat.** *"Carried ≠ armed"*
 > has a harder sibling: ***hot ≠ armed***. Heat arms **conceptual** moves (the same hour it armed unprompted
-> pinning — see `spontaneous-pinning-is-a-state-not-a-trait-2026-07-17.md`) and **does not arm mechanical ones**.
+> pinning — see `WR161-spontaneous-pinning-is-a-state-not-a-trait-2026-07-17.md`) and **does not arm mechanical ones**.
 > **Second instance of that split within one hour** (cf. SM134 #8, the premature stop). **Only the guard stopped
 > it.** The day's load-bearing finding, at its sharpest: *only the guard, the tool interface, and the human survive.*
 

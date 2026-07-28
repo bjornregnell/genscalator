@@ -11,7 +11,7 @@
   whole category of friction never arises.
 - **Plan:** Distill the autotranslate (AT) case study, where two instruments proved decisive, into an
   authoring convention (and possibly a tiny helper/template) for genscalator tools.
-- **Status:** open — proposal drawn from the AT case study (`research/wr-data/introprog-autotranslate.md`).
+- **Status:** open — proposal drawn from the AT case study (`research/wr-data/WR001-introprog-autotranslate.md`).
 
 ## Findings
 

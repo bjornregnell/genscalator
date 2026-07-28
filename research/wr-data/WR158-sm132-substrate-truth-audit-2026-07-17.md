@@ -1,5 +1,7 @@
 # SM132 — the substrate-truth audit: results, and the prediction it was built to test is untestable
 
+> **WR158** · episode 2026-07-17 · first commit 2026-07-17 · previously `sm132-substrate-truth-audit-2026-07-17.md`
+
 **2026-07-17 08:35 (`tt chrono now`).** BR's approved 1-2-3-4, run post-clear as designed. **Corpus: the 54
 genscalator commits of 2026-07-16** (`a56ff43` 00:32 → `0e71c9c` 22:55), bodies pulled whole. **The agent's own 8
 commits from 23:35 onward are EXCLUDED** — self-authored, and the resume prompt specifies the pre-clear set.
@@ -16,7 +18,7 @@ Trail: the corpus itself names it (`5b1c3d6`'s body), which pointed at the file.
 *claims* it did (*"Now annotated in place, never erased"*). **Claims are what we are auditing**, so it was checked
 against the file, not believed:
 
-- `prohibition-does-not-arm-the-reflex-use-a-hex-escape-2026-07-16.md:192` — *"⚠️ RETRACTION (same session, BR):
+- `WR145-prohibition-does-not-arm-the-reflex-use-a-hex-escape-2026-07-16.md:192` — *"⚠️ RETRACTION (same session, BR):
   'blind the guard-checker' is OVERSTATED."* ✅ **landed**
 - same file `:75` — *"## RETRACTION, same session: the escape is a better prohibition, NOT a structural fix"* ✅
 - same file `:212` — *"The agent's 'silent rewrite is a transparency problem' objection was WRONG and is retracted"* ✅
@@ -72,7 +74,7 @@ note or the PB" — is what produced the false orphan.** A source comment is a m
 *researchers*.
 
 > **★ Accident worth recording:** the research orphan was **closed 8 hours before this audit ran, by accident**.
-> `hangover-chip-fires-on-the-humans-thinking-pause-2026-07-17.md` (00:15) has a section *"there are TWO noise
+> `WR151-hangover-chip-fires-on-the-humans-thinking-pause-2026-07-17.md` (00:15) has a section *"there are TWO noise
 > floors, and only one was measured"* — **written for a different reason, by an agent who did not know it was the
 > audit's named test case.** Continuous pinning closed the orphan before the audit reached it, which is exactly
 > `42b7295`'s argument (*the dance only works if pinning is CONTINUOUS*) landing on the audit itself.
@@ -81,7 +83,7 @@ note or the PB" — is what produced the false orphan.** A source comment is a m
 
 **`83596ec`'s follow-up: a toolbox-wide lint that smoke-runs every `tt` tool's `--help`.**
 
-- **Its only home:** `wr-data/green-test-suite-hid-a-tool-broken-in-its-real-invocation-2026-07-16.md:72` — *"or
+- **Its only home:** `wr-data/WR140-green-test-suite-hid-a-tool-broken-in-its-real-invocation-2026-07-16.md:72` — *"or
   simply smoke-run every `tt` tool's `--help` in CI — the cheapest possible standalone-compile check"*.
 - **Homed narratively, ORPHANED actionably:** **no SM, not on any menu, not in SM134's register.** Nothing will ever
   cause it to be built.

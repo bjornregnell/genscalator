@@ -82,7 +82,7 @@ $ stops buying Q). The knee + the floor is the real deliverable; the scalar is t
 Cheap: also score **Haiku+Fable run in parallel, agreement-gated** (both patch → if their patches agree / both pass,
 accept; else escalate). Question: does the 2-cheap-model ensemble reach the quality floor at **less cost than one
 Opus call**? If yes, the "lagom fleet" is literally a *fleet*, not a single tier — which is the whole naming point.
-This is the calibration-value of the double-race made measurable ([[cost-snapshot-2026-07-10-usd774-opus-context-reread]]).
+This is the calibration-value of the double-race made measurable ([[WR041-cost-snapshot-2026-07-10-usd774-opus-context-reread]]).
 
 ## 8. Threats to validity (echt)
 - **API nondeterminism** → reps + variance, not point estimates.
@@ -113,4 +113,4 @@ the expensive resource is *authoring + reviewing the suite*, not running it.
 4. **Suite authoring:** agent drafts ~10 items for your spot-check — good? (This is the one human-in-loop step.)
 5. **modly/local tier:** confirmed deferred to the bigger experiment, not the pilot?
 
-Ties: SM045, SM039, [[cost-snapshot-2026-07-10-usd774-opus-context-reread]], [[cue-use-fleet]], RT029, blog 019.
+Ties: SM045, SM039, [[WR041-cost-snapshot-2026-07-10-usd774-opus-context-reread]], [[cue-use-fleet]], RT029, blog 019.

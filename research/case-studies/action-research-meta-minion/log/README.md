@@ -63,6 +63,6 @@ wrong layer**. *(Were a tool ever needed, `tt` is the right layer for exactly th
 **resolve** the path and check containment, which a string match cannot — which is why allowlisting `tt git` is
 safe.)*
 
-**Ground:** `research/wr-data/` (the specimen note) · `research/wr-data/guard-suggests-blanket-date-glob-but-tt-chrono-exists-2026-07-10.md`
+**Ground:** `research/wr-data/` (the specimen note) · `research/wr-data/WR047-guard-suggests-blanket-date-glob-but-tt-chrono-exists-2026-07-10.md`
 (**the same shape: the harness proposed an over-broad glob and the right answer was already in the toolbox**) ·
 `100b6c0` (a blanket allow permanently disarms the guard for a shape) · SM134 §0.1.

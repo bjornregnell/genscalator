@@ -12,7 +12,7 @@ cross-push PATTERN now visible)
 (a) Answered from retained context, before re-reading anything: push 1's catches were
 (A) mode.scala validates only in the `add` branch — `rm` is `write(read().filterNot(_ == label))`,
 no validation, so `tt mode rm hangover?` is a silent exit-0 no-op, contradicting the WR note's
-"would be rejected outright" (nobody-dropped-the-hangover-chip-2026-07-16.md:24-25); and
+"would be rejected outright" (WR143-nobody-dropped-the-hangover-chip-2026-07-16.md:24-25); and
 (B) "the `?` marks it an inferred proxy (SM118)" claimed as an exact double-quote at
 statusline.scala:209 and :325 — :209 has the parenthetical, :325 does not. I judged B trivial for
 the argument (the ?-convention is real, both line numbers correct; quote-precision only). A was the

@@ -184,7 +184,7 @@ DILUTION, not raw token pressure.**
   multi-line* ticks were too frequent/verbose. Fixes: (1) **terse one-line** ticks; (2) **fewer** of them (rely on
   task-notifications for the real events — cull/completion — and a long fallback heartbeat); (3) offload to a
   **`tt sweep-status`** tool so the verbose `echo ===`/assembly stays OUT of context (tool returns one line, the
-  haystack stays on disk). Cross-ref the `tt sweep-status`/`tt tsv` candidates in `research/wr-data/genscalator-self-dev.md`.
+  haystack stays on disk). Cross-ref the `tt sweep-status`/`tt tsv` candidates in `research/wr-data/WR002-genscalator-self-dev.md`.
 - **Testable (agent-affective, sibling to the indent-vs-braces harness):** a **rot gauge** =
   contradiction/re-read/confabulation events per 100k tokens as fill grows; and an A/B of *repetitive-filler* vs
   *dense-unique* context of equal token count on a fixed probe task — turns "difficult to measure" into a number.

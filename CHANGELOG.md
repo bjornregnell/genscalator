@@ -138,7 +138,7 @@ Detail from the 2026-06-30 → 2026-07-05 window (docs/research + the sequence-d
   BR's current instructions as a worked example), `003-instruction-surfaces-precedence.md` (how AGENTS.md /
   CLAUDE.md / SKILL.md / MEMORY.md / global instructions compose, conflict, and rank). `research/README.md`
   index updated for all.
-- **`research/wr-data/introprog-autotranslate.md`** — appended friction events (count/status aggregation gaps,
+- **`research/wr-data/WR001-introprog-autotranslate.md`** — appended friction events (count/status aggregation gaps,
   GPU/job probe, pipe-to-grep noise suppression, git-commit & repo-overview cd/&&/echo regressions) feeding
   candidate `tt` tools.
 - **Human-agent collaboration research notes:** `008-instruction-adherence-decay.md` (why the agent regresses to

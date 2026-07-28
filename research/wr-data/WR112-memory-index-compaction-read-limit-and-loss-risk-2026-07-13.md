@@ -1,5 +1,7 @@
 # WR data: compacting the MEMORY.md index — the harness read-limit it surfaces, and does compaction lose anything? (2026-07-13)
 
+> **WR112** · episode 2026-07-13 · first commit 2026-07-13 · previously `memory-index-compaction-read-limit-and-loss-risk-2026-07-13.md`
+
 Two linked, BR-flagged items from a live MEMORY.md compaction.
 
 ## (1) Agent introspection surfaced a harness behaviour

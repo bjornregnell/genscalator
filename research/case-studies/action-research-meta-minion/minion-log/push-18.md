@@ -149,7 +149,7 @@ PB claims against work-repo git log and local substrate:
     mirror compile gate on PRs" exists as described); `5e367d9c` is BR's same-day workflow-fix
     commit.
 27. PUBLISHED pin's "the SM196 casefile's 11-prompt tally": the casefile
-    (`genscalator/research/wr-data/gh-vs-tt-forge-capability-gap-2026-07-21.md`) computes
+    (`genscalator/research/wr-data/WR183-gh-vs-tt-forge-capability-gap-2026-07-21.md`) computes
     "2 list/read calls + 3 draft-body PATCHes + 6 asset uploads = **11 guard prompts**" —
     tally exists and says 11 (note: also agent-authored, so consistent, not independent).
 28. `compendium-en/compendium-en.pdf` mtime 23:48:16 — after the deglue commit, before

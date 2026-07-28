@@ -17,8 +17,8 @@ behaviour, versus substrate I recall but do not enact?**
 ## Why this matters (the evidence base is already here)
 
 The Go #1/#2 loop produced **five command-hygiene regressions** in a few days
-(`research/wr-data/command-hygiene-regression-2026-07-06.md`, specimens 1-5) plus the **guard-stall-invisibility**
-finding (`research/wr-data/guard-stall-invisible-to-agent-2026-07-07.md`). The pattern across them:
+(`research/wr-data/WR008-command-hygiene-regression-2026-07-06.md`, specimens 1-5) plus the **guard-stall-invisibility**
+finding (`research/wr-data/WR016-guard-stall-invisible-to-agent-2026-07-07.md`). The pattern across them:
 - **Recall does not equal enactment** — the relevant rule was often *in recalled memory* yet not enacted
   (the t=0 post-compact `cd`-git slip had `commit-via-tt-git-not-raw-cd-git` in context).
 - **Willpower does not fix it** — discipline regresses under load (RT043), does not survive a warp, and
@@ -66,8 +66,8 @@ harness to the indent-vs-braces edit-cost experiment, but the DV is *tool-discip
 cost. Beware the reflexivity/observer effect: the agent knowing it is measured may itself change behaviour.
 
 ## Related
-- Data: `research/wr-data/command-hygiene-regression-2026-07-06.md` (5 specimens),
-  `research/wr-data/guard-stall-invisible-to-agent-2026-07-07.md`, `research/wr-data/broad-allowlist-aversion-2026-07-06.md`.
+- Data: `research/wr-data/WR008-command-hygiene-regression-2026-07-06.md` (5 specimens),
+  `research/wr-data/WR016-guard-stall-invisible-to-agent-2026-07-07.md`, `research/wr-data/WR007-broad-allowlist-aversion-2026-07-06.md`.
 - Siblings: RT039 (wall-clock / `tt` clock), RT043 (guardrail adherence under load), RT003 (instruction
   surfaces precedence), RT013/016/021 (guard tooling), RT027 (steering-doc design tension).
 - Themes: 047 (substrate carry, at the meta-level of the agent's own discipline), structure-over-willpower,

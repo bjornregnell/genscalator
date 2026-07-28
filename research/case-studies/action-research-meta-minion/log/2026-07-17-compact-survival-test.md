@@ -95,11 +95,11 @@ rule somewhere to execute.** *Consistent with the day's spine: structure arms, i
 
 ## Findings this cycle produced — POINTERS ONLY (per the README contract)
 
-- [`severity-double-duties-as-the-mask-selector-so-sm129s-med-to-deny-is-unsafe-2026-07-17.md`](../../../wr-data/severity-double-duties-as-the-mask-selector-so-sm129s-med-to-deny-is-unsafe-2026-07-17.md)
+- [`WR156-severity-double-duties-as-the-mask-selector-so-sm129s-med-to-deny-is-unsafe-2026-07-17.md`](../../../wr-data/WR156-severity-double-duties-as-the-mask-selector-so-sm129s-med-to-deny-is-unsafe-2026-07-17.md)
   (`767926f`) — a **false-positive DENY hit live, twice in 15 min**, on read-only commands. `severity` selects the
   scan target, so **SM129's MED→deny green light rests on a property the move destroys**. **The check's own name
   triggers the check.** ⛔ **Not fixed solo: masking HIGH would LOOSEN the guard.**
-- [`sm129s-probe-counted-brs-pastes-not-stalls-the-agent-is-blind-to-its-own-asks-2026-07-17.md`](../../../wr-data/sm129s-probe-counted-brs-pastes-not-stalls-the-agent-is-blind-to-its-own-asks-2026-07-17.md)
+- [`WR157-sm129s-probe-counted-brs-pastes-not-stalls-the-agent-is-blind-to-its-own-asks-2026-07-17.md`](../../../wr-data/WR157-sm129s-probe-counted-brs-pastes-not-stalls-the-agent-is-blind-to-its-own-asks-2026-07-17.md)
   (`2e1fcc5`, `f0188d3`) — **SM129's central empirical claim RETRACTED.** The probe counted BR's pastes. **The agent
   is structurally blind to its own asks.** Corpus grew **54 → 66 → 72 while the note was being written**.
 - **Fan-out landed** (`d2e982a`): SM129 (struck + corrected), **SM130 (inherited the false premise — it did not state

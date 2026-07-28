@@ -1,5 +1,7 @@
 # Context-rot before/after-compact experiment (2026-07-05)
 
+> **WR005** · episode 2026-07-05 · first commit 2026-07-05 · previously `context-rot-before-after-2026-07-05.md`
+
 A within-session natural experiment: do the SAME agent's coding mistakes differ at **high context usage** (before
 compact) vs **fresh context** (after compact)? BR's design. This file is the live data log — append observations
 during the run; the post-compact re-inspect scores against the pre-registration below.
@@ -290,7 +292,7 @@ Verbatim turns whose *content* was captured in observations O7-refinement/O8 but
   explicit "don't narrate 'absorbed'" (corrects the O1 slip). Committed `a8057e3`.
 - **[BR]** "TS: sön 5 jul 2026 17:40:39 CES[T]" → ~31 min elapsed.
 - **[BR]** (pin UX problem) "it is irritatinmg that I cannot check context while messages are queud" → **[agent]**
-  pinned to `harness-ux.md` (can't `/context` while queued = flying the load meter blind while adding load). `7ba4a08`.
+  pinned to `WR003-harness-ux.md` (can't `/context` while queued = flying the load meter blind while adding load). `7ba4a08`.
 - **[BR]** "WDYT: is it ok to stop the experiment or should we push further? do you think you were dumb enough at som
   points?" → **[agent]** assessment below (**A1**).
 - **[BR]** "yes log it then I will compact ;; note my ambiguity: the experiment is not stopped until we have gather
@@ -508,7 +510,7 @@ prioritized over non-interference / observability.** A controlled experiment min
 action research does the opposite — it **intervenes**, and WR-data points found *during* the study are meant to improve
 the work immediately. So the record continues as the **ACT** phase of observe → reflect → act, not a frozen artifact.
 What we did right after the flooding stopped:
-- **Audit (a hardening-dance pass):** wrote `substrate-regression-candidates-2026-07-05.md` — the misfire-cause
+- **Audit (a hardening-dance pass):** wrote `WR006-substrate-regression-candidates-2026-07-05.md` — the misfire-cause
   inventory (`cd`-git, `dot` prompts, context-while-queued, the logging leak), each tagged **TOOL** vs **SUBSTRATE**.
 - **Discovery that sharpens O12 to its strongest form:** `Bash(git -C * *)` and `Bash(tt git *)` were **already
   allowlisted** — so the whole-session `cd <repo> && git …` regression had **two sanctioned, zero-prompt escapes

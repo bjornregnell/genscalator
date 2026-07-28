@@ -3,7 +3,7 @@
 **Purpose.** A pre-built, read-and-render source for the `gs cues` / `gs dances` / `gs term` commands, so the
 agent does NOT have to synthesize the answer live from `docs/foundations.md` + the `cue-*` memories every time
 (which lagged, cost tokens, and risked dropping an entry — WR
-`research/wr-data/gs-lists-need-ready-to-grab-substrate-2026-07-13.md`). Each entry is one line: a
+`research/wr-data/WR104-gs-lists-need-ready-to-grab-substrate-2026-07-13.md`). Each entry is one line: a
 meaning plus, for cues, its direction.
 
 **Canonical source.** `docs/foundations.md` (its "Channel bandwidth", "Dances and handoffs", and glossary

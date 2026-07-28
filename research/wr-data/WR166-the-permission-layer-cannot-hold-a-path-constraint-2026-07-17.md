@@ -1,5 +1,7 @@
 # The permission layer cannot hold a path constraint — three layer-mismatches in one dialog
 
+> **WR166** · episode 2026-07-17 · first commit 2026-07-17 · previously `the-permission-layer-cannot-hold-a-path-constraint-2026-07-17.md`
+
 **2026-07-17 10:15 (`tt chrono now`).** BR flagged the agent's claim as WR data, naming it **theory-building + the
 security model**. Grounded in **two live guard stalls five minutes apart**, both self-inflicted by the agent.
 **Feeds SM125 (the security model), SM131 (`SECURITY-MODEL.md` §3), SM129 (the stall budget), SM134 #9.**
@@ -150,7 +152,7 @@ trade-off and he chose `DISABLE_MOUSE_CLICKS` + Shift-drag, keeping wheel-scroll
 > is "remove your own reach."** Vigilance is willpower; the env var is structure. **The pair is symmetric: both
 > members need their reach narrowed, and neither can do it from the inside at the moment of action.**
 
-**Ties [[a5f4387]] (`human-tab-fires-redundant-preprompt-low-friction-2026-07-16.md`) — the SAME principle at
+**Ties [[a5f4387]] (`WR142-human-tab-fires-redundant-preprompt-low-friction-2026-07-16.md`) — the SAME principle at
 trivial stakes:** a low-friction accidental action (TAB) fired a redundant preprompt, and the candidate rule was
 ***match firing-friction to the stakes of what the prompt can trigger***. **§3b is that rule at CATASTROPHIC
 stakes, and the system has it exactly inverted:** the irreversible option costs one careless click; typing a commit
@@ -160,7 +162,7 @@ message costs more effort than permanently disarming the guard.
 preserves the typing flow, mouse breaks it"* (`PIN-BOARD.md`). ⇒ the keyboard is not merely nicer; **it is the
 higher-friction, higher-intent channel**, which is precisely what a consent gesture should require.
 
-*(Homes respected: the mouse-mode **UX race** lives in `wr-data/harness-ux.md` § "New mouse-click TUI mode races the
+*(Homes respected: the mouse-mode **UX race** lives in `wr-data/WR003-harness-ux.md` § "New mouse-click TUI mode races the
 human's native terminal clicking" (2026-07-06) and the **env-var trade-off** in **SM093**. This section is the
 **dialog's** defect, which is why it lives here beside its three siblings — one home per finding.)*
 
@@ -168,7 +170,7 @@ human's native terminal clicking" (2026-07-06) and the **env-var trade-off** in 
 
 > **⚠️ It was an ORPHAN for ~15 minutes, and BR caught it.** This section originally read *"a **candidate** guard rule
 > for §3"* — i.e. the agent wrote a rule for a document, **into a different document**, and stopped. **Narratively
-> homed, actionably homeless** — the *exact* shape SM132's audit had named an hour earlier (`sm132-substrate-truth-audit-2026-07-17.md`
+> homed, actionably homeless** — the *exact* shape SM132's audit had named an hour earlier (`WR158-sm132-substrate-truth-audit-2026-07-17.md`
 > §3), committed by the agent that named it. BR: *"it is now pinned to SECURITY-MODEL.md? or else go do it."*
 > **The audit's rule does not arm the audit's author.** Add it to the tally: *carried ≠ armed*, *hot ≠ armed*, and now
 > **found-and-written-up ≠ armed.** ⇒ Landed at §3.5, with the introspective rationale BR asked for (the agent
@@ -197,7 +199,7 @@ false ones.*
 > irreversible policy change one keystroke away from a human who was mid-task.**
 
 **That is the honest framing: the agent is not merely a consumer of the guard, it is a GENERATOR of the risk the
-guard exists to contain.** Ties `guard-suggests-blanket-date-glob-but-tt-chrono-exists-2026-07-10.md` — **the same
+guard exists to contain.** Ties `WR047-guard-suggests-blanket-date-glob-but-tt-chrono-exists-2026-07-10.md` — **the same
 shape, seven days earlier: the harness proposed an over-broad glob and the right answer was already in the toolbox.**
 **It recurred.** *(Cf. `36f1532`: the quoted-arg false positive recurred 3 days after being logged AND skilled. This
 one recurred after 7. The pattern of the pattern: knowing about a shape does not stop it — only removing the reach
@@ -205,7 +207,7 @@ does.)*
 
 ## Cross-links
 
-`guard-suggests-blanket-date-glob-but-tt-chrono-exists-2026-07-10.md` (**the 7-day-earlier twin**) ·
+`WR047-guard-suggests-blanket-date-glob-but-tt-chrono-exists-2026-07-10.md` (**the 7-day-earlier twin**) ·
 `research/theory/TH006-genscalator-security-model-save-nothing-open-and-the-human-may-be-bhh.md` (SM125 — the
 human-may-be-BHH frame; **§2 and §3 here are both attacks on the human's attention, which is that frame's soft
 target**) · `SECURITY-MODEL.md` §3 (SM131 — the rule above wants a home there) · `100b6c0` (the guard-stalled `rm`:

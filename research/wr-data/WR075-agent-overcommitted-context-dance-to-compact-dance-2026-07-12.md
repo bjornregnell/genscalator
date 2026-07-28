@@ -1,5 +1,7 @@
 # WR specimen: agent over-committed "context dance" -> "compact dance" (misread caught by BR, 2026-07-12)
 
+> **WR075** · episode 2026-07-12 · first commit 2026-07-12 · previously `agent-overcommitted-context-dance-to-compact-dance-2026-07-12.md`
+
 **The misread.** BR: "lets do the context dance." The agent replied "On it - the compact dance." and immediately
 began compact-dance prep (rewriting the resume-prompt). BR flagged it: "you misread me", and softened to "(perhaps
 compact dance)".
@@ -17,7 +19,7 @@ the human MEANS") and the post-hoc-introspection thesis.
 - The fix is the live-edit-dance rule applied to CUES too: on an open or ambiguous cue, do what he MEANS - and when
   the pattern-match is a guess, CONFIRM rather than commit.
 
-Ties: [[live-edit-dance]], [[introspection-is-post-hoc-reconstruction-not-privileged-readout-2026-07-12]], RQ0
+Ties: [[live-edit-dance]], [[WR083-introspection-is-post-hoc-reconstruction-not-privileged-readout-2026-07-12]], RQ0
 family E (cannot read own gauges), [[agent-lacks-felt-time-rebind-at-boundaries]], the ape family.
 
 ## Was it rot? (BR's follow-up, itself flagged WR data)

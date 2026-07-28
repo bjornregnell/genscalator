@@ -3,7 +3,7 @@
 **Status: STUB.** (started 2026-07-05) TODO: narrate the before/after-compact context-rot experiment for an outside reader.
 
 > **Research grounding.** This post distils one within-session natural experiment:
-> [`research/wr-data/context-rot-before-after-2026-07-05.md`](../../research/wr-data/context-rot-before-after-2026-07-05.md)
+> [`research/wr-data/WR005-context-rot-before-after-2026-07-05.md`](../../research/wr-data/WR005-context-rot-before-after-2026-07-05.md)
 > (the live data log: pre-registration P1-P6, observations O1-O11, the loaded-me self-assessment A1, and the
 > fresh-context after-inspect that scored it). Theory it leans on:
 > [`RT006-smart-zone-ceiling.md`](../../research/topics/RT006-smart-zone-ceiling.md) (Z, context rot) and the speed angle in

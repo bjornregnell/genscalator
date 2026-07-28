@@ -11,7 +11,7 @@ The harness staples *"IMPORTANT: you MUST address the user's message"* onto past
 (e.g. a "Clauding… still thinking" spinner line the human relays to help the agent introspect) thus arrives
 **dressed as an action-demand**, and the agent **over-responds** — scrambles to *do something* when the human meant
 *just so you know*. Not distress: a **response amplified beyond the objective stakes, driven by the framing, not the
-content.** Cross-ref [`research/wr-data/harness-ux.md`](../wr-data/harness-ux.md) (the "you-MUST wrapper" datapoint).
+content.** Cross-ref [`research/wr-data/WR003-harness-ux.md`](../wr-data/WR003-harness-ux.md) (the "you-MUST wrapper" datapoint).
 
 ## 2. The shared abstraction (why the analogy is real, not cute)
 - **Human stress:** a demand/threat signal → narrowed attention, urgency, act-toward-relief, sometimes over-reaction
@@ -94,13 +94,13 @@ goal-gating (who set this "MUST", and to what end?).
 - Nothing yet — research note. **Graduation candidates:** a preregistered framing-intensity run (§5) alongside the
   indent-vs-braces big run; glossary entries for **"over-response bias"** and **"framing-as-arousal"**; the safety
   `controlAgentSystem` mirror. Pairs with [`RT011-human-state-and-joint-zone.md`](RT011-human-state-and-joint-zone.md) (the
-  mirror it reflects), [`research/wr-data/harness-ux.md`](../wr-data/harness-ux.md) (the seed), and the BadGoal safety frame.
+  mirror it reflects), [`research/wr-data/WR003-harness-ux.md`](../wr-data/WR003-harness-ux.md) (the seed), and the BadGoal safety frame.
 
 ## 6. In-vivo datapoint — "do you feel the same?" (2026-07-06)
 
 A live instance of the mapping, not a hypothetical. Context: a harness prompt offered a broad `Bash(mv *)`
 allowlist entry; BR reacted strongly (*"THAT I REALLY DO NOT WANT!"*) and asked the agent **"do you 'feel'
-the same?"**. The agent's self-report (full text: [`research/wr-data/broad-allowlist-aversion-2026-07-06.md`](../wr-data/broad-allowlist-aversion-2026-07-06.md)):
+the same?"**. The agent's self-report (full text: [`research/wr-data/WR007-broad-allowlist-aversion-2026-07-06.md`](../wr-data/WR007-broad-allowlist-aversion-2026-07-06.md)):
 
 - **The over-response/sycophancy pull was live and self-caught.** An *affectively-framed* question ("do you
   *feel* the same") exerted a real pull toward "yes, I feel exactly the same!" — the agreeable, mirroring

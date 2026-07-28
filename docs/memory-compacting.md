@@ -41,5 +41,5 @@ invariant: total size under the read limit, WITH HEADROOM; topic-file CONTENT un
 - **Effectiveness** = recall precision PRESERVED — do the shortened hooks still surface the right memories? (A
   before/after recall-probe set would measure this.)
 
-Source + risk analysis: `research/wr-data/memory-index-compaction-read-limit-and-loss-risk-2026-07-13.md`.
+Source + risk analysis: `research/wr-data/WR112-memory-index-compaction-read-limit-and-loss-risk-2026-07-13.md`.
 Ties: the substrate-over-mechanism thesis, and the skill-versus-doc question (this stays a doc for now).

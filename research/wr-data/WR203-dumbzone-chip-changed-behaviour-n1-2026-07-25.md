@@ -1,5 +1,7 @@
 # Specimen: the DumbZone chip appears to change agent behaviour within one turn (n=1, confounded)
 
+> **WR203** · episode 2026-07-25 · first commit 2026-07-25 · previously `dumbzone-chip-changed-behaviour-n1-2026-07-25.md`
+
 **2026-07-25 ~14:5x, BR-present, BR flagged this as WR data.** Recorded because it is positive evidence
 for a mode chip having a behavioural effect, which the mode vocabulary has mostly asserted rather than
 shown. Recorded WITH its confounds, because the strongest alternative explanation is very strong.

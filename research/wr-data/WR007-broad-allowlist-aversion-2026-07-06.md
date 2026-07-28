@@ -1,5 +1,7 @@
 # Broad allowlist aversion + an affective self-report (2026-07-06)
 
+> **WR007** · episode 2026-07-06 · first commit 2026-07-06 · previously `broad-allowlist-aversion-2026-07-06.md`
+
 Study-log note (hand-authored agent reflection, **not** a RAW-DATA mined excerpt). Ties to
 [`research/024-agent-affective-analogs.md`](../topics/RT024-agent-affective-analogs.md) and the guard/allowlist thread.
 

@@ -11,7 +11,7 @@
   (tools + hooks) vs which are theater (more exhortation in a doc the agent skims once).
 - **Status:** open (mechanism hypothesis below, drawn from this project's own WR-data regressions as evidence).
 
-## The phenomenon (from `research/wr-data/introprog-autotranslate.md`)
+## The phenomenon (from `research/wr-data/WR001-introprog-autotranslate.md`)
 The agent regressed to dynamic shell **after** demonstrating the typed/bare discipline in the *same session*
 — git-commit via `cd && add && commit && push | tail` right after using bare `git -C`; repo-overview via
 `cd && ls && echo && git log` one call after a clean bare `git -C status`. Not a one-off: the dynamic-shell

@@ -1,5 +1,7 @@
 # Recent WR-data regressions → tt-tool / substrate-tightening candidates (2026-07-05)
 
+> **WR006** · episode 2026-07-05 · first commit 2026-07-05 · previously `substrate-regression-candidates-2026-07-05.md`
+
 BR's pin: several recent WR-data friction points are **regressions** — the agent (or the substrate) falling back into
 a known-bad pattern that a prior pin/tool was supposed to have retired. Collecting them here so they become an
 actionable backlog, each tagged **TOOL** (a `tt` tool should do this) or **SUBSTRATE** (allowlist / settings / guard /
@@ -32,7 +34,7 @@ the agent auditing its own substrate for misfire causes. Common thread at the bo
      the *direct* bash `dot` did), so there's no reason to call `dot` directly.
 
 3. **Can't read `/context` while messages are queued. (substrate gap — harness)** — flying the load meter blind exactly
-   when adding load (`harness-ux.md`). **SUBSTRATE:** a persistent context-fill statusline, or a read-only meta-query
+   when adding load (`WR003-harness-ux.md`). **SUBSTRATE:** a persistent context-fill statusline, or a read-only meta-query
    that jumps the queue. Not a `tt` tool — a harness/substrate ask.
 
 4. **Ad-hoc transcript logging leaks under absorption (O6/O12). (tool candidate)** — a standing "log EVERYTHING"

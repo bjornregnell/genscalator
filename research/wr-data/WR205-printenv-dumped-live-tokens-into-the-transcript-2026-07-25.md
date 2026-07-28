@@ -1,5 +1,7 @@
 # Hazard specimen: a bare `printenv` put live credentials into the transcript (2026-07-25 ~15:0x)
 
+> **WR205** · episode 2026-07-25 · first commit 2026-07-25 · previously `printenv-dumped-live-tokens-into-the-transcript-2026-07-25.md`
+
 **Severity: this is the worst outcome the toolbox-gap family has produced.** The earlier specimens in
 this family cost a missed abstraction or a stalled run. This one disclosed two live access tokens into a
 durable transcript. No token values appear in this note, and none should ever be added to it.
@@ -49,7 +51,7 @@ operation even though every one of them is technically read-only.
 
 ## Counter-evidence for the DumbZone specimen filed one hour earlier
 
-`dumbzone-chip-changed-behaviour-n1-2026-07-25.md` records the chip apparently making the agent more
+`WR203-dumbzone-chip-changed-behaviour-n1-2026-07-25.md` records the chip apparently making the agent more
 careful. **The DumbZone chip was ACTIVE when this happened.** So that note now has a paired negative:
 the chip preceded a careful act (writing missing tests) and also preceded the worst slip of the day.
 

@@ -1,9 +1,11 @@
 # An audit finds only what it has a THEORY for — and this one ran at rot 710k (2026-07-16)
 
+> **WR134** · episode 2026-07-16 · first commit 2026-07-16 · previously `an-audit-finds-only-what-it-has-a-theory-for-2026-07-16.md`
+
 **Type:** WR data — a **method** finding about audits/sweeps, captured at BR's request because *this* consistency
 sweep behaved differently from previous ones and he wants to know why.
-**Threads:** [[two-error-classes-rot-vs-structural-and-what-a-clear-buys-2026-07-16]] (the pinning trap + the
-taxonomy this refines), [[co-design-specimen-human-falsified-five-agent-premises-in-one-hour-2026-07-16]],
+**Threads:** [[WR148-two-error-classes-rot-vs-structural-and-what-a-clear-buys-2026-07-16]] (the pinning trap + the
+taxonomy this refines), [[WR138-co-design-specimen-human-falsified-five-agent-premises-in-one-hour-2026-07-16]],
 SM132 (the audit this predicts the performance of), SM133.
 
 ## BR's observation (the trigger)

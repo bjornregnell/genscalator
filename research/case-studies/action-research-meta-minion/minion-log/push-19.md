@@ -52,7 +52,7 @@ BEFORE the NOW.md reconcile commit landed, and the reconciled file still asserts
 ## Verified TRUE (enumerated — 21 checks)
 
 Item 2 (guard stall + WR datum):
-1. `research/wr-data/guard-ask-rule-help-form-2026-07-24.md` exists; content matches the
+1. `research/wr-data/WR196-guard-ask-rule-help-form-2026-07-24.md` exists; content matches the
    account (release-create `--help` prefix-matched the ask-rule; BR answered from the guard
    TUI; file-based-help reflex as the fix).
 2. Commit `17c9fab` (open repo, 18:03:14) adds exactly that file, +31 lines, message matches.
@@ -79,7 +79,7 @@ Item 3 (NOW.md reconcile):
    account's 0.009s same magnitude).
 
 Item 4 (model-swap WR datum):
-10. `research/wr-data/model-swap-on-warp-into-clear-2026-07-24.md` exists and DOES separate
+10. `research/wr-data/WR199-model-swap-on-warp-into-clear-2026-07-24.md` exists and DOES separate
     "What the agent can verify from inside the session" from the human report — the
     separation claim is structurally true of the file, not just asserted.
 11. Commit `41bb057` (18:05:49) adds exactly that file, +31 lines, message matches.

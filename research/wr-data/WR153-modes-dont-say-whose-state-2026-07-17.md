@@ -1,5 +1,7 @@
 # The mode vocabulary doesn't say WHOSE state — and `human-stress` is the only one that does
 
+> **WR153** · episode 2026-07-17 · first commit 2026-07-17 · previously `modes-dont-say-whose-state-2026-07-17.md`
+
 **2026-07-17 00:38 (`tt chrono now`).** BR's finding, ratified by him for WR data (*"good finding; pin that to the
 related tasks"*). Fourth instance of one defect in a single night. **SM134 #6 · SM085 (terminology) · SM121.**
 
@@ -47,7 +49,7 @@ wrong.** That is not a coincidence; it is the control group, and it was sitting 
 
 1. **Ambiguous subject — `hangover?`.** *Both* parties can plausibly be hungover, so the label is genuinely
    ambiguous. And the chip **fired on BR's own thinking pause**: it rendered the human's silence as the agent's
-   state (`hangover-chip-fires-on-the-humans-thinking-pause-2026-07-17.md`). **Whose hangover was it reporting? The
+   state (`WR151-hangover-chip-fires-on-the-humans-thinking-pause-2026-07-17.md`). **Whose hangover was it reporting? The
    label cannot say.**
 2. **Wrong grammatical subject — `go afk`.** The cue's verb takes the agent; the predicate belongs to the human.
 3. **Wrong setter — the agent adding `afk`.** ⚠️ **Twice in twenty minutes** (00:3x and 00:4x, both reverted). Both
@@ -96,7 +98,7 @@ built to be *shared*, and sharing turned out to mean *unattributed*.
 
 ## Cross-links
 
-`hangover-chip-fires-on-the-humans-thinking-pause-2026-07-17.md` · `nobody-dropped-the-hangover-chip-2026-07-16.md`
+`WR151-hangover-chip-fires-on-the-humans-thinking-pause-2026-07-17.md` · `WR143-nobody-dropped-the-hangover-chip-2026-07-16.md`
 · `research/case-studies/action-research-meta-minion/long-lived-meta-minion.md` §0.2 (**the pairing is the unit — this is a defect of the shared
 surface, not of either party**) · [[agent-blind-to-input-channel-and-timing]] (broken twice tonight) · [[cue-go-afk]]
 (**defines the cue BR is now revising — a home that needs updating on his word**) · `docs/foundations.md` (*"Go afk

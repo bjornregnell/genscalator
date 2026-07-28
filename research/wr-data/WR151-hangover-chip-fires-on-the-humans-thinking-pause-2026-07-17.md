@@ -1,7 +1,9 @@
 # The `hangover?` chip reported the HUMAN's thinking pause as the AGENT's state
 
+> **WR151** · episode 2026-07-17 · first commit 2026-07-17 · previously `hangover-chip-fires-on-the-humans-thinking-pause-2026-07-17.md`
+
 **2026-07-17 00:13 (`tt chrono now`).** Live specimen, BR + CO4, ~75 min into a fresh clear-context session.
-**Sibling of [`nobody-dropped-the-hangover-chip-2026-07-16.md`](nobody-dropped-the-hangover-chip-2026-07-16.md)**
+**Sibling of [`WR143-nobody-dropped-the-hangover-chip-2026-07-16.md`](WR143-nobody-dropped-the-hangover-chip-2026-07-16.md)**
 (same chip, ~90 minutes earlier, opposite error). Requested by BR as WR data. **SM121 · SM134 candidate #5 · safe-solo
 menu item 5 (the calibration job).**
 
@@ -121,7 +123,7 @@ cost zero. It costs a human decision.**
 
 ## Cross-links
 
-`nobody-dropped-the-hangover-chip-2026-07-16.md` (**the sibling — read together: at 23:47 the chip vanished and BR
+`WR143-nobody-dropped-the-hangover-chip-2026-07-16.md` (**the sibling — read together: at 23:47 the chip vanished and BR
 credited the agent; at 00:13 it appeared and BR credited the agent again. Same chip, same missing affordance —
 NO PROVENANCE — twice in 90 minutes**) · SM121 (`tt hangover`) · SM134 (candidates #3 provenance, #5 this) ·
 `research/case-studies/action-research-meta-minion/long-lived-meta-minion.md` §0.2 (**the pairing is the unit — this specimen is the tool's

@@ -145,7 +145,7 @@ the right edge of the page. Concept diagram, no real data needed; it earns its p
 
 ## "But isn't the fast one better?" We measured
 
-**[scaffold, BR to revoice; grounded in `research/wr-data/approval-wake-launcher-startup-bench-2026-07-14.md`.]**
+**[scaffold, BR to revoice; grounded in `research/wr-data/WR120-approval-wake-launcher-startup-bench-2026-07-14.md`.]**
 The natural objection to "rewrite it in Scala" is speed: bash is interpreted, so surely a compiled language wins,
 and for a latency-critical hook we should reach for C, or for Scala Native compiled straight to a binary via
 LLVM. BR raised exactly this about the approval-wake notifier: "bash is still interpreted so C should be faster,

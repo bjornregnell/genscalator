@@ -1,5 +1,7 @@
 # WR data — introprog/autotranslate case study
 
+> **WR001** · first commit 2026-06-26 · previously `introprog-autotranslate.md`
+
 **WR = Workflow Research** (see [`README.md`](README.md) for the thesis + field schema). Each row below is
 a *real* moment, during the introprog/autotranslate working session, where an agent action hit (or would
 hit) a **confirmation/approval prompt** because it used dynamic shell — and is therefore a **candidate to

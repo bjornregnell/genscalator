@@ -1,5 +1,7 @@
 # The agent pinned unprompted — and the flattering reading is probably wrong
 
+> **WR161** · episode 2026-07-17 · first commit 2026-07-17 · previously `spontaneous-pinning-is-a-state-not-a-trait-2026-07-17.md`
+
 **2026-07-17 08:54 (`tt chrono now`).** BR's observation, flagged by him for WR data. **Recorded with a correction
 to its own interpretation**, which is the point of the note.
 
@@ -20,7 +22,7 @@ the distinction is this project's central claim pointing at itself.
 
 **The agent did not pin because it holds a durable disposition to pin. It pinned because the orphan theory was
 HOT.** At the moment of that message the agent had spent ~10 hours doing almost nothing else:
-- it had just written `sm132-substrate-truth-audit-2026-07-17.md`, whose entire subject is homeless claims;
+- it had just written `WR158-sm132-substrate-truth-audit-2026-07-17.md`, whose entire subject is homeless claims;
 - it had, 30 minutes earlier, found a **real orphan** (SM134 #7) and coined *"narratively homed ≠ actionably homed"*;
 - the session's most-repeated sentence is ***"saying it in chat FEELS like doing it."***
 
@@ -65,7 +67,7 @@ open question, with the same prediction: probably not.
 ## Cross-links
 
 `research/case-studies/action-research-meta-minion/long-lived-meta-minion.md` §2 (**the non-stationary case — this is its first live instance**),
-§0.2 (the pairing is the unit) · `sm132-substrate-truth-audit-2026-07-17.md` (**the hot theory that caused the
-behaviour**) · `an-audit-finds-only-what-it-has-a-theory-for-2026-07-16.md` (*conceptual work degrades as the theory
+§0.2 (the pairing is the unit) · `WR158-sm132-substrate-truth-audit-2026-07-17.md` (**the hot theory that caused the
+behaviour**) · `WR134-an-audit-finds-only-what-it-has-a-theory-for-2026-07-16.md` (*conceptual work degrades as the theory
 goes cold* — **this note is its positive-side corollary**) · [[cue-note-vs-pin]] · `research/035-go-verb-vocabulary.md`
 (the ratify precedent) · SM135.

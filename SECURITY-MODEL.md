@@ -224,7 +224,7 @@ The policy in full, with the reasoning that used to live only in commit messages
    another durable record; and remember that a token derived as `$(gh auth token)` self-heals on re-auth
    while a literal token in an rc file does not.
 
-Sources: `research/wr-data/printenv-dumped-live-tokens-into-the-transcript-2026-07-25.md`,
+Sources: `research/wr-data/WR205-printenv-dumped-live-tokens-into-the-transcript-2026-07-25.md`,
 `tools/secrets.scala`, `tools/env.scala`, and the trust-boundary note on `ghCliToken` in `tools/forge.scala`.
 
 ## Future work

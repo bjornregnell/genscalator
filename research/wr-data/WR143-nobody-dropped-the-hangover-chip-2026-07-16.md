@@ -1,5 +1,7 @@
 # Nobody dropped the `hangover?` chip — an invitation to confabulate, declined
 
+> **WR143** · episode 2026-07-16 · first commit 2026-07-16 · previously `nobody-dropped-the-hangover-chip-2026-07-16.md`
+
 **2026-07-16 23:47 (`tt chrono now`).** Fresh clear-context session (CO4), joint work with BR. Recorded because BR
 asked for it *"for the record"* — though not the record he asked for. **He asked the agent to explain an action it
 did not take.**
@@ -111,9 +113,9 @@ twice; the sample of what was *not* caught is, by construction, unavailable.
 
 `research/case-studies/action-research-meta-minion/long-lived-meta-minion.md` (the action-research protocol — this is pairing-level data of the
 kind its §0 goal put in scope: **the human's side of the loop, not just the agent's**) ·
-`research/wr-data/an-audit-finds-only-what-it-has-a-theory-for-2026-07-16.md` ·
+`research/wr-data/WR134-an-audit-finds-only-what-it-has-a-theory-for-2026-07-16.md` ·
 [[keep-the-ball-game-retract-by-annotating]] · [[hold-human-intent-uncertainty-like-fact]] · SM121 (`tt hangover`).
 
 **Related but NOT this:** BR's own pinned reflection on his dropped scratchpad habit
-(`br-reflection-dropped-scratchpad-habit-2026-07-16.md`) is *his* data to raise, on his timing. This note does not
+(`WR137-br-reflection-dropped-scratchpad-habit-2026-07-16.md`) is *his* data to raise, on his timing. This note does not
 touch it.

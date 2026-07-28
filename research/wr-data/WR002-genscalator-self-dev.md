@@ -1,5 +1,7 @@
 # WR data — genscalator self-development
 
+> **WR002** · first commit 2026-06-27 · previously `genscalator-self-dev.md`
+
 **WR = Workflow Research** (see [`README.md`](README.md) for the thesis + field schema). Confirmation
 events recorded while developing genscalator *itself* — dogfooding: building the toolbox surfaces the same
 dynamic-shell friction the toolbox exists to remove.
@@ -13,7 +15,7 @@ dynamic-shell friction the toolbox exists to remove.
 
 ## Narrative
 This event is a clean instance of WR flavour #2 from the introprog case study
-([`introprog-autotranslate.md`](introprog-autotranslate.md)): **the bundling itself is the prompt cause**,
+([`WR001-introprog-autotranslate.md`](WR001-introprog-autotranslate.md)): **the bundling itself is the prompt cause**,
 not any single command. Twist worth noting — it happened *inside genscalator development*, where the
 one-bare-command discipline is literally documented in `AGENTS.md`; momentum still re-introduced the
 scaffolding stack. Evidence that command-hygiene needs to be **frictionless/reflexive**, not just written
@@ -141,7 +143,7 @@ be the clean allowlistable `tt parsereqt lint FILE` thus accretes **three** un-a
 the agent never reflexes `2>/dev/null`. **General WR lesson:** *every line of un-actionable tool stderr trains
 a stderr-hiding reflex* — the quiet cousin of instrumentation-by-default: a typed tool should emit **only** what
 the caller can act on. Cross-ref the pipe-to-grep / `2>/dev/null` noise-suppression events in
-[`introprog-autotranslate.md`](introprog-autotranslate.md). **3rd occurrence, same session:** every
+[`WR001-introprog-autotranslate.md`](WR001-introprog-autotranslate.md). **3rd occurrence, same session:** every
 `parsereqt lint` re-pays all three modifiers — the friction is confirmed **per-invocation**, and *logging is
 not fixing*. The signal is to **implement** the tool-side fixes now (walk-up-from-cwd in the `tt` launcher +
 quiet the vendored warnings), not to log a 4th time. Adherence-decay's cousin: a documented-but-unremoved
@@ -274,7 +276,7 @@ expansion** + a `grep|sort|uniq` pipeline — just to check three files. The per
   matches an allowlist rule; a command containing `simple_expansion` **cannot be statically matched** to a literal
   rule, because the variable's *value* — hence the command's real effect — is unknown at check time. Same
   unprovability as `sed`/`curl`/`xargs`: the *rule* can't be certified even when the *call* is benign. (The reason
-  string leaking a parser node-name to the human is logged as a UX facet in [`harness-ux.md`](harness-ux.md).)
+  string leaking a parser node-name to the human is logged as a UX facet in [`WR003-harness-ux.md`](WR003-harness-ux.md).)
 - **4th shell-munging reflex this session** (sed → xargs → `git|grep` → now `for`/`$f`/`grep|sort|uniq`), and
   again on a **read-only verification** the typed path already covers: `tt text grepr` (recursive pattern scan) or
   a 3-line scala-cli scratch that reads the SVGs and asserts the label. **n=4** confirms the n=3 claim — the reflex

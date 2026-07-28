@@ -59,8 +59,8 @@ all three remotes), 3 minor, everything else VERIFIED including an exact 245.
   the ember's number is precise, and the `$lessempty$greater$` paths corroborate the
   `<empty>`-package wart. (The "~150/245 vendored reqt" split: not counted, plausible.)
 - Today's four wr-data notes all exist and are committed: `sandbox-clone-has-no-guard-clean-shape-
-  tt-git-lacks-clone.md`, `subagents-need-the-ember-s0-checklist.md`,
-  `verify-writers-before-advising-file-edits.md`, `tt-box-lacks-local-health-shape.md`.
+  tt-git-lacks-clone.md`, `WR212-subagents-need-the-ember-s0-checklist.md`,
+  `WR214-verify-writers-before-advising-file-edits.md`, `WR213-tt-box-lacks-local-health-shape.md`.
 - "No ~/.claude memory-dir writes today": MEMORY.md mtime 2026-07-20 22:04 — supports it (index
   untouched today; individual unindexed writes not exhaustively ruled out).
 - PB pointers, the right halves: TODAY's pins at lines 107-113 (SM185, SM184, SM183, SM146-add,

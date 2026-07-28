@@ -1,5 +1,7 @@
 # WR data — the delegation dance and the dilemma of delegation, 2026-07-07
 
+> **WR015** · episode 2026-07-07 · first commit 2026-07-07 · previously `delegation-dance-and-dilemma-2026-07-07.md`
+
 **Event.** While CO4 was proposing to run solo tasks via subagents, BR got an idea: lean on **Fable-5 (CF5)
 subagents more**, deliberately, so that the super-agent (CO4) **stays responsive to BR in chat** and the risk of
 **message-race** drops, while parallel subagents **eat tokens in parallel** (aligned with token-spending mode).

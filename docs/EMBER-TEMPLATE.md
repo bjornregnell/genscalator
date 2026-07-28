@@ -4,7 +4,7 @@
 over the coals; the fresh agent on the other side of the warp blows the ember back into flame.
 Formerly called the "baton" — renamed 2026-07-20 (Swedish* batong *= police club; the smithy fit
 won: `tt forge`, banking the fire). Raw pre-rename records keep the old word; see
-`../research/wr-data/rename-baton-to-warp-ember-2026-07-20.md`.*
+`../research/wr-data/WR181-rename-baton-to-warp-ember-2026-07-20.md`.*
 
 **Status: pre-hoc seed, v0 (2026-07-19); v0.1 maintenance 2026-07-20; v0.2 maintenance
 2026-07-21** — v0.2: mode-state phrasing clarified (meta-minion push-17 nit: modes live in the

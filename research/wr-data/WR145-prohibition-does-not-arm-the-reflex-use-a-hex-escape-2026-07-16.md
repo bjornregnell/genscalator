@@ -1,9 +1,11 @@
 # A prohibition does not arm the reflex — replace it with a positive construction (hex escape) (2026-07-16)
 
+> **WR145** · episode 2026-07-16 · first commit 2026-07-16 · previously `prohibition-does-not-arm-the-reflex-use-a-hex-escape-2026-07-16.md`
+
 **Type:** WR data — a recurrence specimen (a known, logged, *already-skilled* guard trip fired again 3 days later),
 plus the design fix and a rejected alternative.
-**Threads:** [[guardcheck-false-positive-gt-inside-quoted-regex-2026-07-13]] (the same trip, first logged),
-[[post-compact-is-highest-risk-window-for-mechanical-bash-regression-2026-07-16]] (the `| tail` sibling),
+**Threads:** [[WR106-guardcheck-false-positive-gt-inside-quoted-regex-2026-07-13]] (the same trip, first logged),
+[[WR144-post-compact-is-highest-risk-window-for-mechanical-bash-regression-2026-07-16]] (the `| tail` sibling),
 [[guard-against-forced-confirmations]], [[earned-trust-obligates-flagging-risk-more]].
 
 ## What happened (observable)

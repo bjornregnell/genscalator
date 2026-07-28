@@ -1,5 +1,7 @@
 # WR specimen: gs cues / gs dances need a ready-to-grab substrate, not live synthesis (2026-07-13)
 
+> **WR104** · episode 2026-07-13 · first commit 2026-07-13 · previously `gs-lists-need-ready-to-grab-substrate-2026-07-13.md`
+
 **Observation (BR, live).** BR ran `gs cues` then `gs dances`. Both produced good, complete lists — but the
 agent had to **think for a while** to synthesize each one from the `cue-*` memories + `docs/foundations.md`,
 grouping and glossing on the fly. BR: "you had to think quite a while to produce these lists on cues and

@@ -1,5 +1,7 @@
 # Platform update digest — 2026-07-06 (step-4b box update)
 
+> **WR010** · episode 2026-07-06 · first commit 2026-07-06 · previously `platform-update-digest-2026-07-06.md`
+
 Scrubbed from the raw terminal log for public-repo hygiene. The **full raw log is retained privately** in the closed synch repo (muntabot-synch-introprog); username, full software/snap/flatpak inventory, the sudo prompt line, and expired download URLs were removed here. Study-relevant toolchain + platform state only.
 
 - **Scala toolchain (SDKMAN):** java 25.0.2-tem; scala 3.8.4 (unchanged); **scala-cli 1.14.0 → 1.15.0**; **sbt 2.0.0 → 2.0.1**. → the coding-fidelity arm (§047) will compile/test with **scala-cli 1.15.0**.

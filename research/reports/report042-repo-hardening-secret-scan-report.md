@@ -69,4 +69,4 @@ password: an *egress* leak, not a repo leak.)
 
 Ties: [[hardening-dance]], SM041 (allowlist deep-mine — the sibling hardening arm), the round-4 security-gap +
 ZIP-audit pattern, guardcheck (SM007c — the mechanical-check + human-gate precedent),
-[[credential-leak-in-deploy-verbose-2026-07-08]] (the egress-leak incident), [[dependency-preference-cascade]].
+[[WR024-credential-leak-in-deploy-verbose-2026-07-08]] (the egress-leak incident), [[dependency-preference-cascade]].
