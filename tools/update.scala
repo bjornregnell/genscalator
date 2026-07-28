@@ -142,6 +142,16 @@ object Update:
       case Some(t) => (rl.findRelease(owner, repo, t, dialect, base), t)
       case None    => rl.latestRelease(owner, repo, dialect, base)
 
+    // Named-tag refusal, because "release carries no assets" from deep inside the download path does not
+    // say WHICH release or why, and this is the FIRST wall a tester hits when the newest published release
+    // predates the native build matrix. Found by the first live run, 2026-07-28: the only published
+    // release was v0.9.2, cut before the matrix existed, so it carries no binaries at all.
+    if ReleaseLib.assetsOf(rel).isEmpty then die(
+      s"release '$tag' carries no downloadable assets, so there is nothing to install.\n" +
+        "  The newest PUBLISHED release predates the native build matrix (or its assets were removed).\n" +
+        "  Fix by cutting a release WITH platform binaries, or pass --tag <tag> naming one that has them.\n" +
+        s"  Check what exists: tt forge releases $owner/$repo --gh")
+
     val installed = installedVersion(home)
     println(s"platform:  $platform")
     println(s"install:   $home  (${installed.getOrElse("no VERSION.txt — not a genscalator install?")})")

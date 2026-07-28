@@ -4,6 +4,12 @@
 .metals/
 target/
 
+# scalex's symbol index (a pure cache: every command auto-reindexes changed files, and `scalex index`
+# force-rebuilds it). It lands in whatever directory is passed as -w, so this must match at ANY depth --
+# which a pattern with no leading slash already does, exactly like .scala-build/ above. There is no
+# repo-root config for scalex; it is configured by CLI flags alone, so nothing here needs preserving.
+.scalex/
+
 # editor / agent local config
 .vscode/
 .claude/
