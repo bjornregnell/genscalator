@@ -117,7 +117,7 @@ object Forge {
       |  --gl              talk to the GitLab API (--url BASE, default https://gitlab.com)
       |  --state S         open | closed | all for issues/prs (default open)
       |
-      |Token: whoami and release-create/edit read the token from env
+      |Token: whoami, release-create/edit/delete and protection read the token from env
       |GENSCALATOR_CODEBERG_TOKEN, then CODEBERG_TOKEN, then FORGE_TOKEN — never a flag,
       |and it is only ever sent to a trusted host (codeberg.org; the human may extend
       |the set via env TT_FORGE_HOSTS). Effectful verbs print an [audit] line first.

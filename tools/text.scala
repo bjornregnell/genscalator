@@ -150,5 +150,5 @@ object TextTool:
         |  text match <file> <regex>          print matching lines, numbered (grep -n)
         |  text context <file> <regex> [N]    matching lines with N context lines (grep -C N, default 2)
         |  text freq  <file> <regex>          histogram of match / group(1)  (sort|uniq -c|sort -rn)
-        |  text grepr <dir> <ext[,ext2…]> <regex>  recursive search, file:line:match (grep -r --include)
+        |  text grepr <dir> <ext[,ext2…]> <regex> [--any] [--count]  recursive search, file:line:match (grep -r --include)
         |  text cols  <file> <sep> <i...>     extract 1-based fields, tab-joined (cut/awk)""".stripMargin)

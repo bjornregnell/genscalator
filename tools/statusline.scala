@@ -522,6 +522,14 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       |  --no-status         suppress line 1 (e.g. show ONLY the mode line)
       |  --modes-file F      the declared-modes state file (default ~/.claude/gs-modes)
       |  --limits-file F     the declared-limits store (default ~/.claude/gs-limits.json)
+      |  --dumb-zone N       context-fill DUMB-ZONE threshold in % (default 75; distinct from
+      |                      --ctx-warn, which is the lower RISK threshold)
+      |  --auto-compact N    context-fill near-auto-compact threshold in % (default 92)
+      |  --tok-warn N        rot? (since-warp) orange threshold in tokens (default 200000)
+      |  --tok-danger N      rot? (since-warp) red threshold in tokens (default 500000)
+      |  --tired-chars N     human-char tired? nudge threshold (default OFF; opt-in)
+      |  --no-tok            skip the transcript read entirely (no tok gauge)
+      |  --rot-only          keep rot? but drop the secondary tot gauge
       |
       |Wire it up (human-gated settings step) in .claude/settings.json:
       |  "statusLine": { "type": "command", "command": "tt statusline --warn 85 --ctx-warn 28" }

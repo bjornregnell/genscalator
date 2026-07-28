@@ -32,8 +32,8 @@ private val SubHelp: String =
     |  Patterns are Java regex (ERE), matched per LINE, so ^ and $ anchor to the line.
     |  In the replacement, $1 $2 are capture-group backrefs and \ escapes — pass --literal to
     |  turn that off when the text contains a literal $ or \.
-    |  tree mode skips generated build dirs (.git .scala-build target node_modules) so a bulk
-    |  rewrite never touches build caches, and needs an ABSOLUTE dir.
+    |  tree mode skips generated build dirs (.git .scala-build target node_modules .bloop
+    |  .metals) so a bulk rewrite never touches build caches, and needs an ABSOLUTE dir.
     |  Preview prints  path:line  with the old line then the new one, so you read the change
     |  before it happens; the summary always states how many lines in how many files.
     |

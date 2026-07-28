@@ -11,7 +11,7 @@
 //   tt mode rm <label>        clear <label>
 //   tt mode clear             clear all modes
 //   tt mode --file <f> ...    override the state file (default ~/.claude/gs-modes; config-in-ARGS, for tests)
-// State: one label per line in ~/.claude/gs-modes (created on first `on`, order-preserving, de-duplicated).
+// State: one label per line in ~/.claude/gs-modes (created on first `add`, order-preserving, de-duplicated).
 // Labels are bare tokens [A-Za-z0-9._-]+ (no spaces, no paths) so they render cleanly and pass around safely.
 import java.nio.file.{Files, Path}
 

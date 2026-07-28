@@ -26,11 +26,16 @@ object Update:
 
   private def die(msg: String): Nothing = { System.err.println(s"update: $msg"); sys.exit(2) }
   // The steps the human runs in Claude Code (the tool cannot drive the harness itself).
+  // ⚠ `/plugin marketplace update` takes the MARKETPLACE name (`bjornregnell`, from
+  // .claude-plugin/marketplace.json), NOT the plugin name (`genscalator`) - the v0.9.1 gotcha.
+  // This line shipped with the plugin name for a while (SM255 audit finding H1); the docs were
+  // fixed in c1fbcd5 and this, the copy every behind-version tester actually runs, was not.
   private val ManualSteps =
     """  To update, run these in Claude Code:
-      |    /plugin marketplace update genscalator
+      |    /plugin marketplace update bjornregnell
       |    /reload-plugins
-      |  (Third-party marketplaces do not auto-update by default, so this is a manual step.)""".stripMargin
+      |  (Third-party marketplaces do not auto-update by default, so this is a manual step.
+      |   The name above is the MARKETPLACE name, not the plugin name.)""".stripMargin
 
   private def git(repo: os.Path, args: String*): (Int, String) = gitTimed(repo, 120_000, args*)
 
@@ -314,10 +319,11 @@ object Update:
       |corrupt the live process on POSIX and is refused outright on Windows, while RENAMING one is
       |permitted on both. One code path, no platform branch (D7b, verified on Windows CI).
       |
-      |It REFUSES rather than guesses in three places, each of which would otherwise brick an install:
+      |It REFUSES rather than guesses in five places, each of which would otherwise brick an install:
       |a platform with no published binary (build from source — the documented route), a --home that is a
-      |git checkout rather than a binary install, and an archive whose payload had no published .sha256
-      |to check it against.
+      |git checkout rather than a binary install, an archive whose payload had no published .sha256 to
+      |check it against, a release carrying no downloadable assets at all, and an asset that does not
+      |unpack to exactly one .zip payload.
       |
       |--home defaults to GENSCALATOR_HOME, then ~/.genscalator. Deliberately NOT the repo self-locate the
       |other verbs use, which can resolve to a contributor's git clone.""".stripMargin

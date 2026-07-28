@@ -5,7 +5,7 @@
 // gitinfo — typed, READ-ONLY git status/overview for agents (retires raw `git -C status/log/ls-remote`).
 // Prints branch, clean/dirty count, ahead/behind vs upstream, and the recent log; with `--remote <name>` it
 // also checks whether the local HEAD is in sync with that remote's HEAD (via ls-remote). NON-MUTATING: only
-// read-only git subcommands (rev-parse/status/rev-list/log/ls-remote) — no add/commit/checkout/fetch — so it
+// read-only git subcommands (rev-parse/status/rev-list/log/ls-remote/merge-base) — no add/commit/checkout/fetch — so it
 // is trivially safe to allowlist. Complements `tt git` (which owns the safe WRITE subset). Its own object +
 // @main name keep it collision-free from git.scala in a whole-toolbox compile. See skills/scala-style.
 //   tt gitinfo <repo> [--remote <name>]
@@ -62,7 +62,7 @@ object GitInfo {
       |
       |Prints one screen of repo status: current branch and HEAD, clean/dirty count,
       |ahead/behind vs upstream, and the 5 most recent commits. Strictly NON-MUTATING —
-      |only read-only git subcommands run (rev-parse/status/rev-list/log/ls-remote),
+      |only read-only git subcommands run (rev-parse/status/rev-list/log/ls-remote/merge-base),
       |so it is always safe to run, anywhere.
       |
       |Usage:

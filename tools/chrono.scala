@@ -16,8 +16,17 @@ import java.time.format.DateTimeFormatter
 object Chrono {
   val stateFile = Path.of(sys.props.getOrElse("tt.chrono.state",
     System.getProperty("java.io.tmpdir") + "/tt-chrono-state.tsv"))
-  val logFile = Path.of(sys.props.getOrElse("tt.chrono.log",
-    "/home/bjornr/git/berg/bjornregnell/genscalator/research/wr-data/chrono-log.tsv"))
+  // Log path resolution (SM255 audit: this was ONE hard-coded absolute path into BR's old berg
+  // clone, so `tt chrono stop` crashed on every other machine). Order: the -Dtt.chrono.log
+  // override wins; else the legacy path IF its directory exists, so an accumulated log keeps
+  // growing where it always lived; else a per-user default under ~/.genscalator, whose parent is
+  // created before the first append so the tool works out of the box for a fresh tester.
+  private val legacyLog =
+    Path.of("/home/bjornr/git/berg/bjornregnell/genscalator/research/wr-data/chrono-log.tsv")
+  val logFile = sys.props.get("tt.chrono.log").map(Path.of(_)).getOrElse {
+    if Files.isDirectory(legacyLog.getParent) then legacyLog
+    else Path.of(System.getProperty("user.home"), ".genscalator", "chrono-log.tsv")
+  }
 
   /** Format a millisecond duration compactly: "0.42s", "45s", "1m 18s". Pure. */
   def fmt(ms: Long): String =
@@ -84,7 +93,9 @@ object Chrono {
         val start = parts(0).trim.toLong
         val label = if parts.length > 1 then parts(1).trim else ""
         val elapsed = now - start
-        if !Files.exists(logFile) then Files.writeString(logFile, "start\tstop\telapsed_ms\tlabel\tthink_ms\n")
+        if !Files.exists(logFile) then
+          if logFile.getParent != null then Files.createDirectories(logFile.getParent)
+          Files.writeString(logFile, "start\tstop\telapsed_ms\tlabel\tthink_ms\n")
         Files.writeString(logFile, s"${iso(start)}\t${iso(now)}\t$elapsed\t$label\t${if thinkMs >= 0 then thinkMs else ""}\n", StandardOpenOption.APPEND)
         Files.deleteIfExists(stateFile)
         println(s"chrono: elapsed ${fmt(elapsed)}${if label.nonEmpty then s"  [$label]" else ""} (logged)")

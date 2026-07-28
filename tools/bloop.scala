@@ -221,7 +221,7 @@ object BloopTool:
       case a if a.contains("--help") || a.contains("-h") => println(Help); 0
       case other =>
         // Loud abort on unknown verbs — the silent fall-through lesson (introprog f6939418).
-        Console.err.println(s"bloop: unknown arguments '${other.mkString(" ")}'. Verbs: status | restart. See --help.")
+        Console.err.println(s"bloop: unknown arguments '${other.mkString(" ")}'. Verbs: status | restart | clean. See --help.")
         2
 
 @main def bloopServerCtl(args: String*): Unit = sys.exit(BloopTool.dispatch(args))

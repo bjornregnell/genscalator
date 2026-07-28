@@ -11,8 +11,17 @@
 import java.nio.file.{Files, Path}
 
 object NewTool {
+  val Help =
+    """tt newtool <name> - scaffold a new pure tool from template.scala.txt
+      |  <name> becomes both the file (tools/<name>.scala) and the CLI verb (tt <name>);
+      |  it must be an identifier: [a-zA-Z][a-zA-Z0-9]*
+      |  Refuses to overwrite an existing tools/<name>.scala.""".stripMargin
   def dispatch(name: String): Unit =
-    require(name.matches("[a-zA-Z][a-zA-Z0-9]*"), s"bad tool name: $name (use an identifier)")
+    // SM255 audit: `tt newtool --help` used to crash with a raw require-stack-trace; every other
+    // tool prints help, so this one answers --help and fails bad names with a clean exit 2.
+    if name == "--help" || name == "-h" then { println(Help); sys.exit(0) }
+    if !name.matches("[a-zA-Z][a-zA-Z0-9]*") then
+      { System.err.println(s"newtool: bad tool name: $name (use an identifier)"); sys.exit(2) }
     val dir  = Path.of("tools")
     val tmpl = String(Files.readAllBytes(dir.resolve("template.scala.txt")), "UTF-8")
     val out  = dir.resolve(s"$name.scala")

@@ -15,7 +15,11 @@ while [[ -L "$SOURCE" ]]; do
 done
 TOOLS="${TT_TOOLS:-$(cd -P "$(dirname "$SOURCE")" && pwd)}"
 if [[ $# -lt 1 ]]; then
-  echo "usage: tt <tool> <args...>   (tools: $(cd "$TOOLS" && ls *.scala | sed 's/\.scala//' | tr '\n' ' '))"
+  # Runnable verbs only (SM255 audit M2): a plain `ls *.scala` advertised 55 names of which 11
+  # were mainless helpers that fail with "no such tool". A verb is a file carrying @main;
+  # `dispatch` carries one too but IS the dispatcher, not a verb, so it is filtered by name.
+  # Deriving from @main (not a hardcoded helper list) keeps this line from drifting.
+  echo "usage: tt <tool> <args...>   (tools: $(cd "$TOOLS" && grep -l '@main' *.scala | sed 's/\.scala//' | grep -v '^dispatch$' | tr '\n' ' '))"
   exit 2
 fi
 tool="$1"; shift
