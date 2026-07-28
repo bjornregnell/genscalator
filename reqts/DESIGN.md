@@ -340,8 +340,31 @@ file that `tt text` includes would widen a lot of blast radii to save a file. Sa
 DEPS, this one for its BLAST RADIUS).
 
 ⇒ **D7's step 3 is now implemented** — `tt update --native` exists, previews by default, and applies with
-`--write`. ⚠ **It has NOT been run end to end.** Doing so requires network egress and would replace a real
-install, so the first live run wants a human present; that is the same discipline D7b used rather than an
-oversight. What IS verified: the toolbox suite is green with the pure parts unit-tested (the asset glob,
-and the rule that staging and retired must be SIBLINGS of the install — a staging dir inside the directory
-being renamed would move with it and the second rename would target a path that no longer exists).
+`--write`. ~~⚠ It has NOT been run end to end.~~ *(True when written; superseded the same day — see below.
+Left visible rather than deleted, because the supervised-first-run discipline is the reason the record
+reads this way.)* What was verified at that point: the suite green, with the pure parts unit-tested (the
+asset glob, and the rule that staging and retired must be SIBLINGS of the install — a staging dir inside
+the directory being renamed would move with it and the second rename would target a vanished path).
+
+✅✅ **RUN END TO END 2026-07-28, BR present, on linux-x86_64. D7 IS NOW CLOSED.** Against the real draft
+release `v0.10.0` (8 assets, CI run 30352401422), in this order:
+- `tt update --native --tag v0.10.0` (**preview**) — downloaded `genscalator-linux-x86_64.zip`
+  (14,739,513 B) and its `.sha256`, reported `ok … verified 1/1 payload(s)`, planned **36 files /
+  44,784,074 B, every CRC32 valid**, printed the swap it would perform, and **removed its staging dir**
+  (verified absent afterwards). Nothing else written.
+- `… --write` with **no install present** — created `~/.genscalator`, and `~/.genscalator/bin/tt chrono
+  now` RAN. ⭐ That is the `--exec 'bin/*'` guard proving itself: `java.util.zip` restores no permission
+  bits, so without it this is the exit-126 wall a tester hits on their first command.
+- `… --write` a SECOND time, now **with an install present** — the run reported `install: … (v0.10.0)`,
+  so this exercised the half the first run could not: **move-aside THEN move-in**, the two-rename swap of
+  D7b. No `-old-`/`-new-` siblings survived, and the binary still ran.
+
+⚠ **What is still NOT proven, stated so nobody reads "end to end" as "everywhere":** the swap of a
+*running* binary on Windows (that rests on `RunningBinaryRenameSuite`, which is real evidence but a
+different path), the two other published platforms (same code path, different arch), and the case where
+the binary being replaced IS the one executing — here `tt` resolved from the git clone, not from
+`~/.genscalator`.
+
+⇒ **The remaining alpha work on this item is zero code.** What is left is publishing a release the
+default (no `--tag`) path can see: `/releases/latest` excludes BOTH drafts and prereleases, so an alpha
+published as a prerelease leaves a tester's plain `tt update --native` finding nothing.
