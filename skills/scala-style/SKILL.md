@@ -212,6 +212,34 @@ colon form (a short one); the `object ToolName { … }` wrapper of §1 (a long s
 genscalator's own indent-vs-braces experiment (reported in blog post 002) runs the measurable comparison the
 note proposes — braceless / braces-everywhere / common style — across edit-error-rate and token cost.
 
+## 7. Before you MOVE, RENAME or DELETE a symbol — ask who uses it, with the tool that knows
+**If `tt which scalex` finds it, run `scalex refs <Symbol>` first.** If it does not, use
+`tt text grepr <abs-dir> scala <Symbol>` and say that you fell back. (scalex is a separately-installed
+companion, not bundled — see [`../../tools/README.md`](../../tools/README.md#companion-scalex).)
+
+**Why this is a rule and not a suggestion, stated honestly because the obvious objection is correct:**
+*the compiler is a stronger authority than any symbol search.* Inside one build unit, moving code and
+compiling **cannot miss**; a textual search can, via aliases, re-exports, or a name that is also a
+substring. So "move it and compile" is a legitimate strategy, and this rule does not replace it.
+
+It exists for the three things a compiler cannot do:
+1. **Blast radius BEFORE the edit.** The compiler answers *after* you have committed to the change.
+   `scalex refs` tells you how big the change is while you can still scope it — the difference between
+   planning one shared module and discovering mid-refactor that you needed two.
+2. **References that are never compiled.** Tests, skills, docs, `tools/README.md`. The compiler is blind
+   to every one of them, and in this repo they are where the real citations live.
+3. **Reading the original instead of retyping it.** `scalex body <Symbol>` (or `--in <Type>`). ⚠ This is
+   the one that has actually bitten: while moving `Zip.failures` into `ziplib.scala` on 2026-07-28 the
+   method was re-typed from memory as `readAllBytes()` instead of the original `transferTo` to a null
+   sink — against a comment in the source *explicitly warning* against that change. **Both versions
+   typecheck**, so no compiler and no test would have caught it. Moving code is copying code: read the
+   original, do not recall it.
+
+⚠ **Use the literal verb names.** It is `refs`, not `usages` — guessing the concept-shaped name costs a
+round trip and pushes you straight back to grep. The full command set is in the README section linked
+above; the routing rule between `tt`, scalex and Metals MCP is in
+[`../../docs/tool-selection.md`](../../docs/tool-selection.md).
+
 ## Shape
 ```scala
 //> using file project.scala   // the version is single-sourced there, never named per tool

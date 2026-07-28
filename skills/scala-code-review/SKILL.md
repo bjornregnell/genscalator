@@ -20,6 +20,16 @@ soothing. **The nulls are half the story.**
 ## Method (five steps, in order)
 1. **Re-read the diff top-to-bottom.** `git -C <repo> diff <base>..HEAD` (or the staged diff). Read every changed
    line as if someone else wrote it — intent should be clear without running it.
+   ⚠ **If the change MOVED code, the diff cannot do this job and you must not rely on it.** A move renders as
+   deletions in one file and unrelated-looking additions in another, never aligned side by side — so the one
+   comparison that matters, *old body vs new body*, is exactly what the diff hides. Reconstruct it explicitly:
+   `git -C <repo> show <base>:<old/path>` for the original, or `scalex body <Symbol> --in <Type>` if
+   `tt which scalex` finds it. **Moving code is copying code, and a body retyped from memory typechecks.**
+   Live specimen (2026-07-28): `Zip.failures` moved into `ziplib.scala` came out as `readAllBytes()` instead
+   of the original `transferTo` to a null sink — pulling a 40 MB entry onto the heap and dropping the
+   exception-class prefix — against a comment in the source that warned against precisely that. Green suite,
+   clean compile, caught only by reading the two bodies beside each other. That defect is a **P1** (a source
+   comment IS a recorded decision), but no amount of P1-hunting finds it if step 1 never surfaced the original.
 2. **Re-run the tests.** `scala-cli test <toolsDir>` (or the fast in-process subset via `--test-only <Suite>`). A
    green suite is necessary, not sufficient — an untested path is exactly a P6.
 3. **Hunt each P1-P6 in the code** (below), as a falsifiable claim.
@@ -44,7 +54,10 @@ soothing. **The nulls are half the story.**
   `cd`/`&&`/pipe baked into a tool.
 - **P5 — dangling pointer / stale reference.** A `[[memory-link]]`, path, doc cross-ref, or figure name that no
   longer resolves after the change (adding a 3rd consumer but updating only 2 doc sites). *Check:* `tt text grepr`
-  for the old name/path across README / foundations / cross-links; expect 0 stale hits.
+  for the old name/path across README / foundations / cross-links; expect 0 stale hits. **For a renamed or moved
+  SYMBOL, prefer `scalex refs <Symbol>` when `tt which scalex` finds it** — it separates the definition from real
+  usages and reaches the call sites the compiler never compiles (tests, skills, docs), which is exactly where P5
+  lives. The compiler already covers same-build-unit breakage; this check is for everything it cannot see.
 - **P6 — over / under-build.** A missing edge case, a **new code path with no test**, an unhandled input, or not
   committing + pushing per atomic unit. *Check:* is every new behaviour exercised by a test? is there a branch the
   suite never enters? (This is the mode the study most often confirmed.)
