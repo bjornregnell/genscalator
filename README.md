@@ -11,7 +11,7 @@ The above image shows the genscalator awareness lines. Read more about what they
 What do we mean by 
 * **smarter?** By introspection, genscalator tries to stay in the smart zone, aiming to stay away from the dumb zone and decrease the probability of agent mistakes.
 * **safer?** By open, inspectable, compile-time checked strongly typed tools genscalator avoids harness guard stalls that ask for permission, with the aim to reduce human confirmation fatigue.
-* **faster?** With defined workflow elements (cues and dances) genscalator aims to provide composable efficient joint human-agent workflows. Also, the typed tools can be compiled to bare metal for ~0.03 s start-up times (see [Graalify](#34-graalify-genscalator-for-speed-and-low-footprint)); the planned `gs native` command (roadmap) will check what you have on your box and help you set this up with consent.
+* **faster?** With defined workflow elements (cues and dances) genscalator aims to provide composable efficient joint human-agent workflows. Also, the typed tools run compiled to bare metal for ~0.03 s start-up times - prebuilt binaries ship with every release, or you build your own (see [Native speed](#34-native-speed-prebuilt-binary-or-graalify-yourself)).
 
 You can read more on the background and goals of genscalator in [HUMANS.md](HUMANS.md#3-the-main-goals-of-genscalator) and navigate the structure of this repo by reading ["Where are all the things?" in HUMANS.md](HUMANS.md#1-where-are-all-the-things).
 
@@ -21,17 +21,17 @@ This README.md focuses on a brief overview of genscalator and how to get started
 
 * [1. What is genscalator?](#1-what-is-genscalator)
 * [2. How to install genscalator](#2-how-to-install-genscalator)
-  * [2.1 Install the genscalator Claude Code plugin](#21-install-the-genscalator-claude-code-plugin)
-  * [2.2 Companions for Scala code (recommended)](#22-companions-for-scala-code-recommended)
-  * [2.3 Manual install](#23-manual-install-recommended-if-you-dont-use-claude-code)
+  * [2.1 Install the binary toolbox](#21-install-the-binary-toolbox-one-command-works-without-claude-code)
+  * [2.2 Install the genscalator Claude Code plugin](#22-install-the-genscalator-claude-code-plugin)
+  * [2.3 Companions for Scala code (recommended)](#23-companions-for-scala-code-recommended)
 * [3. Using the Claude Code plugin](#3-using-the-claude-code-plugin)
   * [3.1 What you get](#31-what-you-get)
   * [3.2 The gs in-session commands](#32-the-gs-in-session-commands)
   * [3.3 Getting started: seed a working web app](#33-getting-started-try-seeding-a-working-web-app)
-  * [3.4 Graalify for speed and low footprint](#34-graalify-genscalator-for-speed-and-low-footprint)
+  * [3.4 Native speed: prebuilt binary or graalify yourself](#34-native-speed-prebuilt-binary-or-graalify-yourself)
 * [4. Using typed tools directly in terminal](#4-using-typed-tools-directly-in-terminal)
   * [4.1 Tool dependencies](#41-tool-dependencies)
-  * [4.2 Optional: forge tokens for tt forge](#42-optional-forge-tokens-for-tt-forge-github-and-codeberg)
+  * [4.2 Optional: forge tokens for tt forge](#42-optional-forge-tokens-for-tt-forge)
 * [5. Licenses](#5-licenses) · [6. Donations](#6-donations) · [7. Commercial support](#7-commercial-support) · [8. Mirrors and digital sovereignty](#8-mirrors-and-digital-sovereignty)
 
 ## 1. What is genscalator?
@@ -51,20 +51,55 @@ narrow allowlist can trust.
 The tools and workflows are *language-agnostic*. With genscalator you can generate and manage code in **any language**.
 
 When you generate **Scala**, you get extra help from the bundled Scala skills (`scala-style` for the common style,
-`scala-code-review`, `reqt-lang`) and the optional [Scala-code companions](#22-companions-for-scala-code-recommended)
+`scala-code-review`, `reqt-lang`) and the optional [Scala-code companions](#23-companions-for-scala-code-recommended)
 (scalex, Metals MCP).
 
 
 ## 2. How to install genscalator
 
-* **Prerequisites:** [scala-cli](https://scala-cli.virtuslab.org/install) and a JDK (to run the tools), plus `git`
-(to clone this repo).
+* **Prerequisites:** [scala-cli](https://scala-cli.virtuslab.org/install) (it installs a JDK if you
+don't have one), plus `git` if you clone this repo.
 
-* **Platforms:** Linux, macOS, and WSL (Windows Subsystem for Linux) — anywhere `bash` + `scala-cli` run. On native Windows, use WSL or Git Bash.
+* **Platforms:** prebuilt native binaries are published for `linux-x86_64`, `linux-aarch64`,
+`macos-aarch64` (Apple Silicon) and `windows-x86_64` - each proven by running the full CLI-contract
+test suite through the binary before it ships. Intel macOS and Windows-on-ARM are supported by
+building from source. The from-source path and the repo's `tt` launcher script need `bash` +
+`scala-cli`, so on native Windows use WSL or Git Bash there; the prebuilt binary needs neither.
 
-### 2.1 Install the genscalator Claude Code plugin
+### 2.1 Install the binary toolbox (one command, works without Claude Code)
 
-Make sure you have the prerequisites above. In Claude Code, run:
+The fastest way to get `tt` on your PATH is the bootstrap installer shipped with every
+[release](https://github.com/bjornregnell/genscalator/releases/latest): download
+**`get-genscalator.sc`** from the release assets and **read it before you run it** - it is one
+self-contained, dependency-free Scala file, on purpose (this project argues against curl-into-shell
+precisely because it hides what it does). Then:
+
+```
+scala-cli run get-genscalator.sc -- --dry-run    # show exactly what WOULD happen; write nothing
+scala-cli run get-genscalator.sc                 # install into ~/.genscalator, put bin/ on your PATH
+```
+
+It downloads the **prebuilt native binary** for your platform, verifies the published sha256, marks
+`bin/tt` executable, and appends one clearly marked block to your shell config (`--no-path` to skip
+that). It cannot change the PATH of the shell that started it, so open a new terminal and verify with
+`tt chrono now`. Native means a `tt` call answers in ~0.03 s with no compile and no JVM warm-up.
+Later, `tt update --native` keeps the install fresh (preview by default; `--write` applies).
+
+**From source (contributors, or a platform without a published binary):** clone and symlink the
+launcher, then tools compile on first use via scala-cli (a couple of seconds; reruns are cached):
+```
+git clone https://github.com/bjornregnell/genscalator.git
+cd genscalator
+ln -s "$PWD/tools/tt" ~/.local/bin/tt    # ensure ~/.local/bin is on your PATH
+```
+You can then build your own native binary with the rebuild ritual, see
+[Native speed](#34-native-speed-prebuilt-binary-or-graalify-yourself).
+
+### 2.2 Install the genscalator Claude Code plugin
+
+Make sure you have the prerequisites above (the binary install in 2.1 is recommended first: with
+`~/.genscalator/bin` on your PATH the agent's `tt` calls run at native speed; without it the
+plugin's bundled tools compile on first use via scala-cli). In Claude Code, run:
 ```
 /plugin marketplace add bjornregnell/genscalator
 /plugin install genscalator@bjornregnell
@@ -92,11 +127,14 @@ gs allow
 
 You can also edit the `.claude/settings.local.json` directly, for example:
 ```
-{ "permissions": { "allow": ["Bash(tt *)", "Bash(scala-cli *)"] } }
+{ "permissions": { "allow": ["Bash(tt text *)", "Bash(tt files *)", "Bash(tt gitinfo *)"] } }
 ```
-to give the exact permissions you want.
+to give the exact permissions you want. The habit is **per-subcommand allows, added as each tool is
+proven** - deliberately not a blanket `Bash(tt *)` (a few verbs are effectful by design) and not
+`Bash(scala-cli *)` (running arbitrary code; the typed `tt scala` driver exists so you never need
+that blanket). See [`docs/allowlist.md`](docs/allowlist.md) for the reasoning and a fuller set.
 
-### 2.2 Companions for Scala code (recommended)
+### 2.3 Companions for Scala code (recommended)
 
 genscalator integrates — but does **not** bundle — two upstream tools for Scala *code* intelligence (the
 `tt` tools cover text and logs). Install whichever you need; [`docs/tool-selection.md`](docs/tool-selection.md)
@@ -114,24 +152,6 @@ says which tool answers which question.
   real diagnostics, run tests, refactor); heavier. Enable it through your editor's Metals + MCP-client
   config per the linked setup page.
 
-### 2.3 Manual install (recommended if you don't use Claude Code)
-
-> TODO. This is future work and not yet fully operational. In pre-releases we focus on Claude Code support.
-
-**A. Clone the repo:**
-```
-git clone https://github.com/bjornregnell/genscalator.git
-cd genscalator
-```
-
-**B. Put the `tt` launcher on your PATH.** Run this *from the repo root* (so `$PWD` is your clone),
-symlinking the launcher into a directory that's on your PATH:
-```
-ln -s "$PWD/tools/tt" ~/.local/bin/tt    # ensure ~/.local/bin is on your PATH
-```
-The typed-tools launcher is one literal, allowlist-friendly command from any repo. First run of a tool
-compiles (a couple of seconds); reruns are cached. Verify with `tt files src .scala --count`.
-
 ## 3. Using the Claude Code plugin
 
 You installed the plugin in [How to install genscalator](#2-how-to-install-genscalator); here is what it gives
@@ -145,10 +165,17 @@ playbooks the agent invokes by name, or by matching what you ask for:
 | Skill | What it does |
 |-------|--------------|
 | `tt-toolbox` | how to use and choose the `tt` tools — the toolbox habit |
+| `gs-dwim` | the `gs` do-what-I-mean in-session commands (see [3.2](#32-the-gs-in-session-commands)) |
+| `avoid-guard-stall` | construct shell commands that never trip the permission guard — fewer confirmation stalls |
 | `scala-style` | a genscalator-tailored guide on Scala generation in direct, [common style](https://codeberg.org/bjornregnell/scala-common-style) |
-| `scala-code-review` | review Scala code for correctness, style, and safety |
+| `scala-code-review` | adversarially review Scala changes for correctness, style, and safety |
+| `scala-platform` | choose a compilation target: JVM, Scala Native, or GraalVM native-image |
 | `reqt-lang` | write markdown requirements in reqT-lang, meta-examples in [`PRD.md`](reqts/PRD.md) |
-| `crud-web-app-seed` | seed a complete, runnable web app into a directory you choose — see *Getting started* below |
+| `crud-web-app-seed` | seed a complete, runnable full-stack web app — see *Getting started* below |
+| `serverless-spa-seed` | seed a minimal client-only Scala.js + Laminar single-page app (no server) |
+| `contribute-tool` | grow a one-off scratch tool into a toolbox-worthy `tt` tool candidate |
+| `in-session-experiment` | run a controlled experiment on the agent's own performance, live |
+| `research-methods` | design, run and report an empirical study — checklists and pointers |
 
 The plugin also ships the operating contract [`AGENTS.md`](AGENTS.md) — the shared human-agent **conventions** (tool
 selection, shorthand, workflow "dances", safe-by-design allowlist habit, etc.) that the agent reads as its
@@ -187,17 +214,24 @@ gs new app todo ./my-todo
 The agent runs the **`crud-web-app-seed`** skill, which writes a small full-stack project into the directory you chose:
 a shared datamodel, a **JDK-only** HTTP server, and a **Scala.js + Laminar** browser client, plus a Product Requirements Document in `PRD.md`, and a test suite. Then follow the agent's instructions or ask when you need help. The todo app is deliberately small and commented so you can read the whole thing and adapt it to your liking together with the agent that will invoke genscalator's typed tools when it sees fit.
 
-### 3.4 Graalify genscalator for speed and low footprint
+### 3.4 Native speed: prebuilt binary or graalify yourself
 
-The whole `tt` toolbox can be compiled into **one native binary** (GraalVM native-image), and the
-launcher then prefers it automatically. What you gain:
+The whole `tt` toolbox runs as **one native binary** (GraalVM native-image), and the launcher
+prefers it automatically. What you gain:
 
 * **Speed**: a `tt` call starts in ~0.03 s instead of ~0.5 s on the JVM — agents issuing many small
   typed-tool calls feel this immediately (the full test suite drops from ~2 minutes to ~30 seconds).
 * **Low footprint**: no compile server (bloop) and no warm JVM need to stay resident — the binary
   just runs, so a whole class of build-daemon stalls and memory drains disappears.
 
-Build it once with the **rebuild ritual** (from the repo root, takes a few minutes and ~4 GB RAM):
+**The easy way:** every [release](https://github.com/bjornregnell/genscalator/releases/latest) ships
+prebuilt binaries for four platforms (linux x86_64/aarch64, macOS Apple Silicon, Windows x86_64),
+each proven in CI by running the complete CLI-contract suite *through* that binary. Install via
+`get-genscalator.sc` ([2.1](#21-install-the-binary-toolbox-one-command-works-without-claude-code));
+stay fresh with `tt update --native`.
+
+**Build your own** (from a source clone, e.g. on Intel macOS) with the **rebuild ritual** (from the
+repo root, takes a few minutes and ~4 GB RAM):
 ```
 scala-cli run deploy/buildnative.sc
 ```
@@ -205,10 +239,7 @@ The ritual never swaps in an unproven binary: it builds a candidate, runs the co
 CLI-contract test suite *through* that candidate, and only on all-green replaces the live binary
 atomically. After any edit under `tools/` the launcher detects the binary is stale and safely
 falls back to scala-cli (slower, never wrong) until you re-run the ritual. Opt out anytime with
-`TT_NATIVE=0 tt ...`.
-
-Status: proven on linux-x64; macOS/Windows binaries are on the roadmap. Details, measurements and
-design: [`docs/native.md`](docs/native.md).
+`TT_NATIVE=0 tt ...`. Details, measurements and design: [`docs/native.md`](docs/native.md).
 
 ## 4. Using typed tools directly in terminal
 
@@ -221,14 +252,18 @@ tt <tool> <args...>
 Examples:
 
 ```
-tt text count build.log '^! '          # count matches (grep -c)
-tt text grepr src .scala 'TODO'        # recursive search → file:line:match
-tt files src .scala --count            # count matching files (find|wc)
+tt text count build.log '^! '            # count matches (grep -c)
+tt text grepr src .scala,.md TODO        # recursive search → file:line:match
+tt files src .scala --count              # count matching files (find|wc)
+tt json get package.json version         # one scalar from a JSON file, unquoted
+tt env list CLAUDE                       # environment variable NAMES only, never values
+tt gitinfo /path/to/repo --remote origin # branch, dirty count, ahead/behind, remote sync
+tt zip check download.zip                # validate every CRC32 in an archive
+tt log build.log                         # error/warning summary of a build log
+tt chrono now                            # timestamp (chrono start/stop times a work span)
 ```
 
-TODO: add and improve examples above.
-
-Full cheat-sheet: [`tools/README.md`](tools/README.md).
+Every tool answers `tt <tool> --help`. Full cheat-sheet: [`tools/README.md`](tools/README.md).
 
 
 ### 4.1 Tool dependencies
@@ -246,21 +281,20 @@ Tools degrade gracefully when their dependency is missing: `tt gvdot` still prin
 errors with the install hint only on the render path. (The sibling renderers `tt svg` and `tt ascii` need **no**
 external dependency — pure JDK.)
 
-### 4.2 Optional: forge tokens for `tt forge` (GitHub and Codeberg)
+### 4.2 Optional: forge tokens for `tt forge`
 
-`tt forge` talks to code forges (issues, PRs, releases, tags, branch protection) on Codeberg/Forgejo and,
-via `--gh`, on GitHub. **All read verbs work without any token** — GitHub just rate-limits anonymous reads
-(60/hour). A token is only needed for `protection` (admin-scoped read) and the release verbs. Tokens are
-read **only from fixed environment variables** (never flags) and are only ever sent to their own forge's
-fixed host.
+`tt forge` talks to code forges (issues, PRs, releases, tags, branch protection) on Codeberg/Forgejo,
+via `--gh` on GitHub, and via `--gl` on GitLab. **All read verbs work without any token** — GitHub just
+rate-limits anonymous reads (60/hour). A token is only needed for `protection` (admin-scoped read) and
+the release verbs (create/edit/upload/download-of-drafts/delete). Tokens are read **only from fixed
+environment variables** (never flags) and are only ever sent to their own forge's fixed or
+human-trusted host.
 
-- **GitHub (optional):** install [GitHub's `gh` CLI](https://cli.github.com/), authenticate once with
-  `gh auth login`, then reuse its token by adding to your `~/.bashrc`:
-  ```bash
-  export GITHUB_TOKEN="$(gh auth token)"
-  ```
-  This lifts the anonymous rate limit and enables `tt forge protection <owner>/<repo> <branch> --gh`.
-  No new secret to manage: revoking the `gh` login revokes this too.
+- **GitHub (optional):** install [GitHub's `gh` CLI](https://cli.github.com/) and authenticate once
+  with `gh auth login` — that is all: when no env token is set, `tt forge --gh` borrows the token
+  from `gh auth token` automatically (it says so on stderr when it does). This lifts the anonymous
+  rate limit and enables the token-gated verbs. No new secret to manage: revoking the `gh` login
+  revokes this too. To pin a dedicated token instead, export `GITHUB_TOKEN` (env always wins).
 
 - **Codeberg/Forgejo (optional):** mint a token in Codeberg → Settings → Applications
   ([how-to in the Codeberg docs](https://docs.codeberg.org/advanced/access-token/)) (scope
@@ -271,8 +305,10 @@ fixed host.
   (Each forge also honours a genscalator-specific name checked first — `GENSCALATOR_CODEBERG_TOKEN`
   respectively `GENSCALATOR_GITHUB_TOKEN` — if you want a token dedicated to these tools.)
 
-- **GitLab:** no token to set — `tt forge` has no GitLab dialect (yet), so nothing reads a GitLab
-  token; git-level mirroring to GitLab needs no API token.
+- **GitLab (optional):** `tt forge` speaks GitLab via `--gl` (release-create; gitlab.com by default,
+  self-managed instances via `--url` plus the human-set `TT_FORGE_GITLAB_HOSTS` trust list). Mint a
+  token with the `api` scope and export `GITLAB_TOKEN` (or `GENSCALATOR_GITLAB_TOKEN`). Git-level
+  mirroring to GitLab needs no API token.
 
 Putting the exports in `~/.bashrc` makes them reach both your own terminals and the shells your agent
 spawns (note that a running agent session keeps its start-time environment; restart the session after
