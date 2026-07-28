@@ -7,7 +7,11 @@ won: `tt forge`, banking the fire). Raw pre-rename records keep the old word; se
 `../research/wr-data/WR181-rename-baton-to-warp-ember-2026-07-20.md`.*
 
 **Status: pre-hoc seed, v0 (2026-07-19); v0.1 maintenance 2026-07-20; v0.2 maintenance
-2026-07-21** — v0.2: mode-state phrasing clarified (meta-minion push-17 nit: modes live in the
+2026-07-21; v0.3 maintenance 2026-07-28** — v0.3: the EXIT-SIDE minion audit becomes a required
+step (see the pre-flight checklist), on BR's argument that the ember is written by the session's
+most-rotted context and neither party reliably REMEMBERS to order a check at exactly that moment —
+so the check must be structural, not remembered. Two specimens preceded the rule (2026-07-28, both
+sessions' embers audited by a fresh minion before commit; the first audit caught real mirror lag). — v0.2: mode-state phrasing clarified (meta-minion push-17 nit: modes live in the
 harness, not in committed files) and the routine push set grew to include the gitlab mirror
 (CD13). v0.1: operational updates from
 live guard-stall specimens plus the ColdStart-clearing revert, and the baton→ember rename. Still
@@ -114,7 +118,19 @@ Before exiting, the writer checks:
       warp is stale by construction (specimen 2026-07-20: a cold start received the previous
       evening's ember, missing a whole morning session of pins);
 - [ ] the FORBIDDEN→ALLOWED lines reflect the NEWEST stall data — retire lines proven false
-      (specimen: "test suite guard-stalls, BR-present only" outlived its truth by a day).
+      (specimen: "test suite guard-stalls, BR-present only" outlived its truth by a day);
+- [ ] **EXIT-SIDE MINION AUDIT (required, v0.3): before committing the ember, spawn a FRESH
+      sub-agent to audit it against disk** — every hash in its claimed repo, every path resolving,
+      every count re-counted, every verify-mandate actually runnable, and (the check the writer
+      cannot do from inside) **no load-bearing claim that resolves to nothing durable** — a
+      CANNOT-VERIFY finding means a fact is about to die with the session: commit the missing
+      substrate or drop the claim. Fold findings in, then commit. WHY structural rather than
+      remembered: the ember is written at the session's HIGHEST fill by its most-rotted context,
+      which is precisely when both parties are least likely to remember to order a check. The
+      minion is read-only, writes no memory, and gets the bare-allowlist reflexes in its brief
+      (a warm minion lacks the caller's skills). This is the exit-side sibling of §3's cold-start
+      meta-minion; the ember-prep SKILL that would enforce this whole checklist mechanically is
+      still an open build (anticipated above).
 
 ## Open questions this seed does not settle
 
