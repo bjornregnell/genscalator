@@ -93,8 +93,12 @@ source drop without git would be both unhackable and uncontributable.
 
 ## D3 - the user install is one self-contained archive per platform
 
-**Decision.** Six release assets, `genscalator-<os>-<arch>.zip`, each containing `bin/tt` (`tt.exe` on
-Windows), `docs/`, `reqts/PRD.md` and `VERSION.txt`. The installer verifies a published SHA-256, aborts on
+**Decision.** ~~Six~~ release assets, `genscalator-<os>-<arch>.zip`, each containing `bin/tt` (`tt.exe` on
+Windows), `docs/`, `reqts/PRD.md` and `VERSION.txt`. *(Count corrected by later decisions: v0.10.0
+shipped FOUR platform zips — the proven `linux-x86_64`, `linux-aarch64`, `macos-aarch64`,
+`windows-x86_64` — after `macos-13` was removed for perpetual queuing and `windows-aarch64` stayed
+red for want of an upstream scala-cli build; building from source is the documented route for the
+unproven two. See ROADMAP v0.10.0, decided 2026-07-27.)* The installer verifies a published SHA-256, aborts on
 mismatch, extracts into `GENSCALATOR_HOME`, and puts `~/.genscalator/bin` on PATH. No symlink.
 
 **No `tools/*.scala` in the archive, which is the opposite of the obvious assumption.** Checked
@@ -132,7 +136,9 @@ downloaders rather than by programmatic HTTP, so an installer-fetched binary sho
 at all, and that Apple Silicon's signature requirement is satisfied by the ad-hoc signature the linker
 applies at build time. **Both halves are unverified.** They must be tested on a real Mac before the
 alpha depends on them. If either is wrong, the fallback is documenting `xattr -d com.apple.quarantine`,
-which is ugly but free.
+which is ugly but free. *(Status 2026-07-28: the alpha SHIPPED with both halves still unverified —
+no macOS box was available. The risk is accepted and open, not resolved: the first macOS tester's
+report settles it, and the xattr fallback is the ready answer if it lands wrong.)*
 
 ## D4 - the plugin and the toolbox ship separately and check each other
 
@@ -180,7 +186,9 @@ instead of restating it, and a native image has something to route.
 **The load-bearing part is the test, not the table.** A hand-maintained table drifts from the file set the
 moment someone adds a tool and forgets a line, and it drifts SILENTLY: the new tool still runs under
 scala-cli, so nothing looks broken until the native binary is asked for a verb it has never heard of.
-`DispatchSuite` asserts the table covers exactly the files carrying a top-level `@main`, currently 43, so
+`DispatchSuite` asserts the table covers exactly the files carrying a top-level `@main` (43 when this
+was written; 45 as of 2026-07-28 — `session` and `sub` arrived and the test moved the number, which
+is the mechanism working), so
 the drift fails a test instead of surfacing as a missing verb weeks later. Same shape as D1: the mechanism
 exists because the failure it prevents is quiet.
 
@@ -368,3 +376,11 @@ the binary being replaced IS the one executing — here `tt` resolved from the g
 ⇒ **The remaining alpha work on this item is zero code.** What is left is publishing a release the
 default (no `--tag`) path can see: `/releases/latest` excludes BOTH drafts and prereleases, so an alpha
 published as a prerelease leaves a tester's plain `tt update --native` finding nothing.
+✅✅ **DONE 2026-07-28: v0.10.0 published as a REAL (non-prerelease) release, and the default path
+verified live the same evening.** The post-publish smoke installed from `/releases/latest` into a
+scratch home and `tt update --native` answered "already up to date" — after one defect the smoke
+itself caught: the bootstrap OVERWROTE the zip's CI-stamped `VERSION.txt` with the literal requested
+ref (`latest`), so the up-to-date compare could never match. Fixed in `8c7f02e` (the zip is the source
+of truth; the bootstrap stamps a fallback only when the archive carried none) and the corrected
+installer replaced on the live release. The stamp expression itself was proven right by reading the
+release run's own log — the bug was one layer down, in the installer.

@@ -62,7 +62,13 @@ ship beyond its blocking items", which is a question the release notes will have
 ⚠ The cost BR accepted explicitly: a Windows tester's three hard failures now ship no sooner than the
 alpha, and the alpha is gated behind `tt zip extract`, a security design task (see v0.10.0 below).
 
-## v0.10.0 - alpha, coming next
+## v0.10.0 - alpha — SHIPPED, published 2026-07-28
+
+✅ **PUBLISHED 2026-07-28 (19:26Z) as a real, non-prerelease release**: 4 platform zips + 4 sha256 +
+`get-genscalator.sc`, all built from the day's final commits and verified by a post-publish smoke
+(installer against a scratch home, then `tt update --native` answering "already up to date" — after
+the smoke caught and fixed a bootstrap version-stamp defect, `8c7f02e`; full record in DESIGN.md D7c).
+The section below is kept as it stood at the gate, with shipped items marked.
 
 **Gate:** a tester on their own machine can install and run the toolbox without a wedge. Everything else is polish or velocity.
 
@@ -114,17 +120,19 @@ Blocking:
   two extractions into shared modules, `releaselib.scala` and `ziplib.scala`, before a line of the verb
   could be written. Recorded as **D7c** in DESIGN.md. The payoff is that ZipSuite's 15 hostile-entry tests
   now guard the code the self-updater actually runs, instead of one of two copies of it.
-  ⚠ **NOT YET RUN END TO END, and that is deliberate rather than unfinished.** A live run needs network
-  egress and replaces a real install, so it wants a human at the wheel — the same discipline D7b used.
-  What is verified: the full suite is green, and the pure parts are unit-tested (the asset glob, and the
-  rule that staging and retired must be SIBLINGS of the install). ⇒ **The remaining alpha work on this
-  item is one supervised live run**, not more code.
+  ~~⚠ NOT YET RUN END TO END, and that is deliberate rather than unfinished.~~ ✅ **RUN END TO END
+  2026-07-28, BR present** — preview, fresh-install, and install-over-install (the two-rename swap)
+  all exercised against the real release; DESIGN.md D7c carries the full record and closes D7. What
+  had been verified before that run: the full suite green, and the pure parts unit-tested (the asset
+  glob, and the rule that staging and retired must be SIBLINGS of the install).
 - `gs native`, consent-gated provisioning, depends on the same.
 
 Also in scope for alpha:
 
-- Onboarding smoothness: install and getting-started path, and `tt init` / `gs init` (designed, not
-  built). Includes a one-command install of genscalator plus its companions, scalex and the Metals MCP,
+- Onboarding smoothness: install and getting-started path, and `tt init` / `gs init` ~~(designed, not
+  built)~~ *(stale when the alpha shipped: `gs init` and `gs allow` are BUILT in the gs-dwim skill —
+  per-project onboarding walking allowlist, status line, and hooks, human-gated — and the README was
+  rebuilt installer-first with the release-frozen script URL, 2026-07-28)*. Includes a one-command install of genscalator plus its companions, scalex and the Metals MCP,
   for newcomers who want everything at once. It must be a reviewable, version-pinned script the human
   reads before running, never a blind curl-into-shell pipe: that opaque pattern is the exact
   confirmation-fatigue and remote-execution risk genscalator argues against.
@@ -161,7 +169,9 @@ Also in scope for alpha:
   filename, still saying *baton*).
   ⚠ **The order matters and is counter-intuitive: GATE FIRST, WIDEN SECOND.** All 19 are plain
   markdown/html links, so the NARROW matcher already finds every one — `tt links check` carries an exit
-  code built for gating and is in NO workflow (`native-release.yml` is the only one). So the cheap win is
+  code built for gating and is in NO workflow (`native-release.yml` is the only one). *(Progress
+  2026-07-28: down to 6 dangling of 347, all six in the by-design set below; the remaining half of
+  this line is filed as issue-011, and the lint sibling as issue-010.)* So the cheap win is
   wiring it in and fixing the 19; the `--include-prose` widening comes after, because a better matcher on
   a check nobody runs just produces more findings nobody reads. When it lands it must stay OFF the CI exit
   code, so the gate keeps the precision that makes it gateable.
@@ -177,7 +187,8 @@ tester can see between us and the alpha.
 
 Besides the round-trip headline (issue-005), the alpha's own field experience minted a set of
 smaller items, each filed as an in-repo issue on 2026-07-28: forge asset replace (issue-006),
-`tt forge file` (issue-007), commit-log search (issue-008), `tt forge contributors` (issue-009),
+`tt forge file` (issue-007), ~~commit-log search (issue-008)~~ *(closed same day: `tt git log`
+already existed; the stale digest that hid it is fixed)*, `tt forge contributors` (issue-009),
 reqt-lint fenced-skip (issue-010), links-check exceptions + CI gate (issue-011), release-workflow
 tag-input validation (issue-012), and the munit bump (issue-013, a good first contribution). See
 `reqts/issues/open/`.

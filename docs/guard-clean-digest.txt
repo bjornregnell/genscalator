@@ -21,8 +21,10 @@ GIT
   commit PROSE ; no Claude-credit trailers .    Never  cd repo && git …
   tt gitinfo <repo> [--remote <name>]       branch, clean/dirty, ahead/behind, recent — for
     STATE/SYNC never raw  git status / git rev-list / git log --oneline  (reflex slips here).
-  (commit-log SEARCH by grep/author/co-author trailer has no typed shape yet — SM217 gap;
-   keep it a bare  git log --grep …  , NEVER piped to | head .)
+  tt git log <repo> [--grep P] [--co-author P] [--author P] [--since D] [--limit N]
+    commit-log SEARCH, read-only, self-capped — never a bare  git log --grep  (this line
+    said "no typed shape yet" until 2026-07-28; the verb existed and the digest was stale).
+  tt git show <repo> --ref <ref> --path <relpath>     read ONE file at a ref, no checkout
 
 ⚠ THE TRIPWIRE  — the one line to internalise, because it fires at the ACTION, not at an abstraction:
   REACHING FOR python3 / jq / perl / node IS ITSELF THE SIGNAL that a typed verb is missing.

@@ -170,11 +170,16 @@ Learned by running snippets through the REAL parser (`tt parsereqt parse FILE`),
 
 ### Roadmap
 
-v0.1.0–v0.9.2 have shipped (see PAST/IMPLEMENTED and `CHANGELOG.md` as ground truth; the v0.9.0/v0.9.1
+v0.1.0–v0.10.0 have shipped (see PAST/IMPLEMENTED and `CHANGELOG.md` as ground truth; the v0.9.0/v0.9.1
 PAST backfill is pending). **v0.9.2 was the first release speced here BEFORE the cut** (its section was
 re-engineered from the real `v0.9.1..HEAD` range, then moved FUTURE → PAST the same day it shipped,
-2026-07-24). The next scheduled block is **v0.10.0** below; near-term pinned work outside any block:
-`tt forge release-create --gh/--gl`, per-session mode sets, release-all.
+2026-07-24). **v0.10.0, the alpha, SHIPPED 2026-07-28** — its PAST block below records what it
+actually contained, which is NOT what the next FUTURE section (once headed "Release v0.10.0")
+predicted; that section is re-headed UNSCHEDULED rather than silently re-dated, so the mis-prediction
+stays visible. The near-term pins this paragraph once listed all shipped in it (`tt forge
+release-create --gh/--gl`, per-session mode sets, multi-remote push). **Next scheduled: v0.10.1** —
+the reqT round trip (issue-005) plus the alpha field-experience items filed 2026-07-28 as issues
+006–013 (see `reqts/ROADMAP.md` and `reqts/issues/open/`).
 
 > **Bootstrap note (2026-07-03):** this PRD was re-engineered retrospectively — we did NOT author reqT-lang
 > reqts before each release. To keep it realistic, PAST was reconstructed release-by-release from the
@@ -247,7 +252,9 @@ re-engineered from the real `v0.9.1..HEAD` range, then moved FUTURE → PAST the
 example of expressing already-built work as reqT-lang requirements for Agentic RE):
 
 * Feature: ttGit has
-  * Gist: a typed SAFE git helper — add/commit/push + ff-only pull/fetch, commit message from a FILE — with no reset/rebase/force/rm/clean, so the destructive git surface is simply absent from the agent's reach.
+  * Gist: a typed SAFE git helper — commit (message from a FILE) / push / ff-only pull / fetch, plus read-only history verbs show and log — with no reset/rebase/force/rm/clean, so the destructive git surface is simply absent from the agent's reach.
+  * Spec: VERBS AS SHIPPED (re-verified against the tool's own usage output 2026-07-28): `commit --repo <dir> --message-file <path> [--add <pathspec>]... [--push] [--remote <name>]...`; `push --repo <dir> [--remote ...]` (one unit to a whole mirror set); `pull` (fast-forward only); `fetch`; `show --repo <dir> --ref <ref> --path <relpath>` (read ONE file at a ref, no checkout); `log --repo <dir> [--grep] [--co-author] [--author] [--committer] [--since] [--limit]` (typed commit-log search, self-capped — a verb the guard-clean digest wrongly called missing until 2026-07-28; issue-008 was filed and closed same-day on that staleness). NO status/diff/branch — those are `tt gitinfo`, a separate tool — and deliberately NO `-m <msg>`: the message and paths reach git as an explicit argv list, so prose metacharacters cannot glob, expand, or mangle.
+  * Spec: OPEN, from the pre-ship design and NOT shipped — the in-session diff report (effectful runs surfacing their own diffstat/diff back into the session): as shipped, `commit` prints the sha only. Full design record: Feature: ttGitPreShipDesign.
 * Feature: ttGit helps Goal: safeGeneration
 * Feature: ttGit hurts Goal: controlHumanSystem
 
@@ -329,7 +336,13 @@ example of expressing already-built work as reqT-lang requirements for Agentic R
 * Feature: dwimCommands helps Goal: tokenEfficiency
 * Feature: dwimCommands relatesTo Feature: ttStatusline
 
-### Release v0.10.0 — config file, parser fall-through marker, safe-mode flags, MCP (later)
+### UNSCHEDULED — config file, parser fall-through marker, safe-mode flags, MCP
+
+> ⚠ This section was headed "Release v0.10.0" until 2026-07-28 — a PREDICTION the real v0.10.0 did
+> not honour: the alpha that shipped under that number contained native binaries, the installer,
+> `tt update --native`, session-scoped modes and the forge release verbs (see the v0.10.0 block in
+> PAST), and NONE of the features below. They remain wanted and unscheduled; re-headed rather than
+> re-dated so the divergence between plan and reality stays on the record.
 
 * Feature: ttConfigFile has
   * Gist: a simple, discovered project config file for STABLE tt settings (defaults, tool dir) — replacing ambient env for non-per-invocation config; complements Feature: configInArgsNotEnv.
@@ -375,9 +388,11 @@ example of expressing already-built work as reqT-lang requirements for Agentic R
 * Feature: textStreamEditor helps Goal: avoidConfirmationFatigue
 * Feature: textStreamEditor helps Goal: tokenEfficiency
 * Feature: textStreamEditor hurts Goal: controlHumanSystem
+* Feature: textStreamEditor relatesTo Feature: ttSub
+  * Comment: STATUS 2026-07-28 — the FILE-rewrite half of this idea shipped as `tt sub file|tree` (preview by default, --write to apply; see PAST v0.10.0), which is what actually retired the sed -i reflex; the stdin/stdout STREAM verbs (prefix/suffix/sub/filter) specified above remain unbuilt.
 
-* Feature: ttGit has
-  * Comment: ⚠ SUPERSEDED DESIGN, and a DUPLICATE ENTITY — flagged 2026-07-27, not yet resolved. `Feature: ttGit has` also appears earlier in this document (the shipped description), so reqT merges both blocks into ONE entity and this stale one silently contributes its attributes. Removing or renaming a duplicate id is a structural edit to the model, so it is deferred to the PRD consistency pass rather than done here. What IS corrected below is the verb list, which asserted things the shipped tool does not do.
+* Feature: ttGitPreShipDesign has
+  * Comment: RESOLVED 2026-07-28 (this consistency pass): renamed from a DUPLICATE `ttGit` id so this pre-ship design record no longer silently merges its attributes into the shipped entity — the v0.9.0 `ttGit` block now carries the as-shipped spec and is authoritative; this block stays as the design-history record. The original flag, kept verbatim: ⚠ SUPERSEDED DESIGN, and a DUPLICATE ENTITY — flagged 2026-07-27, then unresolved. `Feature: ttGit has` also appears earlier in this document (the shipped description), so reqT merges both blocks into ONE entity and this stale one silently contributes its attributes. Removing or renaming a duplicate id is a structural edit to the model, so it is deferred to the PRD consistency pass rather than done here. What IS corrected below is the verb list, which asserted things the shipped tool does not do.
   * Gist: a typed wrapper over git's SAFE verbs that passes the commit message and args as DATA — never as a shell-tokenized string — killing the glob false-positive + quoting footguns of git-over-bash, while keeping the effectful path auditable.
   * Spec: VERBS — ⚠ AS SHIPPED (corrected 2026-07-27; this line previously claimed `status`, `log`, `diff`, `branch` + `add`, `commit -m <msg>`, `push`): `commit --repo --message-file [--add ...] [--push] [--remote ...] [--tags]`, `push`, `pull` (ff-only), `fetch`, and read-only `show --ref --path` + `log --grep/--author/--co-author/--committer/--since/--limit`. There is NO `status`, NO `diff` and NO `branch` verb — those are `tt gitinfo`, a separate tool. And `-m <msg>` is deliberately NOT offered: the message comes from a FILE, so prose never crosses a shell boundary. The message and paths are handed to git as an explicit **argv list** (`os.proc(...)`, not a shell string), so prose metacharacters (`<->`, `*`, backticks, `{a,b}`, `$`) cannot glob, expand, or mangle — the exact false positive logged in `research/wr-data/WR002-genscalator-self-dev.md` (bash analyzer flagged a `<->` in a commit message as a zsh numeric-range glob).
   * Spec: SAFETY — destructive verbs/flags are NOT exposed and are statically rejected: `rm`, `reset --hard`, `push --force`/`-f`, `clean -f`. This mirrors the settings global-deny model (see `research/settings-mirror/README.md` + `settings.local.json` — NOT `research/wr-data/settings-local-mirror.*`, which never existed): the human runs destructive git; the tool cannot. `push` is included because non-force push is effectful-but-not-destructive and the commit+push atomic unit is the core workflow; `--audit` prints what ran. NOT a general `git` passthrough — a passthrough would re-admit the destructive surface and defeat the point.
@@ -502,6 +517,7 @@ and the session pin board. The through-line is a new general goal, sovereigntyOf
 * Feature: ttUpdate has
   * Gist: (SHIPPED 2026-07-15) a git-based check of whether the installed genscalator is behind its marketplace remote — a read-only fetch of remote-tracking refs, never the working tree — that SUGGESTS the manual update steps, since only the human can run the /plugin commands a tool cannot.
   * Spec: self-locates the repo via the tools dir (or a --repo override), reports the installed version and the ahead/behind count vs upstream, and degrades gracefully when offline, when there is no upstream, or when genscalator is not a git checkout; a --brief mode speaks only when a newer release is available so gs warm can call it behind a throttle.
+  * Spec: EXTENDED in v0.10.0 — `--brief` now also SPEAKS when it CANNOT self-check (a plugin cache is not a git checkout; silence had been indistinguishable from up-to-date, so every cold start silently lost update-awareness — found by the first alpha field test), and the binary-install path gets its own verb, Feature: ttUpdateNative; the git-based check remains the contributor path.
 * Feature: ttUpdate helps Goal: sovereigntyOfCapability
 * Feature: ttUpdate helps Goal: jointHumanAgentProductivity
 
@@ -718,5 +734,70 @@ spine it *would* have been had we specified reqts before each release (bootstrap
 * Feature: cliSuiteParityMode verifies Goal: verifiedTypedTools
 
 * Comment: also in this release window but repo shape rather than product Features: reqts/ born with insourced issues (issue-000), HUMANS.md built out as the extended README, deploy/ gathers transport, work/NOW.md as the tracked present, SECURITY-MODEL gains the run-generated-code section. Release-day extras: origin repointed to GitHub (codeberg becomes a batched mirror per the new push policy), plugin.json homepage/repository follow.
+
+#### Release v0.10.0 — the alpha: native binaries, installer, self-update, session scoping, forge release verbs — SHIPPED 2026-07-28
+
+> Published 2026-07-28 as a real (non-prerelease) GitHub release: 4 platform zips + sha256 files +
+> the bootstrap installer, gate = "a tester on their own machine can install and run without a
+> wedge" (ROADMAP v0.10.0; DESIGN.md D2/D3/D6/D7 carry the how-and-why). ⚠ This content DIVERGED
+> from what the PRD had predicted under the v0.10.0 number — see the UNSCHEDULED note in FUTURE.
+
+* Feature: nativeReleaseMatrix has
+  * Gist: CI builds the native tt binary for the four proven platforms (linux-x86_64, linux-aarch64, macos-aarch64, windows-x86_64), proves EACH by running the full CLI-contract suite THROUGH it, and attaches zip + sha256 assets to the release.
+  * Spec: triggered by a release publish event or a manual dispatch (whose free-text tag input is a known hazard — issue-012); third-party actions pinned to release tags (DESIGN D6); windows-aarch64 ships experimental-red until upstream publishes a scala-cli build, Intel macOS removed for perpetual queuing — building from source is the documented route for both.
+* Feature: nativeReleaseMatrix verifies Goal: verifiedTypedTools
+* Feature: nativeReleaseMatrix helps Goal: sovereigntyOfCapability
+
+* Feature: binaryInstaller has
+  * Gist: get-genscalator.sc — a single self-contained JDK-only bootstrap the human READS before running: downloads this platform's zip, verifies the published sha256 (aborts on mismatch), extracts behind a zip-slip containment guard, restores bin/ executability, and adds a marked removable PATH block.
+  * Spec: no dependencies and nothing resolved at run time BY DESIGN — a bootstrap's whole job is being auditable, the opposite of curl-into-shell; the containment guard is a DECLARED vendored copy of ziplib's, checked against the SAME hostile-entry table; --dry-run / --no-path / --tag / --home; the zip's CI-stamped VERSION.txt is the source of truth (the bootstrap overwrote it with the requested ref until commit 8c7f02e — found by the post-publish smoke, fixed and replaced on the live release the same evening).
+* Feature: binaryInstaller requires Feature: nativeReleaseMatrix
+* Feature: binaryInstaller helps Goal: safeGeneration
+* Feature: binaryInstaller hurts Goal: controlHumanSystem
+
+* Feature: ttUpdateNative has
+  * Gist: `tt update --native` — one typed verb for "bring my install current": resolve the platform, download the latest (or --tag) release asset, INSIST on sha256 verification, extract through the shared guarded extractor, and swap via two atomic renames that are safe for a RUNNING binary on both POSIX and Windows.
+  * Spec: previews by default and applies only with --write; refuses to touch a git checkout; refuses unverified payloads outright ("--native will not install bytes it cannot check"); answers "already up to date" via the VERSION.txt-vs-tag compare; the swap design was SELECTED BY AN EXPERIMENT (RunningBinaryRenameSuite, answered on real Windows CI) rather than by reasoning alone — the full D7a/D7b/D7c record is in DESIGN.md, closed end to end 2026-07-28.
+* Feature: ttUpdateNative requires Feature: nativeReleaseMatrix
+* Feature: ttUpdateNative helps Goal: sovereigntyOfCapability
+* Feature: ttUpdateNative hurts Goal: controlHumanSystem
+
+* Feature: ttZip has
+  * Gist: typed zip verbs (list / check / extract) with a purpose-built zip-slip containment guard — EVERY entry adjudicated before ANY is written, absolute paths / drive letters / escapes rejected, executability restored only via an explicit --exec glob.
+  * Spec: the guard and extractor live in a shared module (ziplib.scala) so the hostile-entry tests cover the ONE copy that both `tt zip` and `tt update --native` run — the D7c extraction against the sibling-miss failure; releaselib.scala carries download-and-verify for the same reason.
+* Feature: ttZip helps Goal: safeGeneration
+* Feature: ttZip hurts Goal: controlHumanSystem
+
+* Feature: ttSession has
+  * Gist: `tt session [<name>]` — name the CURRENT Claude Code session and read it back in milliseconds; the human-facing handle for telling concurrent sessions apart.
+* Feature: perSessionModes has
+  * Gist: ALL workflow modes are PER-SESSION — `tt mode` state is keyed on the session id (env CLAUDE_CODE_SESSION_ID), so concurrent sessions stop clobbering each other's declared modes, and the statusline reads the same session-keyed state.
+  * Spec: UNIFORM scoping with no exception — a budget-chip carve-out was proposed and REVERSED by BR 2026-07-28: the shared weekly-headroom FACT lives in `tt limit`, while a lit chip is THIS session's POLICY; bare-shell fallback = the legacy global file; field-tested with two concurrent sessions in both directions before ship.
+* Feature: perSessionModes requires Feature: ttSession
+* Feature: perSessionModes helps Goal: echtModeAwareness
+* Feature: perSessionModes helps Goal: jointHumanAgentProductivity
+
+* Feature: forgeReleaseVerbs has
+  * Gist: tt forge grows the release LIFECYCLE as typed verbs — release-create / release-edit / release-upload / release-download [--verify] / release-delete — across the GitHub, Gitea/Forgejo and GitLab dialects, so cutting and maintaining a release stops being raw API calls.
+  * Spec: effectful verbs read tokens from fixed human-set env names with the audited `gh auth token` fallback (the momentary-first policy, SECURITY-MODEL.md); trusted hosts only; release-delete previews by default and demands --yes --allow-published for a published release; the gaps this surface still has are filed — asset replace (issue-006) and single-file repo read (issue-007).
+* Feature: forgeReleaseVerbs helps Goal: sovereigntyOfCapability
+* Feature: forgeReleaseVerbs hurts Goal: exfiltrateSecrets
+* Feature: forgeReleaseVerbs relatesTo Feature: forgeReadVerbsGh
+
+* Feature: ttLinks has
+  * Gist: `tt links check` — dangling-local-link detection over a doc tree with a gate-ready exit code; the instrument behind the public-surface sweep (19 real defects found and fixed; the 6 survivors are by-design generated targets — issue-011 carries the exceptions-plus-CI-gate follow-up).
+* Feature: ttLinks helps Goal: jointHumanAgentProductivity
+
+* Feature: ttJson has
+  * Gist: typed JSON reads (check / get path / keys / pretty) replacing the python3 json.tool and jq reflexes; pretty SORTS keys, so its output must never be written back over a human's file.
+* Feature: ttJson helps Goal: tokenEfficiency
+* Feature: ttJson helps Goal: safeGeneration
+
+* Feature: ttSub has
+  * Gist: `tt sub file|tree` — regex search-and-replace over a file or a tree, PREVIEW BY DEFAULT with --write to apply; the typed replacement for the sed -i and python-rewrite reflexes, and the shipped file-rewrite half of the textStreamEditor idea.
+* Feature: ttSub helps Goal: safeGeneration
+* Feature: ttSub hurts Goal: controlHumanSystem
+
+* Comment: also in the alpha window, repo-shape rather than new entities — README rebuilt installer-first with the TLDR install line; SECURITY-MODEL.md's credentials-and-tokens section written (momentary-first, decided 2026-07-27); alpha hardening from the first field test (mainless helpers cleaned of stray directives, `tt update --brief` speaking on cannot-self-check, DispatchSuite given a cold-compile budget); and public docs toned down so agents DERIVE working state instead of hunting closed-repo substrate.
 
 ### CANCELLED
