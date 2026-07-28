@@ -1192,6 +1192,30 @@ class CliSuite extends munit.FunSuite:
     assert(clue(Guardcheck.cmdFindings("""tt x "$(whoami)"""")).exists(_.severity == "HIGH"))
     assert(clue(Guardcheck.cmdFindings("""tt x "/dev/stdin"""")).exists(_.severity == "HIGH"))
   }
+  // --- SM252: the raw-binary NOTE. The shape checks could not see `grep -n x f` (no cd, no pipe, no
+  // redirect, not recursive), so it was reached for six times in one hour with `tt text match` available.
+  // This tier is keyed on the BINARY NAME instead. False positives are the binding constraint, so the
+  // negative direction is pinned harder than the positive one — a nag people learn to ignore is worse
+  // than no nag, and flagging the FIX would be self-defeating.
+  test("raw-binary NOTE: the bare reaches that no shape check could see now fire") {
+    def note(c: String) = Guardcheck.cmdFindings(c).filter(_.severity == "NOTE")
+    assert(clue(note("""grep -n "def " tools/zip.scala""")).nonEmpty)  // the actual SM252 reach
+    assert(clue(note("find . -name '*.tmp'")).nonEmpty)
+    assert(clue(note("curl -s https://example.com/x")).nonEmpty)
+    assert(clue(note("which scala-cli")).nonEmpty)
+    assert(clue(note("command -v pdftk")).nonEmpty)
+  }
+  test("raw-binary NOTE: never flags the typed verb it recommends, nor a sanctioned raw shape") {
+    // Flagging the fix is the self-defeating failure recorded at bulkCredentialReadRx.
+    assertEquals(clue(Guardcheck.cmdFindings("tt which scala-cli")), Nil)
+    assertEquals(clue(Guardcheck.cmdFindings("tt web get https://example.com/x")), Nil)
+    assertEquals(clue(Guardcheck.cmdFindings("tt files /home/x/tools scala")), Nil)
+    assertEquals(clue(Guardcheck.cmdFindings("tt text grepr /home/x/tools scala foo")), Nil)
+    // commit-log search still has NO typed verb (SM217), so `git log --grep` is explicitly sanctioned and
+    // must stay silent. The start-anchor is what buys this: `grep` here is never the command.
+    assertEquals(clue(Guardcheck.cmdFindings("git log --grep=ember")), Nil)
+  }
+
   test("guardcheck hook: HIGH finding → deny decision JSON") {
     val json = """{"tool_name":"Bash","tool_input":{"command":"tt git commit --message-file /dev/stdin"}}"""
     val (code, out, _) = runStdin("guardcheck", json, "hook")

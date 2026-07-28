@@ -38,7 +38,11 @@ if [[ "${TT_NATIVE:-1}" == "1" ]]; then
     if [[ -z "$(find "$TOOLS" -name '*.scala' -newer "$bin" -print -quit)" ]]; then
       runner=("$bin" "-Dtt.tools=$TOOLS" "$tool")
     else
-      echo "tt: native binary is STALE (tools/ edited since build) - using scala-cli; refresh: scala-cli run deploy/buildnative.sc" >&2
+      # Wording matters more than it looks (SM252): read as a warning ABOUT THE TOOLBOX, this line led an
+      # agent to conclude "tt is unusable" from one slow call and fall back to raw grep for an hour. It is
+      # a note about SPEED, so it says so - the same "degrades to slow, never to wrong" the comment above
+      # states. Keep the reassurance ahead of the remedy.
+      echo "tt: native binary is stale (tools/ edited since build) - using scala-cli: SLOWER, still correct. Refresh when convenient: scala-cli run deploy/buildnative.sc" >&2
     fi
   fi
   # no binary at all = not graalified yet: silently use scala-cli (the pre-native default)

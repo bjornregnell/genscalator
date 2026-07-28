@@ -523,20 +523,46 @@ update [--repo <dir>] [--brief] [--throttle <hours>]
    --repo <dir>        the genscalator repo to check     (default: self-locate via the tools dir)
    --brief             print ONLY an actionable "newer release available" notice; silent otherwise
    --throttle <hours>  actually fetch at most once per <hours> window (stamp-file gated); implies --brief
+
+update --native [--home <dir>] [--repo <owner/repo>] [--tag <tag>] [--write]
+   --home <dir>        the INSTALLED tree to replace     (default: GENSCALATOR_HOME, then ~/.genscalator)
+   --repo <owner/repo> where releases are published      (default: bjornregnell/genscalator)
+   --tag <tag>         install a specific tag            (default: the latest published release)
+   --write             APPLY. Without it this previews and touches nothing.
 ```
 genscalator's **own update-awareness**, because the platform gives none: a third-party Claude Code marketplace does
 **not** auto-update, there is no per-plugin update command, and plugin authors get no update-check API. But
 genscalator *is* a git checkout, so git is the mechanism — `update` **fetches remote-tracking refs (read-only, never
 the working tree)**, compares your installed version against the remote, and, if you are behind, prints the incoming
 commits plus the steps **you** run (`/plugin marketplace update bjornregnell` (the MARKETPLACE name from marketplace.json, not the plugin name) then `/reload-plugins` — the harness
-commands a tool cannot drive). It changes nothing itself; the human is the actuator. Exits 0 in all normal cases and
-degrades gracefully when offline, when the branch has no upstream, or when genscalator is not a git checkout.
-`--throttle` is what **`gs warm`** calls (`tt update --brief --throttle 24`), so warm gains update-awareness without
-ever hanging or nagging. Examples:
+commands a tool cannot drive). **In this git-checkout mode it changes nothing itself; the human is the actuator.**
+Exits 0 in all normal cases and degrades gracefully when offline, when the branch has no upstream, or when
+genscalator is not a git checkout. `--throttle` is what **`gs warm`** calls (`tt update --brief --throttle 24`), so
+warm gains update-awareness without ever hanging or nagging.
+
+**`--native` is the other mode, and it DOES act** — it replaces an *installed binary* tree with the latest published
+release. (The sentence above used to read "it changes nothing itself" without qualification; `--native` made that
+claim false, which is the SM248 class — a doc asserting something about code that nobody re-checked.) It downloads
+the asset for **this** platform, verifies its published `sha256`, validates every CRC32 in the archive, unpacks to a
+staging dir *beside* the install, and only then swaps. **PREVIEWS by default like `tt sub` and `tt zip extract`;
+`--write` applies.**
+
+The swap is **two renames, never a write-through**: overwriting a running executable can corrupt the live process on
+POSIX and is refused outright on Windows, while *renaming* one is permitted on both — so the install is moved aside
+and the staged tree moved in. One code path, no platform branch (D7b, verified on Windows CI). If the second rename
+fails the first is undone, because that is the one failure that would otherwise leave you with no toolbox at all.
+
+It **refuses rather than guesses** in three places, each of which would otherwise brick an install: a platform with
+no published binary (Intel macOS and Windows-on-ARM — build from source, the documented route); a `--home` that is a
+**git checkout** rather than a binary install (deliberately *not* the repo self-locate the other verbs use, which can
+resolve to a contributor's clone); and an archive whose payload had no published `.sha256` to check it against.
+Examples:
 ```
 tt update                       # full report: installed version, ahead/behind, and what to do
 tt update --brief               # speak only if a newer release is available
 tt update --brief --throttle 24 # gs warm's call: check at most once a day, silent unless behind
+tt update --native              # PREVIEW: what would be installed, and the swap that would happen
+tt update --native --write      # apply it
 ```
 
 ### statusline — format the Claude Code statusLine stdin JSON into ONE compact line (PURE: reads stdin, prints)

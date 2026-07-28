@@ -51,6 +51,8 @@
       "Edit(//home/bjornr/git/berg/bjornregnell/muntabot-synch-introprog/**)",
       "Edit(//home/bjornr/git/hub/bjornregnell/genscalator/**)",
       "Edit(//tmp/claude-1000/**)",
+      "Edit(//home/bjornr/git/hub/bjornregnell/genscalator-work/research-closed/wr-data/**)",
+      "Write(//home/bjornr/git/hub/bjornregnell/genscalator-work/research-closed/wr-data/**)",
       "Bash(echo \"exit=$?\")",
       "Bash(awk '{print \"cache last modified:\", $6, \"size:\", $5}')",
       "Bash(awk '{print \"cache modified:\", $6}')",

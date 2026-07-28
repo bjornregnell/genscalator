@@ -135,6 +135,38 @@ object Guardcheck {
         "(tt json is why that works); a genuine one-off scratch or interpreter call is fine — say so rather " +
         "than pretending it was the only option",
       has(raw"\b(python3?|perl|ruby|node)\s+[-\w/.]")),
+    // Added 2026-07-28 after SM252, and it is SM235's widening repeated one tier down: the checks above
+    // reason about shell SHAPE, so `grep -n <pattern> <file>` — no cd, no pipe, no redirect, nothing
+    // recursive — matched NOTHING, and was reached for SIX times in one hour while `tt text match` sat
+    // available. The two MED grep checks fire only on `-r` or on `-A/-B/-C`; plain grep over one file had
+    // no check at all. This one is keyed on the BINARY NAME, which is the only property the reflex
+    // reliably has — the agent does not think "a typed shape is missing", it reaches for the name it knows.
+    //
+    // ⚠ WHY IT ANCHORS AT THE START, and it is the same reasoning SM235 used for the dump forms: that is
+    // the position where the word IS the command rather than an argument. This single constraint kills
+    // every false positive that matters at once:
+    //   - `tt which <name>` and `tt web get <url>` must NEVER match, because flagging the fix is
+    //     self-defeating (the lesson recorded at bulkCredentialReadRx);
+    //   - `git log --grep=<x>` is EXPLICITLY sanctioned — commit-log search still has no typed verb
+    //     (SM217) — and never appears first;
+    //   - `tt text grepr` cannot match anyway, since `grep\b` does not match inside `grepr`;
+    //   - quoted arguments are already masked for the NOTE tier, so a search PATTERN containing the word
+    //     `grep` is data, not a reach.
+    // Cost of the anchor, stated rather than hidden: `xargs grep …` and `… | grep …` are not caught here.
+    // Both carry shapes the MED tier already sees, so the uncovered case was precisely the bare one.
+    //
+    // ⚠ It deliberately OVERLAPS the two MED grep checks rather than carving around them. A recursive grep
+    // is both a shape problem and a tool-choice problem, and covering the CLASS is the whole point — the
+    // mistake SM231 and SM235 both diagnosed was listing the shapes that had already bitten.
+    Check("NOTE", "raw search/fetch binary where a typed verb exists",
+      "reaching for a raw text/file/URL binary BY NAME — the gap class no shape check can see, since " +
+        "`grep -n x f` has no cd, no pipe and no redirect to catch (SM252: six reaches in one hour, " +
+        "zero self-caught, all six found by the human)",
+      "tt text match <file> <regex> · tt text grepr <abs-dir> <ext> <regex> · tt files <dir> <ext> · " +
+        "tt which <name> · tt web get <url>. ⚠ And the trigger that caused SM252: a STALE native binary " +
+        "is NOT a broken toolbox — it only means tt falls back to scala-cli and runs slower, so one failed " +
+        "tt call licenses retrying THAT call, never abandoning the typed path",
+      has(raw"^\s*(grep|egrep|fgrep|rg|find|curl|wget|which)\b|^\s*command\s+-v\b")),
 
     Check("MED", "output redirect (>)",
       "a > redirect (esp. combined with cd) trips the path-resolution guard — and a > inside a QUOTED pattern/string arg fires this same check, since the guard scans raw bytes",
