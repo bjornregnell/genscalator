@@ -17,6 +17,12 @@ target/
 # in-repo scratch (preferred over /tmp so paths stay inside the trusted tree)
 tmp/
 
+# the assembled deployable SITE (deploy/buildsite.sc). Fully derivable in one command, and the whole
+# point of it existing is that "is this generated?" has a one-word answer: it is untracked. It mirrors
+# the DEPLOYED site rather than the repo, so `tt links check out` is a check of what readers actually
+# get - which is why it finds 4 real defects where the repo check finds 10 mostly-by-design ones.
+out/
+
 # release build output: buildnative.sc --out lands per-platform binaries here, and the CI matrix
 # does the same. ~41 MB each, fully derivable from a build, and published as release assets.
 dist/
