@@ -208,7 +208,12 @@ if !dryRun then Files.createDirectories(home)
 val n = unzip(tmpZip, home, dryRun)
 Files.deleteIfExists(tmpZip)
 if !dryRun then
-  Files.writeString(home.resolve("VERSION.txt"), tag.getOrElse("latest") + "\n")
+  // The archive carries the CI-stamped tag in VERSION.txt and unzip REPLACE_EXISTING has already
+  // written it; overwriting with the REQUESTED ref would turn "latest" into a stamp that can never
+  // equal a real tag, so `tt update --native` would re-install forever instead of saying up to date.
+  // Found by the v0.10.0 post-publish smoke, 2026-07-28. Write a fallback only if the zip had none.
+  val versionFile = home.resolve("VERSION.txt")
+  if !Files.exists(versionFile) then Files.writeString(versionFile, tag.getOrElse("latest") + "\n")
   println(s"  unpacked: $n file(s) into $home")
 
 if noPath then println(s"  PATH: skipped (--no-path). Add $home/bin to your PATH yourself.")
