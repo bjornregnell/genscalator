@@ -256,7 +256,7 @@ the allowlist, not a replacement for them and not a finished part of this model.
 
 ## Go deeper
 
-- [`research/theory/genscalator-security-model-save-nothing-open-and-the-human-may-be-bhh.md`](research/theory/genscalator-security-model-save-nothing-open-and-the-human-may-be-bhh.md) for the founding
+- [`research/theory/TH006-genscalator-security-model-save-nothing-open-and-the-human-may-be-bhh.md`](research/theory/TH006-genscalator-security-model-save-nothing-open-and-the-human-may-be-bhh.md) for the founding
   argument, the three pillars in full, and the discriminating criterion (how to hold a firm ethical floor
   without becoming either paternalistic or easy to manipulate).
 - [`docs/foundations.md`](docs/foundations.md) for the glossary: BHH, BadGoals, confirmation fatigue, rot.

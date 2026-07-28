@@ -1,5 +1,7 @@
 # Toward an agent-skill theory — a question framework (DRAFT seed)
 
+> **TH002** · first commit 2026-07-14 · previously `agent-skill-theory.md`
+
 **Status:** agent-authored DRAFT, 2026-07-14, for BR to develop. This poses the *questions* a theory should
 answer; it does not yet answer them. Written in the light of recent events (the cold-start dormant-skill
 regressions of 2026-07-13). Model producing this draft: Opus 4.8 (1M) — skill behaviour is model-dependent, so

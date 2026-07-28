@@ -1,6 +1,8 @@
 # What is a theory? — a working note (DRAFT seed)
 
-**Status:** agent-authored DRAFT, 2026-07-14, for BR to develop. A companion to `agent-skill-theory.md` that
+> **TH004** · first commit 2026-07-14 · previously `what-is-a-theory.md`
+
+**Status:** agent-authored DRAFT, 2026-07-14, for BR to develop. A companion to `TH002-agent-skill-theory.md` that
 grounds the meta-level: what *we* mean by "theory", and the rubric we will judge our own theories against. It
 leans deliberately on BR's own methods framing — *Experimentation in Software Engineering* [EX] and *Case Study
 Research in Software Engineering* [CS] — surfaced via `skills/research-methods` (BR is a co-author, so the
@@ -93,7 +95,7 @@ brittle in context**. Hold both.
 
 ## 6. Applying the rubric to our agent-skill theory (the point of this note)
 
-A quick self-audit of `agent-skill-theory.md` against §5:
+A quick self-audit of `TH002-agent-skill-theory.md` against §5:
 
 - **Falsifiable?** In intent, yes — P1–P6 are stated to be breakable. Good.
 - **Validatable?** This is the crux. It hinges on whether **gap** and **drift** are operationalizable and
@@ -115,7 +117,7 @@ operationalization of gap and drift to graduate into an empirically validated th
 
 ## Housekeeping / ties
 
-- Companion to `agent-skill-theory.md`; grounds the meta-level and supplies the goodness rubric.
+- Companion to `TH002-agent-skill-theory.md`; grounds the meta-level and supplies the goodness rubric.
 - Leans on BR's own [EX] / [CS] via `skills/research-methods` (the four validity threats; analytical vs
   statistical generalization; theory feeds studies, §3.3).
 - Ties SM069, `skills/in-session-experiment` (intervention-as-study), the WR method, and the "structure over

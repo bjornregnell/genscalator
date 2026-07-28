@@ -1,5 +1,7 @@
 # The "poor users" theory of opaque design decisions by big tech — a deliberately provocative, ironic seed
 
+> **TH007** · first commit 2026-07-16 · previously `poor-users-theory-on-opaque-design-decisions-by-big-tech-company.md`
+
 > **Register: PROVOCATIVE / IRONIC, NOT echt.** BR set this up on purpose (2026-07-16): the *title* theory is a
 > tongue-in-cheek lament, and the note's job is to **puncture it** — because the opacity it complains about is often
 > a legitimate need (security-by-obscurity, control-mechanism integrity). Keep the irony visible; do **not** let the

@@ -1,5 +1,7 @@
 # Experiment design: within-session recall fidelity vs context fill, and trust-erosion (SM106)
 
+> **TH005** · first commit 2026-07-15 · previously `recall-fidelity-and-trust-erosion-experiment-design.md`
+
 **Status: DRAFT (design only — no run).** Agent-drafted safe-solo (SM106), from SM102 (recall) + SM096
 (trust). Two probes for the skill-theory + in-session-experiment thread. The governing rule throughout (the
 in-session-experiment lesson): **self-report is the least trustworthy instrument** — score against behavioural

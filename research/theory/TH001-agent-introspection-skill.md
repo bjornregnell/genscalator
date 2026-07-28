@@ -1,7 +1,9 @@
 # Should we have an agent-introspection skill? — a design seed (DRAFT)
 
+> **TH001** · first commit 2026-07-14 · previously `agent-introspection-skill.md`
+
 **Status:** agent-authored DRAFT, 2026-07-14, for BR to develop (SM078). A companion to
-`agent-skill-theory.md` (§E observability) and `what-is-a-theory.md`. Model producing this draft: Opus 4.8 (1M).
+`TH002-agent-skill-theory.md` (§E observability) and `TH004-what-is-a-theory.md`. Model producing this draft: Opus 4.8 (1M).
 Ties SM069 (skill-set theory), SM070 (`tt skillcheck` = detect), SM077 (`gs warm` = load),
 `research/039-can-we-give-agent-introspection-wall-clock.md`, the `in-session-experiment` skill.
 

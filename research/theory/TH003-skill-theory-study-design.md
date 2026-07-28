@@ -1,7 +1,9 @@
 # A book-grounded study design for the agent-skill theory (DRAFT)
 
+> **TH003** · first commit 2026-07-14 · previously `skill-theory-study-design.md`
+
 **Status:** agent-authored DRAFT, 2026-07-14 (SM080), for BR to develop. This turns the *method* section of
-`agent-skill-theory.md` (§5) and the *validatability crux* of `what-is-a-theory.md` (§6) from skill-index
+`TH002-agent-skill-theory.md` (§5) and the *validatability crux* of `TH004-what-is-a-theory.md` (§6) from skill-index
 references into a concrete, cited study design. Grounded via two CF5 book-expert consultants that read BR's own
 methods books directly: **[EX]** = Wohlin, Runeson, Höst, Ohlsson, Regnell & Wesslén, *Experimentation in
 Software Engineering*, **2nd ed. (Springer, 2024)**, DOI 10.1007/978-3-662-69306-3 (page
@@ -13,7 +15,7 @@ Research in Software Engineering*. All book content is paraphrased + page-cited;
 
 ## 0. The crux this answers
 
-`what-is-a-theory.md` §6 states the make-or-break: the skill theory graduates from *lens* to *validatable
+`TH004-what-is-a-theory.md` §6 states the make-or-break: the skill theory graduates from *lens* to *validatable
 theory* iff **gap** and **drift** are operationalizable and testable by real
 studies. This note argues they are, and specifies how.
 
@@ -31,7 +33,7 @@ The controlled **experiment** ([EX], §§2–5 below) is a SEPARATE, more-contro
 randomized treatment order over a task pool (the indent-braces-style rig) — that TESTS a proposition the case
 study produced. This is theory-TESTING (deductive).
 
-Per `what-is-a-theory.md` §3 this is the healthy cycle: **case study to FORM, experiment to TEST**, and [CS]
+Per `TH004-what-is-a-theory.md` §3 this is the healthy cycle: **case study to FORM, experiment to TEST**, and [CS]
 Table 2.2 (p. 20) gives the graduation criterion — when a proposition needs control + statistical replication,
 promote it from the in-session case study to the experiment. §§2–5 develop the experiment ([EX] consultant);
 §6 develops the case study ([CS] consultant).

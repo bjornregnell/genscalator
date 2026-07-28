@@ -206,7 +206,7 @@ does.)*
 ## Cross-links
 
 `guard-suggests-blanket-date-glob-but-tt-chrono-exists-2026-07-10.md` (**the 7-day-earlier twin**) ·
-`research/theory/genscalator-security-model-save-nothing-open-and-the-human-may-be-bhh.md` (SM125 — the
+`research/theory/TH006-genscalator-security-model-save-nothing-open-and-the-human-may-be-bhh.md` (SM125 — the
 human-may-be-BHH frame; **§2 and §3 here are both attacks on the human's attention, which is that frame's soft
 target**) · `SECURITY-MODEL.md` §3 (SM131 — the rule above wants a home there) · `100b6c0` (the guard-stalled `rm`:
 *a blanket allow permanently disarms the guard*) · `f4dae63` (**the harness's classifier is opaque and MOVES: the

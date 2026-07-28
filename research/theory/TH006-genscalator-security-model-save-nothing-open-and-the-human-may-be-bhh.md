@@ -1,5 +1,7 @@
 # The genscalator security model: save-nothing, fully open, and "the human may be the BLACK HAT HACKER "
 
+> **TH006** · first commit 2026-07-16 · previously `genscalator-security-model-save-nothing-open-and-the-human-may-be-bhh.md`
+
 ## Rationale
 
 - The **human gets stressed / rotted**; the **agent might be BLACK HAT HACKER -controlled** (the standing threat model).
@@ -19,7 +21,7 @@
 3. **NO security-by-obscurity.** Security comes from **auditable structure** (removed-not-gated surfaces, typed
    tools, no interpreter blobs, nothing retained), not concealment. Contrast the *legitimate* obscurity of a control
    mechanism (the platform's withheld stall event —
-   [[poor-users-theory-on-opaque-design-decisions-by-big-tech-company]]): genscalator runs its **own** opacity budget
+   [[TH007-poor-users-theory-on-opaque-design-decisions-by-big-tech-company]]): genscalator runs its **own** opacity budget
    at **zero**, because its security does not depend on anyone not-knowing — it depends on there being **nothing to
    steal and nothing hidden to abuse.**
 
