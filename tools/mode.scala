@@ -10,14 +10,16 @@
 //   tt mode                   list the active modes (one per line; session chips + machine chips)
 //   tt mode add <label>       declare <label> active (idempotent)
 //   tt mode rm <label>        clear <label>
-//   tt mode clear             clear this SESSION's modes (machine-scoped budget chips stay)
+//   tt mode clear             clear this SESSION's modes (bare shell: clears the global file)
 //   tt mode --file <f> ...    override: single-file mode on <f>, no session scoping (for tests)
 //   tt mode --sessions-root <d> ...   override the session-store root (for tests)
-// SCOPING (SM208, BR-ratified): modes are PER-SESSION, keyed on env CLAUDE_CODE_SESSION_ID —
-// a chip declared in one terminal must never leak into another. The ONE exception is the
-// token-budget family (SessionStore.BudgetChips), which is machine-scoped in the old global file
-// (~/.claude/gs-modes): weekly account headroom genuinely IS shared. Without a session id (a bare
-// shell), everything falls back to the global file, exactly the pre-scoping behavior.
+// SCOPING (SM208, BR-ratified 2026-07-24; made UNIFORM on his call 2026-07-28): ALL modes are
+// PER-SESSION, keyed on env CLAUDE_CODE_SESSION_ID — a chip declared in one terminal must never
+// leak into another. Even the token-budget chips scope per session: the SHARED FACT (weekly account
+// headroom) lives in `tt limit`'s machine store; the CHIP is this session's spend POLICY, and
+// policy differs per session under one wallet (line-1-measured / line-2-declared). Without a
+// session id (a bare shell), everything falls back to the global file (~/.claude/gs-modes),
+// exactly the pre-scoping behavior; chips left there render in every session until removed.
 // Labels are bare tokens [A-Za-z0-9._-]+ (no spaces, no paths) so they render cleanly and pass around safely.
 import java.nio.file.{Files, Path}
 
@@ -32,18 +34,19 @@ private val ModeHelp: String =
     |  mode                   list the active modes (session chips + machine chips, one per line)
     |  mode add <label>       declare <label> active (idempotent)
     |  mode rm <label>        clear <label> (from whichever store holds it)
-    |  mode clear             clear this SESSION's modes (machine-scoped budget chips stay; in a
-    |                         bare shell with no session id, clears the global file)
+    |  mode clear             clear this SESSION's modes (in a bare shell with no session id,
+    |                         clears the global file)
     |  mode --file <f> ...    single-file mode on <f>, no session scoping (config-in-args, for tests)
     |  mode --sessions-root <d> ...  override the session-store root (for tests)
     |  mode --global-file <g> ...    override the machine store, scoping stays active (for tests)
     |  mode --id <id> ...     fix the session id (for tests; default env CLAUDE_CODE_SESSION_ID)
     |
-    |SCOPING (SM208): modes are PER-SESSION, keyed on the harness session id
-    |(env CLAUDE_CODE_SESSION_ID), so parallel sessions cannot flip each other's chips. The
-    |token-budget chips (TokSpend, TokSaving, TokNormal) are the exception: weekly account headroom
-    |is genuinely shared, so they live machine-scoped in ~/.claude/gs-modes. No session id (a bare
-    |shell) -> everything uses the global file, as before. Session state: ~/.claude/gs-sessions/<id>/.
+    |SCOPING (SM208): ALL modes are PER-SESSION, keyed on the harness session id
+    |(env CLAUDE_CODE_SESSION_ID), so parallel sessions cannot flip each other's chips — including
+    |the token-budget chips: the shared FACT (account headroom) lives in `tt limit`, the CHIP is
+    |this session's spend policy. No session id (a bare shell) -> the global file
+    |(~/.claude/gs-modes), as before; chips left there show in every session until removed.
+    |Session state: ~/.claude/gs-sessions/<id>/.
     |
     |Labels are bare tokens [A-Za-z0-9._-]+ (no spaces / paths). Examples of modes:
     |  TokSpend  TokenSaving  HotHarvest  HighContext  Solo  HumanStress  RotVigil  Racing
@@ -101,11 +104,11 @@ private def defaultStateFile(): Path =
         Console.err.println(s"mode: invalid label '$label' (use bare [A-Za-z0-9._-], no spaces or paths)")
         sys.exit(2)
       val target = sessionModesFile match
-        case Some(f) if !SessionStore.BudgetChips(label) =>
+        case Some(f) =>
           SessionStore.ensureStarted(sessionsRoot, sid.get, System.currentTimeMillis())
           SessionStore.prune(sessionsRoot, System.currentTimeMillis())
           f
-        case _ => globalFile
+        case None => globalFile
       val cur = readF(target)
       if !cur.contains(label) then writeF(target, cur :+ label)
     case "rm" :: label :: Nil =>

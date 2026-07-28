@@ -9,8 +9,9 @@
 // WHY (SM208, ratified by BR 2026-07-24): the one global ~/.claude/gs-modes file is a CORRECTNESS
 // bug with concurrent sessions — a chip flipped in one terminal leaks into every other, and the
 // mode line is what an agent reads to decide how autonomously to act. The principle: MODES ARE NOT
-// GLOBAL — every workflow mode is per-session. The ONE exception is the token-budget family
-// (weekly ACCOUNT headroom genuinely is machine/account-shared), which stays in the global file.
+// GLOBAL — every workflow mode is per-session, WITHOUT exception (BR 2026-07-28, superseding the
+// same-pin budget-chip carve-out: the shared FACT of account headroom lives in `tt limit`'s machine
+// store; a budget CHIP is this session's spend POLICY, and policy differs per session).
 //
 // KEY: the harness session id (env CLAUDE_CODE_SESSION_ID, also `session_id` in the statusline's
 // stdin JSON). It is opaque and useless as a NAME, but a key only has to be unique and stable
@@ -34,11 +35,6 @@ object SessionStore:
 
   def defaultRoot: Path =
     Path.of(sys.props.getOrElse("user.home", "."), ".claude", "gs-sessions")
-
-  /** The token-budget chips that stay MACHINE-scoped (the SM208 exception). Everything else is
-    * session-scoped. Both spellings of the saving chip exist in the wild (statusline's modeOrder
-    * has TokenSaving; the gs vocabulary says TokSaving), so both are listed. */
-  val BudgetChips: Set[String] = Set("TokSpend", "TokSaving", "TokenSaving", "TokNormal", "TokSave")
 
   /** A session NAME is free text for a human: spaces ALLOWED, control characters (incl. newline —
     * the store is one-value-per-line) REJECTED. The chip validator RELAXED, not reused (SM259). */

@@ -655,8 +655,8 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       silentSec = gapSec, declaredLimits = declared))
     // LINE 2 is DECLARED-ONLY (BR 2026-07-17): the gap now rides line 1 as `silent`, and there is no derived-chip
     // argument left to pass — see renderModes.
-    // SM208 SESSION SCOPING: the chips shown are the machine-scoped budget chips (global file) plus THIS
-    // session's chips, keyed on the stdin JSON's `session_id`. The session lead renders the display name
+    // SM208 SESSION SCOPING (uniform, BR 2026-07-28): the chips shown are THIS session's chips, keyed on
+    // the stdin JSON's `session_id`, unioned with the legacy/bare-shell global file. The session lead renders the display name
     // (timestamp part from the store's `started` stamp when a writer created one, else the transcript
     // file's creation time — a READ, keeping this tool's write-nothing contract). A JSON without
     // `session_id` (old harness, tests) renders exactly the pre-scoping line.

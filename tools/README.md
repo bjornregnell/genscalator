@@ -297,12 +297,12 @@ mode --file <f> ...     # single-file mode on <f>, NO session scoping (config-in
 mode --global-file <g> | --sessions-root <d> | --id <id>   # store/id overrides (for tests)
 ```
 A "mode" is a label on the shared human<->agent state-of-mind; MANY can be active at once, and BOTH the human
-and the agent may add/remove them (a joint, mutually-visible channel). **Modes are PER-SESSION (SM208)**:
+and the agent may add/remove them (a joint, mutually-visible channel). **ALL modes are PER-SESSION (SM208)**:
 chips are keyed on the harness session id (env `CLAUDE_CODE_SESSION_ID`, state in
-`~/.claude/gs-sessions/<id>/`), so parallel sessions cannot flip each other's chips. The ONE exception is the
-token-budget family (`TokSpend`, `TokSaving`, `TokNormal`): weekly account headroom is genuinely shared, so
-those live machine-scoped in `~/.claude/gs-modes`. In a bare shell with no session id everything falls back
-to the global file. The statusline's **mode line** (`tt statusline --mode-line`) renders whatever is active,
+`~/.claude/gs-sessions/<id>/`), so parallel sessions cannot flip each other's chips — including the
+token-budget chips, because the shared FACT (account headroom) lives in `tt limit`'s machine store while a
+budget CHIP is this session's spend policy. In a bare shell with no session id everything falls back to the
+global `~/.claude/gs-modes` file; chips left there render in every session until removed. The statusline's **mode line** (`tt statusline --mode-line`) renders whatever is active,
 each label reverse-video + bold in its own colour, padded one space each side. Labels are bare tokens
 `[A-Za-z0-9._-]+`. Pairs with `session` (the session NAME) and `statusline` (rendering).
 

@@ -42,13 +42,6 @@ class SessionStoreSuite extends munit.FunSuite:
     assertEquals(SessionStore.readName(root, "id-1"), None)
   }
 
-  test("BudgetChips carries the token-budget family and nothing session-shaped") {
-    assert(SessionStore.BudgetChips("TokSpend"))
-    assert(SessionStore.BudgetChips("TokenSaving"))
-    assert(!SessionStore.BudgetChips("Afk"))
-    assert(!SessionStore.BudgetChips("RotVigil"))
-  }
-
   test("prune drops only dirs older than the cutoff") {
     val root = os.temp.dir().toNIO
     SessionStore.writeName(root, "old", "x", nowMs = 0L)
@@ -104,29 +97,30 @@ class SessionCliSuite extends munit.FunSuite:
     assert(!os.exists(root / "t-2" / "name"))
   }
 
-  test("mode routes: session chip to the session store, budget chip to the machine store") {
+  test("mode add is UNIFORMLY session-scoped: even a budget chip goes to the session store") {
     val root = os.temp.dir()
     val g    = (root / "global").toString
     run("mode", "--global-file", g, "--sessions-root", root.toString, "--id", "s-1", "add", "RotVigil")
     run("mode", "--global-file", g, "--sessions-root", root.toString, "--id", "s-1", "add", "TokSpend")
     val sessionChips = os.read(root / "s-1" / "modes")
-    val globalChips  = os.read(os.Path(g))
-    assert(clue(sessionChips).contains("RotVigil") && !sessionChips.contains("TokSpend"))
-    assert(clue(globalChips).contains("TokSpend") && !globalChips.contains("RotVigil"))
+    assert(clue(sessionChips).contains("RotVigil") && sessionChips.contains("TokSpend"))
+    assert(!os.exists(os.Path(g))) // nothing routed to the machine file
   }
 
-  test("mode list is the union; rm removes from either store; clear keeps budget chips") {
+  test("mode list unions in legacy global chips; rm removes from either store; clear spares the global file") {
     val root = os.temp.dir()
-    val g    = (root / "global").toString
-    def m(args: String*)= run("mode", ("--global-file" +: g +: "--sessions-root" +: root.toString +: "--id" +: "s-2" +: args)*)
-    m("add", "Afk"); m("add", "TokSpend")
+    val g    = root / "global"
+    os.write(g, "LegacyChip\n") // pre-scoping residue / bare-shell declarations
+    def m(args: String*)= run("mode", ("--global-file" +: g.toString +: "--sessions-root" +: root.toString +: "--id" +: "s-2" +: args)*)
+    m("add", "Afk")
     val (_, listed, _) = m()
-    assert(clue(listed).contains("Afk") && listed.contains("TokSpend"))
-    m("rm", "Afk")
-    assert(!m()._2.contains("Afk"))
+    assert(clue(listed).contains("Afk") && listed.contains("LegacyChip"))
+    m("rm", "LegacyChip") // rm reaches the global file too
+    assert(!m()._2.contains("LegacyChip"))
+    os.write.over(g, "LegacyChip\n")
     m("add", "Solo"); m("clear")
     val (_, after, _) = m()
-    assert(clue(after).contains("TokSpend") && !after.contains("Solo"))
+    assert(clue(after).contains("LegacyChip") && !after.contains("Solo"))
   }
 
   test("mode chips from another session do NOT leak into this one") {
