@@ -18,7 +18,7 @@
 //       blog/                         <- media/blog (published + deployed only)
 //       img/                          <- media/img
 //       graphical-profile/            <- media/graphical-profile
-//       api/                          <- scaladoc (see NOT YET WIRED, below)
+//       api/                          <- scaladoc via deployttapi.sc (wired 2026-07-28, SM256)
 //
 // Why site-mirroring: a blog post's `../img/x.png` resolves because out/blog -> out/img is the real
 // on-site relationship; and the manual's sibling links (`foundations.html` from `index.html`) resolve
@@ -30,7 +30,10 @@
 // dangle here, and that is CORRECT rather than a regression: they are genuinely broken for a reader,
 // because those trees are not published. Fix them at the source, or point them at a public URL.
 //
-// ⚠⚠ NOT YET WIRED: `out/api/`. Held deliberately; tracked as a JOINT task on the pin board.
+// ✅ `out/api/` WIRED 2026-07-28 (SM256, BR present): step 4 below shells deployttapi.sc with
+// `--out <out>/api`. The hold was released the safe way round - deployttapi.sc first grew the --out
+// flag WITH its path-pin moved in the same edit (only `docs/generated/api` and `out/api` shapes are
+// accepted at the clear step), then a bad-path rejection test and a --dry-run ran before this wiring.
 //
 // The DESTINATION IS DECIDED (BR, 2026-07-28): `https://bjornregnell.se/genscalator/api`, so inside this
 // tree it is `out/api/` - the path under `out/` is just the site URL with the domain and the
@@ -46,9 +49,9 @@
 // doing the api first is what creates the orphaned level, and moving the manual later breaks every
 // existing inbound link.
 //
-// WHY THE WIRING IS HELD: `deployttapi.sc` generates into `docs/generated/api/` and CLEARS that
-// directory under a path-pinned safety check. Getting a directory-clearing path wrong is the one mistake
-// in this area that destroys work, so it wants its own change and its own dry-run.
+// WHY THE WIRING WAS HELD until 2026-07-28: `deployttapi.sc` CLEARS its target directory under a
+// path-pinned safety check, and re-pointing a dir-clearing path is the one mistake in this area that
+// destroys work - so it got its own change and its own dry-run (see the ✅ note above).
 // ⇒ Also found while writing this (deployttapi.sc:7): the api site has NEVER been uploaded. Its header
 // says "a LATER step will deploy to bjornregnell.se" and that step was never built. Unifying under one
 // push is what finally closes that.
@@ -117,6 +120,15 @@ staticTrees.foreach { (src, dst) =>
       os.makeDir.all(out / dst)
       os.list(from).filter(os.isFile).foreach(f => os.copy.over(f, out / dst / f.last))
 }
+
+// 4. the api (SM256): toolbox scaladoc, generated + synced by deployttapi.sc into out/api - its
+// path-pin accepts exactly this target shape. The doc build takes a minute or two, so a quick
+// iteration on the manual/blog can skip it with --skip-api.
+if argv.contains("--skip-api") then println("  api:    SKIPPED (--skip-api)")
+else
+  println(s"  api:    scaladoc -> $out/api")
+  run("deployttapi (scaladoc -> out/api)", Vector("scala-cli", "run", (root / "deploy" / "deployttapi.sc").toString,
+    "--", "--root", root.toString, "--out", (out / "api").toString))
 
 println()
 if dryRun then println("DRY RUN complete - nothing written. Re-run without --dry-run to build.")

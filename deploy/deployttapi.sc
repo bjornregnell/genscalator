@@ -29,6 +29,8 @@
 //   scala-cli run deploy/deployttapi.sc -- --dry-run   # generate into tmp/, show what WOULD change in docs/, change nothing there
 //   scala-cli run deploy/deployttapi.sc                # generate + sync into docs/generated/api/
 //   scala-cli run deploy/deployttapi.sc -- --root <abs>  # treat <abs> as the genscalator checkout (else cwd must be the root)
+//   scala-cli run deploy/deployttapi.sc -- --out <abs>   # sync target override (SM256: the site build wants <root>/out/api);
+//                                                        # only the two pinned shapes are accepted, see the path-pin at the clear step
 //
 // NOTES
 //   - Expected magnitude: ~245 html pages (grows as tools are added).
@@ -67,7 +69,15 @@ if !Files.isDirectory(root.resolve("tools")) || !Files.exists(root.resolve("depl
 
 val toolsDir = root.resolve("tools")
 val buildDir = root.resolve("tmp").resolve("ttapi-build")          // fresh scratch site (gitignored, in-repo)
-val apiDir   = root.resolve("docs").resolve("generated").resolve("api")
+// SM256: --out re-points the sync target (the site build wants <root>/out/api). ⚠ THE PATH-PIN MOVES
+// WITH THE FLAG, in this same edit and never separately: the clear step refuses any target that does
+// not end in one of these two shapes, so a mistyped --out cannot aim the directory-clear at an
+// arbitrary tree. Re-pointing a dir-clearing path is the one mistake here that destroys work.
+val PinnedShapes = Vector(Paths.get("docs", "generated", "api"), Paths.get("out", "api"))
+val apiDir   = optVal("--out").map(Paths.get(_).toAbsolutePath.normalize)
+                 .getOrElse(root.resolve("docs").resolve("generated").resolve("api"))
+if !PinnedShapes.exists(apiDir.endsWith) then
+  die(s"refusing sync target '$apiDir': not one of the pinned shapes (${PinnedShapes.mkString(", ")})")
 val readme   = apiDir.resolve("README.md")                          // HUMAN-authored: never deleted, never overwritten
 
 // Recursively delete -- but ONLY our own build dir, never anything else (name-pinned like mirror.sc's rmrf).
@@ -115,8 +125,10 @@ val stale = filesUnder(apiDir).filterNot(_.toString == "README.md")
 if dryRun then
   println(s"deployttapi: DRY-RUN  would remove ${stale.size} stale files from $apiDir and write ${generated.size} fresh ones (README.md untouched); docs/ unchanged")
 else
-  // Safety: only ever clear a dir that IS the expected .../docs/generated/api (path-pinned).
-  if !apiDir.endsWith(Paths.get("docs", "generated", "api")) then die(s"refusing to clear an unexpected path: $apiDir")
+  // Safety: only ever clear a dir matching a PINNED shape (docs/generated/api or out/api; the pin
+  // travels with --out, see PinnedShapes above). Checked at arg-parse time too; re-checked here
+  // because THIS is the line that deletes.
+  if !PinnedShapes.exists(apiDir.endsWith) then die(s"refusing to clear an unexpected path: $apiDir")
   for rel <- stale do Files.delete(apiDir.resolve(rel))             // stale generated files: removal is wanted
   // drop now-empty subdirs (deepest first), never api/ itself
   if Files.isDirectory(apiDir) then
