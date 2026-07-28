@@ -1,5 +1,10 @@
 # genscalator
 
+TLDR: get [scala-cli](https://scala-cli.virtuslab.org/install) and [get-genscalator.sc](https://github.com/bjornregnell/genscalator/releases/latest/download/get-genscalator.sc), then read it and run: 
+```bash
+scala-cli run get-genscalator.sc
+```
+
 ## *Power tools for agents and humans: smarter, safer, faster.*
 
 <p align="center">
