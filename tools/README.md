@@ -547,16 +547,18 @@ forge protection <owner>/<repo> <branch> [--gh | --url BASE]   # show the protec
 forge release-create <owner>/<repo> <tag> [--name S] [--body S | --body-file F]
                      [--prerelease] [--draft] [--target COMMITISH] [--gh | --gl --url BASE]   # CREATE (effectful)
 forge release-edit   <owner>/<repo> <tag> [--name S] [--body S | --body-file F]
-                     [--prerelease] [--draft] [--url BASE]        # PATCH a Gitea release; sends only provided fields
+                     [--prerelease] [--draft] [--gh | --url BASE] # PATCH a release (drafts found too); only provided fields
 forge release-download <owner>/<repo> <tag> [--gh | --url BASE] [--pattern GLOB] [--dir D] [--verify]
                                                                   # download assets (finds DRAFTS too; --verify = sha256)
+forge release-upload <owner>/<repo> <tag> <file> [--name N] [--gh | --url BASE]
+                                                                  # attach ONE file (drafts too); refuses duplicate names
 forge release-delete <owner>/<repo> <tag> [--gh | --url BASE] [--yes] [--allow-published]
                                                                   # DESTRUCTIVE: previews by default, applies with --yes;
                                                                   # a PUBLISHED release also needs --allow-published
 ```
 Replaces hand-curling the REST API (a `curl` with a token on the command line). **READ verbs need no auth**
 (public repos) → safe to allowlist (`Bash(tt forge releases *)`, `Bash(tt forge tags *)`). The **effectful
-verbs** — `release-create`, `release-edit`, `release-download` (writes files) and `release-delete` (the one
+verbs** — `release-create`, `release-edit`, `release-upload`, `release-download` (writes files) and `release-delete` (the one
 DESTRUCTIVE verb: preview-by-default, `--yes` to apply, `--allow-published` additionally required for a
 published release; the git tag is never deleted) — read their token **only** from fixed human-set env vars
 (**`GENSCALATOR_CODEBERG_TOKEN`**, then `CODEBERG_TOKEN`, then `FORGE_TOKEN`; GitHub: `GENSCALATOR_GITHUB_TOKEN`/

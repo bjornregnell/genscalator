@@ -21,10 +21,11 @@
 //   tt forge tags     <owner>/<repo> [--gh | --url BASE] [--limit N]
 //   tt forge release-create <owner>/<repo> <tag> [--name S] [--body S | --body-file F]
 //                           [--prerelease] [--draft] [--target COMMITISH] [--url BASE]
-//   tt forge release-edit   <owner>/<repo> <tag> [--name S] [--body S | --body-file F] [--prerelease] [--draft] [--url BASE]
+//   tt forge release-edit   <owner>/<repo> <tag> [--name S] [--body S | --body-file F] [--prerelease] [--draft] [--gh | --url BASE]
+//                           # PATCH an existing release (draft-visible lookup); sends ONLY the provided fields
 //   tt forge release-download <owner>/<repo> <tag> [--gh | --url BASE] [--pattern GLOB] [--dir D] [--verify]
+//   tt forge release-upload <owner>/<repo> <tag> <file> [--name N] [--gh | --url BASE]
 //   tt forge release-delete <owner>/<repo> <tag> [--gh | --url BASE] [--yes] [--allow-published]
-//                           # PATCH an existing release (look up by tag); sends ONLY the provided fields
 //   READ verbs for issues/PRs/branch protection (both dialects; --gh = GitHub, see GitHubApi below):
 //   tt forge issues <owner>/<repo> [--gh | --url BASE] [--state open|closed|all] [--limit N]
 //   tt forge prs    <owner>/<repo> [--gh | --url BASE] [--state open|closed|all] [--limit N]
@@ -56,8 +57,9 @@ object Forge {
       "  forge pr     <owner>/<repo> <n> [--gh | --url BASE]             (merge state + body)\n" +
       "  forge protection <owner>/<repo> <branch> [--gh | --url BASE]    (needs a token)\n" +
       "  forge release-create <owner>/<repo> <tag> [--gh | --gl | --url BASE] [--name S] [--body S | --body-file F] [--prerelease] [--draft] [--target C]\n" +
-      "  forge release-edit   <owner>/<repo> <tag> [--name S] [--body S | --body-file F] [--prerelease] [--draft] [--url BASE]\n" +
+      "  forge release-edit   <owner>/<repo> <tag> [--name S] [--body S | --body-file F] [--prerelease] [--draft] [--gh | --url BASE]\n" +
       "  forge release-download <owner>/<repo> <tag> [--gh | --url BASE] [--pattern GLOB] [--dir D] [--verify]   (finds DRAFTS too; --verify checks the .sha256)\n" +
+      "  forge release-upload <owner>/<repo> <tag> <file> [--name N] [--gh | --url BASE]   (attach ONE file; refuses duplicate names)\n" +
       "  forge release-delete <owner>/<repo> <tag> [--gh | --url BASE] [--yes] [--allow-published]   (PREVIEWS by default; never deletes the git tag)\n" +
       "  Dialects for release-create: default = Gitea/Forgejo (--url BASE, default https://codeberg.org); --gh = GitHub (fixed api.github.com); --gl = GitLab (--url BASE, default https://gitlab.com).\n" +
       "  Tokens come ONLY from fixed env names (never a flag): Gitea = CODEBERG_TOKEN/FORGE_TOKEN, GitHub = GITHUB_TOKEN/GH_TOKEN, GitLab = GITLAB_TOKEN (GENSCALATOR_-prefixed variants win first)."
@@ -93,8 +95,13 @@ object Forge {
       |                       [--prerelease] [--draft] [--target COMMITISH]
       |                       (create a release; three dialects — see below)
       |  forge release-edit   <owner>/<repo> <tag> [--name S] [--body S | --body-file F]
-      |                       [--prerelease] [--draft] [--url BASE]
-      |                       (PATCH an existing Gitea release; sends ONLY the provided fields)
+      |                       [--tag S] [--prerelease] [--draft] [--gh | --url BASE]
+      |                       (PATCH an existing release; sends ONLY the provided fields;
+      |                        --gh edits on GitHub and finds DRAFTS too; --tag re-points a
+      |                        draft's tag, e.g. after the UI reset it to untagged-...)
+      |  forge release-upload <owner>/<repo> <tag> <file> [--name N] [--gh | --url BASE]
+      |                       (attach ONE file to an existing release, drafts included;
+      |                        refuses a duplicate asset name)
       |  forge release-download <owner>/<repo> <tag> [--gh | --url BASE]
       |                       [--pattern GLOB] [--dir D] [--verify]
       |                       (download release assets; finds DRAFTS too, which the tags
@@ -117,7 +124,7 @@ object Forge {
       |  --gl              talk to the GitLab API (--url BASE, default https://gitlab.com)
       |  --state S         open | closed | all for issues/prs (default open)
       |
-      |Token: whoami, release-create/edit/delete and protection read the token from env
+      |Token: whoami, release-create/edit/upload/delete and protection read the token from env
       |GENSCALATOR_CODEBERG_TOKEN, then CODEBERG_TOKEN, then FORGE_TOKEN — never a flag,
       |and it is only ever sent to a trusted host (codeberg.org; the human may extend
       |the set via env TT_FORGE_HOSTS). Effectful verbs print an [audit] line first.
@@ -211,6 +218,7 @@ object Forge {
       case "release-create" :: rest => releaseCreate(rest)
       case "release-edit" :: rest   => releaseEdit(rest)
       case "release-download" :: rest => releaseDownload(rest)
+      case "release-upload" :: rest => releaseUpload(rest)
       case "release-delete" :: rest => releaseDelete(rest)
       case _                        => forgeUsage()
 
@@ -629,10 +637,30 @@ object Forge {
       case c   => die(s"POST $url -> $c ${r.statusMessage}\n${r.text().take(500)}")
 
   private final case class EditOpts(repo: Option[String], tag: Option[String], name: Option[String],
-      body: Option[String], bodyFile: Option[String], setPrerelease: Boolean, setDraft: Boolean, base: String)
+      body: Option[String], bodyFile: Option[String], setPrerelease: Boolean, setDraft: Boolean, base: String,
+      dialect: Dialect, newTag: Option[String])
 
-  // release-edit — PATCH an EXISTING release: look it up by tag (unauth GET), then send ONLY the provided fields
-  // (unspecified fields are left unchanged by the forge). Same effectful/token/trusted-host rules as release-create.
+  /** PURE payload builder for release-edit: ONLY the provided fields, so unspecified fields are left
+    * unchanged by the forge. Public so the request shape is unit-testable without a network (SM207).
+    * `tagName` exists because a DRAFT's tag is just a text field the GitHub UI can silently reset to an
+    * `untagged-...` placeholder on a save with the selector unpicked (it happened to v0.10.0 on
+    * 2026-07-28, minutes after a body-only PATCH had matched the tag) — restoring it must be possible
+    * without the UI. */
+  def editPayload(name: Option[String], body: Option[String],
+      setPrerelease: Boolean, setDraft: Boolean, tagName: Option[String] = None): ujson.Obj =
+    val payload = ujson.Obj()
+    body.foreach(b => payload("body") = b)
+    name.foreach(n => payload("name") = n)
+    tagName.foreach(t => payload("tag_name") = t)
+    if setPrerelease then payload("prerelease") = true
+    if setDraft then payload("draft") = true
+    payload
+
+  // release-edit — PATCH an EXISTING release: look it up by tag (unauth GET on Gitea; token-visible on
+  // GitHub so DRAFTS are found), then send ONLY the provided fields (unspecified fields are left
+  // unchanged by the forge). Same effectful/token/trusted-host rules as release-create; the write-auth
+  // headers come from ReleaseLib.writeHeaders so the rule has ONE definition. `--gh` added 2026-07-28
+  // (SM207's edit half): the immediate need was editing the v0.10.0 DRAFT notes, which had no typed shape.
   private def releaseEdit(args: List[String]): Unit =
     @annotation.tailrec
     def go(rest: List[String], o: EditOpts): EditOpts =
@@ -641,39 +669,39 @@ object Forge {
         case "--name" :: s :: t        => go(t, o.copy(name = Some(s)))
         case "--body" :: s :: t        => go(t, o.copy(body = Some(s)))
         case "--body-file" :: f :: t   => go(t, o.copy(bodyFile = Some(f)))
+        case "--tag" :: s :: t         => go(t, o.copy(newTag = Some(s)))
         case "--prerelease" :: t       => go(t, o.copy(setPrerelease = true))
         case "--draft" :: t            => go(t, o.copy(setDraft = true))
         case "--url" :: u :: t         => go(t, o.copy(base = u))
+        case "--gh" :: t               => go(t, o.copy(dialect = Dialect.GitHub))
+        case "--gl" :: _               => die(
+          "release-edit is not implemented for GitLab (its release update API differs; use the web UI\n" +
+            "  or extend this verb). Stated rather than faked — use --gh or the default Gitea dialect.")
         case flag :: _ if flag.startsWith("--") => die(s"unknown/incomplete flag '$flag'")
         case r :: t if o.repo.isEmpty  => go(t, o.copy(repo = Some(r)))
         case tg :: t if o.tag.isEmpty  => go(t, o.copy(tag = Some(tg)))
         case other :: _                => die(s"unexpected argument '$other'")
-    val o             = go(args, EditOpts(None, None, None, None, None, false, false, DefaultBase))
+    val o             = go(args, EditOpts(None, None, None, None, None, false, false, DefaultBase, Dialect.Gitea, None))
+    if o.dialect == Dialect.GitHub && o.base != DefaultBase then
+      die("--gh targets the fixed GitHub API root; drop --url (it is not used with --gh).")
     val (owner, repo) = splitRepo(o.repo.getOrElse(forgeUsage()))
     val tag           = o.tag.getOrElse(forgeUsage())
-    val tok = token.getOrElse(die(
-      s"release-edit needs a token — the HUMAN sets one of env ${TokenEnvNames.mkString(", ")} (never a flag)."))
-    val host = hostOf(o.base)
-    if !trustedHosts.contains(host) then die(
-      s"refusing to send the token to untrusted host '$host'. Trusted: ${trustedHosts.toVector.sorted.mkString(", ")}.")
-    // build the PATCH payload with ONLY the provided fields (so unspecified fields stay unchanged)
-    val payload = ujson.Obj()
-    o.bodyFile match
-      case Some(f) => payload("body") = Try(os.read(os.Path(f, os.pwd))).getOrElse(die(s"cannot read --body-file '$f'"))
-      case None    => o.body.foreach(b => payload("body") = b)
-    o.name.foreach(n => payload("name") = n)
-    if o.setPrerelease then payload("prerelease") = true
-    if o.setDraft then payload("draft") = true
-    if payload.obj.isEmpty then die("nothing to edit — provide --body/--body-file, --name, --prerelease, or --draft")
+    val bodyText = o.bodyFile match
+      case Some(f) => Some(Try(os.read(os.Path(f, os.pwd))).getOrElse(die(s"cannot read --body-file '$f'")))
+      case None    => o.body
+    val payload = editPayload(o.name, bodyText, o.setPrerelease, o.setDraft, o.newTag)
+    if payload.obj.isEmpty then die("nothing to edit — provide --body/--body-file, --name, --tag, --prerelease, or --draft")
     // Look up the release id via findRelease, which LISTS first and so can see a DRAFT. The previous
     // by-tag-only lookup made this verb structurally unable to edit a draft — the state you are most
     // likely to be editing, since a draft is by definition unfinished.
-    val relJson = findRelease(owner, repo, tag, Dialect.Gitea, o.base)
+    val relJson = findRelease(owner, repo, tag, o.dialect, o.base)
     val id      = Try(relJson.obj("id").num.toLong).getOrElse(die(s"no release id found for tag '$tag'"))
-    val url     = s"${apiBase(o.base)}/repos/$owner/$repo/releases/$id"
+    val url     = if o.dialect == Dialect.GitHub then s"$GitHubApi/repos/$owner/$repo/releases/$id"
+                  else s"${apiBase(o.base)}/repos/$owner/$repo/releases/$id"
+    val hdrs    = rl.writeHeaders(o.dialect, o.base, "release-edit") + ("Content-Type" -> "application/json")
     System.err.println(s"forge: [audit] PATCH $url  tag=$tag fields=${payload.obj.keys.mkString(",")}")
     val r = Try(requests.patch(url, data = ujson.write(payload),
-      headers = Map("Content-Type" -> "application/json", "Authorization" -> s"token $tok"),
+      headers = hdrs,
       check = false, readTimeout = 30000, connectTimeout = 10000)).getOrElse(die("request failed"))
     r.statusCode match
       case 200 =>
@@ -740,6 +768,73 @@ object Forge {
     val written       = rl.downloadAssets(rel, o.pattern, os.Path(o.dir, os.pwd), o.dialect, o.base, "release-download")
     if o.verify then verifyChecksums(written)
     else println("(no --verify: bytes downloaded but NOT checked against a .sha256)")
+
+  /** PURE upload-URL builder, public for unit tests (SM207's testable-request-building rule).
+    * GitHub uploads go to a SECOND fixed root (uploads.github.com) — fixed for the same reason as
+    * GitHubApi: the token must never travel to a host derived from input (not even from the release
+    * JSON's own upload_url, which is attacker-influenceable in principle). The asset name is
+    * URL-encoded with %20 for spaces (URLEncoder's '+' is form-encoding, not query-encoding). */
+  def uploadAssetUrl(isGh: Boolean, apiRoot: String, owner: String, repo: String, id: Long, name: String): String =
+    val enc = java.net.URLEncoder.encode(name, "UTF-8").replace("+", "%20")
+    if isGh then s"https://uploads.github.com/repos/$owner/$repo/releases/$id/assets?name=$enc"
+    else s"$apiRoot/repos/$owner/$repo/releases/$id/assets?name=$enc"
+
+  // release-upload — attach ONE file to an existing release (drafts included, via findRelease).
+  // Built 2026-07-28: the v0.10.0 draft needed get-genscalator.sc attached and the only shapes were a
+  // raw `gh release upload` or the web UI. GitHub sends the bytes as application/octet-stream to the
+  // fixed uploads root; Gitea/Forgejo takes multipart form field `attachment` on the API root.
+  private final case class UploadOpts(repo: Option[String], tag: Option[String], file: Option[String],
+      name: Option[String], base: String, dialect: Dialect)
+
+  private def releaseUpload(args: List[String]): Unit =
+    @annotation.tailrec
+    def go(rest: List[String], o: UploadOpts): UploadOpts =
+      rest match
+        case Nil                       => o
+        case "--name" :: n :: t        => go(t, o.copy(name = Some(n)))
+        case "--url" :: u :: t         => go(t, o.copy(base = u))
+        case "--gh" :: t               => go(t, o.copy(dialect = Dialect.GitHub))
+        case "--gl" :: _               => die(
+          "release-upload is not implemented for GitLab: GitLab releases carry LINKS to external\n" +
+            "  artifacts rather than uploaded assets. Stated rather than faked — use --gh or the default dialect.")
+        case flag :: _ if flag.startsWith("--") => die(s"unknown/incomplete flag '$flag'")
+        case r :: t if o.repo.isEmpty  => go(t, o.copy(repo = Some(r)))
+        case tg :: t if o.tag.isEmpty  => go(t, o.copy(tag = Some(tg)))
+        case f :: t if o.file.isEmpty  => go(t, o.copy(file = Some(f)))
+        case other :: _                => die(s"unexpected argument '$other'")
+    val o             = go(args, UploadOpts(None, None, None, None, DefaultBase, Dialect.Gitea))
+    if o.dialect == Dialect.GitHub && o.base != DefaultBase then
+      die("--gh targets the fixed GitHub upload root; drop --url (it is not used with --gh).")
+    val (owner, repo) = splitRepo(o.repo.getOrElse(forgeUsage()))
+    val tag           = o.tag.getOrElse(forgeUsage())
+    val path          = os.Path(o.file.getOrElse(forgeUsage()), os.pwd)
+    if !os.isFile(path) then die(s"no such file: $path")
+    val bytes         = os.read.bytes(path)
+    val assetName     = o.name.getOrElse(path.last)
+    val rel           = findRelease(owner, repo, tag, o.dialect, o.base)
+    val id            = Try(rel.obj("id").num.toLong).getOrElse(die(s"no numeric release id for tag '$tag'"))
+    val existing      = assetsOf(rel).map(a => strOr(a.obj.get("name"), "?"))
+    if existing.contains(assetName) then die(
+      s"an asset named '$assetName' already exists on release '$tag' — forges refuse duplicate names.\n" +
+        s"  Delete it first, or upload under another name with --name.")
+    val url  = uploadAssetUrl(o.dialect == Dialect.GitHub, apiBase(o.base), owner, repo, id, assetName)
+    val hdrs = rl.writeHeaders(o.dialect, o.base, "release-upload")
+    System.err.println(s"forge: [audit] POST $url  tag=$tag file=${path.last} bytes=${bytes.length}")
+    val r =
+      if o.dialect == Dialect.GitHub then
+        Try(requests.post(url, data = bytes, headers = hdrs + ("Content-Type" -> "application/octet-stream"),
+          check = false, readTimeout = 120000, connectTimeout = 10000)).getOrElse(die("request failed"))
+      else
+        Try(requests.post(url,
+          data = requests.MultiPart(requests.MultiItem("attachment", bytes, assetName)),
+          headers = hdrs, check = false, readTimeout = 120000, connectTimeout = 10000))
+          .getOrElse(die("request failed"))
+    r.statusCode match
+      case 201 | 200 =>
+        val dl = Try(ujson.read(r.text()).obj.get("browser_download_url").map(_.str).getOrElse("")).getOrElse("")
+        println(s"uploaded $assetName (${bytes.length} B) to release $tag  $dl")
+      case 422 => die(s"the forge rejected the upload (422) — most often a duplicate asset name.\n${r.text().take(500)}")
+      case c   => die(s"POST $url -> $c ${r.statusMessage}\n${r.text().take(500)}")
 
   private def releaseDelete(args: List[String]): Unit =
     val o             = parseAsset(args, "release-delete")
