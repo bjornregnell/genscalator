@@ -1,4 +1,3 @@
-//> using jvm 21
 // (no version include: mainless helper — inherits it from its includer; see project.scala)
 
 // Shared helpers for the Scala agent toolbox. PURE (no I/O effects except the explicitly-named file

@@ -1,5 +1,4 @@
-//> using jvm 21
-// (no version include: mainless helper — inherits it from its includer; see project.scala)
+// (no directives at all: mainless helper — inherits everything from its includer; see project.scala)
 
 // sessionstore — the SHARED, MAINLESS store logic behind per-SESSION mode scoping (SM208):
 // `tt mode` (chip writer), `tt session` (name writer) and `tt statusline` (reader/renderer).

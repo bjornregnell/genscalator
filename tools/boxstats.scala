@@ -1,4 +1,3 @@
-//> using jvm 21
 // (no version include: mainless helper — inherits it from its includer; see project.scala)
 
 // boxstats — SHARED helper (no @main, like lib.scala / seqspec.scala; see research/038): the box-health

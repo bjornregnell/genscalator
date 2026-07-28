@@ -1,4 +1,3 @@
-//> using jvm 21
 // (no version include: mainless helper — inherits it from its includer; see project.scala)
 //
 // ⚠ NO `//> using dep` here, following the toolbox convention: every mainless helper is dep-free and the

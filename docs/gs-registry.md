@@ -118,6 +118,6 @@ of truth). For the full prose on any entry, follow it back to foundations.
 | **SSG** (static site generator) | the strand that publishes the `media/blog/*.md` posts to bjornregnell.se. |
 | **substrate-grounding** | check the deterministic substrate instead of recalling; regex-triangulation beats stochastic recall. |
 | **gs** | genscalator (always lower-case); deliberately overloaded — a leading `gs` cue means "run a gs command". |
-| **PB** | the closed pinboard `PIN-BOARD.md`. |
+| **PB** | a pinboard: the durable decisions/menu file a project MAY keep (see foundations.md). This repo ships none — the genscalator dev team keeps its own outside this repo; in your project, yours is whatever you create. |
 | **Thriller state** | a human high-arousal excitement state; carries an over-trust risk → propose the rest dance. |
 | **human-stress-mode** | a human-state mode (agents don't get stressed); enter on a disclosed stress, exit on "not so stressed now". |

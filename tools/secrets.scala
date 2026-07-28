@@ -1,4 +1,3 @@
-//> using jvm 21
 // (no version include: mainless helper — inherits it from its includer; see project.scala)
 
 // secrets — the ONE home for "does this look like a credential, and how do I show it without leaking it".

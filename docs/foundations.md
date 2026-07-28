@@ -183,7 +183,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   means "do the genscalator command I mean" ([[dwim]], the `gs-dwim` skill: `gs help`, `gs cues`, `gs tt
   chrono`, ...), while `gs` in prose or a path still names the project; context disambiguates, and we split
   them if it ever gets too overloaded), **`bg`** = an agent-solo *background task* (runs when the AFK menu is empty + human
-  away), **`PB`** = the closed pinboard `PIN-BOARD.md` …) which name domain concepts / the project —
+  away), **`PB`** = the project's pinboard, if it keeps one (not shipped here) …) which name domain concepts / the project —
   this entry is generic conversational glue. Both sides may use these freely; when a token is genuinely
   ambiguous in context, expand it once. Common set:
   - *Presence / status:* **BRB** be right back · **AFK** away from keyboard · **OOO** out of office ·

@@ -9,6 +9,12 @@
 
 class DispatchSuite extends munit.FunSuite:
 
+  // Hans's alpha finding (2026-07-28): the subprocess golden test pays for a COLD scala-cli compile
+  // inside munit's default 30s budget — measured 4.2s warm vs 30.94s-and-timeout cold, a 7x margin
+  // CI will eventually land on the wrong side of, and the failure reads as a dispatcher bug to
+  // whoever hits it. The budget covers the compile, not the dispatcher.
+  override def munitTimeout = scala.concurrent.duration.Duration(180, "s")
+
   // Deliberately restates the locate logic (test independence over DRY, scala-style §5).
   private lazy val toolsDir: os.Path =
     sys.props.get("tt.tools").map(os.Path(_)).filter(d => os.exists(d / "tt")).getOrElse:

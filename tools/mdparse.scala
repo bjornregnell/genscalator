@@ -1,4 +1,3 @@
-//> using jvm 21
 // (no version include: mainless helper — inherits it from its includer; see project.scala)
 
 // mdparse — the SHARED markdown block parser for the toolbox (SM019 step 1). It lifts the block

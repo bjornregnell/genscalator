@@ -1,4 +1,3 @@
-//> using jvm 21
 // (no version include: mainless helper — inherits it from its includer; see project.scala)
 
 // limitstore — the SHARED, MAINLESS store logic behind `tt limit` (writer/CLI) and `tt statusline`

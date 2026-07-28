@@ -196,9 +196,10 @@ variants, this absorbs the bare ones.
   **Ground it in the files, do not recall.** If the project keeps no such substrate, say so and fall back to
   the recent git log.
 - **`gs menu`** — show the safe solo-task menu for a solo/AFK handoff, rot-ranked (safest/cheapest first).
-  Source: the pin board's stocked menu if one exists (the `## NOW` safe-vs-not-safe list); otherwise derive
-  candidate safe tasks from the current state (agent-authored, read-only, no outward ops). Re-verify each
-  item's safety against the CURRENT state before presenting ([[cue-go-afk]]).
+  Source: derive candidate safe tasks from the current state (agent-authored, read-only, no outward ops).
+  A project MAY keep a pin board with a stocked `## NOW` menu — use it when present, but do not HUNT for
+  one: a fresh tester checkout keeps none, and burning calls searching for dev substrate is itself a
+  derail. Re-verify each item's safety against the CURRENT state before presenting ([[cue-go-afk]]).
 - **`gs reqt [<file>]`** — verify a reqT-lang file in one step: run `tt parsereqt parse <file>` then
   `tt parsereqt lint <file>`, and report BOTH (parse errors and unknown-concept fall-throughs). Default
   `<file>` to `reqts/PRD.md` if none is given. This is the after-every-reqT-edit check folded into one command.

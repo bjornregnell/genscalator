@@ -1,4 +1,3 @@
-//> using jvm 21
 // (no version include: mainless helper — inherits it from its includer; see project.scala)
 
 // seqspec — the shared spec model + parser for the sequence-diagram tools (svg, ascii, gvdot). A shared helper with NO

@@ -248,10 +248,18 @@ object Update:
       sys.exit(0) // informational check, never a hard error
 
     // Graceful degrade: not a git checkout -> cannot self-check; still tell the human how to update.
+    // ⚠ NOT silent in --brief (Hans's alpha finding, 2026-07-28): --brief used to print NOTHING here,
+    // indistinguishable from "up to date" — and since `gs warm` calls --brief, every plugin-cache
+    // install silently lost update-awareness. Cannot-check is actionable, so brief says it in one
+    // line (the throttle keeps it to once per window, never a nag).
     val isGit = os.exists(repo / ".git") || git(repo, "rev-parse", "--git-dir")._1 == 0
     if !isGit then
-      say(s"genscalator at $repo is not a git checkout, so the version cannot be self-checked.")
-      say(ManualSteps)
+      if brief then
+        println(s"genscalator: cannot self-check for updates ($repo is not a git checkout) — " +
+          "binary installs update via `tt update --native`; plugin installs via /plugin marketplace update bjornregnell")
+      else
+        say(s"genscalator at $repo is not a git checkout, so the version cannot be self-checked.")
+        say(ManualSteps)
       sys.exit(0)
 
     say(s"genscalator: $repo")

@@ -1,4 +1,3 @@
-//> using jvm 21
 // (no version include: mainless helper — inherits it from its includer; see project.scala)
 //
 // NO `//> using dep`: this file is JDK-only (java.util.zip, java.nio), like lib.scala. That is not an

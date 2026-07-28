@@ -1,4 +1,3 @@
-//> using jvm 21
 // (no version include: mainless helper — inherits it from its includer; see project.scala)
 
 // minijson — a tiny, dependency-free JSON reader (SM112 de-dep). PURE; no @main (a shared helper like lib.scala,
