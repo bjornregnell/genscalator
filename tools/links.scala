@@ -79,13 +79,47 @@ object Links:
   /** A reference found in a file: the raw target text as written. */
   final case class Ref(from: String, line: Int, target: String)
 
+  /** Blank out fenced code blocks and inline code spans, keeping the line COUNT identical so any
+    * line-numbered reporting built on this stays honest.
+    *
+    * ⚠ WHY THIS EXISTS, measured rather than assumed (2026-07-28): of the 19 links `check` called
+    * dangling in the public repo, SIX were markdown links written INSIDE a code fence or inline
+    * backticks — `[name](file.md)` in a doc explaining the memory-index FORMAT, `![alt](figures/x.svg)`
+    * in a sentence describing how figures are cited, and a log quoting the very dangling links it was
+    * reporting. None of those is a link; every one is a link being TALKED ABOUT. The existing
+    * "must contain a dot or a slash" rule was written for the same failure and does not reach this case,
+    * because `file.md` does contain a dot.
+    *
+    * ⇒ This is the difference between a gate that can be wired into CI and one that cannot: a check that
+    * fires on a documentation example makes CI permanently red, and a red gate nobody can fix gets
+    * deleted. PURE. */
+  def stripCode(text: String): String =
+    val inlineRx = """``[^`]*``|`[^`]*`""".r
+    def isFence(l: String): Boolean =
+      val t = l.trim
+      t.startsWith("```") || t.startsWith("~~~")
+    val (_, out) = text.split("\n", -1).foldLeft((false, Vector.empty[String])) { (state, line) =>
+      val (inFence, acc) = state
+      if isFence(line) then (!inFence, acc :+ "")      // the fence line itself carries no link
+      else if inFence then (true, acc :+ "")           // inside a block: blanked, line preserved
+      else (false, acc :+ inlineRx.replaceAllIn(line, " "))
+    }
+    out.mkString("\n")
+
   /** Targets of markdown inline links/images and html href/src attributes. A target must look like a
     * path — contain a dot or a slash — because documentation that SHOWS the syntax (this toolbox
     * documents `[text](target)` and `href="url"`) otherwise yields `target` and `url` as findings, and a
-    * gate that cries wolf on its own manual will not be used. PURE. */
-  def linkTargets(text: String): Vector[String] =
-    val md = """\]\(\s*([^)\s]+)""".r.findAllMatchIn(text).map(_.group(1))
-    val html = """(?:href|src)\s*=\s*["']([^"']+)["']""".r.findAllMatchIn(text).map(_.group(1))
+    * gate that cries wolf on its own manual will not be used. PURE.
+    *
+    * `stripCodeSpans` defaults to true (the markdown reading) but callers pass FALSE for `.html`, and the
+    * distinction is deliberate rather than fussy: a backtick is a code delimiter in markdown and ordinary
+    * text in HTML, so stripping backtick spans from an HTML file could HIDE a real `href`. Ambiguity here
+    * must fail toward flagging, since a missed dangling link is the error this tool exists to prevent.
+    * Fences do not occur in HTML at all, so nothing is lost by turning the whole thing off there. */
+  def linkTargets(text: String, stripCodeSpans: Boolean = true): Vector[String] =
+    val scanned = if stripCodeSpans then stripCode(text) else text
+    val md = """\]\(\s*([^)\s]+)""".r.findAllMatchIn(scanned).map(_.group(1))
+    val html = """(?:href|src)\s*=\s*["']([^"']+)["']""".r.findAllMatchIn(scanned).map(_.group(1))
     (md ++ html).filter(t => t.contains('.') || t.contains('/')).toVector
 
   /** Build caches and scratch, never sources: skipped when scanning AND when inventorying. Everything
@@ -245,14 +279,14 @@ object Links:
   def strictRefs: Vector[(String, String, Option[String])] =
     for
       (rel, text) <- docs
-      t <- Links.linkTargets(text) if !Links.isExternal(t)
+      t <- Links.linkTargets(text, rel.endsWith(".md")) if !Links.isExternal(t)
       n = Links.normalizeTarget(t) if n.nonEmpty
     yield (rel, t, Links.resolve(n, rel))
 
   /** Every reference, strict + prose paths, as edges from file -> referenced repo paths. */
   def edges: Map[String, Set[String]] =
     docs.map { (rel, text) =>
-      val strict = Links.linkTargets(text).filterNot(Links.isExternal).map(Links.normalizeTarget)
+      val strict = Links.linkTargets(text, rel.endsWith(".md")).filterNot(Links.isExternal).map(Links.normalizeTarget)
         .flatMap(n => Links.resolve(n, rel)).toSet
       // A prose token may be repo-relative (research/052) or a bare sibling name (031-foo.md); try the
       // repo-relative reading first, then resolve against the citing file's own directory.

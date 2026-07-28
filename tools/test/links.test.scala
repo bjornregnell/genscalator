@@ -19,6 +19,43 @@ class LinksSuite extends munit.FunSuite:
     assertEquals(Links.linkTargets("[real](docs/x.md)"), Vector("docs/x.md"))
   }
 
+  // Code-span blindness: 6 of the 19 "dangling" links measured on 2026-07-28 were links being TALKED
+  // ABOUT, not links. Every case below is a real line from this repo.
+  test("a link inside a FENCED code block is documentation, not a link") {
+    val t = "intro\n```\n    keep the [name](file.md) link EXACTLY   # NEVER drop a pointer\n```\nafter"
+    assertEquals(Links.linkTargets(t), Vector.empty)
+  }
+
+  test("a link inside INLINE backticks is documentation, not a link") {
+    // research/topics/RT030-ssg-scoping.md, describing how figures are cited
+    val t = "**Figures:** hand-authored **SVG** referenced as `![alt](figures/x.svg)`, plus one PNG."
+    assertEquals(Links.linkTargets(t), Vector.empty)
+    // a log QUOTING the dangling links it reports must not re-report them
+    assertEquals(Links.linkTargets("now-dangling links `[HUMANS.inbox.md](HUMANS.inbox.md)` on line 56"), Vector.empty)
+  }
+
+  test("stripping code must not swallow the REAL links around it") {
+    val t = "see [real](docs/a.md)\n```\n[fake](docs/b.md)\n```\nand `[also fake](docs/c.md)` and [real2](docs/d.md)"
+    assertEquals(Links.linkTargets(t), Vector("docs/a.md", "docs/d.md"))
+  }
+
+  test("stripCode preserves the LINE COUNT so line-numbered reporting stays honest") {
+    val t = "a\n```\nb\nc\n```\nd"
+    assertEquals(Links.stripCode(t).split("\n", -1).length, t.split("\n", -1).length)
+  }
+
+  test("an UNMATCHED backtick strips nothing — ambiguity fails toward flagging") {
+    // a lone backtick (an apostrophe-ish typo) must not blank the rest of the line and hide a real link
+    assertEquals(Links.linkTargets("a ` stray tick then [real](docs/x.md)"), Vector("docs/x.md"))
+  }
+
+  test("HTML is scanned RAW: a backtick is not a code delimiter there, so an href cannot be hidden") {
+    val t = """text ` <a href="docs/x.md">y</a> ` more"""
+    assertEquals(Links.linkTargets(t, stripCodeSpans = false), Vector("docs/x.md"))
+    // and with markdown rules it WOULD be stripped — which is exactly why callers pass the file type
+    assertEquals(Links.linkTargets(t, stripCodeSpans = true), Vector.empty)
+  }
+
   test("an html target counts as present when its markdown source sits beside it") {
     // the site generator produces the .html at render time, so the repo holds only the .md
     assertEquals(Links.generatedFrom("blog/000-why.html"), Some("blog/000-why.md"))
