@@ -66,6 +66,13 @@ class LinksSuite extends munit.FunSuite:
     assert(Links.skipDirs(".scala-build"))
     assert(Links.skipDirs("tmp"))
     assert(!Links.skipDirs(".claude-plugin"), "a live plugin manifest dir is not a build cache")
+    // `out/` is the assembled SITE (deploy/buildsite.sc) and `.scalex/` is a symbol-index cache. Both are
+    // derived and gitignored, so scanning them double-counts generated copies of the sources: measured
+    // 2026-07-28, `out/` alone pushed the repo scan from 289 files to 297 and would have distorted the
+    // CI gate. ⚠ The SITE is still checkable - deliberately, by pointing `links check` AT out/, which is
+    // a different question (do the published pages resolve?) from the repo check.
+    assert(Links.skipDirs("out"), "the assembled site is derived; scanning it double-counts the sources")
+    assert(Links.skipDirs(".scalex"))
   }
 
   test("html href and src count as links") {

@@ -126,7 +126,7 @@ object Links:
     * else, including dot-directories like `.claude-plugin`, is real repo content — skipping those made
     * the checker report a live directory as missing. PURE. */
   val skipDirs: Set[String] =
-    Set(".git", ".scala-build", ".bsp", ".bloop", ".metals", ".scalex", "node_modules", "target", "tmp")
+    Set(".git", ".scala-build", ".bsp", ".bloop", ".metals", ".scalex", "node_modules", "target", "tmp", "out")
 
   /** A link to `x.html` is NOT dangling when `x.md` sits beside it: the html is produced at render time
     * by the site generator, so the repo legitimately contains only the source. Without this rule every
