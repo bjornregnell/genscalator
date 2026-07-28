@@ -3,6 +3,7 @@
 //> using file minijson.scala
 //> using file boxstats.scala
 //> using file limitstore.scala
+//> using file sessionstore.scala
 
 // statusline — format the Claude Code `statusLine` stdin JSON into ONE compact line (SM039).
 // Claude Code pipes a JSON object to the configured statusLine command's stdin each turn; this reads it and prints:
@@ -364,9 +365,10 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       val palette = Vector("38;5;170", "38;5;114", "38;5;180", "38;5;75", "38;5;215", "38;5;150", "38;5;210", "38;5;111")
       palette(math.floorMod(label.hashCode, palette.size))
     })
-  /** One mode label: reverse-video (7) + bold (1) + its colour. No padding spaces (BR 2026-07-19):
-    * the chip is exactly the label, e.g. `ColdStart` not ` ColdStart `. PURE. */
-  def renderMode(label: String): String = sgr(s"7;1;${modeColor(label)}", label)
+  /** One mode label: reverse-video (7) + bold (1) + its colour, PADDED one space each side —
+    * ` ColdStart ` not `ColdStart` (BR 2026-07-28, reversing his 2026-07-19 no-padding call: the
+    * bare blocks read cramped, and line 2 has horizontal room the other lines lack). PURE. */
+  def renderMode(label: String): String = sgr(s"7;1;${modeColor(label)}", s" $label ")
   /** SM119: a STABLE render order so a given SET of active modes always renders the same regardless of the
     * +/- add/remove history (the state file records insertion order, which reshuffles the line on every toggle).
     * First-cut canonical priority, grouped by frame; tune freely — it is only a DISPLAY order, no behaviour
@@ -403,8 +405,17 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     * proxy; a declaration is not a proxy, it is a judgment with an owner. BR usually declares it, because the agent
     * is the unreliable narrator of its own warmth: the rule is that the declarer is whoever can OBSERVE the state,
     * which is sometimes the other party. */
-  def renderModes(modes: Seq[String]): String =
-    val brand = sgr("1;38;5;42", "gs mode set") // line-2 prefix: NOT "genscalator" again (redundant with line 1); doubles as the DWIM verb
+  def renderModes(modes: Seq[String], session: Option[String] = None): String =
+    // Line-2 prefix: with a session identity, the lead is `gs session:` + the display name INVERTED
+    // in the label's own colour (SM259: inversion marks free text the human chose, distinct from the
+    // CamelCase enum chips) — 11 chars, so the row-leads still align with "genscalator"/"gs mode set".
+    // Without one (bare shell / old harness), the pre-SM208 brand stays; both double as DWIM verbs.
+    val brand = session match
+      case Some(n) =>
+        // BR 2026-07-28: a second label `gs mode:` sits between the name and the chips, so the line
+        // is self-describing: gs session: ⟨NAME⟩ gs mode: ⟨chips⟩ — both labels double as DWIM verbs.
+        sgr("1;38;5;42", "gs session:") + " " + sgr("1;7;38;5;42", s" $n ") + " " + sgr("1;38;5;42", "gs mode:")
+      case None => sgr("1;38;5;42", "gs mode set")
     val chips = sortModes(modes).map(renderMode)
     if chips.isEmpty then s"$brand ${sgr("38;5;245", "clear: no active mode labels")}"
     else s"$brand ${chips.mkString(" & ")}"
@@ -557,7 +568,8 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     var modeLine  = false // --mode-line: also emit the mode line (line 2)
     var boxLine   = false // --box-line: also emit the box line (line 3, SM163 — measured box health)
     var noStatus  = false // --no-status: suppress line 1 (e.g. to show ONLY the mode line)
-    var modesFile = defaultModesFile
+    var modesFile = defaultModesFile // the MACHINE store (budget chips); --modes-file overrides (tests)
+    var sessionsRoot = SessionStore.defaultRoot // per-session chip/name store (SM208); --sessions-root overrides (tests)
     var limitsFile = LimitStore.defaultFile // human-declared limits store (tt limit); --limits-file overrides (tests)
     var tokWarn    = 200_000L // rot? (since-warp) orange threshold (GUESS for one window, configurable via --tok-warn)
     var tokDanger  = 500_000L // rot? (since-warp) red threshold (GUESS for one window, configurable via --tok-danger)
@@ -587,6 +599,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
         case "--dumb-zone"    if i + 1 < a.length => dumbZone    = a(i + 1).toDoubleOption.getOrElse(dumbZone); i += 2
         case "--auto-compact" if i + 1 < a.length => autoCompact = a(i + 1).toDoubleOption.getOrElse(autoCompact); i += 2
         case "--modes-file" if i + 1 < a.length => modesFile = java.nio.file.Path.of(a(i + 1)); i += 2
+        case "--sessions-root" if i + 1 < a.length => sessionsRoot = java.nio.file.Path.of(a(i + 1)); i += 2
         case "--limits-file" if i + 1 < a.length => limitsFile = java.nio.file.Path.of(a(i + 1)); i += 2
         case "--tok-warn"    if i + 1 < a.length => tokWarn    = a(i + 1).toLongOption.getOrElse(tokWarn); i += 2
         case "--tok-danger"  if i + 1 < a.length => tokDanger  = a(i + 1).toLongOption.getOrElse(tokDanger); i += 2
@@ -642,7 +655,30 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       silentSec = gapSec, declaredLimits = declared))
     // LINE 2 is DECLARED-ONLY (BR 2026-07-17): the gap now rides line 1 as `silent`, and there is no derived-chip
     // argument left to pass — see renderModes.
-    if modeLine then println(renderModes(readModes(modesFile)))
+    // SM208 SESSION SCOPING: the chips shown are the machine-scoped budget chips (global file) plus THIS
+    // session's chips, keyed on the stdin JSON's `session_id`. The session lead renders the display name
+    // (timestamp part from the store's `started` stamp when a writer created one, else the transcript
+    // file's creation time — a READ, keeping this tool's write-nothing contract). A JSON without
+    // `session_id` (old harness, tests) renders exactly the pre-scoping line.
+    if modeLine then
+      val sid: Option[String] =
+        try MiniJson.parse(json).flatMap(_.obj).flatMap(_.get("session_id")).flatMap(_.str)
+          .map(_.trim).filter(_.nonEmpty).filter(_.matches("[A-Za-z0-9-]+"))
+        catch case _: Throwable => None
+      val sessionChips = sid.map(id => SessionStore.readChips(SessionStore.modesFile(sessionsRoot, id)))
+        .getOrElse(Vector.empty)
+      val allChips = (readModes(modesFile) ++ sessionChips).distinct
+      val sessionLead: Option[String] = sid.map: id =>
+        val started = SessionStore.readStarted(sessionsRoot, id)
+          .orElse:
+            try MiniJson.parse(json).flatMap(_.obj).flatMap(_.get("transcript_path")).flatMap(_.str)
+              .map(java.nio.file.Path.of(_)).filter(java.nio.file.Files.isRegularFile(_))
+              .map(p => java.nio.file.Files.readAttributes(p, classOf[java.nio.file.attribute.BasicFileAttributes])
+                .creationTime().toMillis)
+            catch case _: Throwable => None
+          .getOrElse(nowMs)
+        SessionStore.displayName(started, SessionStore.readName(sessionsRoot, id))
+      println(renderModes(allChips, sessionLead))
     // LINE 3 (SM163): measured box health; gather() is None off-Linux so the row is silently absent there.
     if boxLine then BoxStats.gather().foreach(b => println(renderBox(b)))
     0

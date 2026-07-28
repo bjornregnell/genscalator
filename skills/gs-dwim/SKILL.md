@@ -259,6 +259,7 @@ real session; the rest are in the same spirit — accept anything that clearly m
 | add a mode | `gs mode add <label>` | `gs mode +afk`, `mode += afk` ✔live (Scala-idiom, BR's taste), `add afk mode`, `set afk`, `modes.add(solo, afk)` ✔live |
 | clear a mode | `gs mode rm <label>` | `gs mode -afk`, `mode -= afk` ✔live, `drop afk`, `clear afk`, `unset afk mode` |
 | list modes | `gs mode` | `gs modes`, `what modes are on`, `show state of mind` |
+| name this session | `gs session <name>` | `tt session <name>`; `gs session` prints the display name (`YYMMDD-HHhMMm[-name]`), `gs session --clear` drops the name part. Modes are per-session (SM208): chips declared here never leak into parallel sessions; only the token-budget chips are machine-shared. |
 | this help | `gs help` | bare `gs`, `gs ?`, `gs commands`, `what can gs do` |
 | tool help | `gs help tt <what>` | `gs tt help <what>`, `how do I search text` → `tt text`, `make a diagram` → `tt svg`/`ascii` |
 | run a tool | `gs tt <tool>` | `gs run <tool>`, `gs <tool>` when unambiguous |

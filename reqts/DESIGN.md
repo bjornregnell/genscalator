@@ -250,7 +250,7 @@ outright ("duplicate the request code"). The prose always described the shared m
 built wrong, but the label would have sent a reader implementing it straight into the SM247 trap. Fixed
 by naming the decision instead of numbering it — a decision that outgrew its own option list should stop
 borrowing that list's numbering.* The reasoning that changed it: the toolbox's dependency graph is
-FLAT today — 44 tools, none calling another's code, all sharing only `lib.scala` — and option (1) would
+FLAT today — 45 tools, none calling another's code, all sharing only `lib.scala` — and option (1) would
 have spent that property to save a file. A shared module keeps neither tool dependent on the other and
 gives the shared code one narrow documented API, which is how `lib.scala` and `reqt-vendored` already
 work. ⚠ It cannot live in `lib.scala` itself: that file is deliberately JDK-only so pure text tools

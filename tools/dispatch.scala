@@ -48,6 +48,7 @@ object Dispatch {
     "sbt"         -> (a => sbtInDir(a*)),
     "scala"       -> (a => scalaProjectDriver(a*)),
     "serv"        -> (a => serveStaticFiles(a*)),
+    "session"     -> (a => sessionName(a*)),
     "skillcheck"  -> (a => skillcheck(a*)),
     "skillgrants" -> (a => printSkillGrants(a*)),
     "ssg"         -> (a => staticSiteGen(a*)),

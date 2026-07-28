@@ -287,19 +287,37 @@ tt doc statusline-manual                    # the statusline manual
 tt doc                                      # list docs
 ```
 
-### mode — record the declared modes of the joint state-of-mind (EFFECTFUL: a small state file)
+### mode — record the declared modes of the joint state-of-mind (EFFECTFUL: small state files, per-session)
 ```
-mode                    # list the active modes (one per line)
+mode                    # list the active modes (this session's chips + the machine-scoped budget chips)
 mode add <label>        # declare <label> (add a label to the recorded state; idempotent)
-mode rm <label>         # clear <label>
-mode clear              # clear all
-mode --file <f> ...     # override the state file (default ~/.claude/gs-modes; config-in-args, for tests)
+mode rm <label>         # clear <label> (from whichever store holds it)
+mode clear              # clear this SESSION's modes (budget chips stay)
+mode --file <f> ...     # single-file mode on <f>, NO session scoping (config-in-args, for tests)
+mode --global-file <g> | --sessions-root <d> | --id <id>   # store/id overrides (for tests)
 ```
 A "mode" is a label on the shared human<->agent state-of-mind; MANY can be active at once, and BOTH the human
-and the agent may add/remove them (a joint, mutually-visible channel). Declaring = adding a label to the
-recorded state. The statusline's **mode line** (`tt statusline --mode-line`) renders whatever is active here,
-each label reverse-video + bold in its own colour. Labels are bare tokens `[A-Za-z0-9._-]+`. Pairs with
-`statusline` (which reads this state and renders line 2).
+and the agent may add/remove them (a joint, mutually-visible channel). **Modes are PER-SESSION (SM208)**:
+chips are keyed on the harness session id (env `CLAUDE_CODE_SESSION_ID`, state in
+`~/.claude/gs-sessions/<id>/`), so parallel sessions cannot flip each other's chips. The ONE exception is the
+token-budget family (`TokSpend`, `TokSaving`, `TokNormal`): weekly account headroom is genuinely shared, so
+those live machine-scoped in `~/.claude/gs-modes`. In a bare shell with no session id everything falls back
+to the global file. The statusline's **mode line** (`tt statusline --mode-line`) renders whatever is active,
+each label reverse-video + bold in its own colour, padded one space each side. Labels are bare tokens
+`[A-Za-z0-9._-]+`. Pairs with `session` (the session NAME) and `statusline` (rendering).
+
+### session — name THIS session, so parallel sessions are tellable apart (EFFECTFUL: a small state file)
+```
+session                 # print the display name: YYMMDD-HHhMMm[-MyName]
+session <name words>    # set the human name part (free text, spaces allowed; control chars rejected)
+session --clear         # remove the human name (the timestamp part remains)
+session --sessions-root <d> | --id <id> | --now-ms <ms>    # overrides (for tests)
+```
+The timestamp part is ALWAYS present and FIRST: the age signal survives naming, duplicate human names cannot
+collide, and the string is filesystem-safe by construction — though the display name is never a path
+component; the store is keyed on the opaque harness session id. The statusline renders the name inverted
+after a `gs session:` label on the mode line. Outside a harness session (no id) there is nothing to name:
+the tool says so and exits 1.
 
 ### log — build/run-log analyzer (PURE)
 ```
@@ -680,7 +698,9 @@ tt update --native --write      # apply it
 ### statusline — format the Claude Code statusLine stdin JSON into ONE compact line (read-mostly: reads stdin + state files, prints)
 Reads the JSON Claude Code pipes to the configured `statusLine` command each turn and prints one compact,
 colour-coded line — model, context-fill (the rot gauge), usage limits, cost — with optional `--mode-line`
-(line 2, the declared modes) and `--box-line` (line 3, measured box health). It also reads the transcript
+(line 2: `gs session:` + this session's name inverted, `gs mode:` + the declared chips — session-scoped
+per SM208, keyed on the stdin JSON's `session_id`; `--sessions-root` overrides the store for tests) and
+`--box-line` (line 3, measured box health). It also reads the transcript
 and the `tt mode`/`tt limit` state files each render, and has ONE opt-in write: iff the marker file
 `~/.claude/gs-statusline-dump-on` exists, the raw stdin JSON is teed to `~/.claude/gs-statusline-last.json`
 (the recall-free way to confirm fields against a real invocation). Thresholds and segments are tunable —
@@ -792,7 +812,7 @@ One line per file; a tool's real reference is its `###` section above and its `-
 **Verbs** (each has a `@main` and a `###` section above):
 - `text.scala`, `files.scala`, `find.scala`, `sub.scala`, `md-fmt.scala` — the grep/awk/find/sed family.
 - `json.scala`, `tsv.scala`, `zip.scala` — data readers (zip: + the guarded extract).
-- `links.scala`, `which.scala`, `env.scala`, `limit.scala`, `doc.scala`, `mode.scala`, `log.scala` — repo/host/state reads.
+- `links.scala`, `which.scala`, `env.scala`, `limit.scala`, `doc.scala`, `mode.scala`, `session.scala`, `log.scala` — repo/host/state reads (mode/session write their small state files).
 - `verify.scala`, `scala.scala`, `sbt.scala` — the run drivers (effectful; os-lib).
 - `guardcheck.scala`, `typo.scala`, `htmltext.scala`, `chrono.scala`, `hangover.scala`, `parsereqt.scala` — small analyzers.
 - `svg.scala`, `ascii.scala`, `gvdot.scala` — the sequence-diagram trio (shared spec in `seqspec.scala`).
@@ -810,7 +830,7 @@ One line per file; a tool's real reference is its `###` section above and its `-
 - `lib.scala` — shared PURE helpers (`readLatin1`/`readUtf8`, `histogram`, `edit1`, path/platform/glob/json-string utilities). No deps.
 - `seqspec.scala` — shared sequence-diagram spec model + parser; reused by `svg`, `ascii` + `gvdot`.
 - `boxstats.scala` — shared /proc gatherers (statusline + bloop + box).
-- `limitstore.scala`, `minijson.scala`, `mdparse.scala` — shared stores/parsers (limit+statusline; json; md-fmt+ssg).
+- `limitstore.scala`, `sessionstore.scala`, `minijson.scala`, `mdparse.scala` — shared stores/parsers (limit+statusline; mode+session+statusline; json; md-fmt+ssg).
 - `secrets.scala` — the one definition of "what is a secret" (redaction + detection; harden + env).
 - `releaselib.scala`, `ziplib.scala` — release download/verify + zip machinery shared by `forge` and `update` (the toolbox's most security-sensitive shared code — worth an auditor's read).
 - `dispatch.scala` — the single native dispatcher (its `@main` IS `tt`, not a verb).
