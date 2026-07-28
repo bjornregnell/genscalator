@@ -175,6 +175,13 @@ Deliberately AFTER the alpha, not before it. The alpha gate is that a tester can
 without a wedge; round-tripping touches none of that, so putting it earlier would insert work no
 tester can see between us and the alpha.
 
+Besides the round-trip headline (issue-005), the alpha's own field experience minted a set of
+smaller items, each filed as an in-repo issue on 2026-07-28: forge asset replace (issue-006),
+`tt forge file` (issue-007), commit-log search (issue-008), `tt forge contributors` (issue-009),
+reqt-lint fenced-skip (issue-010), links-check exceptions + CI gate (issue-011), release-workflow
+tag-input validation (issue-012), and the munit bump (issue-013, a good first contribution). See
+`reqts/issues/open/`.
+
 * Goal: nonDestructiveRoundTrip has
   * Gist: parsing then unparsing a document never loses anything a human wrote
   * Spec: Two properties, and the weaker one alone is not enough. LOSSLESS means unparse(parse(x)) equals x byte for byte. IDEMPOTENT means norm(norm(x)) equals norm(x), where norm is unparse after parse, so the result reaches a fixed point. A parser can be perfectly idempotent and still destructive: destroy on the first pass, then stay stable forever. The name of this goal is therefore the strong property, not the weak one.
