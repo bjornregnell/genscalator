@@ -18,13 +18,20 @@ symlink name is yours to choose — rename it if `tt` collides with something on
 standard command). It makes every tool ONE literal, statically-analyzable command — so it matches a precise allowlist entry and needs no
 manual confirmation (no `/tmp`, no `..` traversal, no shell variable in the gated command). Allowlist
 is **per-subcommand** for "start safe", e.g. `Bash(tt text *)`; add an entry as each tool is proven.
-First run compiles (~couple s); reruns are cached. Pure tools use only the JDK (fast); effectful
-drivers add `//> using dep com.lihaoyi::os-lib:0.11.8`.
+**The native fast path is the default** (since 2026-07-23): when the native-image dispatcher binary
+exists and is fresh, `tt` runs it and a call answers in ~10 ms with no compile at all. When the binary
+is stale (tools edited since it was built) or absent, `tt` falls back to `scala-cli` with a stderr
+note — SLOWER, still correct; first such run compiles (~couple s), reruns are cached. Refresh the
+binary with `scala-cli run deploy/buildnative.sc`; details in `docs/native.md`. Pure tools use only
+the JDK; effectful drivers add `//> using dep com.lihaoyi::os-lib:0.11.8` (some also requests/ujson).
 
 ## Tests
-The suite is **co-located** under [`test/`](test/): `test/cli.test.scala` (CLI-contract tests — each tool run as a
-subprocess, exit + stdout asserted) and `test/lib.test.scala` (unit tests for `lib.scala`). Run the whole toolbox +
-tests with **`scala-cli test tools`** (from the repo root) — test scope extends the toolbox's main scope, so a plain
+The suite is **co-located** under [`test/`](test/): ~30 `.test.scala` files, roughly one per tool —
+`test/cli.test.scala` (CLI-contract tests — each tool run as a subprocess, exit + stdout asserted) and
+`test/lib.test.scala` (unit tests for `lib.scala`) are the founding two; most tools since have grown a sibling
+(`dispatch.test.scala`, `ssg.test.scala`, `tsv.test.scala`, …). Run the whole toolbox + tests with
+**`tt scala test <abs>/tools --prop tt.tools=<abs>/tools`** (the allowlist-clean driver form, correct from any
+cwd) — or `scala-cli test tools` from the repo root. Test scope extends the toolbox's main scope, so a plain
 `scala-cli compile tools` still builds only the tools (the `.test.scala` files are test-scope and excluded).
 
 ## Tools
@@ -36,6 +43,7 @@ text match <file> <regex>            # grep -n   : print matching lines, numbere
 text context <file> <regex> [N]      # grep -C N : matching lines with N lines of context (default 2)
 text freq  <file> <regex>            # sort|uniq -c|sort -rn : histogram of match (or capture group 1)
 text grepr <dir> <ext[,ext2…]> <regex>        # grep -r --include : recursive search → file:line:match
+text grepr <dir> <ext[,ext2…]> <regex> --count  # just the total match count (grep -r | wc)
 text grepr <dir> <ext[,ext2…]> --any p1 p2…   # OR-match: a line matching ANY pattern (metachar-free alternation)
 text cols  <file> <sep> <i...>       # cut/awk   : extract 1-based fields, tab-joined
 ```
@@ -130,6 +138,45 @@ tt find docs --name 'SM*.md'                # docs named SM*.md
 tt find . --type d --max-depth 1            # immediate sub-directories
 ```
 
+### json — read a JSON file: validate, inspect, pluck (PURE, read-only)
+```
+json check  <file>           # parse-or-fail (exit 0 = well-formed, 2 = not)
+json pretty <file> [path]    # re-render indented, for READING
+json get    <file> <path>    # print one scalar value, unquoted
+json keys   <file> [path]    # an object's keys (one per line), or an array's length
+```
+The typed replacement for `jq` / `python3 -m json.tool`. Paths are dot-separated; a numeric segment
+indexes an array (`permissions.allow.3`, `hooks.PreToolUse.0.matcher`); omit for the whole document.
+**A VIEWER, NEVER A REWRITER:** `pretty` sorts keys and drops spacing, so never write its output back
+over a source file (especially a human's settings file) — edit JSON as text.
+
+### tsv — read and filter a tab-separated file (PURE reads; `drop` writes a NEW file only)
+```
+tsv cols  <file> [--no-header]                # column names + row count
+tsv count <file> [filters]                    # how many data rows match
+tsv rows  <file> [filters] [--limit N]        # print matching rows
+tsv drop  <file> [filters] --out <new>        # write NON-matching rows to a NEW file
+```
+Filters are ANDed: `--col <name|index> --eq <v>` / `--matches <regex>` / `--same-as <name|idx>`
+(the key==value shape); `--no-header` makes line 1 data with 0-based column indexes. **Never edits in
+place:** `drop` requires `--out` and refuses an existing path, so a wrong predicate cannot damage the
+input. Example: `tt tsv count cache.tsv --col 0 --same-as 1 --col 1 --matches '[åäöÅÄÖ]'`.
+
+### zip — read-only zip inspection + guarded extract (JDK-only; EFFECTFUL only with `--write`)
+```
+zip list  <file.zip>         # entries: uncompressed, compressed, method, crc32, name
+zip check <file.zip>         # decompress every entry so the JDK validates each CRC32
+zip extract <file.zip> --dir D [--write] [--overwrite] [--exec GLOB] [--max-bytes N]
+```
+`check` vs a checksum: sha256 proves the bytes arrived as sent; `check` proves the archive is internally
+sound — run both on a release. **`extract` is the most destructive verb in the toolbox** (it can write
+executables), so it PREVIEWS by default like `tt sub`; `--write` applies. Every entry is adjudicated
+BEFORE anything is written: path escapes, absolute paths (incl. Windows drive/UNC), control characters,
+and a total-size zip-bomb cap (`--max-bytes`, 1 GiB default) are rejected; existing targets refused
+unless `--overwrite`. `--exec GLOB` marks entries owner-executable — needed because `java.util.zip`
+cannot restore permission bits, so the CALLER declares which entries are programs (deliberately stricter
+than OS `unzip`).
+
 ### links — link + reference analysis across a repo (PURE, read-only)
 ```
 links check <absdir> [--ext <list>]                  # dangling markdown/html links; exit 1 if any
@@ -149,7 +196,12 @@ the third, because there a **missed** reference is the expensive error and a fal
 file. For the same reason a `dir/prefix` citation (`research/topics/RT052`) counts every file in that dir
 with that prefix. ⚠ That generosity hides a real trap when numbers are NOT unique: two files shared the
 `052` prefix, so one ambiguous citation kept BOTH, and making it precise (2026-07-26) revealed the other
-had no reference of its own. **A prefix citation can mask unreachability — prefer the full filename.** Site-absolute targets (`/genscalator/...`) are treated as external: they are URLs on the deployed
+had no reference of its own. **A prefix citation can mask unreachability — prefer the full filename.** Two more rules worth knowing
+before wiring `check` into a gate: a link to `x.html` is satisfied by a sibling `x.md` (the generated-page
+rule, so a pre-render tree checks clean against its post-render links), and cited-DIRECTORY expansion
+applies only at depth ≥ 3 components (a grouping dir like `research/` is not treated as citing everything
+under it; an artifact dir like `research/experiments/indent-vs-braces/` is). Site-absolute targets
+(`/genscalator/...`) are treated as external: they are URLs on the deployed
 site, not repo paths, so validating them here would report a false break on every page.
 
 **The mirror limit, and `--leaf`.** That same generosity misfires when the question is *may I DELETE
@@ -184,11 +236,25 @@ tt which cd echo                            # builtin honesty (echo is BOTH buil
 tt which scala-cli sbt java                 # batch-check a toolchain
 ```
 
+### env — read environment variables without spilling them (PURE, read-only; the audited `printenv` replacement)
+```
+env list [regex]             # variable NAMES only, never values (case-insensitive filter)
+env has <NAME>               # exit 0 if set AND non-blank, 1 otherwise; prints nothing
+env get <NAME>               # one variable; value REDACTED if it looks like a credential
+env get <NAME> --reveal      # print the real value, one variable, deliberately
+```
+There is deliberately **no verb that prints the whole environment** — that request IS the hazard this
+tool removes: a bare `printenv` once put two live tokens into a transcript, which is durable, copied
+and quoted. Read-only is not the same as safe. A value is withheld when the NAME looks
+credential-bearing, the VALUE matches a known credential shape, or it is long and high-entropy;
+redaction shows the first 4 chars + length. Example: `tt env list CLAUDE`.
+
 ### limit — declare a usage limit the harness feed does not carry
 ```
 limit                                # list declarations (with time left)
 limit set <label> <pct> [--resets-in <dur>]   # declare/update (dur: 3d20h, 5h, 90m)
 limit rm <label>  |  limit clear     # remove
+limit --file <f> ...                 # override the store (default ~/.claude/gs-limits.json; for tests)
 ```
 Born from the f5 gap (2026-07-24): Claude Code's statusline JSON has NO per-model weekly window, while
 `/usage` shows e.g. Fable at 84%. The HUMAN reads the number there and declares it here; `tt statusline`
@@ -261,8 +327,11 @@ tt log weird.log --no-defaults --error 'BOOM:'    # only my pattern
 
 ### newtool — generator (scaffold a new pure tool)
 ```
-scala-cli run tools/newtool.scala -- <name>      # creates tools/<name>.scala from template.scala.txt
+newtool <name>                       # creates tools/<name>.scala from template.scala.txt
 ```
+`<name>` must be an identifier (`[a-zA-Z][a-zA-Z0-9]*`); it becomes both the file and the CLI verb.
+Refuses to overwrite an existing tool. ⚠ The `tools/` path is cwd-relative — run it FROM the
+genscalator root. (Explicit form: `scala-cli run tools/newtool.scala -- <name>`.)
 
 ### verify — run-and-verify driver (EFFECTFUL)
 ```
@@ -304,23 +373,38 @@ tt scala test /abs/tools --prop tt.tools=/abs/tools
 tt scala package-js /abs/my-spa -o /abs/my-spa/main.js
 ```
 
+### sbt — run sbt in an explicit directory, no shell cd (EFFECTFUL)
+```
+sbt --dir <abs-dir> [sbt-args...]    # e.g. tt sbt --dir /home/me/proj --client compile
+```
+The dir-scoped sibling of `tt scala`: the working directory is a typed argument set via
+`ProcessBuilder.directory()`, never a shell `cd`, so no compound `cd X && sbt …` shape is needed and
+shell metacharacters in arguments are inert. `--dir` must come FIRST and be an ABSOLUTE path to an
+existing sbt build (holds `build.sbt` or `project/`); everything after it passes through untouched.
+Running sbt runs the project's own build code — keep this shown-gated, not allowlisted.
+
 ### guardcheck — flag guard-trip / banned-reflex patterns (PURE)
 ```
-guardcheck cmd <shell-command>       # flag &&, ;, $(, backtick, |head, raw grep -r, line-leading #, …
-guardcheck msg <commit-message>      # flag patterns that trip the commit guard (e.g. a #N turn index)
+guardcheck cmd <shell-command>       # flag &&, ;, $(, backtick, |head, raw grep -r, …
+guardcheck msg <commit-message>      # flag patterns that trip the commit guard (line-leading #, a #N turn index)
+guardcheck hook                      # PreToolUse hook surface: stdin JSON in, verdict out
+guardcheck posthook                  # PostToolUse twin (wiring: human-gated settings step)
 ```
-A prosthetic for the confirmation-guard feedback the agent can't see. Exit 0 clean / 1 flagged / 2 usage.
+A prosthetic for the confirmation-guard feedback the agent can't see. Besides the HIGH/MED syntax
+tiers, `cmd` has a **NOTE tier** of tool-choice nudges: reaching for an interpreter (`python3`, `jq`,
+`perl`, …), a bulk env read (`printenv`, bare `set`), or a raw command a `tt` verb covers gets a
+[NOTE] pointing at the typed alternative. Exit 0 clean / 1 flagged / 2 usage.
 
 ### typo — keyboard-aware typo classifier (PURE)
 ```
 typo adjacent <a> <b>                # are keys a,b adjacent on the Swedish QWERTY layout?
-typo classify <typed> <intended>     # adjacency / transposition / deletion / insertion / substitution-far / complex
+typo classify <typed> <intended>     # match / adjacency / transposition / deletion / insertion / substitution-far / complex
 ```
 Feeds the human-fatigue / mutual-degradation gauge (BR's idea): the typo *kind* hints at tiredness.
 
-### htmltext — strip a saved HTML page to readable text (PURE)
+### htmltext — strip a saved HTML page to readable text (PURE; writes a file with `out.file`)
 ```
-htmltext <in.html> [out.file]        # drop head/script/style/svg, block tags → newlines, decode entities
+htmltext <in.html> [out.file]        # drop head/script/style/svg/noscript, block tags → newlines, decode entities
 ```
 Turns a Firefox "Save Page As" dump (e.g. journal guidelines) into plain text without the JS/CSS bloat.
 
@@ -329,12 +413,13 @@ Turns a Firefox "Save Page As" dump (e.g. journal guidelines) into plain text wi
 chrono start [label] | stop [--think <dur>] | now | fmt <ms> | think <dur> | report
 ```
 Times a human-agent-human round (or any span); `stop --think 30s` also records the relayed think-time and prints
-the `round = think + human` split; spans append to `chrono-log.tsv`; `report` summarizes. (The agent can't
+the `round = think + human` split; spans append to a `chrono-log.tsv` (default under `~/.genscalator/`, created
+on first use; `-Dtt.chrono.log` overrides the path); `report` summarizes. (The agent can't
 perceive its own think-time — this plus a human relay reconstruct a full round.)
 
 ### hangover — detect a just-ended agent blackout by the resume-gap (PURE read; the clock supplies `now`)
 ```
-hangover <transcript.jsonl> [--now-ms N] [--threshold-sec N]
+hangover <transcript.jsonl> [--now-ms N] [--threshold-sec N]   # threshold default 900 (15 min)
 hangover hook [<json>]               # Claude Code SessionStart hook: stdin JSON -> a hangover line named by `source`
 ```
 On resume, compares NOW to the last conversational record's timestamp and flags a gap that dwarfs execution
@@ -350,15 +435,19 @@ Still uncovered: a mid-session stall or idle, which fires no SessionStart.
 
 ### parsereqt — parse reqT model text (PURE)
 ```
-parsereqt <file>                     # parse reqT model text into a structured form
+parsereqt parse <file>               # parse reqT model text into a structured form
+parsereqt lint  <file>               # structural lint of a reqT model
 ```
+(A bare `parsereqt <file>` without a verb is a usage error, exit 2.)
 
 ### svg — textual diagram spec → self-contained SVG (PURE; writes a file with `out`)
 ```
 svg sequence <in.txt> [out.svg] [--light|--dark] [--transparent]   # spec → SVG (no out → stdout)
-svg --sequence-diagram <in.txt> [out.svg]                          # alias for `sequence`
+svg --sequence-diagram <in.txt> [out.svg]                          # aliases: `seq`, `-s`; flags also accept
+                                                                   # --light-mode/--dark-mode/--transparent-bg
 ```
-Input is a tiny PlantUML/mermaid-flavoured spec (`title:`, `actor <Id> [as label]`, `A -> B: call`,
+Input is a tiny PlantUML/mermaid-flavoured spec (`title:`, `actor <Id> [as label]` — `participant` is
+accepted as a synonym —, `A -> B: call`,
 `A --> B: reply`, `note over A,B: text`; `#`/`//` comments; self-message `A -> A` draws a loop). Output is a
 **self-contained** SVG (inline `<style>`, no external refs) — inline it straight into an SSG page, an artifact, or a
 report. **Theme:** default **auto** adapts to the viewer via `prefers-color-scheme`; **`--light`** / **`--dark`**
@@ -376,7 +465,7 @@ tt svg sequence flow.txt flow-dark.svg --dark
 ### ascii — same spec → good-looking monospace/box-drawing diagram (PURE)
 ```
 ascii sequence <in.txt> [out.txt] [--pure]   # render a sequence-diagram spec to monospace art (no out → stdout)
-ascii --sequence-diagram <in.txt> [out.txt]  # alias for `sequence`
+ascii --sequence-diagram <in.txt> [out.txt]  # aliases for `sequence`: also `seq`, `-s`
 ```
 The **plaintext sibling of `svg`** — reads the *same* spec (grammar shared via `seqspec.scala`) and renders a
 diagram for terminals, PR/commit comments, and plaintext reports. Default uses **Unicode box-drawing** glyphs
@@ -389,8 +478,8 @@ tt ascii sequence flow.txt flow.txt.art --pure
 
 ### gvdot — same spec → image via graphviz `dot` (EFFECTFUL: spawns `dot`, writes a file)
 ```
-gvdot sequence <in.txt> [out.pdf|.png|.svg]   # render via graphviz `dot` (no out → prints the generated DOT source)
-gvdot --sequence-diagram <in.txt> [out.…]     # alias; output format inferred from the out extension (default pdf)
+gvdot sequence <in.txt> [out.pdf|.png|.svg|.ps]   # render via graphviz `dot` (no out → prints the generated DOT source)
+gvdot --sequence-diagram <in.txt> [out.…]     # aliases: `seq`, `-s`; output format inferred from the out extension (default pdf)
 ```
 The **graphviz sibling** — reads the *same* spec (shared via `seqspec.scala`) and renders it by generating **DOT**
 and shelling to **`dot`** (auto-layout: `pdf`/`png`/`svg`). **Needs graphviz** on PATH for the render path; if
@@ -405,6 +494,7 @@ tt gvdot sequence flow.txt                  # just the DOT source
 ### web — safe read-only HTTP (EFFECTFUL: network, but GET-only)
 ```
 web get <url> [--host H]... [--max-bytes N] [--status]   # fetch and print; GET only, no credential headers
+web get <url> --trace                                    # HEAD-only redirect-chain trace (hop-capped, allowlist-stopping)
 ```
 Replaces the dual-use `curl` reflex. It can **only fetch-and-print**: GET only (no POST/PUT/upload), **no
 credential/cookie headers ever**, response **size-capped** (default 5 MB), optional **`--host` allowlist**.
@@ -412,7 +502,7 @@ So `Bash(tt web get *)` is safe to blanket-allow where a bare `curl *` allowlist
 (`curl -d @secret`), RCE (`curl … | sh`), and credential leaks. Residual risk is only SSRF-*read* of internal
 hosts — lock down with `--host`. Example: `tt web get https://codeberg.org/api/v1/repos/o/r/tags --status`.
 
-### serv — local static-file preview server (EFFECTFUL: network, but LOOPBACK-only, GET-only, read-only)
+### serv — local static-file preview server (EFFECTFUL: network, but LOOPBACK-only, GET/HEAD-only, read-only)
 ```
 serv <dir> [--port N]      # serve <dir> at http://127.0.0.1:N/  (default N=8000; Ctrl-C to stop)
 ```
@@ -423,17 +513,24 @@ never `0.0.0.0`, so nothing is exposed off the box. GET/HEAD only; a directory s
 escape → 403). Example: `tt serv site --port 8137` then open the printed URL. *(`--localhost` is accepted and
 ignored; the bind is always loopback.)*
 
-### ssg — hand-rolled markdown -> static HTML site generator (EFFECTFUL: writes .html files)
+### ssg — hand-rolled markdown -> static HTML site generator (EFFECTFUL: writes into the out-dir, and `--status-update` rewrites source .md)
 ```
-ssg <src> <out-dir> [--template <file>]     # <src> = a .md file or a dir of .md files
+ssg <src> <out-dir> [--template <file>]                     # legacy form: <src> = a .md file or a dir
+ssg --out <dir> <file.md>...                                # set mode: render exactly these files
+ssg --status <s[,s]> --out <dir> <blog-dir>                 # render only posts whose status matches
+ssg --status-update <from>:<to> [--date <d>] <dir|files>    # REWRITES the posts' status line in place
 ```
 Renders the GitHub-flavored-markdown subset we use to self-contained HTML, consuming the SAME `MdParse.parse`
 front-end that `md-fmt` reflows through (one parser, two renderers). Handles headings, paragraphs, blockquotes,
 bold/italic (incl. `*italic*` inside `**bold**` and intraword-underscore safety), inline `code`, `[links](url)`,
-`<autolinks>`, `![images]`, fenced code (a `language-*` class), GFM tables, and bullet/ordered lists. Template
-resolution: `--template F`, else `<srcdir>/_template.html`, else a minimal builtin; slots are `{{TITLE}}` (first
-h1) and `{{CONTENT}}`. A sibling `figures/` dir is copied so relative images resolve. Preview with `tt serv`.
-Deferred to a later refinement: nested lists (rendered flat), footnotes, reference links, syntax highlighting.
+`<autolinks>`, `![images]`, fenced code, GFM tables, bullet/ordered lists, **footnotes** (refs + a bottom
+section), and **Scala syntax highlighting** in fenced `scala` blocks. Template resolution: `--template F`, else
+`<srcdir>/_template.html`, else a minimal builtin; slots are `{{TITLE}}` (first h1), `{{TOC}}` and
+`{{CONTENT}}`. ⚠ **The out-dir is MANAGED, not merely written to:** only figures actually referenced by the
+rendered pages are copied, any UNREFERENCED file under `<out>/figures` is DELETED, and the set modes also
+delete stale `.html` pages — so keep nothing hand-made in the out-dir. `--status-update` is the one verb that
+touches SOURCES: it rewrites each post's status line (optionally stamping `--date`). Preview with `tt serv`.
+Still deferred: nested lists (rendered flat) and reference links.
 Example: `tt ssg blog/002-....md tmp/site` then `tt serv tmp/site` and open the URL.
 
 ### forge — Forgejo/Gitea forge client, default Codeberg (EFFECTFUL: network; create needs env token)
@@ -448,17 +545,29 @@ forge issue  <owner>/<repo> <n> [--gh | --url BASE]        # show an issue + com
 forge pr     <owner>/<repo> <n> [--gh | --url BASE]        # show a PR: merge state + body (READ)
 forge protection <owner>/<repo> <branch> [--gh | --url BASE]   # show the protection rule (needs token)
 forge release-create <owner>/<repo> <tag> [--name S] [--body S | --body-file F]
-                     [--prerelease] [--draft] [--target COMMITISH] [--url BASE]   # CREATE (effectful)
+                     [--prerelease] [--draft] [--target COMMITISH] [--gh | --gl --url BASE]   # CREATE (effectful)
+forge release-edit   <owner>/<repo> <tag> [--name S] [--body S | --body-file F]
+                     [--prerelease] [--draft] [--url BASE]        # PATCH a Gitea release; sends only provided fields
+forge release-download <owner>/<repo> <tag> [--gh | --url BASE] [--pattern GLOB] [--dir D] [--verify]
+                                                                  # download assets (finds DRAFTS too; --verify = sha256)
+forge release-delete <owner>/<repo> <tag> [--gh | --url BASE] [--yes] [--allow-published]
+                                                                  # DESTRUCTIVE: previews by default, applies with --yes;
+                                                                  # a PUBLISHED release also needs --allow-published
 ```
 Replaces hand-curling the REST API (a `curl` with a token on the command line). **READ verbs need no auth**
-(public repos) → safe to allowlist (`Bash(tt forge releases *)`, `Bash(tt forge tags *)`). The one **effectful**
-verb (`release-create`) reads its token **only** from a fixed set of human-set env vars
-(**`GENSCALATOR_CODEBERG_TOKEN`**, then `CODEBERG_TOKEN`, then `FORGE_TOKEN`) — never a flag — so the agent can't self-authorize (same trust-boundary rule as `verify`'s
-`TT_VERIFY_ALLOW`). It prints an `[audit]` line and is deliberately **not** blanket-allowlistable (creating a
-release stays a visible, confirmed op). **GitHub dialect:** `--gh` (or a github.com `--url`) switches the path
-shapes to the GitHub REST API, rooted at the fixed `api.github.com` — never derived from `--url`, so a token
-cannot be redirected. The GitHub token comes only from fixed env names (`GENSCALATOR_GITHUB_TOKEN`,
-`GITHUB_TOKEN`, `GH_TOKEN`); reads work anonymously (60/h rate limit), `protection` requires it (admin read).
+(public repos) → safe to allowlist (`Bash(tt forge releases *)`, `Bash(tt forge tags *)`). The **effectful
+verbs** — `release-create`, `release-edit`, `release-download` (writes files) and `release-delete` (the one
+DESTRUCTIVE verb: preview-by-default, `--yes` to apply, `--allow-published` additionally required for a
+published release; the git tag is never deleted) — read their token **only** from fixed human-set env vars
+(**`GENSCALATOR_CODEBERG_TOKEN`**, then `CODEBERG_TOKEN`, then `FORGE_TOKEN`; GitHub: `GENSCALATOR_GITHUB_TOKEN`/
+`GITHUB_TOKEN`/`GH_TOKEN`; GitLab: `GENSCALATOR_GITLAB_TOKEN`/`GITLAB_TOKEN`) — never a flag — so the agent
+can't self-authorize (same trust-boundary rule as `verify`'s `TT_VERIFY_ALLOW`). Each prints an `[audit]` line
+and none is blanket-allowlistable. **Dialects:** `--gh` targets the GitHub REST API rooted at the fixed
+`api.github.com` — never derived from `--url`, so a token cannot be redirected; `--gl` targets GitLab
+(`--url BASE` for self-managed, trusted-host-guarded via `TT_FORGE_GITLAB_HOSTS`/`TT_FORGE_HOSTS`).
+⚠ For the WRITE verbs the dialect is set ONLY by `--gh`/`--gl` — a github.com `--url` switches path shapes for
+READ verbs but is REFUSED by `release-create` (the trusted-host check), so use the flag, not the URL. Reads
+work anonymously on GitHub (60/h rate limit); `protection` requires the token (admin read).
 **`contributors`** reads the repo's contributor list — `--gh` prints `login⇥contributions⇥type` (type = `User`/`Bot`,
 the field that answers "why is a bot on the list"), `--gl` prints `name⇥email⇥commits`; the Gitea/Forgejo REST API
 has no contributors endpoint (Codeberg 404s), so the default dialect says so plainly rather than erroring cryptically.
@@ -552,10 +661,11 @@ POSIX and is refused outright on Windows, while *renaming* one is permitted on b
 and the staged tree moved in. One code path, no platform branch (D7b, verified on Windows CI). If the second rename
 fails the first is undone, because that is the one failure that would otherwise leave you with no toolbox at all.
 
-It **refuses rather than guesses** in three places, each of which would otherwise brick an install: a platform with
+It **refuses rather than guesses** in five places, each of which would otherwise brick an install: a platform with
 no published binary (Intel macOS and Windows-on-ARM — build from source, the documented route); a `--home` that is a
 **git checkout** rather than a binary install (deliberately *not* the repo self-locate the other verbs use, which can
-resolve to a contributor's clone); and an archive whose payload had no published `.sha256` to check it against.
+resolve to a contributor's clone); an archive whose payload had no published `.sha256` to check it against; a
+release carrying no downloadable assets at all; and an asset that does not unpack to exactly one `.zip` payload.
 Examples:
 ```
 tt update                       # full report: installed version, ahead/behind, and what to do
@@ -565,15 +675,31 @@ tt update --native              # PREVIEW: what would be installed, and the swap
 tt update --native --write      # apply it
 ```
 
-### statusline — format the Claude Code statusLine stdin JSON into ONE compact line (PURE: reads stdin, prints)
+### statusline — format the Claude Code statusLine stdin JSON into ONE compact line (read-mostly: reads stdin + state files, prints)
 Reads the JSON Claude Code pipes to the configured `statusLine` command each turn and prints one compact,
 colour-coded line — model, context-fill (the rot gauge), usage limits, cost — with optional `--mode-line`
-(line 2, the declared modes) and `--box-line` (line 3, measured box health). Full legend: `docs/statusline-manual.md`.
+(line 2, the declared modes) and `--box-line` (line 3, measured box health). It also reads the transcript
+and the `tt mode`/`tt limit` state files each render, and has ONE opt-in write: iff the marker file
+`~/.claude/gs-statusline-dump-on` exists, the raw stdin JSON is teed to `~/.claude/gs-statusline-last.json`
+(the recall-free way to confirm fields against a real invocation). Thresholds and segments are tunable —
+`--warn`, `--ctx-warn`, `--dumb-zone`, `--auto-compact`, `--tok-warn`, `--tok-danger`, `--tired-chars`,
+`--no-tok`, `--rot-only` — see `tt statusline --help`. Full legend: `docs/statusline-manual.md`.
 
 ### box — safe host + local box ops: health, and host-pinned remote ops for a known compute box (EFFECTFUL)
-Replaces the dual-use `ssh *` / `ps` / `pkill` reflexes with a narrow, allowlistable tool: a FIXED verb enum,
-no shell passthrough, a pinned default host. LOCAL health/kill shapes for this machine plus host-pinned REMOTE
-ops for the known compute box.
+```
+box health        [--top N] [--wide]             # local top-N by RSS with CPU%, mem, load (default N=10)
+box kill <t>      [--yes]                        # t = bloop | sbt | scala-cli; SIGKILL matched dev servers;
+                                                 # DRY-RUN without --yes
+box models        [--host H]                     # ollama inventory (name/size/modified)
+box df | gpu | freegb [--host H]                 # disk usage / nvidia-smi / free-GB integer on the box
+box pull <model>  [--host H] [--min-free-gb N]   # ollama pull; REFUSED below the free-disk floor (default 50)
+```
+Replaces the dual-use `ssh *` / `ps` / `pkill` reflexes with a FIXED verb enum, no shell passthrough, a
+pinned default host (`bjornyx.local`; host and model names strictly validated, so caller input cannot inject
+remote shell). Local ops read `/proc` directly (no `ps`) and `kill` matches only a closed enum of dev servers
+by PID via `ProcessHandle` (no pkill patterns). ssh runs BatchMode (never hangs on a password prompt); quick
+ops time out after 60 s, a pull after 1 h. ⚠ **With `kill` aboard, `Bash(tt box *)` is NOT blanket-safe** —
+kill stays human-gated; allowlist the granular read-only verbs instead (`Bash(tt box health *)`, …).
 
 ### gitinfo — typed, READ-ONLY git status/overview (PURE, read-only)
 Branch, clean/dirty count, ahead/behind vs upstream, and the recent log in ONE call; `--remote <name>` also
@@ -582,13 +708,15 @@ checks whether local HEAD is in sync with that remote's HEAD (via `ls-remote`). 
 
 ### prd — read + navigate the genscalator PRD.md (PURE, read-only)
 See what the PRD says without re-emitting it token-by-token: `tt prd show` (whole file), `tt prd summarize`
-(a FUTURE-roadmap gist), `tt prd find <what>` (locate a term by its nearest heading). Complements
-`tt parsereqt` (which parses + lints the reqT-lang).
+(a FUTURE-roadmap gist), `tt prd find <what>` (locate a term by its nearest heading); `--prd <file>`
+overrides the PRD path. Complements `tt parsereqt` (which parses + lints the reqT-lang).
 
 ### harden — Layer-1 deterministic secret scanner (PURE, read-only)
 Surfaces CANDIDATE secrets for semantic (Layer-2) triage. `tt harden repo <dir>` scans git-TRACKED text files
 (respects `.gitignore`); `tt harden egress <dir>` scans ALL files under a dir destined to LEAVE (a ZIP-staging
-or deploy bundle) — the higher-value half, since a secret safe at rest can leak on egress.
+or deploy bundle) — the higher-value half, since a secret safe at rest can leak on egress. `--entropy <bits>`
+tunes the high-entropy detector (default 3.6). Findings are printed REDACTED. Exit: 0 clean, 1 candidates
+found, 2 usage/error.
 
 ### skillcheck — verify the genscalator skill set is active; catch the silent skill outage (PURE, read-only)
 The agent CANNOT feel a missing skill (no phenomenology of absence), so this prints the EXPECTED set (derived
@@ -598,12 +726,32 @@ names via `--active` for a machine-checked, exit-coded diff.
 ### skillgrants — print what a skill GRANTS: its allowed-tools frontmatter, for informed consent (PURE, read-only)
 When the harness loads a skill it silently widens the auto-approved tool set by that skill's `allowed-tools`,
 but never shows the human WHICH tools at grant time. This is that read: name a skill (or list all) and see
-exactly which tools it opens.
+exactly which tools it opens. Both `skillcheck` and `skillgrants` take `--skills <dir>` to override the
+skills dir.
 
-### bloop — targeted BloopServer control: status + restart (EFFECTFUL)
+### memory — keep the committed memory/ snapshot in step with the live Claude Code memory store (EFFECTFUL: `sync` copies into the repo)
+```
+memory where [--repo <dir>]          # print the DERIVED live-store path and stop
+memory check [--repo <dir>]          # read-only drift report; exit 1 if drifted
+memory sync  [--repo <dir>]          # copy live -> <repo>/memory (additive)
+memory ...   --force                 # proceed past the collapse guard
+```
+The live store is OUTSIDE the repo, in a `~/.claude/projects/` directory named after the project path;
+this tool DERIVES that path from `--repo` (default: cwd) instead of hardcoding it, because a hardcoded
+path goes stale silently when the project moves — it copies nothing and still exits 0. Four guards each
+FAIL LOUDLY rather than doing nothing quietly: `<repo>/memory` must exist; the derived live dir must
+exist; the live dir must hold `MEMORY.md`; and the live file count must not have collapsed against the
+snapshot (the 148-vs-14 scream) — `--force` overrides deliberately.
+
+### bloop — targeted BloopServer control: status + restart + clean (EFFECTFUL)
+```
+bloop status | restart               # what is bloop doing / targeted kill + lazy respawn
+bloop clean --dir <abs> [--yes]      # recursively DELETE .scala-build dirs under <abs>; DRY-RUN without --yes
+```
 Bloop is a disposable compile daemon that respawns lazily, so "restart" is a targeted kill + lazy respawn. It
 uses `kill -9` deliberately: when bloop is wedged (the empirical villain) polite protocols hang and a
 signal is the reliable cure. Its RSS also surfaces on the statusline box line so regrowth is visible early.
+⚠ `clean` is the destructive verb of the trio (build caches only, but recursive) — dry-run by default.
 
 ### wr — Workflow-Research utilities for the WR corpus itself (PURE, read-only)
 `tt wr stamp <project-dir> <regex> [--user|--human] [--limit N]` retrofits the REAL date-time of an utterance
@@ -638,40 +786,48 @@ for plain text and logs; use Metals MCP when you need true compiler semantics (i
 diagnostics, refactors). Full guide: [`../docs/tool-selection.md`](../docs/tool-selection.md).
 
 ## Files
-- `lib.scala` — shared PURE helpers (`readLatin1`/`readUtf8`, `histogram`, `edit1`). No deps.
-- `text.scala` — the grep/awk replacement.
-- `log.scala` — the build/run-log analyzer.
-- `verify.scala` — the run-and-verify driver (effectful; os-lib).
-- `scala.scala` — typed driver over scala-cli for a project dir (effectful; os-lib).
-- `files.scala` — the find / grep -l replacement.
-- `guardcheck.scala` — guard-trip / banned-reflex flagger.
-- `typo.scala` — keyboard-aware typo classifier.
-- `htmltext.scala` — HTML→text stripper.
-- `chrono.scala` — stopwatch (effectful: state + log).
-- `parsereqt.scala` — reqT model parser.
-- `seqspec.scala` — shared sequence-diagram spec model + parser (no `@main`, like `lib.scala`); reused by `svg`, `ascii` + `gvdot`.
-- `svg.scala` — sequence-diagram spec → self-contained, theme-aware SVG (pure; writes a file with `out`).
-- `ascii.scala` — sequence-diagram spec → good-looking monospace/box-drawing art (pure; `--pure` for 7-bit ASCII).
-- `gvdot.scala` — sequence-diagram spec → image via graphviz `dot` (effectful; needs graphviz; argv-no-shell, DOT on stdin).
+One line per file; a tool's real reference is its `###` section above and its `--help`.
+**Verbs** (each has a `@main` and a `###` section above):
+- `text.scala`, `files.scala`, `find.scala`, `sub.scala`, `md-fmt.scala` — the grep/awk/find/sed family.
+- `json.scala`, `tsv.scala`, `zip.scala` — data readers (zip: + the guarded extract).
+- `links.scala`, `which.scala`, `env.scala`, `limit.scala`, `doc.scala`, `mode.scala`, `log.scala` — repo/host/state reads.
+- `verify.scala`, `scala.scala`, `sbt.scala` — the run drivers (effectful; os-lib).
+- `guardcheck.scala`, `typo.scala`, `htmltext.scala`, `chrono.scala`, `hangover.scala`, `parsereqt.scala` — small analyzers.
+- `svg.scala`, `ascii.scala`, `gvdot.scala` — the sequence-diagram trio (shared spec in `seqspec.scala`).
 - `web.scala` — safe read-only HTTP GET (effectful: network; requests).
-- `forge.scala` — forge client (Gitea/Codeberg + GitHub via `--gh`): releases/tags/issues/PRs/protection reads + env-token create (effectful; requests+ujson+os-lib).
-- `git.scala` — safe git helper: commit-from-file, ff-only pull, fetch, read-only show (effectful; os-lib).
-- `update.scala` — update-awareness: is genscalator behind its marketplace remote? (effectful: git fetch; read-only; os-lib).
+- `serv.scala` — loopback-only static preview server.
+- `ssg.scala` — the markdown → HTML site generator (writes into its out-dir; see its ⚠ managed-out-dir note).
+- `forge.scala` — forge client (Gitea/Codeberg + GitHub `--gh` + GitLab `--gl`): reads + env-token release verbs incl. the destructive `release-delete` (effectful; requests+ujson+os-lib).
+- `git.scala` — safe git helper: commit-from-file, ff-only pull, fetch, read-only show/log (effectful; os-lib).
+- `gitinfo.scala` — read-only git overview.
+- `update.scala` — update-awareness (git-checkout mode: read-only apart from git fetch) AND `--native`, which REPLACES an installed binary tree (preview-by-default; effectful; os-lib+requests+ujson).
+- `statusline.scala`, `box.scala`, `bloop.scala` — harness/host instruments (box kill + bloop clean are the guarded destructive verbs).
+- `prd.scala`, `harden.scala`, `skillcheck.scala`, `skillgrants.scala`, `memory.scala`, `wr.scala` — genscalator-upkeep reads (memory `sync` writes the repo snapshot).
 - `newtool.scala` — the generator.
+**Mainless helpers** (no `@main`, not `tt` verbs):
+- `lib.scala` — shared PURE helpers (`readLatin1`/`readUtf8`, `histogram`, `edit1`, path/platform/glob/json-string utilities). No deps.
+- `seqspec.scala` — shared sequence-diagram spec model + parser; reused by `svg`, `ascii` + `gvdot`.
+- `boxstats.scala` — shared /proc gatherers (statusline + bloop + box).
+- `limitstore.scala`, `minijson.scala`, `mdparse.scala` — shared stores/parsers (limit+statusline; json; md-fmt+ssg).
+- `secrets.scala` — the one definition of "what is a secret" (redaction + detection; harden + env).
+- `releaselib.scala`, `ziplib.scala` — release download/verify + zip machinery shared by `forge` and `update` (the toolbox's most security-sensitive shared code — worth an auditor's read).
+- `dispatch.scala` — the single native dispatcher (its `@main` IS `tt`, not a verb).
 - `template.scala.txt` — starter template (version + lib includes, dispatch skeleton).
 - `project.scala` — the single source of the Scala version (no code, no `@main`); every tool includes it.
 
 ## Conventions
 - **Pure tools** (read → compute → print): keep them pure; later default to **Capture-Checking Safe
-  mode** so the compiler errors on accidental side effects (PoC pending — see ../README.md roadmap).
+  mode** so the compiler errors on accidental side effects (PoC pending — see `../reqts/ROADMAP.md`).
 - **Effectful drivers** (run sbt/pdflatex, write files): separate files; os-lib `os.proc`; not Safe mode.
 - Live **in-project** (this repo, or `<project>/.../scratch/` for one-offs) so paths stay inside the
   trusted tree (avoids the `/tmp` path-resolution-bypass approval). Drivers should root-find (walk up).
 - Clean `===` section output; return a clear verdict (e.g. error count) so no bash post-processing is needed.
 
 ## Roadmap
-- More generic tools (tsv stats, pdf scan), generalized from real case-study work. (`log` analyzer shipped
-  in v0.6.0; `verify` run-and-verify driver in v0.7.0.)
+(Version planning lives in `../reqts/ROADMAP.md`; this list is toolbox-local ideas only.)
+- More generic tools (pdf scan), generalized from real case-study work. (`log` shipped v0.6.0; `verify`
+  v0.7.0; `tsv`, `json`, `env`, `zip`, `memory`, `sbt` have shipped since this list was first written.)
 - Extend the guarded-run primitive (`verify` already does allowed-executables + no-shell): add allowed-roots
-  / `cwd`, reject `..`/symlinks, a `--dry-run` echo. `verify` also prototypes the `--audit` flag below.
+  / `cwd`, reject `..`/symlinks, a `--dry-run` echo, and a general `--audit` flag (verify's audit line —
+  argv, exit, ms — is its seed).
 - Capture-Checking Safe-mode PoC → pure tools safe by default.
