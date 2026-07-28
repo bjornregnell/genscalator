@@ -29,10 +29,11 @@ This README.md focuses on a brief overview of genscalator and how to get started
   * [3.2 The gs in-session commands](#32-the-gs-in-session-commands)
   * [3.3 Getting started: seed a working web app](#33-getting-started-try-seeding-a-working-web-app)
   * [3.4 Native speed: prebuilt binary or graalify yourself](#34-native-speed-prebuilt-binary-or-graalify-yourself)
-* [4. Using typed tools directly in terminal](#4-using-typed-tools-directly-in-terminal)
-  * [4.1 Tool dependencies](#41-tool-dependencies)
-  * [4.2 Optional: forge tokens for tt forge](#42-optional-forge-tokens-for-tt-forge)
-* [5. Licenses](#5-licenses) · [6. Donations](#6-donations) · [7. Commercial support](#7-commercial-support) · [8. Mirrors and digital sovereignty](#8-mirrors-and-digital-sovereignty)
+* [4. Using the genscalator skills](#4-using-the-genscalator-skills)
+* [5. Using typed tools directly in terminal](#5-using-typed-tools-directly-in-terminal)
+  * [5.1 Tool dependencies](#51-tool-dependencies)
+  * [5.2 Optional: forge tokens for tt forge](#52-optional-forge-tokens-for-tt-forge)
+* [6. Licenses](#6-licenses) · [7. Donations](#7-donations) · [8. Commercial support](#8-commercial-support) · [9. Mirrors and digital sovereignty](#9-mirrors-and-digital-sovereignty)
 
 ## 1. What is genscalator?
 
@@ -159,23 +160,10 @@ you and how to drive it. Details, the recommended allowlist, and caveats: [`docs
 
 ### 3.1 What you get
 
-Installing the plugin puts the `tt` toolbox on your PATH for the agents to use when the genscalator plugin is active (see [Usage](#4-using-typed-tools-directly-in-terminal)) and adds a set of **skills** — focused
-playbooks the agent invokes by name, or by matching what you ask for:
-
-| Skill | What it does |
-|-------|--------------|
-| `tt-toolbox` | how to use and choose the `tt` tools — the toolbox habit |
-| `gs-dwim` | the `gs` do-what-I-mean in-session commands (see [3.2](#32-the-gs-in-session-commands)) |
-| `avoid-guard-stall` | construct shell commands that never trip the permission guard — fewer confirmation stalls |
-| `scala-style` | a genscalator-tailored guide on Scala generation in direct, [common style](https://codeberg.org/bjornregnell/scala-common-style) |
-| `scala-code-review` | adversarially review Scala changes for correctness, style, and safety |
-| `scala-platform` | choose a compilation target: JVM, Scala Native, or GraalVM native-image |
-| `reqt-lang` | write markdown requirements in reqT-lang, meta-examples in [`PRD.md`](reqts/PRD.md) |
-| `crud-web-app-seed` | seed a complete, runnable full-stack web app — see *Getting started* below |
-| `serverless-spa-seed` | seed a minimal client-only Scala.js + Laminar single-page app (no server) |
-| `contribute-tool` | grow a one-off scratch tool into a toolbox-worthy `tt` tool candidate |
-| `in-session-experiment` | run a controlled experiment on the agent's own performance, live |
-| `research-methods` | design, run and report an empirical study — checklists and pointers |
+Installing the plugin puts the `tt` toolbox on your PATH for the agents to use when the genscalator plugin is active (see [Usage](#5-using-typed-tools-directly-in-terminal)) and adds the full set of **skills** — focused
+playbooks the agent invokes by name, or by matching what you ask for. The skill table is in
+[section 4, Using the genscalator skills](#4-using-the-genscalator-skills), which also explains how to
+use them outside Claude Code.
 
 The plugin also ships the operating contract [`AGENTS.md`](AGENTS.md) — the shared human-agent **conventions** (tool
 selection, shorthand, workflow "dances", safe-by-design allowlist habit, etc.) that the agent reads as its
@@ -241,7 +229,48 @@ atomically. After any edit under `tools/` the launcher detects the binary is sta
 falls back to scala-cli (slower, never wrong) until you re-run the ritual. Opt out anytime with
 `TT_NATIVE=0 tt ...`. Details, measurements and design: [`docs/native.md`](docs/native.md).
 
-## 4. Using typed tools directly in terminal
+## 4. Using the genscalator skills
+
+The skills are focused playbooks the agent invokes by name, or by matching what you ask for:
+
+| Skill | What it does |
+|-------|--------------|
+| `tt-toolbox` | how to use and choose the `tt` tools — the toolbox habit |
+| `gs-dwim` | the `gs` do-what-I-mean in-session commands (see [3.2](#32-the-gs-in-session-commands)) |
+| `avoid-guard-stall` | construct shell commands that never trip the permission guard — fewer confirmation stalls |
+| `scala-style` | a genscalator-tailored guide on Scala generation in direct, [common style](https://codeberg.org/bjornregnell/scala-common-style) |
+| `scala-code-review` | adversarially review Scala changes for correctness, style, and safety |
+| `scala-platform` | choose a compilation target: JVM, Scala Native, or GraalVM native-image |
+| `reqt-lang` | write markdown requirements in reqT-lang, meta-examples in [`PRD.md`](reqts/PRD.md) |
+| `crud-web-app-seed` | seed a complete, runnable full-stack web app — see [Getting started](#33-getting-started-try-seeding-a-working-web-app) |
+| `serverless-spa-seed` | seed a minimal client-only Scala.js + Laminar single-page app (no server) |
+| `contribute-tool` | grow a one-off scratch tool into a toolbox-worthy `tt` tool candidate |
+| `in-session-experiment` | run a controlled experiment on the agent's own performance, live |
+| `research-methods` | design, run and report an empirical study — checklists and pointers |
+
+In Claude Code, the plugin loads all of these automatically ([section 3](#3-using-the-claude-code-plugin)).
+
+**In other agent harnesses:** each `skills/<name>/SKILL.md` is a self-contained markdown playbook
+with a description of when to trigger it, so nothing about the skills requires Claude Code. If your
+harness (OpenCode, Codex, or your own) can load instruction files, you can use them:
+
+1. **Get the files.** The binary install ([2.1](#21-install-the-binary-toolbox-one-command-works-without-claude-code))
+   brings only the `tt` toolbox, so also clone this repo (or download the source archive of the
+   [latest release](https://github.com/bjornregnell/genscalator/releases/latest)); the skills live
+   under [`skills/`](skills/).
+2. **Point your harness at `skills/*/SKILL.md`**, and load [`AGENTS.md`](AGENTS.md) as the operating
+   contract - the shared human-agent conventions the skills assume. The vocabulary (cues, dances,
+   modes) is in [`docs/foundations.md`](docs/foundations.md).
+3. **The `gs` do-what-I-mean commands are themselves a skill** (`gs-dwim`), so `gs help`, `gs allow`
+   and friends should work in any harness that follows its loaded instructions.
+
+Two honesty notes: some skills mention Claude-Code-specific surfaces (the `/skills` command,
+`allowed-tools` frontmatter, plugin paths) - in another harness these degrade to inert prose, not
+errors. And only Claude Code is tested in this alpha: reports on how the skills behave in other
+harnesses are exactly the alpha feedback we want - please open an issue (see
+[`reqts/issues/`](reqts/issues/)).
+
+## 5. Using typed tools directly in terminal
 
 After following the install instructions above to get `tt` on your PATH you can run the typed tools directly in terminal like so:
 
@@ -266,7 +295,7 @@ tt chrono now                            # timestamp (chrono start/stop times a 
 Every tool answers `tt <tool> --help`. Full cheat-sheet: [`tools/README.md`](tools/README.md).
 
 
-### 4.1 Tool dependencies
+### 5.1 Tool dependencies
 
 Most `tt` tools need only **scala-cli + a JDK** — scala-cli fetches the Scala compiler and the small library set on
 first run, then caches them (no manual library install). A few tools additionally shell out to an **external program**
@@ -281,7 +310,7 @@ Tools degrade gracefully when their dependency is missing: `tt gvdot` still prin
 errors with the install hint only on the render path. (The sibling renderers `tt svg` and `tt ascii` need **no**
 external dependency — pure JDK.)
 
-### 4.2 Optional: forge tokens for `tt forge`
+### 5.2 Optional: forge tokens for `tt forge`
 
 `tt forge` talks to code forges (issues, PRs, releases, tags, branch protection) on Codeberg/Forgejo,
 via `--gh` on GitHub, and via `--gl` on GitLab. **All read verbs work without any token** — GitHub just
@@ -315,21 +344,21 @@ spawns (note that a running agent session keeps its start-time environment; rest
 adding them). Full verb reference: [`tools/README.md`](tools/README.md).
 
 
-## 5. Licenses
+## 6. Licenses
 
 * All code in this repo is licensed under Apache-2.0 — see [`LICENSE`](LICENSE).
 * All blog posts and research topics are licensed as CC-BY 4.0.
 
-## 6. Donations
+## 7. Donations
 
 Genscalator is developed as a liberally licensed open source software project that anyone can use. If you want to support the maintenance and implementation of new features of genscalator contact genscalator@bjornregnell.se
 
-## 7. Commercial Support
+## 8. Commercial Support
 
 * For commercial support and consultancy in using genscalator to improve agentic software engineering productivity contact genscalator@bjornregnell.se
 
 
-## 8. Mirrors and digital sovereignty
+## 9. Mirrors and digital sovereignty
 
 The genscalator repo is mirrored from [GitHub](https://github.com/bjornregnell/genscalator) — the source of truth — to [Codeberg](https://codeberg.org/bjornregnell/genscalator), [GitLab](https://gitlab.com/bjornregnell/genscalator) and coursegit at LTH, in the spirit of [digital sovereignty](https://en.wikipedia.org/wiki/Digital_sovereignty): the point is that an EU-hosted copy exists independently of any single forge. Mirrors are verbatim and disposable; `deploy/mirror.sc` pushes them, one-directionally, and never pulls from a mirror. See also [here](https://codeberg.org/bjornregnell/digital-sovereignty).
 
