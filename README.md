@@ -11,7 +11,7 @@ The above image shows the genscalator awareness lines. Read more about what they
 What do we mean by 
 * **smarter?** By introspection, genscalator tries to stay in the smart zone, aiming to stay away from the dumb zone and decrease the probability of agent mistakes.
 * **safer?** By open, inspectable, compile-time checked strongly typed tools genscalator avoids harness guard stalls that ask for permission, with the aim to reduce human confirmation fatigue.
-* **faster?** With defined workflow elements (cues and dances) genscalator aims to provide composable efficient joint human-agent workflows. Also, the typed tools run compiled to bare metal for ~0.03 s start-up times - prebuilt binaries ship with every release, or you build your own (see [Native speed](#34-native-speed-prebuilt-binary-or-graalify-yourself)).
+* **faster?** With defined workflow elements (cues and dances) genscalator aims to provide composable efficient joint human-agent workflows. Also, the typed tools run compiled to bare metal for ~0.03 s start-up times - prebuilt binaries ship with every release, or you build your own (see [Native speed](#24-native-speed-prebuilt-binary-or-graalify-yourself)).
 
 You can read more on the background and goals of genscalator in [HUMANS.md](HUMANS.md#3-the-main-goals-of-genscalator) and navigate the structure of this repo by reading ["Where are all the things?" in HUMANS.md](HUMANS.md#1-where-are-all-the-things).
 
@@ -24,12 +24,12 @@ This README.md focuses on a brief overview of genscalator and how to get started
   * [2.1 Install the binary toolbox](#21-install-the-binary-toolbox-one-command-works-without-claude-code)
   * [2.2 Install the genscalator Claude Code plugin](#22-install-the-genscalator-claude-code-plugin)
   * [2.3 Companions for Scala code (recommended)](#23-companions-for-scala-code-recommended)
+  * [2.4 Native speed: prebuilt binary or graalify yourself](#24-native-speed-prebuilt-binary-or-graalify-yourself)
 * [3. Using the Claude Code plugin](#3-using-the-claude-code-plugin)
-  * [3.1 What you get](#31-what-you-get)
-  * [3.2 The gs in-session commands](#32-the-gs-in-session-commands)
-  * [3.3 Getting started: seed a working web app](#33-getting-started-try-seeding-a-working-web-app)
-  * [3.4 Native speed: prebuilt binary or graalify yourself](#34-native-speed-prebuilt-binary-or-graalify-yourself)
-* [4. Using the genscalator skills](#4-using-the-genscalator-skills)
+* [4. Using the genscalator skills and gs dwim](#4-using-the-genscalator-skills-and-gs-dwim)
+  * [4.1 The gs in-session commands](#41-the-gs-in-session-commands)
+  * [4.2 Getting started: seed a working web app](#42-getting-started-try-seeding-a-working-web-app)
+  * [4.3 Using the skills in other agent harnesses](#43-using-the-skills-in-other-agent-harnesses)
 * [5. Using typed tools directly in terminal](#5-using-typed-tools-directly-in-terminal)
   * [5.1 Tool dependencies](#51-tool-dependencies)
   * [5.2 Optional: forge tokens for tt forge](#52-optional-forge-tokens-for-tt-forge)
@@ -94,7 +94,7 @@ cd genscalator
 ln -s "$PWD/tools/tt" ~/.local/bin/tt    # ensure ~/.local/bin is on your PATH
 ```
 You can then build your own native binary with the rebuild ritual, see
-[Native speed](#34-native-speed-prebuilt-binary-or-graalify-yourself).
+[Native speed](#24-native-speed-prebuilt-binary-or-graalify-yourself).
 
 ### 2.2 Install the genscalator Claude Code plugin
 
@@ -116,7 +116,7 @@ gs
 ```
 you should see help on how to use genscalator's *do-what-I-mean* commands.
 
-For the full skill set, the recommended allowlist, the `gs` commands, etc., see [Using the Claude Code plugin](#3-using-the-claude-code-plugin) further down.
+For what the plugin wires up, see [Using the Claude Code plugin](#3-using-the-claude-code-plugin); for the full skill set and the `gs` commands, see [Using the genscalator skills and gs dwim](#4-using-the-genscalator-skills-and-gs-dwim).
 
 
 **Allow the typed tools to run without a prompt.** When the Claude Code harness asks for permissions you can allow according to its suggestions. 
@@ -153,56 +153,7 @@ says which tool answers which question.
   real diagnostics, run tests, refactor); heavier. Enable it through your editor's Metals + MCP-client
   config per the linked setup page.
 
-## 3. Using the Claude Code plugin
-
-You installed the plugin in [How to install genscalator](#2-how-to-install-genscalator); here is what it gives
-you and how to drive it. Details, the recommended allowlist, and caveats: [`docs/claude-plugin.md`](docs/claude-plugin.md).
-
-### 3.1 What you get
-
-Installing the plugin puts the `tt` toolbox on your PATH for the agents to use when the genscalator plugin is active (see [Usage](#5-using-typed-tools-directly-in-terminal)) and adds the full set of **skills** — focused
-playbooks the agent invokes by name, or by matching what you ask for. The skill table is in
-[section 4, Using the genscalator skills](#4-using-the-genscalator-skills), which also explains how to
-use them outside Claude Code.
-
-The plugin also ships the operating contract [`AGENTS.md`](AGENTS.md) — the shared human-agent **conventions** (tool
-selection, shorthand, workflow "dances", safe-by-design allowlist habit, etc.) that the agent reads as its
-modus operandi. Full glossary and cues live in [`docs/foundations.md`](docs/foundations.md).
-
-### 3.2 The `gs` in-session commands
-
-Once the plugin is active you can drive genscalator by typing 
-```
-gs help
-```
-to the agent in chat. 
-
-`gs` is a
-**do-what-I-mean** cue: the agent matches your words to the nearest command in meaning (an informal list, not a rigid
-syntax, so near-miss spellings and phrasings still work) and does it in the session.
-
-You can get help with Claude Code settings for allow/deny/ask by issuing this command and following the instructions from the agent:
-
-```
-gs allow
-```
-
-### 3.3 Getting started: Try seeding a working web app
-
-New to genscalator? The fastest way to see it work is to let the agent **seed a complete, runnable Scala web app** for
-you, then run and read it. After installing the plugin, in a fresh context, ask in plain language, naming the directory you want, something similar to:
-
-> Use the crud-web-app-seed skill to create a todo web app in ./my-todo
-
-Or you can just type this gs command in the chat:
-```
-gs new app todo ./my-todo
-```
-
-The agent runs the **`crud-web-app-seed`** skill, which writes a small full-stack project into the directory you chose:
-a shared datamodel, a **JDK-only** HTTP server, and a **Scala.js + Laminar** browser client, plus a Product Requirements Document in `PRD.md`, and a test suite. Then follow the agent's instructions or ask when you need help. The todo app is deliberately small and commented so you can read the whole thing and adapt it to your liking together with the agent that will invoke genscalator's typed tools when it sees fit.
-
-### 3.4 Native speed: prebuilt binary or graalify yourself
+### 2.4 Native speed: prebuilt binary or graalify yourself
 
 The whole `tt` toolbox runs as **one native binary** (GraalVM native-image), and the launcher
 prefers it automatically. What you gain:
@@ -229,20 +180,34 @@ atomically. After any edit under `tools/` the launcher detects the binary is sta
 falls back to scala-cli (slower, never wrong) until you re-run the ritual. Opt out anytime with
 `TT_NATIVE=0 tt ...`. Details, measurements and design: [`docs/native.md`](docs/native.md).
 
-## 4. Using the genscalator skills
+## 3. Using the Claude Code plugin
+
+You installed the plugin in [How to install genscalator](#2-how-to-install-genscalator); here is what it gives
+you. Details, the recommended allowlist, and caveats: [`docs/claude-plugin.md`](docs/claude-plugin.md).
+
+Installing the plugin puts the `tt` toolbox on your PATH for the agents to use when the genscalator plugin is active (see [Usage](#5-using-typed-tools-directly-in-terminal)) and adds the full set of **skills** — focused
+playbooks the agent invokes by name, or by matching what you ask for. The skill table and how to
+drive the skills - in Claude Code or any other harness - are in
+[section 4, Using the genscalator skills and gs dwim](#4-using-the-genscalator-skills-and-gs-dwim).
+
+The plugin also ships the operating contract [`AGENTS.md`](AGENTS.md) — the shared human-agent **conventions** (tool
+selection, shorthand, workflow "dances", safe-by-design allowlist habit, etc.) that the agent reads as its
+modus operandi. Full glossary and cues live in [`docs/foundations.md`](docs/foundations.md).
+
+## 4. Using the genscalator skills and gs dwim
 
 The skills are focused playbooks the agent invokes by name, or by matching what you ask for:
 
 | Skill | What it does |
 |-------|--------------|
 | `tt-toolbox` | how to use and choose the `tt` tools — the toolbox habit |
-| `gs-dwim` | the `gs` do-what-I-mean in-session commands (see [3.2](#32-the-gs-in-session-commands)) |
+| `gs-dwim` | the `gs` do-what-I-mean in-session commands (see [4.1](#41-the-gs-in-session-commands)) |
 | `avoid-guard-stall` | construct shell commands that never trip the permission guard — fewer confirmation stalls |
 | `scala-style` | a genscalator-tailored guide on Scala generation in direct, [common style](https://codeberg.org/bjornregnell/scala-common-style) |
 | `scala-code-review` | adversarially review Scala changes for correctness, style, and safety |
 | `scala-platform` | choose a compilation target: JVM, Scala Native, or GraalVM native-image |
 | `reqt-lang` | write markdown requirements in reqT-lang, meta-examples in [`PRD.md`](reqts/PRD.md) |
-| `crud-web-app-seed` | seed a complete, runnable full-stack web app — see [Getting started](#33-getting-started-try-seeding-a-working-web-app) |
+| `crud-web-app-seed` | seed a complete, runnable full-stack web app — see [Getting started](#42-getting-started-try-seeding-a-working-web-app) |
 | `serverless-spa-seed` | seed a minimal client-only Scala.js + Laminar single-page app (no server) |
 | `contribute-tool` | grow a one-off scratch tool into a toolbox-worthy `tt` tool candidate |
 | `in-session-experiment` | run a controlled experiment on the agent's own performance, live |
@@ -250,7 +215,42 @@ The skills are focused playbooks the agent invokes by name, or by matching what 
 
 In Claude Code, the plugin loads all of these automatically ([section 3](#3-using-the-claude-code-plugin)).
 
-**In other agent harnesses:** each `skills/<name>/SKILL.md` is a self-contained markdown playbook
+### 4.1 The `gs` in-session commands
+
+Once the skills are active you can drive genscalator by typing 
+```
+gs help
+```
+to the agent in chat. 
+
+`gs` is a
+**do-what-I-mean** cue: the agent matches your words to the nearest command in meaning (an informal list, not a rigid
+syntax, so near-miss spellings and phrasings still work) and does it in the session.
+
+You can get help with Claude Code settings for allow/deny/ask by issuing this command and following the instructions from the agent:
+
+```
+gs allow
+```
+
+### 4.2 Getting started: Try seeding a working web app
+
+New to genscalator? The fastest way to see it work is to let the agent **seed a complete, runnable Scala web app** for
+you, then run and read it. After installing the plugin, in a fresh context, ask in plain language, naming the directory you want, something similar to:
+
+> Use the crud-web-app-seed skill to create a todo web app in ./my-todo
+
+Or you can just type this gs command in the chat:
+```
+gs new app todo ./my-todo
+```
+
+The agent runs the **`crud-web-app-seed`** skill, which writes a small full-stack project into the directory you chose:
+a shared datamodel, a **JDK-only** HTTP server, and a **Scala.js + Laminar** browser client, plus a Product Requirements Document in `PRD.md`, and a test suite. Then follow the agent's instructions or ask when you need help. The todo app is deliberately small and commented so you can read the whole thing and adapt it to your liking together with the agent that will invoke genscalator's typed tools when it sees fit.
+
+### 4.3 Using the skills in other agent harnesses
+
+Each `skills/<name>/SKILL.md` is a self-contained markdown playbook
 with a description of when to trigger it, so nothing about the skills requires Claude Code. If your
 harness (OpenCode, Codex, or your own) can load instruction files, you can use them:
 
