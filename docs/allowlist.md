@@ -32,6 +32,17 @@ equivalents (`grep -rnE`, pipe-chains) still prompt.
 ```
 Add `"Bash(scalex *)"` to `allow` if you use the scalex companion.
 
+**Which `tt` does the rule match?** `Bash(tt *)` matches the bare command word only. If you run a
+checkout's launcher by absolute path (e.g. `/home/you/genscalator/bin/tt`), the rule does NOT match
+and every call prompts, even though it is the same tool (and often newer than a plugin-cache `tt`
+that runs silently). Either put the checkout's `bin/` on your PATH so the command word is `tt`, or
+add a path-scoped rule in the spirit of principle 2:
+```
+      "Bash(/ABSOLUTE/PATH/TO/YOUR/CHECKOUT/bin/tt *)"
+```
+(Found in the first alpha field test, 2026-07-28: the stale 0.9.1 plugin-cache `tt` ran silently
+while the up-to-date checkout's `bin/tt` prompted, so the quiet path was the stale one.)
+
 **Tier 2 — autonomous (opt in consciously).** Adds path-scoped `git` and scratch-`rm` for THIS repo, so the
 agent can commit and clean its own `tmp/` without prompting. `gs allow` fills in the absolute path for you.
 ```
