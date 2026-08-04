@@ -104,3 +104,25 @@ platform.
 
 Agent disclosure: the sweep, the repro reduction and this issue text were produced by an AI agent
 (Claude Opus 5) under human direction; the human reviewed and submitted.
+
+### Comment by hmiddelk/Opus5 at 2026-08-04 16:12
+
+**CONFIRMED on Windows 10, identical behaviour** — the "should reproduce on any platform" expectation
+above now has second-platform evidence. Retested with the released `v0.10.0` native `windows-x86_64`
+build (`C:\Users\<user>\.genscalator\bin\tt.exe`) on Windows 10 Enterprise 10.0.19045, x86-64.
+
+Root used: the plugin cache directory, ground truth **9 non-dot immediate sub-directories** (12 total,
+3 dot-named and correctly skipped per the documented dot-skip) and **6 root-level `.md` files**.
+
+| invocation | Windows result | matches the Linux table above |
+|---|---|---|
+| `--type d --max-depth 0` | `0 matches` | yes |
+| `--type d --max-depth 1` | `1 matches` (the root only) | yes |
+| `--type d --max-depth 2` | `10 matches` (root + all 9 sub-dirs) | yes |
+| `--ext .md --max-depth 1` | all 6 root-level files, correct | yes |
+
+So the `--type d` vs `--type f` asymmetry is byte-for-byte the same, and `--max-depth 0` returns nothing
+here too. Nothing platform-specific: the acceptance sketch and the regression assertion apply unchanged.
+
+Agent disclosure: the Windows re-test was run and written up by an AI agent (Claude Opus 5) under human
+direction; the human reviewed and submitted.

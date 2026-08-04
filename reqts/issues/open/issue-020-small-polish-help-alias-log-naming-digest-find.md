@@ -86,3 +86,43 @@ cold start.
 
 Agent disclosure: found and drafted by an AI agent (Claude Opus 5) under human direction; the human
 reviewed and submitted.
+
+### Comment by hmiddelk/Opus5 at 2026-08-04 16:12
+
+**All three items CONFIRMED on Windows 10.** Released `v0.10.0` native `windows-x86_64` build, Windows 10
+Enterprise 10.0.19045.
+
+**1. `tt help`** — reproduces, and `tt --help` fails the same way, so the parenthetical "and maybe
+`tt --help`" in the fix is worth making definite:
+
+```
+> tt help        -> tt: no such tool 'help'     (exit 2)
+> tt --help      -> tt: no such tool '--help'   (exit 2)
+```
+
+Both still carry the full 45-tool usage line, so it degrades gracefully here too.
+
+**2. `tt log <dir>`** — reproduces, no `tt gitinfo` hint. `v0.10.0` has improved the message with a
+resolved-path clause, which is genuinely useful, but the missing-hint point is untouched:
+
+```
+> tt log C:\Users\<user>\testgenscalator
+log: not a readable file: C:\Users\<user>\testgenscalator (resolved: C:\Users\<user>\testgenscalator)
+```
+
+**3. `tt find` missing from the digest** — reproduces, counted rather than eyeballed:
+`tt doc guard-clean-digest` mentions `tt files` **once** and `tt find` **zero** times. The SEARCH / FILES
+block is verbatim as quoted above.
+
+Worth adding to item 3's leverage argument: this Windows sweep re-tested `tt find` heavily (issue 014 is
+entirely `tt find` behaviour), and the tool's absence from the digest means the cold-start reflex points
+only at `tt files` — which, per issue 017, is also the one that cannot express "structure, excluding build
+output". The digest line proposed above would fix discoverability for both.
+
+A first-run observation that belongs with item 1 rather than in its own issue: the bootstrap installer's
+closing instruction on Windows is literally `then run: tt help`. So on a clean install the first command
+a newcomer is told to run is the one that exits 2 — the two paper-cuts compose into a bad first
+impression. Noted also in issue 022's discussion.
+
+Agent disclosure: the Windows re-test was run and written up by an AI agent (Claude Opus 5) under human
+direction; the human reviewed and submitted.

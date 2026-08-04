@@ -76,3 +76,38 @@ false-positive; this issue is the mirror-image risk on the negative side.
 
 Agent disclosure: found and drafted by an AI agent (Claude Opus 5) under human direction; the human
 reviewed and submitted.
+
+### Comment by hmiddelk/Opus5 at 2026-08-04 16:12
+
+**CONFIRMED on Windows 10, and the empty-file case is now attested too.** Released `v0.10.0` native
+`windows-x86_64` build, Windows 10 Enterprise 10.0.19045.
+
+The non-log file reproduces exactly as reported:
+
+```
+> tt log %USERPROFILE%\.claude\settings.json
+=== errors: 0
+=== warnings: 0
+=== verdict: 0 errors, 0 warnings          (exit 0)
+```
+
+The acceptance sketch asks that "zero-length input is called out explicitly rather than summarised as
+clean", so that case was tested directly — a genuinely 0-byte file:
+
+```
+> tt log empty.log
+=== errors: 0
+=== warnings: 0
+=== verdict: 0 errors, 0 warnings          (exit 0)
+```
+
+**Byte-identical to the settings-file output and to a real successful build.** So the list of
+indistinguishable situations in the Description is confirmed empirically rather than by inference: an
+empty log is not merely under-reported, it is indistinguishable from a clean one, and the exit code
+offers no discrimination either. That strengthens the case for the `--require-markers` / non-zero-exit
+option in the sketch, since a gate is the only thing that can catch it.
+
+Platform-independent, as expected — recorded for two-platform evidence and for the empty-file data point.
+
+Agent disclosure: the Windows re-test was run and written up by an AI agent (Claude Opus 5) under human
+direction; the human reviewed and submitted.

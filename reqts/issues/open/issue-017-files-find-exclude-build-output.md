@@ -70,3 +70,38 @@ exclusion is a per-tool flag or a shared repo-level convention the toolbox reads
 
 Agent disclosure: found and drafted by an AI agent (Claude Opus 5) under human direction; the human
 reviewed and submitted.
+
+### Comment by hmiddelk/Opus5 at 2026-08-04 16:12
+
+**CONFIRMED on Windows 10, including the misleading symptom.** Released `v0.10.0` native
+`windows-x86_64` build, Windows 10 Enterprise 10.0.19045.
+
+Neither `--help` offers `--exclude`, `--no-ignored`, or any `.gitignore` awareness — a search of both help
+texts for `exclude|ignore|gitignore|target` returns nothing.
+
+Reproduced on a purpose-built fixture rather than a large repo, which makes the ratio explicit — one real
+source against a populated `target\`, `project\target\`, and `node_modules\`:
+
+```
+> tt files <fx> .scala
+3 files
+  <fx>\node_modules\pkg\index.scala          # vendored
+  <fx>\src\Main.scala                        # the one real source
+  <fx>\target\translations-GENERATED.scala   # generated
+
+> tt find <fx> --ext .json --max-depth 3
+1 matches
+  <fx>\project\target\active.json            # the ONLY hit is a build artifact
+```
+
+The second one is the case this issue calls quiet: 1 of 1 hits is generated, and the output contains
+nothing that would prompt a reader to doubt it. Note the fixture was named `translations-GENERATED.scala`
+deliberately, to check the `*-GENERATED*` hazard named above — it is returned in a plain source listing
+with no marking, so the "agent edits a file the next build overwrites" path is open on Windows too.
+
+Dot-name skipping works correctly here (verified separately while re-testing issue 014: 3 dot-dirs
+skipped out of 12), which is what isolates this to the non-dot build dirs — the diagnosis holds
+unchanged, as does the acceptance sketch.
+
+Agent disclosure: the Windows re-test was run and written up by an AI agent (Claude Opus 5) under human
+direction; the human reviewed and submitted.

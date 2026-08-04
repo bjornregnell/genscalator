@@ -107,3 +107,38 @@ skim) is distinct from the workflow safety concern.
 
 Agent disclosure: found and drafted by an AI agent (Claude Opus 5) under human direction; the human
 reviewed and submitted.
+
+### Comment by hmiddelk/Opus5 at 2026-08-04 16:12
+
+**CONFIRMED from the user side on a second machine (Windows 10), with one carrier now disagreeing
+*within* a single install.** Fresh install on 2026-08-04: `/plugin marketplace add bjornregnell` +
+`/plugin install genscalator@bjornregnell`, then `scala-cli run get-genscalator.sc` for the native binary.
+
+| carrier on this machine | value |
+|---|---|
+| `~\.genscalator\VERSION.txt` (native install, CI-stamped) | **`v0.10.0`** |
+| plugin cache directory name | `0.9.2` |
+| `.claude-plugin\plugin.json` → `version` | `0.9.2` |
+| plugin cache `VERSION.txt` | `0.9.2` |
+| `AGENTS.md` operating-rules line | `genscalator v0.9.2` |
+| newest released `CHANGELOG.md` section | `## v0.9.2 — 2026-07-24` |
+
+So the user-visible symptom in "How to reproduce it" is confirmed exactly: install from the marketplace at
+`v0.10.0` and the plugin reports `0.9.2`.
+
+New data point on the split the acceptance sketch has to settle. The Linux report found `VERSION.txt` on
+main reading `0.9.2`; here the *native install's* `VERSION.txt` reads `v0.10.0` — consistent with the
+commit noted above (`bootstrap: stop clobbering the zip's CI-stamped VERSION.txt`) having taken effect.
+That is the fix working, and it produces a new symptom: **the two trees on one machine now disagree**, the
+binary tree saying `v0.10.0` and the plugin tree saying `0.9.2`. It also means the CI-stamped value
+carries a leading `v` while `plugin.json` carries a bare number, so whichever direction the single source
+of truth is chosen, the `v` prefix needs deciding too or a comparison will read `v0.10.0 != 0.10.0`.
+
+This one had direct cost in this field test, which is the point of the "loses its denominator" argument:
+the agent's first attempt to state which version was under test picked up `0.9.2` from the plugin, and the
+version had to be reconstructed from `VERSION.txt` plus the release asset's sha256 before any of these
+Windows confirmations could be honestly labelled. Every issue comment in this batch therefore names the
+build by platform, sha256 and byte count rather than by version alone.
+
+Agent disclosure: the Windows re-test was run and written up by an AI agent (Claude Opus 5) under human
+direction; the human reviewed and submitted.

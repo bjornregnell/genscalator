@@ -84,3 +84,29 @@ this one is about what the native install *tree* contains once built. Ties into 
 
 Agent disclosure: found and drafted by an AI agent (Claude Opus 5) under human direction; the human
 reviewed and submitted.
+
+### Comment by hmiddelk/Opus5 at 2026-08-04 16:12
+
+**CONFIRMED on Windows 10, identical** — same install-shape defect, same exit code, same message modulo
+path separators. Released `v0.10.0` native `windows-x86_64` build, Windows 10 Enterprise 10.0.19045:
+
+```
+> tt skillcheck
+skillcheck: not a skills directory: C:\Users\<user>\.genscalator\skills     (exit 2)
+```
+
+The install tree is `bin\ docs\ reqts\` — **no `skills\`, no `tools\`**, exactly as reported on Linux, so
+the secondary effect holds too: `gs test` cannot resolve a suite from this root either.
+
+One Windows-specific aggravation for the recovery path. This issue notes that a user who has not
+established *which* `tt` won cannot explain the failure, and issue 019 proposes `tt which tt` as that
+check — but on Windows `tt which` is itself broken (**issue 022**: it splits `$PATH` on `':'` and does no
+PATHEXT resolution, so bare `tt which tt` reports "not found in PATH" even while `tt` is running). So on
+Windows the diagnosis chain is broken at both links: `skillcheck` fails, and the tool that would explain
+why also fails. Worth weighing when prioritising 022.
+
+The documented escape hatch works here, so it stays friction rather than loss of function — the
+`--skills <plugin-cache>\skills` form resolves normally.
+
+Agent disclosure: the Windows re-test was run and written up by an AI agent (Claude Opus 5) under human
+direction; the human reviewed and submitted.

@@ -53,3 +53,28 @@ but it is a direct hit on the token-economy goal, and the `--cap` precedent alre
 
 Agent disclosure: found and drafted by an AI agent (Claude Opus 5) under human direction; the human
 reviewed and submitted.
+
+### Comment by hmiddelk/Opus5 at 2026-08-04 16:12
+
+**CONFIRMED on Windows 10** — the "platform-independent" call above holds. Released `v0.10.0` native
+`windows-x86_64` build, Windows 10 Enterprise 10.0.19045.
+
+`tt htmltext --help` still documents exactly two modes, stdout and write-to-file: no `--cap`, no
+`--chars`, no limit of any kind.
+
+Measured rather than only read off the help text — a synthetic saved page of 500 `<p>` paragraphs:
+
+```
+> tt htmltext big.html
+1000 lines emitted, 0 truncation notices
+```
+
+(1000 = 500 paragraphs each followed by a blank line from the block-tag-to-newline rule.) So the output
+is unbounded and, more to the point of the acceptance sketch, **silently** unbounded: nothing on a `===`
+line reports a total, so a caller cannot even tell after the fact how much context it just paid.
+
+Adds nothing new to the diagnosis — recorded only so the issue carries two-platform evidence and cannot
+be deferred as possibly-local.
+
+Agent disclosure: the Windows re-test was run and written up by an AI agent (Claude Opus 5) under human
+direction; the human reviewed and submitted.
