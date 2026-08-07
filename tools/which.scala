@@ -37,6 +37,8 @@ private val WhichHelp: String =
     |Full reference: tools/README.md""".stripMargin
 
 object WhichTool:
+  val isWindows: Boolean = System.getProperty("os.name", "").toLowerCase.contains("win")
+
   /** bash builtins (static list, bash 5.x `enable -a` + `[`): the honest half of `type`. */
   val bashBuiltins: Set[String] = Set(
     ".", ":", "[", "alias", "bg", "bind", "break", "builtin", "caller", "cd", "command",
@@ -68,6 +70,7 @@ object WhichTool:
     else if b(0) == '#' && b(1) == '!' then
       val line = new String(bytes, "ISO-8859-1").takeWhile(c => c != '\n' && c != '\r').trim
       s"script  $line"
+    else if b(0) == 'M' && b(1) == 'Z' then "PE executable"
     else if b(0) == 'P' && b(1) == 'K' && b(2) == 3 && b(3) == 4 then "zip archive (jar?)"
     else if b(0) == 0xca && b(1) == 0xfe && b(2) == 0xba && b(3) == 0xbe then "java class / universal binary"
     else if bytes.nonEmpty && bytes.forall(x => x >= 0x20 || x == '\n' || x == '\r' || x == '\t') then
@@ -90,16 +93,41 @@ object WhichTool:
     val size = try human(Files.size(p)) catch case _: Throwable => "?"
     val mode =
       try java.nio.file.attribute.PosixFilePermissions.toString(Files.getPosixFilePermissions(p))
-      catch case _: Throwable => "?"
+      catch
+        case _: UnsupportedOperationException => "n/a" // non-POSIX filesystem (NTFS): no mode bits exist
+        case _: Throwable => "?"
     val mtime = try Files.getLastModifiedTime(p).toString.take(16) catch case _: Throwable => "?"
     s"$kind  $size  $mode  $mtime"
 
-  def pathDirs: Vector[Path] =
-    Option(System.getenv("PATH")).getOrElse("").split(':').toVector
-      .filter(_.nonEmpty).map(Path.of(_)) // empty entry = POSIX cwd; skipped on purpose (see help)
+  /** Split a raw PATH string on the given separator. PURE, so the Windows ';' case is unit-testable
+    * on any platform — the previous hard-coded ':' shredded drive-lettered Windows entries, doubling
+    * the reported dir count and stripping drive letters (issue-022). */
+  def splitPathString(raw: String, sep: Char): Vector[String] =
+    raw.split(sep).toVector.filter(_.nonEmpty) // empty entry = POSIX cwd; skipped on purpose (see help)
 
-  def hitsFor(name: String, dirs: Vector[Path]): Vector[Path] =
-    dirs.map(_.resolve(name)).filter(p => Files.isRegularFile(p) && Files.isExecutable(p)).distinct
+  def pathDirs: Vector[Path] =
+    splitPathString(Option(System.getenv("PATH")).getOrElse(""), java.io.File.pathSeparatorChar).map(Path.of(_))
+
+  /** Executable extensions to probe AFTER the verbatim name: Windows PATHEXT (shell resolution the
+    * JVM does not do), empty elsewhere. PURE given the raw env value. */
+  def pathExts(rawPathext: Option[String], windows: Boolean): Vector[String] =
+    if !windows then Vector.empty
+    else rawPathext.map(_.split(';').toVector.map(_.trim).filter(_.nonEmpty))
+      .filter(_.nonEmpty).getOrElse(Vector(".COM", ".EXE", ".BAT", ".CMD"))
+
+  def hitsFor(name: String, dirs: Vector[Path], exts: Vector[String] = Vector.empty): Vector[Path] =
+    // Dir order first, then ext order within a dir — the shell's own resolution order. The bare
+    // word is accepted; the file actually found (e.g. tt.exe) is what gets reported.
+    dirs.flatMap { d =>
+      (name +: exts.map(name + _)).map(d.resolve)
+        .find(p => Files.isRegularFile(p) && Files.isExecutable(p))
+    }.distinct
+
+  /** A token given as a path (vs a bare command word): '/' anywhere, or on Windows also '\' or a
+    * drive-letter prefix — so `tt which C:\dir\tt.exe` is inspected as a path, not mislabelled
+    * "in PATH". Windows-gated because '\' is a legal POSIX filename character. */
+  def looksLikePath(name: String): Boolean =
+    name.contains('/') || (isWindows && (name.contains('\\') || (name.length >= 2 && name(1) == ':')))
 
   /** Report one file hit: absolute path, then the symlink chain, then the facts of the FINAL target. */
   def reportHit(p: Path, label: String): Unit =
@@ -109,17 +137,20 @@ object WhichTool:
     println(s"    ${factsOf(chain.lastOption.getOrElse(p))}")
 
   /** Report one name; true iff it resolved to something (builtin counts). */
-  def report(name: String, dirs: Vector[Path]): Boolean =
-    if name.contains('/') then
+  def report(name: String, dirs: Vector[Path], exts: Vector[String] = Vector.empty): Boolean =
+    if looksLikePath(name) then
       val p = Path.of(name).toAbsolutePath.normalize
       if Files.isRegularFile(p) then { println(s"$name:"); reportHit(p, ""); true }
       else { println(s"$name: no such file"); false }
     else
       val builtin = bashBuiltins(name)
-      val hits = hitsFor(name, dirs)
+      val hits = hitsFor(name, dirs, exts)
       if builtin && hits.isEmpty then println(s"$name: bash builtin (no file; aliases/functions are invisible here)")
       else if builtin then println(s"$name: bash builtin AND ${hits.size} in PATH (interactive bash runs the BUILTIN)")
-      else if hits.isEmpty then println(s"$name: not found in PATH (${dirs.size} dirs; not a bash builtin either)")
+      else if hits.isEmpty then
+        // The bash clause points at the wrong universe on a box with no bash — omit it there.
+        val builtinClause = if isWindows then "" else "; not a bash builtin either"
+        println(s"$name: not found in PATH (${dirs.size} dirs$builtinClause)")
       else println(s"$name: ${hits.size} in PATH${if hits.size > 1 then " (first wins)" else ""}")
       hits.zipWithIndex.foreach: (p, i) =>
         reportHit(p, if i == 0 && !builtin then "" else " (shadowed)")
@@ -132,5 +163,6 @@ object WhichTool:
     println("usage: which <name> [<name> ...]   (what is this command: PATH hits, symlink chain, kind)")
     sys.exit(2)
   val dirs = WhichTool.pathDirs
-  val allFound = names.map(WhichTool.report(_, dirs)).forall(identity)
+  val exts = WhichTool.pathExts(Option(System.getenv("PATHEXT")), WhichTool.isWindows)
+  val allFound = names.map(WhichTool.report(_, dirs, exts)).forall(identity)
   if !allFound then sys.exit(2)

@@ -134,7 +134,15 @@ object Log {
             val warns = hits(text, warnRes.map(_.r))
             show("errors", errs, cfg.cap)
             show("warnings", warns, cfg.cap)
-            println(s"=== verdict: ${errs.size} errors, ${warns.size} warnings")
+            // The verdict must not report the ABSENCE of bad news as good news (issue-018): an empty
+            // file and a marker-less file are called out, so they cannot masquerade as a clean run.
+            val lines = text.linesIterator.size
+            if text.isEmpty then
+              println("=== verdict: EMPTY input (0 bytes) — nothing was scanned, this is not a clean run")
+            else if errs.isEmpty && warns.isEmpty then
+              println(s"=== verdict: 0 errors, 0 warnings — but no log markers recognised in $lines lines (is this a log?)")
+            else
+              println(s"=== verdict: ${errs.size} errors, ${warns.size} warnings ($lines lines scanned)")
 }
 
 @main def logAnalyze(args: String*): Unit = Log.dispatch(args*)

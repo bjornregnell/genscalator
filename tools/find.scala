@@ -1,5 +1,6 @@
 //> using file project.scala
 //> using jvm 21
+//> using file lib.scala
 
 // find — typed, SAFE file enumeration (PURE, read-only): the allowlistable read-half of `find`. Walks the tree
 // under <root> and prints the matching paths (stable-sorted), filtered by name-glob / extension / type / depth.
@@ -8,6 +9,7 @@
 // (`--prune`, confined + dry-run-by-default) is a separate, later step (SM031).
 //   scala-cli run tools/find.scala -- <root> [--name <glob>] [--ext <e>] [--type f|d] [--max-depth N] [--count]
 import java.nio.file.{Files, Path, FileSystems}
+import agenttools.Lib
 
 // Top-level, so a UNIQUE name (the toolbox compiles as one unit; a generic `Help` would collide across files).
 private val FindHelp: String =
@@ -67,27 +69,16 @@ private val FindHelp: String =
       val root = Path.of(rootStr)
       if !Files.exists(root) then { Console.err.println(s"find: no such path: $rootStr"); sys.exit(2) }
       val matcher = nameGlob.map(g => FileSystems.getDefault.getPathMatcher(s"glob:$g"))
-      def hidden(p: Path): Boolean =
-        val n = p.getFileName; n != null && n.toString.startsWith(".")
       def matches(p: Path): Boolean =
         ext.forall(e => p.toString.endsWith(e)) && matcher.forall(m => Option(p.getFileName).exists(m.matches))
       val hits = scala.collection.mutable.ArrayBuffer.empty[String]
       val depth = maxDepth.getOrElse(Int.MaxValue)
-      // walkFileTree (not walk) so hidden dirs are PRUNED as whole subtrees (skip .git/.scala-build fast),
-      // not merely filtered post-hoc. Symlinks not followed (empty option set); unreadable entries skipped.
-      Files.walkFileTree(root, java.util.Collections.emptySet[java.nio.file.FileVisitOption](), depth,
-        new java.nio.file.SimpleFileVisitor[Path] {
-          override def preVisitDirectory(dir: Path, attrs: java.nio.file.attribute.BasicFileAttributes): java.nio.file.FileVisitResult =
-            if !all && hidden(dir) && !dir.equals(root) then java.nio.file.FileVisitResult.SKIP_SUBTREE
-            else
-              if typ == "d" && matches(dir) then hits += dir.toString
-              java.nio.file.FileVisitResult.CONTINUE
-          override def visitFile(file: Path, attrs: java.nio.file.attribute.BasicFileAttributes): java.nio.file.FileVisitResult =
-            if (all || !hidden(file)) && typ == "f" && matches(file) then hits += file.toString
-            java.nio.file.FileVisitResult.CONTINUE
-          override def visitFileFailed(file: Path, exc: java.io.IOException): java.nio.file.FileVisitResult =
-            java.nio.file.FileVisitResult.CONTINUE
-        })
+      // Shared pruning walker (Lib.walkPruned, also behind tt files): hidden subtrees pruned whole,
+      // symlinks not followed, boundary-depth dirs delivered with their TRUE type (issue-014).
+      Lib.walkPruned(root, all, depth) { (p, isDir) =>
+        if isDir then { if typ == "d" && matches(p) then hits += p.toString }
+        else if typ == "f" && matches(p) then hits += p.toString
+      }
       val sorted = hits.toVector.sorted
       println(s"${sorted.size} matches")
       if !countOnly then sorted.foreach(p => println(s"  $p"))

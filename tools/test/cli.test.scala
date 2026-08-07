@@ -1,5 +1,5 @@
 //> using file ../project.scala
-//> using dep org.scalameta::munit::1.3.3
+//> using dep org.scalameta::munit::1.3.4
 //> using dep com.lihaoyi::os-lib:0.11.8
 
 // CLI-CONTRACT tests: run each tool as a SUBPROCESS (`scala-cli run tools/<t>.scala -- <args>`) against
@@ -298,6 +298,25 @@ class CliSuite extends munit.FunSuite:
     finally TestFs.removeAllForce(d)
   }
 
+  test("files prunes hidden subtrees like its sibling find; --all includes them (issue-017)") {
+    // Before the shared walker, tt files had NO pruning at all: a .scala-build cache dominated
+    // every scan (253 of 258 hits measured on this repo) and generated build copies listed as
+    // plain sources. The siblings now share Lib.walkPruned, so they cannot drift apart.
+    val d = os.temp.dir()
+    try
+      os.write(d / "real.scala", "object A")
+      os.makeDir(d / ".scala-build")
+      os.write(d / ".scala-build" / "generated.scala", "object B")
+      os.write(d / ".hidden.scala", "object C")
+      val (_, out, _) = run("files", d.toString, ".scala")
+      assert(clue(out).contains("1 files"))
+      assert(clue(out).contains("real.scala"))
+      assert(!clue(out).contains("generated.scala"))
+      val (_, outAll, _) = run("files", d.toString, ".scala", "--all", "--count")
+      assert(clue(outAll).contains("3 files"))
+    finally TestFs.removeAllForce(d)
+  }
+
   // --- find (typed safe enumeration, read-half) ---
   private def findFixture(): os.Path =
     val d = os.temp.dir()
@@ -340,6 +359,30 @@ class CliSuite extends munit.FunSuite:
     try
       val (_, out, _) = run("find", d.toString, "--ext", ".scala", "--max-depth", "1", "--count")
       assert(clue(out).contains("2 matches"))           // sub/deep.scala (depth 2) is excluded
+    finally TestFs.removeAllForce(d)
+  }
+  test("find --max-depth semantics agree for --type f and --type d (issue-014)") {
+    // GNU-find accounting on one fixture: root = depth 0, entries directly inside it = depth 1.
+    // Pinned for BOTH types because the defect was an asymmetry: boundary-depth directories were
+    // delivered to visitFile, leaking into --type f output and missing from --type d.
+    val d = os.temp.dir()
+    try
+      os.write(d / "f1.md", "x")
+      os.write(d / "f2.md", "y")
+      os.makeDir(d / "s1")
+      os.makeDir(d / "s2")
+      os.makeDir(d / "s1" / "inner")
+      val (_, d0, _) = run("find", d.toString, "--type", "d", "--max-depth", "0", "--count")
+      assert(clue(d0).contains("1 matches"))            // the root itself (root = 0)
+      val (_, d1, _) = run("find", d.toString, "--type", "d", "--max-depth", "1", "--count")
+      assert(clue(d1).contains("3 matches"))            // root + s1 + s2
+      val (_, d2, _) = run("find", d.toString, "--type", "d", "--max-depth", "2", "--count")
+      assert(clue(d2).contains("4 matches"))            // + s1/inner
+      val (_, f1, _) = run("find", d.toString, "--type", "f", "--max-depth", "1")
+      assert(clue(f1).contains("2 matches"))            // f1.md + f2.md — and no directory leak:
+      assert(!clue(f1).contains("s1"))
+      val (_, f0, _) = run("find", d.toString, "--type", "f", "--max-depth", "0", "--count")
+      assert(clue(f0).contains("0 matches"))            // the root is not a regular file
     finally TestFs.removeAllForce(d)
   }
   test("find on a nonexistent root: exit 2, no such path") {
@@ -538,6 +581,28 @@ class CliSuite extends munit.FunSuite:
       assertEquals(code, 1)
       assert(clue(err).contains("alpha"))
       assert(clue(err).contains("beta"))
+    finally TestFs.removeAllForce(d)
+  }
+  test("skillcheck on a missing skills dir: exit 2 with the native-install recovery hint (issue-015)") {
+    // The native install ships no skills/ by design (D4), so the bare session-start reflex used to die
+    // with a bare error. The error must now name the --skills escape hatch and the D4 reason, so the
+    // reflex is recoverable from the message alone.
+    val d = os.temp.dir()
+    try
+      val (code, _, err) = run("skillcheck", "--skills", (d / "no-such-skills").toString)
+      assertEquals(code, 2)
+      assert(clue(err).contains("not a skills directory"))
+      assert(clue(err).contains("--skills"))
+      assert(clue(err).contains("by design"))
+    finally TestFs.removeAllForce(d)
+  }
+  test("skillgrants on a missing skills dir: exit 2 with the same recovery hint (issue-015 twin)") {
+    val d = os.temp.dir()
+    try
+      val (code, _, err) = run("skillgrants", "--skills", (d / "no-such-skills").toString)
+      assertEquals(code, 2)
+      assert(clue(err).contains("not a skills directory"))
+      assert(clue(err).contains("--skills"))
     finally TestFs.removeAllForce(d)
   }
   test("skillcheck --help: elaborate help, exit 0") {
@@ -739,6 +804,31 @@ class CliSuite extends munit.FunSuite:
     val (code, _, err) = run("log")
     assertEquals(code, 2)
     assert(clue(err).nonEmpty)
+  }
+  test("log verdict distinguishes empty input from a clean-looking run (issue-018)") {
+    val f = os.temp(contents = "", suffix = ".log")
+    try
+      val (code, out, _) = run("log", "summary", f.toString)
+      assertEquals(code, 0)
+      assert(clue(out).contains("EMPTY input"))
+      assert(!clue(out).contains("0 errors, 0 warnings")) // an empty log must not read as a pass
+    finally os.remove(f)
+  }
+  test("log verdict flags a file with no recognised markers instead of passing it (issue-018)") {
+    val f = os.temp(contents = "{ \"model\": \"opus\", \"permissions\": [] }\n", suffix = ".json")
+    try
+      val (code, out, _) = run("log", "summary", f.toString)
+      assertEquals(code, 0)
+      assert(clue(out).contains("no log markers recognised in 1 lines"))
+      assert(clue(out).contains("0 errors, 0 warnings")) // the counts substring stays, additively
+    finally os.remove(f)
+  }
+  test("log verdict carries a lines-scanned count when markers hit (issue-018)") {
+    val f = os.temp(contents = "[error] boom\n[warn] careful\nall good\n", suffix = ".log")
+    try
+      val (_, out, _) = run("log", "summary", f.toString)
+      assert(clue(out).contains("1 errors, 1 warnings (3 lines scanned)"))
+    finally os.remove(f)
   }
 
   // --- newtool (scaffold generator; writes tools/<name>.scala relative to cwd) ---

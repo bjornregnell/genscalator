@@ -105,6 +105,58 @@ object Lib:
       .orElse(toolsDir().map(_.getParent))
       .orElse(dir(Path.of(sys.props.getOrElse("user.home", "."), ".genscalator")))
 
+  /** Walk the tree under root with hidden-name PRUNING (issue-017): a dot-named directory is skipped
+    * as a WHOLE subtree (so .git/.scala-build caches never crowd a scan) and dot-named files are
+    * dropped, unless all=true. The root itself is always entered, hidden or not. Symlinks are not
+    * followed; unreadable entries are skipped. onEntry receives every retained entry with its TRUE
+    * type — walkFileTree delivers directories at exactly maxDepth to visitFile, so the type must
+    * travel with the path or boundary dirs masquerade as files (issue-014). Shared by find + files,
+    * so the siblings' pruning can never drift apart again. */
+  def walkPruned(root: java.nio.file.Path, all: Boolean = false, maxDepth: Int = Int.MaxValue)(
+      onEntry: (java.nio.file.Path, Boolean) => Unit): Unit =
+    import java.nio.file.{Files, FileVisitResult, Path, SimpleFileVisitor}
+    import java.nio.file.attribute.BasicFileAttributes
+    def hidden(p: Path): Boolean =
+      val n = p.getFileName; n != null && n.toString.startsWith(".")
+    Files.walkFileTree(root, java.util.Collections.emptySet[java.nio.file.FileVisitOption](), maxDepth,
+      new SimpleFileVisitor[Path] {
+        override def preVisitDirectory(dir: Path, attrs: BasicFileAttributes): FileVisitResult =
+          if !all && hidden(dir) && !dir.equals(root) then FileVisitResult.SKIP_SUBTREE
+          else { onEntry(dir, true); FileVisitResult.CONTINUE }
+        override def visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult =
+          if all || !hidden(file) then onEntry(file, attrs.isDirectory)
+          FileVisitResult.CONTINUE
+        override def visitFileFailed(file: Path, exc: java.io.IOException): FileVisitResult =
+          FileVisitResult.CONTINUE
+      })
+
+  /** Recovery text for a bare skillcheck/skillgrants failing on a NATIVE install (issue-015): the
+    * install tree ships NO `skills/` by design (D4: the plugin owns the skills), so the default
+    * resolution lands on a directory that does not exist and the session-start reflex dies at step 1.
+    * Names the `--skills` escape hatch and PROBES the plugin cache for candidate dirs — a hint, never
+    * a silent fallback: a stale cache yields a WRONG expected set, so the choice stays with the caller
+    * (the version is visible in each candidate path). */
+  def skillsRecoveryHint(): String =
+    import java.nio.file.{Files, Path}
+    import scala.jdk.CollectionConverters.*
+    val cacheRoot = Path.of(sys.props.getOrElse("user.home", "."), ".claude", "plugins", "cache")
+    val candidates =
+      if !Files.isDirectory(cacheRoot) then Vector.empty
+      else
+        Files.list(cacheRoot).iterator.asScala.filter(Files.isDirectory(_))
+          .map(_.resolve("genscalator")).filter(Files.isDirectory(_))
+          .flatMap(g => Files.list(g).iterator.asScala)
+          .map(_.resolve("skills")).filter(Files.isDirectory(_))
+          .map(_.toString).toVector.sorted
+    val found =
+      if candidates.isEmpty then s"  (no plugin-cache skills/ found under $cacheRoot)"
+      else candidates.map(p => s"  --skills $p").mkString("\n")
+    s"""A native install ships NO skills/ by design (D4: the PLUGIN owns the skills) — point at the
+       |plugin cache or a checkout via --skills <dir>. Plugin-cache candidates on this machine:
+       |$found
+       |Pick the one matching your installed version (see VERSION.txt) — a stale cache yields a
+       |WRONG expected set.""".stripMargin
+
   // --- JSON ---
   /** Encode a string as a JSON string literal, quotes included, per RFC 8259. Pure, dependency-free.
     * Escapes the mandatory set (" \ and the C0 controls via \b \f \n \r \t or \uXXXX); passes other

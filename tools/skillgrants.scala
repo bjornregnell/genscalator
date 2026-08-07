@@ -10,7 +10,8 @@
 //
 //   tt skillgrants                    audit the WHOLE skill set: every skill + its grants + the union
 //   tt skillgrants <name>             show one skill's grants (e.g. tt skillgrants scala-style)
-//   tt skillgrants --skills <dir>     override the skills dir (default <tools>/../skills, via -Dtt.tools)
+//   tt skillgrants --skills <dir>     override the skills dir (default <root>/skills, root = GENSCALATOR_HOME,
+//                                     a checkout via -Dtt.tools or the cwd walk-up, else ~/.genscalator)
 //
 // A skill with no `allowed-tools:` grants nothing beyond the session defaults — reported as such, not skipped,
 // so "grants nothing" is a visible, checkable state rather than an absence you have to infer. Ties SM100/SM103.
@@ -35,7 +36,9 @@ object Skillgrants:
       |Usage:
       |  skillgrants                    audit the WHOLE set: every skill, its grants, and the union across all
       |  skillgrants <name>             show one skill's grants (e.g. skillgrants scala-style)
-      |  skillgrants --skills <dir>     override the skills dir (default <tools>/../skills, via -Dtt.tools)
+      |  skillgrants --skills <dir>     override the skills dir (default <root>/skills, where root is
+      |                                 GENSCALATOR_HOME, a checkout, or ~/.genscalator — note a native
+      |                                 install ships no skills/ by design; the plugin owns those)
       |
       |A skill with no allowed-tools grants nothing beyond session defaults — reported explicitly, not skipped.
       |
@@ -100,6 +103,7 @@ object Skillgrants:
           sys.exit(2)
     if !Files.isDirectory(skillsDir) then
       Console.err.println(s"skillgrants: not a skills directory: $skillsDir")
+      Console.err.println(Lib.skillsRecoveryHint())
       sys.exit(2)
 
     // positional skill name = first token that is neither a flag nor a consumed flag-value

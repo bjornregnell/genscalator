@@ -12,7 +12,8 @@
 //   tt skillcheck                       list the expected skill set (from skills/*/SKILL.md) + how to reconcile
 //   tt skillcheck --active <a> <b> ...  diff expected vs the ACTIVE set (what /skills reports): warn (exit 1)
 //                                       on any expected-but-NOT-active; also flag active-but-unexpected
-//   tt skillcheck --skills <dir> ...    override the skills dir (default <tools>/../skills, via -Dtt.tools)
+//   tt skillcheck --skills <dir> ...    override the skills dir (default <root>/skills, root = GENSCALATOR_HOME,
+//                                       a checkout via -Dtt.tools or the cwd walk-up, else ~/.genscalator)
 //
 // The harness `/skills` list can only be produced by the harness, not a tool — so the session-start reflex is:
 // run `tt skillcheck` to see what SHOULD be active, run `/skills`, and (optionally) feed the active names back
@@ -33,7 +34,9 @@ private val SkillcheckHelp: String =
     |  skillcheck                       list the expected skills + how to reconcile against /skills
     |  skillcheck --active <a> <b> ...  diff expected vs the ACTIVE set (what /skills reports); exit 1 if any
     |                                   expected skill is NOT active; also flags active-but-unexpected skills
-    |  skillcheck --skills <dir> ...    override the skills dir (default <tools>/../skills, via -Dtt.tools)
+    |  skillcheck --skills <dir> ...    override the skills dir (default <root>/skills, where root is
+    |                                   GENSCALATOR_HOME, a checkout, or ~/.genscalator — note a native
+    |                                   install ships no skills/ by design; the plugin owns those)
     |
     |Session-start reflex (the harness /skills list can only come from the harness, not a tool):
     |  1. tt skillcheck            # what SHOULD be active
@@ -66,6 +69,7 @@ private def expectedSkills(skillsDir: Path): Vector[String] =
         sys.exit(2)
   if !Files.isDirectory(skillsDir) then
     Console.err.println(s"skillcheck: not a skills directory: $skillsDir")
+    Console.err.println(Lib.skillsRecoveryHint())
     sys.exit(2)
   val expected = expectedSkills(skillsDir)
   if expected.isEmpty then

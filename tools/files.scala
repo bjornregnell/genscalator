@@ -6,7 +6,6 @@
 // optionally by a content regex; print a count and (unless --count) the matching paths.
 //   scala-cli run tools/files.scala -- <dir> <ext> [contentRegex] [--count]
 import agenttools.Lib
-import scala.jdk.CollectionConverters.*
 
 // Top-level, so a UNIQUE name (the toolbox compiles as one unit; a generic `Help` would collide across files).
 private val FilesHelp: String =
@@ -21,6 +20,11 @@ private val FilesHelp: String =
     |
     |Flags:
     |  --count                              print just the count line, not the paths      (find|wc)
+    |  --all                                include hidden entries (default: skip dot-names)
+    |
+    |Notes:
+    |  Hidden entries (names starting with '.', e.g. .git, .scala-build) are skipped by default,
+    |  whole subtree and all — same pruning as tt find — so a scan is sources, not build caches.
     |
     |Examples:
     |  tt files src .scala 'TODO'               # source files containing TODO
@@ -32,17 +36,20 @@ private val FilesHelp: String =
 @main def files(args: String*): Unit =
   if args.contains("--help") || args.contains("-h") then { println(FilesHelp); sys.exit(0) }
   val countOnly = args.contains("--count")
-  args.filterNot(_ == "--count").toList match
+  val all = args.contains("--all")
+  args.filterNot(f => f == "--count" || f == "--all").toList match
     case dir :: ext :: rest =>
       val contentRe = rest.headOption.map(_.r)
-      val stream = java.nio.file.Files.walk(java.nio.file.Path.of(dir))
-      try
-        val hits = stream.iterator.asScala
-          .filter(p => java.nio.file.Files.isRegularFile(p) && p.toString.endsWith(ext))
-          .filter(p => contentRe.forall(_.findFirstIn(Lib.readUtf8(p.toString)).isDefined))
-          .toVector
-        println(s"${hits.size} files")
-        if !countOnly then hits.foreach(p => println(s"  $p"))
-      finally stream.close()
+      // Shared pruning walker (Lib.walkPruned, same as tt find): before issue-017 this was a raw
+      // Files.walk, so .scala-build/.git internals dominated every scan (98% noise measured).
+      val buf = Vector.newBuilder[String]
+      Lib.walkPruned(java.nio.file.Path.of(dir), all) { (p, isDir) =>
+        if !isDir && java.nio.file.Files.isRegularFile(p) && p.toString.endsWith(ext)
+          && contentRe.forall(_.findFirstIn(Lib.readUtf8(p.toString)).isDefined)
+        then buf += p.toString
+      }
+      val hits = buf.result()
+      println(s"${hits.size} files")
+      if !countOnly then hits.foreach(p => println(s"  $p"))
     case _ =>
-      println("usage: files <dir> <ext> [contentRegex] [--count]")
+      println("usage: files <dir> <ext> [contentRegex] [--all] [--count]")
