@@ -33,6 +33,16 @@ One file per issue: `issue-NNN-short-snake-case-name.md`
   * `## Discussion` — an append-log; each entry is
     `### Comment by userhandle at YYYY-MM-DD HH:MM`
 
+## Study reports and provenance
+
+An issue born from a study or field test cites its report in `## Description`; the batch
+provenance (method, coverage, threats to validity) lives in [`research/reports/`](../../research/reports/)
+as `reportNNN-short-name.md`, continuing that one number series. Reports do NOT live beside the
+issues: one report typically spawns many issues, and the relationship is carried by links in both
+directions (the issue cites its report, the report lists the issues it filed). The invariant:
+**the issue must still stand alone** — reproduction steps go in the issue itself, never only in
+the report. Live example: issues 014–022 and reports 085–086.
+
 ## Contributing an issue
 
 Fork + clone, add your file under `open/` with the next free `NNN`, and open a Pull Request.
