@@ -33,6 +33,8 @@
 //                                                                                 # or GitLab name/email/commits
 //   tt forge issue  <owner>/<repo> <n> [--gh | --url BASE]           # body + comments
 //   tt forge pr     <owner>/<repo> <n> [--gh | --url BASE]           # merge state + body
+//   tt forge pr-files <owner>/<repo> <n> [--gh | --url BASE]         # changed files: status, +/-, path
+//   tt forge pr-diff  <owner>/<repo> <n> [--gh | --url BASE]         # raw unified diff
 //   tt forge protection <owner>/<repo> <branch> [--gh | --url BASE]  # protection rule (needs a token)
 //   BASE defaults to https://codeberg.org
 import scala.util.Try
@@ -55,6 +57,8 @@ object Forge {
       "  forge contributors <owner>/<repo> [--gh | --gl | --url BASE] [--limit N]   (--gh/--gl only)\n" +
       "  forge issue  <owner>/<repo> <n> [--gh | --url BASE]             (body + comments)\n" +
       "  forge pr     <owner>/<repo> <n> [--gh | --url BASE]             (merge state + body)\n" +
+      "  forge pr-files <owner>/<repo> <n> [--gh | --url BASE]           (changed files: status, +/-, path)\n" +
+      "  forge pr-diff  <owner>/<repo> <n> [--gh | --url BASE]           (raw unified diff)\n" +
       "  forge protection <owner>/<repo> <branch> [--gh | --url BASE]    (needs a token)\n" +
       "  forge release-create <owner>/<repo> <tag> [--gh | --gl | --url BASE] [--name S] [--body S | --body-file F] [--prerelease] [--draft] [--target C]\n" +
       "  forge release-edit   <owner>/<repo> <tag> [--name S] [--body S | --body-file F] [--prerelease] [--draft] [--gh | --url BASE]\n" +
@@ -88,6 +92,10 @@ object Forge {
       |                                                          Gitea has no such endpoint)
       |  forge issue  <owner>/<repo> <n> [--gh | --url BASE]     show an issue + comments (READ)
       |  forge pr     <owner>/<repo> <n> [--gh | --url BASE]     show a PR: merge state + body (READ)
+      |  forge pr-files <owner>/<repo> <n> [--gh | --url BASE]   list a PR's changed files:
+      |                                                          status, +adds/-dels, path (READ)
+      |  forge pr-diff  <owner>/<repo> <n> [--gh | --url BASE]   print a PR's raw unified diff (READ;
+      |                                                          can be large — capture and Read)
       |  forge protection <owner>/<repo> <branch> [--gh | --url BASE]
       |                                                          show the protection rule (token)
       |  forge release-create <owner>/<repo> <tag> [--gh | --gl | --url BASE]
@@ -214,6 +222,8 @@ object Forge {
       case "contributors" :: rest   => listContributors(rest)
       case "issue" :: rest          => showIssue(rest)
       case "pr" :: rest             => showPr(rest)
+      case "pr-files" :: rest       => prFiles(rest)
+      case "pr-diff" :: rest        => prDiff(rest)
       case "protection" :: rest     => showProtection(rest)
       case "release-create" :: rest => releaseCreate(rest)
       case "release-edit" :: rest   => releaseEdit(rest)
@@ -460,6 +470,52 @@ object Forge {
     println(s"state: $state  merged=$merged  mergeable=$mergeable$mergeState  $headRef -> $baseRef")
     println("")
     println(strOrEmpty(pr.obj.get("body")))
+
+  /** PURE URL builders for the PR read verbs, public for unit tests (SM207's testable-request rule).
+    * GitHub serves a PR's diff by CONTENT NEGOTIATION on the pull itself (Accept:
+    * application/vnd.github.diff), so prDiffUrl --gh is the pulls endpoint with no suffix;
+    * Gitea/Forgejo serves it at the .diff suffix. Both follow the fixed-GitHubApi-root rule. */
+  def prFilesUrl(isGh: Boolean, apiRoot: String, owner: String, repo: String, n: Int): String =
+    if isGh then s"$GitHubApi/repos/$owner/$repo/pulls/$n/files?per_page=100"
+    else s"$apiRoot/repos/$owner/$repo/pulls/$n/files?limit=100"
+
+  def prDiffUrl(isGh: Boolean, apiRoot: String, owner: String, repo: String, n: Int): String =
+    if isGh then s"$GitHubApi/repos/$owner/$repo/pulls/$n"
+    else s"$apiRoot/repos/$owner/$repo/pulls/$n.diff"
+
+  // pr-files / pr-diff — READ a PR's changed-file list and raw unified diff. Born 2026-08-07:
+  // reviewing the first external alpha PR needed its content, and the only shapes were a raw
+  // `gh pr diff` or the web UI — the raw reach was denied and the typed verbs ordered instead.
+  private def prFiles(args: List[String]): Unit =
+    val o             = parseItem(args)
+    val (owner, repo) = splitRepo(o.repo.getOrElse(forgeUsage()))
+    val n   = o.item.flatMap(_.toIntOption).getOrElse(die("expected a PR number after <owner>/<repo>"))
+    val gh  = isGitHub(o.base)
+    val arr = Try(getJson(prFilesUrl(gh, apiBase(o.base), owner, repo, n), if gh then ghHeaders else Map.empty).arr)
+      .getOrElse(die("expected a JSON array of changed files"))
+    val rows = arr.toList.map { f =>
+      (strOr(f.obj.get("status"), "?"),
+        Try(f.obj("additions").num.toLong).getOrElse(0L),
+        Try(f.obj("deletions").num.toLong).getOrElse(0L),
+        strOr(f.obj.get("filename"), "?"))
+    }
+    rows.foreach((st, a, d, name) => println(s"$st\t+$a/-$d\t$name"))
+    println(s"=== ${rows.size} files changed  +${rows.map(_._2).sum}/-${rows.map(_._3).sum}")
+    if rows.size >= 100 then println("(100-file page cap reached — more files may exist; pagination not implemented)")
+
+  private def prDiff(args: List[String]): Unit =
+    val o             = parseItem(args)
+    val (owner, repo) = splitRepo(o.repo.getOrElse(forgeUsage()))
+    val n    = o.item.flatMap(_.toIntOption).getOrElse(die("expected a PR number after <owner>/<repo>"))
+    val gh   = isGitHub(o.base)
+    val url  = prDiffUrl(gh, apiBase(o.base), owner, repo, n)
+    val hdrs = if gh then ghHeaders + ("Accept" -> "application/vnd.github.diff") else Map.empty[String, String]
+    val r = Try(requests.get(url, headers = hdrs, check = false, readTimeout = 60000, connectTimeout = 10000))
+      .getOrElse(die(s"request failed: $url"))
+    r.statusCode match
+      case 200 => print(r.text())
+      case 404 => die(s"PR #$n not found (404)")
+      case c   => die(s"GET $url -> $c ${r.statusMessage}")
 
   private def showProtection(args: List[String]): Unit =
     val o             = parseItem(args)

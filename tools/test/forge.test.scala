@@ -47,3 +47,24 @@ class ForgeRequestSuite extends munit.FunSuite:
     assert(p.obj("prerelease").bool && p.obj("draft").bool)
     assertEquals(p.obj("tag_name").str, "v1.0.0")
   }
+
+  // ---- pr-files / pr-diff URL builders: the typed shapes that replace a raw `gh pr diff` ----
+  test("prFilesUrl --gh targets the fixed api.github.com root, never the api root argument") {
+    val u = Forge.prFilesUrl(true, "https://evil.example/api/v1", "o", "r", 2)
+    assertEquals(u, "https://api.github.com/repos/o/r/pulls/2/files?per_page=100")
+  }
+
+  test("prFilesUrl Gitea uses the given api root with the limit param") {
+    val u = Forge.prFilesUrl(false, "https://codeberg.org/api/v1", "o", "r", 7)
+    assertEquals(u, "https://codeberg.org/api/v1/repos/o/r/pulls/7/files?limit=100")
+  }
+
+  test("prDiffUrl --gh is the pulls endpoint itself (the diff comes from the Accept header)") {
+    assertEquals(Forge.prDiffUrl(true, "ignored", "o", "r", 2),
+      "https://api.github.com/repos/o/r/pulls/2")
+  }
+
+  test("prDiffUrl Gitea appends the .diff suffix") {
+    assertEquals(Forge.prDiffUrl(false, "https://codeberg.org/api/v1", "o", "r", 2),
+      "https://codeberg.org/api/v1/repos/o/r/pulls/2.diff")
+  }
