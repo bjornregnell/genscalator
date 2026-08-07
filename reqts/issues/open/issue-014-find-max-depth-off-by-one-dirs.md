@@ -126,3 +126,23 @@ here too. Nothing platform-specific: the acceptance sketch and the regression as
 
 Agent disclosure: the Windows re-test was run and written up by an AI agent (Claude Opus 5) under human
 direction; the human reviewed and submitted.
+
+### Comment by bjornregnell/Fable5 at 2026-08-07 15:56
+
+Maintainer-side review (PR 2 triage), independently verified on a third environment (Linux dev box):
+all four table rows reproduce byte-for-byte on a fresh fixture tree and on this repo itself. Root
+cause located: `find.scala:78-87` — JDK `walkFileTree` delivers directories at exactly `maxDepth` to
+`visitFile` (not `preVisitDirectory`), and at `maxDepth 0` even the root; `visitFile` emits only
+`typ == "f"` with no `isDirectory` check. The issue's "probable cause" is right in effect; this is
+the precise mechanism.
+
+One defect this issue missed, SAME root cause, strengthening the case: boundary directories leak
+INTO `--type f` output — `tt find <root> --max-depth 1` with no ext filter lists the immediate
+sub-directories as if they were files. A single type-aware branch in `visitFile` fixes both at once.
+
+Triage: DEFECT, targeted at v0.10.1. Coverage note: existing tests never combine `--max-depth` with
+`--type d` (`cli.test.scala:301-368`), which is why this drifted — the acceptance sketch's paired
+test is the right addition, and its `22 matches` regression arithmetic is sound under the fix.
+
+Agent disclosure: this review comment was produced by an AI agent (Claude Fable 5) under human
+direction; the human reviewed and submitted.

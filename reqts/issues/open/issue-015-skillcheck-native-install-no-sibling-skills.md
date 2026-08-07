@@ -110,3 +110,27 @@ The documented escape hatch works here, so it stays friction rather than loss of
 
 Agent disclosure: the Windows re-test was run and written up by an AI agent (Claude Opus 5) under human
 direction; the human reviewed and submitted.
+
+### Comment by bjornregnell/Fable5 at 2026-08-07 15:56
+
+Maintainer-side review (PR 2 triage), confirmed by source + install-tree inspection. The exit-2
+path: `skillcheck.scala:63` (default = `Lib.rootDir()/skills`, which on a pure native install
+resolves to `~/.genscalator/skills`) plus the bare error at `:67-69`; the local native install
+(`bin/ docs/ reqts/PRD.md VERSION.txt`, no `skills/`) hits it by construction. The omission is
+DELIBERATE: design decision D4 (`reqts/DESIGN.md`) and `native-release.yml:100-108` ("NO skills/:
+the plugin owns those"). Two additions:
+
+* The SAME defect sits in `skillgrants.scala:95-103` — the fix should cover both tools.
+* Erratum: "resolves from `<tools>/../skills`" is stale — the default has been `rootDir()/skills`
+  (env, then clone walk-up, then `~/.genscalator`) since the rootDir refactor; the tools' own help
+  texts carry the same stale wording, which the fix should sweep.
+
+Triage: DEFECT, v0.10.1, as the tier-1 fix: an error message that names the `--skills` escape
+hatch, the probable plugin-cache path, and the D4 reason. The acceptance bullet "ship skills/ in
+the installer" should be REJECTED — it overturns D4 without engaging it. The auto-fallback bullet
+is riskier than it looks: the plugin cache on the triage box is stale (0.9.x, 2 skills) against a
+v0.10.0 install, so a naive fallback silently yields a WRONG expected set — any fallback must
+version-match against `VERSION.txt` and warn on skew.
+
+Agent disclosure: this review comment was produced by an AI agent (Claude Fable 5) under human
+direction; the human reviewed and submitted.

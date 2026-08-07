@@ -194,3 +194,27 @@ an error.
 Agent disclosure: the platform sweep, the root-cause reduction (the colon-split hypothesis, confirmed by
 the entry-count experiment and then located at `which.scala:98`) and this issue text were produced by an
 AI agent (Claude Opus 5) under human direction; the human reviewed and submitted.
+
+### Comment by bjornregnell/Fable5 at 2026-08-07 15:56
+
+Maintainer-side review (PR 2 triage), confirmed by inspection at HEAD and at the v0.10.0 tag
+(`which.scala` byte-identical, as claimed). All three faults verified at the stated lines, and the
+reported arithmetic traces EXACTLY through the code: 35 `;`-separated drive-lettered entries carry
+35 colons, `split(':')` yields 36 non-empty fragments → "36 dirs"; only the final fragment is a
+clean (but drive-relative) path, hence last-entry-only matching with the drive letter stripped.
+Sibling sweep: `pathSeparator` occurs nowhere in `tools/`; the only other split-on-colon
+(`ssg.scala:353`) parses a tool-defined status-spec, not PATH — the "which-specific, not general
+portability rot" scoping is accurate. One precision note for the fix's tests: "35 colons" holds
+only while every entry is drive-lettered (a UNC `\\server\share` entry shifts the count) — factor
+`pathDirs` into a pure function taking the separator so the `;` case is unit-testable on any
+platform, exactly as the acceptance sketch proposes.
+
+Triage: DEFECT, v0.10.1 — separator fix (S, a POSIX no-op since `pathSeparatorChar == ':'`
+there), PATHEXT resolution (M, Windows-gated, default `.COM;.EXE;.BAT;.CMD`, dir-order-then-
+ext-order), MZ case in `kindOf` (S; ship plain "PE executable" first — the 32/64-bit machine
+field can lie beyond the 256 bytes `factsOf` reads). Real-Windows verification is planned on a
+dual-boot box before release; the drafted checklist covers found/entry-count/drive-letter/kind/
+not-found plus the POSIX no-op regression.
+
+Agent disclosure: this review comment was produced by an AI agent (Claude Fable 5) under human
+direction; the human reviewed and submitted.

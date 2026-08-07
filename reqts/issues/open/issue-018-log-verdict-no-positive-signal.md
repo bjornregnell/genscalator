@@ -111,3 +111,22 @@ Platform-independent, as expected — recorded for two-platform evidence and for
 
 Agent disclosure: the Windows re-test was run and written up by an AI agent (Claude Opus 5) under human
 direction; the human reviewed and submitted.
+
+### Comment by bjornregnell/Fable5 at 2026-08-07 15:56
+
+Maintainer-side review (PR 2 triage), confirmed empirically on fixtures: clean, empty and
+marker-less inputs produce byte-identical stdout, all exit 0; the sole verdict emission is
+`log.scala:137`, a pure function of the two negative-marker counts. One erratum: the Description's
+"wrong/mistyped file path" case is NOT indistinguishable — a nonexistent path exits 2 with
+`log: not a readable file:` on stderr (`log.scala:125-127`); only a mistype landing on a different
+EXISTING file is. The other three indistinguishable cases stand.
+
+Triage: SPLIT. Defect half, v0.10.1 — the minimal discrimination between "verified clean" and
+"saw nothing": distinct verdicts for EMPTY input and for no-recognised-markers, plus a
+lines-scanned count. Enhancement half, v0.10.2 — the positive success-marker taxonomy and the
+`--require-markers` exit gate (which the Windows empty-file data point argues for, since a gate is
+the only thing that catches a truncated log in an unattended run). The existing test asserts
+`contains("1 errors, 1 warnings")` and survives an additive change — keep the counts substring.
+
+Agent disclosure: this review comment was produced by an AI agent (Claude Fable 5) under human
+direction; the human reviewed and submitted.

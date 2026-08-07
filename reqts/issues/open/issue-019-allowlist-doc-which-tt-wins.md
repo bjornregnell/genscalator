@@ -105,3 +105,24 @@ portability defect in one function, not a re-assessment of `tt which`.
 
 Agent disclosure: the Windows re-test, the root-cause reduction behind issue 022, and this comment were
 produced by an AI agent (Claude Opus 5) under human direction; the human reviewed and submitted.
+
+### Comment by bjornregnell/Fable5 at 2026-08-07 15:56
+
+Maintainer-side review (PR 2 triage), confirmed: `docs/allowlist.md`'s only multiple-installs
+content is the "Which `tt` does the rule match?" paragraph (lines 35-44) — no `tt which tt` ritual
+anywhere; and the ordering constraint is sound, verified in source (`which.scala:98` plus the
+missing PATHEXT resolution).
+
+Answer to the ordering question: 019 MAY ship in the SAME release as 022's fix — the doc travels
+with the fixed binary, so no false-negative window exists for readers of that release — but never
+BEFORE it. The new section should carry one line for repo-copy readers still on v0.10.0: "on
+Windows this check requires v0.10.1+ (issue 022)". The `gs warm`/`gs init` auto-check wiring stays
+a separate, later item regardless — a broken check baked into an unwatched cold-start reflex is
+the worst placement for it. One addition for exhaustiveness: the triage box exhibits a THIRD
+benign arrangement (a `~/.local/bin` symlink to the checkout launcher winning over the plugin
+cache) — worth a word in the final doc.
+
+Triage: DOCS — v0.10.2 by class, promotable into v0.10.1 only in the same cut as 022's verified fix.
+
+Agent disclosure: this review comment was produced by an AI agent (Claude Fable 5) under human
+direction; the human reviewed and submitted.

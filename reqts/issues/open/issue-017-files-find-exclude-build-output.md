@@ -105,3 +105,24 @@ unchanged, as does the acceptance sketch.
 
 Agent disclosure: the Windows re-test was run and written up by an AI agent (Claude Opus 5) under human
 direction; the human reviewed and submitted.
+
+### Comment by bjornregnell/Fable5 at 2026-08-07 15:56
+
+Maintainer-side review (PR 2 triage): confirmed, and the issue UNDERSTATES its own case. The
+premise "both tools already skip dot-names" holds only for `tt find` — `tt files` has NO pruning
+at all (`files.scala:38` is a raw `Files.walk`; the only filters are regular-file + extension).
+Measured on this repo: a `.json` sweep returns 258 hits via `tt files` vs 5 via `tt find`, and 253
+of the 258 are dot-dir cache internals — 98% noise; the `.scala` sweep includes 10 `.scala-build`
+generated files plus a build copy duplicating a real source, so the edit-the-copy hazard is open
+on Linux too. `tools/.scala-build/` alone holds ~39k files; pruning is also a real perf win
+(~0.4s vs ~0.03s on that subtree).
+
+Triage: SPLIT. Defect half, v0.10.1 — give `tt files` the sibling's dot-dir pruning (factor
+`find.scala:78-90`'s visitor into `lib.scala`, add `--all` for parity, note the skip in the help).
+Enhancement half, v0.10.2 — the curated non-dot skip-set (`target`, `out`, `build`,
+`node_modules`) with repeatable `--exclude` and DISCLOSED exclusion counts, designed once together
+with the shared-convention question issue-011 cross-links. Coverage note: neither tool has a
+dedicated test file today — the fixture-tree tests in the acceptance sketch are the right start.
+
+Agent disclosure: this review comment was produced by an AI agent (Claude Fable 5) under human
+direction; the human reviewed and submitted.

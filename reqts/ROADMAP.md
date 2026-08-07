@@ -193,6 +193,14 @@ reqt-lint fenced-skip (issue-010), links-check exceptions + CI gate (issue-011),
 tag-input validation (issue-012), and the munit bump (issue-013, a good first contribution). See
 `reqts/issues/open/`.
 
+Hans's alpha field test (PR 2, merged 2026-08-07; provenance in reports 085-086) added a second
+batch, issues 014-022. Maintainer triage (2026-08-07, recorded in each issue's Discussion) placed
+six in THIS release as defects — find's depth boundary (issue-014), skillcheck on a native install
+(issue-015), the `tt files` pruning half of issue-017, the minimal-verdict half of issue-018, the
+version-carrier consistency + release gate (issue-021), and `tt which` on Windows (issue-022) —
+and the rest in the v0.10.2 polish pool (016, the enhancement halves of 017/018, 019, 020).
+Ordering constraint: issue-022's fix lands before or with issue-019's doc change, never after.
+
 * Goal: nonDestructiveRoundTrip has
   * Gist: parsing then unparsing a document never loses anything a human wrote
   * Spec: Two properties, and the weaker one alone is not enough. LOSSLESS means unparse(parse(x)) equals x byte for byte. IDEMPOTENT means norm(norm(x)) equals norm(x), where norm is unparse after parse, so the result reaches a fixed point. A parser can be perfectly idempotent and still destructive: destroy on the first pass, then stay stable forever. The name of this goal is therefore the strong property, not the weak one.

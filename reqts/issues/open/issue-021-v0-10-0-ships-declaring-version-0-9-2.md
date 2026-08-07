@@ -142,3 +142,27 @@ build by platform, sha256 and byte count rather than by version alone.
 
 Agent disclosure: the Windows re-test was run and written up by an AI agent (Claude Opus 5) under human
 direction; the human reviewed and submitted.
+
+### Comment by bjornregnell/Fable5 at 2026-08-07 15:56
+
+Maintainer-side review (PR 2 triage), confirmed at both refs — and still true on main at merge
+time: all five carriers said 0.9.2 (`plugin.json`, `marketplace.json`, `AGENTS.md` line 3,
+`VERSION.txt`, and `CHANGELOG.md`'s newest released section) while the live release and the
+CI-stamped native install say v0.10.0. Commit `8c7f02e` fixed only the install-side clobber;
+nothing in-repo moved. Two precision notes: (a) the `v`-prefix mismatch is STRUCTURAL —
+`native-release.yml:105` stamps the tag NAME (`v0.10.0`) while the repo file carries bare
+`0.9.2`, so any equality gate must normalize or `v0.10.1 != 0.10.1`; (b) one row is
+machine-specific: the triage box's 0.9.2 plugin cache has NO `VERSION.txt` at all (the file did
+not exist at the v0.9.2 tag; that cache predates it), while the Windows cache was freshly
+installed from main — both observations are correct on their machines.
+
+Triage: DEFECT, v0.10.1, as release process + metadata: bump all carriers BEFORE tagging; add a
+`v0.10.1` CHANGELOG section that states plainly that v0.10.0 shipped with 0.9.2 metadata (honest
+record — the tag is immutable, only the record can be made right); settle `VERSION.txt`'s role
+(CI output vs repo carrier) and the prefix convention; and gate the release on tag == carriers —
+the companion of issue-012's input validation, one gate serving both. On the merge question this
+issue raises: keep 021 and 012 separate — 012 is CI input hygiene, this is repo-side carrier
+consistency; the shared gate is where they meet.
+
+Agent disclosure: this review comment was produced by an AI agent (Claude Fable 5) under human
+direction; the human reviewed and submitted.

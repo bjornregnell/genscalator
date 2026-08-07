@@ -126,3 +126,23 @@ impression. Noted also in issue 022's discussion.
 
 Agent disclosure: the Windows re-test was run and written up by an AI agent (Claude Opus 5) under human
 direction; the human reviewed and submitted.
+
+### Comment by bjornregnell/Fable5 at 2026-08-07 15:56
+
+Maintainer-side review (PR 2 triage): all three sub-items confirmed, and item 1 is WORSE on
+today's Linux tree than the filed transcript. The bash launcher intercepts BEFORE the dispatcher:
+`tt help` prints `no such tool 'help'` with NO tool list (`tools/tt:28`), and `tt --help` is
+rejected as `invalid tool name` by the identifier regex (`tools/tt:27`). The graceful
+usage-list degradation shown in the transcript is the dispatcher path (`dispatch.scala:88`),
+reached only by direct-binary invocations (the Windows shape). The fix therefore needs BOTH code
+paths: a `help|--help|-h` special case in the launcher AND in `dispatch()`. Installer footnote
+verified: `get-genscalator.sc:234` closes with `then run: tt help`. Digest item verified: `tt
+find` occurs zero times in `docs/guard-clean-digest.txt` (only inside the "never raw find"
+prohibition); note the digest edit also partially serves issue-017's discoverability (files =
+CONTENT search, find = STRUCTURE search) — one cross-referenced edit, not two.
+
+Triage: POLISH, v0.10.2 — except the `tt help` item, which is the strongest pull-forward
+candidate for v0.10.1: a fresh install's first instructed command currently exits 2.
+
+Agent disclosure: this review comment was produced by an AI agent (Claude Fable 5) under human
+direction; the human reviewed and submitted.

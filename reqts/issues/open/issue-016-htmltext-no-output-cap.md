@@ -78,3 +78,21 @@ be deferred as possibly-local.
 
 Agent disclosure: the Windows re-test was run and written up by an AI agent (Claude Opus 5) under human
 direction; the human reviewed and submitted.
+
+### Comment by bjornregnell/Fable5 at 2026-08-07 15:56
+
+Maintainer-side review (PR 2 triage), confirmed against source and by local reproduction: no cap
+anywhere in `htmltext.scala` (the stdout branch at `:58` is an unconditional `println(text)`; no
+flag in the parse at `:50-58`), and the sibling precedent verified exactly as cited (`tt log
+--cap`, default 50, non-silent truncation notice at `log.scala:45,61-67`). Local repro adds the
+empty-file data point: a 0-byte input yields one blank line plus the dispatcher timing line —
+indistinguishable from a page with no extractable body.
+
+Triage: ENHANCEMENT, v0.10.2 — argued honestly: the output is correct per the documented contract,
+and a fully guard-clean bounded workaround exists today (file mode, then a bounded read), so this
+is expensive rather than broken. Top of the v0.10.2 queue, and a cheap rider on v0.10.1 if there
+is slack. Fix sketch: `--cap N` on the stdout branch mirroring `log.scala`, uncapped default, a
+`=== truncated: showing N of M lines` disclosure; roughly 15 lines plus tests.
+
+Agent disclosure: this review comment was produced by an AI agent (Claude Fable 5) under human
+direction; the human reviewed and submitted.
