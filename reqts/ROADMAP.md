@@ -200,6 +200,8 @@ six in THIS release as defects — find's depth boundary (issue-014), skillcheck
 version-carrier consistency + release gate (issue-021), and `tt which` on Windows (issue-022) —
 and the rest in the v0.10.2 polish pool (016, the enhancement halves of 017/018, 019, 020).
 Ordering constraint: issue-022's fix lands before or with issue-019's doc change, never after.
+Same-day field find against the new per-session state feature: harness bg/fg orphans mode chips
+and session name (issue-023, 2026-08-07) — a defect-pool candidate for this release.
 
 * Goal: nonDestructiveRoundTrip has
   * Gist: parsing then unparsing a document never loses anything a human wrote
