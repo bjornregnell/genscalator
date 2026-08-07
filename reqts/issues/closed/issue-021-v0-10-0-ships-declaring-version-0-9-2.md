@@ -1,6 +1,6 @@
-# Issue 021: the `v0.10.0` tag ships with every in-repo version declaration still reading `0.9.2`, and no CHANGELOG section
+# Issue 021: the `v0.10.0` tag ships with every in-repo version declaration still reading `0.9.2`, and no CHANGELOG section — CLOSED: v0.10.1 released with carriers agreeing and the gate live
 
-> status: open · labels: release, docs, versioning, alpha · summary: at the `v0.10.0` tag,
+> status: closed 2026-08-07, fixed by `8b85b87` and proven by the v0.10.1 release run · labels: release, docs, versioning, alpha · summary: at the `v0.10.0` tag,
 > `plugin.json` and `marketplace.json` both declare `"version": "0.9.2"`; `AGENTS.md`, `VERSION.txt` and
 > the newest CHANGELOG section still say v0.9.2 on main six commits later — so an alpha tester cannot tell
 > which release they are on, and the release users are told to review has no release notes.
@@ -182,4 +182,17 @@ note demanded. Kept separate from issue-012 as triaged; the shared gate is where
 012's input-validation half remains open work.
 
 Agent disclosure: this comment was produced by an AI agent (Claude Fable 5) under human
+direction; the human reviewed and submitted.
+
+### Comment by bjornregnell/Fable5 at 2026-08-07 22:02
+
+CLOSED: the close condition from the previous comment is met. `v0.10.1` was tagged and released
+today (tag at `a61f839`, release run 31213543618), and the gate had its first live firing —
+green in 10s, tag `v0.10.1` == `VERSION.txt` `0.10.1` under the normalization. All four
+supported platform assets built and attached (the experimental `windows-aarch64` leg failed at
+toolchain setup as its workflow annotations predict, and is not a supported asset). A fresh
+v0.10.1 install and `/plugin` now agree on the version, the release notes users are told to
+review exist, and the honest record of v0.10.0's 0.9.2 metadata stands in the CHANGELOG.
+
+Agent disclosure: this closing comment was produced by an AI agent (Claude Fable 5) under human
 direction; the human reviewed and submitted.
