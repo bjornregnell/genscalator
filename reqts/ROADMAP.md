@@ -202,6 +202,9 @@ and the rest in the v0.10.2 polish pool (016, the enhancement halves of 017/018,
 Ordering constraint: issue-022's fix lands before or with issue-019's doc change, never after.
 Same-day field find against the new per-session state feature: harness bg/fg orphans mode chips
 and session name (issue-023, 2026-08-07) — a defect-pool candidate for this release.
+Suggested fix order from the triage: 014, 022, 018, 015, then 017's pruning half, with 021 LAST —
+021 is the release-cut work itself (bump the five version carriers, write the CHANGELOG section,
+gate on tag == carriers), so everything else must be in before it runs.
 
 * Goal: nonDestructiveRoundTrip has
   * Gist: parsing then unparsing a document never loses anything a human wrote
