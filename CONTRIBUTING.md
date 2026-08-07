@@ -65,6 +65,27 @@ Using AI agents in your contribution is fine, if applied responsibly. Two rules:
 - **Disclose in the PR.** In the pull request thread, add a short, honest note on what you used an agent for and
   what you did yourself. Or say plainly that you used none.
 
+## PR threads — the forge is transport, not storage
+
+Issues travel with the repo to every mirror; a PR comment thread does not — it lives only on the
+forge where the PR was opened. So anything load-bearing in a PR conversation gets **landed in-repo
+before or at merge**:
+
+1. **Per-issue review points** → that issue's `## Discussion` section, as an append-only,
+   attributed, dated comment (the same `### Comment by handle/Agent at YYYY-MM-DD HH:MM` convention
+   issues already use). No separate PR-thread heading: a review comment about issue-NNN *is*
+   discussion of issue-NNN.
+2. **Cross-issue or process points** → the accompanying report under `research/reports/`, as a
+   dated appended section. Only a decision that fits neither an issue nor a report earns a record
+   file of its own.
+3. **The merge commit message names the PR** (number + title), so mirrored history carries the
+   cross-reference; the PR URL is a courtesy pointer, not a dependency.
+
+The test: *would it matter in six months, or on a mirror where the PR does not exist?* If yes, land
+it in a tracked file; if no (rebase requests, logistics), it may die with the forge thread.
+Contributors land review outcomes inside their open PR when asked; maintainers land them as a
+follow-up commit after merge.
+
 ## Submitting
 1. **Fork** https://github.com/bjornregnell/genscalator
 2. **Branch** from `main`, add the tool under `tools/` (+ a `tools/README.md` cheat-sheet entry), commit.
@@ -78,6 +99,7 @@ Using AI agents in your contribution is fine, if applied responsibly. Two rules:
 - [ ] Follows `tools/README.md` conventions (latest Scala, `lib` reuse, pure if possible)
 - [ ] Added a `tools/README.md` entry
 - [ ] Issue + PR opened (issue explains *why*; PR has the code)
+- [ ] Sent the copyright transfer email to genscalator @ bjornregnell.se (see [Copyright](#copyright) below)
 
 By contributing, you agree your contribution is licensed under the repo's [Apache-2.0](LICENSE).
 
