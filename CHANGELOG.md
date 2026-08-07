@@ -6,14 +6,59 @@ All notable changes to genscalator. Versions follow the git tags (`vX.Y.Z`); the
 Updating genscalator is a **human-reviewed** step — see [`docs/updating.md`](docs/updating.md). Skim this
 file before adopting a new version: it changes the agent's operating rules, so review beats blind pull.
 
-## Unreleased
-- **`research/RAW-DATA.md` and `research/RawData.scala` moved to the closed work repo.** The raw ledger is
-  verbatim excerpts from live sessions, so the raw corpus is now kept private, and its miner goes with it.
-  What stays public is the layer that is readable without the transcripts: `research/METHODOLOGY.md`, the
-  coded `research/wr-data/` notes, and the research topics. Pointers in `research/README.md`,
-  `docs/foundations.md` and `skills/research-methods/SKILL.md` now say where the ledger lives. Dated
-  accounts of the earlier `L → Z` sweep (the v0.8.0 entry below, and `research/topics/RT022-…`) keep their
-  old paths on purpose: they record what was true then, and are not living pointers.
+## v0.10.1 — 2026-08-07 — the alpha's bug harvest, fixed
+
+**The honest note first**: v0.10.0 shipped with every in-repo version declaration still reading 0.9.2
+and no CHANGELOG section (issue-021) — `/plugin` reported 0.9.2 for a v0.10.0 install, and there were
+no release notes to skim. The tag is immutable, so the record is repaired rather than the tag: the
+backfilled v0.10.0 section below is that repair, and this release adds the gate that stops a recurrence
+(the `VersionSuite` carrier tests plus a release-workflow step refusing to build for a tag that does not
+match `VERSION.txt`; the `v` prefix belongs to the tag alone, carriers stay bare).
+
+**Fixes, from the alpha field tests** (Hans's Linux + Windows 10 reports, PR #2 — issues 014–022 filed
+with two-platform evidence; six triaged as defects for this release):
+- **`tt find` depth accounting matches GNU find** (issue-014): boundary-depth directories were delivered
+  as if files — leaking into `--type f` output and missing from `--type d`, so the tool's own `--help`
+  example returned only the root. A type-aware visitor branch fixes both; a contract test pins the
+  semantics for both types on one fixture.
+- **`tt which` works on Windows** (issue-022): PATH was split on a hard-coded `':'`, shredding
+  drive-lettered entries — dir counts doubled and a bare `tt which tt` said "not found" while `tt` was
+  running. Now splits on the platform separator, resolves bare words through PATHEXT, recognises the
+  `MZ` magic as a PE executable, and prints `n/a` for mode bits that do not exist on NTFS. All POSIX
+  no-ops, unit-tested with `';'` on every platform.
+- **`tt log` cannot pass off silence as success** (issue-018, defect half): a clean build, an empty file
+  and a JSON settings file used to produce byte-identical verdicts. Empty and marker-less input now get
+  distinct verdicts, and every verdict carries a lines-scanned count.
+- **`tt skillcheck`/`tt skillgrants` explain the native-install failure** (issue-015): a native install
+  ships no `skills/` by design (D4 — the plugin owns those), so the bare session-start reflex died at
+  step 1 with an unexplained exit 2. Both tools now name the `--skills` escape hatch, the D4 reason, and
+  the plugin-cache candidates found on the machine (a hint, never a silent fallback — a stale cache
+  would yield a wrong expected set).
+- **`tt files` prunes like its sibling** (issue-017, defect half): it walked raw, so dot-dir build
+  caches dominated every scan (253 of 258 `.json` hits on this repo were cache internals). The pruning
+  visitor is shared (`Lib.walkPruned`) with `--all` for parity; the curated non-dot skip-set and
+  `--exclude` stay in the next release.
+- **munit 1.3.3 → 1.3.4** across the test suites (issue-013).
+
+**Also in this release:** `tt forge pr-files` + `pr-diff` typed PR content reads; guardcheck NOTEs
+unquoted regex metachars in `tt` pattern args (the quoting rule joins the guard-clean digest);
+contribution conventions forced into words by the first external PR — PR review threads land in-repo
+(the forge is transport, not storage), field reports live in `research/reports/` with issues standing
+alone, and the copyright email joins the PR checklist; issue-023 filed (per-session state orphaned on
+a harness bg/fg round trip).
+
+## v0.10.0 — 2026-07-29 — the alpha release *(entry backfilled 2026-08-07; see v0.10.1's honest note)*
+Cut for the alpha field testers; ground truth is the git range `v0.9.2..v0.10.0`. Headlines: the
+zero-dependency bootstrap installer (`get-genscalator.sc`) and `tt update --native` (self-replacing,
+refuses rather than guesses); `tt zip` + release-asset verbs with a shared containment guard;
+per-session mode scoping + `tt session`; the installer-first README restructure; the SECURITY-MODEL
+credentials policy; `out/` as a mirror of the deployed site with the api wired in. Also in this span:
+`research/RAW-DATA.md` and its miner moved to the closed work repo — the raw ledger is verbatim session
+excerpts, so the raw corpus is private; what stays public is the layer readable without transcripts
+(`research/METHODOLOGY.md`, the coded `research/wr-data/` notes, the topics), with pointers updated in
+`research/README.md`, `docs/foundations.md` and `skills/research-methods/SKILL.md`. Dated accounts of
+the earlier `L → Z` sweep (the v0.8.0 entry below, `research/topics/RT022-…`) keep their old paths on
+purpose: they record what was true then.
 
 ## v0.9.2 — 2026-07-24 — native fast path, typed scala/which, statusline diet
 Speced in reqT-lang BEFORE the cut for once (see `reqts/PRD.md`, re-engineered from the real

@@ -21,7 +21,31 @@ permissions:
   contents: read                # the publish job re-declares write; build jobs never need it
 
 jobs:
+  gate:
+    # Release gate (issue-021): refuse to build for a tag that disagrees with the in-repo version
+    # carriers. VERSION.txt is the single in-repo source and VersionSuite (run per-leg through the
+    # build-and-prove step) pins plugin.json/marketplace.json/AGENTS.md to it — so this one
+    # comparison transitively gates every carrier. The `v` prefix belongs to the tag alone,
+    # carriers stay bare; hence the normalization. A blank tag = build-only run, nothing to gate.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tag matches the in-repo version carriers
+        shell: bash
+        run: |
+          tag="${{ github.event.release.tag_name || inputs.tag }}"
+          if [ -z "$tag" ]; then echo "no tag in play - build-only run, gate passes"; exit 0; fi
+          want="${tag#v}"
+          have="$(tr -d '[:space:]' < VERSION.txt)"
+          if [ "$want" != "$have" ]; then
+            echo "RELEASE GATE (issue-021): tag $tag declares $want but VERSION.txt says $have."
+            echo "Bump the carriers (VERSION.txt, plugin.json, marketplace.json, AGENTS.md, CHANGELOG) BEFORE tagging."
+            exit 1
+          fi
+          echo "gate passes: tag $tag == VERSION.txt $have"
+
   build:
+    needs: gate
     strategy:
       fail-fast: false          # one platform failing must never mask the others' results
       matrix:
