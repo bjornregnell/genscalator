@@ -4,14 +4,18 @@ fires, so at turn zero these reflexes are NOT salient unless you load them. Load
 
 SEARCH / FILES   (never raw find / grep / ls | head / 2>/dev/null / command -v / which / type)
   tt files <DIR> <ext> [regex]              find files (dir first)
-  tt text grepr <ABS-DIR> <ext> <regex>     recursive grep (dir first, metachar-free pattern)
+  tt text grepr <ABS-DIR> <ext> <regex>     recursive grep (dir first, SINGLE-QUOTE the pattern)
   tt text match <file> <regex>              grep a single file
   tt which <name> [<name>...]               what IS a command: PATH hits, symlink chain, script-or-binary
 
 SHELL HYGIENE
   ONE bare allowlist-matchable command per call  — no  cd && … , no  ;-chains , no compounds
   run_in_background                              — never  | head / | tail / | wc , never  > file
-  keep shell metachars  ( | > < ` && ; )  OUT of quoted search patterns
+  regex metachars in patterns: SINGLE-QUOTE the pattern, ALWAYS — an unquoted | or [ ] ( )
+    changes the COMMAND, not the pattern (a naked | = guard stall + exit 127; WR223 2026-08-07).
+    Quoted | [ ] ( ) are SAFE: bash-inert, and guard + allowlist are quote-aware (probed live).
+    For > < & ; ` inside a pattern prefer hex escapes ( \x3E \x3C \x26 \x3B \x60 ) — same match,
+    no such byte in the command.
   Write tool for files                           — never a  > redirect
 
 GIT

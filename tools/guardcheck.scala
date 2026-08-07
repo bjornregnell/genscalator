@@ -167,6 +167,20 @@ object Guardcheck {
         "is NOT a broken toolbox — it only means tt falls back to scala-cli and runs slower, so one failed " +
         "tt call licenses retrying THAT call, never abandoning the typed path",
       has(raw"^\s*(grep|egrep|fgrep|rg|find|curl|wget|which)\b|^\s*command\s+-v\b")),
+    // Added 2026-08-07 (WR223): a cold-start minion wrote tt-text patterns UNQUOTED, so BASH parsed
+    // the regex's own metachars — the naked | split the command (a harness ask-prompt on the
+    // right-hand fragment, then exit 127), naked brackets are glob roulette. Every guard layer is
+    // quote-aware, so the fix is QUOTING, not avoiding metachars: a single-quoted pattern is inert
+    // for bash, masked by maskQuoted here, and matches `Bash(tt *)` fine (probed live 2026-08-07).
+    // Like every NOTE check this scans the MASKED skeleton — a properly quoted pattern disappears
+    // before the check looks, so only the unquoted survivors can fire. That inversion is the point:
+    // maskQuoted makes the other checks IGNORE quoted metachars; it makes this one SEE unquoted ones.
+    Check("NOTE", "unquoted regex metachar in a tt pattern arg",
+      "a tt text/files/find argument carries a naked regex metachar — bash parses | [ ] ( ) BEFORE " +
+        "the tool sees them: a naked | splits the command (guard stall + exit 127), naked brackets glob",
+      "single-quote the pattern: tt text match <file> 'SM26[0-9]|foo' — quoted metachars are safe " +
+        "for bash, guardcheck and the allowlist alike; or run two single-pattern calls",
+      has(raw"^\s*tt\s+(text|files|find)\b.*[\[\]()|]")),
 
     Check("MED", "output redirect (>)",
       "a > redirect (esp. combined with cd) trips the path-resolution guard — and a > inside a QUOTED pattern/string arg fires this same check, since the guard scans raw bytes",

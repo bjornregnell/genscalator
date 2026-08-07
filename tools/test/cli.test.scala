@@ -1256,6 +1256,17 @@ class CliSuite extends munit.FunSuite:
     assert(Guardcheck.cmdFindings("tt json check /a/b.json").isEmpty)
     assert(Guardcheck.cmdFindings("tt files /a/node_modules js").isEmpty)
   }
+  // --- WR223: unquoted regex metachars in a tt pattern arg. The minion specimens: a naked | split
+  // the command (ask-prompt + exit 127), naked brackets globbed. Quoted patterns must stay silent —
+  // this check inverts maskQuoted's usual role: quoting HIDES metachars from it, which is correct.
+  test("NOTE: unquoted regex metachars in a tt pattern arg fire; quoted ones stay silent") {
+    assert(clue(Guardcheck.cmdFindings("tt text match /f.md SM26[0-9]")).exists(_.severity == "NOTE"))
+    assert(clue(Guardcheck.cmdFindings("tt text grepr /d md SM263|SM264")).exists(_.severity == "NOTE"))
+    assertEquals(clue(Guardcheck.cmdFindings("tt text match /f.md 'SM263|SM26[45]'")), Nil)
+    assertEquals(clue(Guardcheck.cmdFindings("""tt text grepr /d scala "split\(.:.\)"""")), Nil)
+    assert(Guardcheck.cmdFindings("tt files /a/dir scala").isEmpty)   // no pattern, no nag
+    assert(Guardcheck.cmdFindings("tt forge pr-files o/r 2 --gh").isEmpty) // other tt verbs exempt
+  }
   test("guardcheck hook: NOTE-only emits systemMessage and NO permissionDecision") {
     val json = """{"tool_name":"Bash","tool_input":{"command":"jq .a b.json"}}"""
     val (code, out, _) = runStdin("guardcheck", json, "hook")
