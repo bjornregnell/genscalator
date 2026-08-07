@@ -1,4 +1,4 @@
-//> using dep org.scalameta::munit::1.3.3
+//> using dep org.scalameta::munit::1.3.4
 
 // Unit tests for the hangover detector (SM121). Compiled together with tools/ by `scala-cli test tools`,
 // so `HangoverTool` is in scope without a `using file`. Timestamps are derived via parseInstantMs so no

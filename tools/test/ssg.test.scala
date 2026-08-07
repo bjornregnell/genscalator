@@ -1,5 +1,5 @@
 //> using file ../project.scala
-//> using dep org.scalameta::munit::1.3.3
+//> using dep org.scalameta::munit::1.3.4
 
 // Unit tests for the ssg HTML renderer (ssg.scala). The rendering (inline + blocks + renderPage) is PURE, so it
 // is tested in-process here; the @main file I/O is not. Covers the fiddly inline cases that blog 002 actually

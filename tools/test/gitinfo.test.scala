@@ -1,5 +1,5 @@
 //> using file ../project.scala
-//> using dep org.scalameta::munit::1.3.3
+//> using dep org.scalameta::munit::1.3.4
 
 // Unit tests for gitinfo.scala's PURE remote-sync classifier — the ancestry logic that replaced the
 // old hash-equality "IN SYNC or DIVERGED" verdict. No git process is touched here: classify takes the

@@ -1,4 +1,4 @@
-//> using dep org.scalameta::munit::1.3.3
+//> using dep org.scalameta::munit::1.3.4
 
 // Unit tests for the hand-rolled MiniJson reader (SM112). Compiled together with tools/ by `scala-cli test tools`,
 // so `Json` / `MiniJson` are in scope without a `using file`.

@@ -1,5 +1,5 @@
 //> using file ../project.scala
-//> using dep org.scalameta::munit::1.3.3
+//> using dep org.scalameta::munit::1.3.4
 //> using dep com.lihaoyi::os-lib:0.11.8
 
 // Unit tests for the serv static-file server (serv.scala). The server loop itself opens a socket and blocks,

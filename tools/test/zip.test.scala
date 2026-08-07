@@ -1,5 +1,5 @@
 //> using file ../project.scala
-//> using dep org.scalameta::munit::1.3.3
+//> using dep org.scalameta::munit::1.3.4
 
 // Unit tests for zip.scala's compute layer. Real archives are BUILT here rather than committed as
 // binary fixtures: a fixture would be opaque to every other tool in this repo (the SM246 finding —

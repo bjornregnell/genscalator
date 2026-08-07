@@ -1,5 +1,5 @@
 //> using file ../project.scala
-//> using dep org.scalameta::munit::1.3.3
+//> using dep org.scalameta::munit::1.3.4
 
 // Unit tests for tsv.scala's PURE core: parsing, column resolution, and the row predicates.
 // The predicate tests are the substance — `drop` deletes rows on their verdict, so a predicate that

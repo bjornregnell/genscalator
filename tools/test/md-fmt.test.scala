@@ -1,5 +1,5 @@
 //> using file ../project.scala
-//> using dep org.scalameta::munit::1.3.3
+//> using dep org.scalameta::munit::1.3.4
 
 // Unit tests for the md-fmt markdown reflow (md-fmt.scala). Like the other pure tools its logic lives in an
 // `object MdFmt` (the @main just does I/O), so it sits on the toolbox MAIN scope and is importable in-process

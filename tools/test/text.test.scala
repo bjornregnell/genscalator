@@ -1,5 +1,5 @@
 //> using file ../project.scala
-//> using dep org.scalameta::munit::1.3.3
+//> using dep org.scalameta::munit::1.3.4
 
 // Unit tests for the text tool's grepr pattern selection (the --any metachar-free OR, SM114) and the OR match.
 // Co-located under tools/ (test scope extends the MAIN scope, so `TextTool` is in scope without a `//> using file`).

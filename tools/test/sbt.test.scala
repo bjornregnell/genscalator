@@ -1,5 +1,5 @@
 //> using file ../project.scala
-//> using dep org.scalameta::munit::1.3.3
+//> using dep org.scalameta::munit::1.3.4
 
 // Unit tests for sbt.scala's PURE argv planner. No sbt process is touched here — what is pinned is
 // the safety-critical construction: the working directory is a validated ABSOLUTE argument (never a

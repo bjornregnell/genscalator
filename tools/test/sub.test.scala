@@ -1,6 +1,6 @@
 //> using file ../project.scala
 //> using jvm 21
-//> using dep org.scalameta::munit::1.3.3
+//> using dep org.scalameta::munit::1.3.4
 
 // Tests for tt sub (SM232). The property that matters most is the SAFETY one: preview must not write.
 // Everything else is about not corrupting a file while rewriting it — line endings, a missing final

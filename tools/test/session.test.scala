@@ -1,5 +1,5 @@
 //> using file ../project.scala
-//> using dep org.scalameta::munit::1.3.3
+//> using dep org.scalameta::munit::1.3.4
 
 // Unit tests for the SM208 per-session scoping: SessionStore's PURE core, the `tt session` verb,
 // mode's chip routing (session vs machine store), and the statusline session lead. All stores are

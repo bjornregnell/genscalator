@@ -1,6 +1,6 @@
 //> using file ../project.scala
 //> using jvm 21
-//> using dep org.scalameta::munit::1.3.3
+//> using dep org.scalameta::munit::1.3.4
 
 // CLI-level tests for ssg's SOURCE SELECTION — the three-armed match that resolves (sources, outDir, srcDir)
 // from the arguments. SsgSuite covers the pure renderer only, and CliSuite has no ssg case, so before this

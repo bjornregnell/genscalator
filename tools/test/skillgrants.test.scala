@@ -1,5 +1,5 @@
 //> using file ../project.scala
-//> using dep org.scalameta::munit::1.3.3
+//> using dep org.scalameta::munit::1.3.4
 
 // Unit tests for skillgrants' paren-aware grant tokenizer (the one bit of real logic). Co-located under tools/
 // (test scope extends the MAIN scope, so `Skillgrants` is in scope without a `//> using file`). Runs in-process.

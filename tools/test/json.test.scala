@@ -1,5 +1,5 @@
 //> using file ../project.scala
-//> using dep org.scalameta::munit::1.3.3
+//> using dep org.scalameta::munit::1.3.4
 
 // Unit tests for json.scala's PURE core: path parsing, navigation, scalar extraction, rendering.
 // No file is read here — MiniJson.parse supplies the values, as the driver does after reading disk.

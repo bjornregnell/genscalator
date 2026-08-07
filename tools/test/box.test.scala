@@ -1,5 +1,5 @@
 //> using file ../project.scala
-//> using dep org.scalameta::munit::1.3.3
+//> using dep org.scalameta::munit::1.3.4
 
 // Unit tests for box.scala's SM181 LOCAL shapes — the PURE core only: /proc stat/meminfo parsing,
 // the human formatters, and the DevServer fingerprints. The bloop fingerprint delegates to the

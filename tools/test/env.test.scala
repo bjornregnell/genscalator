@@ -1,5 +1,5 @@
 //> using file ../project.scala
-//> using dep org.scalameta::munit::1.3.3
+//> using dep org.scalameta::munit::1.3.4
 
 // Unit tests for env.scala + secrets.scala. The redaction cases are the point: this tool exists because
 // a bare `printenv` put two live tokens into a transcript, so every test that asserts a value is WITHHELD

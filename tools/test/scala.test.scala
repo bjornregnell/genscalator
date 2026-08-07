@@ -1,5 +1,5 @@
 //> using file ../project.scala
-//> using dep org.scalameta::munit::1.3.3
+//> using dep org.scalameta::munit::1.3.4
 
 // Unit tests for scala.scala's PURE core `ScalaTool.plan` — the safety-critical part: it builds the exact
 // scala-cli argv with no filesystem or process effect, so the invariants that let `tt scala` retire the

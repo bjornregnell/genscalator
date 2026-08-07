@@ -1,5 +1,5 @@
 //> using file ../project.scala
-//> using dep org.scalameta::munit::1.3.3
+//> using dep org.scalameta::munit::1.3.4
 
 // Unit tests for web.scala's PURE failure classifier. No network is touched: the exceptions are
 // constructed directly, exactly as the JDK throws them, which is the only way to test the offline

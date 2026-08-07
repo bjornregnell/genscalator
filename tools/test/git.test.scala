@@ -1,6 +1,6 @@
 //> using file ../project.scala
 //> using jvm 21
-//> using dep org.scalameta::munit::1.3.3
+//> using dep org.scalameta::munit::1.3.4
 
 // Tests for tt git's push paths (SM232). The mirror-set push is the risky one: a dropped or reordered
 // remote means work the caller believes is pushed is not, and nothing downstream notices. So the argv
