@@ -1,6 +1,6 @@
-# Issue 015: `tt skillcheck` fails by default when `tt` runs from a native install with no sibling `skills/`
+# Issue 015: `tt skillcheck` fails by default when `tt` runs from a native install with no sibling `skills/` — CLOSED: recoverable-from-the-error in the v0.10.1 batch
 
-> status: open · labels: toolbox, skillcheck, native, install-layout · summary: bare `tt skillcheck` exits
+> status: closed 2026-08-07, fixed by `8fb28af` · labels: toolbox, skillcheck, native, install-layout · summary: bare `tt skillcheck` exits
 > 2 with "not a skills directory" when the winning `tt` is the native binary under `~/.genscalator/bin/`,
 > because that install tree ships no `skills/` — so the SM070 session-start self-check dies at step 1 on
 > exactly the install shape that wins on PATH.
@@ -133,4 +133,22 @@ v0.10.0 install, so a naive fallback silently yields a WRONG expected set — an
 version-match against `VERSION.txt` and warn on skew.
 
 Agent disclosure: this review comment was produced by an AI agent (Claude Fable 5) under human
+direction; the human reviewed and submitted.
+
+### Comment by bjornregnell/Fable5 at 2026-08-07 20:28
+
+CLOSED as fixed by `8fb28af`, at the triage's tier-1 scope: both `skillcheck` AND `skillgrants`
+(the twin the issue missed) now follow the "not a skills directory" error with a shared recovery
+hint (`Lib.skillsRecoveryHint`) that names the `--skills` escape hatch, states the D4 reason (a
+native install ships no `skills/` by design — the plugin owns those), and PROBES the plugin cache
+for candidate `skills/` dirs, printing each as a ready-to-paste `--skills` line with the version
+visible in the path. Deliberately a hint and never an automatic fallback, per the triage's
+stale-cache warning: a 0.9.x cache against a v0.10.x install would silently yield a WRONG expected
+set, so the choice stays with the caller. The stale `<tools>/../skills` wording in both help texts
+is swept to the real rootDir resolution order. Tests cover the missing-skills-dir case for both
+tools. The acceptance bullet "ship skills/ in the installer" is REJECTED as triaged (it overturns
+D4 without engaging it); a version-matched auto-fallback remains possible future work, not this
+close.
+
+Agent disclosure: this closing comment was produced by an AI agent (Claude Fable 5) under human
 direction; the human reviewed and submitted.

@@ -1,6 +1,6 @@
-# Issue 014: `tt find --max-depth` is off by one for `--type d`, and the `--help` example is wrong
+# Issue 014: `tt find --max-depth` is off by one for `--type d`, and the `--help` example is wrong — CLOSED: fixed in the v0.10.1 batch
 
-> status: open · labels: toolbox, find, docs · summary: `tt find <root> --type d --max-depth 1` returns
+> status: closed 2026-08-07, fixed by `8fb28af` · labels: toolbox, find, docs · summary: `tt find <root> --type d --max-depth 1` returns
 > ONLY the root, not the immediate sub-directories its own `--help` example promises; the shift is
 > `--type d` relative to `--type f`, and `--max-depth 0` returns nothing despite the documented
 > "root = 0".
@@ -145,4 +145,18 @@ Triage: DEFECT, targeted at v0.10.1. Coverage note: existing tests never combine
 test is the right addition, and its `22 matches` regression arithmetic is sound under the fix.
 
 Agent disclosure: this review comment was produced by an AI agent (Claude Fable 5) under human
+direction; the human reviewed and submitted.
+
+### Comment by bjornregnell/Fable5 at 2026-08-07 20:28
+
+CLOSED as fixed by `8fb28af`: a type-aware branch in the walker's `visitFile` (directories at
+exactly max-depth arrive there, not in `preVisitDirectory`) fixes both this issue and the
+same-root-cause bonus defect the triage found — boundary dirs no longer leak into `--type f`
+output. Depth accounting now matches GNU find: `--type d --max-depth 1` = root + immediate
+sub-dirs, `--max-depth 0` = the root itself (nothing for `--type f`, since the root is not a
+regular file). The acceptance sketch's paired contract test is in (`cli.test.scala`, one fixture,
+both types), and the whole suite ran green. In v0.10.1 the walker moved into the shared
+`Lib.walkPruned` (issue-017), so find and files carry one depth semantics, not two.
+
+Agent disclosure: this closing comment was produced by an AI agent (Claude Fable 5) under human
 direction; the human reviewed and submitted.

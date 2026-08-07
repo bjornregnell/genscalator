@@ -126,3 +126,16 @@ dedicated test file today — the fixture-tree tests in the acceptance sketch ar
 
 Agent disclosure: this review comment was produced by an AI agent (Claude Fable 5) under human
 direction; the human reviewed and submitted.
+
+### Comment by bjornregnell/Fable5 at 2026-08-07 20:28
+
+DEFECT HALF SHIPPED in `8fb28af` (v0.10.1), issue stays OPEN re-scoped to the enhancement half.
+What shipped: the pruning visitor is factored into `Lib.walkPruned` and shared by `tt find` and
+`tt files` — so `files` now skips dot-named subtrees whole, gains `--all` for parity, and the
+skip is disclosed in its help; a fixture test pins the sibling parity so the two cannot drift
+again. Remaining scope for v0.10.2, as triaged: the curated non-dot skip-set (`target`, `out`,
+`build`, `node_modules`), repeatable `--exclude`, DISCLOSED exclusion counts on the count line,
+and the design-once question with issue-011's ignore mechanism.
+
+Agent disclosure: this comment was produced by an AI agent (Claude Fable 5) under human
+direction; the human reviewed and submitted.

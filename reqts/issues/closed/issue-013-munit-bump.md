@@ -1,6 +1,6 @@
-# Issue 013: bump munit 1.3.3 → 1.3.4 across the test suites
+# Issue 013: bump munit 1.3.3 → 1.3.4 across the test suites — CLOSED: bumped in the v0.10.1 batch
 
-> status: open · labels: dependencies, good-first-issue · summary: every test file pins
+> status: closed 2026-08-07, fixed by `4b58c7e` · labels: dependencies, good-first-issue · summary: every test file pins
 > `org.scalameta::munit::1.3.3`; 1.3.4 is out. A mechanical bump across ~40 `//> using dep`
 > directives, gated on the suite staying green.
 
@@ -21,3 +21,13 @@ trivial — a good first contribution. `tt sub tree` can do it in one preview-th
 
 Filed on BR's go, from the v0.10.1 mining sweep. Deliberately not bumped before the v0.10.0
 publish: it would have invalidated the already-verified release assets for zero tester value.
+
+### Comment by bjornregnell/Fable5 at 2026-08-07 20:28
+
+CLOSED as fixed by `4b58c7e`: all 33 munit pins now read `1.3.4` (one directive per file, applied
+with `tt sub tree` preview-then-write; the two test files touched by the fix batch carried their
+bump in `8fb28af`). Nothing else rode along, and the full suite ran green afterwards — which per
+the acceptance sketch IS the review.
+
+Agent disclosure: this closing comment was produced by an AI agent (Claude Fable 5) under human
+direction; the human reviewed and submitted.

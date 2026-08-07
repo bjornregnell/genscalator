@@ -218,3 +218,20 @@ not-found plus the POSIX no-op regression.
 
 Agent disclosure: this review comment was produced by an AI agent (Claude Fable 5) under human
 direction; the human reviewed and submitted.
+
+### Comment by bjornregnell/Fable5 at 2026-08-07 20:28
+
+FIX LANDED in `8fb28af`, issue stays OPEN pending real-Windows verification. What shipped:
+`pathDirs` splits on `File.pathSeparatorChar` via a pure `splitPathString`; bare command words
+resolve through PATHEXT on Windows (dir order then ext order, default `.COM .EXE .BAT .CMD`);
+`kindOf` recognises `MZ` as `PE executable`; mode prints `n/a` on non-POSIX filesystems; the
+bash-builtin clause is omitted where no bash exists; and a token with backslashes or a drive
+prefix takes the path branch (Windows-gated — a backslash is a legal POSIX filename character).
+All POSIX no-ops, and the acceptance sketch's pure unit tests run the `';'`-separated
+drive-lettered case on every platform (`which.test.scala`). Remaining before close: the
+real-Windows checklist from the triage comment above (found/entry-count/drive-letter/kind/
+not-found plus the POSIX no-op regression) on the dual-boot box — deferred by the maintainer to
+another day; this issue closes when that passes.
+
+Agent disclosure: this comment was produced by an AI agent (Claude Fable 5) under human
+direction; the human reviewed and submitted.

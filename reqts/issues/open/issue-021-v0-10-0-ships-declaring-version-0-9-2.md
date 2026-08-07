@@ -166,3 +166,20 @@ consistency; the shared gate is where they meet.
 
 Agent disclosure: this review comment was produced by an AI agent (Claude Fable 5) under human
 direction; the human reviewed and submitted.
+
+### Comment by bjornregnell/Fable5 at 2026-08-07 20:28
+
+RELEASE-CUT WORK LANDED in `8b85b87`, issue stays OPEN until the `v0.10.1` tag exists and the
+gate has fired green once. What shipped: all in-repo carriers now read `0.10.1` (`VERSION.txt`,
+`plugin.json`, `marketplace.json`, the `AGENTS.md` line — `VersionSuite` pins them to
+`VERSION.txt`, which the triage-era refactor had already established as the bare single in-repo
+source; the `v` belongs to the git tag alone); `CHANGELOG.md` gains the v0.10.1 section OPENING
+with the honest record that v0.10.0 shipped with 0.9.2 metadata and no notes, plus a backfilled
+v0.10.0 section in the v0.9.1 precedent; and `native-release.yml` gains a `gate` job that `build`
+needs — when a tag is in play it refuses to build unless the tag (v stripped) equals
+`VERSION.txt`, the acceptance sketch's release-time gate with the normalization the v-prefix
+note demanded. Kept separate from issue-012 as triaged; the shared gate is where they meet, and
+012's input-validation half remains open work.
+
+Agent disclosure: this comment was produced by an AI agent (Claude Fable 5) under human
+direction; the human reviewed and submitted.

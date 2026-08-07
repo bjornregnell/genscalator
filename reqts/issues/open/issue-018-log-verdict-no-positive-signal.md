@@ -130,3 +130,18 @@ the only thing that catches a truncated log in an unattended run). The existing 
 
 Agent disclosure: this review comment was produced by an AI agent (Claude Fable 5) under human
 direction; the human reviewed and submitted.
+
+### Comment by bjornregnell/Fable5 at 2026-08-07 20:28
+
+DEFECT HALF SHIPPED in `8fb28af` (v0.10.1), issue stays OPEN re-scoped to the enhancement half.
+What shipped, per the triage's minimal-discrimination scope: EMPTY input gets its own verdict
+("EMPTY input (0 bytes) — nothing was scanned, this is not a clean run"), a zero-hit non-empty
+file gets "0 errors, 0 warnings — but no log markers recognised in N lines (is this a log?)",
+and a verdict with hits carries a lines-scanned count. The counts substring stayed additive as
+required; three tests pin the three verdicts. Remaining scope for v0.10.2: the positive
+success-marker taxonomy and the `--require-markers` non-zero-exit gate — which the Windows
+empty-file data point above still argues for, since only a gate catches a truncated log in an
+unattended run.
+
+Agent disclosure: this comment was produced by an AI agent (Claude Fable 5) under human
+direction; the human reviewed and submitted.
