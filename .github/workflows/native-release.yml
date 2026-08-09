@@ -22,19 +22,63 @@ permissions:
 
 jobs:
   gate:
-    # Release gate (issue-021): refuse to build for a tag that disagrees with the in-repo version
+    # Release gate, one job serving two issues (021's review: one gate serves both):
+    #
+    # issue-012: `inputs.tag` is FREE TEXT with two downstream uses — it is stamped into
+    # staging/VERSION.txt at build time and handed to `gh release upload "$TAG" --clobber` at
+    # publish time. A typo therefore mis-stamps every binary AND clobbers assets on whatever
+    # release the typo happens to name. So the tag must first LOOK like a release tag (shape)
+    # and then BE one (an existing git tag on the remote) before anything downstream may
+    # trust it. Release-event tags come from GitHub itself, but validating them is one string
+    # through the same checks — cheap, and it keeps a single code path honest.
+    #
+    # issue-021: refuse to build for a tag that disagrees with the in-repo version
     # carriers. VERSION.txt is the single in-repo source and VersionSuite (run per-leg through the
     # build-and-prove step) pins plugin.json/marketplace.json/AGENTS.md to it — so this one
     # comparison transitively gates every carrier. The `v` prefix belongs to the tag alone,
     # carriers stay bare; hence the normalization. A blank tag = build-only run, nothing to gate.
+    #
+    # Check order is deliberate: shape, then existence, then carrier match — each check assumes
+    # only what the previous one proved.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Tag matches the in-repo version carriers
+        # Default shallow checkout is enough: the carrier check reads VERSION.txt from the working
+        # tree, and the existence check asks the REMOTE (ls-remote below), not the local clone —
+        # checkout@v4 has a history of not materializing tag refs under a shallow fetch even with
+        # `fetch-tags: true` (a release tag usually points behind the fetched tip), which would
+        # make every legitimate run fail its own gate.
+      - name: Tag is well-shaped, exists, and matches the in-repo version carriers
         shell: bash
+        env:
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
+          # Via env ON PURPOSE, never `${{ }}` inside `run:`: template expansion pastes the free
+          # text INTO the script before bash ever runs, so an injection would fire before any of
+          # the checks below could see it. As an environment variable it is inert data.
         run: |
-          tag="${{ github.event.release.tag_name || inputs.tag }}"
+          tag="$TAG"
           if [ -z "$tag" ]; then echo "no tag in play - build-only run, gate passes"; exit 0; fi
+          # Shape (issue-012): a release tag is `v` + dotted numerics + optional suffix
+          # (v0.10.1, v1.0.0-RC1). Anything else is a typo or garbage; name it and stop.
+          # The regex lives in a variable because bash `=~` mangles quoted patterns.
+          shape='^v[0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z.-]+)?$'
+          if ! [[ "$tag" =~ $shape ]]; then
+            echo "RELEASE GATE (issue-012): tag '$tag' does not look like a release tag."
+            echo "Expected shape: v<major>.<minor>.<patch> with an optional suffix, e.g. v0.10.1 or v1.0.0-RC1 (regex: $shape)."
+            exit 1
+          fi
+          # Existence (issue-012): publish runs `gh release upload "$tag" --clobber`, so a
+          # well-shaped typo would clobber assets on whatever release it happens to name. An
+          # upload target must be a REAL tag in this repository; a typo dies here, in seconds.
+          # Asked of the REMOTE (ls-remote), not the local clone, on purpose: the answer must not
+          # depend on what the shallow checkout happened to fetch. --exit-code returns 2 when the
+          # ref does not exist; stdout (the matching ref line) is noise here, so silence it.
+          if ! git ls-remote --exit-code origin "refs/tags/$tag" >/dev/null; then
+            echo "RELEASE GATE (issue-012): tag '$tag' is not an existing git tag in this repository."
+            echo "An upload target must be a real release tag - create and push the tag (and its release) BEFORE dispatching."
+            exit 1
+          fi
+          # Carrier match (issue-021): see the job comment above.
           want="${tag#v}"
           have="$(tr -d '[:space:]' < VERSION.txt)"
           if [ "$want" != "$have" ]; then
@@ -42,7 +86,7 @@ jobs:
             echo "Bump the carriers (VERSION.txt, plugin.json, marketplace.json, AGENTS.md, CHANGELOG) BEFORE tagging."
             exit 1
           fi
-          echo "gate passes: tag $tag == VERSION.txt $have"
+          echo "gate passes: tag $tag is well-shaped, exists as a git tag, and == VERSION.txt $have"
 
   build:
     needs: gate
