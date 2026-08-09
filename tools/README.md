@@ -108,12 +108,21 @@ tt sub file build.txt 'v1.2 (old)' 'v1.3' --literal --write
 files <dir> <ext>                    # count + list files under dir ending <ext>     (find)
 files <dir> <ext> <contentRegex>     # files whose content matches regex             (grep -l)
 files <dir> <ext> [regex] --count    # just the number                               (find|wc)
+files ... --exclude '<glob>'         # drop paths matching glob, relative to <dir>    (repeatable)
+files ... --all                      # include EVERYTHING: hidden entries AND the curated skips
 ```
 (Plus `text grepr ... --count` returns the recursive match count — no `| wc`.)
+Hidden dot-entries are skipped by default, whole subtree and all — same pruning as `find` — and so are
+directories named `target`, `out`, `build`, `node_modules`; unlike the dot-name skip the curated skips are
+DISCLOSED on the count line together with `--exclude` suppressions, e.g. `12 files (2 excluded: target,
+node_modules)` — a pruned subtree counts as one entry, and when nothing was excluded the plain count line
+is printed. `--exclude` globs use java.nio glob syntax, matched against the path relative to `<dir>`;
+a glob ending in `/**` prunes that whole subtree.
 Examples:
 ```
 tt files src .scala 'TODO'                  # source files containing TODO
 tt files src .scala --count
+tt files . .scala --exclude 'seeds/**'      # sources, minus the whole seeds subtree
 ```
 
 ### find — typed, safe file enumeration; the allowlistable read-half of `find` (PURE)
@@ -123,12 +132,18 @@ find <root> --name '<glob>'          # filter by filename glob                  
 find <root> --ext <e>                # filter by extension suffix
 find <root> --type f|d               # regular files (f, the default) or directories (d)
 find <root> --max-depth N            # descend at most N levels below <root>
-find <root> --all                    # include hidden entries (default: skip dot-names)
+find <root> --exclude '<glob>'       # drop paths matching glob, relative to <root>   (repeatable)
+find <root> --all                    # include EVERYTHING: hidden entries AND the curated skips
 find <root> ... --count              # just the count line, no paths
 ```
-Exposes ONLY name/ext/type/depth — no `-exec`, no arbitrary predicates, no `-delete` — so it can be blanket-allowed
-where raw `find` (a general file-executor) cannot. Hidden dot-entries (`.git`, `.scala-build`) are skipped by
-default — whole subtree and all — so a repo scan stays clean and fast; `--all` includes them. Symlinks are not
+Exposes ONLY name/ext/type/depth/exclude — no `-exec`, no arbitrary predicates, no `-delete` — so it can be
+blanket-allowed where raw `find` (a general file-executor) cannot. Hidden dot-entries (`.git`, `.scala-build`)
+are skipped by default — whole subtree and all — so a repo scan stays clean and fast, and so are directories
+named `target`, `out`, `build`, `node_modules`; unlike the dot-name skip the curated skips are DISCLOSED on
+the matches line together with `--exclude` suppressions, e.g. `5 matches (2 excluded: target, node_modules)` —
+a pruned subtree counts as one entry, and when nothing was excluded the plain matches line is printed. `--all`
+includes everything: hidden entries AND the curated skips. `--exclude` globs use java.nio glob syntax, matched
+against the path relative to `<root>`; a glob ending in `/**` prunes that whole subtree. Symlinks are not
 followed. The guarded write-half (`--prune`,
 confined + dry-run-by-default) is a separate, later step. Sibling of `files` (which adds a content-regex).
 Examples:
@@ -136,6 +151,7 @@ Examples:
 tt find src --ext .scala                    # every .scala file under src
 tt find docs --name 'SM*.md'                # docs named SM*.md
 tt find . --type d --max-depth 1            # immediate sub-directories
+tt find . --ext .json --exclude 'seeds/**'  # .json files, minus the whole seeds subtree
 ```
 
 ### json — read a JSON file: validate, inspect, pluck (PURE, read-only)
@@ -294,7 +310,7 @@ mode add <label>        # declare <label> (add a label to the recorded state; id
 mode rm <label>         # clear <label> (from whichever store holds it)
 mode clear              # clear this SESSION's modes (budget chips stay)
 mode --file <f> ...     # single-file mode on <f>, NO session scoping (config-in-args, for tests)
-mode --global-file <g> | --sessions-root <d> | --id <id>   # store/id overrides (for tests)
+mode --global-file <g> | --sessions-root <d> | --id <id> | --cwd <d>   # store/id/cwd overrides (for tests)
 ```
 A "mode" is a label on the shared human<->agent state-of-mind; MANY can be active at once, and BOTH the human
 and the agent may add/remove them (a joint, mutually-visible channel). **ALL modes are PER-SESSION (SM208)**:
@@ -302,7 +318,10 @@ chips are keyed on the harness session id (env `CLAUDE_CODE_SESSION_ID`, state i
 `~/.claude/gs-sessions/<id>/`), so parallel sessions cannot flip each other's chips — including the
 token-budget chips, because the shared FACT (account headroom) lives in `tt limit`'s machine store while a
 budget CHIP is this session's spend policy. In a bare shell with no session id everything falls back to the
-global `~/.claude/gs-modes` file; chips left there render in every session until removed. The statusline's **mode line** (`tt statusline --mode-line`) renders whatever is active,
+global `~/.claude/gs-modes` file; chips left there render in every session until removed. If a list finds
+NO state under this session's key while recent (<48h) orphaned state for the SAME directory exists (the
+harness re-minted the session id, e.g. a bg/fg round trip), ONE hint line goes to **stderr** — stdout stays
+byte-identical — pointing at the recovery: `tt session adopt`. The statusline's **mode line** (`tt statusline --mode-line`) renders whatever is active,
 each label reverse-video + bold in its own colour, padded one space each side. Labels are bare tokens
 `[A-Za-z0-9._-]+`. Pairs with `session` (the session NAME) and `statusline` (rendering).
 
@@ -311,13 +330,26 @@ each label reverse-video + bold in its own colour, padded one space each side. L
 session                 # print the display name: YYMMDD-HHhMMm[-MyName]
 session <name words>    # set the human name part (free text, spaces allowed; control chars rejected)
 session --clear         # remove the human name (the timestamp part remains)
-session --sessions-root <d> | --id <id> | --now-ms <ms>    # overrides (for tests)
+session adopt           # re-attach state orphaned by a harness session-id re-mint
+session adopt <id>      # pick among several candidates (a bare adopt lists them)
+session --sessions-root <d> | --id <id> | --cwd <dir> | --now-ms <ms>    # overrides (for tests)
 ```
 The timestamp part is ALWAYS present and FIRST: the age signal survives naming, duplicate human names cannot
 collide, and the string is filesystem-safe by construction — though the display name is never a path
 component; the store is keyed on the opaque harness session id. The statusline renders the name inverted
 after a `gs session:` label on the mode line. Outside a harness session (no id) there is nothing to name:
 the tool says so and exits 1.
+The harness id is unique but NOT stable — a background/foreground round trip re-mints it, orphaning
+name + chips under the old key while reads of the new key find silent emptiness. `adopt` is the explicit
+recovery: with exactly ONE orphan recorded for the SAME working directory it copies that orphan under the
+current key and reports what was adopted (name, chips, age); with SEVERAL candidates NOTHING is adopted —
+one may be another LIVE session in this directory — they are listed newest first and you pick with
+`adopt <id>` (exit 2 until you do). A lone word spelled adopt in any capitalization is the verb, never a
+session name. There is no auto-adopt. No orphan: says so and exits 2. Chips merge as a union with the orphan's first (chips declared after the re-mint survive);
+the orphan's earlier `started` stamp wins (adoption claims continuity); the name yields to one already set
+on the new key. When an empty-state read (`tt session` or `tt mode`) finds recent (<48h) orphaned state
+for this directory, ONE hint line goes to stderr pointing at `tt session adopt`; stdout stays exactly as
+before, so nothing that parses it can break.
 
 ### log — build/run-log analyzer (PURE)
 ```
@@ -325,13 +357,22 @@ log [summary|errors|warnings] <file>    # summary (default) = counts + lines + v
    [--error <regex>]...                 # add an error pattern   (repeatable)
    [--warn  <regex>]...                 # add a warning pattern  (repeatable)
    [--no-defaults]                      # use ONLY supplied patterns (skip curated markers)
+   [--require-markers]                  # exit 1 when NO marker of any kind is recognised
    [--cap <n>]                          # max lines shown per bucket (default 50)
 ```
 **Sane defaults, customizable.** Curated markers span the logs agents actually read — compiler/build
 (`error:`, `error[E…]`, `[error]`), test runners / CI (`FAIL`, `##[error]`), runtime leveled logs
 (`ERROR`/`FATAL`/`CRITICAL`, logfmt `level=error`, JSON `"level":"error"`), Python `Traceback`, Go
 `panic:`, `npm ERR!`, and LaTeX (`^! `, Over/Underfull). All **targeted** so tally lines like "0 errors" /
-"no warnings" don't false-positive. Two buckets only: errors and warnings (test failures fold into errors).
+"no warnings" don't false-positive. Two problem buckets: errors and warnings (test failures fold into
+errors); the summary ALSO counts curated **success markers** (`=== success markers: N` — sbt `[success]`,
+compiling/compiled, tests-passed lines, `BUILD SUCCESS`, targeted like the rest), so the zero-hit verdicts
+can tell a genuinely clean run (`0 errors, 0 warnings, N success markers`) from a file with no log markers
+at all (`… but no log markers recognised in N lines (is this a log?)`) or EMPTY input (0 bytes, called out
+as not a clean run). `--require-markers` turns that into a gate: exit 1 when no marker of any kind (error,
+warning, success) is found — empty input included — so an unattended run can't take a truncated, empty, or
+non-log input as clean. A directory argument gets a pointer to `tt gitinfo` (the name invites a git
+misreach; `tt log` analyzes build/run LOG FILES).
 When the agent knows a log's own markers, it extends (or with `--no-defaults`, replaces) the set. Each
 pattern compiles separately, so an inline `(?i)` in one can't leak into the others. Reads Latin-1 (some
 logs, e.g. LaTeX, aren't valid UTF-8).
@@ -341,6 +382,7 @@ tt log build.log                                  # curated defaults (the 90% ca
 tt log errors run.log --cap 200                   # just errors, show more
 tt log app.log --error 'MYAPP-FATAL'              # defaults + my app's marker
 tt log weird.log --no-defaults --error 'BOOM:'    # only my pattern
+tt log build.log --require-markers                # gate: exit 1 if nothing was recognised
 ```
 
 ### newtool — generator (scaffold a new pure tool)
@@ -423,8 +465,11 @@ Feeds the human-fatigue / mutual-degradation gauge (BR's idea): the typo *kind* 
 ### htmltext — strip a saved HTML page to readable text (PURE; writes a file with `out.file`)
 ```
 htmltext <in.html> [out.file]        # drop head/script/style/svg/noscript, block tags → newlines, decode entities
+htmltext <in.html> --cap <n>         # print at most n lines to stdout (default: uncapped)
 ```
 Turns a Firefox "Save Page As" dump (e.g. journal guidelines) into plain text without the JS/CSS bloat.
+When `--cap` truncates, a non-silent notice reports the true total (`=== truncated: showing N of M lines`);
+write-to-file mode is always uncapped — `--cap` applies to stdout only.
 
 ### chrono — stopwatch for timing work spans (EFFECTFUL: state + log)
 ```

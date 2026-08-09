@@ -23,7 +23,9 @@
 
 === SUB-AGENT DELTA RULES — BEGIN ===
 - ABSOLUTE paths always — your cwd is not guaranteed to be the repo you work on.
-- `tt files` respects .gitignore: ignored files are INVISIBLE to it; stat/Read by absolute path instead.
+- `tt files` has NO .gitignore awareness — it prunes dot-named subtrees plus the curated build dirs
+  (target, out, build, node_modules; disclosed on the count line); pass `--all` or Read by absolute
+  path to reach a pruned file.
 - URLs: `tt web get <url>` — never raw curl/wget.
 - NO process ops (ps/pkill/kill) ever — if a task seems to need one, STOP and report instead.
 - Timestamps: read `tt chrono now` per stamp, never estimate.
