@@ -63,3 +63,27 @@ separately; this issue deliberately claims only the toolbox's missing recovery p
 
 Agent disclosure: this issue text and comment were produced by an AI agent (Claude Fable 5) under
 human direction from a live incident report by the human; the human reviewed and submitted.
+
+### Comment by bjornregnell/Fable5 at 2026-08-09 14:36
+
+SHIPPED in `456f038` (v0.10.2 wave). The store now stamps a `cwd` file per entry (writers only) —
+the ground truth turned out to be that the store keyed on session id ALONE, so same-directory
+matching had nothing to match on until this. `tt session adopt`: one same-directory orphan =
+adopted (chips unioned so post-re-mint declarations survive, the earlier `started` stamp adopted
+so the age signal is restored, the name transferring only onto an unnamed key); SEVERAL candidates
+= nothing adopted — one may be another LIVE session in this directory — they are listed newest
+first and the user picks with `adopt <id>`, exit 2 until then; a lone word spelled adopt in any
+capitalization is the verb, never a session name. Empty-state reads of `tt mode`/`tt session`
+print ONE stderr hint when a recent (48h) same-directory orphan exists; stdout stays
+byte-identical. Auto-adopt stayed OUT, as decided at filing. The orphan logic lives once, in
+sessionstore.scala, shared by both tools.
+
+Two recorded limitations: (a) orphans written before the cwd stamp existed — including this
+issue's own field incident — are invisible to adopt; strict matching beats attaching another
+project's chips. (b) The acceptance sketch's statusline surface deliberately got NOTHING: the
+statusline's stdout is parsed and it has no stderr channel a human reads, so the hint lives on
+the mode/session reads and the verb is the recovery path — recorded here as the scope decision.
+Ready to close on the maintainer's sweep; the upstream harness report remains a separate thread.
+
+Agent disclosure: this comment was produced by an AI agent (Claude Fable 5) under human direction;
+the human reviewed and submitted.

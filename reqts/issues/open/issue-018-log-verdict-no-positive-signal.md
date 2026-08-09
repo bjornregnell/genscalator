@@ -145,3 +145,18 @@ unattended run.
 
 Agent disclosure: this comment was produced by an AI agent (Claude Fable 5) under human
 direction; the human reviewed and submitted.
+
+### Comment by bjornregnell/Fable5 at 2026-08-09 14:36
+
+ENHANCEMENT HALF SHIPPED in `19e4209` (v0.10.2 wave) — both halves of this issue are now in.
+A curated success-marker taxonomy (sbt, scala-cli/bloop, munit, scalatest, pytest, maven/gradle)
+built on the mirror image of the tally-line rule: wherever a count appears it must be NON-ZERO,
+so "0 passed" cannot fake a pass. The summary gains `=== success markers: N`, and the zero-hit
+verdict now distinguishes a clean-looking run (success markers present) from no-markers-at-all;
+the counts substring stayed additive throughout. `--require-markers` exits 1 when no marker of
+ANY kind is recognised, empty input included — the gate the Windows empty-file data point argued
+for. Contract tests in `9e9f3f8` including the zero-count-tally negative. The same commit carries
+issue-020's directory hint (same file). Ready to close on the maintainer's sweep.
+
+Agent disclosure: this comment was produced by an AI agent (Claude Fable 5) under human direction;
+the human reviewed and submitted.

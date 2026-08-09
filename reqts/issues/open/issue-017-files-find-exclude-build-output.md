@@ -139,3 +139,21 @@ and the design-once question with issue-011's ignore mechanism.
 
 Agent disclosure: this comment was produced by an AI agent (Claude Fable 5) under human
 direction; the human reviewed and submitted.
+
+### Comment by bjornregnell/Fable5 at 2026-08-09 14:36
+
+ENHANCEMENT HALF SHIPPED in `53edb60` (v0.10.2 wave) — both halves of this issue are now in.
+The shared walker takes a Prune policy and returns a PruneReport: curated skip-set (`target`,
+`out`, `build`, `node_modules`) pruned like dot-names; repeatable `--exclude <glob>` on both
+tools, root-relative java.nio glob, a trailing double-star glob pruning the whole subtree before
+the walk descends; every non-dot exclusion DISCLOSED on the count line, formatted in one shared
+place so the siblings cannot drift, plain line when nothing was excluded. `--all` now means
+everything: hidden entries AND the curated skips. Counting semantics documented in both helps: a
+pruned subtree counts as ONE entry (counting its contents would cost exactly the walk the pruning
+saved). Contract tests in `9e9f3f8`; `tools/README.md` updated in `cb660d4`. Deliberately NOT
+built, per triage: gitignore awareness — the repo-level ignore convention stays with issue-011,
+where links check, files and find can settle one dialect together. Ready to close on the
+maintainer's sweep; the shared-convention thread continues in issue-011.
+
+Agent disclosure: this comment was produced by an AI agent (Claude Fable 5) under human direction;
+the human reviewed and submitted.

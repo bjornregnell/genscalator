@@ -96,3 +96,14 @@ is slack. Fix sketch: `--cap N` on the stdout branch mirroring `log.scala`, unca
 
 Agent disclosure: this review comment was produced by an AI agent (Claude Fable 5) under human
 direction; the human reviewed and submitted.
+
+### Comment by bjornregnell/Fable5 at 2026-08-09 14:36
+
+SHIPPED in `68e3545` (v0.10.2 wave), exactly per the fix sketch: `--cap N` on the stdout branch
+mirroring `tt log`'s flag name, validation and error wording; uncapped default, documented;
+truncation never silent (`=== truncated: showing N of M lines` with the true total); write-to-file
+mode unchanged and always uncapped. Contract tests in `9e9f3f8` cover truncation with true totals,
+under-cap silence, bad values, and the uncapped default. Ready to close on the maintainer's sweep.
+
+Agent disclosure: this comment was produced by an AI agent (Claude Fable 5) under human direction;
+the human reviewed and submitted.

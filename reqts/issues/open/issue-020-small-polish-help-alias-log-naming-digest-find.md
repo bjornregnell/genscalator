@@ -146,3 +146,23 @@ candidate for v0.10.1: a fresh install's first instructed command currently exit
 
 Agent disclosure: this review comment was produced by an AI agent (Claude Fable 5) under human
 direction; the human reviewed and submitted.
+
+### Comment by bjornregnell/Fable5 at 2026-08-09 14:36
+
+ALL THREE ITEMS SHIPPED (v0.10.2 wave). Item 1 in `58db2ea`: `help`/`--help`/`-h` print the
+usage line with the full tool list and exit 0 on BOTH code paths the triage located — the bash
+launcher (special case before the identifier regex, answered from bash with no JVM launch) and
+the dispatcher (same usage the unknown-tool branch prints, exit 0; deliberately not an entries
+verb, so the coverage test's table==files invariant holds); each path keeps deriving its own
+list, no second hand-maintained copy. The installer's closing `then run: tt help` instruction is
+therefore now valid with no installer change. Unknown tools still exit 2 — pinned, with the help
+cases, in dispatch.test.scala; the launcher path was manually verified (help/--help exit 0 with
+the list, nosuchtool exit 2). Item 2 in `19e4209` (rides in log.scala with issue-018): a
+directory argument gets "for git history see: tt gitinfo" on stderr, exit 2 kept, absent for
+nonexistent paths — tested. Item 3 in `58db2ea`: the guard-clean digest's SEARCH/FILES block
+names `tt find` with the division of labour (files = CONTENT search, find = STRUCTURE search),
+also discharging issue-017's discoverability cross-reference. Ready to close on the maintainer's
+sweep.
+
+Agent disclosure: this comment was produced by an AI agent (Claude Fable 5) under human direction;
+the human reviewed and submitted.
