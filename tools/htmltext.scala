@@ -37,25 +37,52 @@ private val HtmltextHelp: String =
     |
     |Usage:
     |  htmltext <in.html>                   print the extracted text to stdout
+    |  htmltext <in.html> --cap <n>         print at most n lines to stdout
     |  htmltext <in.html> <out.file>        write the text to <out.file> (reports chars written)
     |
+    |Flags:
+    |  --cap <n>                            max lines printed to stdout (default: uncapped);
+    |                                       when truncating, a non-silent notice reports the
+    |                                       true total: === truncated: showing N of M lines
+    |                                       (write-to-file mode is always uncapped)
+    |
     |Examples:
-    |  tt htmltext saved-page.html                  # read the page in the terminal
+    |  tt htmltext saved-page.html                  # read the whole page in the terminal
+    |  tt htmltext saved-page.html --cap 40         # bounded peek: first 40 lines + notice
     |  tt htmltext guidelines.html guidelines.txt   # keep a plain-text copy
     |
     |Full reference: tools/README.md""".stripMargin
 
 @main def htmltext(args: String*): Unit =
   if args.contains("--help") || args.contains("-h") then { println(HtmltextHelp); sys.exit(0) }
-  args.toList match
-    case in :: rest =>
+  @annotation.tailrec
+  def parse(rest: List[String], pos: List[String], cap: Option[Int]): Either[String, (List[String], Option[Int])] =
+    rest match
+      case Nil => Right((pos.reverse, cap))
+      case "--cap" :: n :: t =>
+        n.toIntOption match
+          case Some(v) if v >= 0 => parse(t, pos, Some(v))
+          case _ => Left(s"--cap needs a non-negative integer, got '$n'")
+      case "--cap" :: Nil => Left("--cap is missing its argument")
+      case other :: t => parse(t, other :: pos, cap)
+  parse(args.toList, Nil, None) match
+    case Left(msg) =>
+      System.err.println(s"htmltext: $msg")
+      sys.exit(2)
+    case Right((in :: rest, cap)) =>
       val html = Files.readString(Path.of(in))
       val text = stripHtml(html)
       rest.headOption match
-        case Some(out) =>
+        case Some(out) => // write-to-file mode: always uncapped (--cap applies to stdout only)
           Files.writeString(Path.of(out), text)
           println(s"htmltext: wrote ${text.length} chars (from ${html.length}) to $out")
-        case None => println(text)
-    case _ =>
-      println("usage: htmltext <in.html> [out.file]   strip a saved HTML page to readable text (no out → stdout)")
+        case None =>
+          val lines = text.linesIterator.toVector
+          cap match
+            case Some(n) if lines.size > n =>
+              lines.take(n).foreach(println)
+              println(s"=== truncated: showing $n of ${lines.size} lines")
+            case _ => println(text)
+    case Right((Nil, _)) =>
+      println("usage: htmltext <in.html> [out.file] [--cap N]   strip a saved HTML page to readable text (no out → stdout)")
       sys.exit(2)
