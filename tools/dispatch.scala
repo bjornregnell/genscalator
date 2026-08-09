@@ -82,6 +82,10 @@ object Dispatch {
   }
 
   def dispatch(args: Seq[String]): Unit = args match {
+    // Help alias (issue 020): requested usage is OUTPUT (stdout, exit 0), unlike the error
+    // branches below (stderr, exit 2). Deliberately NOT an `entries` verb: there is no
+    // help.scala tool file, and the coverage test pins the table to exactly the file set.
+    case help +: _ if help == "help" || help == "--help" || help == "-h" => println(usage)
     case verb +: rest =>
       entryFor(verb) match {
         case Some(run) => run(rest)

@@ -14,15 +14,24 @@ while [[ -L "$SOURCE" ]]; do
   [[ "$SOURCE" != /* ]] && SOURCE="$DIR/$SOURCE"
 done
 TOOLS="${TT_TOOLS:-$(cd -P "$(dirname "$SOURCE")" && pwd)}"
-if [[ $# -lt 1 ]]; then
-  # Runnable verbs only (SM255 audit M2): a plain `ls *.scala` advertised 55 names of which 11
-  # were mainless helpers that fail with "no such tool". A verb is a file carrying @main;
-  # `dispatch` carries one too but IS the dispatcher, not a verb, so it is filtered by name.
-  # Deriving from @main (not a hardcoded helper list) keeps this line from drifting.
+# Runnable verbs only (SM255 audit M2): a plain `ls *.scala` advertised 55 names of which 11
+# were mainless helpers that fail with "no such tool". A verb is a file carrying @main;
+# `dispatch` carries one too but IS the dispatcher, not a verb, so it is filtered by name.
+# Deriving from @main (not a hardcoded helper list) keeps this line from drifting.
+usage() {
   echo "usage: tt <tool> <args...>   (tools: $(cd "$TOOLS" && grep -l '@main' *.scala | sed 's/\.scala//' | grep -v '^dispatch$' | tr '\n' ' '))"
+}
+if [[ $# -lt 1 ]]; then
+  usage
   exit 2
 fi
 tool="$1"; shift
+# Help alias (issue 020): `tt help` is a newcomer's first guess (and the installer's closing
+# instruction), so print the tool list and exit 0. Must sit BEFORE the guardrails below, which
+# would otherwise reject '--help' as an invalid name and 'help' as a missing tool.
+case "$tool" in
+  help|--help|-h) usage; exit 0 ;;
+esac
 # Guardrail: tool must be a bare identifier (no '/', no '..') so we can only run TOOLS/<name>.scala.
 [[ "$tool" =~ ^[a-zA-Z][a-zA-Z0-9_-]*$ ]] || { echo "tt: invalid tool name '$tool'"; exit 2; }
 [[ -f "$TOOLS/$tool.scala" ]] || { echo "tt: no such tool '$tool' in $TOOLS"; exit 2; }

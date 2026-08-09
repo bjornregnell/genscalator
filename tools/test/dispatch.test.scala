@@ -42,6 +42,32 @@ class DispatchSuite extends munit.FunSuite:
     assert(Dispatch.entryFor("no-such-tool").isEmpty)
   }
 
+  // Same invocation shape as the golden test below; check = false so exit codes are data.
+  private def runDispatcher(args: String*): os.CommandResult =
+    // scala-cli.bat on Windows: ProcessBuilder does no PATHEXT resolution (see cli.test.scala).
+    val scalaCli = if System.getProperty("os.name", "").toLowerCase.contains("win")
+                   then "scala-cli.bat" else "scala-cli"
+    os.proc(scalaCli, "run", toolsDir.toString,
+        "--main-class", "dispatchTypedTools", "--", args.toSeq)
+      .call(check = false, stdout = os.Pipe, stderr = os.Pipe)
+
+  test("subprocess: help, --help, -h print usage with the full tool list and exit 0 (issue 020)") {
+    for helpArg <- Seq("help", "--help", "-h") do
+      val r = runDispatcher(helpArg)
+      assertEquals(r.exitCode, 0, s"'$helpArg' must exit 0")
+      val out = r.out.text()
+      assert(clue(out).contains("usage: tt <tool> <args...>"), s"'$helpArg' must print the usage line")
+      Dispatch.verbs.foreach(v => assert(clue(out).contains(v), s"'$helpArg' usage must list verb '$v'"))
+  }
+
+  test("subprocess: unknown tool still exits 2 with usage on stderr (issue 020)") {
+    val r = runDispatcher("no-such-tool")
+    assertEquals(r.exitCode, 2)
+    val err = r.err.text()
+    assert(clue(err).contains("tt: no such tool 'no-such-tool'"))
+    assert(clue(err).contains("usage: tt <tool> <args...>"))
+  }
+
   test("subprocess golden: text count through the single entry point") {
     val f = os.temp(contents = "foo\nbar\nfoo baz foo\n", suffix = ".txt")
     try

@@ -4,6 +4,8 @@ fires, so at turn zero these reflexes are NOT salient unless you load them. Load
 
 SEARCH / FILES   (never raw find / grep / ls | head / 2>/dev/null / command -v / which / type)
   tt files <DIR> <ext> [regex]              find files (dir first)
+  tt find <root> --type d --max-depth N     find dirs / structure (globs, depth, types)
+    division of labour: files = CONTENT search (grep -rl), find = STRUCTURE search
   tt text grepr <ABS-DIR> <ext> <regex>     recursive grep (dir first, SINGLE-QUOTE the pattern)
   tt text match <file> <regex>              grep a single file
   tt which <name> [<name>...]               what IS a command: PATH hits, symlink chain, script-or-binary
