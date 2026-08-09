@@ -316,6 +316,69 @@ class CliSuite extends munit.FunSuite:
       assert(clue(outAll).contains("3 files"))
     finally TestFs.removeAllForce(d)
   }
+  // issue-017 enhancement half: curated skip-set + repeatable --exclude, exclusion always DISCLOSED.
+  test("files skips curated build dirs by default and discloses it on the count line (issue-017)") {
+    val d = os.temp.dir()
+    try
+      os.write(d / "real.scala", "object A")
+      os.makeDir.all(d / "target")
+      os.write(d / "target" / "translations-GENERATED.scala", "object B")
+      os.makeDir.all(d / "node_modules" / "pkg")
+      os.write(d / "node_modules" / "pkg" / "index.scala", "object C")
+      val (code, out, _) = run("files", d.toString, ".scala")
+      assertEquals(code, 0)
+      assert(clue(out).contains("1 files (2 excluded: node_modules, target)"))
+      assert(clue(out).contains("real.scala"))
+      assert(!clue(out).contains("GENERATED"))
+      assert(!clue(out).contains("index.scala"))
+      // --all restores everything, plain line again
+      val (_, outAll, _) = run("files", d.toString, ".scala", "--all", "--count")
+      assert(clue(outAll).contains("3 files"))
+      assert(!clue(outAll).contains("excluded"))
+    finally TestFs.removeAllForce(d)
+  }
+  test("files --exclude glob drops a whole subtree with disclosure (issue-017)") {
+    val d = os.temp.dir()
+    try
+      os.makeDir.all(d / "src")
+      os.write(d / "src" / "a.scala", "object A")
+      os.makeDir.all(d / "seeds")
+      os.write(d / "seeds" / "b.scala", "object B")
+      val (_, out, _) = run("files", d.toString, ".scala", "--exclude", "seeds/**")
+      assert(clue(out).contains("1 files (1 excluded: seeds/**)"))
+      assert(clue(out).contains("a.scala"))
+      assert(!clue(out).contains("b.scala"))
+    finally TestFs.removeAllForce(d)
+  }
+  test("files: nested curated dirs are pruned and disclosed once by name (issue-017)") {
+    val d = os.temp.dir()
+    try
+      os.makeDir.all(d / "src")
+      os.write(d / "src" / "Main.scala", "object M")
+      os.makeDir.all(d / "project" / "target")
+      os.write(d / "project" / "target" / "active.json", "{}")
+      os.makeDir.all(d / "target")
+      os.write(d / "target" / "x.json", "{}")
+      val (_, out, _) = run("files", d.toString, ".json", "--count")
+      assert(clue(out).contains("0 files (2 excluded: target)")) // two pruned subtrees, one distinct name
+    finally TestFs.removeAllForce(d)
+  }
+  test("files: plain count line when nothing was excluded; flag errors exit 2 (issue-017)") {
+    val d = os.temp.dir()
+    try
+      os.write(d / "a.scala", "x")
+      os.write(d / "b.scala", "y")
+      val (_, out, _) = run("files", d.toString, ".scala", "--count")
+      assert(clue(out).contains("2 files"))
+      assert(!clue(out).contains("excluded"))
+      val (code1, _, err1) = run("files", d.toString, ".scala", "--exclude")
+      assertEquals(code1, 2)
+      assert(clue(err1).contains("--exclude needs a glob"))
+      val (code2, _, err2) = run("files", d.toString, ".scala", "--exclude", "[")
+      assertEquals(code2, 2)
+      assert(clue(err2).contains("bad --exclude glob"))
+    finally TestFs.removeAllForce(d)
+  }
 
   // --- find (typed safe enumeration, read-half) ---
   private def findFixture(): os.Path =
@@ -410,6 +473,44 @@ class CliSuite extends munit.FunSuite:
       assert(clue(out).contains("1 matches"))         // only visible.scala (hidden dir + dotfile skipped)
       val (_, outAll, _) = run("find", d.toString, "--ext", ".scala", "--all", "--count")
       assert(clue(outAll).contains("3 matches"))       // + .hidden/buried.scala + .dotfile.scala
+    finally TestFs.removeAllForce(d)
+  }
+  // issue-017 enhancement half on the find side (shared walker, so behaviour mirrors files).
+  test("find skips curated build dirs by default and discloses it on the matches line (issue-017)") {
+    // The issue's own misleading case: the ONLY .json is a build artifact.
+    val d = os.temp.dir()
+    try
+      os.makeDir.all(d / "src")
+      os.write(d / "src" / "Main.scala", "object M")
+      os.makeDir.all(d / "project" / "target")
+      os.write(d / "project" / "target" / "active.json", "{}")
+      val (_, out, _) = run("find", d.toString, "--ext", ".json")
+      assert(clue(out).contains("0 matches (1 excluded: target)"))
+      val (_, outAll, _) = run("find", d.toString, "--ext", ".json", "--all", "--count")
+      assert(clue(outAll).contains("1 matches"))
+      assert(!clue(outAll).contains("excluded"))
+    finally TestFs.removeAllForce(d)
+  }
+  test("find --exclude glob prunes the subtree root early, with disclosure (issue-017)") {
+    val d = os.temp.dir()
+    try
+      os.write(d / "a.md", "x")
+      os.makeDir.all(d / "seeds" / "deep")
+      os.write(d / "seeds" / "deep" / "b.md", "y")
+      val (_, out, _) = run("find", d.toString, "--ext", ".md", "--exclude", "seeds/**")
+      assert(clue(out).contains("1 matches (1 excluded: seeds/**)"))
+      assert(!clue(out).contains("b.md"))
+      // the directory `seeds` itself is pruned by the trailing-double-star prefix rule
+      val (_, outD, _) = run("find", d.toString, "--type", "d", "--exclude", "seeds/**", "--count")
+      assert(clue(outD).contains("1 matches (1 excluded: seeds/**)")) // just the root survives
+    finally TestFs.removeAllForce(d)
+  }
+  test("find plain matches line when nothing excluded (no-noise regression, issue-017)") {
+    val d = findFixture()
+    try
+      val (_, out, _) = run("find", d.toString, "--ext", ".scala", "--count")
+      assert(clue(out).contains("3 matches"))
+      assert(!clue(out).contains("excluded"))
     finally TestFs.removeAllForce(d)
   }
 
@@ -830,6 +931,66 @@ class CliSuite extends munit.FunSuite:
       assert(clue(out).contains("1 errors, 1 warnings (3 lines scanned)"))
     finally os.remove(f)
   }
+  // issue-018 enhancement half: positive success markers + the --require-markers gate.
+  private val cleanSbtLog =
+    "[info] welcome to sbt 1.10.0\n[info] compiling 2 Scala sources to /tmp/x/target/classes ...\n" +
+      "[info] done compiling\n[success] Total time: 57 s\n"
+  test("log summary counts success markers and upgrades the zero-hit verdict (issue-018)") {
+    val f = os.temp(contents = cleanSbtLog, suffix = ".log")
+    try
+      val (code, out, _) = run("log", f.toString)
+      assertEquals(code, 0)
+      assert(clue(out).contains("=== errors: 0"))
+      assert(clue(out).contains("=== warnings: 0"))
+      assert(clue(out).contains("=== success markers: 2"))
+      assert(clue(out).contains("=== verdict: 0 errors, 0 warnings, 2 success markers (4 lines scanned)"))
+    finally os.remove(f)
+  }
+  test("log --require-markers gates a non-log file and EMPTY input with exit 1 (issue-018)") {
+    val f = os.temp(contents = "{ \"theme\": \"dark\", \"fontSize\": 12 }\n", suffix = ".json")
+    val e = os.temp(contents = "", suffix = ".log")
+    try
+      val (code1, out1, _) = run("log", f.toString, "--require-markers")
+      assertEquals(code1, 1)
+      assert(clue(out1).contains("no log markers recognised in 1 lines"))
+      val (code2, out2, _) = run("log", e.toString, "--require-markers")
+      assertEquals(code2, 1)
+      assert(clue(out2).contains("=== verdict: EMPTY input (0 bytes)"))
+    finally { os.remove(f); os.remove(e) }
+  }
+  test("log --require-markers passes when any marker is recognised (issue-018)") {
+    // The gate is about RECOGNITION, not cleanliness: error markers satisfy it too.
+    val clean = os.temp(contents = cleanSbtLog, suffix = ".log")
+    val err = os.temp(contents = "[error] boom\n", suffix = ".log")
+    try
+      val (code1, out1, _) = run("log", clean.toString, "--require-markers")
+      assertEquals(code1, 0)
+      assert(clue(out1).contains("=== success markers: 2"))
+      val (code2, out2, _) = run("log", err.toString, "--require-markers")
+      assertEquals(code2, 0)
+      assert(clue(out2).contains("=== errors: 1"))
+    finally { os.remove(clean); os.remove(err) }
+  }
+  test("log success markers ignore zero-count tally lines (issue-018)") {
+    val f = os.temp(contents = "Tests: 0 passed, 0 total\n", suffix = ".log")
+    try
+      val (_, out, _) = run("log", f.toString)
+      assert(clue(out).contains("=== success markers: 0"))
+      assert(clue(out).contains("no log markers recognised in 1 lines"))
+    finally os.remove(f)
+  }
+  test("log on a directory adds the gitinfo hint and keeps exit 2 (issue-020)") {
+    val d = os.temp.dir()
+    try
+      val (code, _, err) = run("log", d.toString)
+      assertEquals(code, 2)
+      assert(clue(err).contains("log: not a readable file:"))
+      assert(clue(err).contains("for git history see: tt gitinfo <repo>"))
+      val (code2, _, err2) = run("log", (d / "nope.log").toString)
+      assertEquals(code2, 2)
+      assert(!clue(err2).contains("gitinfo")) // the hint fires only for directories
+    finally TestFs.removeAllForce(d)
+  }
 
   // --- newtool (scaffold generator; writes tools/<name>.scala relative to cwd) ---
   test("newtool: scaffolds a tool from the template into tools/ under cwd") {
@@ -952,6 +1113,57 @@ class CliSuite extends munit.FunSuite:
     val (code, out, _) = run("htmltext")
     assertEquals(code, 2)
     assert(clue(out).toLowerCase.contains("usage"))
+  }
+  // issue-016: --cap on the stdout branch, mirroring tt log's flag; truncation is never silent.
+  private def capFixture(): os.Path = os.temp(
+    contents = "<html><head><title>t</title></head><body><p>alpha</p><p>bravo</p><p>charlie</p>" +
+      "<p>delta</p><p>echo</p><p>foxtrot</p></body></html>",
+    suffix = ".html") // 6 paragraphs -> 11 output lines (blank line between each)
+  test("htmltext --cap truncates with a non-silent notice showing true totals (issue-016)") {
+    val f = capFixture()
+    try
+      val (code, out, _) = run("htmltext", f.toString, "--cap", "4")
+      assertEquals(code, 0)
+      assert(clue(out).contains("alpha"))
+      assert(clue(out).contains("bravo"))
+      assert(clue(out).contains("=== truncated: showing 4 of 11 lines"))
+      assert(!clue(out).contains("charlie"))
+      assert(!clue(out).contains("foxtrot"))
+    finally os.remove(f)
+  }
+  test("htmltext --cap larger than the output prints everything and no notice") {
+    val f = capFixture()
+    try
+      val (_, out, _) = run("htmltext", f.toString, "--cap", "100")
+      assert(clue(out).contains("alpha"))
+      assert(clue(out).contains("foxtrot"))
+      assert(!clue(out).contains("=== truncated"))
+    finally os.remove(f)
+  }
+  test("htmltext --cap rejects non-integer and negative values with exit 2") {
+    val f = capFixture()
+    try
+      val (code1, out1, err1) = run("htmltext", f.toString, "--cap", "many")
+      assertEquals(code1, 2)
+      assert(clue(err1).contains("htmltext: --cap needs a non-negative integer, got 'many'"))
+      assert(!clue(out1).contains("alpha"))
+      val (code2, _, err2) = run("htmltext", f.toString, "--cap", "-3")
+      assertEquals(code2, 2)
+      assert(clue(err2).contains("got '-3'"))
+      val (code3, _, err3) = run("htmltext", f.toString, "--cap")
+      assertEquals(code3, 2)
+      assert(clue(err3).contains("--cap is missing its argument"))
+    finally os.remove(f)
+  }
+  test("htmltext default stays uncapped with no notice") {
+    val f = capFixture()
+    try
+      val (code, out, _) = run("htmltext", f.toString)
+      assertEquals(code, 0)
+      assert(clue(out).contains("alpha"))
+      assert(clue(out).contains("foxtrot"))
+      assert(!clue(out).contains("=== truncated"))
+    finally os.remove(f)
   }
 
   // --- chrono (stopwatch) — fmt is the pure formatter; now/usage are the CLI contract ---
