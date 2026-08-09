@@ -105,30 +105,91 @@ object Lib:
       .orElse(toolsDir().map(_.getParent))
       .orElse(dir(Path.of(sys.props.getOrElse("user.home", "."), ".genscalator")))
 
-  /** Walk the tree under root with hidden-name PRUNING (issue-017): a dot-named directory is skipped
-    * as a WHOLE subtree (so .git/.scala-build caches never crowd a scan) and dot-named files are
-    * dropped, unless all=true. The root itself is always entered, hidden or not. Symlinks are not
-    * followed; unreadable entries are skipped. onEntry receives every retained entry with its TRUE
-    * type — walkFileTree delivers directories at exactly maxDepth to visitFile, so the type must
-    * travel with the path or boundary dirs masquerade as files (issue-014). Shared by find + files,
-    * so the siblings' pruning can never drift apart again. */
-  def walkPruned(root: java.nio.file.Path, all: Boolean = false, maxDepth: Int = Int.MaxValue)(
-      onEntry: (java.nio.file.Path, Boolean) => Unit): Unit =
-    import java.nio.file.{Files, FileVisitResult, Path, SimpleFileVisitor}
+  /** Directory NAMES the walker prunes by default alongside dot-names (issue-017): build output and
+    * vendored trees that crowd out sources on any JVM/Node repo. Unlike the dot-name skip this
+    * exclusion is always DISCLOSED via the PruneReport — a curated default may filter, never hide. */
+  val curatedSkipDirNames: Set[String] = Set("target", "out", "build", "node_modules")
+
+  /** Pruning policy for walkPruned. all=true disables BOTH dot-name and curated pruning (unchanged
+    * meaning of --all: everything). excludeGlobs always apply, even under all — they are explicit
+    * caller requests — matched in java.nio glob syntax against the ROOT-RELATIVE path of each entry.
+    * A glob with a trailing double-star after a slash also prunes the subtree ROOT itself (an
+    * exclude of dir-slash-star-star prunes `dir` too — Scala comments nest, so the literal form
+    * lives in the tools' help texts, not here), and the walk never descends into an excluded tree. */
+  final case class Prune(
+      all: Boolean = false,
+      curated: Boolean = true,
+      excludeGlobs: Vector[String] = Vector.empty)
+
+  /** What a walk suppressed, so tools can DISCLOSE exclusion on their count line (issue-017's hard
+    * requirement: the tool never hides files without saying so). Counts are entries suppressed AT
+    * THE WALK LEVEL: a pruned directory counts as ONE entry, because its subtree is never entered —
+    * counting its contents would cost exactly the walk the pruning saved. Dot-name skips are not
+    * reported; they are the documented default, as before. */
+  final case class PruneReport(
+      curatedCount: Int, curatedNames: Vector[String],
+      excludeCount: Int, excludeGlobsHit: Vector[String]):
+    def total: Int = curatedCount + excludeCount
+    /** Suffix for a count line: "" when nothing was excluded (the plain old line, no noise), else
+      * e.g. " (2 excluded: target, node_modules)". Shared here so find + files cannot drift. */
+    def disclosure: String =
+      if total == 0 then ""
+      else s" ($total excluded: ${(curatedNames ++ excludeGlobsHit).mkString(", ")})"
+
+  /** Walk the tree under root with PRUNING (issue-017): a dot-named directory is skipped as a WHOLE
+    * subtree (so .git/.scala-build caches never crowd a scan) and dot-named files are dropped, unless
+    * prune.all; directories named in curatedSkipDirNames are pruned the same way (disclosed via the
+    * returned PruneReport); prune.excludeGlobs suppress entries by root-relative path, pruning early
+    * so the walk never descends into an excluded subtree. The root itself is always entered, hidden
+    * or not. Symlinks are not followed; unreadable entries are skipped. A bad glob throws
+    * PatternSyntaxException BEFORE the walk starts (nothing partial is emitted). onEntry receives
+    * every retained entry with its TRUE type — walkFileTree delivers directories at exactly maxDepth
+    * to visitFile, so the type must travel with the path or boundary dirs masquerade as files
+    * (issue-014). Shared by find + files, so the siblings' pruning can never drift apart again. */
+  def walkPruned(root: java.nio.file.Path, prune: Prune = Prune(), maxDepth: Int = Int.MaxValue)(
+      onEntry: (java.nio.file.Path, Boolean) => Unit): PruneReport =
+    import java.nio.file.{Files, FileVisitResult, Path, PathMatcher, SimpleFileVisitor}
     import java.nio.file.attribute.BasicFileAttributes
     def hidden(p: Path): Boolean =
       val n = p.getFileName; n != null && n.toString.startsWith(".")
+    def nameOf(p: Path): String = Option(p.getFileName).map(_.toString).getOrElse("")
+    val fs = root.getFileSystem
+    val excludeMatchers: Vector[(String, PathMatcher, Option[PathMatcher])] =
+      prune.excludeGlobs.map: g =>
+        (g, fs.getPathMatcher(s"glob:$g"),
+          Option.when(g.endsWith("/**"))(fs.getPathMatcher(s"glob:${g.dropRight(3)}")))
+    def excludedBy(rel: Path, isDir: Boolean): Option[String] =
+      excludeMatchers.collectFirst:
+        case (g, m, prefix) if m.matches(rel) || (isDir && prefix.exists(_.matches(rel))) => g
+    def curatedSkip(name: String): Boolean =
+      !prune.all && prune.curated && curatedSkipDirNames(name)
+    var curatedCount, excludeCount = 0
+    val curatedNames = scala.collection.mutable.SortedSet.empty[String]
+    val globsHit = scala.collection.mutable.Set.empty[String]
     Files.walkFileTree(root, java.util.Collections.emptySet[java.nio.file.FileVisitOption](), maxDepth,
       new SimpleFileVisitor[Path] {
         override def preVisitDirectory(dir: Path, attrs: BasicFileAttributes): FileVisitResult =
-          if !all && hidden(dir) && !dir.equals(root) then FileVisitResult.SKIP_SUBTREE
-          else { onEntry(dir, true); FileVisitResult.CONTINUE }
+          if dir.equals(root) then { onEntry(dir, true); FileVisitResult.CONTINUE }
+          else if !prune.all && hidden(dir) then FileVisitResult.SKIP_SUBTREE
+          else if curatedSkip(nameOf(dir)) then
+            { curatedCount += 1; curatedNames += nameOf(dir); FileVisitResult.SKIP_SUBTREE }
+          else excludedBy(root.relativize(dir), isDir = true) match
+            case Some(g) => { excludeCount += 1; globsHit += g; FileVisitResult.SKIP_SUBTREE }
+            case None    => { onEntry(dir, true); FileVisitResult.CONTINUE }
         override def visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult =
-          if all || !hidden(file) then onEntry(file, attrs.isDirectory)
+          // Boundary-depth dirs land here (issue-014) — suppress them by the same policies as above.
+          if prune.all || !hidden(file) then
+            if attrs.isDirectory && curatedSkip(nameOf(file)) then
+              { curatedCount += 1; curatedNames += nameOf(file) }
+            else excludedBy(root.relativize(file), attrs.isDirectory) match
+              case Some(g) => { excludeCount += 1; globsHit += g }
+              case None    => onEntry(file, attrs.isDirectory)
           FileVisitResult.CONTINUE
         override def visitFileFailed(file: Path, exc: java.io.IOException): FileVisitResult =
           FileVisitResult.CONTINUE
       })
+    PruneReport(curatedCount, curatedNames.toVector,
+      excludeCount, prune.excludeGlobs.distinct.filter(globsHit))
 
   /** Recovery text for a bare skillcheck/skillgrants failing on a NATIVE install (issue-015): the
     * install tree ships NO `skills/` by design (D4: the plugin owns the skills), so the default
