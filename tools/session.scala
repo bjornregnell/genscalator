@@ -6,13 +6,22 @@
 //   tt session                 print the display name: YYMMDD-HHhMMm[-MyName]
 //   tt session <name words>    set the human name part (spaces allowed)
 //   tt session --clear         remove the human name (the timestamp part always remains)
+//   tt session adopt [<id>]    re-attach orphaned state after a harness session-id re-mint (issue-023)
 // The timestamp is ALWAYS present and FIRST (BR's format): the age signal survives naming, duplicate
 // human names cannot collide, and the string is filesystem-safe by construction (no colon) — though
 // the display name is NEVER a path component; the store is keyed on the opaque harness session id
 // (env CLAUDE_CODE_SESSION_ID), which is useless as a name but perfect as a key. State lives in
 // ~/.claude/gs-sessions/<id>/ via sessionstore.scala; the statusline renders the name inverted after
 // the `gs session:` label. This tool owns only the NAME; chips live in `mode`.
-import java.nio.file.Path
+//
+// issue-023: the harness id is unique but NOT stable — a bg/fg round trip re-mints it, orphaning
+// name + chips under the old key while reads of the new key find silent emptiness. Recovery is the
+// explicit `adopt` verb plus a one-line stderr hint on empty-state reads; the shared scan/select/
+// hint logic lives in sessionstore.scala (SessionStore's orphan-recovery section), used by both this
+// tool and `tt mode`. Auto-adopt is decided OUT of scope, and with SEVERAL candidates adopt refuses
+// to pick: two live sessions in one directory is exactly where an auto-pick would union ANOTHER
+// LIVE SESSION's chips into this one — the user must choose with `adopt <id>`.
+import java.nio.file.{Files, Path}
 
 object SessionTool:
   val Help: String =
@@ -23,20 +32,100 @@ object SessionTool:
       |  session <name words...>     set the human name part (free text, spaces allowed;
       |                              newlines/control characters rejected; max 120 chars)
       |  session --clear             remove the human name (the timestamp part remains)
+      |  session adopt               re-attach ORPHANED state to this session: when the harness
+      |                              re-mints the session id (e.g. a background/foreground round
+      |                              trip), the old key's name + chips look cleared while the state
+      |                              sits orphaned under the old key. With exactly ONE orphan
+      |                              recorded for the SAME working directory, adopt copies it under
+      |                              the current key and reports what was adopted (name, chips,
+      |                              age). With SEVERAL candidates NOTHING is adopted — one may be
+      |                              another LIVE session in this directory — they are listed
+      |                              (newest first) and you pick with `adopt <id>`; exit 2. No
+      |                              orphan: says so and exits 2. Adoption is always explicit —
+      |                              there is no auto-adopt.
+      |  session adopt <id>          adopt exactly the candidate with store id <id> (ids are shown
+      |                              by a bare `adopt`); an id that is not an adoptable candidate
+      |                              for this directory is an error naming the valid ones, exit 2.
       |  session --sessions-root <d> override the store root (config-in-args, for tests)
       |  session --id <id>           override the session id (for tests; default env CLAUDE_CODE_SESSION_ID)
+      |  session --cwd <dir>         override the working directory used for orphan matching (for tests)
       |  session --now-ms <ms>       fixed clock (for deterministic tests)
       |
       |The timestamp part is ALWAYS present and FIRST — the age signal survives naming and two
       |sessions named the same can never be confused. Outside a harness session (no session id)
       |there is nothing to name: the tool says so and exits 1.
       |
+      |`adopt` is a RESERVED verb: a lone word spelled adopt in any capitalization is the verb, so
+      |a session cannot be named just "adopt" (multi-word names are unaffected).
+      |
+      |When an empty-state read (`tt session` or `tt mode`) finds recent (<48h) orphaned state for
+      |this directory, ONE hint line goes to stderr pointing at `tt session adopt`; stdout stays
+      |exactly as before, so nothing that parses it can break.
+      |
       |Examples:
       |  tt session alpha prep       # this session now renders as e.g. 260728-15h42m-alpha prep
       |  tt session                  # what is this session called?
       |  tt session --clear          # back to the bare timestamp
+      |  tt session adopt            # chips/name vanished after a bg/fg? re-attach the orphan
       |
       |Chips/modes are a separate field: see `tt mode`. Full reference: tools/README.md""".stripMargin
+
+  /** One candidate as listed to the human: id first (it is what `adopt <id>` takes). */
+  private def candLine(o: SessionStore.Orphan, nowMs: Long): String =
+    val disp = SessionStore.displayName(o.startedMs.getOrElse(o.mtimeMs), o.name)
+    val chipsPart = if o.chips.isEmpty then "no chips" else "chips: " + o.chips.mkString(" ")
+    s"  ${o.id}  $disp ($chipsPart; ${SessionStore.ageStr(nowMs - o.mtimeMs)} old)"
+
+  /** Copy ONE chosen orphan's state under the current key and report it. */
+  private def adoptOne(root: Path, id: String, cwd: String, nowMs: Long,
+      best: SessionStore.Orphan): Int =
+    // Chips: UNION, orphan's first — chips declared AFTER the id re-mint are live declarations
+    // and must survive adoption (the field timeline in issue-023 shows exactly that split).
+    val curChips = SessionStore.readChips(SessionStore.modesFile(root, id))
+    SessionStore.writeChips(SessionStore.modesFile(root, id), (best.chips ++ curChips).distinct)
+    // started: the orphan's (earlier) stamp OVERWRITES — adoption claims continuity, so the
+    // age signal should show the true session start, not the post-re-mint first write.
+    val started = best.startedMs.orElse(SessionStore.readStarted(root, id)).getOrElse(nowMs)
+    Files.writeString(SessionStore.startedFile(root, id), started.toString + "\n")
+    // Name: the orphan's, unless the human already named the NEW key (newest explicit choice wins).
+    if SessionStore.readName(root, id).isEmpty then
+      best.name.foreach(n => SessionStore.writeName(root, id, n, nowMs))
+    SessionStore.ensureCwd(root, id, cwd)
+    val disp = SessionStore.displayName(started, SessionStore.readName(root, id))
+    val chipsPart = if best.chips.isEmpty then "no chips" else "chips: " + best.chips.mkString(" ")
+    println(s"adopted: $disp ($chipsPart; ${SessionStore.ageStr(nowMs - best.mtimeMs)} old; from id ${best.id})")
+    0
+
+  private def adopt(root: Path, id: String, cwd: String, nowMs: Long, chosen: Option[String]): Int =
+    // No age cap on candidates: adoption is an explicit human act on a named candidate; the 48h
+    // cap exists to keep the unsolicited HINT from nagging, not to second-guess a deliberate
+    // recovery. Prune first so long-dead entries cannot surface as candidates.
+    SessionStore.prune(root, nowMs)
+    val cands = SessionStore.selectOrphans(SessionStore.scanStore(root), id, cwd, nowMs, maxAgeMs = Long.MaxValue)
+    chosen match
+      case Some(pick) =>
+        cands.find(_.id == pick) match
+          case Some(o) => adoptOne(root, id, cwd, nowMs, o)
+          case None =>
+            Console.err.println(s"session adopt: '$pick' is not an adoptable orphan for this directory")
+            if cands.nonEmpty then
+              Console.err.println("valid candidates:")
+              cands.foreach(o => Console.err.println(candLine(o, nowMs)))
+            2
+      case None =>
+        cands match
+          case Vector() =>
+            Console.err.println(
+              "session adopt: no orphaned session state found for this directory — nothing to adopt")
+            2
+          case Vector(one) => adoptOne(root, id, cwd, nowMs, one)
+          case many =>
+            // NEVER auto-pick among several (issue-023 acceptance): one candidate may be another
+            // LIVE session in this directory, and adopting it would union ITS chips into this one.
+            Console.err.println(
+              "session adopt: several orphan candidates for this directory — one may be another LIVE session, so nothing was adopted; pick one with: tt session adopt <id>")
+            many.foreach(o => Console.err.println(candLine(o, nowMs)))
+            2
 
   def dispatch(args: List[String]): Int =
     if args.contains("--help") || args.contains("-h") then { println(Help); return 0 }
@@ -44,9 +133,12 @@ object SessionTool:
       val i = args.indexOf(name); if i >= 0 && i + 1 < args.size then Some(args(i + 1)) else None
     val root  = flagVal("--sessions-root").map(Path.of(_)).getOrElse(SessionStore.defaultRoot)
     val nowMs = flagVal("--now-ms").flatMap(_.toLongOption).getOrElse(System.currentTimeMillis())
-    val sid   = flagVal("--id").orElse(SessionStore.sessionId)
+    // --id is validated like the env id in SessionStore.sessionId (and like mode.scala does):
+    // the id becomes a directory name, and an unvalidated override could escape the store root.
+    val sid   = flagVal("--id").filter(_.matches("[A-Za-z0-9-]+")).orElse(SessionStore.sessionId)
+    val cwd   = flagVal("--cwd").getOrElse(sys.props.getOrElse("user.dir", "."))
     val consumed =
-      List("--sessions-root", "--id", "--now-ms").flatMap { n =>
+      List("--sessions-root", "--id", "--cwd", "--now-ms").flatMap { n =>
         val i = args.indexOf(n); if i >= 0 then List(i, i + 1) else Nil
       }.toSet
     val rest = args.zipWithIndex.collect { case (t, i) if !consumed(i) => t }
@@ -58,6 +150,7 @@ object SessionTool:
       case Some(id) =>
         rest match
           case Nil =>
+            SessionStore.orphanHint(root, id, cwd, nowMs).foreach(Console.err.println) // stderr ONLY
             val started = SessionStore.readStarted(root, id).getOrElse(nowMs)
             println(SessionStore.displayName(started, SessionStore.readName(root, id)))
             0
@@ -66,6 +159,16 @@ object SessionTool:
             val started = SessionStore.readStarted(root, id).getOrElse(nowMs)
             println(SessionStore.displayName(started, None))
             0
+          // A LONE adopt matches in ANY capitalization: during the recovery flow a case-typo must
+          // hit the verb, not silently NAME the session "Adopt". Multi-word names are unaffected;
+          // the targeted form is exact-lowercase `adopt <id>` with an id validated like --id.
+          case verb :: Nil if verb.equalsIgnoreCase("adopt") =>
+            adopt(root, id, cwd, nowMs, chosen = None)
+          case "adopt" :: pick :: Nil if pick.matches("[A-Za-z0-9-]+") =>
+            adopt(root, id, cwd, nowMs, chosen = Some(pick))
+          case "adopt" :: bad =>
+            Console.err.println(s"session adopt: usage: tt session adopt [<id>] — got '${bad.mkString(" ")}'")
+            2
           case words if words.nonEmpty && !words.exists(_.startsWith("--")) =>
             val name = words.mkString(" ").trim
             if !SessionStore.validName(name) then
@@ -74,6 +177,7 @@ object SessionTool:
               2
             else
               SessionStore.writeName(root, id, name, nowMs)
+              SessionStore.ensureCwd(root, id, cwd)
               SessionStore.prune(root, nowMs)
               val started = SessionStore.readStarted(root, id).getOrElse(nowMs)
               println(SessionStore.displayName(started, Some(name)))

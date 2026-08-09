@@ -17,10 +17,13 @@
 // (BR's objection and its resolution, SM208). No session id (a bare shell) -> the global file,
 // exactly today's behavior.
 //
-// STORE: ~/.claude/gs-sessions/<session-id>/ with three tiny files —
+// STORE: ~/.claude/gs-sessions/<session-id>/ with four tiny files —
 //   modes    one chip label per line (the same format as the global file)
 //   name     the human-chosen session name, ONE line (spaces allowed; control chars rejected)
 //   started  epoch-ms stamped when the dir is first created by a WRITER (never by statusline)
+//   cwd      the working directory, ONE line, stamped once by writers (issue-023): the id key is
+//            unique but NOT stable (a harness bg/fg round trip re-mints it), and orphan recovery
+//            must match entries to THIS directory — see the orphan-recovery section below.
 // THE PARTS ARE STORED, NEVER THE JOIN (SM259 rider): `YYMMDD-HHhMMm-MyName` is concatenated at
 // RENDER time only, because names contain hyphens and the join cannot be split back. The display
 // name is never a path component; the id is the key.
@@ -119,3 +122,110 @@ object SessionStore:
             catch case _: Throwable => ()
         finally ds.close()
     catch case _: Throwable => ()
+
+  // ---- issue-023: orphan recovery (harness session-id re-mint, e.g. a bg/fg round trip) ----
+  // The id key is unique but NOT stable: when the harness re-mints it, name + chips sit orphaned
+  // under the old key while the new key reads empty. Recovery = the explicit `tt session adopt`
+  // verb plus a one-line stderr hint on empty-state reads; `tt mode` and `tt session` SHARE the
+  // single copy below (this file is the mainless home both include — a @main tool cannot be
+  // file-included by the other). Matching needs the working directory, which the id-only key never
+  // recorded — so writers stamp the `cwd` file (once, like `started`); entries from before that
+  // stamp have no cwd on record and are deliberately invisible here, because adopting across
+  // directories would attach another project's chips.
+
+  /** One store entry as scanned for orphan hunting. `cwd` is None for entries written before cwd
+    * stamping existed; `mtimeMs` is the newest write anywhere in the entry's dir. */
+  final case class Orphan(id: String, name: Option[String], chips: Vector[String],
+      startedMs: Option[Long], cwd: Option[String], mtimeMs: Long)
+
+  /** Hint age cap. 48h covers the realistic gap between a bg/fg id re-mint and the next read (the
+    * same day or the day after); older same-directory state is more likely a FINISHED session than
+    * an orphan of this one, and a hint that fires on every read forever would be tuned out. The
+    * explicit `adopt` verb applies NO cap (the human decides); the 14-day GC above bounds all. */
+  val HintMaxAgeMs: Long = 48L * 3_600_000L
+
+  /** Candidate selection (same directory, newest first, age-capped): PURE so the adopt/hint
+    * semantics are unit-testable without a harness (issue-023 acceptance). An entry qualifies only
+    * if it RECORDED the same working directory — a missing cwd (pre-stamp entry) never matches. */
+  def selectOrphans(cands: Vector[Orphan], currentId: String, currentCwd: String,
+      nowMs: Long, maxAgeMs: Long): Vector[Orphan] =
+    cands.filter(c =>
+        c.id != currentId
+          && c.cwd.contains(currentCwd)
+          && (c.chips.nonEmpty || c.name.nonEmpty)
+          && (nowMs - c.mtimeMs) <= maxAgeMs)
+      .sortBy(-_.mtimeMs)
+
+  /** Human age like `7m` / `3h` / `2d`, floored; negative (clock skew) clamps to 0m. PURE. */
+  def ageStr(ageMs: Long): String =
+    val m = ageMs.max(0L) / 60_000L
+    if m < 60 then s"${m}m" else if m < 48 * 60 then s"${m / 60}h" else s"${m / (24 * 60)}d"
+
+  def cwdFile(root: Path, id: String): Path = dir(root, id).resolve("cwd")
+
+  def readCwd(root: Path, id: String): Option[String] =
+    try
+      val f = cwdFile(root, id)
+      if Files.isRegularFile(f) then
+        String(Files.readAllBytes(f), "UTF-8").linesIterator.nextOption().map(_.trim).filter(_.nonEmpty)
+      else None
+    catch case _: Throwable => None
+
+  /** Stamp the working directory once, like `started` — writers only. Without it a later session
+    * cannot tell whether an entry belongs to ITS directory when hunting orphans after an id
+    * re-mint. Best-effort: a stamp failure must never break a name/chip write. */
+  def ensureCwd(root: Path, id: String, cwd: String): Unit =
+    try
+      if readCwd(root, id).isEmpty then
+        val f = cwdFile(root, id)
+        Option(f.getParent).foreach(Files.createDirectories(_))
+        Files.writeString(f, cwd + "\n")
+    catch case _: Throwable => ()
+
+  /** IO scan of every store entry into Orphan values; the selection itself stays pure above.
+    * Best-effort and silent like prune — a scan failure must never break a read. */
+  def scanStore(root: Path): Vector[Orphan] =
+    try
+      if !Files.isDirectory(root) then Vector.empty
+      else
+        val buf = Vector.newBuilder[Orphan]
+        val ds = Files.list(root)
+        try
+          ds.iterator.forEachRemaining: d =>
+            try
+              if Files.isDirectory(d) then
+                val id = d.getFileName.toString
+                var mt = Files.getLastModifiedTime(d).toMillis
+                val fs = Files.list(d)
+                try
+                  fs.iterator.forEachRemaining: f =>
+                    try mt = mt.max(Files.getLastModifiedTime(f).toMillis) catch case _: Throwable => ()
+                finally fs.close()
+                buf += Orphan(id, readName(root, id), readChips(modesFile(root, id)),
+                  readStarted(root, id), readCwd(root, id), mt)
+            catch case _: Throwable => ()
+        finally ds.close()
+        buf.result()
+    catch case _: Throwable => Vector.empty
+
+  /** The one-line orphan hint. PURE render; stderr-only at the call sites, because stdout of
+    * `tt session` / `tt mode` is parsed (statusline and agents) and must stay byte-stable. */
+  def hintLine(best: Orphan, nowMs: Long): String =
+    val disp = displayName(best.startedMs.getOrElse(best.mtimeMs), best.name)
+    val chipsPart = if best.chips.isEmpty then "no chips" else "chips " + best.chips.mkString(" ")
+    s"hint: orphaned session state for this directory exists ($disp, $chipsPart, ${ageStr(nowMs - best.mtimeMs)} old) — adopt with: tt session adopt"
+
+  /** Is the current key EMPTY (no name, no chips, not even a started stamp)? The hint fires only
+    * then — partial re-declaration under the new key means the human is already recovering. */
+  def keyIsEmpty(root: Path, id: String): Boolean =
+    readName(root, id).isEmpty
+      && readStarted(root, id).isEmpty
+      && readChips(modesFile(root, id)).isEmpty
+
+  /** The whole empty-state hint in one call, shared verbatim by `tt mode` (list) and `tt session`
+    * (print): Some(line) only when the current key is fully empty AND a recent same-directory
+    * orphan exists. Callers print to STDERR only. */
+  def orphanHint(root: Path, id: String, cwd: String, nowMs: Long): Option[String] =
+    if keyIsEmpty(root, id) then
+      selectOrphans(scanStore(root), id, cwd, nowMs, HintMaxAgeMs).headOption.map(hintLine(_, nowMs))
+    else None

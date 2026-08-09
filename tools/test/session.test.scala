@@ -42,6 +42,24 @@ class SessionStoreSuite extends munit.FunSuite:
     assertEquals(SessionStore.readName(root, "id-1"), None)
   }
 
+  test("selectOrphans (issue-023): same-dir only, non-empty only, age-capped, newest first, current id excluded") {
+    import SessionStore.Orphan
+    val now = 1_000_000_000L
+    val older   = Orphan("older",   Some("alpha"), Vector("Afk"),  Some(1L), Some("/proj"), now - 1000)
+    val newest  = Orphan("newest",  None,          Vector("Solo"), None,     Some("/proj"), now - 500)
+    val elsewhere = Orphan("elsewhere", Some("x"), Vector("X"),    None,     Some("/other"), now - 10)
+    val preStamp  = Orphan("prestamp",  Some("y"), Vector("Y"),    None,     None,           now - 10) // no cwd recorded -> never matches
+    val empty     = Orphan("empty",     None,      Vector.empty,   Some(2L), Some("/proj"),  now - 10)
+    val stale     = Orphan("stale",     Some("z"), Vector("Z"),    None,     Some("/proj"),  now - 49L * 3_600_000L)
+    val me        = Orphan("me",        Some("m"), Vector("M"),    None,     Some("/proj"),  now)
+    val all = Vector(older, newest, elsewhere, preStamp, empty, stale, me)
+    val sel = SessionStore.selectOrphans(all, "me", "/proj", now, SessionStore.HintMaxAgeMs)
+    assertEquals(sel.map(_.id), Vector("newest", "older"))
+    // no age cap (the adopt path): the stale entry qualifies too, still newest-first
+    val uncapped = SessionStore.selectOrphans(all, "me", "/proj", now, Long.MaxValue)
+    assertEquals(uncapped.map(_.id), Vector("newest", "older", "stale"))
+  }
+
   test("prune drops only dirs older than the cutoff") {
     val root = os.temp.dir().toNIO
     SessionStore.writeName(root, "old", "x", nowMs = 0L)
@@ -129,6 +147,116 @@ class SessionCliSuite extends munit.FunSuite:
     run("mode", "--global-file", g, "--sessions-root", root.toString, "--id", "sess-A", "add", "Afk")
     val (_, listedB, _) = run("mode", "--global-file", g, "--sessions-root", root.toString, "--id", "sess-B")
     assert(!clue(listedB).contains("Afk"))
+  }
+
+  // ---- issue-023: orphaned state after a harness session-id re-mint (adopt verb + hint) ----
+  // Fixture pattern: seed state under a FAKE old id via the CLI itself (so `cwd` is stamped the
+  // way real writers stamp it), then read/adopt under a NEW id. All runs pin --sessions-root,
+  // --id and --cwd, so nothing depends on the live harness session or the test runner's cwd.
+
+  test("session adopt with exactly ONE candidate adopts it; post-re-mint chips survive (union)") {
+    val root = os.temp.dir()
+    val g    = (root / "global").toString
+    run("session", "--sessions-root", root.toString, "--id", "old-1", "--cwd", "/fake/dir", "one")
+    run("mode", "--global-file", g, "--sessions-root", root.toString, "--id", "old-1", "--cwd", "/fake/dir", "add", "Afk")
+    // the new session already declared a post-re-mint chip; it must SURVIVE adoption (union)
+    run("mode", "--global-file", g, "--sessions-root", root.toString, "--id", "new-1", "--cwd", "/fake/dir", "add", "Solo")
+    val (code, out, _) = run("session", "--sessions-root", root.toString, "--id", "new-1", "--cwd", "/fake/dir", "adopt")
+    assertEquals(code, 0)
+    assert(clue(out).contains("adopted:") && out.contains("one") && out.contains("old-1"))
+    assertEquals(SessionStore.readName(root.toNIO, "new-1"), Some("one"))
+    val chips = os.read(root / "new-1" / "modes")
+    assert(clue(chips).contains("Afk") && chips.contains("Solo")) // orphan chip + surviving new chip
+  }
+
+  test("session adopt with SEVERAL candidates adopts NOTHING, lists them newest first, requires a choice") {
+    val root = os.temp.dir()
+    val g    = (root / "global").toString
+    def seed(id: String, name: String, chip: String) =
+      run("session", "--sessions-root", root.toString, "--id", id, "--cwd", "/fake/dir", name)
+      run("mode", "--global-file", g, "--sessions-root", root.toString, "--id", id, "--cwd", "/fake/dir", "add", chip)
+    seed("old-1", "one", "Afk")
+    seed("old-2", "two", "RotVigil")
+    // make old-1 decisively older than old-2 (recent enough to dodge the 14-day GC)
+    val hourAgo = System.currentTimeMillis() - 3_600_000L
+    for f <- os.list(root / "old-1") do os.mtime.set(f, hourAgo)
+    os.mtime.set(root / "old-1", hourAgo)
+    val (code, out, err) = run("session", "--sessions-root", root.toString, "--id", "new-1", "--cwd", "/fake/dir", "adopt")
+    assertEquals(code, 2)
+    assertEquals(clue(out), "") // NOTHING adopted, nothing on stdout
+    assert(!os.exists(root / "new-1")) // the new key was not even created — no state written
+    assert(clue(err).contains("old-1") && err.contains("old-2") && err.contains("tt session adopt <id>"))
+    assert(clue(err).indexOf("old-2") < err.indexOf("old-1")) // listed newest first
+  }
+
+  test("session adopt <id> adopts exactly that candidate; an unknown id errors naming the valid ones") {
+    val root = os.temp.dir()
+    val g    = (root / "global").toString
+    def seed(id: String, name: String, chip: String) =
+      run("session", "--sessions-root", root.toString, "--id", id, "--cwd", "/fake/dir", name)
+      run("mode", "--global-file", g, "--sessions-root", root.toString, "--id", id, "--cwd", "/fake/dir", "add", chip)
+    seed("old-1", "one", "Afk")
+    seed("old-2", "two", "RotVigil")
+    run("mode", "--global-file", g, "--sessions-root", root.toString, "--id", "new-1", "--cwd", "/fake/dir", "add", "Solo")
+    // pick the OLDER candidate deliberately: the explicit choice, not recency, decides
+    val hourAgo = System.currentTimeMillis() - 3_600_000L
+    for f <- os.list(root / "old-1") do os.mtime.set(f, hourAgo)
+    os.mtime.set(root / "old-1", hourAgo)
+    val (c1, out1, _) = run("session", "--sessions-root", root.toString, "--id", "new-1", "--cwd", "/fake/dir", "adopt", "old-1")
+    assertEquals(c1, 0)
+    assert(clue(out1).contains("adopted:") && out1.contains("one") && out1.contains("old-1"))
+    assertEquals(SessionStore.readName(root.toNIO, "new-1"), Some("one"))
+    val chips = os.read(root / "new-1" / "modes")
+    assert(clue(chips).contains("Afk") && chips.contains("Solo"))
+    val (c2, _, err2) = run("session", "--sessions-root", root.toString, "--id", "new-2", "--cwd", "/fake/dir", "adopt", "no-such")
+    assertEquals(c2, 2)
+    assert(clue(err2).contains("not an adoptable orphan") && err2.contains("old-2")) // valid ones named
+  }
+
+  test("session adopt (any capitalization) with no orphan exits 2 and never NAMES; other-directory state never counts") {
+    val root = os.temp.dir()
+    // "Adopt" (case-typo) must hit the VERB, not silently name the session during recovery
+    val (c1, _, err1) = run("session", "--sessions-root", root.toString, "--id", "lone", "--cwd", "/fake/dir", "Adopt")
+    assertEquals(c1, 2)
+    assert(clue(err1).contains("no orphaned session state"))
+    assert(!os.exists(root / "lone")) // nothing was named/written
+    run("session", "--sessions-root", root.toString, "--id", "old-x", "--cwd", "/other/dir", "elsewhere")
+    val (c2, _, err2) = run("session", "--sessions-root", root.toString, "--id", "new-x", "--cwd", "/fake/dir", "adopt")
+    assertEquals(c2, 2)
+    assert(clue(err2).contains("no orphaned session state"))
+  }
+
+  test("empty-state reads hint at a recent same-directory orphan on STDERR; stdout is unchanged") {
+    val root = os.temp.dir()
+    val g    = (root / "global").toString
+    run("session", "--sessions-root", root.toString, "--id", "old-h", "--cwd", "/fake/dir", "ghost")
+    run("mode", "--global-file", g, "--sessions-root", root.toString, "--id", "old-h", "--cwd", "/fake/dir", "add", "Afk")
+    val (c1, out1, err1) = run("mode", "--global-file", g, "--sessions-root", root.toString, "--id", "new-h", "--cwd", "/fake/dir")
+    assertEquals(c1, 0)
+    assertEquals(clue(out1), "(no active modes)") // stdout byte-identical to the pre-hint contract
+    assert(clue(err1).contains("hint:") && err1.contains("tt session adopt") && err1.contains("ghost"))
+    val (c2, out2, err2) = run("session", "--sessions-root", root.toString, "--id", "new-h", "--cwd", "/fake/dir")
+    assertEquals(c2, 0)
+    assert(clue(out2).trim.matches("\\d{6}-\\d{2}h\\d{2}m")) // normal print unchanged
+    assert(clue(err2).contains("hint:") && err2.contains("tt session adopt"))
+  }
+
+  test("no hint without an orphan, with declared state under the current key, or past the 48h cap") {
+    val root = os.temp.dir()
+    val g    = (root / "global").toString
+    def list(id: String) = run("mode", "--global-file", g, "--sessions-root", root.toString, "--id", id, "--cwd", "/fake/dir")
+    assert(!clue(list("solo-1")._3).contains("hint:")) // empty store, nothing to hint at
+    run("session", "--sessions-root", root.toString, "--id", "old-h2", "--cwd", "/fake/dir", "ghost")
+    run("mode", "--global-file", g, "--sessions-root", root.toString, "--id", "new-h2", "--cwd", "/fake/dir", "add", "Solo")
+    assert(!clue(list("new-h2")._3).contains("hint:")) // key not empty: human already re-declaring
+    // the 48h cap needs an otherwise-EMPTY root, or the entries above would themselves hint
+    val root2 = os.temp.dir()
+    run("session", "--sessions-root", root2.toString, "--id", "old-h3", "--cwd", "/fake/dir", "ghost")
+    val past = System.currentTimeMillis() - 49L * 3_600_000L // just past the 48h hint cap
+    for f <- os.list(root2 / "old-h3") do os.mtime.set(f, past)
+    os.mtime.set(root2 / "old-h3", past)
+    val (_, _, err3) = run("mode", "--global-file", g, "--sessions-root", root2.toString, "--id", "new-h3", "--cwd", "/fake/dir")
+    assert(!clue(err3).contains("hint:")) // orphan too old to hint (adopt still could)
   }
 
   test("statusline renders the session lead + chips from session and machine stores") {

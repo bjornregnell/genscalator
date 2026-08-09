@@ -21,7 +21,7 @@
 // session id (a bare shell), everything falls back to the global file (~/.claude/gs-modes),
 // exactly the pre-scoping behavior; chips left there render in every session until removed.
 // Labels are bare tokens [A-Za-z0-9._-]+ (no spaces, no paths) so they render cleanly and pass around safely.
-import java.nio.file.{Files, Path}
+import java.nio.file.Path
 
 private val ModeHelp: String =
   """tt mode — record the declared modes of the joint state-of-mind (v0.10.0)
@@ -40,6 +40,7 @@ private val ModeHelp: String =
     |  mode --sessions-root <d> ...  override the session-store root (for tests)
     |  mode --global-file <g> ...    override the machine store, scoping stays active (for tests)
     |  mode --id <id> ...     fix the session id (for tests; default env CLAUDE_CODE_SESSION_ID)
+    |  mode --cwd <d> ...     override the working directory used for orphan matching (for tests)
     |
     |SCOPING (SM208): ALL modes are PER-SESSION, keyed on the harness session id
     |(env CLAUDE_CODE_SESSION_ID), so parallel sessions cannot flip each other's chips — including
@@ -47,6 +48,10 @@ private val ModeHelp: String =
     |this session's spend policy. No session id (a bare shell) -> the global file
     |(~/.claude/gs-modes), as before; chips left there show in every session until removed.
     |Session state: ~/.claude/gs-sessions/<id>/.
+    |
+    |If a list finds NO state under this session's key while recent (<48h) orphaned state for the
+    |SAME directory exists (the harness re-minted the session id, e.g. a bg/fg round trip), ONE
+    |hint line goes to stderr; stdout is unchanged. Recover with `tt session adopt`.
     |
     |Labels are bare tokens [A-Za-z0-9._-]+ (no spaces / paths). Examples of modes:
     |  TokSpend  TokenSaving  HotHarvest  HighContext  Solo  HumanStress  RotVigil  Racing
@@ -81,11 +86,12 @@ private def defaultStateFile(): Path =
   val sid: Option[String] =
     if fileOverride.isDefined then None
     else flagVal("--id").filter(_.matches("[A-Za-z0-9-]+")).orElse(SessionStore.sessionId)
+  val cwd = flagVal("--cwd").getOrElse(sys.props.getOrElse("user.dir", "."))
   def readF(file: Path): Vector[String] = SessionStore.readChips(file)
   def writeF(file: Path, modes: Seq[String]): Unit = SessionStore.writeChips(file, modes)
   def valid(s: String): Boolean = s.matches("[A-Za-z0-9._-]+")
   val consumedIdx =
-    List("--file", "--global-file", "--sessions-root", "--id").flatMap { n =>
+    List("--file", "--global-file", "--sessions-root", "--id", "--cwd").flatMap { n =>
       val i = a.indexOf(n); if i >= 0 then List(i, i + 1) else Nil
     }.toSet
   val rest = a.zipWithIndex.collect { case (t, i) if !consumedIdx(i) => t }
@@ -93,7 +99,14 @@ private def defaultStateFile(): Path =
   rest match
     case Nil =>
       // Machine chips first (they are the shared truth), then this session's chips.
-      val cur = (readF(globalFile) ++ sessionModesFile.map(readF).getOrElse(Vector.empty)).distinct
+      val sessionChips = sessionModesFile.map(readF).getOrElse(Vector.empty)
+      val cur = (readF(globalFile) ++ sessionChips).distinct
+      // issue-023: when the key is FULLY empty but a recent same-directory orphan exists (the
+      // harness re-minted the id), SessionStore.orphanHint yields ONE line — stderr only, so
+      // stdout stays byte-identical for anything that parses the list.
+      for id <- sid do
+        SessionStore.orphanHint(sessionsRoot, id, cwd, System.currentTimeMillis())
+          .foreach(Console.err.println)
       if cur.isEmpty then println("(no active modes)") else cur.foreach(println)
     case "clear" :: Nil =>
       sessionModesFile match
@@ -106,6 +119,7 @@ private def defaultStateFile(): Path =
       val target = sessionModesFile match
         case Some(f) =>
           SessionStore.ensureStarted(sessionsRoot, sid.get, System.currentTimeMillis())
+          SessionStore.ensureCwd(sessionsRoot, sid.get, cwd)
           SessionStore.prune(sessionsRoot, System.currentTimeMillis())
           f
         case None => globalFile
