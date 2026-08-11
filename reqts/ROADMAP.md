@@ -179,7 +179,7 @@ Also in scope for alpha:
   those `.md` sources cite `.html` siblings that exist only after `tt ssg` generates them. If so the
   answer is an ignore rule or a generation-order note — never edit a link into a lie.
 
-## v0.10.1 - reqT-lang round trip, and the road to de-vendoring
+## v0.10.1 - RELEASED 2026-08-07 - the alpha's bug harvest; the round-trip headline did NOT ship
 
 Deliberately AFTER the alpha, not before it. The alpha gate is that a tester can install and run
 without a wedge; round-tripping touches none of that, so putting it earlier would insert work no
@@ -206,6 +206,12 @@ Suggested fix order from the triage: 014, 022, 018, 015, then 017's pruning half
 021 is the release-cut work itself (bump the five version carriers, write the CHANGELOG section,
 gate on tag == carriers), so everything else must be in before it runs.
 
+**What v0.10.1 actually shipped** (tag `v0.10.1` on `a61f839`, 2026-08-07): the six defects above,
+and nothing else. The round-trip headline below (issue-005) and the de-vendoring did NOT ship in it
+and are NOT yet re-scheduled — the section keeps them here rather than silently moving them, because
+where they land is a maintainer decision, not a bookkeeping one. The polish pool moved on to v0.10.2,
+which now has its own section below.
+
 * Goal: nonDestructiveRoundTrip has
   * Gist: parsing then unparsing a document never loses anything a human wrote
   * Spec: Two properties, and the weaker one alone is not enough. LOSSLESS means unparse(parse(x)) equals x byte for byte. IDEMPOTENT means norm(norm(x)) equals norm(x), where norm is unparse after parse, so the result reaches a fixed point. A parser can be perfectly idempotent and still destructive: destroy on the first pass, then stay stable forever. The name of this goal is therefore the strong property, not the weak one.
@@ -230,6 +236,31 @@ Also in scope, because the cascade is the real constraint:
   what it may keep. Publishing the fix without that note is what makes a cascade hurt.
 
 Then de-vendor `tools/reqt-vendored/` and depend on a released reqT-lang, before the beta.
+
+## v0.10.2 - RELEASED 2026-08-11 - the polish pool, and the release gate proven
+
+The six items the v0.10.1 triage parked as polish rather than defects, landed as one wave on
+2026-08-09 and cut on 2026-08-11: the enhancement halves of issue-017 (curated skip-set, repeatable
+`--exclude`, disclosed exclusions, `--all` meaning everything) and issue-018 (success-marker taxonomy,
+`--require-markers`), issue-016 (`tt htmltext --cap`), issue-020 (all three polish items, including a
+`tt help` that exits 0), issue-023 (`tt session adopt` for state orphaned by a harness bg/fg round
+trip), and issue-012 (release-workflow tag-input validation, implemented in the gate job issue-021's
+cut introduced). Per-item detail lives in each issue's Discussion and in `CHANGELOG.md`; the
+implementation commits are `58db2ea` `19e4209` `68e3545` `53edb60` `456f038` `50cb1d0`, with contract
+tests in `9e9f3f8` and the doc sweep in `cb660d4`.
+
+Deliberately NOT in this release, and moved to v0.10.3 rather than dropped:
+
+- **issue-022's real-Windows verification.** The `tt which` fix shipped in v0.10.1 and is unit-tested
+  with `';'` on every platform, but the checklist in 022's Discussion has not been run on real
+  hardware. BR's call, 2026-08-11: ship v0.10.2 with what is proven and do the Windows day for
+  v0.10.3. The issue stays open, and the ordering constraint below still holds.
+- **issue-019 (allowlist doc: which `tt` wins).** Its blocking constraint — 022's fix must land before
+  or with it — is satisfied by code, but the doc would be asserting Windows behaviour nobody has yet
+  watched work. It travels with the Windows day.
+- **issue-011 (links-check ignore rules + the CI gate).** Held on purpose: 017's enhancement half
+  deferred the gitignore question here, so links-check, `tt files` and `tt find` can settle ONE ignore
+  dialect together rather than three.
 
 ## Future
 

@@ -6,6 +6,60 @@ All notable changes to genscalator. Versions follow the git tags (`vX.Y.Z`); the
 Updating genscalator is a **human-reviewed** step — see [`docs/updating.md`](docs/updating.md). Skim this
 file before adopting a new version: it changes the agent's operating rules, so review beats blind pull.
 
+## v0.10.2 — 2026-08-11 — the polish pool, and the release gate proven
+
+The enhancement half of the alpha harvest: the six items the v0.10.1 triage parked as polish rather
+than defects, plus the tag-input validation that release cut left open. Nothing here changes what an
+existing command means; the two behaviour changes that could surprise are called out below.
+
+- **`tt files` and `tt find` prune build output, and say so** (issue-017, enhancement half): the
+  shared walker now takes a prune policy and returns a report. A curated skip-set (`target`, `out`,
+  `build`, `node_modules`) is pruned like dot-names, `--exclude <glob>` is repeatable on both tools
+  (root-relative, a trailing double-star glob pruning the subtree before the walk descends), and
+  every non-dot exclusion is DISCLOSED on the count line — formatted in one shared place so the
+  siblings cannot drift. `--all` now means everything: hidden entries and the curated skips.
+  ⚠ **Behaviour change**: a scan that no longer reports a build directory is correct, not broken.
+  A pruned subtree counts as one entry, because counting its contents would cost exactly the walk
+  the pruning saved. Gitignore awareness is deliberately NOT here: the repo-level ignore convention
+  stays with issue-011, where links-check, files and find can settle one dialect together.
+- **`tt log` can tell a pass from a silence** (issue-018, enhancement half): a curated success-marker
+  taxonomy (sbt, scala-cli/bloop, munit, scalatest, pytest, maven/gradle) built on the mirror image
+  of the tally-line rule — wherever a count appears it must be non-zero, so "0 passed" cannot fake a
+  pass. The summary gains `=== success markers: N`, the zero-hit verdict distinguishes a clean-looking
+  run from no-markers-at-all, and `--require-markers` exits 1 when nothing of any kind is recognised
+  (empty input included) — the gate the Windows empty-file data point argued for.
+- **`tt htmltext` can cap its output** (issue-016): `--cap N` on the stdout branch, mirroring
+  `tt log`'s flag name, validation and error wording. Uncapped by default; truncation is never silent
+  (`=== truncated: showing N of M lines`, with the true total); write-to-file mode is unchanged and
+  always uncapped.
+- **`tt help` exists, and exits 0** (issue-020): `help`/`--help`/`-h` print the usage line with the
+  full tool list on both code paths — the bash launcher (answered without a JVM launch) and the
+  dispatcher — each still deriving its own list, so there is no second hand-maintained copy. The
+  installer's closing `then run: tt help` instruction is therefore now true. Unknown tools still
+  exit 2. Also in this issue: `tt log` given a directory points at `tt gitinfo` instead of failing
+  blankly, and the guard-clean digest names `tt find` with the division of labour (files = CONTENT
+  search, find = STRUCTURE search).
+- **`tt session adopt` re-attaches state orphaned by a harness bg/fg round trip** (issue-023): the
+  store now stamps a `cwd` per entry — it keyed on session id alone, so same-directory matching had
+  nothing to match on until this. One same-directory orphan is adopted (chips unioned, the original
+  `started` stamp restored); SEVERAL candidates are LISTED newest-first and you pick with
+  `adopt <id>`, because one of them may be another live session in the same directory. Auto-adopt
+  stayed out by design. `tt mode`/`tt session` print one stderr hint when a recent orphan exists;
+  stdout stays byte-identical. Two honest limits: orphans written before the `cwd` stamp existed are
+  invisible to adopt, and the statusline deliberately got nothing (its stdout is parsed and it has no
+  stderr a human reads).
+- **The release workflow validates its tag input before anything trusts it** (issue-012): shape, then
+  existence asked of the REMOTE via `git ls-remote --exit-code` (fetch-independent, so a well-shaped
+  typo dies in seconds instead of `--clobber`-ing assets on whatever release it names), then the
+  v0.10.1 carrier match. The tag reaches the script as an environment variable and is never
+  template-expanded into the run block, so a crafted input is inert data rather than shell source.
+  A blank tag still means build-only.
+
+**Still open, and honestly so**: the real-Windows verification of the v0.10.1 `tt which` fix
+(issue-022) has not been run on hardware — it is scheduled for v0.10.3, and 019's allowlist doc waits
+with it. issue-011 (links-check ignore rules + the shared exclude convention) stays open by the same
+reasoning as 017's gitignore note above.
+
 ## v0.10.1 — 2026-08-07 — the alpha's bug harvest, fixed
 
 **The honest note first**: v0.10.0 shipped with every in-repo version declaration still reading 0.9.2

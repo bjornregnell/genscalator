@@ -1,6 +1,6 @@
 {
   "name": "genscalator",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "description": "Power tools for agents: the typed `tt` Scala toolbox (compiler-checked tools that replace brittle bash/grep/awk/sed) plus a skill that teaches the habit.",
   "author": { "name": "Björn Regnell" },
   "homepage": "https://github.com/bjornregnell/genscalator",
