@@ -42,14 +42,32 @@ class DispatchSuite extends munit.FunSuite:
     assert(Dispatch.entryFor("no-such-tool").isEmpty)
   }
 
-  // Same invocation shape as the golden test below; check = false so exit codes are data.
+  // scala-cli.bat on Windows: ProcessBuilder does no PATHEXT resolution (see cli.test.scala).
+  private val isWindows = System.getProperty("os.name", "").toLowerCase.contains("win")
+  private val ScalaCli  = if isWindows then "scala-cli.bat" else "scala-cli"
+
+  // Parity mode (opt-in), the same contract CliSuite uses: -Dtt.native.bin=<native dispatcher> runs
+  // these through the binary that actually SHIPS, so the dispatcher contract is tested end to end
+  // rather than through a build tool that happens to spawn it.
+  //
+  // ⚠ It matters more here than anywhere else in the suite, because a wrapper can silently rewrite the
+  // very thing these tests assert. Specimen, the v0.10.2 release run (2026-08-11, windows-x86_64):
+  // this test saw exit 1 where the dispatcher had called `sys.exit(2)`, while CliSuite's 29 exit-2
+  // assertions passed in the SAME run — because CliSuite goes through the binary and this suite went
+  // through `scala-cli.bat`. Exit 0 survived that wrapper; the exact nonzero code did not. The
+  // dispatcher's exit branches carry no platform condition, so the wrapper was the only difference.
+  private lazy val nativeBin: Option[os.Path] =
+    sys.props.get("tt.native.bin").map(os.Path(_, os.pwd)).filter(os.exists)
+
+  // check = false so exit codes are data.
   private def runDispatcher(args: String*): os.CommandResult =
-    // scala-cli.bat on Windows: ProcessBuilder does no PATHEXT resolution (see cli.test.scala).
-    val scalaCli = if System.getProperty("os.name", "").toLowerCase.contains("win")
-                   then "scala-cli.bat" else "scala-cli"
-    os.proc(scalaCli, "run", toolsDir.toString,
-        "--main-class", "dispatchTypedTools", "--", args.toSeq)
-      .call(check = false, stdout = os.Pipe, stderr = os.Pipe)
+    nativeBin match
+      case Some(bin) =>
+        os.proc(bin.toString, args.toSeq).call(check = false, stdout = os.Pipe, stderr = os.Pipe)
+      case None =>
+        os.proc(ScalaCli, "run", toolsDir.toString,
+            "--main-class", "dispatchTypedTools", "--", args.toSeq)
+          .call(check = false, stdout = os.Pipe, stderr = os.Pipe)
 
   test("subprocess: help, --help, -h print usage with the full tool list and exit 0 (issue 020)") {
     for helpArg <- Seq("help", "--help", "-h") do
@@ -62,7 +80,11 @@ class DispatchSuite extends munit.FunSuite:
 
   test("subprocess: unknown tool still exits 2 with usage on stderr (issue 020)") {
     val r = runDispatcher("no-such-tool")
-    assertEquals(r.exitCode, 2)
+    // Exit 2 is the contract, asserted exactly wherever the channel preserves it — which is the native
+    // binary always, and `scala-cli` everywhere except Windows. Through `scala-cli.bat` the assertion
+    // weakens to "failed", because that is all that channel can honestly report (see runDispatcher).
+    if nativeBin.isDefined || !isWindows then assertEquals(r.exitCode, 2)
+    else assertNotEquals(r.exitCode, 0, "unknown tool must fail")
     val err = r.err.text()
     assert(clue(err).contains("tt: no such tool 'no-such-tool'"))
     assert(clue(err).contains("usage: tt <tool> <args...>"))
