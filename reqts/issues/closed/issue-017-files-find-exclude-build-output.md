@@ -1,6 +1,7 @@
 # Issue 017: `tt files` / `tt find` cannot exclude build output, so generated files dominate every scan
 
-> status: open · labels: toolbox, files, find, ergonomics · summary: dot-names are skipped but `target/`,
+> status: closed 2026-08-13, both halves in: defect half `8fb28af` (v0.10.1), enhancement half
+> `53edb60` (v0.10.2) · labels: toolbox, files, find, ergonomics · summary: dot-names are skipped but `target/`,
 > `out/`, `node_modules/` are not, and there is no `--exclude` and no `.gitignore` awareness — on a Scala
 > repo the generated tree crowds out the sources you asked for.
 

@@ -1,6 +1,7 @@
 # Issue 018: `tt log`'s verdict has no positive signal — a clean build and a non-log file are indistinguishable
 
-> status: open · labels: toolbox, log, agent-trust · summary: `tt log` reports only error/warning counts,
+> status: closed 2026-08-13, both halves in: defect half `8fb28af` (v0.10.1), enhancement half
+> `19e4209` (v0.10.2) · labels: toolbox, log, agent-trust · summary: `tt log` reports only error/warning counts,
 > so a successful 57-second sbt compile and a JSON settings file produce byte-identical output and exit 0;
 > "0 errors, 0 warnings" is an unfalsifiable pass.
 

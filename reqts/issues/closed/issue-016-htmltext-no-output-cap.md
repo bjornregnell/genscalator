@@ -1,6 +1,6 @@
 # Issue 016: `tt htmltext` has no output cap, so a saved page dumps unbounded text into agent context
 
-> status: open · labels: toolbox, htmltext, token-economy · summary: `tt htmltext <file>` prints the whole
+> status: closed 2026-08-13, fixed by `68e3545` (v0.10.2) · labels: toolbox, htmltext, token-economy · summary: `tt htmltext <file>` prints the whole
 > extracted page with no `--cap`, unlike `tt log --cap` and the `--count` on `find`/`files`/`grepr`; since
 > the guard-clean reflexes forbid `| head`, an agent has no in-band way to bound it.
 

@@ -1,6 +1,6 @@
 # Issue 023: per-session mode/session state is orphaned when the harness re-mints the session id (bg/fg round trip)
 
-> status: open · labels: toolbox, session, mode · summary: backgrounding a Claude Code session
+> status: closed 2026-08-13, fixed by `456f038` (v0.10.2) · labels: toolbox, session, mode · summary: backgrounding a Claude Code session
 > (accidental left-arrow) and returning to it made the harness mint a NEW session id; `tt mode`
 > and `tt session` then correctly read the new key and found nothing — all chips and the session
 > name appeared cleared, while the real state sat orphaned under the old key. Recovery today is

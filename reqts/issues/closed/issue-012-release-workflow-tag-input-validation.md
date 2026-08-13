@@ -1,6 +1,7 @@
 # Issue 012: `native-release.yml`'s free-text tag input serves double duty and is never validated
 
-> status: open · labels: ci, release, safety · summary: a manual dispatch's `tag` input is BOTH
+> status: closed 2026-08-13, fixed by `50cb1d0` and proven by the gate firing live and green on both
+> v0.10.2 release runs · labels: ci, release, safety · summary: a manual dispatch's `tag` input is BOTH
 > the `VERSION.txt` stamp and the upload target for `gh release upload --clobber` — one typo
 > mis-stamps every binary AND clobbers assets on whatever release the typo names.
 

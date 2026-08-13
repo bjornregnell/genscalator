@@ -1,6 +1,7 @@
 # Issue 020: three small polish items — `tt help` alias, `tt log` name collision, `tt find` missing from the guard-clean digest
 
-> status: open · labels: toolbox, docs, discoverability, good-first-issue · summary: three independent
+> status: closed 2026-08-13, all three items fixed by `58db2ea` (v0.10.2) · labels: toolbox, docs,
+> discoverability, good-first-issue · summary: three independent
 > paper-cuts from the alpha field test, each cheap: `tt help` exits 2, `tt log <dir>` fails in a way that
 > invites a git misreach, and the `gs warm` digest teaches `tt files` while never mentioning `tt find`.
 
