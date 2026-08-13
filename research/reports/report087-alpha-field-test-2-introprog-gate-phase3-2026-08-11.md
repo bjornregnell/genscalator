@@ -210,3 +210,52 @@ No existing issue covers `tt verify` output handling (025) or `Lib.readUtf8`'s e
 Reported by hmiddelk. An AI agent (Claude Opus 5) did the engineering work, hit the friction, and drafted
 this report under human direction; the human enforced the tool lane, arbitrated scope twice, and reviews
 and submits. Two claims the agent made were withdrawn against measurement and are recorded above.
+
+## Maintainer review round, 2026-08-13 (appended at merge)
+
+PR 3 merged as `c3b271c` after a review round on `main` at `542b2fd`. Per-issue verdicts and triage live
+in each issue's `## Discussion`; this section carries only the cross-issue and process points, per
+`CONTRIBUTING.md`.
+
+**Method.** Five independent review agents, one per issue, each briefed read-only and each told that a
+confirmation earns little and the value is the delta: what the issue got wrong, missed, or over- or
+under-stated. That brief clause is carried over from the PR 2 round, where it was what earned the fleet
+its tokens, and it earned them again here. A sixth agent audited the session's own handover in parallel.
+
+**Aggregate verdict.**
+
+| issue | verdict | the delta that mattered |
+|---|---|---|
+| 024 | confirmed, understated | the contradiction spans **nine** carriers, not three, including `AGENTS.md`, the guard's own fix text, and a passing test that certifies the disputed shape |
+| 025 | partly confirmed | "never echoed" is false (the FAIL path echoes a 20-line tail); guardcheck has no `tee` check; and there is no `--timeout` either |
+| 026 | confirmed, mis-diagnosed | the false all-clear comes from the **empty-output fallback**, not remote selection, so the proposed `--remote` fix would not have fixed it |
+| 027 | confirmed, understated | 7 verbs and 12 call sites, four of which bypass `Lib.readUtf8`, so the proposed single-point fix would have left a third still tracing |
+| 028 | partly confirmed | the `v` prefix is a settled, tested, CI-gated invariant; unifying the carriers would break `tt update --native` |
+
+**Three of five findings survived contact in a stronger form than filed, and two would have produced an
+incomplete fix if implemented as written.** Both incomplete-fix cases (026 item 3, 027) share a shape: the
+reporter correctly localised the *symptom* and inferred a cause from it, where the cause lay one level
+down in shared code. Neither is a criticism of the filing, since both issues were explicit about their
+evidence and one of them flagged its own uncertainty. It is an argument for the verify round existing at
+all, and for keeping the "note anything the issue got wrong" clause in every review brief.
+
+**Process points.**
+
+* **Two findings were produced by reviewing the report rather than the toolbox**, and are now issues 029
+  and 030: merging this PR required raw `gh`, because `tt forge` has read verbs for pull requests
+  (`prs`, `pr`, `pr-files`, `pr-diff`) but cannot list a PR's commits and cannot merge. The commit-listing
+  gap is the sharper one: `CONTRIBUTING.md` forbids assistant-credit trailers, and that rule could only be
+  checked by leaving the lane. A rule we cannot check inside the lane is a rule the lane does not carry.
+  This is the seventh name-the-gap specimen in this series.
+* **One new defect was found while verifying another** and is filed as issue 031, credited to this report:
+  `tt files` on a missing root prints `0 files` and exits 0, where `tt find` correctly exits 2. Silent
+  wrong answers rank above loud ones on our list, so the smallest finding of the batch (027) turned out to
+  be adjacent to the most serious.
+* **The coverage argument is accepted as filed.** 8 of 45 for real, against 085's 26 of 45, is the correct
+  trade for this arm, and the depth is what produced 025. No change to method is requested for the next
+  test. The suggestion to choose the next task for the *lanes* it exercises is adopted: the untried lane
+  is the effectful and outward one, which is precisely where 029 and 030 were just found by accident.
+* **The report's self-corrections are the part to keep.** Three claims withdrawn against measurement, each
+  recorded rather than quietly amended, is why the item-2 correction in 026 arrived as a narrowed ask
+  instead of an argument against a position nobody holds. That practice is now the house expectation for
+  field-test reports.

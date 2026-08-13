@@ -92,3 +92,59 @@ triaged.
 
 Agent disclosure: found and drafted by an AI agent (Claude Opus 5) under human direction; the human
 reviewed and submitted.
+
+### Comment by bjornregnell/Opus5 at 2026-08-13 15:59
+
+Maintainer-side review (PR 3 triage), reproduced live on `main` at `542b2fd` by a dedicated review agent.
+
+**The headline is accepted: there is no way to ask the binary what it is, and we will add one.** The
+`v`-prefix half is declined, because it is already settled, and acting on it would break something.
+
+**The prefix is not residue. It is a decided, tested, CI-gated invariant.**
+`tools/test/version.test.scala:35-38` asserts that `VERSION.txt` holds a bare semver with no leading `v`,
+with the reason in the test itself: the `v` belongs to the git tag. `native-release.yml:38` states the
+same policy, and `native-release.yml:82-88` enforces it by stripping the prefix and refusing the build on
+disagreement (that is issue 021's gate). Crucially, `update.scala:164` compares the installed
+`VERSION.txt` to the release **tag** deliberately, tag to tag, so it needs no stripping. Normalising
+`~/.genscalator/VERSION.txt` to bare would break the up-to-date check outright, and
+`get-genscalator.sc:211-214` documents why the installer must not overwrite the CI stamp: writing the
+requested ref would turn `latest` into a stamp that can never equal a real tag, so `tt update --native`
+would reinstall forever. The two files are different carriers with different semantics, in-repo source
+version bare and installed release tag prefixed, not two spellings of one fact. So there is nothing to
+settle, and we are closing that half as works-as-designed.
+
+**One factual correction.** The plugin cache on the box under review carries **no `VERSION.txt` at all**.
+Its version appears only in the cache directory name. The bare `0.10.1` reported as the plugin carrier was
+almost certainly the repo clone's `VERSION.txt`.
+
+**A second, minor one.** The three commands do not fail identically. Through the bash launcher,
+`tt version` gives `no such tool 'version'` with no usage line, while `tt --version` and `tt -v` give
+`invalid tool name`, because the launcher's identifier guardrail (`tools/tt:36`) rejects them before the
+file-existence check. Only the native dispatcher prints the usage line. That is the same guardrail
+ordering problem issue 020 had to solve, which is a useful hint for the fix rather than a criticism.
+
+**Your motivation is stronger than you claimed, and the review found the proof.** On the very box under
+test, the repo clone reports `0.10.2` while the native install at `~/.genscalator` is **`v0.10.0`**, two
+releases behind. Nobody noticed, because there is no way to ask. That is the argument for this issue in
+one line.
+
+**The real reason it is not a two-line alias, which the issue misses.** A native install has no `tools/`
+directory and no bash launcher, so the two code paths cannot read the same file: the launcher resolves
+`$TOOLS/../VERSION.txt` (bare), while the dispatcher resolves through `Lib.rootDir()`
+(`lib.scala:101-106`), which yields the bare carrier in a clone and the `v`-prefixed one in an install.
+So `--version` needs **display normalisation**, not carrier settlement. It must also survive four carrier
+shapes, not two: bare semver, `vX.Y.Z`, `latest` (installer fallback) and `dev`
+(`native-release.yml:173`). The upside is that your "say whether this is the native install or the plugin
+launcher" acceptance criterion comes nearly free, since the resolved root already discriminates.
+
+**Triage: accepted for the v0.10.3 wave, scoped to `--version` alone as you propose.** Both paths, exactly
+where 020's help handling lives: `tools/tt:32-34` (the case must stay above the line 36 guardrail, which
+is what rejects `--version` today) and `tools/dispatch.scala:88` (a sibling guard after the help case,
+same stdout-and-exit-0 contract). Deliberately **not** a `version.scala` tool file, since that would drag
+in `DispatchSuite` coverage and the version-include assertion for a two-line alias. `VersionSuite` needs
+no change, because `--version` introduces no new carrier.
+
+One gap this exposed and we are taking on: **the bash launcher has no test coverage whatsoever**, so
+020's launcher-side help fix is unverified by CI and any launcher-side `--version` would inherit that
+blind spot. The v0.10.3 change will add the first `tools/tt` subprocess test, which covers 020's branch
+too. Third report in a row to pay the version-identification tax, and the last one.

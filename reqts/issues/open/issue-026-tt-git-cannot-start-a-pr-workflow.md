@@ -155,3 +155,85 @@ confuses the two wastes the reader's time arguing with a position nobody holds.
 Agent disclosure: found and drafted by an AI agent (Claude Opus 5) under human direction; the human ran
 the raw-git commands the tool could not, reviewed and submitted. The item-2 misreading above was the
 agent's and was corrected before filing.
+
+### Comment by bjornregnell/Opus5 at 2026-08-13 15:59
+
+Maintainer-side review (PR 3 triage), verified against `main` at `542b2fd` by a dedicated review agent.
+All three items confirmed. Item 3 is re-diagnosed, and the re-diagnosis matters, because the fix you
+propose would not fix the defect you found.
+
+**Item 3 is two defects welded together, and `--remote` fixes only the smaller one.**
+`git.scala:278-282` prints `fetch: up to date` when git's own output is **empty**. Empty output means
+"git updated no refs". It does not mean "you are current". The commonest way to be behind is with
+remote-tracking refs already current from an earlier fetch: git prints nothing, and the tool reports an
+all-clear. That fires in a single-remote repo with a perfect refspec, with no remote selection involved at
+all. Add `--remote origin` exactly as filed and `tt git fetch --remote origin` still prints `up to date`
+while origin is ahead. So:
+
+* **3a, the correctness half:** the message asserts a proposition the command never evaluated. One line at
+  `git.scala:282`, plus a test. This is the half with the correctness edge you correctly sensed, but the
+  mechanism is the empty-output fallback, not the missing flag.
+* **3b, the ergonomics half:** `fetch` cannot target a remote. Not a one-line parity fix, because
+  `repoArg` (`git.scala:231-237`) hardcodes `case "--repo" :: v :: Nil` and is shared with `pull`, so this
+  needs its own parser plus a per-remote loop like `pushTo`. Roughly 20 to 25 lines with help, README and
+  tests, and `pull` should be swept at the same time since it shares the same argument shape.
+
+Two things strengthen the case beyond what you filed. First, **the correct shape already exists in the
+toolbox**: `update.scala:284-291` runs `rev-list --left-right --count HEAD...@{u}` and prints
+`up to date with <upstream>`, scoped, named and evidence-backed. That is the model for 3a, and at minimum
+the message must name the remote it actually contacted. Second, **this repo makes the scope drop vivid**:
+it has four remotes (origin, gitlab, coursegit, codeberg) with `branch.main.remote = origin`, so bare
+`git fetch` refreshes origin only, and `tt git fetch` prints an unqualified all-clear while three mirrors
+are never contacted, in a project whose entire push story is a mirror set.
+
+One caveat on your specimen, recorded for honesty rather than to dispute it: `Unresolved` immediately
+after a successful fetch requires the remote HEAD object to be genuinely absent locally, which means the
+fetch reached a different remote than `gitinfo` queried, or the refspec did not cover it. Both are
+consistent with what you saw, but because `fetch: up to date` names no remote, the output cannot
+distinguish them. The message is unfalsifiable from itself, which is the defect restated.
+
+**Item 2(a) is right, and for a better reason than given.** The "single-remote repo" clause is simply
+wrong. Under `push.default=simple`, git branches on whether the push is *triangular*, that is whether the
+target remote differs from the branch's default fetch remote, not on how many remotes exist. So with no
+upstream, `--remote origin` fails exactly as a bare push does, while `--remote gitlab` would have
+**succeeded**. You observed the first half and concluded that naming a remote does not help. The
+asymmetry also has a real consequence for us: in a mirror set `--remote origin --remote gitlab
+--remote coursegit`, the whole set aborts on the first remote (`git.scala:196` fails on first rejection)
+even though the other two would have gone through.
+
+**A second overclaim in our own help, which your item 2 lets stand.** "The tool never sets one behind your
+back" describes what the tool does not pass, not what it guarantees. With `push.autoSetupRemote=true`
+(git 2.37 and later) the bare push at `git.scala:189` will set an upstream, and there is no guard and no
+detection. If we state the policy that firmly it should be true.
+
+**And your item 2 ask is more dangerous than allowed for.** `pushTo` loops over N remotes
+(`git.scala:194-198`), so a `--set-upstream` there would rebind the branch upstream to the *last* remote
+in the list, silently redirecting every future bare `pull`, `fetch` and `push`. That is the behind-your-back
+effect the policy exists to prevent. Any such flag must refuse when more than one `--remote` is given.
+
+**Item 1 accepted in principle, but it needs a design call, not just a yes.** "Creating a ref mutates
+nothing" holds for `git branch <name>` and for `switch -c` at HEAD, but not for a general `switch` verb:
+switching to an existing branch rewrites the working tree, and `branch -d`, `switch -f` and
+`--discard-changes` are destructive. It would also be the first verb to move HEAD, against a charter where
+nothing touches the working tree except `pull --ff-only`. And because `Bash(tt git *)` is allowlisted
+precisely because the verb set is closed, any new verb silently widens what an existing blanket allow
+permits, with no re-approval. So: a narrow `tt git branch --repo <dir> --new <name>`, create-at-HEAD only,
+no delete and no force.
+
+**Your framing is understated in one place.** "Cannot start a PR workflow" is generous: `tt forge`
+(`forge.scala:217-232`) has `prs`, `pr`, `pr-files` and `pr-diff`, all read-only, and no `pr-create`. The
+toolbox covers the middle of the workflow and neither end. Merging this very PR required leaving the lane,
+which is now filed as issues 029 and 030.
+
+**Triage: SPLIT, and the precedent is your own issue 018.** 018 is the identical archetype, "reports the
+absence of bad news as if it were good news", and it was triaged split: defect half in v0.10.1,
+enhancement half in v0.10.2. Item 3a ships as a v0.10.3 one-liner and should not wait behind the parser
+work. Item 3b, item 1 and item 2's code half go into the v0.10.3 wave proper. Item 2's documentation half
+(correct the single-remote clause, soften the never-behind-your-back promise) is a two-line change that can
+ship immediately, and you were right that documentation is the actionable residue for that item.
+
+One repo-side fix falls out of this and is ours, not yours: `git.scala:101-102` lists only
+reset/rebase/merge/--force/rm/clean as excluded by design, so `branch`, `switch` and `status` are absent
+from both the tool and the exclusion list, and a reader cannot tell policy from oversight. That ambiguity
+produced both this issue and 004. We will state the boundary explicitly whatever else ships. Also noted:
+`fetch` has no test coverage at all today, so every one of these fixes lands on virgin ground.

@@ -84,3 +84,57 @@ built-in `scala-cli, tt, scalex` allowlist covered the whole task).
 
 Agent disclosure: found and drafted by an AI agent (Claude Opus 5) under human direction; the human
 reviewed and submitted.
+
+### Comment by bjornregnell/Opus5 at 2026-08-13 15:59
+
+Maintainer-side review (PR 3 triage), verified against `main` at `542b2fd` by a dedicated review agent.
+
+**Accepted, with one claim corrected and two additions that make the case stronger.**
+
+**Corrected: "the child's own output is never echoed" is false as written.** On the FAIL path,
+`verify.scala:126-131` prints `--- last output ---` plus the last 20 lines of stdout, and a
+`--- stderr ---` section when stderr is non-empty. So the real contract is "observable only after death,
+and only if it died wrong". The long run that **passes** is the maximally blind case, which is your
+ergonomics complaint exactly, but the flat claim is refutable and the narrower one is stronger.
+
+**Confirmed on the core.** `verify.scala:107` calls the child with `stdout = os.Pipe, stderr = os.Pipe`,
+and verify's first byte of its own output is `verify.scala:115`, after `.call` has returned and the text
+has been drained. Your `run_in_background` analysis is right and does not even need os-lib internals:
+verify's stdout receives nothing at all until the child exits, so there is nothing for the harness to
+capture. The allowlist is as you quote it (`verify.scala:19`: `Set("scala-cli", "tt", "scalex")`).
+
+**One attribution to fix.** The guard rules forbid two of the three workarounds you list, not all three:
+`guardcheck.scala:91-93` catches `| head|tail|wc` and `:185-187` catches `>`, but there is **no check that
+matches `tee`**, verified live (`tt guardcheck cmd "... | tee /tmp/x.log"` returns clean). The harness
+permission prompt still gates it, so the workaround is blocked in practice, just not by guardcheck.
+
+**Addition that raises this above ergonomics.** `skills/avoid-guard-stall/SKILL.md:38-39` prescribes
+`run_in_background` as *the* sanctioned substitute for both `| tail` and `> file`, and
+`guardcheck.scala:187` tells the caller to "use the tool's file-sink flag or run_in_background".
+`tt verify` is the one tool where that documented escape hatch silently fails and which has no file-sink
+flag. The failure mode is therefore reachable by following our own documentation correctly, which is a
+doc/tool contradiction rather than a missing convenience.
+
+**Second addition: there is no `--timeout` either.** `verify.scala:107` passes no timeout, so os-lib's
+infinite default applies, while `box.scala:93`, `git.scala:130` and `git.scala:306` all pass one. Blind
+and unbounded is a worse pairing than blind alone, and a genuinely wedged child hangs verify forever with
+no output at all. We will bundle `--timeout N` into the same change; it is three lines and has none of
+the traps the tee half has.
+
+**Trap for whoever implements it, because the obvious fix is silently broken.** Swapping `os.Pipe` for
+`os.Inherit` (copying `scala.scala:105`) streams perfectly and empties `result.out`, so every `--out` and
+`--err` check would report "missing" and the tool would FAIL everything that passes. The fix has to use
+line-callback sinks that both print and accumulate. Also: suppress the `--- last output ---` replay when
+teeing, and expect stdout/stderr interleaving not to reproduce the child's true ordering, since the
+callbacks run on separate reader threads.
+
+**Scoping note that narrows your own honest note further.** `tt scala` (`scala.scala:105`) and `tt sbt`
+(`sbt.scala:82`) already stream with `os.Inherit`. If either killed run was a scala-cli project build or
+test, `tt scala test <dir>` would have shown live output. So the gap is specifically "a long run that
+needs assertions", not "a long run".
+
+**Triage: accepted for the v0.10.3 wave as `--tee` plus `--timeout`.** We agree with your severity read:
+ergonomics on a long-run path, not a defect in verify's contract, which held up well under real load.
+`--out-file` and the unbounded in-memory capture (`result.out.text()` materialises a 40-minute log whole)
+are deliberately left out of that change, because a ring buffer would break `--out` substring checks that
+span the cut. That tension wants its own issue rather than a rushed flag.

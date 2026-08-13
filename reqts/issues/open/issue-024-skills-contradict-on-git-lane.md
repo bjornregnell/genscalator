@@ -77,3 +77,58 @@ they do not, it has to say "typed verbs, except these named shapes" — and leav
 
 Agent disclosure: found and drafted by an AI agent (Claude Opus 5) under human direction; the human
 reviewed and submitted. The agent is also the specimen — it is the thing that followed the wrong rule.
+
+### Comment by bjornregnell/Opus5 at 2026-08-13 15:59
+
+Maintainer-side review (PR 3 triage), verified against `main` at `542b2fd` by a dedicated review agent.
+
+**CONFIRMED, and the spread is wider than filed: nine carriers, not three.** Both quoted lines are
+verbatim correct (`skills/tt-toolbox/SKILL.md:41`, `skills/avoid-guard-stall/SKILL.md:40`). Six further
+carriers repeat the `git -C` advice, and two of them outrank both skills:
+
+* `AGENTS.md:39` says it too. That is the operating contract, the file a vendored copy carries into other
+  repos, version-pinned and test-guarded (`tools/test/version.test.scala:52`). It never mentions
+  `tt git` or `tt gitinfo`.
+* `tools/guardcheck.scala:76` is the guard's own fix text: *"use `git -C <abs>` for git; pass absolute
+  paths; never cd-then-chain"*. By `avoid-guard-stall`'s own "where the fix must live" table, the guard is
+  the one carrier that survives a warp, so it teaches the raw shape at the exact instant of failure.
+* `tools/test/cli.test.scala:1038-1041` is a passing test asserting that `guardcheck cmd
+  "git -C /tmp/x status"` is clean. The suite certifies as guard-clean the very command the digest names
+  as the reflex slip.
+* Also: `docs/confirmations-method.md:59-62` (a whole section prescribing it, with `git -C <path> commit
+  -m "..."` as the worked example), `docs/allowlist.md:49,57`, `docs/foundations.md:595`, and
+  `skills/scala-code-review/SKILL.md:4,21,26`. The last is legitimate, since `tt git` has no `diff` verb.
+
+**One correction to the framing, which sharpens rather than weakens it.** This is not a logical
+contradiction. Read in context, both lines forbid `cd && git`, and they differ only in the replacement
+they name: `avoid-guard-stall:40` sits in the `cd` row and answers "how do I run git in another directory
+without `cd`". The precise defect is that `tt-toolbox:41` is unconditional and names no typed verb, so it
+reads as blanket permission covering `status` and `log`, where the digest does forbid the raw shape. "Coin
+flip" overstates it, "one carrier omits the typed default" is exact, and the observed cost stands either
+way.
+
+**The reconciled wording already exists in-tree.** `docs/EMBER-EXAMPLE.md:70` carries the
+typed-first-plus-marked-fallback shape the acceptance sketch asks for, so the fix is largely a copy edit
+toward our own exemplar rather than new drafting.
+
+**A coupling worth naming before the lint is written.** The most common raw-git call is `git status`,
+which issue 004 explicitly licenses as a justified reach and `cli.test.scala:1039` certifies as clean. A
+blanket grep would flag exactly that, plus the three legitimate `scala-code-review` mentions. The lint has
+to assert "every raw-git mention names the typed verb first or sits in a marked fallback block", not "no
+raw git", and it is cheapest after 004 lands a typed status shape.
+
+**Triage: accepted, split three ways.** The five documentation carriers ship in the v0.10.3 wave. The two
+`tools/*.scala` carriers (the guardcheck fix text, and the test literal changed to a shape with no typed
+equivalent such as `git -C <abs> diff`) ship with them, because a doc-only fix is precisely the class the
+guard-stall skill says rots. The lint waits on 004; its natural home is
+`tools/test/version.test.scala`, the only suite that already lints real repo carriers for cross-file
+agreement.
+
+Two adjacent findings from the same review, recorded here so they are not lost: `tools/guardcheck.scala:150`
+still claims `git log --grep` is "explicitly sanctioned, commit-log search has no typed verb (SM217)",
+which stopped being true when `tt git log` shipped on 2026-07-28, so the guard is now the stale carrier;
+and `skills/tt-toolbox`'s own `allowed-tools` (line 4) grants no git at all, so obeying its advice under a
+Tier-1 allowlist produces the very prompt the skill exists to prevent.
+
+Thank you for this one. It is the finding a surface sweep structurally cannot produce, and the point that
+mis-instruction adds noise to 004's tripwire is the part that changed how we are sequencing the fix.

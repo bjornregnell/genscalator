@@ -73,3 +73,59 @@ mechanical; filed on the same "report anything that wedges, however small" princ
 
 Agent disclosure: found and drafted by an AI agent (Claude Opus 5) under human direction; the human
 reviewed and submitted.
+
+### Comment by bjornregnell/Opus5 at 2026-08-13 15:59
+
+Maintainer-side review (PR 3 triage), reproduced live on `main` at `542b2fd` by a dedicated review agent.
+
+**CONFIRMED, unchanged by the v0.10.2 wave, and materially understated on breadth.** All three shapes
+still trace and the cited line numbers still match exactly. One correction to the report: the exit code is
+**1**, not 2, because `Dispatch.dispatch` has no catch-all and the exception reaches the default handler.
+
+**It is five `tt text` shapes, not three.** `context` (`text.scala:91`) and `cols` (`text.scala:143`)
+trace identically. Only `grepr` is guarded (`text.scala:123-127`).
+
+**Your breadth guess is right, and the review named the actual set: seven verbs, twelve call sites.**
+Confirmed live, all raw traces, all exit 1: `tt md-fmt` (`md-fmt.scala:165`), `tt ssg --status-update`
+(`ssg.scala:461`, via an unvalidated `postFiles()`), `tt ssg --template` (`ssg.scala:511`), `tt htmltext`
+(`htmltext.scala:73`), `tt ascii sequence` (`ascii.scala:162`), `tt svg sequence` (`svg.scala:222`), and
+`tt parsereqt parse` (`parsereqt.scala:21`, a `FileNotFoundException` at fourteen frames).
+
+**That yields the one correction that changes the fix.** Four of those seven do **not** go through
+`Lib.readUtf8` at all: `htmltext`, `ascii` and `svg` call `Files.readString` directly, and `parsereqt`
+uses `Source.fromFile`. So "fix it once in `Lib.readUtf8`'s callers" would leave a third of the affected
+verbs still tracing. The guard has to be a shared `Lib.requireReadableFile(tool, path)` applied at each
+driver, not a change to the readers.
+
+**Your generalisation is too strong in the other direction, which is good news.** "Any tool taking a file
+argument is likely to have it" is false: `tt json` (`cannot read ...`), `tt tsv` and `tt sub`
+(`not a file: ...`, `sub.scala:111,118`) already degrade cleanly, as do `box`, `boxstats` and `links`.
+Several callers are also safe by construction because their paths come from a validated walk
+(`files.scala:64`, `text.scala:135`, `ssg.scala:482,512,520`, `log.scala:152`) and must not be touched.
+
+**The directory case is worse than the issue assumes, and it constrains the implementation.**
+`tt text count <an existing dir> '.'` throws a *different* exception, `java.io.IOException: Is a
+directory`, at nineteen frames. A guard written as `Files.exists(p)` would still trace. It must be
+`Files.isRegularFile(p)`, exactly as `log.scala:147` already does.
+
+**One correction to the house-style claim.** The style is real but it has four wordings already:
+`not a readable file: X (resolved: Y)` (log), `no such path: X` (find), `not a directory: X (resolved: Y)`
+(grepr), `not a file: X` (sub, tsv), `cannot read X` (json). Your proposed `text: no such file: <path>`
+would add a fifth, so we are taking your own "ideally" clause instead and adopting `tt log`'s exact
+wording, including the `(resolved: ...)` clause and the directory branch it already has. Also, `tt bloop`
+is cited as a path-degradation exemplar and is not one: it takes verbs, not a path.
+
+**Bonus defect found while verifying this, and it is arguably worse than the one you filed.**
+`tt files /no/such/dir .scala` prints `0 files` and exits **0**, because `Lib.walkPruned`'s
+`visitFileFailed` returns `CONTINUE` (`lib.scala:188-189`). A missing root is indistinguishable from an
+empty result, which is a wrong answer rather than a loud failure, and `tt find` on the same input
+correctly exits 2, so the sibling walkers disagree. Filed separately as issue 031, credited to this
+report.
+
+**Triage: accepted for the v0.10.3 wave**, as a shared `Lib.requireReadableFile` plus guards at the eight
+unvalidated call sites, keeping `readUtf8` and `readLatin1` pure and throwing so the exit stays in the
+effectful drivers. Tests go in `tools/test/cli.test.scala` alongside the existing models at `:451` and
+`:987`, one per shape (missing file, existing directory), each asserting that stderr does not contain
+`Exception in thread`. `tools/test/text.test.scala` is the wrong home, since it exercises pure helpers.
+
+Smallest finding of your batch and it grew into the widest fix. Thank you for filing it anyway.
