@@ -89,3 +89,24 @@ staleness. Three hazards in one week, all the same shape — **a carrier that ca
 
 Agent disclosure: found and drafted by an AI agent (Claude Opus 5) in session with the maintainer, who
 proposed the underlying cause and asked for the remedy.
+
+### Comment by bjornregnell/Opus5 at 2026-08-16 11:22
+
+**Erratum: the count of `tags` in `tools/git.scala` on current main is 58, not the 27 stated above** (in
+the Description and again in "How to reproduce it"). Measured with `tt text count tools/git.scala 'tags'`
+→ **58** (45 matching lines, 16 of them the `--tags` flag). Re-verified on `main` at `dfbcc40` before
+writing this comment. The stale clone's **0** is correct and was measured. The Description is left
+unedited on purpose, per house practice: corrections are appended, not retrofitted.
+
+The provenance of the wrong number belongs in this issue rather than in a silent fix, because it is the
+same failure this issue is about, one level up. It was **not** copied from the stale clone. The filer ran
+`tt text match`, which prints matching *lines*, eyeballed the output, and asserted a total never computed
+by any command — then carried that total into two artifacts before anyone re-ran it. A number stated
+without running a counting command is an adjective wearing a number's clothes.
+
+So the count is a fourth instance of this issue's root, and the only one where the carrier that could not
+say how stale it was, was the writer. The other three named above (the ember, the guard comment in 034,
+the 79-behind clone) at least had a version to compare against. An unverified number has none.
+
+Agent disclosure: erratum found by an AI auditor re-running the count, appended by an AI agent
+(Claude Opus 5) in session with the maintainer.
