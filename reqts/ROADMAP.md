@@ -262,6 +262,36 @@ Deliberately NOT in this release, and moved to v0.10.3 rather than dropped:
   deferred the gitignore question here, so links-check, `tt files` and `tt find` can settle ONE ignore
   dialect together rather than three.
 
+## v0.10.3 - IN PROGRESS since 2026-08-16 - the maintainer-workflow wave, and the Windows day
+
+The pool, decided across SM273/SM274 and the 2026-08-16 go: the three items carried from v0.10.2
+above (022's real-Windows checklist, 019, 011) plus the entire 024-038 batch — most of it born from
+one week of actually completing maintainer workflows end-to-end inside the toolbox (PR #3's review
+round, the close sweep, and the cold-start audits), which is where typed-verb gaps become visible.
+
+Sub-batches, so one native rebuild covers the tool edits:
+
+- **Process tooling:** issue-029 (`tt forge pr-commits`), issue-030 (`tt forge pr-merge`),
+  issue-032 (`tt issue close/next/list`), plus issue-035's `whoami --gh/--gl` one-liner (035's tag
+  verbs are a separate maintainer decision and stay out of this wave).
+- **Guard truthfulness:** issue-033 (the pipe check misses `tee`), issue-034 (a guard comment still
+  denying a verb that shipped), and issue-024's carrier sweep (skills/docs contradicting on the git
+  lane).
+- **Read-path honesty:** issue-027 (raw stack trace on a missing file, fixed at true breadth),
+  issue-031 (`tt files` silent success on a missing root), issue-038 (`tt git log --path`).
+- **Version family:** issue-028 (the version verb) + issue-036 (version-stamped policy carriers),
+  which share an argument: a carrier that cannot say how old it is misleads correctly-behaving
+  readers.
+- **Git PR workflow:** issue-026 as split in triage (the `fetch: up to date` false all-clear, and
+  `--remote` on fetch), issue-037 (`tt session` bare-word rename hazard), issue-025 (premise
+  re-examined first, per its triage).
+- **The Windows day (joint, human at the box):** issue-022's checklist on real hardware — now
+  extended to a NAKED Win11 box so the whole newcomer path is exercised from zero (Claude Code
+  install, genscalator install, native binary, guard hook), with ssh enabled first so the agent can
+  steer remotely — then issue-019's doc, which asserts Windows behavior nobody should document
+  unwatched. issue-011 settles its ignore dialect together with `tt files`/`tt find`, per the
+  v0.10.2 hold.
+
 ## Future
 
 Tentative plan after alpha release.
