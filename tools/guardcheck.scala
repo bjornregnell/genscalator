@@ -73,7 +73,9 @@ object Guardcheck {
       "split into separate bare commands, one per call", has(";")),
     Check("HIGH", "cd + compound",
       "cd combined with another command; the path-resolution guard cannot validate the cwd-relative paths",
-      "use git -C <abs> for git; pass absolute paths; never cd-then-chain", has(raw"\bcd\s+\S")),
+      "for git use the typed verbs — tt gitinfo <repo>; tt git log|commit|push ... --repo <dir> — with " +
+        "git -C <abs> only for shapes they lack (e.g. diff); pass absolute paths; never cd-then-chain",
+      has(raw"\bcd\s+\S")),
     Check("HIGH", "command substitution $(...)",
       "dynamic substitution is unanalyzable by construction — the guard is right to distrust it",
       "list dirs with the Glob/Read tools or pass a literal path; never capture-then-reuse", has("\\$\\(")),
@@ -91,6 +93,15 @@ object Guardcheck {
     Check("MED", "pipe to head/tail/wc",
       "an output-SHAPING pipe a typed tool should absorb as a flag",
       "use the tool's --limit / --tail / --count flag instead of a pipe", has(raw"\|\s*(head|tail|wc)\b")),
+    // `tee` is the fourth member of the output-pipe family (issue 033: the closed list above read as
+    // complete and was not — a `| tee` came back CLEAN while our docs credited the guard with catching
+    // it). Split out rather than added to the alternation because the FIX differs: a caller who piped
+    // to tee wants the output KEPT, not shortened, so the answer is the redirect check's answer — a
+    // file sink or run_in_background — not a --limit flag. A fix that does not apply teaches nothing.
+    Check("MED", "pipe to tee",
+      "an output-KEEPING pipe — same family as head/tail/wc, reached for when a long run shows no progress",
+      "use run_in_background (the harness captures the output) or the tool's file-sink flag; never tee around it",
+      has(raw"\|\s*tee\b")),
     Check("MED", "stderr suppression (2>/dev/null)",
       "shell-suppressing stderr — memory says tolerate harmless JVM warnings, do not suppress",
       "let the tool self-report to a file and Read it; tolerate benign stderr", has(raw"2>\s*/dev/null")),
@@ -147,8 +158,10 @@ object Guardcheck {
     // every false positive that matters at once:
     //   - `tt which <name>` and `tt web get <url>` must NEVER match, because flagging the fix is
     //     self-defeating (the lesson recorded at bulkCredentialReadRx);
-    //   - `git log --grep=<x>` is EXPLICITLY sanctioned — commit-log search still has no typed verb
-    //     (SM217) — and never appears first;
+    //   - `git` is not in the alternation and never appears first, so `git log --grep=<x>` cannot fire
+    //     HERE — but it is no longer sanctioned: `tt git log --repo <dir> --grep <p>` shipped 2026-07-28
+    //     and closed the SM217 gap, so the raw shape has its own NOTE check below (issue 034; this exact
+    //     claim rotted in the digest first and in this comment second — twice in two carriers);
     //   - `tt text grepr` cannot match anyway, since `grep\b` does not match inside `grepr`;
     //   - quoted arguments are already masked for the NOTE tier, so a search PATTERN containing the word
     //     `grep` is data, not a reach.
@@ -167,6 +180,16 @@ object Guardcheck {
         "is NOT a broken toolbox — it only means tt falls back to scala-cli and runs slower, so one failed " +
         "tt call licenses retrying THAT call, never abandoning the typed path",
       has(raw"^\s*(grep|egrep|fgrep|rg|find|curl|wget|which)\b|^\s*command\s+-v\b")),
+    // Added 2026-08-16 (issue 034): until `tt git log` shipped on 2026-07-28, raw commit-log search was
+    // explicitly sanctioned by the comment above — the typed verb closed that gap, so tighten-never-loosen
+    // says the retired shape now gets named. NOTE tier only: a nudge must never stall a run. Keyed on the
+    // EXACT retired shape (`git log … --grep`, with or without -C), not on `git log`/`git status` broadly —
+    // issue 004 licenses raw `git status` as a justified reach, and plain `git log` still has raw uses
+    // (formats, paths) the typed verb's flags do not cover.
+    Check("NOTE", "raw git commit-log search where tt git log exists",
+      "a raw `git log --grep` — sanctioned until 2026-07-28, when the typed verb closed the SM217 gap",
+      "use tt git log --repo <dir> --grep <p> (read-only, self-capped; also --author, --since, --limit)",
+      has(raw"^\s*git\s+(-C\s+\S+\s+)?log\b.*--grep")),
     // Added 2026-08-07 (WR223): a cold-start minion wrote tt-text patterns UNQUOTED, so BASH parsed
     // the regex's own metachars — the naked | split the command (a harness ask-prompt on the
     // right-hand fragment, then exit 127), naked brackets are glob roulette. Every guard layer is
@@ -365,7 +388,7 @@ object Guardcheck {
       |Usage:
       |  guardcheck cmd "<shell command>"     check a command: && / ; chains, cd+compound, $( ) and
       |                                       backtick substitution, /dev/stdin, heredocs, pipes to
-      |                                       head/tail/wc, raw recursive grep, output redirects
+      |                                       head/tail/wc/tee, raw recursive grep, output redirects
       |  guardcheck msg "<commit message>"    check a commit message: line-leading #, =word
       |                                       (zsh equals-expansion), angle-bracket globs like <->
       |  guardcheck hook [<json>]             Claude Code PreToolUse hook: reads the tool-call JSON

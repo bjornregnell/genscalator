@@ -35,6 +35,7 @@ object Dispatch {
     "hangover"    -> (a => hangoverDetect(a*)),
     "harden"      -> (a => hardenScan(a*)),
     "htmltext"    -> (a => htmltext(a*)),
+    "issue"       -> (a => trackInRepoIssues(a*)),
     "json"        -> (a => jsonRead(a*)),
     "limit"       -> (a => limit(a*)),
     "links"       -> (a => resolveLinks(a*)),
@@ -86,6 +87,12 @@ object Dispatch {
     // branches below (stderr, exit 2). Deliberately NOT an `entries` verb: there is no
     // help.scala tool file, and the coverage test pins the table to exactly the file set.
     case help +: _ if help == "help" || help == "--help" || help == "-h" => println(usage)
+    // Version alias (issue 028): the same stdout-and-exit-0 contract as help above, and likewise
+    // deliberately NOT an `entries` verb — versionlib.scala is a mainless helper, so the coverage
+    // test ignores it. Logic (display normalisation over the four carrier shapes, carrier-kind
+    // discrimination) lives in tools/versionlib.scala; the bash launcher restates the cheap subset.
+    case v +: _ if v == "version" || v == "--version" || v == "-v" =>
+      println(agenttools.Version.line())
     case verb +: rest =>
       entryFor(verb) match {
         case Some(run) => run(rest)

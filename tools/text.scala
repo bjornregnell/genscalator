@@ -75,16 +75,19 @@ object TextTool:
   if args.contains("--help") || args.contains("-h") then { println(TextHelp); sys.exit(0) }
   args.toList match
     case "count" :: file :: pat :: Nil => // grep -c
+      Lib.requireReadableFile("text", file) // issue-027: one-line degradation, never a stack trace (all 5 file verbs)
       warnGrepBre(pat)
       println(pat.r.findAllIn(Lib.readUtf8(file)).size)
 
     case "match" :: file :: pat :: Nil => // grep -n
+      Lib.requireReadableFile("text", file)
       warnGrepBre(pat)
       val re = pat.r
       for (line, i) <- Lib.readUtf8(file).linesIterator.zipWithIndex if re.findFirstIn(line).isDefined do
         println(f"${i + 1}%6d: $line")
 
     case "context" :: file :: pat :: rest => // grep -C N: matching lines with N lines of context (default 2)
+      Lib.requireReadableFile("text", file)
       val n = rest.headOption.flatMap(_.toIntOption).filter(_ >= 0).getOrElse(2)
       warnGrepBre(pat)
       val re = pat.r
@@ -99,6 +102,7 @@ object TextTool:
         prev = i
 
     case "freq" :: file :: pat :: Nil => // histogram of the match (or capture group 1) — like sort|uniq -c|sort -rn
+      Lib.requireReadableFile("text", file)
       warnGrepBre(pat)
       val counts = pat.r.findAllMatchIn(Lib.readUtf8(file))
         .map(m => if m.groupCount >= 1 && m.group(1) != null then m.group(1) else m.matched)
@@ -139,6 +143,7 @@ object TextTool:
       finally stream.close()
 
     case "cols" :: file :: sep :: idxs if idxs.nonEmpty => // cut/awk: print 1-based fields, tab-joined
+      Lib.requireReadableFile("text", file)
       val want = idxs.map(_.toInt)
       for line <- Lib.readUtf8(file).linesIterator do
         val f = line.split(java.util.regex.Pattern.quote(sep), -1)

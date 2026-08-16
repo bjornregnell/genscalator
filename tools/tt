@@ -31,6 +31,18 @@ tool="$1"; shift
 # would otherwise reject '--help' as an invalid name and 'help' as a missing tool.
 case "$tool" in
   help|--help|-h) usage; exit 0 ;;
+  # Version alias (issue 028): answer "what are you?" without a JVM start. Same placement reason as
+  # help above: the guardrail below rejects '--version'/'-v' before the file check. Restates the
+  # cheap subset of tools/versionlib.scala (a native install has no tools/, so the paths cannot
+  # share code). Display normalisation only: the carrier keeps its decided bare shape.
+  version|--version|-v)
+    root="$(cd -P "$TOOLS/.." && pwd)"
+    v=""; [[ -f "$root/VERSION.txt" ]] && v="$(tr -d '[:space:]' < "$root/VERSION.txt")"
+    [[ -n "$v" ]] || v="unknown"
+    case "$v" in [0-9]*) v="v$v" ;; esac
+    kind="source copy (plugin cache?)"; [[ -e "$root/.git" ]] && kind="git checkout"
+    echo "genscalator $v ($kind at $root; bash launcher; $(uname -sm 2>/dev/null || true))"
+    exit 0 ;;
 esac
 # Guardrail: tool must be a bare identifier (no '/', no '..') so we can only run TOOLS/<name>.scala.
 [[ "$tool" =~ ^[a-zA-Z][a-zA-Z0-9_-]*$ ]] || { echo "tt: invalid tool name '$tool'"; exit 2; }

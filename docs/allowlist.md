@@ -43,6 +43,26 @@ add a path-scoped rule in the spirit of principle 2:
 (Found in the first alpha field test, 2026-07-28: the stale 0.9.1 plugin-cache `tt` ran silently
 while the up-to-date checkout's `bin/tt` prompted, so the quiet path was the stale one.)
 
+**First, establish WHICH `tt` wins.** Before trusting any of the above, run the read-only check:
+
+```
+tt which tt
+```
+
+It shows every `tt` on PATH — winner first, shadowed entries flagged — with ELF-vs-script and build
+time in one read. Confirm the winner is the install you intend, and that you invoke it as the bare
+word `tt` so `Bash(tt *)` applies. Three arrangements have field evidence, and which one you are in
+changes both the rule you need and what works:
+
+1. **Stale plugin-cache `tt` wins** (2026-07-28): quiet but OLD — the case described above.
+2. **Native `~/.genscalator/bin/tt` wins** (2026-07-29): quiet AND current, but the native install
+   tree ships no `skills/` by design, so bare `tt skillcheck` exits 2 there — recoverable from the
+   error message itself since v0.10.1 (issue 015).
+3. **A `~/.local/bin` symlink to a checkout's launcher wins**: quiet, current, full checkout — benign.
+
+On Windows this check requires v0.10.1+ (issue 022: older `tt which` split PATH on `:` and reported
+a false "not found").
+
 **Tier 2 — autonomous (opt in consciously).** Adds path-scoped `git` and scratch-`rm` for THIS repo, so the
 agent can commit and clean its own `tmp/` without prompting. `gs allow` fills in the absolute path for you.
 ```

@@ -23,7 +23,7 @@
 // separately, in dispatch.scala's driver. Reading needs nothing: JDK 18+ already defaults to UTF-8.
 //
 // ⚠ The MAINLESS HELPERS (lib, seqspec, boxstats, minijson, limitstore, secrets, mdparse,
-// releaselib, ziplib) deliberately
+// releaselib, ziplib, versionlib) deliberately
 // do NOT include this file. They are themselves included by tools, and scala-cli does not support
 // CHAINING `using file`: the second hop is dropped with a warning on every build — which additionally
 // breaks CliSuite's empty-stderr contract. They inherit the version from whichever tool includes them,

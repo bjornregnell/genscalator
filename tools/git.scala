@@ -18,14 +18,22 @@
 //                      is --tags and not --follow-tags, and why tag CREATION stays out of scope.
 //   tt git push --repo <dir> [--remote <name>]... [--tags]
 //     push already-committed work without making a commit first.
+//   tt git fetch --repo <dir> [--remote <name>]...
+//     update remote-tracking refs for the named remote(s); with none given, the current branch's
+//     remote (else origin — git's own default). The report NAMES what was contacted: empty git
+//     output means "no refs updated", NOT "you are current", so no unqualified all-clear is ever
+//     printed (issue 026), and remotes that exist but were not fetched are listed.
 //   tt git show --repo <dir> --ref <ref> --path <relpath> [--out <file>]
 //     READ-ONLY: print the file content at <ref> (byte-exact) to stdout, or write it to <file> with
 //     --out. This replaces the un-allowlistable shell pattern of redirecting `git show <ref>:<path>`
 //     into a file (redirect + general git surface), e.g. for PR review of a file at a base ref.
 //   tt git log --repo <dir> [--grep P] [--co-author P] [--author P] [--committer P] [--since D] [--limit N]
+//            [--path <relpath>]...
 //     READ-ONLY commit-log search: capped + tab-formatted (<short-sha>\t<author-email>\t<subject>), so it
 //     needs no `| head` and `Bash(tt git log *)` stays allowlist-safe. --co-author greps the Co-Authored-By
-//     trailer (forge contributor attribution). Retires the raw `git log --grep … | head` reflex (SM217).
+//     trailer (forge contributor attribution). --path keeps only commits that TOUCHED the given repo-root-
+//     relative path(s), passed to git after a `--` separator so a path is never read as a ref (issue 038).
+//     Retires the raw `git log --grep … | head` reflex (SM217).
 import scala.util.Try
 
 // Helpers scoped in this object so top-level names (fail/usage/run) don't collide with the other tools when
@@ -47,11 +55,14 @@ object Git {
       |                                  push already-committed work; repeat --remote for a
       |                                  mirror set, omit it for the branch's upstream
       |  git pull  --repo <dir>          fast-forward only: either FFs or fails loudly
-      |  git fetch --repo <dir>          update remote-tracking refs (never the working tree)
+      |  git fetch --repo <dir> [--remote <name>]...
+      |                                  update remote-tracking refs (never the working tree);
+      |                                  repeat --remote for several remotes — the report names
+      |                                  each remote contacted and lists any it did not touch
       |  git show  --repo <dir> --ref <ref> --path <relpath> [--out <file>]
       |                                  print the file content at <ref> (or write to <file>)
       |  git log   --repo <dir> [--grep P] [--co-author P] [--author P] [--committer P]
-      |            [--since D] [--limit N]
+      |            [--since D] [--limit N] [--path <relpath>]...
       |                                  READ-ONLY commit-log search, capped + tab-formatted
       |                                  (so no `| head` is ever needed)
       |Flags (commit):
@@ -75,6 +86,18 @@ object Git {
       |                                  to MOVE an existing remote tag, so this can only ADD refs.
       |                                  Creating tags is out of scope — this sends tags you already
       |                                  made locally.
+      |Flags (fetch):
+      |  --repo <dir>                    the git repository to operate on (required)
+      |  --remote <name>                 fetch this remote (repeatable). With none given, the
+      |                                  current branch's configured remote is fetched (else
+      |                                  origin — git's own default) and NAMED in the report.
+      |                                  Empty git output is reported as "no new refs" for THAT
+      |                                  remote — never as an unqualified "up to date", which a
+      |                                  fetch does not evaluate (a branch can be behind with its
+      |                                  remote-tracking refs already current from an earlier
+      |                                  fetch). When the fetched remote hosts the current
+      |                                  branch's upstream, the report adds the measured
+      |                                  ahead/behind standing; remotes NOT fetched are listed.
       |Flags (show):
       |  --repo <dir>                    the git repository to read from (required)
       |  --ref <ref>                     any commit-ish: HEAD, a branch, a tag, a SHA (required)
@@ -93,6 +116,12 @@ object Git {
       |  --author P / --committer P      filter by author / committer (name or email regex)
       |  --since D                       only commits more recent than D (e.g. 2026-07-01, "2 weeks ago")
       |  --limit N                       cap the output at N commits (default 50)
+      |  --path <relpath>                only commits that TOUCHED this path (repeatable; a commit
+      |                                  matching ANY given path is kept). Relative to the repo
+      |                                  root, like show --path; passed to git after a `--`
+      |                                  separator, so a path can never be mistaken for a ref or
+      |                                  flag. A path no commit touched yields (no matching
+      |                                  commits), same as any other empty result.
       |log is READ-ONLY. Output is one commit per line, <short-sha>TAB<author-email>TAB<subject>,
       |then a `=== N commit(s)` line that flags when the --limit cap was hit (no silent truncation).
       |Multiple message-patterns (--grep + --co-author) must ALL match. Because the tool caps and
@@ -107,7 +136,9 @@ object Git {
       |    --remote origin --remote gitlab --remote coursegit      # one unit, three mirrors
       |  tt git push --repo /abs/repo --remote gitlab --remote coursegit   # sync, no new commit
       |  tt git pull --repo /abs/repo    # fast-forward to upstream, or fail (no merge commit)
-      |  tt git fetch --repo /abs/repo   # refresh remote-tracking refs only
+      |  tt git fetch --repo /abs/repo   # refresh the branch's remote; the report names it
+      |  tt git fetch --repo /abs/repo --remote upstream   # fetch the fork's upstream explicitly
+      |  tt git log  --repo /abs/repo --path tools/git.scala --limit 10   # commits touching one file
       |  tt git show --repo /abs/repo --ref main --path src/app.scala             # to stdout
       |  tt git show --repo /abs/repo --ref v1.2 --path README.md --out tmp/old-readme.md
       |
@@ -119,9 +150,9 @@ object Git {
         |  tt git commit --repo <dir> --message-file <path> [--add <pathspec>]... [--push] [--remote <name>]...
         |  tt git push  --repo <dir> [--remote <name>]...
         |  tt git pull  --repo <dir>   (fast-forward only)
-        |  tt git fetch --repo <dir>
+        |  tt git fetch --repo <dir> [--remote <name>]...
         |  tt git show  --repo <dir> --ref <ref> --path <relpath> [--out <file>]   (read-only)
-        |  tt git log   --repo <dir> [--grep P] [--co-author P] [--author P] [--committer P] [--since D] [--limit N]   (read-only search)
+        |  tt git log   --repo <dir> [--grep P] [--co-author P] [--author P] [--committer P] [--since D] [--limit N] [--path <relpath>]...   (read-only search)
         |safe subset: add/commit/push/pull(--ff-only)/fetch/show/log only (no reset/rebase/force/rm/clean/merge); message read from file.""".stripMargin)
     sys.exit(2)
 
@@ -274,12 +305,65 @@ object Git {
     if c != 0 then fail(s"git pull --ff-only failed:\n$out")
     println(if out.nonEmpty then out else "pull: up to date")
 
-  // fetch is read-only: it updates remote-tracking refs, never the working tree.
+  /** Parsed `fetch` arguments. Pure and public for the same reason as PushArgs: the co-located tests
+    * exercise the argv path directly, remotes kept in the order given with duplicates preserved. */
+  final case class FetchArgs(repo: Option[String], remotes: Vector[String])
+
+  def parseFetchArgs(args: List[String]): FetchArgs =
+    @annotation.tailrec
+    def go(r: List[String], repo: Option[String], remotes: Vector[String]): FetchArgs =
+      r match
+        case Nil                  => FetchArgs(repo, remotes)
+        case "--repo" :: v :: t   => go(t, Some(v), remotes)
+        case "--remote" :: v :: t => go(t, repo, remotes :+ v)
+        case other :: _           => fail(s"unexpected/incomplete argument '$other' (usage: tt git fetch --repo <dir> [--remote <name>]...)")
+    go(args, None, Vector.empty)
+
+  // The remote a bare `git fetch` would contact: the current branch's configured remote, falling back
+  // to origin (git's own documented default). Resolved HERE so fetch can pass it EXPLICITLY and the
+  // report can name it — a report that names no remote is unfalsifiable from itself, which is how the
+  // issue-026 false all-clear could contradict `tt gitinfo` about the same repo seconds apart.
+  private def defaultRemote(repo: os.Path): String =
+    val branch = run(repo, "rev-parse", "--abbrev-ref", "HEAD")._2
+    val (c, r) = run(repo, "config", "--get", s"branch.$branch.remote")
+    if c == 0 && r.nonEmpty then r else "origin"
+
+  // Evidence suffix for a fetch that transferred nothing, modeled on update.scala's rev-list shape:
+  // when the fetched remote hosts the current branch's upstream, measure where the LOCAL branch stands
+  // ("no refs updated" and "you are 1 behind" are routinely BOTH true, with the remote-tracking refs
+  // already current from an earlier fetch — exactly the case the old constant message read as an
+  // all-clear). Empty when the upstream lives elsewhere: this fetch proved nothing about it.
+  private def upstreamSync(repo: os.Path, remote: String): String =
+    val (uc, upstream) = run(repo, "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}")
+    if uc != 0 || !upstream.startsWith(s"$remote/") then ""
+    else
+      val (cc, counts) = run(repo, "rev-list", "--left-right", "--count", "HEAD...@{u}")
+      counts.split("\\s+").toList match
+        case ahead :: behind :: Nil if cc == 0 =>
+          if ahead == "0" && behind == "0" then s"; local branch up to date with $upstream"
+          else s"; local branch $ahead ahead, $behind behind $upstream"
+        case _ => ""
+
+  // fetch is read-only: it updates remote-tracking refs, never the working tree. Every fetch names ONE
+  // remote explicitly (repeat --remote for several; with none given, the branch's default — resolved,
+  // never implied), and the report asserts only what the command evaluated: git's empty output means
+  // "no refs updated", NOT "you are current", so the old constant `fetch: up to date` was a false
+  // all-clear (issue 026, 3a). Remotes that exist but were not fetched are listed, so the report can
+  // never again claim more than the fetch covered. Fails on the FIRST bad remote, like pushTo.
   private def fetch(args: List[String]): Unit =
-    val repo = repoArg(args, "fetch")
-    val (c, out) = run(repo, "fetch")
-    if c != 0 then fail(s"git fetch failed:\n$out")
-    println(if out.nonEmpty then out else "fetch: up to date")
+    val parsed = parseFetchArgs(args)
+    val repoStr = parsed.repo.getOrElse(fail("--repo required"))
+    val repo = os.Path(repoStr, os.pwd)
+    if !os.exists(repo / ".git") && run(repo, "rev-parse", "--git-dir")._1 != 0 then fail(s"not a git repo: $repo")
+    val remotes = if parsed.remotes.nonEmpty then parsed.remotes else Vector(defaultRemote(repo))
+    for r <- remotes do
+      val (c, out) = run(repo, "fetch", r)
+      if c != 0 then fail(s"git fetch $r failed:\n$out")
+      if out.isEmpty then println(s"fetch $r: no new refs${upstreamSync(repo, r)}")
+      else println(s"fetch $r:\n$out")
+    val known = run(repo, "remote")._2.linesIterator.filter(_.nonEmpty).toVector
+    val unfetched = known.filterNot(remotes.contains)
+    if unfetched.nonEmpty then println(s"(not fetched: ${unfetched.mkString(", ")})")
 
   // show is READ-ONLY: extract a file's content at a ref (the allowlist-clean replacement for
   // redirecting `git show ref:path` into a file). It does NOT use the shared run() helper because
@@ -323,25 +407,29 @@ object Git {
   // (SM217). One commit per line: `<short-sha>\t<author-email>\t<subject>`; a trailing count line makes the
   // cap visible (no silent truncation). --co-author greps the Co-Authored-By trailer (what forges attribute
   // contributors from); multiple message-patterns (--grep/--co-author) must ALL match (git --all-match).
+  // --path keeps only commits that TOUCHED the given repo-root-relative path(s) (repeatable; a commit
+  // matching ANY path is kept), passed to git after a `--` separator so a path that happens to name a
+  // ref or look like a flag is never parsed as one (issue 038).
   private def log(args: List[String]): Unit =
     @annotation.tailrec
     def parse(r: List[String], repo: Option[String], greps: Vector[String], author: Option[String],
-        committer: Option[String], since: Option[String], limit: Int)
-        : (String, Vector[String], Option[String], Option[String], Option[String], Int) =
+        committer: Option[String], since: Option[String], paths: Vector[String], limit: Int)
+        : (String, Vector[String], Option[String], Option[String], Option[String], Vector[String], Int) =
       r match
-        case Nil                     => (repo.getOrElse(fail("--repo required")), greps, author, committer, since, limit)
-        case "--repo" :: v :: t      => parse(t, Some(v), greps, author, committer, since, limit)
-        case "--grep" :: v :: t      => parse(t, repo, greps :+ v, author, committer, since, limit)
-        case "--co-author" :: v :: t => parse(t, repo, greps :+ s"[Cc]o-[Aa]uthored-[Bb]y:.*$v", author, committer, since, limit)
-        case "--author" :: v :: t    => parse(t, repo, greps, Some(v), committer, since, limit)
-        case "--committer" :: v :: t => parse(t, repo, greps, author, Some(v), since, limit)
-        case "--since" :: v :: t     => parse(t, repo, greps, author, committer, Some(v), limit)
+        case Nil                     => (repo.getOrElse(fail("--repo required")), greps, author, committer, since, paths, limit)
+        case "--repo" :: v :: t      => parse(t, Some(v), greps, author, committer, since, paths, limit)
+        case "--grep" :: v :: t      => parse(t, repo, greps :+ v, author, committer, since, paths, limit)
+        case "--co-author" :: v :: t => parse(t, repo, greps :+ s"[Cc]o-[Aa]uthored-[Bb]y:.*$v", author, committer, since, paths, limit)
+        case "--author" :: v :: t    => parse(t, repo, greps, Some(v), committer, since, paths, limit)
+        case "--committer" :: v :: t => parse(t, repo, greps, author, Some(v), since, paths, limit)
+        case "--since" :: v :: t     => parse(t, repo, greps, author, committer, Some(v), paths, limit)
+        case "--path" :: v :: t      => parse(t, repo, greps, author, committer, since, paths :+ v, limit)
         case "--limit" :: v :: t     =>
           v.toIntOption match
-            case Some(n) if n > 0 => parse(t, repo, greps, author, committer, since, n)
+            case Some(n) if n > 0 => parse(t, repo, greps, author, committer, since, paths, n)
             case _                => fail(s"--limit needs a positive integer, got '$v'")
-        case other :: _              => fail(s"unexpected/incomplete argument '$other' (usage: tt git log --repo <dir> [--grep P] [--co-author P] [--author P] [--committer P] [--since D] [--limit N])")
-    val (repoStr, greps, author, committer, since, limit) = parse(args, None, Vector.empty, None, None, None, 50)
+        case other :: _              => fail(s"unexpected/incomplete argument '$other' (usage: tt git log --repo <dir> [--grep P] [--co-author P] [--author P] [--committer P] [--since D] [--limit N] [--path <relpath>]...)")
+    val (repoStr, greps, author, committer, since, paths, limit) = parse(args, None, Vector.empty, None, None, None, Vector.empty, 50)
 
     val repo = os.Path(repoStr, os.pwd)
     if !os.exists(repo / ".git") && run(repo, "rev-parse", "--git-dir")._1 != 0 then fail(s"not a git repo: $repo")
@@ -352,7 +440,10 @@ object Git {
       greps.map(g => s"--grep=$g") ++
       author.map(a => s"--author=$a").toVector ++
       committer.map(c => s"--committer=$c").toVector ++
-      since.map(s => s"--since=$s").toVector
+      since.map(s => s"--since=$s").toVector ++
+      // The `--` separator matters: without it a path that names a ref (a file called `main`) would be
+      // parsed as a revision, silently changing WHAT the command answers. With it, paths stay paths.
+      (if paths.isEmpty then Vector.empty else "--" +: paths)
     val (c, out) = run(repo, gitArgs*)
     if c != 0 then fail(s"git log failed:\n$out")
     if out.isEmpty then println("(no matching commits)")

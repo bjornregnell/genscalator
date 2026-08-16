@@ -1,5 +1,6 @@
 //> using file ../project.scala
 //> using dep org.scalameta::munit::1.3.4
+//> using dep com.lihaoyi::os-lib:0.11.8
 
 // Unit tests for WhichTool's PURE helpers (issue-022): PATH splitting, PATHEXT parsing, magic-byte
 // kinds. The Windows ';'-separator and PATHEXT cases run on ANY platform precisely because the
@@ -24,6 +25,23 @@ class WhichUnitSuite extends munit.FunSuite:
   test("splitPathString on a single entry yields exactly one dir") {
     // The field pin: PATH=C:\Users\u\.genscalator\bin was reported as "2 dirs" by the ':' split.
     assertEquals(WhichTool.splitPathString("C:\\Users\\u\\.genscalator\\bin", ';').size, 1)
+  }
+  test("splitPathString keeps a UNC entry whole among drive-lettered ones") {
+    // Maintainer's precision note on issue-022: UNC entries carry no colon, so any colon-based
+    // arithmetic breaks on them — the ';' split must be indifferent to entry shape.
+    val got = WhichTool.splitPathString("C:\\a\\bin;\\\\server\\share\\bin;C:\\b", ';')
+    assertEquals(got, Vector("C:\\a\\bin", "\\\\server\\share\\bin", "C:\\b"))
+  }
+
+  // --- hitsFor: bare word resolves through the ext list, dir order outranking ext order ---
+  test("hitsFor probes the verbatim name first, then each ext in order, per directory") {
+    val d1 = os.temp.dir(); val d2 = os.temp.dir()
+    os.write(d1 / "tool.EXE", "x"); os.write(d2 / "tool", "x")
+    for f <- Seq(d1 / "tool.EXE", d2 / "tool") do f.toIO.setExecutable(true, false)
+    val hits = WhichTool.hitsFor("tool", Vector(d1.toNIO, d2.toNIO), Vector(".EXE"))
+    // d1 has only the ext form, d2 the verbatim form; dir order decides who comes first,
+    // and the file ACTUALLY found (tool.EXE) is what gets reported for the bare word.
+    assertEquals(hits, Vector((d1 / "tool.EXE").toNIO, (d2 / "tool").toNIO))
   }
 
   // --- pathExts (Windows PATHEXT; empty elsewhere) ---

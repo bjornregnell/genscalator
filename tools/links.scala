@@ -23,7 +23,7 @@
 // file in that dir whose name starts with the prefix. That is deliberately generous: it can keep a file
 // nobody meant, and it cannot silently drop one that is cited.
 //
-//   tt links check <absdir> [--ext .md,.html]
+//   tt links check <absdir> [--ext .md,.html]     (honours <absdir>/.links.ignore, see below)
 //   tt links to    <absdir> <repo-relative-path> [--ext ...]
 //   tt links reach <absdir> --root <rel> [--root <rel>]... [--leaf <rel>]... [--ext ...] [--unreachable]
 //
@@ -66,6 +66,15 @@ private val LinksHelp: String =
     |
     |Not counted: external urls (http, https, mailto), pure #anchors, and mailto-style targets.
     |Hidden dirs (.git, .scala-build, ...) are skipped entirely.
+    |
+    |Ignore file (check only): a checked-in <absdir>/.links.ignore records links that are dangling
+    |BY DESIGN (a page citing the .html that tt ssg generates, a seed citing the main.js its build
+    |produces). One entry per line:
+    |  from/file.md -> target.html  # reason
+    |The reason is MANDATORY — a malformed file exits 2 — because an exemption is documentation,
+    |not silence. Excused links are printed with their reason and kept OFF the exit code; an entry
+    |that excuses nothing is noted, never fatal (a locally built artifact can make an entry idle on
+    |one machine and load-bearing on a fresh checkout).
     |
     |Examples:
     |  tt links check /abs/repo                                  # is anything broken right now?
@@ -133,6 +142,49 @@ object Links:
     * page-to-page link on the site reads as broken. PURE. */
   def generatedFrom(target: String): Option[String] =
     if target.endsWith(".html") then Some(target.dropRight(5) + ".md") else None
+
+  /** One recorded exception for `check`: a (from, target) pair that is dangling BY DESIGN, with the
+    * WHY that makes the exemption documentation rather than silence (issue-011). The canonical cases:
+    * the manual sources cite `.html` siblings that exist only after `tt ssg` generates them, and the
+    * serverless-spa-seed template cites the `main.js` its build step produces. Editing those links
+    * would turn them into lies; recording them lets the check reach 0 without lying. */
+  final case class Ignored(from: String, target: String, why: String)
+
+  /** The exceptions file `check` looks for at the scanned root. Checked in on purpose, so adding an
+    * exemption is a reviewed change; not a scanned extension, so it never reports on itself. */
+  val ignoreFileName: String = ".links.ignore"
+
+  /** Parse an exceptions file: one entry per line, `from -> target  # reason`; blank lines and lines
+    * starting with `#` are comments. The reason is MANDATORY, and the Left names EVERY offending
+    * line rather than the first, so one fix-up pass suffices. An entry without a WHY is exactly the
+    * silence the mechanism exists to prevent, so it is a parse error, not a warning. PURE. */
+  def parseIgnores(text: String): Either[String, Vector[Ignored]] =
+    val entries = text.split("\n", -1).iterator.zipWithIndex
+      .map((l, i) => (l.trim, i + 1))
+      .filter((l, _) => l.nonEmpty && !l.startsWith("#"))
+      .map { (l, n) =>
+        val arrow = l.indexOf(" -> ")
+        // The reason marker is searched AFTER the arrow, so a #fragment inside the target survives.
+        val hash = if arrow < 0 then -1 else l.indexOf(" #", arrow + 4)
+        val why = if hash < 0 then "" else l.drop(hash + 2).dropWhile(_ == '#').trim
+        if arrow < 0 then Left(s"line $n: expected `from -> target  # reason`, got: $l")
+        else if why.isEmpty then
+          Left(s"line $n: entry has no reason — an exemption is documentation, not silence: $l")
+        else
+          val target = l.substring(arrow + 4, hash).trim
+          if target.isEmpty then Left(s"line $n: empty target: $l")
+          else Right(Ignored(l.take(arrow).trim, target, why))
+      }.toVector
+    val errs = entries.collect { case Left(e) => e }
+    if errs.nonEmpty then Left(errs.mkString("\n")) else Right(entries.collect { case Right(i) => i })
+
+  /** The entry that excuses a dangling (from, raw-target) pair, if any. Matching is EXACT on both
+    * fields as `check` prints them — an exemption names ONE link, never a pattern, so a NEW dangling
+    * link beside an excused one still fails. `from` is compared with forward slashes so a scan on
+    * Windows still matches the checked-in entries. PURE. */
+  def excuse(from: String, target: String, ignores: Vector[Ignored]): Option[Ignored] =
+    val f = from.replace('\\', '/')
+    ignores.find(i => i.from == f && i.target == target)
 
   /** True for targets that do not name a file in THIS repo. A leading `/` counts: on the deployed site
     * `/genscalator/graphical-profile/design.css` is a site-absolute URL whose repo home is somewhere
@@ -302,9 +354,33 @@ object Links:
     case "check" =>
       def resolves(r: String): Boolean =
         files(r) || dirs(r) || Links.generatedFrom(r).exists(files)
-      val bad = strictRefs.collect { case (from, raw, res) if !res.exists(resolves) => (from, raw) }
+      // Known by-design exceptions (issue-011), read from the scanned root when checked in there.
+      // A malformed exceptions file is exit 2, not exit 1: a broken exemption list is a config
+      // error, not a link regression, and whatever gates on this must be able to tell them apart.
+      val ignoreFile = root.resolve(Links.ignoreFileName)
+      val ignores =
+        if !Files.isRegularFile(ignoreFile) then Vector.empty[Links.Ignored]
+        else
+          Links.parseIgnores(String(Files.readAllBytes(ignoreFile), "UTF-8")) match
+            case Right(v) => v
+            case Left(errs) =>
+              Console.err.println(s"links check: malformed ${Links.ignoreFileName}:")
+              Console.err.println(errs)
+              sys.exit(2)
+      val dangling = strictRefs.collect { case (from, raw, res) if !res.exists(resolves) => (from, raw) }
+      val (excused, bad) = dangling.partition((from, raw) => Links.excuse(from, raw, ignores).isDefined)
       bad.foreach((from, raw) => println(s"$from -> $raw"))
-      println(s"links check: ${bad.size} dangling of ${strictRefs.size} local link(s) in ${docs.size} file(s)")
+      // Excused links are DISCLOSED with their reason, never silent. An unused entry is noted but
+      // never fatal: a locally built artifact (the spa seed's main.js) makes its entry idle on a
+      // dev box and load-bearing on a fresh checkout, and the gate must pass on both.
+      excused.foreach { (from, raw) =>
+        val why = Links.excuse(from, raw, ignores).map(_.why).getOrElse("")
+        println(s"ignored by design: $from -> $raw  # $why")
+      }
+      for i <- ignores if !dangling.exists((from, raw) => Links.excuse(from, raw, Vector(i)).isDefined) do
+        println(s"note: unused ignore entry: ${i.from} -> ${i.target}")
+      val excusedNote = if excused.isEmpty then "" else s" (+${excused.size} ignored by design)"
+      println(s"links check: ${bad.size} dangling of ${strictRefs.size} local link(s) in ${docs.size} file(s)$excusedNote")
       if bad.nonEmpty then sys.exit(1)
 
     case "to" =>

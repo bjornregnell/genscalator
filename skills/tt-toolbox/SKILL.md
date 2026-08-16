@@ -31,6 +31,8 @@ tt text cols  <file> <sep> <i...> # cut/awk field extraction
 tt files <dir> <ext> [regex]      # find / grep -l ; add --count for just the number
 tt log <file>                     # build/run-log analyzer: errors + warnings + verdict
 tt verify [checks] -- <cmd>...    # run-and-verify (effectful): run an allowed cmd, check exit/out, PASS/FAIL
+tt gitinfo <repo>                 # branch, clean/dirty, ahead/behind — state/sync without raw git status
+tt git log|commit|push --repo <dir> …  # the typed git lane (see Command discipline)
 ```
 Run `tt` with no args for the live tool list. Full cheat-sheet: `tools/README.md`.
 
@@ -38,7 +40,11 @@ Run `tt` with no args for the live tool list. Full cheat-sheet: `tools/README.md
 - Run **one bare, statically-analyzable command per call**. No `cd`, no `&&`/`;`, no `| head`/`| wc`,
   no `$var` in the gated part, no `2>/dev/null`. Let the tool print the final, concise answer.
 - Read files with the editor's file-read tool, not `cat`/`head` in bash.
-- For git, use bare `git -C <abs-path> <subcmd>`.
+- For git, use the typed verbs: `tt gitinfo <repo>` for branch/state/sync, `tt git log --repo <dir>`
+  for commit-log search, `tt git commit|push|pull|fetch ... --repo <dir>` for the write subset. Bare
+  `git -C <abs-path> <subcmd>` is the FALLBACK, only for shapes the typed subset does not cover
+  (e.g. `diff`; issue 026 tracks the boundary). Why typed first: the call is auditable, the commit
+  message comes from a file, and the destructive verbs are excluded by construction.
 - Need a scratch dir? Use an in-repo `tmp/` (gitignored), not `/tmp` (keeps paths in the trusted tree).
 
 ## Why

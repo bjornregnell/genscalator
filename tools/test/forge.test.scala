@@ -68,3 +68,71 @@ class ForgeRequestSuite extends munit.FunSuite:
     assertEquals(Forge.prDiffUrl(false, "https://codeberg.org/api/v1", "o", "r", 2),
       "https://codeberg.org/api/v1/repos/o/r/pulls/2.diff")
   }
+
+  // ---- pr-commits (issue 029): URL builder + the credit-trailer scan ----
+  test("prCommitsUrl --gh targets the fixed api.github.com root with per_page") {
+    val u = Forge.prCommitsUrl(true, "https://evil.example/api/v1", "o", "r", 3, 100)
+    assertEquals(u, "https://api.github.com/repos/o/r/pulls/3/commits?per_page=100")
+  }
+
+  test("prCommitsUrl Gitea uses the given api root with the limit param") {
+    val u = Forge.prCommitsUrl(false, "https://codeberg.org/api/v1", "o", "r", 3, 25)
+    assertEquals(u, "https://codeberg.org/api/v1/repos/o/r/pulls/3/commits?limit=25")
+  }
+
+  test("creditTrailers finds a Co-Authored-By trailer case-insensitively") {
+    val msg = "headline\n\nbody text\n\nco-authored-by: Claude <noreply@anthropic.com>"
+    assertEquals(Forge.creditTrailers(msg), List("co-authored-by: Claude <noreply@anthropic.com>"))
+  }
+
+  test("creditTrailers finds a Generated-with line anywhere in the message") {
+    val msg = "headline\n\nGenerated with Claude Code\n"
+    assertEquals(Forge.creditTrailers(msg), List("Generated with Claude Code"))
+  }
+
+  test("creditTrailers is empty for a clean message with human trailers") {
+    val msg = "fix: handle empty input\n\nSigned-off-by: A Human <a@b.se>\nReviewed-by: B <b@c.se>"
+    assert(Forge.creditTrailers(msg).isEmpty)
+  }
+
+  test("creditTrailers surfaces an indented trailer too (trim before matching)") {
+    assertEquals(Forge.creditTrailers("h\n\n  Co-Authored-By: X <x@y.z>"),
+      List("Co-Authored-By: X <x@y.z>"))
+  }
+
+  // ---- pr-merge (issue 030): subject composition + URL + payload dialects ----
+  test("mergeSubject names the PR: number + title (CONTRIBUTING.md's merge-commit rule)") {
+    assertEquals(Forge.mergeSubject(3, "issues 024-028 and report 087"),
+      "Merge PR #3: issues 024-028 and report 087")
+  }
+
+  test("prMergeUrl --gh targets the fixed api.github.com root, never the api root argument") {
+    assertEquals(Forge.prMergeUrl(true, "https://evil.example/api/v1", "o", "r", 3),
+      "https://api.github.com/repos/o/r/pulls/3/merge")
+  }
+
+  test("prMergeUrl Gitea uses the given api root") {
+    assertEquals(Forge.prMergeUrl(false, "https://codeberg.org/api/v1", "o", "r", 3),
+      "https://codeberg.org/api/v1/repos/o/r/pulls/3/merge")
+  }
+
+  test("mergePayload --gh carries merge_method + commit_title, and NO commit_message when the body is empty") {
+    val p = Forge.mergePayload(true, "merge", "Merge PR #3: t", "")
+    assertEquals(p.obj.keySet, Set("merge_method", "commit_title"))
+    assertEquals(p.obj("commit_title").str, "Merge PR #3: t")
+    assertEquals(p.obj("merge_method").str, "merge")
+  }
+
+  test("mergePayload --gh includes commit_message only when a body was given") {
+    val p = Forge.mergePayload(true, "squash", "s", "the body")
+    assertEquals(p.obj.keySet, Set("merge_method", "commit_title", "commit_message"))
+    assertEquals(p.obj("commit_message").str, "the body")
+  }
+
+  test("mergePayload Gitea speaks the capitalized Do/MergeTitleField dialect") {
+    val p = Forge.mergePayload(false, "merge", "s", "")
+    assertEquals(p.obj.keySet, Set("Do", "MergeTitleField"))
+    assertEquals(p.obj("Do").str, "merge")
+    val pb = Forge.mergePayload(false, "merge", "s", "b")
+    assertEquals(pb.obj.keySet, Set("Do", "MergeTitleField", "MergeMessageField"))
+  }

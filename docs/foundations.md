@@ -592,7 +592,7 @@ Terms are grouped by theme — jump via the group map, or **Ctrl-F** a term from
   delegation UX itself is a WR study subject.
 - **Solo-safe** — a property of a **solo task**: the agent can complete it **entirely alone**, reversibly, and
   verifiably. Concretely: only `Read` + `Edit`/`Write` inside allowlisted repos + **bare allowlist-matchable**
-  `tt` / `git -C` / `scala-cli` calls (no pipes/redirects/`&&`, no build-pipeline glue, no new-domain web fetch),
+  `tt` (incl. the typed `tt git`/`tt gitinfo` lane) / `git -C` (fallback shapes only) / `scala-cli` calls (no pipes/redirects/`&&`, no build-pipeline glue, no new-domain web fetch),
   **reversible** (git-tracked, non-outward-facing — no publish/release), and **verifiable after the fact**. This is
   the general *good-solo-job* property (see *Solo dance*). **AFK-safe** is the **strict subset** that *additionally*
   guarantees **no prompt can race the human while they're away** — i.e. **AFK-safe = solo-safe + prompt-race-free**

@@ -456,6 +456,53 @@ class CliSuite extends munit.FunSuite:
       assert(clue(err).contains("no such path"))
     finally TestFs.removeAllForce(d)
   }
+  test("files on a nonexistent root: exit 2, find's wording — a typo is not a true negative (issue 031)") {
+    val d = findFixture()
+    try
+      val (code, _, err) = run("files", (d / "nope").toString, ".scala")
+      assertEquals(code, 2)
+      assert(clue(err).contains("no such path"))
+    finally TestFs.removeAllForce(d)
+  }
+  test("files on a file root: exit 2, not a directory (issue 031)") {
+    val d = findFixture()
+    try
+      val (code, _, err) = run("files", (d / "a.scala").toString, ".scala")
+      assertEquals(code, 2)
+      assert(clue(err).contains("not a directory"))
+    finally TestFs.removeAllForce(d)
+  }
+  test("files on an existing empty dir still reports 0 files, exit 0 (the true negative survives 031)") {
+    val d = os.temp.dir()
+    try
+      val (code, out, _) = run("files", d.toString, ".scala")
+      assertEquals(code, 0)
+      assert(clue(out).contains("0 files"))
+    finally TestFs.removeAllForce(d)
+  }
+  test("text verbs on a missing file: classified error, exit 2, no stack trace (issue 027)") {
+    val d = os.temp.dir()
+    try
+      val missing = (d / "nope.md").toString
+      for args <- List(
+          List("count", missing, "x"), List("match", missing, "x"), List("context", missing, "x"),
+          List("freq", missing, "x"), List("cols", missing, ",", "1"))
+      do
+        val (code, _, err) = run("text", args*)
+        assertEquals(clue(code), 2, clue(args.mkString(" ")))
+        assert(clue(err).contains("not a readable file"), clue(args.head))
+        assert(!clue(err).contains("Exception in thread"), clue(args.head))
+    finally TestFs.removeAllForce(d)
+  }
+  test("text count on a directory: distinct is-a-directory reason, exit 2 (issue 027)") {
+    val d = os.temp.dir()
+    try
+      val (code, _, err) = run("text", "count", d.toString, ".")
+      assertEquals(code, 2)
+      assert(clue(err).contains("is a directory"))
+      assert(!clue(err).contains("Exception in thread"))
+    finally TestFs.removeAllForce(d)
+  }
   test("find --help: elaborate help, exit 0") {
     val (code, out, _) = run("find", "--help")
     assertEquals(code, 0)
@@ -816,6 +863,20 @@ class CliSuite extends munit.FunSuite:
     assertEquals(code, 2)
     assert(clue(err).toLowerCase.contains("usage"))
   }
+  test("verify --timeout rejects zero and non-integers, exit 2 before any child (issue 025)") {
+    val (c0, _, e0) = run("verify", "--timeout", "0", "--", "tt", "chrono", "now")
+    assertEquals(c0, 2)
+    assert(clue(e0).contains("--timeout needs a positive integer"))
+    val (c1, _, e1) = run("verify", "--timeout", "x", "--", "tt", "chrono", "now")
+    assertEquals(c1, 2)
+    assert(clue(e1).contains("--timeout needs a positive integer"))
+  }
+  test("verify --help documents --tee and --timeout (issue 025)") {
+    val (code, out, _) = run("verify", "--help")
+    assertEquals(code, 0)
+    assert(clue(out).contains("--tee"))
+    assert(clue(out).contains("--timeout"))
+  }
 
   /** Run a tool subprocess with an explicit cwd (newtool writes tools/<name>.scala RELATIVE to cwd). */
   private def runIn(cwd: os.Path, tool: String, args: String*): (Int, String, String) =
@@ -1035,8 +1096,10 @@ class CliSuite extends munit.FunSuite:
     assertEquals(code, 1)
     assert(clue(out).contains("&& command chain"))
   }
-  test("guardcheck cmd: a clean git -C command passes (exit 0)") {
-    val (code, out, _) = run("guardcheck", "cmd", "git -C /tmp/x status")
+  test("guardcheck cmd: a clean git -C fallback shape passes (exit 0)") {
+    // diff is the exemplar on purpose (issue 024): a shape the typed tt git subset does NOT cover,
+    // so the suite certifies the sanctioned fallback, not the digest's named reflex-slip.
+    val (code, out, _) = run("guardcheck", "cmd", "git -C /tmp/x diff")
     assertEquals(code, 0)
     assert(clue(out).contains("clean"))
   }
@@ -1048,6 +1111,23 @@ class CliSuite extends munit.FunSuite:
   test("guardcheck cmd: flags a pipe to head") {
     val (_, out, _) = run("guardcheck", "cmd", "ps aux | head")
     assert(clue(out).contains("pipe to head"))
+  }
+  test("guardcheck cmd: flags a pipe to tee (MED, the output-keeping family member)") {
+    val (code, out, _) = run("guardcheck", "cmd", "tt verify -- scala-cli test tools | tee /tmp/x.log")
+    assertEquals(code, 1)
+    assert(clue(out).contains("pipe to tee"))
+    assert(clue(out).contains("[MED]"))
+  }
+  test("guardcheck cmd: raw git log --grep gets the NOTE nudge toward tt git log") {
+    val (code, out, _) = run("guardcheck", "cmd", "git log --grep=issue-012")
+    assertEquals(code, 1)
+    assert(clue(out).contains("raw git commit-log search"))
+    assert(clue(out).contains("[NOTE]"))
+  }
+  test("guardcheck cmd: tt git log itself stays clean (flagging the fix would be self-defeating)") {
+    val (code, out, _) = run("guardcheck", "cmd", "tt git log /tmp/x --grep issue-012")
+    assertEquals(code, 0)
+    assert(clue(out).contains("clean"))
   }
   test("guardcheck msg: flags a line-leading # (newline-then-#)") {
     val (code, out, _) = run("guardcheck", "msg", "#8017 harvest done")
@@ -1513,9 +1593,13 @@ class CliSuite extends munit.FunSuite:
     assertEquals(clue(Guardcheck.cmdFindings("tt web get https://example.com/x")), Nil)
     assertEquals(clue(Guardcheck.cmdFindings("tt files /home/x/tools scala")), Nil)
     assertEquals(clue(Guardcheck.cmdFindings("tt text grepr /home/x/tools scala foo")), Nil)
-    // commit-log search still has NO typed verb (SM217), so `git log --grep` is explicitly sanctioned and
-    // must stay silent. The start-anchor is what buys this: `grep` here is never the command.
-    assertEquals(clue(Guardcheck.cmdFindings("git log --grep=ember")), Nil)
+    // Commit-log search HAS a typed verb since 2026-07-28 (`tt git log`, issue 034) — this comment
+    // itself carried the stale "no typed verb (SM217)" claim until the 034 sweep, a fourth carrier.
+    // The raw shape is no longer silent: it gets exactly ONE NOTE (never a raw-binary finding — the
+    // start-anchor still guarantees `grep` here is never the command, which is what this pin pins).
+    val gl = Guardcheck.cmdFindings("git log --grep=ember")
+    assertEquals(clue(gl).map(_.name), List("raw git commit-log search where tt git log exists"))
+    assertEquals(clue(gl).map(_.severity), List("NOTE"))
   }
 
   test("guardcheck hook: HIGH finding → deny decision JSON") {
@@ -1645,6 +1729,24 @@ class CliSuite extends munit.FunSuite:
       assertEquals(clue(c1), 0)
       assert(clue(out1).contains("pinned.md"), "with --leaf the mention no longer keeps it")
       assert(!clue(out1).contains("archive.md"), "the leaf itself is still KEPT, not orphaned")
+    finally TestFs.removeAllForce(d)
+  }
+
+  test("links check: a .links.ignore entry WITH a reason excuses a by-design dangling link (issue-011)") {
+    // The wiring end to end; the pure parse/match halves are covered in LinksSuite (the SM229 split).
+    val d = os.temp.dir()
+    try
+      os.write(d / "a.md", "[built later](gen.html)\n")
+      os.write(d / ".links.ignore", "a.md -> gen.html  # generated by the build step\n")
+      val (code, out, _) = run("links", "check", d.toString)
+      assertEquals(clue(code), 0)
+      assert(clue(out).contains("0 dangling"))
+      assert(clue(out).contains("ignored by design"), "an exemption must be disclosed, not silent")
+      // and WITHOUT a reason the file is rejected loudly: exit 2, a config error, not a link error
+      os.write.over(d / ".links.ignore", "a.md -> gen.html\n")
+      val (code2, _, err2) = run("links", "check", d.toString)
+      assertEquals(clue(code2), 2)
+      assert(clue(err2).contains("no reason"))
     finally TestFs.removeAllForce(d)
   }
 
@@ -2550,6 +2652,66 @@ class CliSuite extends munit.FunSuite:
     assertEquals(run("guardcheck", "posthook", """{"tool_input":{"command":"git log | head -5"}}""")._2, "")
   }
 
+  // --- issue (in-repo issue workflow; close PREVIEWS by default; --yes only ever touches a temp fixture) ---
+  /** A minimal reqts/issues tree: one open issue 004, one closed 002; READMEs would be ignored. */
+  private def issueFixture(): os.Path =
+    val root = os.temp.dir(prefix = "tt-issue-")
+    os.makeDir.all(root / "reqts" / "issues" / "open")
+    os.makeDir.all(root / "reqts" / "issues" / "closed")
+    os.write(root / "reqts" / "issues" / "open" / "issue-004-a-defect.md",
+      "# Issue 004: a defect\n\n> status: open · labels: toolbox · summary: something is wrong\n\n## Description\nbody\n")
+    os.write(root / "reqts" / "issues" / "closed" / "issue-002-old.md",
+      "# Issue 002: old\n\n> status: done (2026-07-21) · labels: x · summary: s\n\n## Description\nbody\n")
+    root
+  test("issue next: highest across open AND closed plus one, zero-padded") {
+    val root = issueFixture()
+    try
+      val (code, out, _) = run("issue", "next", "--repo", root.toString)
+      assertEquals(code, 0)
+      assertEquals(out, "005")
+    finally os.remove.all(root)
+  }
+  test("issue close previews by default: nothing moves, nothing is rewritten") {
+    val root = issueFixture()
+    try
+      val open = root / "reqts" / "issues" / "open" / "issue-004-a-defect.md"
+      val (code, out, _) = run("issue", "close", "4", "--fixed-by", "abc1234", "--date", "2026-08-16", "--repo", root.toString)
+      assertEquals(code, 0)
+      assert(clue(out).contains("PREVIEW"))
+      assert(clue(out).contains("closed 2026-08-16, fixed by `abc1234`"))
+      assert(os.exists(open), "preview must not move the file")
+      assert(os.read(open).contains("> status: open"), "preview must not rewrite the status")
+    finally os.remove.all(root)
+  }
+  test("issue close --yes rewrites the status AND moves the file as one operation") {
+    val root = issueFixture()
+    try
+      val base = root / "reqts" / "issues"
+      val (code, _, _) = run("issue", "close", "004", "--fixed-by", "abc1234", "--date", "2026-08-16", "--yes", "--repo", root.toString)
+      assertEquals(code, 0)
+      assert(!os.exists(base / "open" / "issue-004-a-defect.md"))
+      val moved = os.read(base / "closed" / "issue-004-a-defect.md")
+      assert(clue(moved).contains("> status: closed 2026-08-16, fixed by `abc1234` · labels: toolbox"))
+    finally os.remove.all(root)
+  }
+  test("issue close refuses an already-closed number, exit 1") {
+    val root = issueFixture()
+    try
+      val (code, _, err) = run("issue", "close", "2", "--fixed-by", "abc", "--repo", root.toString)
+      assertEquals(code, 1)
+      assert(clue(err).contains("already closed"))
+    finally os.remove.all(root)
+  }
+  test("issue list --state all: one line per issue, number then state") {
+    val root = issueFixture()
+    try
+      val (code, out, _) = run("issue", "list", "--state", "all", "--repo", root.toString)
+      assertEquals(code, 0)
+      assert(clue(out).contains("002  done"))
+      assert(clue(out).contains("004  open"))
+    finally os.remove.all(root)
+  }
+
   // --- bloop clean (reclaim .scala-build caches; DRY RUN unless --yes) ---
   // Every case here either refuses, or reports without deleting. No test may pass --yes.
   test("bloop clean: dry run finds a .scala-build dir, reports it, and deletes NOTHING") {
@@ -2641,6 +2803,40 @@ class CliSuite extends munit.FunSuite:
   test("forge release-create --gl rejects --prerelease/--draft (GitLab has no such flag) with exit 2 before network") {
     assertEquals(run("forge", "release-create", "foo/bar", "v1", "--gl", "--prerelease")._1, 2)
     assertEquals(run("forge", "release-create", "foo/bar", "v1", "--gl", "--draft")._1, 2)
+  }
+
+  // --- forge pr-commits / pr-merge (issues 029/030; arg contracts only — live paths need a forge) ---
+  test("forge pr-commits with missing or bad args exits 2 before any network") {
+    assertEquals(run("forge", "pr-commits")._1, 2)                                  // no repo
+    assertEquals(run("forge", "pr-commits", "foo/bar")._1, 2)                       // no PR number
+    assertEquals(run("forge", "pr-commits", "foo/bar", "3", "--limit", "0")._1, 2)  // bad limit
+  }
+  test("forge pr-merge arg contract: bad args exit 2 before any token/network") {
+    assertEquals(run("forge", "pr-merge")._1, 2)                                    // no repo
+    assertEquals(run("forge", "pr-merge", "foo/bar")._1, 2)                         // no PR number
+    assertEquals(run("forge", "pr-merge", "foo/bar", "3", "--method", "octopus")._1, 2) // bad method
+  }
+  test("forge pr-merge --gh with --url exits 2 (GitHub root is fixed; token can't be redirected)") {
+    val (code, _, err) = run("forge", "pr-merge", "foo/bar", "3", "--gh", "--url", "https://example.com")
+    assertEquals(code, 2)
+    assert(clue(err).contains("drop --url"))
+  }
+  test("forge pr-merge --gl exits 2 with a stated-rather-than-faked message") {
+    val (code, _, err) = run("forge", "pr-merge", "foo/bar", "3", "--gl")
+    assertEquals(code, 2)
+    assert(clue(err).contains("not implemented for GitLab"))
+  }
+  test("forge pr-merge with a missing --body-file exits 2 before any network") {
+    assertEquals(run("forge", "pr-merge", "foo/bar", "3", "--body-file", "tmp/no-such-file.md")._1, 2)
+  }
+  test("forge whoami --gh with --url exits 2 (fixed GitHub root, checked before any token lookup)") {
+    val (code, _, err) = run("forge", "whoami", "--gh", "--url", "https://example.com")
+    assertEquals(code, 2)
+    assert(clue(err).contains("drop --url"))
+  }
+  test("forge --help mentions pr-commits and pr-merge") {
+    val (_, out, _) = run("forge", "--help")
+    assert(clue(out).contains("pr-commits") && clue(out).contains("pr-merge"))
   }
 
   // --- forge issue/PR/protection READ verbs (arg contract; live reads need a network, so only arg errors here) ---

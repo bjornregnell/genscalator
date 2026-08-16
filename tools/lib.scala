@@ -16,6 +16,30 @@ object Lib:
   def readUtf8(path: String): String =
     String(java.nio.file.Files.readAllBytes(java.nio.file.Path.of(path)), "UTF-8")
 
+  /** Why `path` is not a readable regular file — Some(reason) for the two easy caller mistakes
+    * (no such path; exists but is a directory), None when a regular file is there. The wording adopts
+    * `tt log`'s established shape incl. the `(resolved: ...)` clause (cwd can differ between calls),
+    * so every file-taking verb degrades with the SAME one-liner instead of growing a sixth variant
+    * (issue-027 counted five). `isRegularFile`, not `exists`: an existing DIRECTORY throws a
+    * different exception ("Is a directory") than a missing file, and both must classify here.
+    * Read-only metadata probe; printing and exiting stay in the effectful drivers below. */
+  def unreadableFileReason(path: String): Option[String] =
+    val p = java.nio.file.Path.of(path)
+    if java.nio.file.Files.isRegularFile(p) then None
+    else if java.nio.file.Files.isDirectory(p) then
+      Some(s"not a readable file (is a directory): $path (resolved: ${p.toAbsolutePath})")
+    else Some(s"not a readable file: $path (resolved: ${p.toAbsolutePath})")
+
+  /** Driver-side guard for a USER-SUPPLIED file argument: print `<tool>: <reason>` on stderr and
+    * exit 2 when the path is missing or a directory — the toolbox's one-line degradation instead of
+    * a raw NoSuchFileException stack trace (issue-027). Call it in the @main BEFORE the read; the
+    * readers above stay minimal-and-throwing, and paths delivered by a validated walk (find/files/
+    * grepr internals) need no guard — they exist by construction. */
+  def requireReadableFile(tool: String, path: String): Unit =
+    unreadableFileReason(path).foreach: reason =>
+      System.err.println(s"$tool: $reason")
+      sys.exit(2)
+
   // --- paths ---
   /** Absolute in the POSIX sense ("/..."), the Windows drive sense ("C:\..." or "C:/"), or UNC
     * ("\\server\share"). PURE: it inspects the STRING, touching no filesystem.
@@ -186,6 +210,10 @@ object Lib:
               case None    => onEntry(file, attrs.isDirectory)
           FileVisitResult.CONTINUE
         override def visitFileFailed(file: Path, exc: java.io.IOException): FileVisitResult =
+          // CONTINUE is deliberate for entries hit MID-WALK (one unreadable file must not kill a
+          // scan) — and it is exactly why callers MUST validate the walk ROOT before calling: a
+          // missing root lands here too and would otherwise masquerade as an empty result, the
+          // silent `0 files` of issue-031. find + files both validate their root at the driver.
           FileVisitResult.CONTINUE
       })
     PruneReport(curatedCount, curatedNames.toVector,

@@ -36,7 +36,9 @@ Whenever you build or scaffold a new tool, pause and classify it:
   no `$var` in the gated part, no `2>/dev/null`. Let the tool print the final, concise answer.
 - Invoke tools as `tt <tool> <args...>` so the call matches a narrow allowlist entry (e.g. `Bash(tt text *)`).
 - Read files with the editor's **file-read tool**, not `cat`/`head`/`tail` in bash.
-- For git, use bare `git -C <abs-path> <subcmd>` — not `cd … && git …`.
+- For git, use the typed verbs — `tt gitinfo <repo>` for state/sync, `tt git log --repo <dir>` for
+  commit-log search, `tt git commit|push --repo <dir> …` for the write subset — with bare
+  `git -C <abs-path> <subcmd>` only for shapes they lack (e.g. `diff`); never `cd … && git …`.
 - Need a scratch/temp dir? Use an **in-repo `tmp/`** (gitignored), not `/tmp` — keeps paths inside the
   trusted tree and avoids the `/tmp` path-resolution approval.
 

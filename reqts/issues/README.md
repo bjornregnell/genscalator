@@ -1,5 +1,8 @@
 # In-repo issues — how they work
 
+> **genscalator v0.10.2** — issue-process version. In an older checkout these rules may have moved
+> on: check with `tt --version` and update before filing.
+
 genscalator tracks its issues **in the repository** (not on any single forge), so requirements,
 decisions and their history travel with the code to every mirror, offline and forge-independent.
 The forge trackers stay enabled as an **inbox** for one-time reporters; accepted reports are
@@ -48,3 +51,7 @@ the report. Live example: issues 014–022 and reports 085–086.
 Fork + clone, add your file under `open/` with the next free `NNN`, and open a Pull Request.
 If two PRs claim the same `NNN`, the later one renumbers. Prefer this route if you can; the
 forge inbox exists for everyone else. More in the repo root `CONTRIBUTING.md`.
+
+In the issue, **state the genscalator version you measured against** (`tt --version`): a gap
+report can only be re-checked against current `main` when it names its baseline. Reports 085,
+086 and 087 all did this, and it is why 087 could be re-checked before filing.

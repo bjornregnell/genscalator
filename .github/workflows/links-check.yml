@@ -1,0 +1,44 @@
+# Gates in-repo link integrity (issue-011): `links check` exits nonzero on any dangling
+# markdown/html link that is not recorded — WITH a reason — in the checked-in .links.ignore,
+# so a new dangling link fails loudly instead of rotting silently.
+#
+# CHEAP ON PURPOSE: no network link-following, ever — the check reads the tree it checked out
+# and nothing else, so a red run is deterministic and always means the repo itself changed.
+# Prose-path matching (the generous shape `links to`/`links reach` use) stays OFF this gate's
+# exit code by construction: `links check` counts strict markdown/html links only, because a
+# gate that cries wolf gets deleted (see tools/links.scala).
+#
+# A SEPARATE workflow, not a job in native-release.yml: that workflow is an ACT (dispatch or
+# release only, by its own design record), while this is a gate that must run as a side effect
+# of every push and pull request.
+
+name: links-check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        # Shallow is enough: the check reads the working tree only, never history.
+
+      - uses: coursier/cache-action@v6
+        # Same pairing native-release.yml uses: caches the JVM + compiler artifacts scala-cli
+        # fetches, which is the bulk of a cold run. Correctness-neutral.
+
+      - uses: VirtusLab/scala-cli-setup@v1
+        # Pinned to @v1 like native-release.yml, and for the same reason: a moving branch means
+        # the thing that gated today's push is not the thing that gates tomorrow's.
+
+      - name: Dangling-link gate
+        run: scala-cli run tools/links.scala -- check "$GITHUB_WORKSPACE"
+        # Exit 0 = clean (by-design exceptions excused and disclosed via .links.ignore),
+        # exit 1 = a real dangling link, exit 2 = a malformed .links.ignore. The single-file
+        # `scala-cli run` path is the same contract cli.test.scala proves.

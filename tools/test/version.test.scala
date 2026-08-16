@@ -12,6 +12,11 @@
 // VERSION is the in-repo SOURCE. The git tag stays canonical for a release, per CHANGELOG; the tag
 // is checked against this file at release time, so this file is a checkable mirror rather than a
 // second authority.
+//
+// Issue 036 widened the stamped-carrier set: CONTRIBUTING.md and reqts/issues/README.md carry the
+// same banner AGENTS.md does, so a stale checkout's policy pages announce their own vintage —
+// asserted below by the same mechanism. The suite also covers the pure display core behind
+// `tt --version` (tools/versionlib.scala, issue 028).
 
 class VersionSuite extends munit.FunSuite:
 
@@ -56,10 +61,53 @@ class VersionSuite extends munit.FunSuite:
     assert(clue(agents).contains(s"genscalator v$version"))
   }
 
+  test("CONTRIBUTING.md states the same contributing-policy version") {
+    // Issue 036: stale policy fails silently and OUTWARD — a contributor on an old checkout forks
+    // the wrong forge or mails a stale address, having followed their local instructions correctly.
+    // The banner lets a reader see the vintage without asking; this assertion is the release gate
+    // that keeps the banner honest, exactly as it does for AGENTS.md above.
+    val contributing = os.read(root / "CONTRIBUTING.md")
+    assert(clue(contributing).contains(s"genscalator v$version"))
+  }
+
+  test("reqts/issues/README.md states the same issue-process version") {
+    // Issue 036: the issue-filing rules travel with the repo to every mirror, so a stale copy
+    // prescribes an outdated process with nothing to say so. Same banner, same gate.
+    val issuesReadme = os.read(root / "reqts" / "issues" / "README.md")
+    assert(clue(issuesReadme).contains(s"genscalator v$version"))
+  }
+
   test("no OTHER file at the repo root re-declares a product version") {
     // Cheap guard against the number quietly acquiring a fifth home.
     val strays = os.list(root)
       .filter(p => os.isFile(p) && p.last.endsWith(".json"))
       .filter(p => jsonVersions(p).exists(_ != version))
     assertEquals(strays.map(_.last).toList, Nil)
+  }
+
+  // --- the `tt --version` display logic (issue 028; pure core in tools/versionlib.scala) ---
+
+  test("Version.display normalises every carrier shape to the tag spelling") {
+    // Display NORMALISATION, not carrier settlement (issue-028 triage): the carriers keep their
+    // decided shapes — bare in-repo (pinned above), v-prefixed in an install — and only the
+    // PRINTED form is unified. Four shapes ship: bare semver, vX.Y.Z, `latest` (the installer
+    // fallback) and `dev` (native-release.yml).
+    assertEquals(agenttools.Version.display("0.10.2"), "v0.10.2")
+    assertEquals(agenttools.Version.display("v0.10.1"), "v0.10.1")
+    assertEquals(agenttools.Version.display("latest"), "latest")
+    assertEquals(agenttools.Version.display("dev"), "dev")
+    assertEquals(agenttools.Version.display(" 0.10.2\n"), "v0.10.2")
+    assertEquals(agenttools.Version.display(""), "unknown")
+  }
+
+  test("Version.render is one identifying line: version, kind, root, engine, platform") {
+    // Enough to name the artifact in a bug report (the issue-028 acceptance), and a missing
+    // VERSION.txt reads as `unknown` rather than crashing or guessing.
+    assertEquals(
+      agenttools.Version.render(Some("v0.10.1"), "native install", "/home/x/.genscalator",
+        "native dispatcher", "Linux", "amd64"),
+      "genscalator v0.10.1 (native install at /home/x/.genscalator; native dispatcher; Linux amd64)")
+    assertEquals(
+      agenttools.Version.render(None, "git checkout", "/repo", "jvm dispatcher", "Linux", "amd64"),
+      "genscalator unknown (git checkout at /repo; jvm dispatcher; Linux amd64)")
   }

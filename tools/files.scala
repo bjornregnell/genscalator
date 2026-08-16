@@ -52,13 +52,22 @@ private val FilesHelp: String =
   val consumed = a.zipWithIndex.collect { case (t, i) if t == "--exclude" => Vector(i, i + 1) }.flatten.toSet
   a.zipWithIndex.collect { case (t, i) if !consumed(i) && t != "--count" && t != "--all" => t } match
     case dir :: ext :: rest =>
+      // issue-031: validate the ROOT before walking. walkPruned's visitFileFailed CONTINUEs — right
+      // for an unreadable entry mid-walk, wrong for the root — so a mistyped path used to print
+      // `0 files` and exit 0: a wrong answer indistinguishable from a true negative. Fail like the
+      // sibling `tt find` (same wording, exit 2) so the two walkers cannot drift apart again.
+      val root = java.nio.file.Path.of(dir)
+      if !java.nio.file.Files.exists(root) then
+        Console.err.println(s"files: no such path: $dir"); sys.exit(2)
+      if !java.nio.file.Files.isDirectory(root) then
+        Console.err.println(s"files: not a directory: $dir (resolved: ${root.toAbsolutePath})"); sys.exit(2)
       val contentRe = rest.headOption.map(_.r)
       // Shared pruning walker (Lib.walkPruned, same as tt find): before issue-017 this was a raw
       // Files.walk, so .scala-build/.git internals dominated every scan (98% noise measured).
       val buf = Vector.newBuilder[String]
       val report =
         try
-          Lib.walkPruned(java.nio.file.Path.of(dir), Lib.Prune(all = all, excludeGlobs = excludes)) {
+          Lib.walkPruned(root, Lib.Prune(all = all, excludeGlobs = excludes)) {
             (p, isDir) =>
               if !isDir && java.nio.file.Files.isRegularFile(p) && p.toString.endsWith(ext)
                 && contentRe.forall(_.findFirstIn(Lib.readUtf8(p.toString)).isDefined)

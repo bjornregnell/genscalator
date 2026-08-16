@@ -58,5 +58,7 @@ entries: wrapping work in `echo … ; cmd | head/wc/sed ; cmd2` with redirects/v
 
 ### A standing git pattern that avoids prompts
 Even when `git *` is allowlisted, a `cd … && git add … && git commit … && git log` compound is
-non-analyzable → prompt. Instead use **bare `git -C <abs-path> <subcmd>`** — no `cd`, no `&&` — one
-invocation per call (e.g. `git -C <path> commit -m "…" <file>`, then `git -C <path> push`).
+non-analyzable → prompt. Use the **typed verbs** — `tt gitinfo <repo>` for state/sync, `tt git log
+--repo <dir>` for history search, `tt git commit --repo <dir> --message-file <path> --add <path>
+--push` for the write path — and **bare `git -C <abs-path> <subcmd>`** only for shapes the typed
+subset does not cover (e.g. `diff`) — no `cd`, no `&&`, one invocation per call.

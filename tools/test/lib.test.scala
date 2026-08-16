@@ -102,3 +102,33 @@ class LibSuite extends munit.FunSuite:
       assert(s.contains("! ")) // the "! " error marker survives byte-for-byte
     finally os.remove(f)
   }
+
+  // --- unreadableFileReason (issue-027: the shared classifier behind requireReadableFile) ---
+  // The driver-side print+exit is exercised as a subprocess in cli.test.scala; HERE we pin the pure
+  // classification: the two caller mistakes get DISTINCT reasons and a real file gets None.
+  test("unreadableFileReason: a regular file is readable — None") {
+    val f = os.temp(contents = "x", suffix = ".txt")
+    try assertEquals(Lib.unreadableFileReason(f.toString), None)
+    finally os.remove(f)
+  }
+  test("unreadableFileReason: a missing path names the path and the resolved absolute path") {
+    val d = os.temp.dir()
+    val missing = (d / "nope.txt").toString
+    try
+      val reason = Lib.unreadableFileReason(missing).getOrElse(fail("expected Some(reason)"))
+      assert(clue(reason).startsWith("not a readable file:")) // tt log's established wording
+      assert(clue(reason).contains(missing))
+      assert(clue(reason).contains("(resolved: ")) // cwd can differ between calls
+      assert(!clue(reason).contains("is a directory")) // distinct from the directory case
+    finally os.remove.all(d)
+  }
+  test("unreadableFileReason: an existing DIRECTORY gets the distinct is-a-directory reason") {
+    // Files.exists would pass here and the read would still trace ("Is a directory") — the
+    // classifier must use isRegularFile, exactly as log.scala's own guard does.
+    val d = os.temp.dir()
+    try
+      val reason = Lib.unreadableFileReason(d.toString).getOrElse(fail("expected Some(reason)"))
+      assert(clue(reason).contains("is a directory"))
+      assert(clue(reason).contains("not a readable file")) // still greppable by the shared prefix
+    finally os.remove.all(d)
+  }

@@ -6,6 +6,71 @@ All notable changes to genscalator. Versions follow the git tags (`vX.Y.Z`); the
 Updating genscalator is a **human-reviewed** step — see [`docs/updating.md`](docs/updating.md). Skim this
 file before adopting a new version: it changes the agent's operating rules, so review beats blind pull.
 
+## Unreleased (v0.10.3 wave, in progress since 2026-08-16)
+
+- **`tt --version` / `tt version` / `-v`** (issue-028): one identifying line — tag-spelled version,
+  carrier kind (git checkout / source copy / native install), root, entry path, platform — answered
+  on both code paths (bash launcher without a JVM start; dispatcher via the new mainless
+  `versionlib.scala`). Offline always. The v-prefix half of 028 closed works-as-designed.
+- **Version-stamped policy carriers** (issue-036): `CONTRIBUTING.md` and `reqts/issues/README.md`
+  carry the AGENTS.md-style version banner, gated by VersionSuite, plus a check-your-version line in
+  the contributor path and a state-your-baseline line in the issue checklist.
+- **`tt issue` — the in-repo issue workflow gets its typed verb** (issue-032): `next` prints the next
+  free NNN computed across `open/` AND `closed/` (numbers never reused); `list` prints one line per
+  issue (number, state, labels, summary — with a ⚠ when a preamble disagrees with its directory);
+  `close <NNN> --fixed-by <ref>` (or `--as wontfix|duplicate|...`) rewrites the `> status:` line and
+  moves the file as ONE operation, so the two can never disagree — preview by default, `--yes` to
+  apply, date from the system clock, never invented. Local clone only; staging and committing stay
+  with the caller (stage both paths and git records the rename). The standalone move primitive stayed
+  OUT, answering issue-032's design question: verb sprawl for a shape only this workflow uses.
+- **`tt forge pr-commits`** (issue-029): list a PR's commits (short sha, date, author, headline) with
+  `Co-Authored-By:`/"Generated with" lines surfaced under their commit and a one-line verdict — the
+  CONTRIBUTING.md no-assistant-credit check now runs inside the lane.
+- **`tt forge pr-merge`** (issue-030): the first effectful verb in the `pr-*` family. Previews by
+  default and merges only with `--yes`; composes the merge subject `Merge PR #<n>: <title>` from PR
+  metadata, takes the body from `--body-file` only, refuses an unmergeable/draft/closed PR by name,
+  and never deletes the source branch.
+- **`tt forge whoami --gh/--gl`** (issue-035, first item): the auth-check verb can now check the
+  GitHub and GitLab tokens the other verbs use, with each dialect's own guard; the token-source line
+  also names the keyring/`gh auth token` instead of `env ?`.
+- **`tt verify` can watch a long run** (issue-025): `--tee` streams the child's output live while
+  still capturing it for checks (line-callback sinks, not os.Inherit, so `--out` checks keep
+  working), and `--timeout N` bounds a wedged child; the silent default stays and is now documented
+  as deliberate.
+- **Missing files fail like grown-ups across the read path** (issue-027): the five `tt text` verbs
+  and the previously-tracing direct readers get a shared classified guard (`not a readable file` /
+  `is a directory`, exit 2) instead of a raw stack trace, via the new `Lib.requireReadableFile`.
+- **`tt files` on a missing root is an error, not a silent zero** (issue-031): `files: no such
+  path:` exit 2, matching `tt find`'s wording, and a not-a-directory root is rejected too — a
+  mistyped path can no longer read as a true negative.
+- **`tt git log --path <relpath>`** (issue-038, repeatable): only commits that touched the given
+  repo-root-relative path(s), passed to git after a `--` separator so a path can never be parsed as
+  a ref — "which commits touched this file" now has a typed answer.
+- **`tt git fetch` reports evidence, not reassurance** (issue-026): the false all-clear
+  `fetch: up to date` is gone — fetch names the ONE remote it contacted, distinguishes "no new
+  refs" from "you are current" (upstream ahead/behind standing when the fetched remote hosts it),
+  lists remotes NOT fetched, and takes a repeatable `--remote <name>`.
+- **`tt session list` is a read, and a rename announces itself** (issue-037): read-shaped lone words
+  (list/ls/show/status/current/get/name) are reserved like adopt — list/ls print a roster of every
+  session recorded for this directory (newest first, current starred), the rest print the display
+  name, and none can ever set a name; an exact-lowercase read word with arguments is a usage error,
+  exit 2. `tt session <Name>` is unchanged, but a name write now prints `session: renamed <old> ->
+  <new>` on stderr, so a write can no longer pass as a read; stdout stays byte-stable.
+- **guardcheck tells the truth about its own coverage** (issues 033/034/024): a `pipe to tee` MED
+  check (the closed list read as complete and was not; the fix line differs because a tee caller
+  wants output kept); the stale SM217 sanction of raw `git log --grep` corrected, and the retired
+  shape now gets a NOTE nudge toward `tt git log`; the git-lane carriers across AGENTS.md, skills
+  and docs now say typed-verbs-first with `git -C` as the named fallback.
+- **`tt links check` learns its exceptions, and CI finally runs it** (issue-011): a checked-in
+  `.links.ignore` at the scanned root records by-design dangling links, one `from -> target  #
+  reason` per line with the reason MANDATORY (malformed file = exit 2), excused links disclosed with
+  their reason and kept off the exit code, unused entries noted but never fatal. The six known cases
+  recorded, and the new `links-check` workflow gates every push and PR — strict links only, no
+  network.
+- **`docs/allowlist.md` says which `tt` wins** (issue-019): the `tt which tt` ritual first, the
+  three field-evidenced arrangements named, and the Windows version caveat — landing in the same
+  cut as 022's verified fix per the standing ordering rule.
+
 ## v0.10.2 — 2026-08-11 — the polish pool, and the release gate proven
 
 The enhancement half of the alpha harvest: the six items the v0.10.1 triage parked as polish rather

@@ -286,3 +286,74 @@ class SessionCliSuite extends munit.FunSuite:
     assert(clue(out).contains("gs mode set"))
     assert(!clue(out).contains("gs session:"))
   }
+
+  // ---- issue-037: read-shaped words must never SET a name; the setter announces itself ----
+  // `tt session list` used to silently rename the live session to "<stamp>-list" (observed live
+  // 2026-08-15). Every test here asserts the one property the defect broke: a read leaves the
+  // stored name unchanged.
+
+  test("session list is a READ: the roster prints and the stored name is untouched") {
+    val root = os.temp.dir()
+    run("session", "--sessions-root", root.toString, "--id", "t-37", "--cwd", "/fake/dir", "Golf")
+    val (code, out, _) = run("session", "--sessions-root", root.toString, "--id", "t-37", "--cwd", "/fake/dir", "list")
+    assertEquals(code, 0)
+    assertEquals(SessionStore.readName(root.toNIO, "t-37"), Some("Golf")) // NOT renamed to "list"
+    assert(clue(out).contains("Golf") && out.contains("t-37"))
+    assert(clue(out).contains("*")) // the current session is starred
+  }
+
+  test("session list shows sessions of THIS directory only, and ls is an alias") {
+    val root = os.temp.dir()
+    run("session", "--sessions-root", root.toString, "--id", "here-1", "--cwd", "/fake/dir", "alpha")
+    run("session", "--sessions-root", root.toString, "--id", "there-1", "--cwd", "/other/dir", "beta")
+    val (code, out, _) = run("session", "--sessions-root", root.toString, "--id", "me-1", "--cwd", "/fake/dir", "list")
+    assertEquals(code, 0)
+    assert(clue(out).contains("alpha") && !out.contains("beta"))
+    val (c2, out2, _) = run("session", "--sessions-root", root.toString, "--id", "me-1", "--cwd", "/fake/dir", "ls")
+    assertEquals(c2, 0)
+    assert(clue(out2).contains("alpha") && !out2.contains("beta"))
+  }
+
+  test("every reserved read word leaves the stored name unchanged, in any capitalization") {
+    val root = os.temp.dir()
+    run("session", "--sessions-root", root.toString, "--id", "t-38", "Golf")
+    for w <- Seq("list", "ls", "show", "status", "current", "get", "name", "LIST", "Show") do
+      val (code, _, _) = run("session", "--sessions-root", root.toString, "--id", "t-38", w)
+      assertEquals(code, 0, w)
+      assertEquals(SessionStore.readName(root.toNIO, "t-38"), Some("Golf"), w)
+  }
+
+  test("a reserved read synonym prints the display name on stdout, with a stderr note") {
+    val root = os.temp.dir()
+    run("session", "--sessions-root", root.toString, "--id", "t-39", "Golf")
+    val (code, out, err) = run("session", "--sessions-root", root.toString, "--id", "t-39", "status")
+    assertEquals(code, 0)
+    assert(clue(out).trim.endsWith("-Golf")) // a genuine read of the name
+    assert(clue(err).contains("reserved READ word"))
+  }
+
+  test("setting a name announces the rename on STDERR; stdout stays the bare display name") {
+    val root = os.temp.dir()
+    val (c1, out1, err1) = run("session", "--sessions-root", root.toString, "--id", "t-40", "Golf")
+    assertEquals(c1, 0)
+    assert(clue(out1).trim.endsWith("-Golf")) // stdout contract unchanged (byte-stable)
+    assert(clue(err1).contains("session: named") && err1.contains("-Golf"))
+    val (c2, _, err2) = run("session", "--sessions-root", root.toString, "--id", "t-40", "Hotel")
+    assertEquals(c2, 0)
+    assert(clue(err2).contains("session: renamed") && err2.contains("-Golf") && err2.contains("-Hotel"))
+  }
+
+  test("an exact-lowercase read word with arguments is a usage error that writes nothing") {
+    val root = os.temp.dir()
+    val (code, _, err) = run("session", "--sessions-root", root.toString, "--id", "t-41", "list", "extra")
+    assertEquals(code, 2)
+    assert(clue(err).contains("takes no arguments"))
+    assert(!os.exists(root / "t-41")) // nothing was named/written
+  }
+
+  test("multi-word names starting with a capitalized reserved word still name (cold-start flow intact)") {
+    val root = os.temp.dir()
+    val (code, out, _) = run("session", "--sessions-root", root.toString, "--id", "t-42", "List", "of", "things")
+    assertEquals(code, 0)
+    assert(clue(out).trim.endsWith("-List of things"))
+  }

@@ -7,6 +7,7 @@
 //   tt session <name words>    set the human name part (spaces allowed)
 //   tt session --clear         remove the human name (the timestamp part always remains)
 //   tt session adopt [<id>]    re-attach orphaned state after a harness session-id re-mint (issue-023)
+//   tt session list            list sessions recorded for THIS directory (pure read; alias: ls)
 // The timestamp is ALWAYS present and FIRST (BR's format): the age signal survives naming, duplicate
 // human names cannot collide, and the string is filesystem-safe by construction (no colon) — though
 // the display name is NEVER a path component; the store is keyed on the opaque harness session id
@@ -21,6 +22,12 @@
 // tool and `tt mode`. Auto-adopt is decided OUT of scope, and with SEVERAL candidates adopt refuses
 // to pick: two live sessions in one directory is exactly where an auto-pick would union ANOTHER
 // LIVE SESSION's chips into this one — the user must choose with `adopt <id>`.
+//
+// issue-037: any bare word used to be a SETTER, so `tt session list` (the obvious roster query)
+// silently RENAMED the live session. Read-shaped lone words are now RESERVED like adopt is:
+// list/ls run the roster read; show/status/current/get/name print the display name — none can ever
+// set a name. The setter itself announces `session: renamed <old> -> <new>` on stderr, so a write
+// can no longer pass as a read; stdout stays byte-stable for everything that parses it.
 import java.nio.file.{Files, Path}
 
 object SessionTool:
@@ -31,6 +38,8 @@ object SessionTool:
       |  session                     print the display name: YYMMDD-HHhMMm[-MyName]
       |  session <name words...>     set the human name part (free text, spaces allowed;
       |                              newlines/control characters rejected; max 120 chars)
+      |  session list                list every session recorded for THIS directory, newest first,
+      |                              the current one starred — a pure read; `ls` is an alias
       |  session --clear             remove the human name (the timestamp part remains)
       |  session adopt               re-attach ORPHANED state to this session: when the harness
       |                              re-mints the session id (e.g. a background/foreground round
@@ -55,8 +64,11 @@ object SessionTool:
       |sessions named the same can never be confused. Outside a harness session (no session id)
       |there is nothing to name: the tool says so and exits 1.
       |
-      |`adopt` is a RESERVED verb: a lone word spelled adopt in any capitalization is the verb, so
-      |a session cannot be named just "adopt" (multi-word names are unaffected).
+      |`adopt` and the READ words list/ls/show/status/current/get/name are RESERVED: a lone word
+      |spelled that way in any capitalization is the verb, never a name — a query must NEVER write
+      |(issue-037: `tt session list` used to silently rename the session). Multi-word names are
+      |unaffected. Setting a name announces itself on stderr (`session: renamed <old> -> <new>`),
+      |so a write can never be mistaken for a read; stdout stays the display name, byte-stable.
       |
       |When an empty-state read (`tt session` or `tt mode`) finds recent (<48h) orphaned state for
       |this directory, ONE hint line goes to stderr pointing at `tt session adopt`; stdout stays
@@ -65,6 +77,7 @@ object SessionTool:
       |Examples:
       |  tt session alpha prep       # this session now renders as e.g. 260728-15h42m-alpha prep
       |  tt session                  # what is this session called?
+      |  tt session list             # which sessions has this directory seen? (never a setter)
       |  tt session --clear          # back to the bare timestamp
       |  tt session adopt            # chips/name vanished after a bg/fg? re-attach the orphan
       |
@@ -75,6 +88,31 @@ object SessionTool:
     val disp = SessionStore.displayName(o.startedMs.getOrElse(o.mtimeMs), o.name)
     val chipsPart = if o.chips.isEmpty then "no chips" else "chips: " + o.chips.mkString(" ")
     s"  ${o.id}  $disp ($chipsPart; ${SessionStore.ageStr(nowMs - o.mtimeMs)} old)"
+
+  // issue-037: lone words that must NEVER become a name — every plausible spelling of a read.
+  // RosterWords run the roster; the rest print the current name exactly like a bare `tt session`.
+  private val RosterWords: Set[String] = Set("list", "ls")
+  private val ReadWords: Set[String]   = RosterWords ++ Set("show", "status", "current", "get", "name")
+
+  /** The bare read: orphan hint (stderr only) + display name. Shared by the reserved read words. */
+  private def printName(root: Path, id: String, cwd: String, nowMs: Long): Int =
+    SessionStore.orphanHint(root, id, cwd, nowMs).foreach(Console.err.println) // stderr ONLY
+    val started = SessionStore.readStarted(root, id).getOrElse(nowMs)
+    println(SessionStore.displayName(started, SessionStore.readName(root, id)))
+    0
+
+  /** issue-037 roster: every recorded session for THIS directory, newest first — the same data
+    * adopt enumerates when it lists candidates, plus the current session. A PURE read: it scans
+    * and prints, and deliberately writes NOTHING (no prune, no cwd stamp). */
+  private def roster(root: Path, id: String, cwd: String, nowMs: Long): Int =
+    val entries = SessionStore.scanStore(root)
+      .filter(o => o.id == id || o.cwd.contains(cwd))
+      .sortBy(-_.mtimeMs)
+    if entries.isEmpty then println(s"no sessions recorded for $cwd")
+    else
+      println(s"sessions for $cwd (newest first; * marks this session):")
+      entries.foreach(o => println((if o.id == id then "*" else " ") + candLine(o, nowMs)))
+    0
 
   /** Copy ONE chosen orphan's state under the current key and report it. */
   private def adoptOne(root: Path, id: String, cwd: String, nowMs: Long,
@@ -149,11 +187,7 @@ object SessionTool:
         1
       case Some(id) =>
         rest match
-          case Nil =>
-            SessionStore.orphanHint(root, id, cwd, nowMs).foreach(Console.err.println) // stderr ONLY
-            val started = SessionStore.readStarted(root, id).getOrElse(nowMs)
-            println(SessionStore.displayName(started, SessionStore.readName(root, id)))
-            0
+          case Nil => printName(root, id, cwd, nowMs)
           case "--clear" :: Nil =>
             SessionStore.clearName(root, id)
             val started = SessionStore.readStarted(root, id).getOrElse(nowMs)
@@ -169,6 +203,20 @@ object SessionTool:
           case "adopt" :: bad =>
             Console.err.println(s"session adopt: usage: tt session adopt [<id>] — got '${bad.mkString(" ")}'")
             2
+          // issue-037: READ-shaped words are RESERVED — `tt session list` used to silently NAME
+          // the session "list". The adopt precedent applies: a LONE word in any capitalization is
+          // the verb; exact-lowercase with arguments is a usage error; multi-word names in other
+          // capitalizations stay allowed, and the cold-start `tt session <Name>` flow is untouched.
+          case verb :: Nil if ReadWords(verb.toLowerCase) =>
+            if RosterWords(verb.toLowerCase) then roster(root, id, cwd, nowMs)
+            else
+              Console.err.println(
+                s"session: '$verb' is a reserved READ word — it never sets a name; the current name follows (to list sessions: tt session list)")
+              printName(root, id, cwd, nowMs)
+          case verb :: bad if ReadWords(verb) =>
+            Console.err.println(
+              s"session: usage: tt session $verb — takes no arguments; got '${bad.mkString(" ")}'")
+            2
           case words if words.nonEmpty && !words.exists(_.startsWith("--")) =>
             val name = words.mkString(" ").trim
             if !SessionStore.validName(name) then
@@ -176,11 +224,19 @@ object SessionTool:
                 "session: invalid name — free text is fine (spaces allowed) but control characters are not, max 120 chars")
               2
             else
+              // issue-037: a WRITE must announce itself. The audit line goes to STDERR so the
+              // parsed stdout (the display name, as ever) stays byte-stable for existing callers.
+              val oldName    = SessionStore.readName(root, id)
+              val oldStarted = SessionStore.readStarted(root, id)
               SessionStore.writeName(root, id, name, nowMs)
               SessionStore.ensureCwd(root, id, cwd)
               SessionStore.prune(root, nowMs)
               val started = SessionStore.readStarted(root, id).getOrElse(nowMs)
-              println(SessionStore.displayName(started, Some(name)))
+              val newDisp = SessionStore.displayName(started, Some(name))
+              val oldDisp = SessionStore.displayName(oldStarted.getOrElse(started), oldName)
+              val act     = if oldName.isDefined then "renamed" else "named"
+              Console.err.println(s"session: $act $oldDisp -> $newDisp")
+              println(newDisp)
               0
           case other =>
             Console.err.println(s"session: unexpected arguments '${other.mkString(" ")}' — see --help")

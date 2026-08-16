@@ -1,5 +1,10 @@
 # Contributing to genscalator
 
+> **genscalator v0.10.2** — contributing-policy version. Stale policy fails silently and outward:
+> an old checkout can point you at the wrong forge or a stale address, and nothing else will warn
+> you. Check what you have with `tt --version` and update (`tt update`) before filing an issue or
+> opening a PR.
+
 genscalator is built **with and for both humans and agents** — so this guide speaks to both. The repo
 grows the way its tools were born: someone (human *or* agent) does real work, builds a small typed tool to
 replace a brittle bash/grep/awk reflex, and — if it turns out to be generally useful — contributes it back.

@@ -227,6 +227,15 @@ frozen audit log mentioned a draft blog post, which mentioned another, and both 
 from anything alive. `--leaf <rel>` separates the two relations a plain walk conflates: a leaf is
 **kept** when something points at it, but its **own** citations are not followed. Repeatable, opt-in,
 and it cannot change a run that does not pass it.
+
+**The check ignore file (issue-011).** A checked-in `.links.ignore` at the scanned root records links
+that are dangling *by design* — the manual sources cite the `.html` pages only `tt ssg` generates, and
+the serverless-spa-seed template cites the `main.js` its build step produces. One entry per line,
+`from/file.md -> target.html  # reason`; the reason is MANDATORY (a malformed file exits 2, a config
+error kept distinct from a link regression), so an exemption is documentation, not silence. Excused
+links are printed with their reason and kept off the exit code; an unused entry is noted, never fatal.
+With the six known cases recorded, `links check` exits 0 on the repo, and
+`.github/workflows/links-check.yml` gates every push and PR on it.
 ```
 tt links check /abs/repo                                              # is anything broken right now?
 tt links to /abs/repo research/METHODOLOGY.md                         # who depends on this file?
@@ -329,6 +338,7 @@ each label reverse-video + bold in its own colour, padded one space each side. L
 ```
 session                 # print the display name: YYMMDD-HHhMMm[-MyName]
 session <name words>    # set the human name part (free text, spaces allowed; control chars rejected)
+session list             # list sessions recorded for THIS directory, newest first (alias: ls; pure read)
 session --clear         # remove the human name (the timestamp part remains)
 session adopt           # re-attach state orphaned by a harness session-id re-mint
 session adopt <id>      # pick among several candidates (a bare adopt lists them)
@@ -344,8 +354,11 @@ name + chips under the old key while reads of the new key find silent emptiness.
 recovery: with exactly ONE orphan recorded for the SAME working directory it copies that orphan under the
 current key and reports what was adopted (name, chips, age); with SEVERAL candidates NOTHING is adopted —
 one may be another LIVE session in this directory — they are listed newest first and you pick with
-`adopt <id>` (exit 2 until you do). A lone word spelled adopt in any capitalization is the verb, never a
-session name. There is no auto-adopt. No orphan: says so and exits 2. Chips merge as a union with the orphan's first (chips declared after the re-mint survive);
+`adopt <id>` (exit 2 until you do). A lone word spelled adopt — or any of the read words
+list/ls/show/status/current/get/name — in any capitalization is a verb, never a session name
+(issue-037: `tt session list` used to silently rename the session); list/ls print the roster, the
+other read words print the display name. Setting a name announces `session: renamed <old> -> <new>`
+on stderr; stdout stays the display name, byte-stable. There is no auto-adopt. No orphan: says so and exits 2. Chips merge as a union with the orphan's first (chips declared after the re-mint survive);
 the orphan's earlier `started` stamp wins (adoption claims continuity); the name yields to one already set
 on the new key. When an empty-state read (`tt session` or `tt mode`) finds recent (<48h) orphaned state
 for this directory, ONE hint line goes to stderr pointing at `tt session adopt`; stdout stays exactly as
@@ -399,6 +412,8 @@ verify [checks] -- <cmd> <args...>      # run <cmd> (NO shell), check exit/stdou
    --exit N        expected exit code (default 0)
    --out  <substr> / --out-re <regex>   stdout must contain / match
    --err  <substr> / --err-re <regex>   stderr must contain / match
+   --tee           echo the child's output LIVE (still captured for checks; verdict prints last)
+   --timeout N     kill the child and FAIL after N seconds (default: no limit)
 ```
 The toolbox's first **effectful driver** (os-lib; not a pure tool). Replaces the `cd && … > log 2>&1;
 echo $?` bundle with **one allowlistable call** — so `Bash(tt verify *)` is safe to blanket-allow.
@@ -598,7 +613,7 @@ Example: `tt ssg blog/002-....md tmp/site` then `tt serv tmp/site` and open the 
 
 ### forge — Forgejo/Gitea forge client, default Codeberg (EFFECTFUL: network; create needs env token)
 ```
-forge whoami   [--url BASE]                               # verify auth: print the token's login (never the token)
+forge whoami   [--gh | --gl | --url BASE]                 # verify auth: print the token's login (never the token)
 forge releases <owner>/<repo> [--url BASE] [--limit N]    # list releases  (READ, no auth → allowlistable)
 forge tags     <owner>/<repo> [--url BASE] [--limit N]    # list tags      (READ, no auth → allowlistable)
 forge issues <owner>/<repo> [--gh | --url BASE] [--state open|closed|all] [--limit N]   # list issues (READ)
@@ -606,6 +621,9 @@ forge prs    <owner>/<repo> [--gh | --url BASE] [--state open|closed|all] [--lim
 forge contributors <owner>/<repo> [--gh | --gl | --url BASE] [--limit N]   # list contributors (READ; --gh/--gl only)
 forge issue  <owner>/<repo> <n> [--gh | --url BASE]        # show an issue + comments   (READ)
 forge pr     <owner>/<repo> <n> [--gh | --url BASE]        # show a PR: merge state + body (READ)
+forge pr-commits <owner>/<repo> <n> [--gh | --url BASE] [--limit N]   # list a PR's commits + credit-trailer check (READ)
+forge pr-merge <owner>/<repo> <n> [--gh | --url BASE] [--method merge|squash|rebase]
+               [--subject S] [--body-file F] [--yes]       # MERGE a PR (EFFECTFUL): previews by default, applies with --yes
 forge protection <owner>/<repo> <branch> [--gh | --url BASE]   # show the protection rule (needs token)
 forge release-create <owner>/<repo> <tag> [--name S] [--body S | --body-file F]
                      [--prerelease] [--draft] [--target COMMITISH] [--gh | --gl --url BASE]   # CREATE (effectful)
@@ -636,6 +654,12 @@ work anonymously on GitHub (60/h rate limit); `protection` requires the token (a
 **`contributors`** reads the repo's contributor list — `--gh` prints `login⇥contributions⇥type` (type = `User`/`Bot`,
 the field that answers "why is a bot on the list"), `--gl` prints `name⇥email⇥commits`; the Gitea/Forgejo REST API
 has no contributors endpoint (Codeberg 404s), so the default dialect says so plainly rather than erroring cryptically.
+**`pr-commits`** lists a PR's commits (short sha⇥date⇥author⇥headline) and surfaces `Co-Authored-By:`/"Generated
+with" lines with a one-line verdict — the CONTRIBUTING.md no-assistant-credit pre-merge check in one allowlisted
+call. **`pr-merge`** merges a PR: previews by default (release-delete's shape) and applies only with `--yes`; the
+default subject `Merge PR #<n>: <title>` satisfies CONTRIBUTING.md's name-the-PR rule, the body comes from
+`--body-file` only, an unmergeable/draft/closed PR is refused by name, and the source branch is never deleted.
+`whoami` now takes `--gh`/`--gl` too, so the verb whose job is "check my auth" can check the token the other verbs use.
 Example:
 ```
 tt forge releases bjornregnell/genscalator --limit 5
@@ -650,9 +674,11 @@ tt forge release-create bjornregnell/genscalator v0.8.0 --name "v0.8.0: …" --b
 git commit --repo <dir> --message-file <path> [--add <pathspec>]... [--push] [--remote <name>]... [--tags]
 git push   --repo <dir> [--remote <name>]... [--tags]    # push committed work, no new commit
 git pull   --repo <dir>                                  # fast-forward ONLY: FFs or fails loudly
-git fetch  --repo <dir>                                  # remote-tracking refs only, never the working tree
+git fetch  --repo <dir> [--remote <name>]...             # remote-tracking refs only, never the working tree;
+                                                         # names the remote it fetched, reports upstream standing
+                                                         # instead of a bare "up to date", lists unfetched remotes
 git show   --repo <dir> --ref <ref> --path <relpath> [--out <file>]   # READ-ONLY: file content at a ref
-git log    --repo <dir> [--grep P] [--co-author P] [--author P] [--committer P] [--since D] [--limit N]  # READ-ONLY search
+git log    --repo <dir> [--grep P] [--co-author P] [--author P] [--committer P] [--since D] [--limit N] [--path <relpath>]...  # READ-ONLY search
 ```
 Exposes ONLY the safe, non-destructive verbs — no reset/rebase/merge/rm/clean/`--force` — so `Bash(tt git *)`
 cannot become a data-loss vector. `commit` reads its message from a FILE, so prose with shell metacharacters
@@ -664,7 +690,9 @@ general surface blocked allowlisting, e.g. when a PR-review sub-agent needs a fi
 ref or path it exits non-zero with git's error — never a partial/empty success. **`log`** is a READ-ONLY
 commit-log search: it caps (`--limit`, default 50) and tab-formats the output (`<short-sha>⇥<author-email>⇥<subject>`
 plus a `=== N commit(s)` line that flags when the cap was hit), so it needs no `| head` and `Bash(tt git log *)`
-stays allowlist-safe — `--co-author P` greps the `Co-Authored-By:` trailer forges attribute contributors from.
+stays allowlist-safe — `--co-author P` greps the `Co-Authored-By:` trailer forges attribute contributors from,
+and `--path <relpath>` (repeatable, issue 038) keeps only commits that TOUCHED the given repo-root-relative
+path(s), passed to git after a `--` separator so a path can never be mistaken for a ref.
 **`--remote <name>`** (repeatable, with `--push`) sends the unit to a MIRROR SET in one call instead of
 one raw `git push <remote>` per extra remote — genscalator pushes github + gitlab + coursegit every unit, and
 that gap was forcing the raw-git reflex this tool exists to retire. It fails on the first remote that
@@ -824,6 +852,20 @@ signal is the reliable cure. Its RSS also surfaces on the statusline box line so
 `tt wr stamp <project-dir> <regex> [--user|--human] [--limit N]` retrofits the REAL date-time of an utterance
 or event from the session `.jsonl` transcripts — the grounded-timestamp tool behind the WR-data discipline.
 
+### issue — typed verb for the in-repo issue workflow (EFFECTFUL: `close --yes` rewrites + moves ONE file)
+```
+issue next  [--repo <dir>]                    # the next free NNN across open/ AND closed/ (never reused)
+issue list  [--state open|closed|all]         # one line per issue: number, state, labels, summary
+issue close <NNN> (--fixed-by <ref> | --as <text>) [--date YYYY-MM-DD] [--yes]
+```
+Executes `reqts/issues/README.md`'s rules (issue-032): closing rewrites the `> status:` preamble AND
+moves the file open/ → closed/ as ONE operation, so directory and preamble cannot disagree — PREVIEW by
+default, `--yes` to apply (the `release-delete` pattern). The date comes from the system clock (the
+`tt chrono` source) or an explicit `--date`, never guessed. Refuses (exit 1) an unknown number, an
+already-closed issue, a number claiming several files, or a preamble already declaring a closed state.
+`list` flags a preamble that disagrees with its directory with a ⚠. Local clone only; staging and
+committing stay with the caller (stage BOTH paths so git records the rename).
+
 ## Companion: scalex
 The `tt` tools are **textual** — grep/awk/cut over any file. For **Scala code structure** the companion
 is **[scalex](https://github.com/nguyenyou/scalex)**: "grep, but it understands Scala's AST." It parses
@@ -867,6 +909,7 @@ One line per file; a tool's real reference is its `###` section above and its `-
 - `forge.scala` — forge client (Gitea/Codeberg + GitHub `--gh` + GitLab `--gl`): reads + env-token release verbs incl. the destructive `release-delete` (effectful; requests+ujson+os-lib).
 - `git.scala` — safe git helper: commit-from-file, ff-only pull, fetch, read-only show/log (effectful; os-lib).
 - `gitinfo.scala` — read-only git overview.
+- `issue.scala` — the in-repo issue workflow (next/list read-only; close is the guarded rewrite+move, preview-by-default).
 - `update.scala` — update-awareness (git-checkout mode: read-only apart from git fetch) AND `--native`, which REPLACES an installed binary tree (preview-by-default; effectful; os-lib+requests+ujson).
 - `statusline.scala`, `box.scala`, `bloop.scala` — harness/host instruments (box kill + bloop clean are the guarded destructive verbs).
 - `prd.scala`, `harden.scala`, `skillcheck.scala`, `skillgrants.scala`, `memory.scala`, `wr.scala` — genscalator-upkeep reads (memory `sync` writes the repo snapshot).
@@ -878,6 +921,7 @@ One line per file; a tool's real reference is its `###` section above and its `-
 - `limitstore.scala`, `sessionstore.scala`, `minijson.scala`, `mdparse.scala` — shared stores/parsers (limit+statusline; mode+session+statusline; json; md-fmt+ssg).
 - `secrets.scala` — the one definition of "what is a secret" (redaction + detection; harden + env).
 - `releaselib.scala`, `ziplib.scala` — release download/verify + zip machinery shared by `forge` and `update` (the toolbox's most security-sensitive shared code — worth an auditor's read).
+- `versionlib.scala` — the `tt --version` line (display normalisation over the four VERSION.txt carrier shapes + carrier-kind discrimination; issue 028). Handlers live in `tt` (bash) and `dispatch.scala`, not in a verb file.
 - `dispatch.scala` — the single native dispatcher (its `@main` IS `tt`, not a verb).
 - `template.scala.txt` — starter template (version + lib includes, dispatch skeleton).
 - `project.scala` — the single source of the Scala version (no code, no `@main`); every tool includes it.

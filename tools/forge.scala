@@ -16,7 +16,7 @@
 //   fallback is a deliberate 2026-07-25 widening so the human need keep NO token in the environment at
 //   all; see the CREDENTIAL HELPERS note below for the full trade. It prints an [audit] line before acting,
 //   and is deliberately NOT blanket-allowlistable (creating a release should stay a visible, confirmed op).
-//   tt forge whoami   [--url BASE]                          # verify auth: print the token's login (never the token)
+//   tt forge whoami   [--gh | --gl | --url BASE]            # verify auth: print the token's login (never the token)
 //   tt forge releases <owner>/<repo> [--gh | --url BASE] [--limit N]   # lists asset names too
 //   tt forge tags     <owner>/<repo> [--gh | --url BASE] [--limit N]
 //   tt forge release-create <owner>/<repo> <tag> [--name S] [--body S | --body-file F]
@@ -35,6 +35,9 @@
 //   tt forge pr     <owner>/<repo> <n> [--gh | --url BASE]           # merge state + body
 //   tt forge pr-files <owner>/<repo> <n> [--gh | --url BASE]         # changed files: status, +/-, path
 //   tt forge pr-diff  <owner>/<repo> <n> [--gh | --url BASE]         # raw unified diff
+//   tt forge pr-commits <owner>/<repo> <n> [--gh | --url BASE] [--limit N]  # commits + credit-trailer check
+//   tt forge pr-merge <owner>/<repo> <n> [--gh | --url BASE] [--method M] [--subject S] [--body-file F] [--yes]
+//                                                                    # EFFECTFUL: previews by default, merges with --yes
 //   tt forge protection <owner>/<repo> <branch> [--gh | --url BASE]  # protection rule (needs a token)
 //   BASE defaults to https://codeberg.org
 import scala.util.Try
@@ -49,7 +52,7 @@ object Forge {
 
   private def forgeUsage(): Nothing = die(
     "usage:\n" +
-      "  forge whoami   [--url BASE]                              (verify auth: prints the token's login)\n" +
+      "  forge whoami   [--gh | --gl | --url BASE]                 (verify auth: prints the token's login)\n" +
       "  forge releases <owner>/<repo> [--gh | --url BASE] [--limit N]\n" +
       "  forge tags     <owner>/<repo> [--gh | --url BASE] [--limit N]\n" +
       "  forge issues <owner>/<repo> [--gh | --url BASE] [--state open|closed|all] [--limit N]\n" +
@@ -59,6 +62,9 @@ object Forge {
       "  forge pr     <owner>/<repo> <n> [--gh | --url BASE]             (merge state + body)\n" +
       "  forge pr-files <owner>/<repo> <n> [--gh | --url BASE]           (changed files: status, +/-, path)\n" +
       "  forge pr-diff  <owner>/<repo> <n> [--gh | --url BASE]           (raw unified diff)\n" +
+      "  forge pr-commits <owner>/<repo> <n> [--gh | --url BASE] [--limit N]   (commits + credit-trailer check)\n" +
+      "  forge pr-merge <owner>/<repo> <n> [--gh | --url BASE] [--method merge|squash|rebase]\n" +
+      "                 [--subject S] [--body-file F] [--yes]           (PREVIEWS by default; merges with --yes)\n" +
       "  forge protection <owner>/<repo> <branch> [--gh | --url BASE]    (needs a token)\n" +
       "  forge release-create <owner>/<repo> <tag> [--gh | --gl | --url BASE] [--name S] [--body S | --body-file F] [--prerelease] [--draft] [--target C]\n" +
       "  forge release-edit   <owner>/<repo> <tag> [--name S] [--body S | --body-file F] [--prerelease] [--draft] [--gh | --url BASE]\n" +
@@ -77,8 +83,10 @@ object Forge {
       |The token is read ONLY from human-set env vars — never from a flag.
       |
       |Usage:
-      |  forge whoami   [--url BASE]                             verify auth: print the token's
-      |                                                          login (never the token itself)
+      |  forge whoami   [--gh | --gl | --url BASE]               verify auth: print the token's
+      |                                                          login (never the token itself);
+      |                                                          --gh/--gl check the GitHub/GitLab
+      |                                                          token the other verbs use
       |  forge releases <owner>/<repo> [--gh | --url BASE] [--limit N]
       |                                                          list releases, with each release's
       |                                                          asset names indented under it (READ)
@@ -96,6 +104,20 @@ object Forge {
       |                                                          status, +adds/-dels, path (READ)
       |  forge pr-diff  <owner>/<repo> <n> [--gh | --url BASE]   print a PR's raw unified diff (READ;
       |                                                          can be large — capture and Read)
+      |  forge pr-commits <owner>/<repo> <n> [--gh | --url BASE] [--limit N]
+      |                                                          list a PR's commits: short sha, date,
+      |                                                          author, headline (READ); surfaces
+      |                                                          Co-Authored-By/"Generated with" lines
+      |                                                          and gives a one-line verdict — the
+      |                                                          CONTRIBUTING.md pre-merge check
+      |  forge pr-merge <owner>/<repo> <n> [--gh | --url BASE] [--method merge|squash|rebase]
+      |                 [--subject S] [--body-file F] [--yes]
+      |                       (EFFECTFUL: merge a PR. PREVIEWS by default — PR, state,
+      |                        the exact merge subject — and applies only with --yes;
+      |                        the default subject "Merge PR #<n>: <title>" satisfies
+      |                        CONTRIBUTING.md's name-the-PR rule; the body comes from
+      |                        a FILE so prose never rides a command line; refuses an
+      |                        unmergeable PR; NEVER deletes the source branch)
       |  forge protection <owner>/<repo> <branch> [--gh | --url BASE]
       |                                                          show the protection rule (token)
       |  forge release-create <owner>/<repo> <tag> [--gh | --gl | --url BASE]
@@ -131,6 +153,10 @@ object Forge {
       |  --gh              talk to the GitHub API (fixed api.github.com) instead of a Gitea forge
       |  --gl              talk to the GitLab API (--url BASE, default https://gitlab.com)
       |  --state S         open | closed | all for issues/prs (default open)
+      |  --method M        pr-merge: merge | squash | rebase (default merge; squash discards
+      |                    the contributors' commit boundaries — see pr-commits)
+      |  --subject S       pr-merge: merge commit subject (default "Merge PR #<n>: <title>")
+      |  --yes             pr-merge/release-delete: actually apply (both PREVIEW by default)
       |
       |Token: whoami, release-create/edit/upload/delete and protection read the token from env
       |GENSCALATOR_CODEBERG_TOKEN, then CODEBERG_TOKEN, then FORGE_TOKEN — never a flag,
@@ -224,6 +250,8 @@ object Forge {
       case "pr" :: rest             => showPr(rest)
       case "pr-files" :: rest       => prFiles(rest)
       case "pr-diff" :: rest        => prDiff(rest)
+      case "pr-commits" :: rest     => prCommits(rest)
+      case "pr-merge" :: rest       => prMerge(rest)
       case "protection" :: rest     => showProtection(rest)
       case "release-create" :: rest => releaseCreate(rest)
       case "release-edit" :: rest   => releaseEdit(rest)
@@ -233,30 +261,59 @@ object Forge {
       case _                        => forgeUsage()
 
   // whoami — authenticated READ (GET /user) to verify the token inherits + is valid. Prints only the login and
-  // which env var supplied the token (NEVER the token). Trusted-host-guarded like release-create.
+  // which source supplied the token (NEVER the token). Trusted-host-guarded like release-create.
+  // --gh/--gl added for issue 035: the one verb whose job is "check my auth" could only check the Gitea
+  // token, so running it before a GitHub release reported a Codeberg 403 that read as a problem and was
+  // not one. Each dialect follows its own verbs' rules exactly: same token sources, same auth header,
+  // same fixed-root/trusted-host guard.
   private def whoami(args: List[String]): Unit =
     @annotation.tailrec
-    def go(rest: List[String], base: String): String =
+    def go(rest: List[String], base: String, dialect: Dialect): (String, Dialect) =
       rest match
-        case Nil                                => base
-        case "--url" :: u :: t                  => go(t, u)
+        case Nil                                => (base, dialect)
+        case "--url" :: u :: t                  => go(t, u, dialect)
+        case "--gh" :: t                        => go(t, base, Dialect.GitHub)
+        case "--gl" :: t                        => go(t, base, Dialect.GitLab)
         case flag :: _ if flag.startsWith("--") => die(s"unknown/incomplete flag '$flag'")
         case other :: _                         => die(s"unexpected argument '$other'")
-    val base = go(args, DefaultBase)
-    val tok  = token.getOrElse(die(s"whoami needs a token — the HUMAN sets one of env ${TokenEnvNames.mkString(", ")} (never a flag)."))
-    val url  = s"${apiBase(base)}/user"
-    val host = hostOf(url)
-    if !trustedHosts.contains(host) then die(
-      s"refusing to send the token to untrusted host '$host'. Trusted: ${trustedHosts.toVector.sorted.mkString(", ")} (extend via env TT_FORGE_HOSTS).")
-    val r = Try(requests.get(url, headers = Map("Authorization" -> s"token $tok"),
-      check = false, readTimeout = 30000, connectTimeout = 10000)).getOrElse(die("request failed"))
-    r.statusCode match
-      case 200 =>
-        val login = Try(ujson.read(r.text()).obj.get("login").map(_.str).getOrElse("?")).getOrElse("?")
-        val src   = TokenEnvNames.find(n => sys.env.get(n).exists(_.trim.nonEmpty)).getOrElse("?")
-        println(s"authenticated as $login on $host (token from env $src)")
-      case 401 => die(s"token present but rejected (401) by $host — check the token / its scope")
-      case c   => die(s"GET $url -> $c ${r.statusMessage}")
+    val (base, dialect) = go(args, DefaultBase, Dialect.Gitea)
+    // ONE reporter for all three dialects, so the output shape cannot drift between them.
+    def report(url: String, headers: Map[String, String], loginKey: String, src: String): Unit =
+      val host = hostOf(url)
+      val r = Try(requests.get(url, headers = headers,
+        check = false, readTimeout = 30000, connectTimeout = 10000)).getOrElse(die("request failed"))
+      r.statusCode match
+        case 200 =>
+          val login = Try(ujson.read(r.text()).obj.get(loginKey).map(_.str).getOrElse("?")).getOrElse("?")
+          println(s"authenticated as $login on $host (token from $src)")
+        case 401 => die(s"token present but rejected (401) by $host — check the token / its scope")
+        case c   => die(s"GET $url -> $c ${r.statusMessage}")
+    def envSrc(names: List[String], fallback: String): String =
+      names.find(n => sys.env.get(n).exists(_.trim.nonEmpty)).map("env " + _).getOrElse(fallback)
+    dialect match
+      case Dialect.Gitea =>
+        val tok  = token.getOrElse(die(s"whoami needs a token — the HUMAN sets one of env ${TokenEnvNames.mkString(", ")} (never a flag)."))
+        val url  = s"${apiBase(base)}/user"
+        val host = hostOf(url)
+        if !trustedHosts.contains(host) then die(
+          s"refusing to send the token to untrusted host '$host'. Trusted: ${trustedHosts.toVector.sorted.mkString(", ")} (extend via env TT_FORGE_HOSTS).")
+        report(url, Map("Authorization" -> s"token $tok"), "login", envSrc(TokenEnvNames, "the OS keyring"))
+      case Dialect.GitHub =>
+        if base != DefaultBase then die("--gh targets the fixed GitHub API root; drop --url (it is not used with --gh).")
+        val tok = ghToken.getOrElse(die(
+          s"whoami --gh needs a token — the HUMAN sets one of env ${GhTokenEnvNames.mkString(", ")} (never a flag), or logs in once with `gh auth login`."))
+        report(s"$GitHubApi/user",
+          Map("Accept" -> "application/vnd.github+json", "Authorization" -> s"Bearer $tok"),
+          "login", envSrc(GhTokenEnvNames, "`gh auth token`"))
+      case Dialect.GitLab =>
+        val glBase = if base == DefaultBase then "https://gitlab.com" else base // default gitlab.com, not codeberg
+        val tok = glToken.getOrElse(die(
+          s"whoami --gl needs a token — the HUMAN sets one of env ${GlTokenEnvNames.mkString(", ")} (never a flag)."))
+        val host = hostOf(glBase)
+        if !gitlabTrustedHosts.contains(host) then die(
+          s"refusing to send the token to untrusted host '$host'. Trusted: ${gitlabTrustedHosts.toVector.sorted.mkString(", ")} (extend via env TT_FORGE_GITLAB_HOSTS or TT_FORGE_HOSTS).")
+        report(s"${glBase.stripSuffix("/")}/api/v4/user", Map("PRIVATE-TOKEN" -> tok),
+          "username", envSrc(GlTokenEnvNames, "?"))
 
   private final case class ReadOpts(repo: Option[String], base: String, limit: Int, state: String)
 
@@ -516,6 +573,190 @@ object Forge {
       case 200 => print(r.text())
       case 404 => die(s"PR #$n not found (404)")
       case c   => die(s"GET $url -> $c ${r.statusMessage}")
+
+  /** PURE URL builder for pr-commits, public for unit tests (SM207's testable-request rule).
+    * GitHub spells the page size per_page (server cap 100), Gitea/Forgejo spells it limit; both
+    * follow the fixed-GitHubApi-root rule of the other pr-* builders. */
+  def prCommitsUrl(isGh: Boolean, apiRoot: String, owner: String, repo: String, n: Int, limit: Int): String =
+    if isGh then s"$GitHubApi/repos/$owner/$repo/pulls/$n/commits?per_page=$limit"
+    else s"$apiRoot/repos/$owner/$repo/pulls/$n/commits?limit=$limit"
+
+  /** PURE trailer scan for pr-commits: the message lines that claim credit — `Co-Authored-By:`
+    * trailers and "Generated with ..." lines, case-insensitively. Deliberately BROAD: the tool
+    * SURFACES candidate lines and the maintainer judges, because deciding whether a co-author is an
+    * assistant is not a string predicate (a human co-author trailer is legitimate; an assistant one
+    * is what CONTRIBUTING.md forbids). Public for unit tests. */
+  def creditTrailers(message: String): List[String] =
+    message.linesIterator.map(_.trim).filter { l =>
+      val lc = l.toLowerCase
+      lc.startsWith("co-authored-by:") || lc.contains("generated with")
+    }.toList
+
+  // pr-commits — READ a PR's commit list (issue 029). CONTRIBUTING.md:63 forbids assistant-credit
+  // trailers, and checking that rule before a merge means reading the branch's commit MESSAGES —
+  // which pr-files and pr-diff cannot show, so the check used to leave the lane as a raw
+  // `gh pr view --json commits`. One line per commit (tab-separated like the other list verbs),
+  // credit-candidate lines indented under their commit, and a one-line verdict the caller can act on.
+  private final case class CommitsOpts(repo: Option[String], item: Option[String], base: String, limit: Int)
+
+  private def prCommits(args: List[String]): Unit =
+    @annotation.tailrec
+    def go(rest: List[String], o: CommitsOpts): CommitsOpts =
+      rest match
+        case Nil                 => o
+        case "--url" :: u :: t   => go(t, o.copy(base = u))
+        case "--gh" :: t         => go(t, o.copy(base = "https://github.com"))
+        case "--limit" :: n :: t =>
+          n.toIntOption match
+            case Some(v) if v > 0 => go(t, o.copy(limit = v))
+            case _                => die(s"--limit needs a positive integer, got '$n'")
+        case flag :: _ if flag.startsWith("--") => die(s"unknown/incomplete flag '$flag'")
+        case r :: t if o.repo.isEmpty => go(t, o.copy(repo = Some(r)))
+        case i :: t if o.item.isEmpty => go(t, o.copy(item = Some(i)))
+        case other :: _               => die(s"unexpected argument '$other'")
+    val o             = go(args, CommitsOpts(None, None, DefaultBase, 100))
+    val (owner, repo) = splitRepo(o.repo.getOrElse(forgeUsage()))
+    val n   = o.item.flatMap(_.toIntOption).getOrElse(die("expected a PR number after <owner>/<repo>"))
+    val gh  = isGitHub(o.base)
+    val arr = Try(getJson(prCommitsUrl(gh, apiBase(o.base), owner, repo, n, o.limit), if gh then ghHeaders else Map.empty).arr)
+      .getOrElse(die("expected a JSON array of commits"))
+    // Both dialects nest the git data under `commit` (author name/email/date, full message);
+    // the top-level `sha` is the commit id. Shown: short sha, ISO date, author, headline.
+    val rows = arr.toList.map { c =>
+      val sha   = strOr(c.obj.get("sha"), "?").take(10)
+      val cmt   = c.obj.get("commit")
+      val name  = cmt.flatMap(v => Try(v.obj("author").obj("name").str).toOption).getOrElse("?")
+      val email = cmt.flatMap(v => Try(v.obj("author").obj("email").str).toOption).getOrElse("")
+      val date  = cmt.flatMap(v => Try(v.obj("author").obj("date").str).toOption).getOrElse("")
+      val msg   = cmt.flatMap(v => Try(v.obj("message").str).toOption).getOrElse("")
+      (sha, date, s"$name <$email>", msg.takeWhile(_ != '\n').trim, creditTrailers(msg))
+    }
+    if rows.isEmpty then println("(no commits)")
+    else
+      rows.foreach { (sha, date, author, headline, trailers) =>
+        println(s"$sha\t$date\t$author\t$headline")
+        trailers.foreach(l => println(s"\t  ! $l"))
+      }
+      val hits = rows.map(_._5.size).sum
+      if hits == 0 then println(s"=== ${rows.size} commits, 0 assistant-credit trailers")
+      else println(s"=== ${rows.size} commits, $hits credit line(s) flagged (! above) — CONTRIBUTING.md forbids assistant credit")
+      if rows.size >= o.limit then
+        println(s"(--limit ${o.limit} page cap reached — more commits may exist; pagination not implemented)")
+
+  /** PURE builders for pr-merge, public for unit tests (SM207). The subject default is
+    * CONTRIBUTING.md:81's rule made automatic: the merge commit names the PR (number + title), so
+    * mirrored history carries the cross-reference without the caller retyping the title. */
+  def mergeSubject(n: Int, title: String): String = s"Merge PR #$n: $title"
+
+  def prMergeUrl(isGh: Boolean, apiRoot: String, owner: String, repo: String, n: Int): String =
+    if isGh then s"$GitHubApi/repos/$owner/$repo/pulls/$n/merge"
+    else s"$apiRoot/repos/$owner/$repo/pulls/$n/merge"
+
+  /** PURE payload builder for pr-merge. GitHub PUTs {merge_method, commit_title[, commit_message]};
+    * Gitea/Forgejo POSTs {Do, MergeTitleField[, MergeMessageField]} — the capitalized keys are the
+    * Gitea API's own spelling, not a style slip. An empty body sends NO message field, so the forge
+    * composes its default instead of recording an empty message. */
+  def mergePayload(isGh: Boolean, method: String, subject: String, body: String): ujson.Obj =
+    if isGh then
+      val p = ujson.Obj("merge_method" -> method, "commit_title" -> subject)
+      if body.nonEmpty then p("commit_message") = body
+      p
+    else
+      val p = ujson.Obj("Do" -> method, "MergeTitleField" -> subject)
+      if body.nonEmpty then p("MergeMessageField") = body
+      p
+
+  // pr-merge — the FIRST effectful verb in the pr-* family (issue 030): merge a PR. Follows the
+  // safety shape release-delete established — PREVIEW by default, apply only with --yes — because a
+  // merge is outward-facing in the same way. The body comes from a FILE only (like release-create's
+  // --body-file and `tt git commit --message-file`): prose with shell metacharacters must never ride
+  // a command line, which is WHY this verb exists. Refuses a PR the forge reports unmergeable, and
+  // NEVER deletes the source branch — that is a separate destructive act with no flag here.
+  private final case class MergeOpts(repo: Option[String], item: Option[String], base: String,
+      dialect: Dialect, method: String, subject: Option[String], bodyFile: Option[String], yes: Boolean)
+
+  private def prMerge(args: List[String]): Unit =
+    @annotation.tailrec
+    def go(rest: List[String], o: MergeOpts): MergeOpts =
+      rest match
+        case Nil                     => o
+        case "--method" :: m :: t    =>
+          if Set("merge", "squash", "rebase").contains(m) then go(t, o.copy(method = m))
+          else die(s"--method must be merge, squash or rebase, got '$m'")
+        case "--subject" :: s :: t   => go(t, o.copy(subject = Some(s)))
+        case "--body-file" :: f :: t => go(t, o.copy(bodyFile = Some(f)))
+        case "--yes" :: t            => go(t, o.copy(yes = true))
+        case "--url" :: u :: t       => go(t, o.copy(base = u))
+        case "--gh" :: t             => go(t, o.copy(dialect = Dialect.GitHub))
+        case "--gl" :: _             => die(
+          "pr-merge is not implemented for GitLab (a merge request is a different API shape there).\n" +
+            "  Stated rather than faked — use --gh or the default Gitea/Forgejo dialect.")
+        case flag :: _ if flag.startsWith("--") => die(s"unknown/incomplete flag '$flag'")
+        case r :: t if o.repo.isEmpty => go(t, o.copy(repo = Some(r)))
+        case i :: t if o.item.isEmpty => go(t, o.copy(item = Some(i)))
+        case other :: _               => die(s"unexpected argument '$other'")
+    val o = go(args, MergeOpts(None, None, DefaultBase, Dialect.Gitea, "merge", None, None, false))
+    if o.dialect == Dialect.GitHub && o.base != DefaultBase then
+      die("--gh targets the fixed GitHub API root; drop --url (it is not used with --gh).")
+    val (owner, repo) = splitRepo(o.repo.getOrElse(forgeUsage()))
+    val n    = o.item.flatMap(_.toIntOption).getOrElse(die("expected a PR number after <owner>/<repo>"))
+    val gh   = o.dialect == Dialect.GitHub
+    val body = o.bodyFile match
+      case Some(f) => Try(os.read(os.Path(f, os.pwd))).getOrElse(die(s"cannot read --body-file '$f'"))
+      case None    => ""
+    // ONE anonymous read serves both the preview and the pre-merge state check (like showPr's).
+    val prUrl = if gh then s"$GitHubApi/repos/$owner/$repo/pulls/$n" else s"${apiBase(o.base)}/repos/$owner/$repo/pulls/$n"
+    val pr    = getJson(prUrl, if gh then ghHeaders else Map.empty)
+    val title      = strOr(pr.obj.get("title"), "?")
+    val state      = strOr(pr.obj.get("state"), "?")
+    val merged     = Try(pr.obj("merged").bool).getOrElse(false)
+    val draft      = Try(pr.obj("draft").bool).getOrElse(false)
+    val mergeable  = pr.obj.get("mergeable").flatMap(v => Try(v.bool).toOption) // None = absent OR still computing
+    val mergeState = if gh then strOr(pr.obj.get("mergeable_state"), "?") else ""
+    val headRef    = Try(pr.obj("head").obj("ref").str).getOrElse("?")
+    val baseRef    = Try(pr.obj("base").obj("ref").str).getOrElse("?")
+    val changed    = Try(pr.obj("changed_files").num.toLong.toString).getOrElse("?") // Gitea may not report it
+    val subject    = o.subject.getOrElse(mergeSubject(n, title))
+    // The refusals, named rather than passing the forge's error through raw — and shown in the
+    // preview too, so a preview never promises an apply that the next step would refuse (the same
+    // rule release-delete's preview follows for --allow-published).
+    val blocker =
+      if merged then Some("already merged")
+      else if state != "open" then Some(s"in state '$state', not open")
+      else if draft then Some("a DRAFT — mark it ready for review first")
+      else if mergeable.contains(false) then
+        Some(s"reported NOT mergeable${if gh then s" (mergeable_state=$mergeState)" else ""} — resolve conflicts first")
+      else if gh && mergeable.isEmpty then Some("still being computed by GitHub (mergeability unknown) — re-run in a moment")
+      else None
+    if !o.yes then
+      println(s"would MERGE PR #$n: $title")
+      println(s"  author: ${userLogin(pr)}  $headRef -> $baseRef  files changed: $changed")
+      println(s"  state: $state  merged=$merged  mergeable=${mergeable.map(_.toString).getOrElse("?")}${if gh then s"  merge_state=$mergeState" else ""}")
+      println(s"  method: ${o.method}  subject: $subject")
+      println(s"  body: ${o.bodyFile.map(f => s"from $f (${body.length} chars)").getOrElse("(none — the forge composes its default)")}")
+      if o.method == "squash" then
+        println("  note: squash discards the contributors' commit boundaries and per-commit attribution")
+      println("  the source branch is NOT deleted — that is a separate act, deliberately without a flag here")
+      println(blocker.map(b => s"  would REFUSE: the PR is $b").getOrElse("  re-run with --yes to apply"))
+    else
+      blocker.foreach(b => die(s"refusing to merge PR #$n: it is $b"))
+      val url     = prMergeUrl(gh, apiBase(o.base), owner, repo, n)
+      val hdrs    = rl.writeHeaders(o.dialect, o.base, "pr-merge") + ("Content-Type" -> "application/json")
+      val payload = mergePayload(gh, o.method, subject, body)
+      System.err.println(s"forge: [audit] ${if gh then "PUT" else "POST"} $url  pr=#$n method=${o.method} subject=$subject")
+      val r =
+        if gh then Try(requests.put(url, data = ujson.write(payload), headers = hdrs,
+          check = false, readTimeout = 60000, connectTimeout = 10000)).getOrElse(die("request failed"))
+        else Try(requests.post(url, data = ujson.write(payload), headers = hdrs,
+          check = false, readTimeout = 60000, connectTimeout = 10000)).getOrElse(die("request failed"))
+      r.statusCode match
+        case 200 =>
+          val sha = Try(ujson.read(r.text()).obj("sha").str).getOrElse("")
+          println(s"merged PR #$n (${o.method})${if sha.nonEmpty then s"  merge sha $sha" else ""}")
+          println(s"  subject: $subject")
+        case 405 => die(s"the forge refused the merge (405) — the PR became unmergeable or a protection rule blocks it.\n${r.text().take(500)}")
+        case 409 => die(s"the head branch changed since the check (409) — re-read the PR and re-run.\n${r.text().take(500)}")
+        case c   => die(s"${if gh then "PUT" else "POST"} $url -> $c ${r.statusMessage}\n${r.text().take(500)}")
 
   private def showProtection(args: List[String]): Unit =
     val o             = parseItem(args)

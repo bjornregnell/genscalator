@@ -12,13 +12,22 @@
 // is the whole point; a flag would be agent-authored, not human approval.
 //   scala-cli run tools/verify.scala -- [checks] -- <cmd> <args...>
 //   checks: --exit N | --out S | --out-re R | --err S | --err-re R   (combinable; ALL must pass; default --exit 0)
+//   options: --tee (echo the child's output live, still captured for checks) | --timeout N (kill + FAIL after N seconds)
 
 // Helpers (parseChecks/allowed/basename, the allow-set + Checks type) scoped in this object so their generic
 // names don't collide with other tools when the toolbox compiles together. Only the @main entry is top-level.
 object Verify {
   private val builtinAllow = Set("scala-cli", "tt", "scalex")
 
-  private case class Checks(exit: Int, out: Vector[String], outRe: Vector[String], err: Vector[String], errRe: Vector[String])
+  private case class Checks(
+      exit: Int = 0,
+      out: Vector[String] = Vector.empty,
+      outRe: Vector[String] = Vector.empty,
+      err: Vector[String] = Vector.empty,
+      errRe: Vector[String] = Vector.empty,
+      tee: Boolean = false,     // echo the child's output live (still captured for checks)
+      timeoutSec: Long = 0L,    // 0 = no limit (os-lib treats timeout 0 as "kill after 0 ms", so we map 0 → -1)
+  )
 
   private def parseChecks(args: List[String]): Either[String, Checks] =
     @annotation.tailrec
@@ -33,9 +42,14 @@ object Verify {
         case "--out-re" :: r :: t => go(t, c.copy(outRe = c.outRe :+ r))
         case "--err" :: s :: t    => go(t, c.copy(err = c.err :+ s))
         case "--err-re" :: r :: t => go(t, c.copy(errRe = c.errRe :+ r))
+        case "--tee" :: t         => go(t, c.copy(tee = true))
+        case "--timeout" :: n :: t =>
+          n.toLongOption match
+            case Some(v) if v > 0 => go(t, c.copy(timeoutSec = v))
+            case _                => Left(s"--timeout needs a positive integer (seconds), got '$n'")
         case flag :: Nil if flag.startsWith("--") => Left(s"$flag needs an argument")
-        case other :: _ => Left(s"unknown check '$other' (expected --exit/--out/--out-re/--err/--err-re)")
-    go(args, Checks(0, Vector.empty, Vector.empty, Vector.empty, Vector.empty))
+        case other :: _ => Left(s"unknown check '$other' (expected --exit/--out/--out-re/--err/--err-re/--tee/--timeout)")
+    go(args, Checks())
 
   private def allowed: Set[String] =
     val extra = sys.env.getOrElse("TT_VERIFY_ALLOW", "").split(",").iterator.map(_.trim).filter(_.nonEmpty).toSet
@@ -63,6 +77,19 @@ object Verify {
       |  --err <substr>                  stderr must contain this substring (repeatable)
       |  --err-re <regex>                stderr must match this regex (repeatable)
       |
+      |Options (before the --):
+      |  --tee                           echo the child's stdout/stderr LIVE as it arrives (stdout to
+      |                                  stdout, stderr to stderr), still captured for the checks; the
+      |                                  audit line + verdict print last. Use for a run measured in
+      |                                  minutes, where silence is indistinguishable from a hang.
+      |                                  (Line order ACROSS the two streams is not guaranteed.)
+      |  --timeout <seconds>             kill the child and FAIL after this many seconds
+      |                                  (default: no limit)
+      |
+      |The default is SILENT on purpose: verify's value is turning a prose claim into one allowlistable
+      |call with a clean PASS/FAIL, and echoing everything would bury the verdict. On FAIL the last
+      |20 lines of output are replayed (unless --tee already showed them).
+      |
       |Allowed executables: scala-cli, tt, scalex — plus any listed in the HUMAN-set env var
       |TT_VERIFY_ALLOW (comma-separated, e.g. export TT_VERIFY_ALLOW=git,make). There is
       |deliberately NO flag to widen this: a flag would be agent-authored, not human approval.
@@ -73,6 +100,7 @@ object Verify {
       |  tt verify -- tt files /abs/src .scala --count
       |  tt verify --exit 0 --out 8 -- scala-cli run tools/text.scala -- grepr /abs .scala x --count
       |  tt verify --exit 2 --out usage -- tt chrono bogus    # assert the failure mode too
+      |  tt verify --tee --timeout 3600 -- scala-cli test /abs/proj    # long run: watch it live, capped
       |
       |Full reference: tools/README.md""".stripMargin
 
@@ -86,7 +114,7 @@ object Verify {
       println(Help)
       sys.exit(0)
     if cmd.isEmpty then
-      System.err.println("verify: usage: verify [checks] -- <cmd> <args...>   (checks: --exit N | --out S | --out-re R | --err S | --err-re R)")
+      System.err.println("verify: usage: verify [checks] -- <cmd> <args...>   (checks: --exit N | --out S | --out-re R | --err S | --err-re R; options: --tee | --timeout N)")
       sys.exit(2)
 
     val exe = basename(cmd.head)
@@ -103,19 +131,34 @@ object Verify {
         sys.exit(2)
       case Right(checks) =>
         val t0 = System.nanoTime()
+        // --tee trap (issue 025): os.Inherit would stream but empty result.out, silently failing every
+        // --out check. So teeing uses line-callback sinks that BOTH echo and accumulate. The two sinks
+        // run on separate reader threads; call() joins them before returning, so the builders are safe
+        // to read afterwards — but stdout/stderr line ORDER across the two streams is not the child's.
+        val outBuf = new StringBuilder
+        val errBuf = new StringBuilder
+        val outSink: os.ProcessOutput =
+          if checks.tee then os.ProcessOutput.Readlines { line => println(line); outBuf.append(line).append('\n') }
+          else os.Pipe
+        val errSink: os.ProcessOutput =
+          if checks.tee then os.ProcessOutput.Readlines { line => System.err.println(line); errBuf.append(line).append('\n') }
+          else os.Pipe
+        val timeoutMs = if checks.timeoutSec > 0 then checks.timeoutSec * 1000 else -1L // 0 would mean "kill after 0 ms"
         val result =
-          try os.proc(cmd).call(check = false, stdout = os.Pipe, stderr = os.Pipe, cwd = os.pwd)
+          try os.proc(cmd).call(check = false, stdout = outSink, stderr = errSink, cwd = os.pwd, timeout = timeoutMs)
           catch
             case e: Throwable =>
               System.err.println(s"verify: failed to run '${cmd.mkString(" ")}': ${e.getMessage}")
               sys.exit(2)
         val ms = (System.nanoTime() - t0) / 1000000
-        val out = result.out.text()
-        val err = result.err.text()
+        val out = if checks.tee then outBuf.toString else result.out.text()
+        val err = if checks.tee then errBuf.toString else result.err.text()
+        val timedOut = timeoutMs > 0 && ms >= timeoutMs
         println(s"=== ran: ${cmd.mkString(" ")} (exit ${result.exitCode}, $ms ms)")
 
         val fails: Vector[String] =
-          (if result.exitCode != checks.exit then Vector(s"exit: expected ${checks.exit}, got ${result.exitCode}") else Vector.empty) ++
+          (if timedOut then Vector(s"timeout: wall time $ms ms reached --timeout ${checks.timeoutSec} s (child killed at the limit)") else Vector.empty) ++
+            (if result.exitCode != checks.exit then Vector(s"exit: expected ${checks.exit}, got ${result.exitCode}") else Vector.empty) ++
             checks.out.filterNot(out.contains).map(s => s"""stdout missing "$s"""") ++
             checks.outRe.filterNot(r => r.r.findFirstIn(out).isDefined).map(r => s"stdout doesn't match /$r/") ++
             checks.err.filterNot(err.contains).map(s => s"""stderr missing "$s"""") ++
@@ -125,7 +168,7 @@ object Verify {
         else
           fails.foreach(f => println(s"  ✗ $f"))
           val combined = (out + (if err.nonEmpty then "\n--- stderr ---\n" + err else "")).linesIterator.toVector
-          if combined.nonEmpty then
+          if combined.nonEmpty && !checks.tee then // --tee already showed the output live; no replay
             println("--- last output ---")
             combined.takeRight(20).foreach(println)
           println(s"=== FAIL (${fails.size})")
