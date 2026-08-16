@@ -7,7 +7,14 @@ won: `tt forge`, banking the fire). Raw pre-rename records keep the old word; se
 `../research/wr-data/WR181-rename-baton-to-warp-ember-2026-07-20.md`.*
 
 **Status: pre-hoc seed, v0 (2026-07-19); v0.1 maintenance 2026-07-20; v0.2 maintenance
-2026-07-21; v0.3 maintenance 2026-07-28** — v0.3: the EXIT-SIDE minion audit becomes a required
+2026-07-21; v0.3 maintenance 2026-07-28; v0.4 maintenance 2026-08-16** — v0.4: the SM275 harvest
+(2026-08-13 session, applied on BR's go): the forge sweep becomes a mandatory §4 state line (it
+changed the agenda twice while the ember verified clean, SM270e + SM274); next-free IDs carry the
+deriving COMMAND, never the bare number (two of four carried numbers were wrong or stale, SM275b);
+the exit obligation fails LOUDLY via the `ember:` commit-subject convention plus an incoming
+HEAD-check (the 2026-08-11 exit skipped regeneration and left no trace, SM275c); and the cold-start
+meta-minion brief must COMPLEMENT, not duplicate, the main lane (half of one audit's calls re-ran
+checks the main lane had just made, SM275g). — v0.3: the EXIT-SIDE minion audit becomes a required
 step (see the pre-flight checklist), on BR's argument that the ember is written by the session's
 most-rotted context and neither party reliably REMEMBERS to order a check at exactly that moment —
 so the check must be structural, not remembered. Two specimens preceded the rule (2026-07-28, both
@@ -31,10 +38,23 @@ real specimen it generalizes: [EMBER-EXAMPLE.md](EMBER-EXAMPLE.md).
    check-instruction (a hash to compare, a command to run, a file to read). A fresh agent holds all
    inherited facts at uniform strength; the mandates substitute for the lost knowing-which-was-checked.
 3. **Numbers over adjectives.** Commit hashes, counts, percentages - checkable against git and disk.
+   ⚠ Exception, and it cuts the other way: **next-free IDs (SM/WR/RT/issue numbers) carry the deriving
+   COMMAND, with the number only as a hint marked "re-verify before using".** A carried number decays
+   the moment anyone files anything: on 2026-08-13 two of four carried next-free IDs were wrong or
+   stale (`RT057+` wrong WHEN WRITTEN), and a number that is right half the time is worse than no
+   number, because it gets trusted (SM275b). The first ember to carry commands survived its audit
+   with all four IDs correct (2026-08-16).
 4. **One screen.** Size is a duplication budget, not a token budget: if a section grows, relocate
    content to the substrate and point.
 5. **Exit order.** Commit and push ALL work first, then write the ember, then exit. An ember written
-   before the final commits points at a moving target.
+   before the final commits points at a moving target. **The ember commit is therefore the LAST
+   commit of the exit, and its subject starts with `ember:`** — that convention is what makes the
+   obligation FAIL LOUDLY: the incoming agent checks whether the work repo's HEAD subject starts
+   with `ember:`, and if it does not, regeneration was skipped and §3/§4 are UNTRUSTED (read them as
+   history, re-derive state from the substrate). WHY structural: the 2026-08-11 exit skipped
+   regeneration entirely and nothing recorded the skip — the next cold start read a carrier stale by
+   process failure and could not tell (SM275c). A rule with no artifact is a rule nobody can see was
+   broken.
 6. **English**, even if the working chat is not: the reader may be any future agent.
 7. **One carrier, one path: write it to `EMBER.md` at the repo root, and nowhere else.** Root, because
    that is where a cold agent actually looks; tracked, because an ember's whole job is to be audited and
@@ -51,6 +71,9 @@ real specimen it generalizes: [EMBER-EXAMPLE.md](EMBER-EXAMPLE.md).
 ```markdown
 ⛔ THIS IS A WARP EMBER: a pointer to durable truth, not the truth. Verify before
 trusting; read only what you need (bounded reads).
+⚠ FRESHNESS CHECK before acting on §3/§4: the work repo's HEAD commit subject must start
+with `ember:` (verify: tt gitinfo <work-repo>). If it does not, the exiting session skipped
+regeneration — treat §3/§4 as UNTRUSTED history and re-derive state from the substrate (§5).
 
 # Ember — <warp type: cold start | compact | model switch | reboot>, written <real timestamp> by <writer>
 
@@ -68,6 +91,8 @@ FORBIDDEN → ALLOWED:
   new native-binary smokes stalled minutes after an "everything left is stall-free" claim).
 - No regex alternation `(a|b)` in inline shell patterns — it reads as regex but executes as
   shell; run two plain single-pattern greps instead (two live slips 2026-07-20).
+- Next free IDs (SM/WR/RT/issue): carry the deriving COMMANDS, numbers only as hints marked
+  "re-verify before using" (rule 3's exception, SM275b).
 
 ## 1. Warp declaration (mode line)
 - cold start: declare `-RotVigil +ColdStart +SmartZone`
@@ -90,12 +115,22 @@ FORBIDDEN → ALLOWED:
   the last session's final commits against this ember's claims. It is the one verifier outside
   both the dying and the newborn context ("carried ≠ armed": ember content must be read to act,
   a spawned watcher fires regardless). If not in spending mode: ask before spawning.
+  **Brief it to COMPLEMENT, NOT DUPLICATE: "assume the main lane's git/forge/state claims are
+  already checked; spend your budget on what the main lane structurally did NOT examine"** —
+  ID numbering, holds, process obligations, HUMAN-ONLY checks. WHY: half of one audited brief's
+  calls re-ran checks the main lane had made minutes earlier with the same commands, while all
+  its value sat in the four things nobody else looked at (SM275g); the first complement-briefed
+  audit ran 16 calls, zero duplicated (2026-08-16).
 - ...
 
 ## 4. State summary — MAX THREE LINES, each with its verify-mandate
 - <claim of state> (verify: <command/hash/file>)
 - <claim of state> (verify: <command/hash/file>)
-- <claim of state> (verify: <command/hash/file>)
+- <REQUIRED: the FORGE line — open PRs + open issues at exit> (verify: tt forge prs <owner/repo>
+  --gh --state open, same for issues; anything NEW there at cold start OUTRANKS §3)
+  [WHY reserved: the forge is where OTHER PEOPLE change the agenda while nobody local is looking —
+  it held the agenda-changer twice while the rest of the ember verified clean (SM270e, SM274), so
+  it is state to re-check first, not an audit-minion afterthought]
 
 ## 5. Substrate map (priority order)
 <board/roadmap file> · <memory index> · <research/data dir> · <this file's own queue section if any>
@@ -117,6 +152,9 @@ Before exiting, the writer checks:
 - [ ] the ember was (re)written or re-stamped at THIS exit — an ember reused from an earlier
       warp is stale by construction (specimen 2026-07-20: a cold start received the previous
       evening's ember, missing a whole morning session of pins);
+- [ ] the ember's commit is the LAST commit of the exit and its subject starts with `ember:` —
+      this is the artifact that lets the NEXT session detect a skipped regeneration (rule 5,
+      SM275c); any post-ember afterthought means re-stamp and re-commit the ember on top;
 - [ ] the FORBIDDEN→ALLOWED lines reflect the NEWEST stall data — retire lines proven false
       (specimen: "test suite guard-stalls, BR-present only" outlived its truth by a day);
 - [ ] **EXIT-SIDE MINION AUDIT (required, v0.3): before committing the ember, spawn a FRESH
