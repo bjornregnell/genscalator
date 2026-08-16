@@ -1,6 +1,6 @@
 # Issue 011: `tt links check` — an ignore mechanism for by-design targets, then wire it into CI as a gate
 
-> status: open · labels: toolbox, links, ci · summary: the repo is down to 6 dangling of 347 local
+> status: closed 2026-08-16, fixed by `7add972` · labels: toolbox, links, ci · summary: the repo is down to 6 dangling of 347 local
 > links and ALL SIX are by design (generated files that exist only after a build step) — so the
 > check can never reach 0, and it still runs in NO workflow, so nothing gates regressions.
 

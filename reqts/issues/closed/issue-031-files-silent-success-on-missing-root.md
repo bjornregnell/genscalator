@@ -1,6 +1,6 @@
 # Issue 031: `tt files` reports `0 files` and exits 0 for a root that does not exist
 
-> status: open · labels: toolbox, files, find, agent-trust, correctness · summary: a missing root is
+> status: closed 2026-08-16, fixed by `7add972` · labels: toolbox, files, find, agent-trust, correctness · summary: a missing root is
 > indistinguishable from an empty result, so a typo in a path reads as a true negative. `tt find` on
 > the same input correctly exits 2, so the sibling walkers disagree.
 

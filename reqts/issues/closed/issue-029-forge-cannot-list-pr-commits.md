@@ -1,6 +1,6 @@
 # Issue 029: `tt forge` cannot list a PR's commits, so a rule we wrote down cannot be checked inside the lane
 
-> status: open · labels: toolbox, forge, contributing, agent-trust · summary: `tt forge` has four
+> status: closed 2026-08-16, fixed by `7add972` · labels: toolbox, forge, contributing, agent-trust · summary: `tt forge` has four
 > read verbs for pull requests but none that lists commits, so the `CONTRIBUTING.md` pre-merge check
 > for assistant-credit trailers can only be done with raw `gh`. Found while merging PR 3.
 

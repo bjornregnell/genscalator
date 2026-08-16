@@ -1,6 +1,6 @@
 # Issue 019: `docs/allowlist.md` should tell users to check WHICH `tt` wins — both failure directions now have field evidence
 
-> status: open · labels: docs, allowlist, native, install-layout · summary: the doc records the
+> status: closed 2026-08-16, fixed by `7add972` · labels: docs, allowlist, native, install-layout · summary: the doc records the
 > stale-plugin-cache-wins case from 2026-07-28; a second field test found the inverse (a native
 > `~/.genscalator/bin/tt` winning over the shadowed plugin-cache launcher) — and which case you are in
 > changes both the allowlist rule you need and whether `tt skillcheck` works at all.

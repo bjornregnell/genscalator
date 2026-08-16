@@ -1,6 +1,6 @@
 # Issue 037: `tt session list` silently RENAMES the session, because any bare word is taken as the new name
 
-> status: open · labels: toolbox, session, agent-trust, safety · summary: `tt session` has no read
+> status: closed 2026-08-16, fixed by `7add972` · labels: toolbox, session, agent-trust, safety · summary: `tt session` has no read
 > subcommand, and `session.scala:172` treats any bare non-flag word as a name to set. So the obvious
 > way to ask "what sessions are there" performs a write instead. Observed live 2026-08-15.
 

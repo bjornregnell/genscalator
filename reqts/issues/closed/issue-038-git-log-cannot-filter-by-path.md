@@ -1,6 +1,6 @@
 # Issue 038: `tt git log` cannot filter by path, so "did anything touch this file" has no typed answer
 
-> status: open · labels: tools, git, enhancement · summary: `tt git log` has grep/author/committer/
+> status: closed 2026-08-16, fixed by `7add972` · labels: tools, git, enhancement · summary: `tt git log` has grep/author/committer/
 > since/limit filters but no path filter, so the question "which commits touched this file or
 > directory" cannot be asked through the typed lane. An auditor needing exactly that answer on
 > 2026-08-16 had to settle for reading commit subjects, and honestly flagged its own conclusion as

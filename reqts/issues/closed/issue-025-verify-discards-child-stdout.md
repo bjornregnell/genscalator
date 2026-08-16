@@ -1,6 +1,6 @@
 # Issue 025: `tt verify` discards the child's stdout, so a long-running command is unobservable
 
-> status: open · labels: toolbox, verify, ergonomics · summary: verify captures the child's output and
+> status: closed 2026-08-16, fixed by `7add972` · labels: toolbox, verify, ergonomics · summary: verify captures the child's output and
 > prints only its own audit line, with no `--tee` / `--out-file`. For a fast assertion that is right; for
 > a run measured in minutes it means progress is indistinguishable from a hang — and the guard rules
 > correctly forbid the pipe shapes that would work around it.

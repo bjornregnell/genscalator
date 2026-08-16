@@ -1,6 +1,6 @@
 # Issue 030: `tt forge` cannot merge a pull request, so every merge leaves the lane
 
-> status: open · labels: toolbox, forge, ergonomics · summary: `tt forge` can read a PR from four
+> status: closed 2026-08-16, fixed by `7add972` · labels: toolbox, forge, ergonomics · summary: `tt forge` can read a PR from four
 > angles but cannot merge one, so the last step of every contribution is raw `gh pr merge`. Found
 > while merging PR 3, alongside issue 029.
 

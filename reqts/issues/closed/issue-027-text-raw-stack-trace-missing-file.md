@@ -1,6 +1,6 @@
 # Issue 027: `tt text` prints a raw Java stack trace when the file does not exist
 
-> status: open · labels: toolbox, text, polish, good-first-issue · summary: a twelve-frame
+> status: closed 2026-08-16, fixed by `7add972` · labels: toolbox, text, polish, good-first-issue · summary: a twelve-frame
 > `NoSuchFileException` for "file isn't there" — reads as a tool crash, and is an outlier against the
 > clean one-line failures the rest of the toolbox gives.
 

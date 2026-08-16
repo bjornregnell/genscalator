@@ -1,6 +1,6 @@
 # Issue 032: the in-repo issue workflow has no typed verb, so closing an issue is hand-executed prose
 
-> status: open · labels: toolbox, reqts, process, agent-trust · summary: `reqts/issues/README.md`
+> status: closed 2026-08-16, fixed by `7add972` · labels: toolbox, reqts, process, agent-trust · summary: `reqts/issues/README.md`
 > defines closing as "rewrite the status line, then `git mv` from `open/` to `closed/`", and nothing
 > in the toolbox does it. Six issues were closed by hand in the v0.10.2 sweep, with a bare `mv` per
 > file, because `tt git`'s safe subset has no move and there is no issue verb.

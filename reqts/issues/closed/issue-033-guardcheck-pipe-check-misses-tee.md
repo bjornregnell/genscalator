@@ -1,6 +1,6 @@
 # Issue 033: `guardcheck`'s output-shaping pipe check names three commands and misses `tee`
 
-> status: open · labels: toolbox, guardcheck, docs · summary: the pipe check matches only
+> status: closed 2026-08-16, fixed by `7add972` · labels: toolbox, guardcheck, docs · summary: the pipe check matches only
 > `head|tail|wc`, so `| tee <file>` passes as clean, while our own documentation credits the guard
 > with blocking it. Nothing was at risk, but a doc that overstates the guard is worse than one that
 > understates it.

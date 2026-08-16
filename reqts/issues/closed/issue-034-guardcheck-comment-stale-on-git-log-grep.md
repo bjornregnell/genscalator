@@ -1,6 +1,6 @@
 # Issue 034: `guardcheck` still says `git log --grep` has no typed verb, two weeks after `tt git log` shipped
 
-> status: open · labels: toolbox, guardcheck, docs, agent-trust · summary: `guardcheck.scala:150-151`
+> status: closed 2026-08-16, fixed by `7add972` · labels: toolbox, guardcheck, docs, agent-trust · summary: `guardcheck.scala:150-151`
 > justifies its raw-reach anchor by claiming commit-log search "still has no typed verb (SM217)".
 > `tt git log` shipped 2026-07-28. The guard is the one carrier that survives a warp, so a stale
 > claim there is the most expensive kind.

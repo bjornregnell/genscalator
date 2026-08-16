@@ -1,6 +1,6 @@
 # Issue 024: `tt-toolbox` and `avoid-guard-stall` give CONTRADICTORY git guidance, and the agent follows the wrong one
 
-> status: open · labels: skills, docs, git · summary: one skill says use bare `git -C <abs-path>`, the
+> status: closed 2026-08-16, fixed by `7add972` · labels: skills, docs, git · summary: one skill says use bare `git -C <abs-path>`, the
 > other says use `tt git ... --repo <dir>`. Both load in the same session, so the reflex the agent forms
 > is a coin flip — observed twice in one session, corrected by the human both times.
 

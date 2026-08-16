@@ -1,6 +1,6 @@
 # Issue 036: nothing tells an issue filer their genscalator is out of date, so stale policy is followed correctly and silently
 
-> status: open · labels: docs, contributing, release, agent-trust, alpha · summary: a contributor
+> status: closed 2026-08-16, fixed by `7add972` · labels: docs, contributing, release, agent-trust, alpha · summary: a contributor
 > working from an old checkout reads old `CONTRIBUTING.md` and old source, and nothing in the repo or
 > the toolbox says so. Observed twice on 2026-08-15: a false gap report from 79-commits-old source,
 > and a `CONTRIBUTING.md` that sends contributors to the wrong forge.

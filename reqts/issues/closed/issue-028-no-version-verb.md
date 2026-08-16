@@ -1,6 +1,6 @@
 # Issue 028: there is still no `tt --version` — you cannot ask the binary what it is
 
-> status: open · labels: toolbox, release, discoverability · summary: issue 021 fixed the *declared*
+> status: closed 2026-08-16, fixed by `7add972` · labels: toolbox, release, discoverability · summary: issue 021 fixed the *declared*
 > version, but `tt version` and `tt --version` both exit 2, so identifying an artifact still means
 > reading `VERSION.txt` — the third field report in a row to pay that tax. The two carriers also still
 > disagree on the `v` prefix.

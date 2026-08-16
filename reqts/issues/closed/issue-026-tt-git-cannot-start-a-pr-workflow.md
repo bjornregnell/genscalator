@@ -1,6 +1,6 @@
 # Issue 026: `tt git` can finish a PR workflow but cannot start one — no branch verb, no `--set-upstream`, no `--remote` on `fetch`
 
-> status: open · labels: toolbox, git, ergonomics · summary: three gaps hit in sequence while opening one
+> status: closed 2026-08-16, fixed by `7add972` · labels: toolbox, git, ergonomics · summary: three gaps hit in sequence while opening one
 > PR. None is a destructive verb, so none is excluded by the safe-subset principle — but together they
 > mean every PR begins outside the lane, which is the habit the lane exists to build.
 
