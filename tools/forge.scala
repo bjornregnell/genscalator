@@ -24,8 +24,12 @@
 //   tt forge release-edit   <owner>/<repo> <tag> [--name S] [--body S | --body-file F] [--prerelease] [--draft] [--gh | --url BASE]
 //                           # PATCH an existing release (draft-visible lookup); sends ONLY the provided fields
 //   tt forge release-download <owner>/<repo> <tag> [--gh | --url BASE] [--pattern GLOB] [--dir D] [--verify]
-//   tt forge release-upload <owner>/<repo> <tag> <file> [--name N] [--gh | --url BASE]
+//   tt forge release-upload <owner>/<repo> <tag> <file> [--name N] [--clobber] [--gh | --url BASE]
 //   tt forge release-delete <owner>/<repo> <tag> [--gh | --url BASE] [--yes] [--allow-published]
+//   tt forge asset-rm <owner>/<repo> <tag> <asset> [--gh | --url BASE] [--yes] [--allow-published]
+//                           # remove ONE asset (issue 006); previews by default, --allow-published for a live release
+//   tt forge file <owner>/<repo> <path> [--ref R] [--out F] [--max-bytes N] [--gh | --gl | --url BASE]
+//                           # ONE repo file's contents (issue 007) — the remote sibling of `tt git show`
 //   READ verbs for issues/PRs/branch protection (both dialects; --gh = GitHub, see GitHubApi below):
 //   tt forge issues <owner>/<repo> [--gh | --url BASE] [--state open|closed|all] [--limit N]
 //   tt forge prs    <owner>/<repo> [--gh | --url BASE] [--state open|closed|all] [--limit N]
@@ -69,8 +73,10 @@ object Forge {
       "  forge release-create <owner>/<repo> <tag> [--gh | --gl | --url BASE] [--name S] [--body S | --body-file F] [--prerelease] [--draft] [--target C]\n" +
       "  forge release-edit   <owner>/<repo> <tag> [--name S] [--body S | --body-file F] [--prerelease] [--draft] [--gh | --url BASE]\n" +
       "  forge release-download <owner>/<repo> <tag> [--gh | --url BASE] [--pattern GLOB] [--dir D] [--verify]   (finds DRAFTS too; --verify checks the .sha256)\n" +
-      "  forge release-upload <owner>/<repo> <tag> <file> [--name N] [--gh | --url BASE]   (attach ONE file; refuses duplicate names)\n" +
+      "  forge release-upload <owner>/<repo> <tag> <file> [--name N] [--clobber] [--gh | --url BASE]   (attach ONE file; refuses duplicate names unless --clobber)\n" +
       "  forge release-delete <owner>/<repo> <tag> [--gh | --url BASE] [--yes] [--allow-published]   (PREVIEWS by default; never deletes the git tag)\n" +
+      "  forge asset-rm <owner>/<repo> <tag> <asset> [--gh | --url BASE] [--yes] [--allow-published]   (remove ONE asset; PREVIEWS by default)\n" +
+      "  forge file <owner>/<repo> <path> [--ref R] [--out F] [--max-bytes N] [--gh | --gl | --url BASE]   (read ONE repo file; READ, but carries a token)\n" +
       "  Dialects for release-create: default = Gitea/Forgejo (--url BASE, default https://codeberg.org); --gh = GitHub (fixed api.github.com); --gl = GitLab (--url BASE, default https://gitlab.com).\n" +
       "  Tokens come ONLY from fixed env names (never a flag): Gitea = CODEBERG_TOKEN/FORGE_TOKEN, GitHub = GITHUB_TOKEN/GH_TOKEN, GitLab = GITLAB_TOKEN (GENSCALATOR_-prefixed variants win first)."
   )
@@ -129,9 +135,27 @@ object Forge {
       |                       (PATCH an existing release; sends ONLY the provided fields;
       |                        --gh edits on GitHub and finds DRAFTS too; --tag re-points a
       |                        draft's tag, e.g. after the UI reset it to untagged-...)
-      |  forge release-upload <owner>/<repo> <tag> <file> [--name N] [--gh | --url BASE]
+      |  forge release-upload <owner>/<repo> <tag> <file> [--name N] [--clobber] [--gh | --url BASE]
       |                       (attach ONE file to an existing release, drafts included;
-      |                        refuses a duplicate asset name)
+      |                        refuses a duplicate asset name unless --clobber, which REPLACES
+      |                        the bytes under that name — a conscious flag, never silent, and
+      |                        loudly audited when the release is already PUBLISHED)
+      |  forge asset-rm <owner>/<repo> <tag> <asset> [--gh | --url BASE]
+      |                       [--yes] [--allow-published]
+      |                       (DESTRUCTIVE: remove ONE asset from a release. Previews by
+      |                        default, applies with --yes; a PUBLISHED release additionally
+      |                        needs --allow-published, because removing an asset makes a
+      |                        download URL 404 that may sit in someone's install script.
+      |                        The release and its other assets are untouched. To swap bytes
+      |                        under the same name, prefer release-upload --clobber)
+      |  forge file <owner>/<repo> <path> [--ref R] [--out F] [--max-bytes N]
+      |                       [--gh | --gl | --url BASE]
+      |                       (READ ONE file's contents out of a repo — the remote sibling of
+      |                        `tt git show`. Unlike `tt web get`, this one CARRIES A TOKEN, so
+      |                        it reaches a private repo without a shallow clone or a raw curl;
+      |                        same fixed-env token machinery and trusted-host guard as the
+      |                        effectful verbs. --ref defaults to the default branch; without
+      |                        --out the bytes print to stdout, capped at 5 MB)
       |  forge release-download <owner>/<repo> <tag> [--gh | --url BASE]
       |                       [--pattern GLOB] [--dir D] [--verify]
       |                       (download release assets; finds DRAFTS too, which the tags
@@ -156,7 +180,12 @@ object Forge {
       |  --method M        pr-merge: merge | squash | rebase (default merge; squash discards
       |                    the contributors' commit boundaries — see pr-commits)
       |  --subject S       pr-merge: merge commit subject (default "Merge PR #<n>: <title>")
-      |  --yes             pr-merge/release-delete: actually apply (both PREVIEW by default)
+      |  --yes             pr-merge/release-delete/asset-rm: actually apply (all PREVIEW by default)
+      |  --allow-published release-delete/asset-rm: the second flag a live release needs
+      |  --clobber         release-upload: replace an existing asset's bytes under the same name
+      |  --ref R           file: branch, tag or sha to read from (default: the default branch)
+      |  --out F           file: write the bytes to F instead of printing them
+      |  --max-bytes N     file: refuse to print more than N bytes (default 5000000)
       |
       |Token: whoami, release-create/edit/upload/delete and protection read the token from env
       |GENSCALATOR_CODEBERG_TOKEN, then CODEBERG_TOKEN, then FORGE_TOKEN — never a flag,
@@ -258,6 +287,8 @@ object Forge {
       case "release-download" :: rest => releaseDownload(rest)
       case "release-upload" :: rest => releaseUpload(rest)
       case "release-delete" :: rest => releaseDelete(rest)
+      case "asset-rm" :: rest       => assetRm(rest)
+      case "file" :: rest           => repoFileRead(rest)
       case _                        => forgeUsage()
 
   // whoami — authenticated READ (GET /user) to verify the token inherits + is valid. Prints only the login and
@@ -1081,13 +1112,14 @@ object Forge {
   // raw `gh release upload` or the web UI. GitHub sends the bytes as application/octet-stream to the
   // fixed uploads root; Gitea/Forgejo takes multipart form field `attachment` on the API root.
   private final case class UploadOpts(repo: Option[String], tag: Option[String], file: Option[String],
-      name: Option[String], base: String, dialect: Dialect)
+      name: Option[String], base: String, dialect: Dialect, clobber: Boolean)
 
   private def releaseUpload(args: List[String]): Unit =
     @annotation.tailrec
     def go(rest: List[String], o: UploadOpts): UploadOpts =
       rest match
         case Nil                       => o
+        case "--clobber" :: t          => go(t, o.copy(clobber = true))
         case "--name" :: n :: t        => go(t, o.copy(name = Some(n)))
         case "--url" :: u :: t         => go(t, o.copy(base = u))
         case "--gh" :: t               => go(t, o.copy(dialect = Dialect.GitHub))
@@ -1099,7 +1131,7 @@ object Forge {
         case tg :: t if o.tag.isEmpty  => go(t, o.copy(tag = Some(tg)))
         case f :: t if o.file.isEmpty  => go(t, o.copy(file = Some(f)))
         case other :: _                => die(s"unexpected argument '$other'")
-    val o             = go(args, UploadOpts(None, None, None, None, DefaultBase, Dialect.Gitea))
+    val o             = go(args, UploadOpts(None, None, None, None, DefaultBase, Dialect.Gitea, false))
     if o.dialect == Dialect.GitHub && o.base != DefaultBase then
       die("--gh targets the fixed GitHub upload root; drop --url (it is not used with --gh).")
     val (owner, repo) = splitRepo(o.repo.getOrElse(forgeUsage()))
@@ -1110,10 +1142,26 @@ object Forge {
     val assetName     = o.name.getOrElse(path.last)
     val rel           = findRelease(owner, repo, tag, o.dialect, o.base)
     val id            = Try(rel.obj("id").num.toLong).getOrElse(die(s"no numeric release id for tag '$tag'"))
-    val existing      = assetsOf(rel).map(a => strOr(a.obj.get("name"), "?"))
-    if existing.contains(assetName) then die(
-      s"an asset named '$assetName' already exists on release '$tag' — forges refuse duplicate names.\n" +
-        s"  Delete it first, or upload under another name with --name.")
+    val isDraft       = rel.obj.get("draft").exists(_.bool)
+    val clash         = assetsOf(rel).find(a => strOr(a.obj.get("name"), "?") == assetName)
+    // ISSUE 006. Refusing a duplicate stays the DEFAULT — silently overwriting a published asset is
+    // exactly the surprise a typed tool must not hand out. What changed is that the refusal now names
+    // verbs that EXIST: the old message said "delete it first" while nothing in the toolbox could delete
+    // an asset, which trains the caller to leave the toolbox at the one moment it should hold the rails.
+    clash.foreach: a =>
+      if !o.clobber then die(
+        s"an asset named '$assetName' already exists on release '$tag' — forges refuse duplicate names.\n" +
+          s"  Replace its bytes:  tt forge release-upload <repo> $tag <file> --clobber\n" +
+          s"  Remove it first:    tt forge asset-rm <repo> $tag '$assetName'   (previews; --yes to apply)\n" +
+          s"  Or keep both:       --name <other-name>")
+      val oldId   = Try(a.obj("id").num.toLong).getOrElse(die(s"no numeric asset id for '$assetName'"))
+      val oldSize = Try(a.obj("size").num.toLong).getOrElse(-1L)
+      // Loud by design: --clobber on a PUBLISHED release changes bytes someone may already have
+      // downloaded and checksummed. One conscious flag, but never a quiet one.
+      System.err.println(
+        s"forge: [audit] --clobber REPLACING asset '$assetName' (id $oldId, $oldSize B) on " +
+          s"${if isDraft then "draft" else "PUBLISHED"} release '$tag' — old bytes become unreachable at the same URL")
+      deleteAsset(o.dialect, o.base, owner, repo, id, oldId, assetName, "release-upload --clobber")
     val url  = uploadAssetUrl(o.dialect == Dialect.GitHub, apiBase(o.base), owner, repo, id, assetName)
     val hdrs = rl.writeHeaders(o.dialect, o.base, "release-upload")
     System.err.println(s"forge: [audit] POST $url  tag=$tag file=${path.last} bytes=${bytes.length}")
@@ -1132,6 +1180,183 @@ object Forge {
         println(s"uploaded $assetName (${bytes.length} B) to release $tag  $dl")
       case 422 => die(s"the forge rejected the upload (422) — most often a duplicate asset name.\n${r.text().take(500)}")
       case c   => die(s"POST $url -> $c ${r.statusMessage}\n${r.text().take(500)}")
+
+  /** PURE asset-delete URL builder, public for unit tests (SM207's testable-request-building rule).
+    * The dialects disagree about what an asset IS: GitHub addresses it by its own id directly under the
+    * repo (`/releases/assets/<id>`), Gitea/Forgejo scopes the attachment under its release
+    * (`/releases/<rid>/assets/<id>`). Getting that wrong is a 404 at best and someone else's asset at
+    * worst, so it is one function with both shapes side by side rather than an inline string per site.
+    * The GitHub root is the FIXED constant for the same reason `uploadAssetUrl` fixes the upload root. */
+  def assetDeleteUrl(isGh: Boolean, apiRoot: String, owner: String, repo: String,
+      releaseId: Long, assetId: Long): String =
+    if isGh then s"$GitHubApi/repos/$owner/$repo/releases/assets/$assetId"
+    else s"$apiRoot/repos/$owner/$repo/releases/$releaseId/assets/$assetId"
+
+  /** ONE definition of the asset DELETE request, shared by `asset-rm` and `release-upload --clobber`.
+    * Both call sites destroy published bytes, so they must not drift apart in audit line or error map. */
+  private def deleteAsset(dialect: Dialect, base: String, owner: String, repo: String,
+      releaseId: Long, assetId: Long, assetName: String, verb: String): Unit =
+    val url  = assetDeleteUrl(dialect == Dialect.GitHub, apiBase(base), owner, repo, releaseId, assetId)
+    val hdrs = rl.writeHeaders(dialect, base, verb)
+    System.err.println(s"forge: [audit] DELETE $url  asset='$assetName' id=$assetId release=$releaseId")
+    val r = Try(requests.delete(url, headers = hdrs, check = false,
+      readTimeout = 30000, connectTimeout = 10000)).getOrElse(die("request failed"))
+    r.statusCode match
+      case 204 | 200 => println(s"deleted asset '$assetName' (id $assetId)")
+      case 404       => die(s"asset id $assetId not found (404) — it may already be gone")
+      case c         => die(s"DELETE $url -> $c ${r.statusMessage}\n${r.text().take(500)}")
+
+  // asset-rm — remove ONE asset from a release (issue 006). The gap this fills was not convenience:
+  // `release-upload` refused duplicate names and told the caller to "delete it first", while
+  // `release-delete` removes the WHOLE release and nothing removed a single asset. An error message
+  // prescribing an impossible action is worse than no message. Follows release-delete's contract
+  // exactly — preview by default, --yes to apply, --yes --allow-published for a published release —
+  // because removing an asset from a published release breaks a URL that may sit in an install script.
+  private def assetRm(args: List[String]): Unit =
+    @annotation.tailrec
+    def go(rest: List[String], o: AssetOpts, asset: Option[String]): (AssetOpts, Option[String]) =
+      rest match
+        case Nil                                => (o, asset)
+        case "--yes" :: t                       => go(t, o.copy(yes = true), asset)
+        case "--allow-published" :: t           => go(t, o.copy(allowPublished = true), asset)
+        case "--url" :: u :: t                  => go(t, o.copy(base = u), asset)
+        case "--gh" :: t                        => go(t, o.copy(dialect = Dialect.GitHub), asset)
+        case "--gl" :: _                        => die(
+          "asset-rm is not implemented for GitLab: GitLab releases carry LINKS to external artifacts\n" +
+            "  rather than uploaded assets. Stated rather than faked — use --gh or the default dialect.")
+        case flag :: _ if flag.startsWith("--") => die(s"unknown/incomplete flag '$flag'")
+        case r :: t if o.repo.isEmpty           => go(t, o.copy(repo = Some(r)), asset)
+        case tg :: t if o.tag.isEmpty           => go(t, o.copy(tag = Some(tg)), asset)
+        case a :: t if asset.isEmpty            => go(t, o, Some(a))
+        case other :: _                         => die(s"unexpected argument '$other'")
+    val (o, assetOpt) = go(args, AssetOpts(None, None, DefaultBase, Dialect.Gitea, None, ".", false, false, false), None)
+    val (owner, repo) = splitRepo(o.repo.getOrElse(forgeUsage()))
+    val tag           = o.tag.getOrElse(forgeUsage())
+    val assetName     = assetOpt.getOrElse(forgeUsage())
+    val rel           = findRelease(owner, repo, tag, o.dialect, o.base)
+    val relId         = Try(rel.obj("id").num.toLong).getOrElse(die(s"no numeric release id for tag '$tag'"))
+    val isDraft       = rel.obj.get("draft").exists(_.bool)
+    val all           = assetsOf(rel)
+    val hit = all.find(a => strOr(a.obj.get("name"), "?") == assetName).getOrElse(die(
+      s"release '$tag' has no asset named '$assetName'.\n" +
+        "  present: " + (if all.isEmpty then "(none)" else all.map(a => strOr(a.obj.get("name"), "?")).mkString(", "))))
+    val assetId = Try(hit.obj("id").num.toLong).getOrElse(die(s"no numeric asset id for '$assetName'"))
+    val size    = Try(hit.obj("size").num.toLong).getOrElse(-1L)
+    val what    = s"'$assetName' (id $assetId, $size B) from release $tag (${if isDraft then "draft" else "PUBLISHED"})"
+    if !o.yes then
+      println(s"would DELETE asset $what")
+      println("  the release itself and its other assets are NOT touched")
+      if !isDraft then
+        println("  ⚠ this release is PUBLISHED — the asset's download URL may already be in an install script")
+      println(
+        if isDraft then "  re-run with --yes to apply"
+        else "  re-run with --yes --allow-published to apply (a PUBLISHED release needs BOTH flags)")
+    else if !isDraft && !o.allowPublished then
+      die(s"refusing to remove an asset from a PUBLISHED release ('$tag'): its download URL may already\n" +
+        "  be in someone's install script, and removal makes that URL 404. Pass --allow-published if that\n" +
+        "  is truly intended. To REPLACE the bytes under the same name instead, use\n" +
+        "  `tt forge release-upload <repo> <tag> <file> --clobber`.")
+    else
+      deleteAsset(o.dialect, o.base, owner, repo, relId, assetId, assetName, "asset-rm")
+
+  // ------------------------------------------------------------------------------------------------
+  // file — read ONE file's contents out of a repo, the remote sibling of `tt git show` (issue 007).
+  // The gap: `release-download` fetches ASSETS, `tt web get` NEVER sends credentials by design, so a
+  // single file in a PRIVATE repo forced either a raw curl carrying a token on the command line or a
+  // whole shallow clone to read one file. This is a READ that CARRIES A CREDENTIAL, which is exactly
+  // why the typed shape is the safety argument: same fixed-env + helper token machinery, same fixed
+  // GitHub root, same trusted-host guard, and a size cap so a mis-typed path cannot dump a blob.
+  // ------------------------------------------------------------------------------------------------
+
+  /** Percent-encode a repo path for a URL PATH position, preserving the slashes as separators. */
+  def encodePathSegments(p: String): String =
+    p.split("/").filter(_.nonEmpty)
+      .map(s => java.net.URLEncoder.encode(s, "UTF-8").replace("+", "%20")).mkString("/")
+
+  /** Percent-encode a repo path as a SINGLE URL component (slashes become %2F) — GitLab's files API
+    * takes the whole path that way, the same encoding its projects endpoint wants for owner/repo. */
+  def encodePathWhole(p: String): String =
+    java.net.URLEncoder.encode(p.stripPrefix("/"), "UTF-8").replace("+", "%20")
+
+  /** PURE repo-file URL builder, public for unit tests. `root` is the dialect's already-resolved root
+    * (apiBase(base) for Gitea, the instance base for GitLab); GitHub ignores it and uses the FIXED
+    * constant, so no input can point the GitHub token at another host. */
+  def repoFileUrl(isGh: Boolean, isGl: Boolean, root: String, owner: String, repo: String,
+      path: String, ref: Option[String]): String =
+    val q = ref.map(r => s"?ref=${java.net.URLEncoder.encode(r, "UTF-8")}").getOrElse("")
+    if isGh then s"$GitHubApi/repos/$owner/$repo/contents/${encodePathSegments(path)}$q"
+    else if isGl then
+      s"${root.stripSuffix("/")}/api/v4/projects/$owner%2F$repo/repository/files/${encodePathWhole(path)}/raw$q"
+    else s"$root/repos/$owner/$repo/raw/${encodePathSegments(path)}$q"
+
+  private final case class FileOpts(repo: Option[String], path: Option[String], ref: Option[String],
+      out: Option[String], base: String, dialect: Dialect, maxBytes: Long)
+
+  private val DefaultFileMaxBytes = 5_000_000L
+
+  private def repoFileRead(args: List[String]): Unit =
+    @annotation.tailrec
+    def go(rest: List[String], o: FileOpts): FileOpts =
+      rest match
+        case Nil                                => o
+        case "--ref" :: r :: t                  => go(t, o.copy(ref = Some(r)))
+        case "--out" :: f :: t                  => go(t, o.copy(out = Some(f)))
+        case "--url" :: u :: t                  => go(t, o.copy(base = u))
+        case "--gh" :: t                        => go(t, o.copy(dialect = Dialect.GitHub))
+        case "--gl" :: t                        => go(t, o.copy(dialect = Dialect.GitLab))
+        case "--max-bytes" :: n :: t            =>
+          n.toLongOption match
+            case Some(v) if v > 0 => go(t, o.copy(maxBytes = v))
+            case _                => die(s"--max-bytes needs a positive integer, got '$n'")
+        case flag :: _ if flag.startsWith("--") => die(s"unknown/incomplete flag '$flag'")
+        case r :: t if o.repo.isEmpty           => go(t, o.copy(repo = Some(r)))
+        case p :: t if o.path.isEmpty           => go(t, o.copy(path = Some(p)))
+        case other :: _                         => die(s"unexpected argument '$other'")
+    val o             = go(args, FileOpts(None, None, None, None, DefaultBase, Dialect.Gitea, DefaultFileMaxBytes))
+    val (owner, repo) = splitRepo(o.repo.getOrElse(forgeUsage()))
+    val path          = o.path.getOrElse(forgeUsage())
+    val isGh          = o.dialect == Dialect.GitHub
+    val isGl          = o.dialect == Dialect.GitLab
+    // GitLab's default instance is gitlab.com, not the Gitea default — the same correction listContributors makes
+    val root = if isGl && o.base == DefaultBase then "https://gitlab.com" else if isGl then o.base else apiBase(o.base)
+    val url  = repoFileUrl(isGh, isGl, root, owner, repo, path, o.ref)
+    // Same trusted-host rule as every other credential-carrying verb: the token never travels to a host
+    // this tool has not been told to trust. GitHub/GitLab roots are guarded by their own dialect rules.
+    val headers: Map[String, String] =
+      if isGh then ghHeaders + ("Accept" -> "application/vnd.github.raw")
+      else if isGl then
+        val host = hostOf(url)
+        if !gitlabTrustedHosts.contains(host) then die(
+          s"refusing to send the GitLab token to untrusted host '$host'. Trusted: " +
+            s"${gitlabTrustedHosts.toVector.sorted.mkString(", ")} (extend via env TT_FORGE_GITLAB_HOSTS).")
+        glToken.map(t => Map("PRIVATE-TOKEN" -> t)).getOrElse(Map.empty)
+      else
+        val host = hostOf(url)
+        token match
+          case Some(t) =>
+            if !trustedHosts.contains(host) then die(
+              s"refusing to send the token to untrusted host '$host'. Trusted: " +
+                s"${trustedHosts.toVector.sorted.mkString(", ")} (extend via env TT_FORGE_HOSTS).")
+            Map("Authorization" -> s"token $t")
+          case None => Map.empty // public repo: an anonymous read is fine, and no secret can leak
+    val r = Try(requests.get(url, headers = headers, check = false,
+      readTimeout = 60000, connectTimeout = 10000)).getOrElse(die(s"request failed: $url"))
+    r.statusCode match
+      case 200 =>
+        val bytes = r.bytes
+        if bytes.length > o.maxBytes then die(
+          s"file is ${bytes.length} B, over the ${o.maxBytes} B cap — raise it with --max-bytes N, or\n" +
+            "  write it out with --out FILE instead of printing it")
+        o.out match
+          case Some(f) =>
+            val dest = os.Path(f, os.pwd)
+            os.write.over(dest, bytes, createFolders = true)
+            println(s"wrote ${bytes.length} B to $dest  ($path${o.ref.map(" @ " + _).getOrElse("")})")
+          case None => print(String(bytes, "UTF-8"))
+      case 404 => die(s"no such file (404): '$path' in $owner/$repo${o.ref.map(" @ " + _).getOrElse("")}\n" +
+        "  a PRIVATE repo also answers 404 when the token cannot see it — check `tt forge whoami`")
+      case 401 | 403 => die(s"GET $url -> ${r.statusCode} ${r.statusMessage} — the token is missing, expired, or lacks scope")
+      case c   => die(s"GET $url -> $c ${r.statusMessage}")
 
   private def releaseDelete(args: List[String]): Unit =
     val o             = parseAsset(args, "release-delete")

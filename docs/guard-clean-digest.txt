@@ -27,6 +27,10 @@ GIT
   commit PROSE ; no Claude-credit trailers .    Never  cd repo && git …
   tt gitinfo <repo> [--remote <name>]       branch, clean/dirty, ahead/behind, recent — for
     STATE/SYNC never raw  git status / git rev-list / git log --oneline  (reflex slips here).
+  tt gitinfo <repo> --files                 WHICH paths changed, labelled staged / unstaged /
+    both / untracked / conflict — never raw  git status --short . The count alone invites a
+    guess at the one step that decides what enters history; on 2026-07-27 the tenth changed
+    file was a HUMAN's, held under an edit baton. List, then  --add  exactly your own paths.
   tt git log <repo> [--grep P] [--co-author P] [--author P] [--since D] [--limit N]
     commit-log SEARCH, read-only, self-capped — never a bare  git log --grep  (this line
     said "no typed shape yet" until 2026-07-28; the verb existed and the digest was stale).

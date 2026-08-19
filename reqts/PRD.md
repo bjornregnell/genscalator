@@ -49,13 +49,16 @@ The complexity risk ("too much machinery") is real **only** if we import the who
 
 *(WR / paper note: this rationale — reqT-lang adoption as dogfooding the structure-beats-prose thesis — is flagged as important input for the first research paper.)*
 
-**Abstract example** of concrete syntax with abstract terms:
+**Abstract example** of concrete syntax with abstract terms (`ENT`, `REL`, `ATTR` and `id` are
+placeholders, not reqT concepts — fenced so `tt parsereqt lint` reads them as the specimen they are):
 
+```
 * ENT: id
 * ENT: id REL
   * ENT: id
   * ATTR: text
   * ENT: id
+```
 
 **Concrete example:**
 

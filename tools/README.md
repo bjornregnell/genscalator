@@ -514,9 +514,16 @@ Still uncovered: a mid-session stall or idle, which fires no SessionStart.
 ### parsereqt — parse reqT model text (PURE)
 ```
 parsereqt parse <file>               # parse reqT model text into a structured form
-parsereqt lint  <file>               # structural lint of a reqT model
+parsereqt lint  <file>               # structural lint of a reqT model (SKIPS fenced code blocks)
 ```
 (A bare `parsereqt <file>` without a verb is a usage error, exit 2.)
+
+The lint flags bullets that silently fell through to a `Text` attribute — a mistyped concept (`Feautre:`),
+an un-mapped term (`BadGoal:`), or a relation keyword written under a `has` block, where the relation is
+LOST. It **skips fenced code blocks** (issue 010): a grammar illustration such as `ENT: id` is metasyntax,
+not a mistake, and a check that reports the same 5 hits forever teaches its reader to ignore the number.
+The skipped count is printed, never swallowed. The skip is lint-only — the vendored parser's handling of
+fences is untouched, so fenced bullets still appear in the parsed model.
 
 ### svg — textual diagram spec → self-contained SVG (PURE; writes a file with `out`)
 ```
@@ -631,11 +638,19 @@ forge release-edit   <owner>/<repo> <tag> [--name S] [--body S | --body-file F]
                      [--prerelease] [--draft] [--gh | --url BASE] # PATCH a release (drafts found too); only provided fields
 forge release-download <owner>/<repo> <tag> [--gh | --url BASE] [--pattern GLOB] [--dir D] [--verify]
                                                                   # download assets (finds DRAFTS too; --verify = sha256)
-forge release-upload <owner>/<repo> <tag> <file> [--name N] [--gh | --url BASE]
+forge release-upload <owner>/<repo> <tag> <file> [--name N] [--clobber] [--gh | --url BASE]
                                                                   # attach ONE file (drafts too); refuses duplicate names
+                                                                  # unless --clobber REPLACES the bytes under that name
 forge release-delete <owner>/<repo> <tag> [--gh | --url BASE] [--yes] [--allow-published]
                                                                   # DESTRUCTIVE: previews by default, applies with --yes;
                                                                   # a PUBLISHED release also needs --allow-published
+forge asset-rm <owner>/<repo> <tag> <asset> [--gh | --url BASE] [--yes] [--allow-published]
+                                                                  # DESTRUCTIVE: remove ONE asset; same preview contract
+                                                                  # as release-delete; the release itself is untouched
+forge file <owner>/<repo> <path> [--ref R] [--out F] [--max-bytes N] [--gh | --gl | --url BASE]
+                                                                  # READ ONE repo file — the remote sibling of
+                                                                  # `tt git show`; CARRIES A TOKEN, so it reaches a
+                                                                  # private repo without a clone (5 MB cap by default)
 ```
 Replaces hand-curling the REST API (a `curl` with a token on the command line). **READ verbs need no auth**
 (public repos) → safe to allowlist (`Bash(tt forge releases *)`, `Bash(tt forge tags *)`). The **effectful
@@ -800,6 +815,12 @@ kill stays human-gated; allowlist the granular read-only verbs instead (`Bash(tt
 Branch, clean/dirty count, ahead/behind vs upstream, and the recent log in ONE call; `--remote <name>` also
 checks whether local HEAD is in sync with that remote's HEAD (via `ls-remote`). Retires raw
 `git -C … status/log/ls-remote`; only read-only git subcommands, never add/commit/checkout/fetch.
+
+`--files` adds the paths behind the count, one per line, each labelled `staged` / `unstaged` / `both` /
+`untracked` / `conflict` with its raw porcelain code. Reach for it instead of a bare `git status --short`:
+`tt git commit --add` needs exact paths, and guessing them is how a human's in-progress file ends up
+committed under an agent's message (the 2026-07-27 near-miss that motivated issue 004). A rename reports
+its DESTINATION path — the one you would `--add`.
 
 ### prd — read + navigate the genscalator PRD.md (PURE, read-only)
 See what the PRD says without re-emitting it token-by-token: `tt prd show` (whole file), `tt prd summarize`

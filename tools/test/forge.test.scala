@@ -30,6 +30,68 @@ class ForgeRequestSuite extends munit.FunSuite:
     assert(uni.endsWith("?name=%C3%A5.zip"), uni)
   }
 
+  // ---- assetDeleteUrl (issue 006): the two dialects address an asset DIFFERENTLY ----
+  // Getting this wrong is a 404 at best and someone else's asset at worst, so both shapes are pinned.
+
+  test("assetDeleteUrl --gh addresses the asset by its own id, under the FIXED api root") {
+    val u = Forge.assetDeleteUrl(true, "https://evil.example/api/v1", "o", "r", 42L, 7L)
+    assertEquals(u, "https://api.github.com/repos/o/r/releases/assets/7")
+    assert(!u.contains("evil.example"), u) // the api-root argument must never steer a GitHub call
+  }
+
+  test("assetDeleteUrl Gitea scopes the attachment under its release, on the given api root") {
+    val u = Forge.assetDeleteUrl(false, "https://codeberg.org/api/v1", "o", "r", 42L, 7L)
+    assertEquals(u, "https://codeberg.org/api/v1/repos/o/r/releases/42/assets/7")
+  }
+
+  test("assetDeleteUrl: the release id appears only in the Gitea shape") {
+    assert(!Forge.assetDeleteUrl(true, "", "o", "r", 42L, 7L).contains("42"))
+    assert(Forge.assetDeleteUrl(false, "https://x/api/v1", "o", "r", 42L, 7L).contains("/releases/42/"))
+  }
+
+  // ---- repoFileUrl (issue 007): dialect routing, ref handling, path encoding ----
+
+  test("repoFileUrl --gh uses the contents endpoint on the FIXED api root") {
+    val u = Forge.repoFileUrl(true, false, "https://evil.example", "o", "r", "docs/native.md", None)
+    assertEquals(u, "https://api.github.com/repos/o/r/contents/docs/native.md")
+  }
+
+  test("repoFileUrl Gitea uses the raw endpoint on the given api root") {
+    val u = Forge.repoFileUrl(false, false, "https://codeberg.org/api/v1", "o", "r", "docs/native.md", None)
+    assertEquals(u, "https://codeberg.org/api/v1/repos/o/r/raw/docs/native.md")
+  }
+
+  test("repoFileUrl GitLab encodes the project AND the whole path as single components") {
+    val u = Forge.repoFileUrl(false, true, "https://git.cs.lth.se/", "o", "r", "docs/native.md", None)
+    assertEquals(u, "https://git.cs.lth.se/api/v4/projects/o%2Fr/repository/files/docs%2Fnative.md/raw")
+  }
+
+  test("repoFileUrl appends --ref as a query, and encodes it") {
+    val u = Forge.repoFileUrl(true, false, "", "o", "r", "a.md", Some("v0.10.3"))
+    assert(u.endsWith("/contents/a.md?ref=v0.10.3"), u)
+    val slashy = Forge.repoFileUrl(true, false, "", "o", "r", "a.md", Some("feature/x"))
+    assert(slashy.endsWith("?ref=feature%2Fx"), slashy) // a branch name with a slash must not split the URL
+  }
+
+  test("repoFileUrl keeps path separators as separators but encodes what is IN a segment") {
+    val u = Forge.repoFileUrl(true, false, "", "o", "r", "docs/my file.md", None)
+    assert(u.endsWith("/contents/docs/my%20file.md"), u) // %20, never the form-encoding +
+    val uni = Forge.repoFileUrl(true, false, "", "o", "r", "docs/å.md", None)
+    assert(uni.endsWith("/contents/docs/%C3%A5.md"), uni)
+  }
+
+  test("repoFileUrl tolerates a leading slash on the path without doubling it") {
+    val u = Forge.repoFileUrl(true, false, "", "o", "r", "/docs/a.md", None)
+    assertEquals(u, "https://api.github.com/repos/o/r/contents/docs/a.md")
+    val gl = Forge.repoFileUrl(false, true, "https://gitlab.com", "o", "r", "/docs/a.md", None)
+    assert(gl.contains("/files/docs%2Fa.md/raw"), gl)
+  }
+
+  test("the two path encoders differ exactly in how they treat a slash") {
+    assertEquals(Forge.encodePathSegments("a/b c.md"), "a/b%20c.md")
+    assertEquals(Forge.encodePathWhole("a/b c.md"), "a%2Fb%20c.md")
+  }
+
   // ---- editPayload: ONLY the provided fields travel ----
   test("editPayload with nothing set is empty (the caller must refuse it)") {
     assert(Forge.editPayload(None, None, false, false).obj.isEmpty)

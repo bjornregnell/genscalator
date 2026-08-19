@@ -30,16 +30,65 @@ object ParseReqt {
     *       from false-tripping. Both cases are evidence for the strict-mode ask in reqT/reqT-lang#15. */
   val conceptLike = "^[A-Z][A-Za-z0-9]*:".r
   val relLike = "^(binds|deprecates|excludes|has|helps|hurts|impacts|implements|interactsWith|is|precedes|relatesTo|requires|verifies):".r
-  def lint(m: Model): List[String] =
-    def walk(elems: Vector[Elem]): Vector[String] =
+
+  /** A lint hit, carrying the offending text alongside the message so the caller can decide whether it
+    * came from somewhere the lint has no business judging (see `fencedLines`). */
+  final case class Finding(text: String, message: String)
+
+  def findings(m: Model): List[Finding] =
+    def walk(elems: Vector[Elem]): Vector[Finding] =
       elems.flatMap:
         case StrAttr(Text, v) if conceptLike.findFirstIn(v.trim).isDefined =>
-          Vector(s"unknown concept '${v.trim.takeWhile(_ != ':')}' kept as Text: ${v.trim.take(70)}")
+          Vector(Finding(v.trim, s"unknown concept '${v.trim.takeWhile(_ != ':')}' kept as Text: ${v.trim.take(70)}"))
         case StrAttr(Text, v) if relLike.findFirstIn(v.trim).isDefined =>
-          Vector(s"relation '${v.trim.takeWhile(_ != ':')}' LOST to Text — write it as a top-level 'ENT ${v.trim.takeWhile(_ != ':')} ENT' clause, not under has: ${v.trim.take(70)}")
+          Vector(Finding(v.trim, s"relation '${v.trim.takeWhile(_ != ':')}' LOST to Text — write it as a top-level 'ENT ${v.trim.takeWhile(_ != ':')} ENT' clause, not under has: ${v.trim.take(70)}"))
         case Rel(_, _, sub) => walk(sub.elems)
         case _ => Vector.empty
     walk(m.elems).toList
+
+  def lint(m: Model): List[String] = findings(m).map(_.message)
+
+  /** ISSUE 010. A grammar illustration is metasyntax, not requirements: `ENT: id` is a PLACEHOLDER, and
+    * flagging it as an unknown concept is a false positive that can never be fixed by editing the model.
+    * A check that reports the same 5 hits forever teaches its reader to ignore the number, which costs
+    * more than the check is worth. So the lint skips what lives inside a fenced code block — the one
+    * marker that already means "this is a specimen, not content".
+    *
+    * Deliberately LINT-ONLY: the parser is vendored pristine (see the header) and its handling of fences
+    * is untouched. Fenced bullets still parse into the model exactly as before; they are merely not
+    * judged. That keeps `reqt-vendored/` diff-clean and the skip auditable in one place.
+    *
+    * Strip list markers and surrounding space, because the parser keeps the bullet's CONTENT as the Text
+    * value while the source line still carries its `* ` marker and indentation. */
+  def normalizeBullet(s: String): String =
+    val t = s.trim
+    val stripped =
+      if t.length > 1 && "-*+".contains(t.charAt(0)) && t.charAt(1) == ' ' then t.substring(2) else t
+    stripped.trim
+
+  /** Pure: the normalized content lines sitting INSIDE fenced blocks (the fence markers themselves are
+    * not content). Tracks which marker opened the block so a ``` inside a ~~~ block reads as content,
+    * and allows the up-to-3-space indent CommonMark permits before a fence. */
+  def fencedLines(src: String): Set[String] =
+    def marker(line: String): Option[String] =
+      val t = line.dropWhile(_ == ' ')
+      if line.length - t.length > 3 then None
+      else if t.startsWith("```") then Some("`")
+      else if t.startsWith("~~~") then Some("~")
+      else None
+    val (inside, _) =
+      src.linesIterator.foldLeft((Set.empty[String], Option.empty[String])):
+        case ((set, open), line) =>
+          (open, marker(line)) match
+            case (None, Some(m))              => (set, Some(m)) // opening fence
+            case (Some(o), Some(m)) if o == m => (set, None)    // matching closing fence
+            case (Some(_), _)                 => (set + normalizeBullet(line), open) // fenced content
+            case (None, None)                 => (set, None)
+    inside - ""
+
+  /** Pure: drop the findings whose offending bullet is a line inside a fenced block. */
+  def dropFenced(fs: List[Finding], fenced: Set[String]): List[Finding] =
+    fs.filterNot(f => fenced.contains(normalizeBullet(f.text)))
 
   private val Help: String =
     """tt parsereqt — parse / lint reqT-lang requirements models (e.g. this repo's reqts/PRD.md)
@@ -57,6 +106,11 @@ object ParseReqt {
       |                                      a 'has' block ('requires: ...') — the relation is LOST;
       |                                      write it as a top-level 'ENT requires ENT' clause
       |
+      |Fenced code blocks are SKIPPED by the lint: a grammar illustration ('ENT: id') is
+      |metasyntax, not a mistake, and a check that reports the same hits forever teaches its
+      |reader to ignore the number. The skipped count is printed, never swallowed. This is a
+      |lint-only rule — the parser's handling of fences is unchanged.
+      |
       |Examples:
       |  tt parsereqt parse reqts/PRD.md # print the parsed model, then a top-level elem count
       |  tt parsereqt lint reqts/PRD.md  # list fall-throughs (real Swedish? typo? un-mapped term?)
@@ -73,10 +127,15 @@ object ParseReqt {
         println(m)
         println(s"reqt parse: ${m.elems.size} top-level elems in $path")
       case "lint" :: path :: _ =>
-        val m = MarkdownParser.parseModel(readFile(path))
-        val ws = lint(m)
-        ws.foreach(w => println(s"  [lint] $w"))
-        println(s"reqt lint: ${ws.size} unknown-concept fall-through(s) in $path  (real Swedish? typo? un-mapped term?)")
+        val src = readFile(path)
+        val m = MarkdownParser.parseModel(src)
+        val all = findings(m)
+        val kept = dropFenced(all, fencedLines(src))
+        val skipped = all.size - kept.size
+        kept.foreach(f => println(s"  [lint] ${f.message}"))
+        // the skipped count is PRINTED rather than swallowed: a silent filter is how a lint starts lying
+        val note = if skipped > 0 then s" ($skipped skipped inside fenced code block(s))" else ""
+        println(s"reqt lint: ${kept.size} unknown-concept fall-through(s) in $path$note  (real Swedish? typo? un-mapped term?)")
       case _ =>
         println("usage: tt parsereqt parse FILE | tt parsereqt lint FILE")
         sys.exit(2)
