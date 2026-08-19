@@ -1,6 +1,6 @@
 # Issue 009: `tt forge contributors` — a read verb for who the forge thinks contributed
 
-> status: open · labels: toolbox, forge · summary: `tt forge` speaks issues/prs/releases/tags but
+> status: closed 2026-08-19, fixed by `7add972` · labels: toolbox, forge · summary: `tt forge` speaks issues/prs/releases/tags but
 > cannot read a repo's CONTRIBUTOR list, so verifying "who does the forge credit" needs `tt web
 > get` on the raw API or a browser.
 
