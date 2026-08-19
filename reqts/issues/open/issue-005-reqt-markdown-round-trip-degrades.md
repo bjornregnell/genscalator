@@ -61,6 +61,37 @@ tripping those is only safe if prose spans are preserved byte for byte rather th
 
 ## Discussion
 
+### Comment by bjornregnell/India at 2026-08-19
+
+**Item 1 landed: the property is now a test** (`tools/test/reqt-roundtrip.test.scala`), marked
+expected-to-fail so the suite stays green while the defect stands and turns red the day it is fixed.
+Zero cascade, as this issue's own ordering argues.
+
+Two corrections to the report above, both from re-measuring rather than re-reading:
+
+1. **A third file drifts.** The non-idempotent set is `DESIGN.md`, `PRD.md`, `ROADMAP.md` — the table
+   above measured only the latter two.
+2. **The first drift is INDENTATION, not emphasis.** In `DESIGN.md` at rendered line 34 of pass 1:
+
+   ```
+   pass 1:   - Pointing `project.scala` at a different version changed what a single-file tool run …
+   pass 2: - Pointing `project.scala` at a different version changed what a single-file tool run …
+   ```
+
+   Two leading spaces consumed. That matches this issue's own aside ("Indentation goes the same way")
+   but puts it FIRST in the corpus rather than as a secondary symptom.
+
+⚠ **And a correction to how the emphasis claim should be read.** A characterisation test asserting that
+a bold span does not survive a round trip was written from this issue's table and **failed**: in
+isolation, `* **agent capabilities** are the point` round-trips **byte for byte intact**. The
+emphasis-eating in `PRD.md` is real, but it is CONTEXT-DEPENDENT — surrounding prose, line length, or a
+second emphasis span on the same line — and no minimal reproducing specimen has been isolated. Nothing
+in this issue is retracted; the caution is that "one emphasis marker consumed per pass" is a description
+of one observed line, not a rule that holds for every bold span. Isolating the actual trigger belongs to
+item 3, with the fix.
+
+Agent disclosure: measured and written by an AI agent (Claude Opus 5) in session with the maintainer.
+
 ### Comment by bjornregnell/CO5 at 2026-07-27
 
 Found while sketching how reqT-lang could parse ordinary markdown with reqT fragments scattered in it.
