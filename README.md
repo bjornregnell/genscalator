@@ -28,7 +28,7 @@ This README.md focuses on a brief overview of genscalator and how to get started
 
 * [1. What is genscalator?](#1-what-is-genscalator)
 * [2. How to install genscalator](#2-how-to-install-genscalator)
-  * [2.1 Install the binary toolbox](#21-install-the-binary-toolbox-one-command-works-without-claude-code)
+  * [2.1 Install the binary toolbox](#21-install-the-binary-toolbox-one-command-works-without-claude-code) (and how to uninstall)
   * [2.2 Install the genscalator Claude Code plugin](#22-install-the-genscalator-claude-code-plugin)
   * [2.3 Companions for Scala code (recommended)](#23-companions-for-scala-code-recommended)
   * [2.4 Native speed: prebuilt binary or graalify yourself](#24-native-speed-prebuilt-binary-or-graalify-yourself)
@@ -92,6 +92,22 @@ It downloads the **prebuilt native binary** for your platform, verifies the publ
 that). It cannot change the PATH of the shell that started it, so open a new terminal and verify with
 `tt chrono now`. Native means a `tt` call answers in ~0.03 s with no compile and no JVM warm-up.
 Later, `tt update --native` keeps the install fresh (preview by default; `--write` applies).
+
+**Uninstall.** The same script removes what it installed, so `install → test → uninstall → reinstall`
+is the supported loop for comparing versions (and the way to get a genuinely naked box back before a
+field test):
+```
+scala-cli run get-genscalator.sc -- --uninstall            # PREVIEW: lists what would be removed
+scala-cli run get-genscalator.sc -- --uninstall --force    # actually remove it
+```
+It reads the `INSTALL-MANIFEST.txt` the installer wrote and removes exactly what is listed, then prunes
+the directories it emptied - anything you put in the install dir yourself is neither listed nor touched.
+An install made before manifests existed falls back to well-known paths and **says so**. Two things are
+deliberately **printed rather than edited**, because they are yours: the marked PATH block in your shell
+config (delete the lines from `# >>> genscalator >>>` through `# <<< genscalator <<<`), and any
+genscalator entries you added to a Claude `settings.json`. The uninstaller is in the bootstrap script
+rather than in `tt` on purpose: `tt` excludes destructive verbs by design, and a script you fetch fresh
+can still reverse an install whose own binary is broken or gone.
 
 **From source (contributors, or a platform without a published binary):** clone and symlink the
 launcher, then tools compile on first use via scala-cli (a couple of seconds; reruns are cached):

@@ -5,6 +5,12 @@
 //   scala-cli run get-genscalator.sc -- --dry-run    # show exactly what WOULD happen; write nothing
 //   scala-cli run get-genscalator.sc -- --no-path    # install, but do not touch any shell config
 //   scala-cli run get-genscalator.sc -- --tag v0.10.0 --home /opt/gs
+//   scala-cli run get-genscalator.sc -- --uninstall           # PREVIEW what would be removed
+//   scala-cli run get-genscalator.sc -- --uninstall --force   # actually remove it
+//
+// install -> test -> uninstall -> reinstall is the supported version-testing loop, and the reason the
+// uninstaller lives HERE: this file is fetched fresh, so it can reverse an install whose own binary is
+// gone or broken. See the manifest section below for the full argument (issue 039).
 //
 // ⚠ READ THIS SCRIPT BEFORE RUNNING IT. That is not a formality: genscalator argues against
 // curl-into-shell precisely because it hides what it does, so this file has to be worth the read. It is
@@ -113,8 +119,11 @@ def resolveEntry(destRoot: Path, entryName: String): Either[String, Path] =
       case Some(t)                        => Right(t)
 
 /** Adjudicate EVERY entry before writing ANY of them, so a hostile archive cannot leave a half-extracted
-  * tree behind: files on disk AND an error is the worst state to hand a user. */
-def unzip(archive: Path, into: Path, dryRun: Boolean): Int =
+  * tree behind: files on disk AND an error is the worst state to hand a user.
+  *
+  * Returns the entry names actually planned (relative, forward-slash), because those names ARE the
+  * install manifest: the set of paths this script created is exactly what `--uninstall` must remove. */
+def unzip(archive: Path, into: Path, dryRun: Boolean): Vector[String] =
   Using.resource(ZipFile(archive.toFile)) { zf =>
     val entries  = zf.entries.asScala.toVector.filterNot(_.isDirectory)
     val verdicts = entries.map(e => (e, resolveEntry(into, e.getName)))
@@ -133,7 +142,7 @@ def unzip(archive: Path, into: Path, dryRun: Boolean): Int =
         // user runs fails with exit 126. One line, and it is the difference between working and not.
         if e.getName.startsWith("bin/") then target.toFile.setExecutable(true, true)
       }
-    planned.size
+    planned.map((e, _) => e.getName.replace('\\', '/'))
   }
 
 // ---- PATH -----------------------------------------------------------------------------------------
@@ -165,23 +174,161 @@ def addToPath(file: Path, line: String, dryRun: Boolean): Unit =
     println(s"        $line")
     if !dryRun then Files.writeString(file, existing + block)
 
+// ---- the install manifest, and uninstall ------------------------------------------------------------
+// Issue 039: nothing removed what the installer put on a box, so "test from a clean box" was not reachable
+// TWICE. Every alpha tester who compares versions runs install -> test -> uninstall -> reinstall, and the
+// third step did not exist. Hand-reversing an install from memory leaves dirt that is INVISIBLE, and the
+// second install then mostly works — which is worse than failing, because it tests a state no real
+// newcomer has.
+//
+// WHY a flag on this script rather than `tt uninstall` or a second script (decided, do not re-litigate):
+//   - ONE carrier for the layout knowledge. The artifact that installed the files is the one that knows
+//     where they are; a separate uninstaller duplicates that knowledge into a carrier that rots alone.
+//   - No added download weight: it travels inside the file every installer-user already fetches.
+//   - The bootstrap works in BOTH directions. This script is fetched fresh, so uninstall stays available
+//     even after the install dir is gone or broken — which a `tt uninstall` verb could never manage,
+//     since it would be the very binary being removed.
+//   - `tt` excludes destructive verbs BY DESIGN; that is what makes it allowlistable. The lifecycle
+//     script is the right home for the one destructive operation this project needs.
+//
+// The fetched-fresh property carries an obligation: a NEWER script must be able to uninstall an OLDER
+// install. Hence the manifest AND a well-known-paths fallback that says out loud when it is being used.
+val ManifestName = "INSTALL-MANIFEST.txt"
+
+/** Plain text, no JSON parser, because this file resolves NO dependencies. `key: value` header lines, then
+  * a `files:` line after which EVERY line is one install-root-relative path. */
+def writeManifest(home: Path, files: Vector[String], tag: Option[String], pathFile: Option[Path]): Unit =
+  val header = Vector(
+    s"# genscalator install manifest — written by get-genscalator.sc",
+    s"# `scala-cli run get-genscalator.sc -- --uninstall --home $home` removes exactly what is listed here.",
+    s"# Safe to read. Deleting this file only costs the uninstaller its precision (it falls back to",
+    s"# well-known paths and says so).",
+    s"manifest-version: 1",
+    s"installed-tag: ${tag.getOrElse("latest")}",
+    s"install-root: $home",
+    s"path-file: ${pathFile.map(_.toString).getOrElse("none")}",
+    s"path-marker: $Marker",
+    s"files:",
+  )
+  Files.writeString(home.resolve(ManifestName), (header ++ files.sorted).mkString("", "\n", "\n"))
+
+final case class Manifest(files: Vector[String], pathFile: Option[Path], tag: String, fallback: Boolean)
+
+/** Read the manifest, or fall back to well-known paths for a PRE-MANIFEST install. The fallback is
+  * deliberately narrow: it only claims the directories this installer has ever created, never the whole
+  * install root, so a user who put something of their own in there does not lose it. */
+def readManifest(home: Path): Manifest =
+  val f = home.resolve(ManifestName)
+  if !Files.exists(f) then
+    val wellKnown = Vector("bin", "docs", "skills", "tools", "plugins", "VERSION.txt")
+      .map(home.resolve)
+      .filter(Files.exists(_))
+      .flatMap: p =>
+        if Files.isDirectory(p) then
+          Using.resource(Files.walk(p))(_.iterator.asScala.toVector)
+            .filter(Files.isRegularFile(_))
+            .map(q => home.relativize(q).toString.replace('\\', '/'))
+        else Vector(home.relativize(p).toString.replace('\\', '/'))
+    Manifest(wellKnown, None, "unknown", fallback = true)
+  else
+    val lines = Files.readString(f).linesIterator.toVector
+    def header(k: String): Option[String] =
+      lines.find(_.startsWith(s"$k: ")).map(_.stripPrefix(s"$k: ").trim).filter(_.nonEmpty)
+    val idx = lines.indexWhere(_.trim == "files:")
+    val files = if idx < 0 then Vector.empty else lines.drop(idx + 1).map(_.trim).filter(_.nonEmpty)
+    // the manifest itself is ours too, and listing it keeps the "remove exactly what is listed" rule true
+    Manifest(
+      (files :+ ManifestName).distinct,
+      header("path-file").filterNot(_ == "none").map(Path.of(_)),
+      header("installed-tag").getOrElse("unknown"),
+      fallback = false,
+    )
+
+/** PREVIEW BY DEFAULT, like every destructive shape in this project: printing costs one extra keystroke,
+  * and the cheapest way to delete the wrong tree is a mistyped --home.
+  *
+  * NEVER edits a human-owned file. The PATH block in a shell rc and any hook entry in settings.json are
+  * REPORTED with exact instructions instead. The installer may have added the PATH line, but the file
+  * belongs to the human and may have been hand-tuned since — and a script that silently rewrites a
+  * shell rc is precisely the behaviour this project argues against. */
+def uninstall(home: Path, force: Boolean): Unit =
+  if !Files.isDirectory(home) then die(s"nothing to uninstall: $home does not exist")
+  val m       = readManifest(home)
+  val present = m.files.map(home.resolve).filter(Files.exists(_))
+  val missing = m.files.size - present.size
+
+  println(s"genscalator uninstall${if force then "" else "  (PREVIEW: nothing will be removed)"}")
+  println(s"  install:  $home")
+  println(s"  version:  ${m.tag}")
+  if m.fallback then
+    println(s"  ⚠ NO $ManifestName found — this install predates manifests, so the list below comes from")
+    println(s"    WELL-KNOWN PATHS (bin, docs, skills, tools, plugins, VERSION.txt) rather than a record of")
+    println(s"    what was actually written. Anything you put in $home yourself is NOT listed and NOT touched.")
+  println(s"  ${if force then "removing" else "would remove"}: ${present.size} file(s)" +
+    (if missing > 0 then s"  ($missing listed file(s) already gone)" else ""))
+  present.take(12).foreach(p => println(s"    ${home.relativize(p)}"))
+  if present.size > 12 then println(s"    … and ${present.size - 12} more")
+
+  if force then
+    present.foreach(p => Try(Files.deleteIfExists(p)))
+    // prune the directories we emptied, deepest first; a non-empty dir simply survives, which is the
+    // correct outcome for anything the user put there
+    Using.resource(Files.walk(home))(_.iterator.asScala.toVector)
+      .filter(Files.isDirectory(_))
+      .sortBy(p => -p.toString.length)
+      .foreach(d => Try(Files.deleteIfExists(d)))
+    if Files.exists(home) then
+      println(s"  kept:     $home still exists — it holds files this uninstaller did not put there")
+    else println(s"  removed:  $home")
+
+  println()
+  println("  These are YOURS to remove, and are printed rather than edited:")
+  m.pathFile match
+    case Some(rc) =>
+      println(s"    1. the PATH block in $rc — delete the lines from")
+      println(s"       `# $Marker` through `# <<< genscalator <<<` (inclusive)")
+    case None =>
+      println(s"    1. a PATH entry, if you added one, pointing at ${home.resolve("bin")}")
+      println(s"       (in a shell rc it sits between `# $Marker` and `# <<< genscalator <<<`;")
+      println(s"        on Windows it is a User Path entry set from PowerShell)")
+  println(s"    2. any genscalator hook or permission entries you added to a Claude settings.json")
+  println(s"       (this installer never wrote them, so it will not guess at removing them)")
+  println()
+  if force then
+    println("Uninstalled. OPEN A NEW TERMINAL so the old PATH entry stops being inherited,")
+    println("then verify the box is naked:  command -v tt   (should print nothing)")
+  else
+    println(s"PREVIEW complete — nothing was removed. Re-run with --force to apply:")
+    println(s"  scala-cli run get-genscalator.sc -- --uninstall --force --home $home")
+
 // ---- main -----------------------------------------------------------------------------------------
-val argv    = args.toList
-val dryRun  = argv.contains("--dry-run")
-val noPath  = argv.contains("--no-path")
+val argv      = args.toList
+val dryRun    = argv.contains("--dry-run")
+val noPath    = argv.contains("--no-path")
+val uninstall_ = argv.contains("--uninstall")
+// --dry-run wins over --force if both are given: between two readings of an ambiguous command line, the
+// one that writes nothing is the right guess.
+val force     = argv.contains("--force") && !dryRun
 def flag(n: String): Option[String] =
   val i = argv.indexOf(n); if i >= 0 && i + 1 < argv.size then Some(argv(i + 1)) else None
 
 val osName = sys.props.getOrElse("os.name", "")
 val isMac  = osName.toLowerCase.contains("mac")
-val plat = platformFor(osName, sys.props.getOrElse("os.arch", "")).getOrElse(die(
-  s"no published binary for this platform ($osName ${sys.props.getOrElse("os.arch", "?")}).\n" +
-    "  Intel macOS and Windows-on-ARM are supported by BUILDING FROM SOURCE, which is documented\n" +
-    "  rather than a workaround: see the repo README. Refusing to install a binary that cannot run."))
 
 val home = flag("--home").map(Path.of(_)).getOrElse(Path.of(sys.props("user.home"), ".genscalator"))
 if Files.exists(home.resolve(".git")) then die(
   s"refusing: $home is a git checkout, not a binary install. Pass --home <dir> for a real install.")
+
+// Uninstall runs BEFORE the platform check on purpose: a box whose platform has no published binary can
+// still be carrying an install (from --home, or from a build), and refusing to clean it would be absurd.
+if uninstall_ then
+  uninstall(home, force)
+  sys.exit(0)
+
+val plat = platformFor(osName, sys.props.getOrElse("os.arch", "")).getOrElse(die(
+  s"no published binary for this platform ($osName ${sys.props.getOrElse("os.arch", "?")}).\n" +
+    "  Intel macOS and Windows-on-ARM are supported by BUILDING FROM SOURCE, which is documented\n" +
+    "  rather than a workaround: see the repo README. Refusing to install a binary that cannot run."))
 
 val tag  = flag("--tag")
 val zipN = s"genscalator-$plat.zip"
@@ -205,7 +352,8 @@ println(s"  verified: sha256 $actual  (${zipBytes.length} B)")
 val tmpZip = Files.createTempFile("genscalator-", ".zip")
 Files.write(tmpZip, zipBytes)
 if !dryRun then Files.createDirectories(home)
-val n = unzip(tmpZip, home, dryRun)
+val installed = unzip(tmpZip, home, dryRun)
+val n = installed.size
 Files.deleteIfExists(tmpZip)
 if !dryRun then
   // The archive carries the CI-stamped tag in VERSION.txt and unzip REPLACE_EXISTING has already
@@ -216,16 +364,27 @@ if !dryRun then
   if !Files.exists(versionFile) then Files.writeString(versionFile, tag.getOrElse("latest") + "\n")
   println(s"  unpacked: $n file(s) into $home")
 
-if noPath then println(s"  PATH: skipped (--no-path). Add $home/bin to your PATH yourself.")
-else
-  val shell = sys.env.getOrElse("SHELL", "")
-  shellConfig(shell, home, isMac) match
-    case Some((file, line)) => addToPath(file, line, dryRun)
-    case None =>
-      println(s"  PATH: unrecognised shell '$shell' -- add this directory yourself: ${home.resolve("bin")}")
-      if osName.toLowerCase.contains("windows") then
-        println("        PowerShell: [Environment]::SetEnvironmentVariable('Path',")
-        println(s"          [Environment]::GetEnvironmentVariable('Path','User') + ';' + '${home.resolve("bin")}', 'User')")
+val pathFileUsed: Option[Path] =
+  if noPath then
+    println(s"  PATH: skipped (--no-path). Add $home/bin to your PATH yourself.")
+    None
+  else
+    val shell = sys.env.getOrElse("SHELL", "")
+    shellConfig(shell, home, isMac) match
+      case Some((file, line)) => addToPath(file, line, dryRun); Some(file)
+      case None =>
+        println(s"  PATH: unrecognised shell '$shell' -- add this directory yourself: ${home.resolve("bin")}")
+        if osName.toLowerCase.contains("windows") then
+          println("        PowerShell: [Environment]::SetEnvironmentVariable('Path',")
+          println(s"          [Environment]::GetEnvironmentVariable('Path','User') + ';' + '${home.resolve("bin")}', 'User')")
+        None
+
+// LAST, so the manifest records the PATH file too and only ever describes a completed install. A manifest
+// written before the work would describe an install that may not exist (issue 039's carrier-staleness
+// argument, the same class as issues 034/036).
+if !dryRun then
+  writeManifest(home, installed, tag, pathFileUsed)
+  println(s"  manifest: ${home.resolve(ManifestName)}  (uninstall reads this)")
 
 println()
 if dryRun then println("DRY RUN complete -- nothing was written. Re-run without --dry-run to install.")
