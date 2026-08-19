@@ -1,6 +1,6 @@
 # Issue 007: `tt forge file` — fetch ONE repo file's contents, the remote sibling of `tt git show`
 
-> status: open · labels: toolbox, forge · summary: no verb reads repo FILE contents from a forge
+> status: closed 2026-08-19, fixed by `e4d1284` · labels: toolbox, forge · summary: no verb reads repo FILE contents from a forge
 > (`release-download` does only assets), and `tt web get` NEVER sends credentials by design — so a
 > single file in a private repo forces a raw curl-with-token or a full clone.
 

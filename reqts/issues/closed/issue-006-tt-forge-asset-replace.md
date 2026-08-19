@@ -1,6 +1,6 @@
 # Issue 006: replacing ONE release asset has no typed shape, and the refusal message points at a verb that does not exist
 
-> status: open · labels: toolbox, forge, release · summary: `tt forge release-upload` refuses
+> status: closed 2026-08-19, fixed by `e4d1284` · labels: toolbox, forge, release · summary: `tt forge release-upload` refuses
 > duplicate asset names by design and its error says "Delete it first, or upload under another
 > name" — but no forge verb can delete an asset (`release-delete` removes a whole release). So
 > asset REPLACEMENT, an act that genuinely occurs in release maintenance, only exists as a raw

@@ -1,6 +1,6 @@
 # Issue 004: `tt gitinfo` reports a change COUNT but no paths, so precise staging has no typed shape
 
-> status: open · labels: toolbox, git, safety · summary: `tt gitinfo` says "10 uncommitted
+> status: closed 2026-08-19, fixed by `e4d1284` · labels: toolbox, git, safety · summary: `tt gitinfo` says "10 uncommitted
 > change(s)" without saying WHICH, and `tt git commit --add <p>` requires naming exact paths.
 > The one shape that closes the gap does not exist, so the agent reaches for a bare
 > `git status --short` at exactly the moment it is deciding what to write to history.

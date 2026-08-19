@@ -1,6 +1,6 @@
 # Issue 010: `tt parsereqt` lint reports 5 eternal false positives on the PRD's own grammar illustration
 
-> status: open · labels: reqt, lint · summary: the lint cannot distinguish a grammar illustration
+> status: closed 2026-08-19, fixed by `e4d1284` · labels: reqt, lint · summary: the lint cannot distinguish a grammar illustration
 > from a mistake, so `reqts/PRD.md` reports 5 unknown-concept hits forever — metasyntactic
 > placeholders like `ENT: id`, not typos.
 

@@ -1,6 +1,6 @@
 # Issue 039: there is no uninstall story, so "test from a clean box" is not reachable twice
 
-> status: open · labels: installer, docs, release, windows, alpha · summary: nothing removes what
+> status: closed 2026-08-19, fixed by `b196d53` · labels: installer, docs, release, windows, alpha · summary: nothing removes what
 > the installer put on a box — no `--uninstall`, no README section — so a tester cannot return to
 > the naked state that alpha field-testing (and the planned real-Windows day) depends on, and every
 > "clean install" after the first is silently not one.
