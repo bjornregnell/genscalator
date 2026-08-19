@@ -164,6 +164,17 @@
         ]
       }
     ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "tt guardcheck posthook"
+          }
+        ]
+      }
+    ],
     "SessionStart": [
       {
         "hooks": [

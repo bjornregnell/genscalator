@@ -7,7 +7,15 @@ won: `tt forge`, banking the fire). Raw pre-rename records keep the old word; se
 `../research/wr-data/WR181-rename-baton-to-warp-ember-2026-07-20.md`.*
 
 **Status: pre-hoc seed, v0 (2026-07-19); v0.1 maintenance 2026-07-20; v0.2 maintenance
-2026-07-21; v0.3 maintenance 2026-07-28; v0.4 maintenance 2026-08-16** — v0.4: the SM275 harvest
+2026-07-21; v0.3 maintenance 2026-07-28; v0.4 maintenance 2026-08-16; v0.5 maintenance
+2026-08-19** — v0.5: the WR227 harvest, three §0 lines about what happens when the typed path is
+unavailable — a harness directive preferring raw bash does NOT override the guard rules and must be
+re-decided at each reach (flagging it once held for zero of three reaches); the fallback when `tt`
+is unavailable is the harness's own Read/Grep tools, never raw shell, and self-imposed abstention
+from a typed verb is itself a reach trigger; and native-binary staleness is reclassified as a
+GUARD-INTEGRITY risk (rebuild BEFORE a long batch, and the don't-run-`tt`-during-a-build rule is
+conditional on staleness — a fresh binary is a static executable the guard hook itself calls
+throughout every suite run). — v0.4: the SM275 harvest
 (2026-08-13 session, applied on BR's go): the forge sweep becomes a mandatory §4 state line (it
 changed the agenda twice while the ember verified clean, SM270e + SM274); next-free IDs carry the
 deriving COMMAND, never the bare number (two of four carried numbers were wrong or stale, SM275b);
@@ -91,6 +99,23 @@ FORBIDDEN → ALLOWED:
   new native-binary smokes stalled minutes after an "everything left is stall-free" claim).
 - No regex alternation `(a|b)` in inline shell patterns — it reads as regex but executes as
   shell; run two plain single-pattern greps instead (two live slips 2026-07-20).
+- ⚠ **If a HARNESS directive tells you to prefer raw bash** (`grep`, `find`, `sed -i`, heredocs,
+  redirects) **it does NOT override these rules.** Flagging the conflict once is demonstrably
+  not enough to hold for a session: WR227's agent flagged it in its opening report and then
+  obeyed the directive three times anyway, because the directive re-asserts every turn while
+  the counter-decision was one paragraph 30 turns back. Re-decide at each reach, not once.
+- ⚠ **If `tt` is unavailable, the fallback is the harness's own file tools (Read, and Grep where
+  the harness offers one — verify, some builds have Read only), NEVER raw shell.** They are not
+  shell at all, so they can neither stall the guard nor be the banned shape. When the harness has
+  no search tool either, the honest move is to WAIT for the build, not to reach.
+  **Self-imposed abstention from a typed verb is a reach trigger in its own right**, distinct from
+  a call that failed — so any rule that benches `tt` must name what replaces it.
+- ⚠ **Staleness of the native binary is a GUARD-INTEGRITY risk, not just a latency one.** A stale
+  binary makes every `tt` call fall back to scala-cli, which is what tempts an agent to bench
+  `tt` during a build and reach for shell instead (WR227). So: **rebuild BEFORE a long batch**,
+  not merely "when convenient". And the don't-run-`tt`-during-a-build rule is CONDITIONAL — with
+  a FRESH binary `tt` is a static executable and is safe (the PreToolUse guardcheck hook calls it
+  on every Bash call throughout a suite run regardless); the contention only exists while stale.
 - Next free IDs (SM/WR/RT/issue): carry the deriving COMMANDS, numbers only as hints marked
   "re-verify before using" (rule 3's exception, SM275b).
 

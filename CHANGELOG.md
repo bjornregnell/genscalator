@@ -8,6 +8,52 @@ file before adopting a new version: it changes the agent's operating rules, so r
 
 ## Unreleased (v0.10.3 wave, in progress since 2026-08-16)
 
+### v0.10.4 candidates (2026-08-18/19)
+
+- **`tt gitinfo --files`** (issue-004): the paths behind the change COUNT, one per line, each labelled
+  `staged` / `unstaged` / `both` / `untracked` / `conflict` with its raw porcelain code, grouped
+  conflicts-first and untracked-last. Closes the gap that made a bare `git status --short` the only
+  move at the step that decides what enters history — the 2026-07-27 near-miss where the tenth changed
+  file was a human's, held under an edit baton. A rename reports its DESTINATION (the path you would
+  `--add`); porcelain is read unTRIMMED (a leading space is a status column) and with
+  `core.quotePath=false` so non-ASCII paths stay usable as `--add` arguments.
+- **`tt parsereqt lint` skips fenced code blocks** (issue-010): a grammar illustration such as
+  `ENT: id` is metasyntax, not a mistake, and `reqts/PRD.md` reported the same 5 unknown-concept hits
+  forever — which teaches every reader to ignore the number. The lint now drops findings whose bullet
+  sits inside a ``` or ~~~ block and PRINTS the skipped count rather than swallowing it; PRD.md lints
+  to 0, pinned by a test. Lint-only: the vendored parser's handling of fences is untouched, so
+  `reqt-vendored/` stays diff-clean. The PRD's illustration is now fenced, which is what it always was.
+- **`tt forge asset-rm` + `release-upload --clobber`** (issue-006): replacing or removing ONE release
+  asset had no typed shape, and `release-upload`'s duplicate-name refusal told the caller to "delete it
+  first" when nothing in the toolbox could. `asset-rm` follows `release-delete`'s contract exactly
+  (preview by default, `--yes`, plus `--allow-published` for a live release, whose download URL may sit
+  in someone's install script); `--clobber` replaces bytes under the same name behind a loud audit line.
+  The refusal message now names verbs that exist.
+- **`tt forge file`** (issue-007): read ONE file's contents out of a repo — the remote sibling of
+  `tt git show`. `release-download` fetches only assets and `tt web get` never sends credentials by
+  design, so a single file in a private repo previously forced a raw curl-with-token or a whole clone.
+  GitHub (`contents` + raw Accept), Gitea (raw endpoint) and GitLab (files API), `--ref`, `--out`, and a
+  5 MB print cap; same fixed-env token machinery, fixed GitHub root and trusted-host guard as the
+  effectful verbs. A read that carries a credential is exactly where the typed shape IS the safety.
+- **`tt forge contributors`** (issue-009): shipped in the v0.10.3 wave itself and verified here —
+  `login⇥contributions⇥type` on GitHub, `name⇥email⇥commits` on GitLab. Recorded because the wave's
+  close sweep missed it.
+- **Uninstall exists** (issue-039): `get-genscalator.sc --uninstall` previews what it would remove and
+  `--force` applies, so `install → test → uninstall → reinstall` — the loop every version-comparing
+  alpha tester runs — is finally closed. The installer writes an `INSTALL-MANIFEST.txt`, the uninstaller
+  removes exactly what it lists and then prunes only the directories it emptied; a pre-manifest install
+  falls back to well-known paths and says so. Shell-rc PATH blocks and Claude `settings.json` entries
+  are PRINTED with exact instructions, never edited — the installer added them, but the files belong to
+  the human. It lives on the bootstrap script, not in `tt`, because `tt` excludes destructive verbs by
+  design and a freshly-fetched script can reverse an install whose own binary is gone.
+- **reqT round-trip degradation is now stated by the build** (issue-005, item 1 of 3): a property test
+  for `norm(norm(x)) == norm(x)` over `reqts/`, marked expected-to-fail, plus characterisation tests for
+  the mechanism (one emphasis marker consumed per pass). Zero downstream cascade — it changes no
+  behaviour — and it turns red the day reqT-lang is fixed, which is the point. The fix itself is an
+  upstream candidate to be timed with a reqT desktop release.
+
+### v0.10.3 wave
+
 - **`tt --version` / `tt version` / `-v`** (issue-028): one identifying line — tag-spelled version,
   carrier kind (git checkout / source copy / native install), root, entry path, platform — answered
   on both code paths (bash launcher without a JVM start; dispatcher via the new mainless
