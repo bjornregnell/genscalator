@@ -209,3 +209,22 @@ hmiddelk's framing in issue 041. Verified: lines 223, 232 and 359 of the current
 `get-genscalator.sc`; that `VERSION.txt` is staged by `native-release.yml` and was present in the
 v0.10.2 payload on the reporting box. Not verified: which directories earlier releases staged (the
 append-only claim above is an argument for checking release history, not a record of it).
+
+### Comment by hmiddelk at 2026-08-20 15:33
+
+The version misreport described in the comment above is now **issue 042**, and it turned out to be
+wider than that comment says. Two corrections, so this log does not mislead whoever picks up either
+issue:
+
+* **It is not specific to the fallback path.** The comment scoped it there on the strength of line
+  232's hardcoded `"unknown"`. Running `--uninstall` against a *manifest-bearing* install prints
+  `version: latest`, because `writeManifest` stores `tag.getOrElse("latest")` — the requested tag
+  rather than the resolved release. Same symptom, unrelated cause, on the path assumed correct. The
+  fallback is the louder failure; the manifest path is the one still wrong after the fallback is
+  fixed.
+* **It is not a candidate first commit for this issue.** Being present on both paths makes it
+  independent of the fallback list entirely, so it belongs to 042 and should not be bundled here.
+
+What remains in scope for 040 is unchanged: which files the fallback removes, and whether that list
+is asserted against the staged payload or derived from it. The `kept:` overclaim in the acceptance
+sketch also stays here, since it is caused by the leftover rather than by the version label.
