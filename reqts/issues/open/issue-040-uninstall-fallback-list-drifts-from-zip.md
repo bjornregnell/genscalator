@@ -159,3 +159,53 @@ the human hit while exercising issue 039's loop. The agent verified the divergen
 `native-release.yml`'s staging step and against the `INSTALL-MANIFEST.txt` of a post-039 install on
 the same box. Not verified: behaviour on macOS or Windows, or against any release other than
 v0.10.2.
+
+### Comment by hmiddelk at 2026-08-20 15:20
+
+**The acceptance sketch above asks for the weaker of two fixes.** Issue 041 names the distinction:
+this repo already runs both strategies against carrier drift — *assert* that two hand-maintained
+carriers agree (`version.test.scala:73`) versus *derive* one from the other so agreement is
+structural (`skillcheck.scala:9`, "so it never drifts"). Bullet two above ("CI should assert ...
+every top-level entry in `staging/` appears in the fallback vector") is the assert form. The derive
+form is available and stronger: make the literal a **build product of the staging step** —
+generated, committed, and CI-verified against a regeneration — so the staging step becomes the
+single source of the payload layout and a new payload directory cannot be forgotten, only
+re-generated.
+
+**But deriving is not as clean here as it first looks, and the reason is 039's own obligation.** A
+list generated from *current* staging describes the *current* payload, while the fallback exists
+precisely to uninstall an *older* one. A directory that shipped in 0.9.x and was dropped since would
+be absent from a freshly generated list and silently left behind — the same class of miss as this
+issue, arriving from the opposite direction. So the generated list has to be **append-only** (a
+union across every payload ever shipped, entries added and never removed), which also settles the
+hygiene half of bullet one: `skills`/`tools`/`plugins` should be *kept* if they were ever staged,
+and only `plugins` — never a top-level dir in any release — is genuinely spurious. Worth deciding
+before the one-word fix lands, because "drop the unused entries" and "never remove an entry" are
+opposite instructions and the current sketch implies the first.
+
+**A cheaper route to exactness, and a defect it exposes.** The uninstaller does not actually need to
+guess the payload for a pre-manifest install, because the installed tag is sitting on disk. Line 232
+hardcodes it:
+
+```scala
+Manifest(wellKnown, None, "unknown", fallback = true)
+```
+
+while line 223 lists `VERSION.txt` in the very same expression's well-known set, and line 359's own
+comment states "the archive carries the CI-stamped tag in `VERSION.txt`". So the fallback path
+prints `version: unknown` while holding the file that answers the question — which is why the
+reproduction above shows `version: unknown` on a box whose `VERSION.txt` read `v0.10.2`. Reading it
+would let the fallback name the tag it is removing, and *optionally* fetch that tag's zip and use
+its entry list as an exact manifest.
+
+That last step is a judgement call, not a recommendation: a 14.8 MB download to uninstall, and it
+fails offline, which is a poor trade for a cleanup operation. **The version misreport is a defect
+regardless**, independent of both the derive question and the fetch idea — the uninstaller should
+say which version it is removing when the answer is on disk. Small, self-contained, and a better
+first commit than the one-word list fix.
+
+Agent disclosure: drafted by an AI agent (Claude Opus 5) in session with hmiddelk, following
+hmiddelk's framing in issue 041. Verified: lines 223, 232 and 359 of the current
+`get-genscalator.sc`; that `VERSION.txt` is staged by `native-release.yml` and was present in the
+v0.10.2 payload on the reporting box. Not verified: which directories earlier releases staged (the
+append-only claim above is an argument for checking release history, not a record of it).
