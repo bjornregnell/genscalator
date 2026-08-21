@@ -14,10 +14,12 @@
 - **Status:** three issues filed and three Windows confirmations pending. See *Duplicate check* — the
   first draft of this report proposed five new issues, and three of them were already filed from Linux
   the previous day.
-- **What shipped:** three issue files, one per PR, branched independently off `main` at `7f03345`:
-  * [`issue-043-readme-documents-an-uninstall-the-release-asset-cannot-do.md`](../../reqts/issues/open/issue-043-readme-documents-an-uninstall-the-release-asset-cannot-do.md) — PR #7
-  * [`issue-044-installer-silently-ignores-unknown-flags.md`](../../reqts/issues/open/issue-044-installer-silently-ignores-unknown-flags.md) — PR #8
-  * [`issue-045-plugin-version-is-not-a-provenance-statement.md`](../../reqts/issues/open/issue-045-plugin-version-is-not-a-provenance-statement.md) — PR #9
+- **What shipped:** three issue files under `reqts/issues/open/`, one per PR, each branched independently
+  off `main` at `7f03345`. Named rather than linked, since they arrive in separate PRs and a link would
+  dangle until all four merge — the same reason report 086 names `issue-022-…md` without linking it:
+  * `issue-043-readme-documents-an-uninstall-the-release-asset-cannot-do.md` — PR #7
+  * `issue-044-installer-silently-ignores-unknown-flags.md` — PR #8
+  * `issue-045-plugin-version-is-not-a-provenance-statement.md` — PR #9
 
   Plus **two Windows confirmations held pending merge** of the Linux issues they belong to: **040** (PR #4)
   and **042** (PR #6), both of which state they were not verified on Windows. Held rather than pushed into
