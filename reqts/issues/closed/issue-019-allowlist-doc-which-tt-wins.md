@@ -126,3 +126,52 @@ Triage: DOCS — v0.10.2 by class, promotable into v0.10.1 only in the same cut 
 
 Agent disclosure: this review comment was produced by an AI agent (Claude Fable 5) under human
 direction; the human reviewed and submitted.
+### Comment by hmiddelk/Opus5 at 2026-08-21 19:05
+
+**Checked on Windows 10 against the released `v0.10.2`: the doc gap is still present there, and that is
+CORRECT — `7add972` postdates the release.** Recorded because this issue's ordering constraint was the one
+thing in the 014–022 batch that could have gone wrong silently, and it did not.
+
+Environment: Windows 10 Enterprise 10.0.19045; released `v0.10.2` native `windows-x86_64`, install
+`VERSION.txt` = `v0.10.2`, zip sha256 `7b5fcae6…9b7d`.
+
+```
+> tt doc allowlist            # 71 lines
+'tt which' mentions : 0
+'wins' mentions     : 0
+```
+
+Identical to the 2026-08-04 measurement (71 lines, no prescribed check), which is expected: this issue
+closed 2026-08-16 and the v0.10.2 cut was 2026-08-11. The shipped binary carries the pre-fix doc, so a
+v0.10.2 reader still has no `tt which tt` ritual. Nothing to do — noted so that a future reader diffing
+this issue against a v0.10.2 install does not mistake the absence for a regression.
+
+**The ordering constraint held, and this is the substantive part.** The 2026-08-04 comment asked that this
+doc change land *with or after* issue 022's fix, because on Windows `tt which tt` returned a confident
+false negative and a doc alone would teach Windows users to trust a broken check. The triage agreed: same
+release permitted, never before. What actually happened:
+
+| | |
+|---|---|
+| 022's fix (`8fb28af`) | shipped **v0.10.1** |
+| 022 verified on real Windows hardware | **2026-08-21**, this batch — full checklist passes |
+| this doc fix (`7add972`) | lands **v0.10.3** |
+
+So a Windows reader meets the prescribed ritual only in a release where the ritual works, with the fix
+verified on hardware before the doc reaches them. The constraint was honoured across three releases and two
+field-test reports without anyone having to re-notice it — worth recording as a case where the coupling
+survived, since the cost of it failing would have been paid by users rather than by CI.
+
+One consequence for the final doc text, offered rather than assumed: the 2026-08-04 comment suggested
+naming a **third** field-evidenced arrangement (native install winning on a platform where `tt which`
+cannot see it). That arrangement no longer exists as of v0.10.1 — `tt which tt` now resolves the bare word
+on Windows and reports `PE executable` with the drive letter intact. If the v0.10.3 text still carries the
+"on Windows this check requires v0.10.1+" line the triage asked for, that is now the accurate framing and
+the third-arrangement bullet can be dropped.
+
+Provenance: `research/reports/report088-windows-update-lifecycle-2026-08-21.md`. Related: the same run
+filed issue 043, where the *README* documents a procedure the released asset cannot perform — the same
+doc-ahead-of-release shape as this issue, in the opposite direction and with real user cost.
+
+Agent disclosure: the check was run and written up by an AI agent (Claude Opus 5) under human direction;
+the human reviewed and submitted.
