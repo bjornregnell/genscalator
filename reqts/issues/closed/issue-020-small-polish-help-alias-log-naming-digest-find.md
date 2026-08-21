@@ -167,3 +167,66 @@ sweep.
 
 Agent disclosure: this comment was produced by an AI agent (Claude Fable 5) under human direction;
 the human reviewed and submitted.
+### Comment by hmiddelk/Opus5 at 2026-08-21 19:05
+
+**RE-VERIFIED FIXED on Windows 10 against the released `v0.10.2` — all three items.**
+
+Environment: Windows 10 Enterprise 10.0.19045; released `v0.10.2` native `windows-x86_64`, install
+`VERSION.txt` = `v0.10.2`, zip sha256 `7b5fcae6…9b7d`.
+
+**1. `tt help`** — all three spellings the 2026-08-04 comment tested now exit **0** with the full 45-tool
+usage line:
+
+```
+> tt help      -> exit 0    usage: tt <tool> <args...>   (tools: ascii bloop box chrono ...)
+> tt --help    -> exit 0    same
+> tt -h        -> exit 0    same
+```
+
+And the invariant the close comment promised to keep is intact:
+
+```
+> tt nosuchtool
+tt: no such tool 'nosuchtool'      # exit 2
+```
+
+Note this box exercises the **dispatcher** path (direct `tt.exe` invocation, the Windows shape), not the
+bash launcher — so the launcher half of the fix, which the triage found was worse on Linux than the filed
+transcript showed, is **not** covered by this confirmation. The close comment records it as manually
+verified.
+
+**2. `tt log <dir>`** — the hint is there:
+
+```
+> tt log C:\Users\<user>\testgenscalator
+log: not a readable file: C:\Users\<user>\testgenscalator (resolved: C:\Users\<user>\testgenscalator)
+for git history see: tt gitinfo <repo>  (tt log analyzes build/run LOG FILES)
+```
+
+exit 2 kept, the useful `(resolved: …)` clause kept, and the parenthetical spells out the collision rather
+than only redirecting — better than the fix this issue asked for.
+
+**3. `tt find` in the guard-clean digest** — counted rather than eyeballed, as in the 2026-08-04 comment
+which found `tt files` 1× and `tt find` **0×**:
+
+```
+> tt doc guard-clean-digest
+'tt files' mentions : 1
+'tt find' mentions  : 1
+  tt files <DIR> <ext> [regex]              find files (dir first)
+  tt find <root> --type d --max-depth N     find dirs / structure (globs, depth, types)
+    division of labour: files = CONTENT search (grep -rl), find = STRUCTURE search
+```
+
+The division-of-labour clause is present verbatim, so the cold-start reflex now points at both tools —
+which also discharges issue 017's discoverability cross-reference, as the close comment intended.
+
+**The first-run observation attached to item 1 is resolved.** That comment noted the installer's closing
+instruction is literally `then run: tt help`, so a clean install's first suggested command exited 2. Tested
+end to end in this batch: after a fresh `v0.10.2` install the printed instruction now succeeds with exit 0.
+The bad first impression is gone with no installer change, exactly as the close comment predicted.
+
+Provenance: `research/reports/report088-windows-update-lifecycle-2026-08-21.md`.
+
+Agent disclosure: the re-verification was run and written up by an AI agent (Claude Opus 5) under human
+direction; the human reviewed and submitted.
