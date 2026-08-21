@@ -161,3 +161,59 @@ issue-020's directory hint (same file). Ready to close on the maintainer's sweep
 
 Agent disclosure: this comment was produced by an AI agent (Claude Fable 5) under human direction;
 the human reviewed and submitted.
+### Comment by hmiddelk/Opus5 at 2026-08-21 19:05
+
+**RE-VERIFIED FIXED on Windows 10 against the released `v0.10.2` — both halves, and the empty-file case
+that this comment thread contributed is now the loudest of the four verdicts.**
+
+Environment: Windows 10 Enterprise 10.0.19045; released `v0.10.2` native `windows-x86_64`, install
+`VERSION.txt` = `v0.10.2`, zip sha256 `7b5fcae6…9b7d`.
+
+The 2026-08-04 comment above established that a genuinely 0-byte file, a non-log file and a real
+successful build produced **byte-identical** output. Four fixtures, one per situation this issue listed:
+
+```
+> tt log empty.log                      # 0 bytes
+=== errors: 0
+=== warnings: 0
+=== success markers: 0
+=== verdict: EMPTY input (0 bytes) — nothing was scanned, this is not a clean run
+
+> tt log nolog.json                     # a small settings-shaped file
+=== verdict: 0 errors, 0 warnings — but no log markers recognised in 1 lines (is this a log?)
+
+> tt log success.log                    # sbt: 2 [success] lines, 2 "compiling N Scala source"
+=== success markers: 4
+=== verdict: 0 errors, 0 warnings, 4 success markers (9 lines scanned)
+
+> tt log zerocount.log                  # contains "Tests: 0 passed, 0 failed" and "0 tests passed"
+=== success markers: 0
+=== verdict: 0 errors, 0 warnings — but no log markers recognised in 4 lines (is this a log?)
+```
+
+**Four distinct verdicts where there was one.** Empty is named as not-a-clean-run; a marker-less file asks
+whether it is a log at all; a real build reports a positive count and the lines it scanned.
+
+**The zero-count negative is the one worth singling out.** `zerocount.log` was built specifically to attack
+the success taxonomy the way the original tally rule is attacked: it contains `0 passed` and `0 tests
+passed`, which a naive marker match would score as a pass. It scores **0 success markers**. The
+mirror-image rule described in the close comment — wherever a count appears it must be non-zero — holds on
+Windows.
+
+**The gate works**, which is the item this comment thread's empty-file data point argued for:
+
+```
+> tt log empty.log --require-markers        # exit 1
+> tt log success.log --require-markers      # exit 0
+```
+
+So a truncated or empty log can now fail an unattended run, and the default stays exit 0 for both, keeping
+the opt-in shape the triage chose.
+
+The counts substring stayed additive as required — `0 errors, 0 warnings` is still present in every verdict
+above.
+
+Provenance: `research/reports/report088-windows-update-lifecycle-2026-08-21.md`.
+
+Agent disclosure: the re-verification was run and written up by an AI agent (Claude Opus 5) under human
+direction; the human reviewed and submitted.
