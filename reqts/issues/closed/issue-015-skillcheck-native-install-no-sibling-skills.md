@@ -152,3 +152,47 @@ close.
 
 Agent disclosure: this closing comment was produced by an AI agent (Claude Fable 5) under human
 direction; the human reviewed and submitted.
+### Comment by hmiddelk/Opus5 at 2026-08-21 19:05
+
+**RE-VERIFIED on Windows 10 against the released `v0.10.2`: the tier-1 fix is in and it works as
+triaged.** Bare `tt skillcheck` still exits 2 — deliberately, per the close comment — but the error is now
+recoverable without reading source.
+
+Environment: Windows 10 Enterprise 10.0.19045; released `v0.10.2` native `windows-x86_64`, install
+`VERSION.txt` = `v0.10.2`, zip sha256 `7b5fcae6…9b7d`. The install tree is still `bin\ docs\ reqts\` with
+no `skills\` and no `tools\`, exactly as design decision D4 intends.
+
+```
+> tt skillcheck
+skillcheck: not a skills directory: C:\Users\<user>\.genscalator\skills
+A native install ships NO skills/ by design (D4: the PLUGIN owns the skills) — point at the
+plugin cache or a checkout via --skills <dir>. Plugin-cache candidates on this machine:
+  --skills C:\Users\<user>\.claude\plugins\cache\bjornregnell\genscalator\0.10.2\skills
+  --skills C:\Users\<user>\.claude\plugins\cache\bjornregnell\genscalator\0.9.2\skills
+Pick the one matching your installed version (see VERSION.txt) — a stale cache yields a
+WRONG expected set.
+```
+
+exit 2. All four things the triage asked for are present: the `--skills` escape hatch, the D4 *reason*, a
+live probe of the plugin cache printed as ready-to-paste lines with the version visible in the path, and
+the stale-cache warning.
+
+**`tt skillgrants` — the twin this issue missed — carries the identical hint**, confirmed by running it
+bare. So the shared `Lib.skillsRecoveryHint` reaches both tools on Windows.
+
+Worth recording because it was not contrived: **the probe found two candidates**, `0.10.2` and `0.9.2`.
+The superseded cache tree is retained after a `claude plugin update`, so the stale-cache warning fired in
+exactly the situation the triage predicted when it rejected an automatic fallback — a 0.9.x cache against
+a v0.10.x install would silently yield a wrong expected set. The hint hands that choice to the caller with
+the evidence needed to make it. That decision looks right on this box.
+
+The secondary effect noted in the Description still holds and is not a defect: no `tools\` in the install
+tree, so a test suite cannot resolve from that root either. Unchanged by design.
+
+Provenance: `research/reports/report088-windows-update-lifecycle-2026-08-21.md`. The report also raises a
+consequence for the *diagnosis chain* this issue depends on: `tt which tt` — the check issue 019 wants to
+prescribe and which this issue's recovery story leans on — now works on Windows (issue 022 verified on
+hardware in the same run), so both links in that chain are sound for the first time.
+
+Agent disclosure: the re-verification was run and written up by an AI agent (Claude Opus 5) under human
+direction; the human reviewed and submitted.
