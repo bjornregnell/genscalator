@@ -694,9 +694,18 @@ git fetch  --repo <dir> [--remote <name>]...             # remote-tracking refs 
                                                          # instead of a bare "up to date", lists unfetched remotes
 git show   --repo <dir> --ref <ref> --path <relpath> [--out <file>]   # READ-ONLY: file content at a ref
 git log    --repo <dir> [--grep P] [--co-author P] [--author P] [--committer P] [--since D] [--limit N] [--path <relpath>]...  # READ-ONLY search
+git rm     --repo <dir> --path <relpath>...              # TRACKED files only, staged not committed
 ```
-Exposes ONLY the safe, non-destructive verbs — no reset/rebase/merge/rm/clean/`--force` — so `Bash(tt git *)`
-cannot become a data-loss vector. `commit` reads its message from a FILE, so prose with shell metacharacters
+Exposes only verbs that cannot lose data — no reset/rebase/merge/clean/`--force`. **`rm` is the one
+destructive verb, and it is safe by CONSTRUCTION rather than by care**: it removes only files git already
+has a committed copy of, so every removal is recoverable with a checkout. It refuses untracked files
+(nothing to restore them from), directories, globs, absolute paths and `..`; it validates every path
+before removing any, so a bad third path cannot leave the first two gone; and it stages rather than
+commits, composing with `tt git commit --add`. ⚠ **It closes a real gap — retiring a generated file whose
+owner moved to another repo had no typed shape at all, and a missing verb is exactly what makes an agent
+reach for raw `rm`, which the guard cannot inspect — but it does mean `Bash(tt git *)` is no longer
+purely non-destructive. Pair a blanket `tt` allow with an `ask` rule for `Bash(tt git rm *)`.**
+`commit` reads its message from a FILE, so prose with shell metacharacters
 (backticks, `$`, `!`, braces, bare `*`) never touches the command line (kills the recurring commit-message
 allowlist tripwire); `--add` stages only the listed paths (never an implicit add-all). **`show`** extracts a
 file's content at any commit-ish (HEAD, branch, tag, SHA) **byte-exact** to stdout or, with `--out`, to a file

@@ -153,7 +153,9 @@ object Git {
         |  tt git fetch --repo <dir> [--remote <name>]...
         |  tt git show  --repo <dir> --ref <ref> --path <relpath> [--out <file>]   (read-only)
         |  tt git log   --repo <dir> [--grep P] [--co-author P] [--author P] [--committer P] [--since D] [--limit N] [--path <relpath>]...   (read-only search)
-        |safe subset: add/commit/push/pull(--ff-only)/fetch/show/log only (no reset/rebase/force/rm/clean/merge); message read from file.""".stripMargin)
+        |  tt git rm    --repo <dir> --path <relpath>...   (TRACKED files only, staged not committed)
+        |safe subset: add/commit/push/pull(--ff-only)/fetch/show/log/rm (no reset/rebase/force/clean/merge);
+        |  rm takes only TRACKED, non-directory, literal paths -- git keeps a recoverable copy of every one.""".stripMargin)
     sys.exit(2)
 
   private def run(repo: os.Path, args: String*): (Int, String) =
@@ -171,6 +173,7 @@ object Git {
       case "fetch"  :: rest => fetch(rest)
       case "show"   :: rest => show(rest)
       case "log"    :: rest => log(rest)
+      case "rm"     :: rest => rm(rest)
       case _                => usage()
 
   private def commit(args: List[String]): Unit =
@@ -401,6 +404,46 @@ object Git {
       case None =>
         System.out.write(bytes)
         System.out.flush()
+
+  // rm is the ONE destructive verb here, and it is safe BY CONSTRUCTION rather than by care: it removes
+  // only files git already has a COMMITTED copy of, so every removal is recoverable with a checkout. The
+  // gap it closes is real and recurring — retiring a generated file whose owner moved to another repo had
+  // no typed shape at all, and a missing verb is precisely what makes the agent reach for raw `rm`, which
+  // the guard cannot inspect (SM284, #rm-tool-gap; it fired twice in one session). Deliberately NOT
+  // supported, because each would break the recoverability argument: globs, directories, recursion, -f,
+  // and untracked files (git has nothing to restore those from). Staged, not committed, so it composes
+  // with `tt git commit --add <path>`.
+  private def rm(args: List[String]): Unit =
+    @annotation.tailrec
+    def parse(r: List[String], repo: Option[String], paths: Vector[String]): (String, Vector[String]) =
+      r match
+        case Nil                => (repo.getOrElse(fail("--repo required")),
+                                    if paths.nonEmpty then paths else fail("--path required"))
+        case "--repo" :: v :: t => parse(t, Some(v), paths)
+        case "--path" :: v :: t => parse(t, repo, paths :+ v)
+        case other :: _         => fail(s"unexpected/incomplete argument '$other' " +
+                                        "(usage: tt git rm --repo <dir> --path <relpath>...)")
+    val (repoStr, relpaths) = parse(args, None, Vector.empty)
+
+    val repo = os.Path(repoStr, os.pwd)
+    if !os.exists(repo / ".git") && run(repo, "rev-parse", "--git-dir")._1 != 0 then fail(s"not a git repo: $repo")
+
+    // validate EVERY path before removing ANY, so a bad third path cannot leave the first two gone
+    for rel <- relpaths do
+      if rel.startsWith("/") then fail(s"--path must be repo-relative, not absolute: $rel")
+      if rel.split('/').contains("..") then fail(s"--path must not contain '..': $rel")
+      if rel.exists("*?[]".contains(_)) then fail(s"--path takes ONE literal file, not a glob: $rel")
+      val target = repo / os.RelPath(rel)
+      if !os.exists(target) then fail(s"no such file: $target")
+      if os.isDir(target) then fail(s"refusing a DIRECTORY (files only, no recursion): $rel")
+      if run(repo, "ls-files", "--error-unmatch", "--", rel)._1 != 0 then
+        fail(s"refusing: '$rel' is NOT tracked by git, so removing it would be unrecoverable. " +
+             "Remove it by hand if that is really what you want.")
+
+    val (code, out) = run(repo, ("rm" +: "--" +: relpaths)*)
+    if code != 0 then fail(s"git rm failed:\n$out")
+    relpaths.foreach(p => println(s"removed (staged): $p"))
+    println(s"undo before committing:  git -C $repo checkout HEAD -- <path>")
 
   // log is READ-ONLY: search/scan the commit log with typed filters, CAPPED and tab-formatted so it never
   // needs a `| head` pipe (which trips guardcheck) — the raw-git reflex a missing typed shape used to force
