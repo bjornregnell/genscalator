@@ -153,8 +153,9 @@ object Git {
         |  tt git fetch --repo <dir> [--remote <name>]...
         |  tt git show  --repo <dir> --ref <ref> --path <relpath> [--out <file>]   (read-only)
         |  tt git log   --repo <dir> [--grep P] [--co-author P] [--author P] [--committer P] [--since D] [--limit N] [--path <relpath>]...   (read-only search)
+        |  tt git diff  --repo <dir> [--ref <ref>] [--ref2 <ref>] [--staged] [--stat] [--path <relpath>]... [--limit N]   (READ-ONLY, capped)
         |  tt git rm    --repo <dir> --path <relpath>...   (TRACKED files only, staged not committed)
-        |safe subset: add/commit/push/pull(--ff-only)/fetch/show/log/rm (no reset/rebase/force/clean/merge);
+        |safe subset: add/commit/push/pull(--ff-only)/fetch/show/log/diff/rm (no reset/rebase/force/clean/merge);
         |  rm takes only TRACKED, non-directory, literal paths -- git keeps a recoverable copy of every one.""".stripMargin)
     sys.exit(2)
 
@@ -174,6 +175,7 @@ object Git {
       case "show"   :: rest => show(rest)
       case "log"    :: rest => log(rest)
       case "rm"     :: rest => rm(rest)
+      case "diff"   :: rest => diff(rest)
       case _                => usage()
 
   private def commit(args: List[String]): Unit =
@@ -404,6 +406,59 @@ object Git {
       case None =>
         System.out.write(bytes)
         System.out.flush()
+
+  // diff is READ-ONLY and, like `log`, CAPPED so it never wants a `| head` (the pipe is what trips the
+  // guard, and a tool that needs one cannot be allowlisted). The gap it closes is the most-cited one in
+  // the toolbox: with no typed diff, reading "what did that commit change" forced either raw `git -C`
+  // or a `tt git show --out` plus an external `diff` — both outside what the guard can inspect.
+  // Truncation is ALWAYS announced, never silent: a diff that looks complete but is not would be worse
+  // than no diff at all.
+  private def diff(args: List[String]): Unit =
+    @annotation.tailrec
+    def parse(r: List[String], repo: Option[String], ref: Option[String], ref2: Option[String],
+              paths: Vector[String], stat: Boolean, staged: Boolean, limit: Int)
+        : (String, Option[String], Option[String], Vector[String], Boolean, Boolean, Int) =
+      r match
+        case Nil                 => (repo.getOrElse(fail("--repo required")), ref, ref2, paths, stat, staged, limit)
+        case "--repo" :: v :: t  => parse(t, Some(v), ref, ref2, paths, stat, staged, limit)
+        case "--ref" :: v :: t   => parse(t, repo, Some(v), ref2, paths, stat, staged, limit)
+        case "--ref2" :: v :: t  => parse(t, repo, ref, Some(v), paths, stat, staged, limit)
+        case "--path" :: v :: t  => parse(t, repo, ref, ref2, paths :+ v, stat, staged, limit)
+        case "--stat" :: t       => parse(t, repo, ref, ref2, paths, true, staged, limit)
+        case "--staged" :: t     => parse(t, repo, ref, ref2, paths, stat, true, limit)
+        case "--limit" :: v :: t =>
+          parse(t, repo, ref, ref2, paths, stat, staged,
+                v.toIntOption.filter(_ > 0).getOrElse(fail(s"--limit needs a positive number, got '$v'")))
+        case other :: _          => fail(s"unexpected/incomplete argument '$other' (usage: tt git diff " +
+                                         "--repo <dir> [--ref <ref>] [--ref2 <ref>] [--staged] [--stat] " +
+                                         "[--path <relpath>]... [--limit N])")
+    val (repoStr, refOpt, ref2Opt, paths, stat, staged, limit) =
+      parse(args, None, None, None, Vector.empty, false, false, 200)
+
+    val repo = os.Path(repoStr, os.pwd)
+    if !os.exists(repo / ".git") && run(repo, "rev-parse", "--git-dir")._1 != 0 then fail(s"not a git repo: $repo")
+    if staged && (refOpt.nonEmpty || ref2Opt.nonEmpty) then fail("--staged cannot be combined with --ref/--ref2")
+    if ref2Opt.nonEmpty && refOpt.isEmpty then fail("--ref2 needs --ref")
+
+    // ONE commit with no second ref means "what this commit changed", which is `show`, not `diff` --
+    // `<ref>~1 <ref>` would break on a root commit. --format= drops the commit header, leaving the patch.
+    val base: Seq[String] = (refOpt, ref2Opt, staged) match
+      case (Some(r), None, _)     => Seq("show", if stat then "--no-patch" else "--patch", "--format=", r)
+      case (Some(a), Some(b), _)  => Seq("diff", a, b)
+      case (None, _, true)        => Seq("diff", "--cached")
+      case (None, _, false)       => Seq("diff", "HEAD")
+    val flags = Seq("--no-color") ++ (if stat then Seq("--stat") else Seq.empty)
+    val pathArgs = if paths.isEmpty then Seq.empty else "--" +: paths
+
+    val (code, out) = run(repo, (base ++ flags ++ pathArgs)*)
+    if code != 0 then fail(s"git ${base.head} failed:\n$out")
+
+    val lines = if out.isEmpty then Vector.empty else out.split("\n").toVector
+    lines.take(limit).foreach(println)
+    if lines.isEmpty then println("=== no differences")
+    else if lines.size > limit then
+      println(s"=== showing $limit of ${lines.size} lines (CAPPED -- raise with --limit, or narrow with --path/--stat)")
+    else println(s"=== ${lines.size} line(s)")
 
   // rm is the ONE destructive verb here, and it is safe BY CONSTRUCTION rather than by care: it removes
   // only files git already has a COMMITTED copy of, so every removal is recoverable with a checkout. The

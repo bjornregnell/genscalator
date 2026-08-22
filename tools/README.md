@@ -694,8 +694,17 @@ git fetch  --repo <dir> [--remote <name>]...             # remote-tracking refs 
                                                          # instead of a bare "up to date", lists unfetched remotes
 git show   --repo <dir> --ref <ref> --path <relpath> [--out <file>]   # READ-ONLY: file content at a ref
 git log    --repo <dir> [--grep P] [--co-author P] [--author P] [--committer P] [--since D] [--limit N] [--path <relpath>]...  # READ-ONLY search
+git diff   --repo <dir> [--ref <ref>] [--ref2 <ref>] [--staged] [--stat] [--path <relpath>]... [--limit N]  # READ-ONLY, capped
 git rm     --repo <dir> --path <relpath>...              # TRACKED files only, staged not committed
 ```
+**`diff`** is READ-ONLY and CAPPED (`--limit`, default 200) with truncation always announced, so it never
+wants a `| head` — the pipe is what trips the guard, and a tool that needs one cannot be allowlisted. It
+closes the most-cited gap in this toolbox: with no typed diff, "what did that commit change" forced either
+raw `git -C` or a `tt git show --out` plus an external `diff`, both outside what the guard can inspect.
+Modes: no ref = all uncommitted work (`diff HEAD`); `--staged` = index only; `--ref A` = what commit A
+itself changed (via `show`, so a root commit works where `A~1 A` would fail); `--ref A --ref2 B` = between
+two refs. `--path` (repeatable) narrows, `--stat` gives the summary alone. `--staged` with `--ref` is
+rejected rather than silently ignored.
 Exposes only verbs that cannot lose data — no reset/rebase/merge/clean/`--force`. **`rm` is the one
 destructive verb, and it is safe by CONSTRUCTION rather than by care**: it removes only files git already
 has a committed copy of, so every removal is recoverable with a checkout. It refuses untracked files
