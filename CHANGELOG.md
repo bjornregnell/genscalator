@@ -8,8 +8,23 @@ file before adopting a new version: it changes the agent's operating rules, so r
 
 ## Unreleased (v0.10.3 wave, in progress since 2026-08-16)
 
-### v0.10.4 candidates (2026-08-18/19)
+### v0.10.4 candidates (2026-08-18/19, extended 2026-08-22)
 
+- **`tt git diff`** (2026-08-22): the most-cited gap in the toolbox. With no typed diff, answering
+  "what did that commit change" forced either raw `git -C` or a `tt git show --out` plus an external
+  `diff` — both outside what the guard can inspect. READ-ONLY and CAPPED like `log` (`--limit`,
+  default 200) with truncation ALWAYS announced, so it never wants a `| head`; the pipe is what makes
+  a tool un-allowlistable, and a silently truncated diff that looks complete is worse than none.
+  Modes: no ref = all uncommitted work, `--staged` = the index, `--ref A` = what commit A changed
+  (routed through `show`, so a root commit works where `A~1 A` fails), `--ref A --ref2 B` = between
+  refs; `--path` repeatable, `--stat` for the summary alone. Bad combinations are refused, not ignored.
+- **`tt git rm`** (2026-08-22): retiring a generated file whose owner moved to another repo had no
+  typed shape at all, and a missing verb is exactly what makes an agent reach for raw `rm`, which the
+  guard cannot see. Safe by CONSTRUCTION rather than by care: it removes only files git already has a
+  committed copy of, so every removal is recoverable. Refuses untracked files (nothing to restore them
+  from), directories, globs, absolute paths and `..`; validates every path before removing any; stages
+  rather than commits. ⚠ **This makes `Bash(tt git *)` no longer purely non-destructive — pair a
+  blanket `tt` allow with an `ask` rule for `Bash(tt git rm *)`.**
 - **`tt gitinfo --files`** (issue-004): the paths behind the change COUNT, one per line, each labelled
   `staged` / `unstaged` / `both` / `untracked` / `conflict` with its raw porcelain code, grouped
   conflicts-first and untracked-last. Closes the gap that made a bare `git status --short` the only
