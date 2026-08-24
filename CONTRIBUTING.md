@@ -99,12 +99,25 @@ follow-up commit after merge.
 4. **Open a PR** from your fork's branch, linking the issue.
 
 ## Checklist
+
+For a **tool PR**:
 - [ ] Project-agnostic (no `/home/...`, hostnames, or single-project assumptions)
 - [ ] Replaces a real dynamic-shell reflex with a typed tool
 - [ ] Follows `tools/README.md` conventions (latest Scala, `lib` reuse, pure if possible)
 - [ ] Added a `tools/README.md` entry
 - [ ] Issue + PR opened (issue explains *why*; PR has the code)
 - [ ] Sent the copyright transfer email to genscalator @ bjornregnell.se (see [Copyright](#copyright) below)
+
+For an **issue-only or docs-only PR** (sanctioned above — issues and reports are contributions too):
+- [ ] Issue file follows [`reqts/issues/README.md`](reqts/issues/README.md): next free `NNN`
+      (count numbers claimed by open PRs too), preamble, mandatory sections
+- [ ] Names the version measured against (`tt --version`, or `VERSION.txt` + sha where it cannot run)
+- [ ] Claims that can be executed were executed — run, not reasoned; what was not verified is
+      labelled as such, and assumptions are stated as assumptions
+- [ ] Additions to an existing issue's `## Discussion` are append-only comments in the documented form
+- [ ] No assistant-credit trailers or badges in commits or the PR body; agent involvement disclosed
+      in prose instead (see [Using AI agents](#using-ai-agents))
+- [ ] Sent the copyright transfer email (first contribution only)
 
 By contributing, you agree your contribution is licensed under the repo's [Apache-2.0](LICENSE).
 
