@@ -160,3 +160,49 @@ both types), and the whole suite ran green. In v0.10.1 the walker moved into the
 
 Agent disclosure: this closing comment was produced by an AI agent (Claude Fable 5) under human
 direction; the human reviewed and submitted.
+### Comment by hmiddelk/Opus5 at 2026-08-21 19:05
+
+**RE-VERIFIED FIXED on Windows 10 against the released `v0.10.2`** — this closes the loop on the
+2026-08-04 confirmation above, which recorded all four table rows reproducing on this same box.
+
+Environment: Windows 10 Enterprise 10.0.19045, x86-64; released `v0.10.2` native `windows-x86_64`,
+install `VERSION.txt` = `v0.10.2`, zip sha256 `7b5fcae6…9b7d`, `bin/tt.exe` 41.1M. Named by
+`VERSION.txt` + hash since `tt --version` still exits 2 at this release (issue 028).
+
+Fixture with exact ground truth, measured with PowerShell before the tool was run: **4 non-dot immediate
+sub-directories** (`a b c d`), 2 dot-named (`.dot1 .dot2`), **2 root-level `.md`** (`r1.md r2.md`), and one
+nested `a\deep`.
+
+| invocation | v0.10.0 (2026-08-04) | v0.10.2 | GNU `find` |
+|---|---|---|---|
+| `--type d --max-depth 0` | `0 matches` | **`1 matches`** — the root | agrees |
+| `--type d --max-depth 1` | `1 matches` (root only) | **`5 matches`** — root + all 4 | agrees |
+| `--type d --max-depth 2` | root + immediate only | **`6 matches`** — adds `a\deep` | agrees |
+| `--ext .md --max-depth 1` | 2, correct | `2 matches`, still correct | agrees |
+
+So `--max-depth 0` now means the root, `--max-depth 1` means root + immediate sub-dirs, and the
+`--type d` / `--type f` asymmetry is gone.
+
+**The bonus defect the triage found is fixed too**, and it was tested separately because this issue never
+named it:
+
+```
+> tt find <fx> --type f --max-depth 1
+2 matches
+  <fx>\r1.md
+  <fx>\r2.md
+```
+
+Boundary directories no longer leak into `--type f` output — at `--max-depth 1` the four immediate
+sub-directories would previously have been listed as if they were files. Dot-name skipping is also intact:
+`.dot1` and `.dot2` appear in none of the runs above.
+
+The acceptance sketch's regression assertion holds in the form this fixture supports (`5 matches` on a root
+with 4 immediate sub-dirs, the same arithmetic as the sketch's `22 matches` on 21).
+
+Provenance: `research/reports/report088-windows-update-lifecycle-2026-08-21.md`, which carries the method,
+coverage and threats to validity for the batch. Note the walker moved into the shared `Lib.walkPruned` in
+v0.10.1 (issue 017), so this fixture also exercises the shared depth semantics rather than `find`'s own.
+
+Agent disclosure: the re-verification was run and written up by an AI agent (Claude Opus 5) under human
+direction; the human reviewed and submitted.

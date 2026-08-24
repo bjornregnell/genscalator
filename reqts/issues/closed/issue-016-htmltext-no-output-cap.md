@@ -107,3 +107,42 @@ under-cap silence, bad values, and the uncapped default. Ready to close on the m
 
 Agent disclosure: this comment was produced by an AI agent (Claude Fable 5) under human direction;
 the human reviewed and submitted.
+### Comment by hmiddelk/Opus5 at 2026-08-21 19:05
+
+**RE-VERIFIED FIXED on Windows 10 against the released `v0.10.2`** — `68e3545` shipped exactly what the
+fix sketch described, and the 2026-08-04 measurement above (1000 lines, 0 truncation notices) is answered.
+
+Environment: Windows 10 Enterprise 10.0.19045; released `v0.10.2` native `windows-x86_64`, install
+`VERSION.txt` = `v0.10.2`, zip sha256 `7b5fcae6…9b7d`.
+
+Synthetic saved page as before — 500 `<p>` paragraphs, 38 422 B:
+
+```
+> tt htmltext big.html                       # uncapped default, as documented
+1498 lines emitted, 0 truncation notices
+
+> tt htmltext big.html --cap 40
+... 40 lines of extracted text ...
+=== truncated: showing 40 of 1498 lines      # 41 lines total
+
+> tt htmltext big.html --cap notanumber
+htmltext: --cap needs a non-negative integer, got 'notanumber'        # exit 2
+```
+
+Three things checked rather than assumed:
+
+* **The disclosed total is the true total.** `1498` in the truncation notice equals the line count measured
+  from the uncapped run, so the `=== ` line is not reporting an estimate. That is the specific property the
+  acceptance sketch asked for and the specific thing the v0.10.0 output could not offer at all.
+* **Truncation is never silent**, and conversely an under-cap run stays quiet — no `===` line appears when
+  the output fits.
+* **The default remains uncapped**, which the sketch explicitly permitted provided it is documented; the
+  help documents it.
+
+(1498 rather than the 1000 recorded on 2026-08-04 because this fixture's filler differs — the verdict rests
+on internal consistency between the reported and measured totals, not on matching the earlier number.)
+
+Provenance: `research/reports/report088-windows-update-lifecycle-2026-08-21.md`.
+
+Agent disclosure: the re-verification was run and written up by an AI agent (Claude Opus 5) under human
+direction; the human reviewed and submitted.

@@ -235,3 +235,90 @@ another day; this issue closes when that passes.
 
 Agent disclosure: this comment was produced by an AI agent (Claude Fable 5) under human
 direction; the human reviewed and submitted.
+### Comment by hmiddelk/Opus5 at 2026-08-21 19:05
+
+**REAL-WINDOWS VERIFICATION RUN — the drafted checklist PASSES on hardware.** This is the close condition
+the fix comment above left open ("deferred by the maintainer to another day; this issue closes when that
+passes"), and the v0.10.2 release notes name it as the one item still outstanding. Reporting it rather than
+closing: the move to `closed/` is the maintainer's act.
+
+Environment: Windows 10 Enterprise 10.0.19045 (build 19045), x86-64 (AMD64), PowerShell 5.1. Released
+`v0.10.2` native `windows-x86_64`, install `VERSION.txt` = `v0.10.2`, zip sha256
+`7b5fcae61f2cae8da84decd82c7a2420a8a078aef08cf03b14cf730896ae9b7d` (14 059 469 B, 30 entries),
+`bin/tt.exe` 41.1M — so this exercises the shipped `8fb28af` fix as a user receives it, not a checkout.
+Named by `VERSION.txt` + hash because `tt --version` still exits 2 at this release (issue 028).
+
+The five checklist items, each against independently measured ground truth:
+
+**1. found** — the bare command word resolves through PATHEXT:
+
+```
+> tt which tt
+tt: 1 in PATH
+  C:\Users\<user>\.genscalator\bin\tt.EXE
+    PE executable  41.1M  n/a  2026-08-21T13:41
+```
+exit **0**. Previously `not found in PATH (36 dirs; not a bash builtin either)`, exit 2.
+
+**2. entry-count** — truthful. `$PATH` on this box holds **36** non-empty `;`-separated entries (counted
+with PowerShell, independent of the tool):
+
+```
+> tt which zzz-no-such-command-zzz
+zzz-no-such-command-zzz: not found in PATH (36 dirs)          # exit 2
+```
+36 reported == 36 real. The old `split(':')` would have yielded **37** here (36 entries carry 36 colons),
+so the numbers separate the fixed and broken code. Because 36-entries/36-colons is a coincidence on this
+box and therefore one bit weaker than the 35/36 case in the original report, the decisive test was run
+too — `PATH` shrunk to a single entry:
+
+```
+> $env:PATH='C:\Users\<user>\.genscalator\bin'; tt which zzz-no-such-command-zzz
+zzz-no-such-command-zzz: not found in PATH (1 dirs)           # exit 2
+```
+**`1 dirs` for one entry** (was `2 dirs`). That is the separator fix, isolated from PATHEXT.
+
+**3. drive-letter** — survives: `C:\Users\<user>\.genscalator\bin\tt.EXE`, not the old drive-stripped
+`\Users\<user>\...`.
+
+**4. kind** — `PE executable`, where v0.10.0 reported `data (unknown magic)`. The mode column reads `n/a`
+rather than a bare `?`, and the `not a bash builtin either` clause is correctly omitted.
+
+**5. not-found** — a genuinely absent command still reports absent with exit 2 (above), so the PATHEXT
+work introduced no false positive. And the false negative that opened this issue is gone:
+
+```
+> tt which git
+git: 1 in PATH
+  C:\Users\<user>\AppData\Local\Programs\Git\cmd\git.EXE
+    PE executable  43.1K  n/a  2021-03-27T07:47
+```
+
+Also verified, from the fix comment's other claims: a token with a drive prefix takes the **path branch** —
+`tt which C:\Users\<user>\.genscalator\bin\tt.exe` prints the file's facts under a bare
+`C:\...\tt.exe:` header with **no `in PATH` label**, which is the false statement the cosmetic list
+named.
+
+**Not verified, stated plainly:** the **POSIX no-op regression** half of the checklist. It cannot be run
+on Windows — it needs a POSIX box asserting the fix changed nothing where `pathSeparatorChar == ':'`.
+The pure `splitPathString` unit tests in `which.test.scala` cover the `';'`-drive-lettered case on any
+platform, but the POSIX regression is a separate confirmation and this comment does not supply it.
+
+**Two cosmetic residues**, offered for the closing comment rather than a new issue:
+
+* **The printed filename carries the PATHEXT probe's casing, not the file's.** `tt.EXE` and `git.EXE`
+  above; the files on disk are `tt.exe` and `git.exe`. Harmless on NTFS, but the acceptance sketch asked
+  it to *"report the file actually found (`tt.exe`)"*, and a path echoed into a case-sensitive context or
+  a string comparison would be wrong.
+* **`1 dirs`** — plural agreement in the single-entry case. One character.
+
+Consequence for issue 019, which was made conditional on this one: the ordering constraint has held.
+022's fix shipped in v0.10.1 and 019's doc fix (`7add972`, 2026-08-16) postdates the v0.10.2 cut, so a
+Windows reader will meet the prescribed `tt which tt` ritual only once the ritual works. Confirmed
+separately in 019's discussion.
+
+Full provenance — method, the command log, coverage (8 of 45 tools invoked; 37 untested on Windows) and
+threats to validity — is in `research/reports/report088-windows-update-lifecycle-2026-08-21.md`.
+
+Agent disclosure: the verification was run and written up by an AI agent (Claude Opus 5) under human
+direction; the human reviewed and submitted.

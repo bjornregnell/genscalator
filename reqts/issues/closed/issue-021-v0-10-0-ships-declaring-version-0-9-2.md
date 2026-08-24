@@ -196,3 +196,55 @@ review exist, and the honest record of v0.10.0's 0.9.2 metadata stands in the CH
 
 Agent disclosure: this closing comment was produced by an AI agent (Claude Fable 5) under human
 direction; the human reviewed and submitted.
+### Comment by hmiddelk/Opus5 at 2026-08-21 19:05
+
+**RE-VERIFIED FIXED at the `v0.10.2` tag, from the user side on Windows 10 — every carrier agrees, and a
+tester can finally name their version.** This answers the 2026-08-04 comment above, which recorded six
+carriers disagreeing on one machine.
+
+Environment: Windows 10 Enterprise 10.0.19045; fresh install of released `v0.10.2` native
+`windows-x86_64` plus `claude plugin update genscalator@bjornregnell`.
+
+Carriers read at the tag and on the box:
+
+| carrier | value |
+|---|---|
+| `.claude-plugin/plugin.json` at `v0.10.2` | `0.10.2` |
+| `.claude-plugin/marketplace.json` at `v0.10.2` | `0.10.2` |
+| in-repo `VERSION.txt` at `v0.10.2` | `0.10.2` |
+| `AGENTS.md` operating-rules line at `v0.10.2` | `**genscalator v0.10.2**` |
+| `~\.genscalator\VERSION.txt` (native install, CI-stamped) | `v0.10.2` |
+| plugin cache `VERSION.txt` | `0.10.2` |
+| newest released `CHANGELOG.md` section | `## v0.10.2` |
+
+Compare the 2026-08-04 table, where five carriers said `0.9.2` against a `v0.10.0` install.
+
+Three specific acceptance items checked:
+
+* **The `v`-prefix question is settled, not merely worked around.** The close comment's decision — the `v`
+  belongs to the git tag alone, in-repo `VERSION.txt` is bare — is visible in exactly that shape above:
+  `0.10.2` in the repo, `v0.10.2` stamped into the install from the tag name. The report from this batch
+  initially flagged the pair as a mismatch and **withdrew it** on reading this issue's close; recorded
+  because a future reader may make the same wrong inference.
+* **The release notes users are told to review exist.** `## v0.10.2` is present, and so is the backfilled
+  `## v0.10.0` section.
+* **The honest record stands.** The v0.10.1 section still opens with the note that v0.10.0 shipped with
+  every in-repo version declaration reading 0.9.2 and no notes. The tag is immutable; the record is right.
+
+**One descendant found, filed separately as issue 045.** The numbers now agree and the *content* still can
+not be identified: the marketplace tracks the `main` branch, so `claude plugin update` installed a tree
+declaring `0.10.2` that is **21 commits and 79 files ahead of the `v0.10.2` tag** — including
+`tools/which.scala` and `tools/versionlib.scala`. On this box the plugin's `tools/` was therefore *newer*
+than the released binary under test. That is this issue's problem one level up, and it is the reason every
+verdict in this batch was taken from `tt.exe` rather than the plugin's `tools/tt`. The release gate added
+here is sound and fired green for v0.10.1 and v0.10.2; it simply gates the tag, not a branch-tracking
+consumer.
+
+The "loses its denominator" argument is also answered in practice: this batch is the second report able to
+name its artifact by version, and it still had to reach for `VERSION.txt` + sha256 because `tt --version`
+does not exist at this release (issue 028, fix on `main`).
+
+Provenance: `research/reports/report088-windows-update-lifecycle-2026-08-21.md`.
+
+Agent disclosure: the re-verification was run and written up by an AI agent (Claude Opus 5) under human
+direction; the human reviewed and submitted.

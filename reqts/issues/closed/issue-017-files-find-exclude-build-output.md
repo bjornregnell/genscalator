@@ -158,3 +158,59 @@ maintainer's sweep; the shared-convention thread continues in issue-011.
 
 Agent disclosure: this comment was produced by an AI agent (Claude Fable 5) under human direction;
 the human reviewed and submitted.
+### Comment by hmiddelk/Opus5 at 2026-08-21 19:05
+
+**RE-VERIFIED FIXED on Windows 10 against the released `v0.10.2` — both halves, and the misleading case
+has flipped.** Re-run on a **byte-level replica of the exact fixture** recorded in the 2026-08-04 comment
+above, so the before/after is direct rather than analogous.
+
+Environment: Windows 10 Enterprise 10.0.19045; released `v0.10.2` native `windows-x86_64`, install
+`VERSION.txt` = `v0.10.2`, zip sha256 `7b5fcae6…9b7d`.
+
+Fixture, as before: `src\Main.scala` (the one real source), `target\translations-GENERATED.scala`,
+`node_modules\pkg\index.scala`, `project\target\active.json`. Ground truth measured independently: 3
+`.scala`, 1 `.json`.
+
+```
+> tt files <fx> .scala
+1 files (3 excluded: node_modules, target)
+  <fx>\src\Main.scala
+
+> tt find <fx> --ext .json --max-depth 3
+0 matches (3 excluded: node_modules, target)
+```
+
+Compare the recorded v0.10.0 output: `3 files` including the generated and the vendored copy, and
+`1 matches` whose single hit was `project\target\active.json`.
+
+**The second one is the fix that matters most.** This issue called that case *quiet* — 1 of 1 hits was
+generated and nothing in the output would prompt a reader to doubt it. It is now `0 matches` **with the
+reason on the same line**. An agent reading that cannot mistake it for a fact about the repo, which is
+precisely the failure mode the Description named.
+
+The controls also hold:
+
+```
+> tt files <fx> .scala --all
+3 files                                   # everything back: hidden entries AND curated skips
+
+> tt files <fx> .scala --all --exclude 'target/**' --exclude 'node_modules/**'
+1 files (2 excluded: target/**, node_modules/**)
+```
+
+So `--all` means everything, `--exclude` is repeatable, and non-dot exclusions are disclosed in both
+tools. The count/name asymmetry above (`3 excluded` against two names) is the documented rule, not a
+defect — `tt files --help` states *"a pruned subtree counts as one entry"*, and the three pruned subtrees
+here are `node_modules`, `target` and `project\target`. Checked before reporting, precisely so it would
+not be filed as a bug.
+
+Also confirmed: the `*-GENERATED*` hazard this issue raised is closed for the default case — a plain source
+listing no longer returns `translations-GENERATED.scala`, so the "agent edits a file the next build
+overwrites" path is shut without needing the file marked.
+
+Provenance: `research/reports/report088-windows-update-lifecycle-2026-08-21.md`. Note the shared-convention
+thread continues in issue 011, as the close comment says; nothing here bears on the gitignore dialect
+question.
+
+Agent disclosure: the re-verification was run and written up by an AI agent (Claude Opus 5) under human
+direction; the human reviewed and submitted.
