@@ -54,6 +54,15 @@ class VersionSuite extends munit.FunSuite:
     assertEquals(found.distinct, Seq(version))
   }
 
+  test("marketplace.json pins the plugin source to VERSION's release tag") {
+    // The plugin channel ships the RELEASED tree, not main (issue 045): the source must carry
+    // ref vVERSION plus an exact sha, so the version number identifies what users receive.
+    // Bump ref AND sha at each release cut, together with VERSION.
+    val mp = os.read(root / ".claude-plugin" / "marketplace.json")
+    assert(clue(mp).contains(s"\"ref\": \"v$version\""))
+    assert(clue(mp).contains("\"sha\": \""))
+  }
+
   test("AGENTS.md states the same operating-rules version") {
     // AGENTS.md is what a vendored copy carries into another repo, so a stale number there is the
     // one that misleads an agent about which rules it is running under.

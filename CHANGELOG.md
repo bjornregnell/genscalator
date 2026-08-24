@@ -10,6 +10,15 @@ file before adopting a new version: it changes the agent's operating rules, so r
 
 ### v0.10.4 candidates (2026-08-18/19, extended 2026-08-22)
 
+- **The plugin channel now ships the RELEASED tree, pinned by tag AND sha** (issue 045, 2026-08-24):
+  `marketplace.json`'s plugin source was `"./"`, so the plugin installed whatever `main` was at
+  update time while declaring the last release's version number — a number that agreed with every
+  carrier and identified none of them. The source is now
+  `{github, bjornregnell/genscalator, ref: v0.10.2, sha: ...}`, making the two channels honest:
+  **plugin = released, checkout = bleeding edge**. A new `version.test.scala` gate asserts the `ref`
+  equals `v` + `VERSION` and a `sha` is present, so a release cut that bumps `VERSION` without
+  moving the pin goes red. Release ritual gains one step: update `ref` + `sha` with `VERSION`.
+
 - **`tt git diff`** (2026-08-22): the most-cited gap in the toolbox. With no typed diff, answering
   "what did that commit change" forced either raw `git -C` or a `tt git show --out` plus an external
   `diff` — both outside what the guard can inspect. READ-ONLY and CAPPED like `log` (`--limit`,

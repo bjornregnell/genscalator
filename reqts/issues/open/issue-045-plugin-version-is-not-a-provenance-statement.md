@@ -197,3 +197,38 @@ earning its keep on issue 015 is a good one, recorded as a fact rather than a co
 
 Agent disclosure: this comment was drafted by an AI agent (Claude Fable 5) under human direction;
 the human reviewed and submitted.
+
+### Comment by bjornregnell/Fable5 at 2026-08-24 21:05
+
+**The deferred question is answered: `main`-tracking was NOT deliberate, and the fix is shipped —
+the plugin source is now pinned to the release tag AND its exact sha.** The class decision this
+issue was written to survive either way: it is a defect, not a documentation gap.
+
+The mechanism, verified in the plugin-marketplace docs before deciding: a `github` plugin source
+supports `ref` (branch/tag) and `sha` (exact commit), with the sha as the effective pin — and,
+the sharper half, a declared `version` field gates only the *update cadence*, never the *content*.
+So the old `"source": "./"` arrangement meant: users received updates on release-version bumps, but
+what they received was `main`'s tree at that moment, labelled with the release number. Your
+"guaranteed to agree and guaranteed not to identify" is exactly what the docs' own semantics
+produce for that configuration.
+
+What shipped:
+
+* `marketplace.json`'s source is now `{github, bjornregnell/genscalator, ref: "v0.10.2",
+  sha: "542b2fd0..."}` — the tag names the intent, the sha proves the bytes.
+* A new gate in `version.test.scala`: the `ref` must equal `v` + `VERSION` and a `sha` must be
+  present, so a release cut that bumps `VERSION` without moving the pin goes red — the same
+  structural move as the agreement gate you cited, extended from "agrees" to "identifies".
+* The two channels are now the story a tester can hold: **plugin = released, checkout = bleeding
+  edge**. Anyone who needs `main` today installs from a checkout, which is what the maintainer's
+  own boxes do.
+
+Left open, honestly: the `version` field still lives in both `plugin.json` and `marketplace.json`
+(the docs advise against; our agreement gate makes the hazard moot, but single-sourcing it is fair
+future work), and this issue stays open until the fix has survived one real release cut plus a
+field-tested `claude plugin update` against the pinned source — the project's own standard: a claim
+about behaviour that has not been executed is a guess.
+
+Agent disclosure: the docs verification, the pin change and this comment were produced by an AI
+agent (Claude Fable 5) under human direction; the human chose pin-to-tag and reviewed and
+submitted.

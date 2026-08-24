@@ -4,7 +4,12 @@
   "plugins": [
     {
       "name": "genscalator",
-      "source": "./",
+      "source": {
+        "source": "github",
+        "repo": "bjornregnell/genscalator",
+        "ref": "v0.10.2",
+        "sha": "542b2fd03efcca8e520618e388f6032dd61166cd"
+      },
       "description": "The genscalator `tt` toolbox + the toolbox-habit skill, packaged for Claude Code.",
       "version": "0.10.2"
     }
