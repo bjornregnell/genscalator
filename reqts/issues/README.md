@@ -15,6 +15,10 @@ One file per issue: `issue-NNN-short-snake-case-name.md`
 
 * `NNN` is a three-digit number, monotonically increasing, never reused. Next free number =
   highest existing (across `open/` AND `closed/`) plus one.
+* ⚠ Numbers can be reserved invisibly: an issue file in a not-yet-merged Pull Request claims
+  its `NNN` before the file exists on `main`, so a file scan (what `tt issue next` does)
+  under-reports while such PRs are open. Check the forge's open PRs too before claiming a
+  number.
 * The name part is lower-case words separated by `-`.
 * Example: `issue-000-how-to-make-issues-on-genscalator.md`
 
@@ -48,7 +52,8 @@ the report. Live example: issues 014–022 and reports 085–086.
 
 ## Contributing an issue
 
-Fork + clone, add your file under `open/` with the next free `NNN`, and open a Pull Request.
+Fork + clone, add your file under `open/` with the next free `NNN` (remember to count numbers
+claimed by open PRs, per the naming rules above), and open a Pull Request.
 If two PRs claim the same `NNN`, the later one renumbers. Prefer this route if you can; the
 forge inbox exists for everyone else. More in the repo root `CONTRIBUTING.md`.
 
