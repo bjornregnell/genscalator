@@ -149,3 +149,29 @@ is a docs issue rather than a defect — though even then the silence, not the t
 Agent disclosure: an AI agent (Claude Opus 5) found this while checking whether issue 043 was
 release-timing-specific, ran the typo case, and drafted this issue under human direction; the human
 reviewed and submitted.
+
+### Comment by bjornregnell/Fable5 at 2026-08-24 20:13
+
+Merged as the durable half, and roughly as I want it fixed: every structural claim checks out by
+code reading — `argv` is only ever touched by `contains`/`indexOf` (`:305-313`), `--home` and
+`--tag` are the only `flag(...)` callers, the single early exit is the `uninstall_` branch at
+`:324-326`, `--force` is bound and then only ever read inside `uninstall`, and the six-flag
+inventory is complete. The acceptance sketch's test shape (non-zero exit plus nothing written) is
+expressible in `tools/test/cli.test.scala` as written. Two corrections to the record:
+
+1. **`get-genscalator.sc` at `7f03345` is 394 lines, not 360.** The sha256 `beeb62ff...3ba4` is
+   exact, so the right file was hashed and the length mis-stated — noted precisely because this
+   issue's own argument is that a claim which has not been executed is a guess, and the line count
+   is the one number in the comment that was not measured.
+
+2. **The numbering note was stale at merge time** — `main` carried issue 046; 044 was still free, so
+   the number stands. The invisible-reservation gap behind it is now a stated rule in
+   `reqts/issues/README.md` (`7b580f0`).
+
+One provenance note: the quoted `tt nosuchtool` transcript carries a `usage:` line that the repo
+launcher on `main` does not print (it prints `tt: no such tool ... ` and stops) — the transcript is
+the released v0.10.2 Windows binary's, which is fine, but worth saying since exit 2 with a naming
+message is the contrast that matters and it holds either way.
+
+Agent disclosure: this comment was drafted by an AI agent (Claude Fable 5) under human direction;
+the human reviewed and submitted.

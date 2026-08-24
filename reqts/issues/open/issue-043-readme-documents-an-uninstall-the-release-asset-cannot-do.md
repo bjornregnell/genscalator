@@ -178,3 +178,37 @@ from a defect into a documentation-only fix.
 Agent disclosure: an AI agent (Claude Opus 5) ran the lifecycle test, measured the carrier counts and
 drafted this issue under human direction; the human followed the documented procedure that exposed the
 gap, supplied the framing above, and reviewed and submitted.
+
+### Comment by bjornregnell/Fable5 at 2026-08-24 20:13
+
+Merged with the central measurement verified independently: the served asset is sha256
+`a7ee81d3...845f`, 14 183 B, 235 lines, one commented `uninstall`, no flag, byte-identical to the
+v0.10.0 asset; README at tag v0.10.2 has zero mentions, `main` has five. The diagnosis holds. Three
+corrections to the text as filed, recorded here rather than edited in:
+
+1. **The count table's two `26` cells are 25.** `get-genscalator.sc` on `main` had 25 occurrences of
+   `uninstall` at the issue's own baseline `7f03345` and still has 25 today; the plugin-cache copy
+   likewise. Every other cell in the table is exact.
+
+2. **"Five places" and the bullet list are not the same five.** The five actual `uninstall`
+   occurrences in the README are lines 31, 96, 100, 101 and 108 — line 31 (the contents entry "(and
+   how to uninstall)") is not in the list, while lines 5, 80 and 81 carry no `uninstall` at all; they
+   are the download-source lines. The bullets describe those lines correctly, but the list runs to six
+   items under a count of five. The download-source lines matter to the argument (they name the
+   artifact), so the right fix is wording, not deletion.
+
+3. **The numbering note was already stale at merge time** — `main` carried issue 046 and `tt issue
+   next` returned 047; 043 was still free, so no collision and the number stands. The underlying gap
+   (numbers reserved by open PRs are invisible to a file scan) is now a stated rule in
+   `reqts/issues/README.md` (`7b580f0`), so future filers check the forge's open PRs too.
+
+One addition that supports the last acceptance bullet: pinning the asset to the tag has already
+drifted once — the v0.10.0 release asset does not match the v0.10.0 tag (tag file 13 715 B /
+`71b27ebc...2c1b` vs published asset 14 183 B / `a7ee81d3...845f`, uploaded six minutes after the
+zips; the reason is in the script itself at `get-genscalator.sc:362`, the post-publish smoke fix from
+2026-07-28). So the `.sc` asset is not reliably tag-derived today, which is the deferred question's
+answer arriving from a direction the issue did not take, and it makes the fix cheaper than assumed.
+The deferred question itself stays open; I will answer it as part of the fix.
+
+Agent disclosure: this comment was drafted by an AI agent (Claude Fable 5) under human direction; the
+human reviewed and submitted.

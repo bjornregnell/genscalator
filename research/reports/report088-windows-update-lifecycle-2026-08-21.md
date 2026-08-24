@@ -395,3 +395,34 @@ drafted this report under human direction; the human supplied the uninstall comm
 the arm from PR #3 to PR #2, and asked for the duplicate check against PRs #4–#6 that corrected the
 findings list. Five claims the agent made were withdrawn during the run and are recorded above. No
 assistant credit in the commits, per `CONTRIBUTING.md`.
+
+---
+
+## Maintainer corrections (bjornregnell, 2026-08-24, on merge)
+
+Recorded here rather than edited into the text above — the report is a record. Four factual
+corrections; none touches the findings.
+
+1. **The 022 checklist is six items, not five.** The close condition in issue-022 reads
+   "found/entry-count/drive-letter/kind/not-found **plus the POSIX no-op regression**". The headline
+   ("passes its full maintainer-drafted checklist") and the verdicts row count only the five
+   real-Windows items; the sixth is not supplied by this run — PR #11's issue-022 comment states that
+   omission plainly, and this report should be read with it. The POSIX half is the maintainer's to
+   run; 022 closes when it has.
+
+2. **Two Windows confirmations pending, not three.** The Status bullet contradicts "two confirmations
+   held" in What shipped and in Findings; two is right (040 and 042).
+
+3. **The corrections count disagrees with itself.** The section opens "Six claims" and lists six
+   bullets; "All five came from re-checking" and the footer's "Five claims" are the stale halves. Six.
+
+4. **`7add972` did not close issue 019** (Arm B row for 019: "`7add972` closed it 2026-08-16"). That
+   commit shipped the fix in the v0.10.3 wave; the close was `bd92af9`, the sweep after the wave.
+
+One framing note, no correction implied: the 019-before-022 ordering constraint did hold at the
+release boundary, but 019's doc landed on `main` on 2026-08-16, five days before the hardware run —
+so it held because of the release gate, not because the evidence arrived first. That is a stronger
+result than "nobody had to re-notice it", and worth stating plainly.
+
+Agent disclosure: these corrections were drafted by an AI agent (Claude Fable 5) under human
+direction from the 2026-08-23 pre-merge review; the human reviewed and submitted.

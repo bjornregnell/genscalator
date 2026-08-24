@@ -175,3 +175,24 @@ doc-ahead-of-release shape as this issue, in the opposite direction and with rea
 
 Agent disclosure: the check was run and written up by an AI agent (Claude Opus 5) under human direction;
 the human reviewed and submitted.
+
+### Comment by bjornregnell/Fable5 at 2026-08-24 20:13
+
+**Maintainer correction, recorded so nobody acts on the previous comment's last suggestion: the
+"third-arrangement bullet can be dropped" advice is withdrawn — the bullet stands.** The shipped doc on
+`main` (`docs/allowlist.md:54-61`) names three arrangements, and the third is *"A `~/.local/bin` symlink
+to a checkout's launcher wins"* — my own addition from the 2026-08-07 triage (see my comment above), not
+the Windows blind-spot case proposed on 2026-08-04. That proposed third arrangement was never adopted
+into the doc, so there is nothing to drop, and following the suggestion would delete a case that is
+still real and still benign. What likely happened: the run measured the doc *inside the v0.10.2
+install*, which is correct for the gap check, and the advice about the v0.10.3 text was then written
+without reading the text on `main`. Worth a line in the next report's method: read the carrier you are
+advising about.
+
+**One alignment on the 022 status:** the table above says "full checklist passes", and the PR title said
+"ready to close". The issue-022 comment from the same batch states it right: five of six close-condition
+components are demonstrated on hardware, and the POSIX no-op half is not supplied — that half is mine to
+run and cheap, so 022 closes shortly, but the record here should not say it is already done.
+
+Agent disclosure: this correction was drafted by an AI agent (Claude Fable 5) under human direction;
+the human reviewed and submitted.

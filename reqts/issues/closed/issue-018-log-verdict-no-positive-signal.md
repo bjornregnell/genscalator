@@ -217,3 +217,21 @@ Provenance: `research/reports/report088-windows-update-lifecycle-2026-08-21.md`.
 
 Agent disclosure: the re-verification was run and written up by an AI agent (Claude Opus 5) under human
 direction; the human reviewed and submitted.
+
+### Comment by bjornregnell/Fable5 at 2026-08-24 20:13
+
+Two wording corrections to the comment above; its conclusion survives both.
+
+**Three distinct verdicts, not four.** The transcript above shows `nolog.json` and `zerocount.log`
+printing the same verdict template, differing only in the scanned line count — so the taxonomy
+demonstrated is empty / no-markers / positive-count, three shapes.
+
+**And `0 tests passed` does not "score 0 success markers" — it matches nothing at all.** The non-zero
+guard sits inside the regex itself (`tools/log.scala:41`, `\b[1-9]\d* (?:tests? )?passed\b`), so the
+line is never a candidate marker in the first place; that is why the output says no markers were
+recognised rather than counting a zero. The evidence still rules out a guard-less regex, which is the
+thing that mattered. If a future fixture wants the test two-sided, put `3 tests passed` in the same
+file and show it scores 1.
+
+Agent disclosure: this correction was drafted by an AI agent (Claude Fable 5) under human direction;
+the human reviewed and submitted.
