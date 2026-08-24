@@ -1,6 +1,8 @@
 # Issue 022: `tt which` splits `$PATH` on `':'`, so it is broken on Windows — plus no PATHEXT and no PE magic
 
-> status: open · labels: toolbox, which, windows, portability, agent-trust · summary: `which.scala:98`
+> status: closed 2026-08-24, fixed by `8fb28af` (shipped v0.10.1), Windows half verified on hardware
+> 2026-08-21 (report 088), POSIX no-op half verified 2026-08-24 (closing comment) · labels: toolbox,
+> which, windows, portability, agent-trust · summary: `which.scala:98`
 > splits `$PATH` on `':'`, but Windows uses `';'` and every entry starts `C:` — so the entry list is
 > shredded, the reported dir count roughly doubles, and a command is found only if it happens to sit in
 > the LAST `$PATH` entry (with its drive letter stripped). Bare `tt which tt` returns a confident
@@ -322,3 +324,59 @@ threats to validity — is in `research/reports/report088-windows-update-lifecyc
 
 Agent disclosure: the verification was run and written up by an AI agent (Claude Opus 5) under human
 direction; the human reviewed and submitted.
+
+### Comment by bjornregnell/Fable5 at 2026-08-24 20:27 — CLOSING
+
+**The sixth close-condition component is now supplied, so all six are demonstrated and this issue
+closes.** The 2026-08-21 hardware run above covered the five real-Windows items against released
+v0.10.2 and stated plainly that the POSIX no-op regression was not its to run. Here it is, on Linux
+x86_64 against current `main`:
+
+**1. The pure unit tests:** `WhichUnitSuite` — **10 total, 0 failed** (Scala 3.9.0-RC4, JVM 21) —
+including the tests written for exactly this half: *"splitPathString on `':'` keeps POSIX behaviour,
+skipping empty entries"*, the single-entry case, and the UNC-entry case the triage comment asked for.
+
+**2. The live transcript**, all POSIX behaviours intact:
+
+```
+$ tt which tt
+tt: 2 in PATH (first wins)
+  /home/<user>/.local/bin/tt
+    -> /home/<user>/git/hub/bjornregnell/genscalator/tools/tt
+    script  #!/usr/bin/env bash  5.0K  rwxrwxr-x  2026-08-16T14:46
+  /home/<user>/.claude/plugins/cache/bjornregnell/genscalator/0.9.2/bin/tt (shadowed)
+    script  #!/usr/bin/env bash  702B  rwxrwxr-x  2026-07-27T15:50
+
+$ tt which git
+git: 2 in PATH (first wins)
+  /usr/bin/git
+    ELF binary (64-bit)  3.9M  rwxr-xr-x  2025-07-02T20:23
+  /bin/git (shadowed)
+    ELF binary (64-bit)  3.9M  rwxr-xr-x  2025-07-02T20:23
+
+$ tt which zzz-no-such-command-zzz
+zzz-no-such-command-zzz: not found in PATH (21 dirs; not a bash builtin either)   # exit 2
+```
+
+The entry count is truthful against independent ground truth: `$PATH` on this box holds **21**
+non-empty `':'`-separated entries, counted by hand from the raw variable — 21 reported == 21 real.
+Bare-word resolution, shadow detection, the symlink chain, ELF kind, the POSIX mode column and the
+bash-builtin clause (correctly present here, correctly omitted on Windows) all behave as before the
+fix. Bonus: the winner in the first transcript is the `~/.local/bin` symlink arrangement — issue
+019's third field-evidenced case, exercising the chain display for real.
+
+**One assumption recorded, folded from the pre-merge review:** the hardware comment's "36 entries
+carry 36 colons" arithmetic holds only while every entry is drive-lettered — a UNC entry shifts it
+(the same caveat as my triage comment's "35 colons" note). It does not affect the verdict because the
+single-entry `1 dirs` control is decisive and the comment says so, but it is an assumption, not a
+theorem, and is now stated as one.
+
+**The two cosmetic residues go where the hardware comment suggested:** the `tt.EXE` probe-casing echo
+and the `1 dirs` plural are filed together as **issue 047**, since the acceptance sketch here did ask
+for the file actually found.
+
+Thanks Hans for the hardware half — the discipline of reporting rather than closing, and of naming
+the component you could not run, is what let this close be clean. Moving to `closed/`.
+
+Agent disclosure: the POSIX verification was run and this comment drafted by an AI agent (Claude
+Fable 5) under human direction; the human reviewed, decided the close, and submitted.
