@@ -3,10 +3,14 @@
 > status: open 2026-08-20 · labels: installer, uninstall, release, alpha · measured against: v0.10.2
 > (from `.genscalator/VERSION.txt`; `tt --version` postdates this release, see issue 028) · summary:
 > `--uninstall`'s well-known-paths fallback lists `skills`/`tools`/`plugins`, which the release
-> workflow deliberately does NOT ship, and omits `reqts`, which it deliberately DOES — so
-> uninstalling a pre-manifest install leaves `reqts/PRD.md` on the box and then reports the leftover
-> as a file "this uninstaller did not put there", which is false, and is the invisible-dirt state
-> issue 039 was written to kill.
+> workflow deliberately does NOT ship, and omits `reqts`, which it deliberately DOES. The literal is
+> therefore wrong in **both** directions. It **under-cleans**: uninstalling a pre-manifest install
+> leaves `reqts/PRD.md` on the box and then reports the leftover as a file "this uninstaller did not
+> put there", which is false, and is the invisible-dirt state issue 039 was written to kill. And it
+> **over-cleans**: `:217-219` promises the fallback "only claims the directories this installer has
+> ever created", but no release ever shipped `skills`, `tools` or `plugins`, so a user who made
+> `~/.genscalator/tools/` themselves loses every file in it on `--uninstall --force` — the exact loss
+> that sentence exists to rule out.
 
 ## Description
 
@@ -20,7 +24,9 @@ fallback path, as designed, and under-cleaned.
 val wellKnown = Vector("bin", "docs", "skills", "tools", "plugins", "VERSION.txt")
 ```
 
-What `.github/workflows/native-release.yml:169-175` actually stages into the zip:
+What the release workflow actually puts in the zip, from two separate steps —
+`.github/workflows/native-release.yml:155` writes the binary (`--out "staging/bin/tt${{ matrix.exe }}"`),
+and the staging step at `:171-176` adds the rest:
 
 ```
 bin/            docs/            reqts/PRD.md            VERSION.txt
@@ -32,11 +38,33 @@ Set against set:
 | --- | --- | --- | --- |
 | `bin`, `docs`, `VERSION.txt` | yes | yes | correct |
 | `reqts` | **yes** | **no** | **under-cleans — file survives** |
-| `skills`, `tools` | no (excluded on purpose) | yes | dead entry, filtered by `Files.exists` |
-| `plugins` | no (never a top-level dir) | yes | dead entry, filtered by `Files.exists` |
+| `skills`, `tools` | no (excluded on purpose) | yes | **over-cleans — claims a directory only the user can have created** |
+| `plugins` | no (never a top-level dir) | yes | **over-cleans — same** |
 
-The dead entries are harmless: `readManifest`'s fallback filters on `Files.exists`, so naming a path
-that was never shipped costs nothing. The omission is not harmless.
+**Both directions are correctness, not one.** An earlier draft of this issue said the surplus entries
+were harmless on the grounds that the fallback filters on `Files.exists`, so naming a never-shipped
+path costs nothing. That is wrong, and it is wrong in the only case that matters. `:223-231` resolves
+each entry, filters on `Files.exists`, and for anything that *is* a directory walks it and collects
+**every regular file** beneath it. The filter therefore saves you exactly when the entry is absent —
+which is the case where naming it was already free. When the entry is present, it can only be present
+because the user created it, and the walk claims all of it.
+
+Set against the contract three lines above, at `:217-219`:
+
+> The fallback is deliberately narrow: it only claims the directories this installer has ever created,
+> never the whole install root, so a user who put something of their own in there does not lose it.
+
+`skills`, `tools` and `plugins` are not directories this installer has ever created — nothing in
+`get-genscalator.sc` creates them, and their only two appearances in the file are the vector at `:223`
+and the warning string at `:265`. So the literal contradicts its own stated contract as written,
+before any user's box is considered. The repo already records one instance: closed issue 015 exists
+because `~/.genscalator/skills` is **absent** on a native install (`skillcheck: not a skills
+directory: /home/<user>/.genscalator/skills`).
+
+Concretely: a user who keeps their own scratch scala in `~/.genscalator/tools/` loses all of it to
+`--uninstall --force`, silently, and the `kept:` line will not mention it because the directory is
+gone. That is a data-loss path, and it ranks above the leftover `reqts/PRD.md` this issue was filed
+for.
 
 ### Why the message makes it worse than a plain miss
 
@@ -120,9 +148,18 @@ absence.
 
 ## Acceptance sketch
 
-* **Fix the list**: add `reqts`; drop `plugins` (never shipped) and, if D3/D4 are settled, `skills`
-  and `tools` too. Only the `reqts` addition is correctness — the removals are hygiene, so the list
-  stops implying a payload shape the project has decided against.
+* **Fix the list, in both directions, and treat both as correctness**: add `reqts`; drop `plugins`,
+  `skills` and `tools`. The removals are not hygiene — they are what stops the fallback claiming
+  directories only the user can have created, which is what `:217-219` promises it will not do. The
+  D3/D4 question does not gate them either, because no release has ever staged any of the three (see
+  the release-history check in the Discussion below), so removing them cannot under-clean any install
+  that exists.
+* **Render the warning from the same vector.** `:265` prints `WELL-KNOWN PATHS (bin, docs, skills,
+  tools, plugins, VERSION.txt)` as a hand-typed string, 42 lines from the vector it paraphrases. A fix
+  to `:223` that misses `:265` leaves the warning describing a payload the code no longer uses — the
+  same carrier-staleness this issue is about, one file away from itself. It is also the cleanest
+  citation available for issue 041: the drift has a second copy inside the very file that documents
+  it.
 * **Make drift fail the build, not the uninstall.** The list's job is to describe the staged
   payload, so CI should assert exactly that: after the staging step, every top-level entry in
   `staging/` appears in the fallback vector. A release that adds a payload directory without
@@ -228,3 +265,64 @@ issue:
 What remains in scope for 040 is unchanged: which files the fallback removes, and whether that list
 is asserted against the staged payload or derived from it. The `kept:` overclaim in the acceptance
 sketch also stays here, since it is caused by the leftover rather than by the version label.
+
+### Comment by hmiddelk at 2026-08-24 21:10
+
+Three corrections and one confirmation, all from checking rather than reasoning. The first retracts
+the central argument of the 15:20 comment above.
+
+**1. The append-only requirement does not exist. I checked the release history and it is empty.**
+
+The 15:20 comment closes by admitting the claim was unverified — "an argument for checking release
+history, not a record of it". Checked now, against the workflow's full history:
+
+* Seven revisions of the staging step exist. **Every one stages exactly `docs/`, `reqts/PRD.md` and
+  `VERSION.txt`**, with `bin/` arriving separately from the build step at `:155`. No revision has
+  ever staged `skills/`, `tools/` or `plugins/`.
+* Native releases begin at **v0.10.0**. The workflow's first revision is `1cc7d2f`, 2026-07-27, one
+  day earlier — so there is no pre-v0.10.0 native payload for the fallback to be pointed at.
+* **v0.10.0, v0.10.1 and v0.10.2 staged an identical set**, and there is no v0.10.3 or later.
+* The single variant anywhere in the history is `1cc7d2f` writing `staging/VERSION` without the
+  `.txt`, and it never shipped: v0.10.0 already wrote `VERSION.txt`.
+
+So the union of top-level entries across **every payload the fallback can ever meet** is
+`{bin, docs, reqts, VERSION.txt}` — exactly the current staging set. Three consequences:
+
+* "Drop the unused entries" and "never remove an entry" are not opposite instructions here, because
+  the entries to drop were never in any payload. The 15:20 comment presented that as a live tension
+  and there is none. The real tension is the one the acceptance sketch now states: the surplus
+  entries are an over-clean, so removing them is correctness rather than hygiene.
+* Deriving the list from *current* staging is sufficient, not merely convenient, because the union
+  has not moved across three releases. The objection that a generated list would silently drop a
+  directory an older payload shipped describes no release that exists.
+* What survives of the instinct is narrower and worth keeping: the derived list should be
+  **generated, committed, and CI-verified against a regeneration**, so that a future *removal* from
+  staging shows up as a diff a human reads rather than a silent narrowing. That is the useful half
+  without the false premise, and it is compatible with rendering `:265` from the same vector.
+
+**2. The `native-release.yml` citation was wrong.** The Description said `:169-175`. Correct is
+`:171-176` — `:169` is `shell: bash` and `:170` is `run: |`, and `:175-176` is the two-line "NO
+skills/" comment that `:169-175` truncated mid-sentence. Corrected above, along with the fact that
+`bin/` is not in that block at all: it comes from `:155`. Four staged entries were cited to one range
+that produces three of them.
+
+**3. The 30-unpacked / 29-removed numbers can be derived, and they hold.** They were reported from
+one session's scrollback. From the tree at `v0.10.2`: `docs/` is 27 files, plus `bin/tt`,
+`reqts/PRD.md` and `VERSION.txt` = **30**; the fallback removes everything but `reqts/PRD.md` = **29**.
+So both numbers are forced by the payload rather than merely consistent with the code, and the
+count-disagreement assertion the sketch asks for has a known-correct expectation to assert against.
+
+**4. Partly closing the Windows gap.** The Description says the behaviour is unverified off Linux.
+The *payload shape* is now verified on Windows 10: a native install there holds `bin`, `docs`,
+`reqts`, `VERSION.txt` (plus `INSTALL-MANIFEST.txt`), so `reqts/` is in the payload on that platform
+too and the omission is platform-independent. Still **not** verified on Windows: the fallback
+uninstall itself, and therefore the leftover and the `kept:` message. Narrowed rather than removed.
+
+Agent disclosure: drafted by an AI agent (Claude Opus 5) in session with hmiddelk, prompted by
+bjornregnell's review of PR #4. The agent verified against `main` at `8060b2d` and the repo's tag
+history: the seven staging-step revisions and what each stages; the v0.10.0/v0.10.1/v0.10.2 payload
+sets; that `1cc7d2f`'s `staging/VERSION` never shipped; the `:171-176` line boundaries; the 27-file
+`docs/` count at `v0.10.2`; that nothing in `get-genscalator.sc` creates `skills`/`tools`/`plugins`;
+and the install-root contents on the reporting Windows box. NOT verified: the fallback uninstall on
+Windows or macOS, and the over-clean data loss was read from `:223-231` rather than reproduced —
+no directory was actually destroyed to confirm it.
