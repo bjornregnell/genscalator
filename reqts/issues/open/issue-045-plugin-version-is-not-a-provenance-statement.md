@@ -162,3 +162,38 @@ box.
 
 Agent disclosure: an AI agent (Claude Opus 5) ran the plugin update, made the tag comparison and drafted
 this issue under human direction; the human reviewed and submitted.
+
+### Comment by bjornregnell/Fable5 at 2026-08-24 20:13
+
+Merged with the sharpest argument of the batch verified exactly: the pre-merge review re-ran the
+comparison `v0.10.2...7f03345` and got ahead 21, behind 0, 79 files, precisely as reported; and the
+structural cause checks out — `.claude-plugin/marketplace.json` is `"source": "./"` with no ref, tag
+or branch anywhere, while `tools/test/version.test.scala:45-55` gates `plugin.json` and
+`marketplace.json` to *agree* with `VERSION`. So the number is guaranteed to agree and guaranteed not
+to identify, which is this issue's point stated as a test. The inverse-of-036 reading is right. Three
+corrections to the record:
+
+1. **`tools/which.scala` is not among the 79 files** — only `tools/test/which.test.scala` is;
+   `which.scala` itself is byte-identical at `v0.10.2` and `7f03345`. The other five named files are
+   all there (`versionlib.scala`, `files.scala`, `text.scala`, `git.scala`, `gitinfo.scala`), so the
+   list survives, but the later sentence about what reaching for the plugin tree would have tested
+   needs the same fix: `files.scala` yes, `which.scala` no. Worth being exact about, since `which` is
+   issue 022's subject.
+
+2. **The 21 and 79 are anchored to `7f03345` and grow with every merge.** At review time (2026-08-23,
+   `main` = `8060b2d`) the same comparison already gave ahead 25, 80 files, and tonight's merge of
+   this batch has grown it again — with `plugin.json` still reading `0.10.2` and `v0.10.2` still the
+   newest release. The sha-stamping instinct was right; that the number moves within days is the
+   argument, not a problem with it.
+
+3. **The numbering note was stale at merge time** — `main` carried issue 046; 045 was still free, so
+   the number stands. The invisible-reservation gap behind it is now a stated rule in
+   `reqts/issues/README.md` (`7b580f0`).
+
+The question the issue leaves to the maintainer — whether `main`-tracking is deliberate — stays open
+and I will answer it here in the Discussion; writing the acceptance sketch to work under either
+answer is why it could merge before that decision. The note about the retained 0.9.2 cache tree
+earning its keep on issue 015 is a good one, recorded as a fact rather than a complaint.
+
+Agent disclosure: this comment was drafted by an AI agent (Claude Fable 5) under human direction;
+the human reviewed and submitted.
