@@ -7,7 +7,7 @@ TLDR: get [scala-cli](https://scala-cli.virtuslab.org/install) and [get-genscala
 scala-cli run get-genscalator.sc
 ```
 
-## *Power tools for agents and humans: smarter, safer, faster.*
+## *Power tools for agents and humans: safer, smarter, faster.*
 
 <p align="center">
   <img src="docs/img/status-line-2.png" alt="genscalator's three awareness lines in Claude Code at a cold start: the introspection line (clock, model, context-fill 4%, usage limits, cost), the mode line with declared modes ColdStart, SmartZone and TokSaving, and the box line showing machine health" width="100%">
@@ -16,8 +16,8 @@ scala-cli run get-genscalator.sc
 The above image shows the genscalator awareness lines. Read more about what they mean in [HUMANS.md, "The genscalator awareness lines"](HUMANS.md#7-the-genscalator-awareness-lines).
 
 What do we mean by 
-* **smarter?** By introspection, genscalator tries to stay in the smart zone, aiming to stay away from context rot and decrease the probability of agent mistakes.
 * **safer?** By open, inspectable, compile-time checked strongly typed tools genscalator avoids harness guard stalls that ask for permission, with the aim to reduce human confirmation fatigue.
+* **smarter?** By introspection, genscalator tries to stay in the smart zone, aiming to stay away from context rot and decrease the probability of agent mistakes.
 * **faster?** With defined workflow elements (cues and dances) genscalator aims to provide composable efficient joint human-agent workflows. Also, the typed tools run compiled to bare metal for ~0.03 s start-up times - prebuilt binaries ship with every release, or you build your own (see [Native speed](#24-native-speed-prebuilt-binary-or-graalify-yourself)).
 
 You can read more on the background and goals of genscalator in [HUMANS.md](HUMANS.md#3-the-main-goals-of-genscalator) and navigate the structure of this repo by reading ["Where are all the things?" in HUMANS.md](HUMANS.md#1-where-are-all-the-things).
