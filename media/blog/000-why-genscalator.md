@@ -1,6 +1,6 @@
 # Why genscalator?
 
-> **Status: initialized 2026-07-03; drafted 2026-07-07; published 2026-07-08; deployed 2026-07-08; updated 2026-08-25.** The "why", an intro and project background a newcomer reads first.
+> **Status: initialized 2026-07-03; drafted 2026-07-07; published 2026-07-08; deployed 2026-07-08; updated 2026-08-25; deployed 2026-08-25.** The "why", an intro and project background a newcomer reads first.
 > **Audience:** anyone strolling by (this is blog zero), including non-specialists with no engineering background,
 > or any developer hit by brittle agent shell usage or confirmation fatigue.
 > **See also:** `docs/foundations.md`, `research/METHODOLOGY.md`
@@ -38,13 +38,13 @@ This is what I saw as an obvious mission for genscalator:
 
 But I also realized, in my collaboration with Claude, that what we really were trying to do is to overcome the teaching-learning boundary between training and inference.
 
-And what struck me as really mind-boggling: my agent is turning into a competent substitute for the next PhD student that I lack the funding for. Genscalator has, on my privately paid token budget, now grown into a full-scale, open research endeavor with sub-projects, experiments, tooling, and a real intellectual challenge.
+And what struck me as really mind-boggling: my agent is turning into a competent substitute for the next PhD student that I lack the funding for. Genscalator has, on my privately paid token budget, now grown into a full-scale, open research endeavour with sub-projects, experiments, tooling, and a real intellectual challenge.
 
 And I haven't had this fun since I discovered programming as a teenager in the mid-'80s...
 
 ## Are we alone?
 
-I will take a step back, addressing anyone strolling by, also non-developers, with a bigger question: Are we the only intelligent species? Humans in general, and science fiction literature in particular, have been thrilled by the question of whether we are the only beings that are as intelligent as we are. Actually, we *used* not to be alone, but our fellow Neanderthals, who probably had likeminded intelligence, became extinct a good while ago, [perhaps or even probably due to us](https://en.wikipedia.org/wiki/Neanderthal_extinction).
+I will take a step back, addressing anyone strolling by, also non-developers, with a bigger question: Are we the only intelligent species? Humans in general, and science fiction literature in particular, have been thrilled by the question of whether we are the only beings that are as intelligent as we are. Actually, we *used* not to be alone, but our fellow Neanderthals, who probably had like-minded intelligence, became extinct a good while ago, [perhaps or even probably due to us](https://en.wikipedia.org/wiki/Neanderthal_extinction).
 
 Science fiction literature and astrophysicists have directed their effort in pursuing this question to both inner and outer space, hypothesizing Martians and warp drives to galaxies beyond. Science fiction has also imagined man-made intelligent beings, and Asimov famously pinned down our hopes and fears about them in his Three Laws of Robotics.[^laws]
 
@@ -54,7 +54,7 @@ No. At least it *feels* like we are not alone, if you ask me or many of my softw
 
 Essentially an agent's underlying language model is just a fixed function from text to text. A programmer would express that type of function as `Text => Text`, spelled text-to-text. That's it, basically. You feed the AI with text and it spits out text, but after a really great deal of number crunching. So how can language-model-based AI coding agents be so smart at programming? That is essentially a scaling phenomenon as it seems. We have sooo big computers now and sooo much language-based stuff on our precious internet, and pretty advanced linear algebra math implemented in pretty advanced and super-fast numerical algorithms, so we can create this `Text => Text` function in a way that it *behaves* just like a human. Well, not like a physical human with a body. But like a human typing text. And *more importantly*, like a human typing programs. This is mind-boggling to me. And, to many [AI researchers](https://en.wikipedia.org/wiki/Symbolic_artificial_intelligence) as well.
 
-By first *training* a language model, with relentless human and machine perseverance, we can then make it do what we call *inference*. Training means to warm up the planet with super-computers to fiddle with a humungous number of numbers in crazy big matrices at a never before seen scale in order to reach a `Text => Text` function that behaves like a human. Inference means putting the `Text => Text` function to work. Humans write other smart hand-made functions that apply the `Text => Text` function inside a *harness* creating an *agent* comprised of harness + `Text => Text` function. So when programmers write the agent their requirements the agent can generate program text. This is what we call *agentic code generation*.
+By first *training* a language model, with relentless human and machine perseverance, we can then make it do what we call *inference*. Training means to warm up the planet with super-computers to fiddle with a humongous number of numbers in crazy big matrices at a never-before-seen scale in order to reach a `Text => Text` function that behaves like a human. Inference means putting the `Text => Text` function to work. Humans write other smart hand-made functions that apply the `Text => Text` function inside a *harness* creating an *agent* comprised of harness + `Text => Text` function. So when programmers write the agent their requirements the agent can generate program text. This is what we call *agentic code generation*.
 
 What has really astonished the programming world (and many academic AI researchers), since winter 2025 and spring 2026, is that one company (Anthropic) has managed to make a coding agent called Claude Code so smart that software developers do not feel alone. We now have the power at our fingertips that can help us build much more advanced and complex software systems than we could before.
 
