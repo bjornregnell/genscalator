@@ -345,3 +345,33 @@ class GitLogSuite extends munit.FunSuite:
       assert(clue(out).contains("=== 1 commit(s)"))
     finally TestFs.removeAllForce(work)
   }
+
+// The help string is a CARRIER of the verb set, and it had drifted from the dispatch table it describes:
+// `diff` and `rm` both shipped without ever being listed, and the safety paragraph went further and named
+// `rm` among the verbs "not on the tool, by design" — the very sentence used to argue that allowlisting
+// `tt git` is safe. Nothing related the two, so nothing noticed (issue 041's class, in the tool whose
+// grants that argument gates). This test DERIVES the expected set from the dispatch table rather than
+// restating it, so a new verb cannot be added without its usage line.
+class GitHelpCoverageSuite extends munit.FunSuite:
+
+  private lazy val src: String =
+    val d = sys.props.get("tt.tools").map(os.Path(_))
+      .getOrElse(throw IllegalStateException("cannot locate tools/ (pass -Dtt.tools=<dir>)"))
+    os.read(d / "git.scala")
+
+  test("every verb tt git dispatches has a usage line in its own --help") {
+    val verbs = """case "([a-z]+)"\s*::\s*rest""".r.findAllMatchIn(src).map(_.group(1)).toVector.distinct
+    assert(clue(verbs).sizeIs >= 6, "no dispatch verbs found — has the dispatch shape changed?")
+    val undocumented = verbs.filterNot(v => src.contains(s"|  git $v"))
+    assertEquals(clue(undocumented), Vector.empty[String],
+      s"dispatched but absent from the Usage block: ${undocumented.mkString(", ")}")
+  }
+
+  test("the safety paragraph does not deny a verb the tool actually dispatches") {
+    val verbs = """case "([a-z]+)"\s*::\s*rest""".r.findAllMatchIn(src).map(_.group(1)).toVector.distinct
+    val denied = """(?s)\|Not on the tool, by design: ([^\n]*)""".r.findFirstMatchIn(src)
+      .map(_.group(1)).getOrElse(fail("the 'Not on the tool' paragraph is gone — was it renamed?"))
+    val contradicted = verbs.filter(v => denied.split("[ ,]+").contains(v))
+    assertEquals(clue(contradicted), Vector.empty[String],
+      s"--help denies verbs that are dispatched: ${contradicted.mkString(", ")}")
+  }

@@ -10,6 +10,17 @@ file before adopting a new version: it changes the agent's operating rules, so r
 
 ### v0.10.4 candidates (2026-08-18/19, extended 2026-08-22)
 
+- **`tt git --help` now describes the tool it belongs to** (2026-08-25): the dispatch table has had
+  eight verbs since `diff` and `rm` landed on 2026-08-22, and the help documented six. Worse than an
+  omission: the safety paragraph listed `rm` among the verbs "not on the tool, by design", and that
+  sentence is the stated argument for allowlisting `Bash(tt git *)`. `rm` is in fact present and safe
+  by a *different* argument — it is bounded to files with a committed copy, so what it removes is
+  restorable — which the paragraph now says instead, along with a pointer to the narrow read-only
+  grants for review-shaped work. `diff` and `rm` gain usage lines, flag notes and examples. A new
+  `GitHelpCoverageSuite` **derives** the verb set from the dispatch table and fails if any verb lacks
+  a usage line, or if the safety paragraph denies a verb that is dispatched — so this cannot drift
+  back. An instance of issue 041's class, found in the tool whose grants that very claim gates.
+
 - **Skill grants: the blanket `git -C` is gone, and review-time git is read-only** (2026-08-25):
   `skills/scala-code-review` declared `Bash(git -C *)` — a do-anything grant on a do-anything binary,
   which also auto-approved `push --force` and `reset --hard` in any directory, inside a skill whose job

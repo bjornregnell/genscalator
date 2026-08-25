@@ -44,10 +44,10 @@ object Git {
   private val Help: String =
     """tt git — safe git write helper for agents (commit message from a FILE)
       |
-      |Exposes ONLY the safe, non-destructive git verbs: add/commit/push, fast-forward-only
-      |pull, fetch, and read-only show. The commit message is read from a file, so prose
-      |containing shell metacharacters (backticks, $, !, braces, bare *) never touches the
-      |command line.
+      |Exposes a deliberately small set of git verbs: add/commit/push, fast-forward-only pull,
+      |fetch, read-only show/log/diff, and one guarded rm. The commit message is read from a
+      |file, so prose containing shell metacharacters (backticks, $, !, braces, bare *) never
+      |touches the command line.
       |
       |Usage:
       |  git commit --repo <dir> --message-file <path> [--add <pathspec>]... [--push] [--remote <name>]... [--tags]
@@ -65,6 +65,18 @@ object Git {
       |            [--since D] [--limit N] [--path <relpath>]...
       |                                  READ-ONLY commit-log search, capped + tab-formatted
       |                                  (so no `| head` is ever needed)
+      |  git diff  --repo <dir> [--ref <ref>] [--ref2 <ref>] [--staged] [--stat]
+      |            [--path <relpath>]... [--limit N]
+      |                                  READ-ONLY diff, capped like log (default 200 lines,
+      |                                  truncation always announced). No ref = all uncommitted
+      |                                  work; --staged = the index; --ref A = what commit A
+      |                                  changed; --ref A --ref2 B = between two refs
+      |  git rm    --repo <dir> --path <relpath>...
+      |                                  DESTRUCTIVE but recoverable BY CONSTRUCTION: removes
+      |                                  and stages ONLY files git already has a committed copy
+      |                                  of, so every removal is restorable with a checkout.
+      |                                  Refuses globs, directories, recursion and untracked
+      |                                  files — git has nothing to restore those from
       |Flags (commit):
       |  --repo <dir>                    the git repository to operate on (required)
       |  --message-file <path>           file holding the commit message (required, non-empty)
@@ -127,8 +139,14 @@ object Git {
       |Multiple message-patterns (--grep + --co-author) must ALL match. Because the tool caps and
       |formats, it needs no `| head` — so `Bash(tt git log *)` stays allowlist-safe (SM217).
       |
-      |Not on the tool, by design: reset, rebase, merge, --force, rm, clean — the
-      |destructive/interactive verbs stay off entirely, so allowlisting `tt git` is safe.
+      |Not on the tool, by design: reset, rebase, merge, --force, clean — the verbs that can
+      |destroy work git cannot give back stay off entirely. `rm` IS here, and is the one
+      |exception: it is bounded to files with a committed copy, so what it removes is always
+      |restorable. That, not the absence of every destructive verb, is why allowlisting
+      |`tt git` is defensible — and it is why a grant of `Bash(tt git *)` should still be
+      |made deliberately rather than assumed harmless (it also covers commit and push).
+      |For read-only work prefer the narrow grants: `Bash(tt git show *)`, `Bash(tt git log *)`,
+      |`Bash(tt git diff *)`.
       |
       |Examples:
       |  tt git commit --repo /abs/repo --message-file tmp/msg.txt --add src/app.scala --push
@@ -139,6 +157,10 @@ object Git {
       |  tt git fetch --repo /abs/repo   # refresh the branch's remote; the report names it
       |  tt git fetch --repo /abs/repo --remote upstream   # fetch the fork's upstream explicitly
       |  tt git log  --repo /abs/repo --path tools/git.scala --limit 10   # commits touching one file
+      |  tt git diff --repo /abs/repo                      # everything uncommitted right now
+      |  tt git diff --repo /abs/repo --staged --stat      # the index, summary only
+      |  tt git diff --repo /abs/repo --ref 456f038        # what that one commit changed
+      |  tt git rm   --repo /abs/repo --path docs/retired-generated.md   # tracked files only
       |  tt git show --repo /abs/repo --ref main --path src/app.scala             # to stdout
       |  tt git show --repo /abs/repo --ref v1.2 --path README.md --out tmp/old-readme.md
       |
