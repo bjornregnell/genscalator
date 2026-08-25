@@ -1,11 +1,11 @@
 # Why genscalator?
 
-> **Status: initialized 2026-07-03; drafted 2026-07-07; published 2026-07-08; deployed 2026-07-08; updated 2026-08-25; deployed 2026-08-25.** The "why", an intro and project background a newcomer reads first.
+> **Status: initialized 2026-07-03; drafted 2026-07-07; published 2026-07-08; deployed 2026-07-08; updated 2026-08-25; deployed 2026-08-25.** 
+> 
+> An introduction to the genscalator projectfor newcomers.
 >
-> **Audience:** anyone strolling by (this is blog zero), including non-specialists with no engineering background,
+> **Audience:** anyone strolling by, including non-specialists with no engineering background,
 > or any developer hit by brittle agent shell usage or confirmation fatigue.
->
-> **See also:** `docs/foundations.md`, `research/METHODOLOGY.md`
 
 ## The one-line answer
 
@@ -97,9 +97,9 @@ Genscalator is still early days and very much work-in-progress. But Claude and I
 
 One big apple to pick from the knowledge tree is a new and still-experimental Scala language feature called [Capture Checking](https://nightly.scala-lang.org/docs/reference/experimental/capture-checking/basics.html), which I hope will make genscalator's code generation even safer and boost human-agent productivity. It is on the roadmap, and an interesting research direction to dive into. 
 
-Maybe genscalator can unlock even more ambitious projects. So maybe this is not my "last big project" before I retire, after all. (And retirement does not mean me stopping to try to do cool things with software, then with even more competent AI software engineers helping us...)
+Maybe genscalator can unlock even more ambitious projects. So maybe this is not my "last big project" before I retire, after all. (And retirement does not mean I stop doing cool things with software, then with even more competent AI software engineers helping us...)
 
-You can already now try out genscalator by joining as an early adopter and [give feedback here](https://github.com/bjornregnell/genscalator).
+You can try out genscalator right now by joining as an early adopter, and [give feedback here](https://github.com/bjornregnell/genscalator).
 
 Happy agentic software engineering!
 

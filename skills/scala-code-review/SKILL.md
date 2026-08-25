@@ -1,7 +1,7 @@
 ---
 name: scala-code-review
 description: Adversarially self-review a batch of Scala changes BEFORE calling them done. Trigger after editing/adding `tools/*.scala` (or any scratch Scala) and before committing a non-trivial change, especially after working at high context fill or across many edits. Re-read the diff, re-run the tests, and hunt each pre-registered failure mode P1-P6 in the code, adjudicating by re-reading + re-running (not intuition); report CONFIRMED defects with file:line, honest NULLs, and named confounds. Sibling to `scala-style` (which says HOW to write a tool; this hunts WHAT a change broke). Distilled from the context-rot after-inspect (`research/wr-data/WR005-context-rot-before-after-2026-07-05.md`).
-allowed-tools: Bash(scala-cli test *) Bash(scala-cli compile *) Bash(scala-cli run *) Bash(tt git *) Bash(tt text grepr *)
+allowed-tools: Bash(scala-cli test *) Bash(scala-cli compile *) Bash(scala-cli run *) Bash(tt git show *) Bash(tt git log *) Bash(tt git diff *) Bash(tt gitinfo *) Bash(tt text grepr *)
 ---
 
 # scala-code-review — the adversarial after-inspect
@@ -23,7 +23,7 @@ soothing. **The nulls are half the story.**
    ⚠ **If the change MOVED code, the diff cannot do this job and you must not rely on it.** A move renders as
    deletions in one file and unrelated-looking additions in another, never aligned side by side — so the one
    comparison that matters, *old body vs new body*, is exactly what the diff hides. Reconstruct it explicitly:
-   `tt git show <repo> --ref <base> --path <old/path>` for the original (or `git -C <repo> show <base>:<path>` where the typed shape does not fit), or `scalex body <Symbol> --in <Type>` if
+   `tt git show <repo> --ref <base> --path <old/path>` for the original, or `scalex body <Symbol> --in <Type>` if
    `tt which scalex` finds it. **Moving code is copying code, and a body retyped from memory typechecks.**
    Live specimen (2026-07-28): `Zip.failures` moved into `ziplib.scala` came out as `readAllBytes()` instead
    of the original `transferTo` to a null sink — pulling a 40 MB entry onto the heap and dropping the
