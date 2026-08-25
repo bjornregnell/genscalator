@@ -1,7 +1,7 @@
 ---
 name: tt-toolbox
 description: Use the typed `tt` Scala toolbox instead of one-off bash/grep/awk/sed/python. Trigger whenever about to search, count, scan, or extract from text or files, or compose a shell pipeline — reach for `tt text`/`tt files` (or scaffold a new tool with newtool), and run one bare command per call.
-allowed-tools: Bash(tt text *) Bash(tt files *) Bash(scala-cli run *)
+allowed-tools: Bash(tt text *) Bash(tt files *) Bash(scala-cli run *) Bash(tt gitinfo *) Bash(tt git log *) Bash(tt git show *) Bash(tt git diff *)
 ---
 
 # genscalator `tt` toolbox
