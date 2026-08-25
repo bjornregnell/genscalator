@@ -249,7 +249,13 @@ object Ssg:
         val cleaned = StatusRe.replaceAllIn(t, _ => "").replaceAll("^\\s+", "").replaceAll("\\s+$", "")
         val byline  = StatusRe.findFirstMatchIn(t).flatMap(m => readerByline(m.group(1)))
         if cleaned.nonEmpty || byline.isDefined then
-          var inner = if cleaned.nonEmpty then renderInline(cleaned, fn) else ""
+          // A bare `>` line splits the quote into paragraphs (MdParse.QuoteParaSep): one <p> each, inside ONE
+          // <blockquote>. The byline belongs to the FIRST paragraph, because that is where the Status span was.
+          val paras =
+            if cleaned.isEmpty then Vector("")
+            else cleaned.split(java.util.regex.Pattern.quote(MdParse.QuoteParaSep), -1).toVector
+              .map(p => renderInline(p, fn))
+          var inner = paras.head
           for b <- byline do
             val badge = s"""<span class="post-byline">${escape(b)}</span>"""
             // The byline follows a LEADING **Author: …** span when the preamble opens with one, and otherwise
@@ -262,7 +268,8 @@ object Ssg:
               if i >= 0 then inner.substring(0, i + 9) + " " + badge + inner.substring(i + 9)
               else if inner.nonEmpty then s"$badge $inner"
               else badge
-          sb ++= s"<blockquote>\n<p>$inner</p>\n</blockquote>\n"
+          val body = (inner +: paras.tail).map(p => s"<p>$p</p>").mkString("\n")
+          sb ++= s"<blockquote>\n$body\n</blockquote>\n"
       case Fence(lines)  => flush(); sb ++= renderFence(lines)
       case Table(rows)   => flush(); sb ++= renderTable(rows)
     }

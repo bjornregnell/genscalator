@@ -1,8 +1,10 @@
 # Why genscalator?
 
 > **Status: initialized 2026-07-03; drafted 2026-07-07; published 2026-07-08; deployed 2026-07-08; updated 2026-08-25; deployed 2026-08-25.** The "why", an intro and project background a newcomer reads first.
+>
 > **Audience:** anyone strolling by (this is blog zero), including non-specialists with no engineering background,
 > or any developer hit by brittle agent shell usage or confirmation fatigue.
+>
 > **See also:** `docs/foundations.md`, `research/METHODOLOGY.md`
 
 ## The one-line answer

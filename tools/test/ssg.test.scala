@@ -282,6 +282,19 @@ class SsgSuite extends munit.FunSuite:
     assert(clue(out).contains("""<span class="post-byline">Published 2026-07-08</span>"""))
     assert(out.contains("<blockquote>"))
   }
+  test("renderBlocks: a bare > line splits the quote into paragraphs inside ONE blockquote") {
+    val md = "> **Status: published 2026-07-08.** The why.\n>\n> **Audience:** anyone.\n>\n> **See also:** `x.md`"
+    val out = renderBlocks(MdParse.parse(md))
+    // one blockquote, three paragraphs, and the byline stays in the FIRST
+    assertEquals(clue(out).sliding("<blockquote>".length).count(_ == "<blockquote>"), 1)
+    assertEquals(clue(out).sliding("<p>".length).count(_ == "<p>"), 3)
+    assert(clue(out).contains("""<p><span class="post-byline">Published 2026-07-08</span> The why.</p>"""))
+    assert(clue(out).contains("<p><strong>Audience:</strong> anyone.</p>"))
+  }
+  test("renderBlocks: a quote with no bare > line is still ONE paragraph") {
+    val out = renderBlocks(MdParse.parse("> **Status: published 2026-07-08.** The why.\n> **Audience:** anyone."))
+    assertEquals(clue(out).sliding("<p>".length).count(_ == "<p>"), 1)
+  }
   test("renderBlocks: with no leading Author span the byline OPENS the blockquote, not after a later bold") {
     // blog 000's real shape, and the one all three tests above miss: the Status span is followed by PROSE, so
     // the first bold in the preamble is **Audience:** further down. Anchoring the splice on the first

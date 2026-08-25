@@ -93,7 +93,12 @@ object MdFmt:
       case Heading(raw)                      => out += raw
       case Rule(raw)                         => out += raw
       case Table(rows)                       => rows.foreach(out += _)
-      case Quote(text)                       => wrap("> ", "> ", text, w).foreach(out += _)
+      case Quote(text)                       =>
+        // Paragraph breaks inside a quote survive the reflow: wrap each paragraph, re-emit the bare `>` between
+        // them. Without this the break would be reflowed away as ordinary whitespace.
+        text.split(java.util.regex.Pattern.quote(MdParse.QuoteParaSep), -1).zipWithIndex.foreach: (p, idx) =>
+          if idx > 0 then out += ">"
+          wrap("> ", "> ", p, w).foreach(out += _)
       case Para(lead, hang, text)            => wrap(lead, hang, text, w).foreach(out += _)
       case Item(lead, marker, hang, text, _) => wrap(lead + marker, hang, text, w).foreach(out += _)
     }

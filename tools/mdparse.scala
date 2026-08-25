@@ -26,6 +26,15 @@ object MdParse:
     case Para(lead: String, hang: String, text: String)                 // paragraph: lead indent + continuation indent + joined text
     case Item(lead: String, marker: String, hang: String, text: String, ordered: Boolean) // list item
 
+  /** Separator marking a PARAGRAPH BREAK inside one `Quote` block, written in markdown as a bare `>` line.
+    *
+    * Quote keeps carrying plain joined text (the reflow renderer wants that), so the break has to live IN the
+    * text. This sequence is safe as a marker because every other join in the quote branch is a single space, so
+    * no parsed quote can otherwise contain a newline at all. Both consumers know it: `tt md-fmt` re-emits a bare
+    * `>` between paragraphs rather than reflowing the break away, and `tt ssg` renders one `<p>` per paragraph
+    * inside a single `<blockquote>`. */
+  val QuoteParaSep: String = "\n\n"
+
   /** Display width in code points (a multi-byte char counts as one column). */
   def cpLen(s: String): Int = s.codePointCount(0, s.length)
 
@@ -61,10 +70,17 @@ object MdParse:
         while i < lines.length && isTable(lines(i)) do { buf += lines(i); i += 1 }
         out += Block.Table(buf.toVector)
       else if isQuote(line) then
-        val q = ArrayBuffer[String]()
+        // A BARE `>` line is a paragraph break inside the quote (standard markdown); prose lines still join
+        // with a space. Two adjacent bare `>` lines collapse to one break rather than an empty paragraph.
+        val paras = ArrayBuffer[String]()
+        val cur = ArrayBuffer[String]()
+        def closePara(): Unit = if cur.nonEmpty then { paras += cur.mkString(" "); cur.clear() }
         while i < lines.length && isQuote(lines(i)) do
-          q += lines(i).trim.stripPrefix(">").stripPrefix(" "); i += 1
-        out += Block.Quote(q.mkString(" "))
+          val inner = lines(i).trim.stripPrefix(">").stripPrefix(" ")
+          if inner.isBlank then closePara() else cur += inner
+          i += 1
+        closePara()
+        out += Block.Quote(paras.mkString(QuoteParaSep))
       else
         // paragraph or list item: gather this line + its non-special, non-item continuation lines
         val m = bulletRe.findFirstMatchIn(line)

@@ -35,10 +35,17 @@ class MdFmtSuite extends munit.FunSuite:
   val blockquote =
     """> a quoted paragraph that is long enough that it will need to be wrapped across more than one line
       |> when reflowed at the deliberately small width used in these tests here today""".stripMargin
+  // a quote whose paragraphs are separated by a BARE `>` line: the break must survive a reflow rather than
+  // being wrapped away as ordinary whitespace, and it must do so under both invariants below.
+  val blockquoteParas =
+    """> a quoted paragraph that is long enough that it will need to be wrapped at the small test width
+      |>
+      |> a second quoted paragraph after a bare marker line, also long enough to require wrapping here""".stripMargin
   val heading = "## A Section Heading That Is Deliberately Longer Than The Small Test Width Used Below"
   val hr = "---"
 
-  val fixtures = List(prose, nestedList, table, codeFence, inlineCodeAndLink, blockquote, heading, hr)
+  val fixtures =
+    List(prose, nestedList, table, codeFence, inlineCodeAndLink, blockquote, blockquoteParas, heading, hr)
 
   // --- INVARIANT 1: content preservation (words never change; only breaks/indent/`>` move) ---
   test("content is preserved (identical after stripping whitespace + `>`) across all fixtures") {
@@ -101,6 +108,14 @@ class MdFmtSuite extends munit.FunSuite:
     val out = MdFmt.reflow(blockquote, 20)
     assert(out.linesIterator.forall(_.startsWith("> ")), s"a quote line lost its prefix:\n$out")
     assert(out.linesIterator.size > 1, "expected the quote to wrap into multiple lines at width 20")
+  }
+
+  // --- blockquote: an inner paragraph break is structure, not whitespace ---
+  test("blockquote paragraph breaks survive a reflow as bare `>` lines") {
+    val out = MdFmt.reflow(blockquoteParas, 20)
+    assert(clue(out).linesIterator.contains(">"), s"the paragraph break was reflowed away:\n$out")
+    assertEquals(out.linesIterator.count(_ == ">"), 1, s"expected exactly one break line:\n$out")
+    assert(out.linesIterator.filterNot(_ == ">").forall(_.startsWith("> ")), s"a quote line lost its prefix:\n$out")
   }
 
   // --- list markers + the author's continuation indent are preserved ---
