@@ -16,7 +16,7 @@ scala-cli run get-genscalator.sc
 The above image shows the genscalator awareness lines. Read more about what they mean in [HUMANS.md, "The genscalator awareness lines"](HUMANS.md#7-the-genscalator-awareness-lines).
 
 What do we mean by 
-* **smarter?** By introspection, genscalator tries to stay in the smart zone, aiming to stay away from the dumb zone and decrease the probability of agent mistakes.
+* **smarter?** By introspection, genscalator tries to stay in the smart zone, aiming to stay away from context rot and decrease the probability of agent mistakes.
 * **safer?** By open, inspectable, compile-time checked strongly typed tools genscalator avoids harness guard stalls that ask for permission, with the aim to reduce human confirmation fatigue.
 * **faster?** With defined workflow elements (cues and dances) genscalator aims to provide composable efficient joint human-agent workflows. Also, the typed tools run compiled to bare metal for ~0.03 s start-up times - prebuilt binaries ship with every release, or you build your own (see [Native speed](#24-native-speed-prebuilt-binary-or-graalify-yourself)).
 
