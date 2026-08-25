@@ -1,6 +1,6 @@
 # Why genscalator?
 
-> **Status: initialized 2026-07-03; drafted 2026-07-07; published 2026-07-08; deployed 2026-07-08.** The "why", an intro and project background a newcomer reads first.
+> **Status: initialized 2026-07-03; drafted 2026-07-07; published 2026-07-08; deployed 2026-07-08; updated 2026-08-25.** The "why", an intro and project background a newcomer reads first.
 > **Audience:** anyone strolling by (this is blog zero), including non-specialists with no engineering background,
 > or any developer hit by brittle agent shell usage or confirmation fatigue.
 > **See also:** `docs/foundations.md`, `research/METHODOLOGY.md`
@@ -25,7 +25,7 @@ retire?" and it struck me that I really needed to think carefully about that (hu
 eventually degrading beyond repair).
 
 After some careful thinking, in parallel with starting to develop my agentic software engineering skills on pet
-projects, I realized that my next big project must be: **`genscalator`**, power-tools for human-agent
+projects, I realized that my next big project will be: **`genscalator`**, power-tools for human-agent
 collaboration productivity. Why? While over weeks developing an increasingly more productive code generation
 workflow together with [Anthropic's Claude Code](https://en.wikipedia.org/wiki/Claude_%28AI%29), I also got caught
 in real User Experience (UX) problems and pitfalls, and the agent repeatedly did some very stupid things with brittle, unsafe
@@ -100,6 +100,12 @@ Genscalator is still early days and very much work-in-progress. But Claude and I
 One big apple to pick from the knowledge tree is a new and still-experimental Scala language feature called [Capture Checking](https://nightly.scala-lang.org/docs/reference/experimental/capture-checking/basics.html), which I hope will make genscalator's code generation even safer and boost human-agent productivity. It is on the roadmap, and an interesting research direction to dive into. 
 
 Maybe genscalator can unlock even more ambitious projects. So maybe this is not my "last big project" before I retire, after all. (And retirement does not mean me stopping to try to do cool things with software, then with even more competent AI software engineers helping us...)
+
+You can already now try out genscalator by joining as an early adopter and [give feedback here](https://github.com/bjornregnell/genscalator).
+
+Happy agentic software engineering!
+
+/BR
 
 ---
 
