@@ -100,7 +100,7 @@ actually make more editing errors in braceless code, and does it get worse for b
 ## 4. The common-style proposal
 
 A concrete proposal for a middle path was written up by Martin Odersky, myself, and Rex Kerr in an
-open note, *["Towards a Common Scala Style Recommendation"](https://codeberg.org/bjornregnell/scala-common-style/src/branch/main/scala-common-style-mirror.md)*
+open note, *["Towards a Common Scala Style Recommendation"](https://github.com/bjornregnell/genscalator/blob/main/docs/scala-common-style-mirror.md)*
 (January 2026). Its thesis is that braceless-vs-braceful "need not be incompatible" - it is "a matter of degree,"
 like the way Scala programmers already use optional parentheses without starting a war. The pragmatic middle:
 
@@ -505,7 +505,7 @@ tool grade its own homework - you are reading the right blog. That is much of wh
 ## Further Reading
 
 - M. Odersky, B. Regnell, R. Kerr, *Towards a Common Scala Style Recommendation*, open note, January 2026.
-  <https://codeberg.org/bjornregnell/scala-common-style/src/branch/main/scala-common-style-mirror.md>
+  <https://github.com/bjornregnell/genscalator/blob/main/docs/scala-common-style-mirror.md>
 - genscalator, *indent-vs-braces edit-cost experiment* - design
   [`README.md`](https://github.com/bjornregnell/genscalator/blob/main/research/experiments/indent-vs-braces/README.md), results
   [`RESULTS.md`](https://github.com/bjornregnell/genscalator/blob/main/research/experiments/indent-vs-braces/RESULTS.md), raw data
