@@ -1,7 +1,7 @@
 # Why genscalator?
 
-> **Status: initialized 2026-07-03; drafted 2026-07-07; published 2026-07-08; deployed 2026-07-08; updated 2026-08-25; deployed 2026-08-25.** 
-> 
+> **Status: initialized 2026-07-03; drafted 2026-07-07; published 2026-07-08; deployed 2026-07-08; updated 2026-08-25; deployed 2026-08-25.** **Author: Björn Regnell.**
+>
 > An introduction to the genscalator project for newcomers.
 >
 > **Audience:** anyone strolling by, including non-specialists with no engineering background,

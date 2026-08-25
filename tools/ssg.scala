@@ -246,16 +246,19 @@ object Ssg:
         // Strip the internal **Status: ...** bookkeeping span (SM032 trim-at-publish), but distil a reader-facing
         // byline from it — `Published <d> · updated <d>` (SM051) — and fold it in right after the leading
         // **Author: …** span. Any other preamble prose the author wrote (Audience / Author) is kept.
-        val cleaned = StatusRe.replaceAllIn(t, _ => "").replaceAll("^\\s+", "").replaceAll("\\s+$", "")
-        val byline  = StatusRe.findFirstMatchIn(t).flatMap(m => readerByline(m.group(1)))
-        if cleaned.nonEmpty || byline.isDefined then
-          // A bare `>` line splits the quote into paragraphs (MdParse.QuoteParaSep): one <p> each, inside ONE
-          // <blockquote>. The byline belongs to the FIRST paragraph, because that is where the Status span was.
-          val paras =
-            if cleaned.isEmpty then Vector("")
-            else cleaned.split(java.util.regex.Pattern.quote(MdParse.QuoteParaSep), -1).toVector
-              .map(p => renderInline(p, fn))
-          var inner = paras.head
+        val stripped = StatusRe.replaceAllIn(t, _ => "")
+        val byline   = StatusRe.findFirstMatchIn(t).flatMap(m => readerByline(m.group(1)))
+        // A bare `>` line splits the quote into paragraphs (MdParse.QuoteParaSep): one <p> each, inside ONE
+        // <blockquote>. The byline belongs to the FIRST paragraph, because that is where the Status span was.
+        //
+        // ⚠ Trim PER PARAGRAPH, never across the joined quote. `\s` matches a newline, so trimming the whole
+        // string ate the FIRST separator along with the space the stripped Status span left behind — collapsing
+        // the empty opening paragraph and gluing the byline onto the next one. When the author puts the Status
+        // span on its own line and a bare `>` under it, that break IS the request for the byline to stand alone.
+        val parts = stripped.split(java.util.regex.Pattern.quote(MdParse.QuoteParaSep), -1).toVector.map(_.trim)
+        if parts.exists(_.nonEmpty) || byline.isDefined then
+          val paras = parts.map(p => if p.isEmpty then "" else renderInline(p, fn))
+          var inner = paras.headOption.getOrElse("")
           for b <- byline do
             val badge = s"""<span class="post-byline">${escape(b)}</span>"""
             // The byline follows a LEADING **Author: …** span when the preamble opens with one, and otherwise
@@ -268,7 +271,9 @@ object Ssg:
               if i >= 0 then inner.substring(0, i + 9) + " " + badge + inner.substring(i + 9)
               else if inner.nonEmpty then s"$badge $inner"
               else badge
-          val body = (inner +: paras.tail).map(p => s"<p>$p</p>").mkString("\n")
+          // Empty paragraphs are dropped AFTER the byline lands, so a Status-only opening paragraph survives
+          // exactly when it now carries the badge, and disappears when there is no byline to put in it.
+          val body = (inner +: paras.drop(1)).filter(_.nonEmpty).map(p => s"<p>$p</p>").mkString("\n")
           sb ++= s"<blockquote>\n$body\n</blockquote>\n"
       case Fence(lines)  => flush(); sb ++= renderFence(lines)
       case Table(rows)   => flush(); sb ++= renderTable(rows)

@@ -291,6 +291,21 @@ class SsgSuite extends munit.FunSuite:
     assert(clue(out).contains("""<p><span class="post-byline">Published 2026-07-08</span> The why.</p>"""))
     assert(clue(out).contains("<p><strong>Audience:</strong> anyone.</p>"))
   }
+  test("renderBlocks: a Status span alone on the first line keeps the byline in its OWN paragraph") {
+    // blog 000's shape after the author put the status on its own line and a bare `>` under it. Trimming the
+    // JOINED quote used to eat that first separator (`\s` matches a newline), collapsing the empty opening
+    // paragraph and gluing the byline onto the intro sentence.
+    val md = "> **Status: published 2026-07-08; updated 2026-08-25.**\n>\n> An intro.\n>\n> **Audience:** anyone."
+    val out = renderBlocks(MdParse.parse(md))
+    assert(clue(out).contains("""<p><span class="post-byline">Published 2026-07-08 · updated 2026-08-25</span></p>"""))
+    assert(clue(out).contains("<p>An intro.</p>"))
+    assertEquals(clue(out).sliding("<p>".length).count(_ == "<p>"), 3)
+  }
+  test("renderBlocks: an empty opening paragraph with NO byline is dropped, not rendered blank") {
+    val out = renderBlocks(MdParse.parse("> **Status: drafted 2026-07-03.**\n>\n> An intro."))
+    assertEquals(clue(out).sliding("<p>".length).count(_ == "<p>"), 1)
+    assert(clue(out).contains("<p>An intro.</p>"))
+  }
   test("renderBlocks: a quote with no bare > line is still ONE paragraph") {
     val out = renderBlocks(MdParse.parse("> **Status: published 2026-07-08.** The why.\n> **Audience:** anyone."))
     assertEquals(clue(out).sliding("<p>".length).count(_ == "<p>"), 1)
