@@ -282,3 +282,13 @@ class SsgSuite extends munit.FunSuite:
     assert(clue(out).contains("""<span class="post-byline">Published 2026-07-08</span>"""))
     assert(out.contains("<blockquote>"))
   }
+  test("renderBlocks: with no leading Author span the byline OPENS the blockquote, not after a later bold") {
+    // blog 000's real shape, and the one all three tests above miss: the Status span is followed by PROSE, so
+    // the first bold in the preamble is **Audience:** further down. Anchoring the splice on the first
+    // `</strong>` ANYWHERE put the publication date in the middle of the audience sentence, and it shipped that
+    // way to the live site until 2026-08-25.
+    val md = "> **Status: published 2026-07-08; updated 2026-08-25.** The why, an intro.\n> **Audience:** anyone strolling by."
+    val out = renderBlocks(MdParse.parse(md))
+    assert(clue(out).contains("""<p><span class="post-byline">Published 2026-07-08 · updated 2026-08-25</span> The why"""))
+    assert(!clue(out).contains("""<strong>Audience:</strong> <span class="post-byline""""))
+  }

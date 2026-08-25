@@ -252,10 +252,15 @@ object Ssg:
           var inner = if cleaned.nonEmpty then renderInline(cleaned, fn) else ""
           for b <- byline do
             val badge = s"""<span class="post-byline">${escape(b)}</span>"""
-            val i = inner.indexOf("</strong>")   // end of the leading **Author: …** span (Status already stripped)
+            // The byline follows a LEADING **Author: …** span when the preamble opens with one, and otherwise
+            // OPENS the blockquote. Anchoring on the first `</strong>` anywhere in the preamble was wrong: when
+            // the Status span is followed by prose rather than an Author span (blog 000), the first bold is
+            // **Audience:**, so the publication date landed in the middle of the audience sentence — shipped
+            // and visible on the live site until 2026-08-25.
+            val i = if inner.startsWith("<strong>") then inner.indexOf("</strong>") else -1
             inner =
               if i >= 0 then inner.substring(0, i + 9) + " " + badge + inner.substring(i + 9)
-              else if inner.nonEmpty then s"$inner $badge"
+              else if inner.nonEmpty then s"$badge $inner"
               else badge
           sb ++= s"<blockquote>\n<p>$inner</p>\n</blockquote>\n"
       case Fence(lines)  => flush(); sb ++= renderFence(lines)
