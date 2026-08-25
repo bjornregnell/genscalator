@@ -18,7 +18,7 @@ as first-class results. A pass that reports only hits is inflating; a pass that 
 soothing. **The nulls are half the story.**
 
 ## Method (five steps, in order)
-1. **Re-read the diff top-to-bottom.** `git -C <repo> diff <base>..HEAD` (or the staged diff). Read every changed
+1. **Re-read the diff top-to-bottom.** `tt git diff --repo <repo> --ref <base>` (or `--staged` for the staged diff). Read every changed
    line as if someone else wrote it — intent should be clear without running it.
    ⚠ **If the change MOVED code, the diff cannot do this job and you must not rely on it.** A move renders as
    deletions in one file and unrelated-looking additions in another, never aligned side by side — so the one

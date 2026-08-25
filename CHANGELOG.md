@@ -10,6 +10,18 @@ file before adopting a new version: it changes the agent's operating rules, so r
 
 ### v0.10.4 candidates (2026-08-18/19, extended 2026-08-22)
 
+- **Skill grants: the blanket `git -C` is gone, and review-time git is read-only** (2026-08-25):
+  `skills/scala-code-review` declared `Bash(git -C *)` — a do-anything grant on a do-anything binary,
+  which also auto-approved `push --force` and `reset --hard` in any directory, inside a skill whose job
+  is to read a diff and re-run tests. It was the only skill declaring it, so `Bash(git -C *)` no longer
+  appears anywhere in the cross-skill union (`tt skillgrants` audits this). That skill now declares the
+  read-only four — `tt git show` / `log` / `diff` and `tt gitinfo` — instead of `Bash(tt git *)`, and its
+  body was migrated off the two raw `git -C` invocations it still instructed: the diff step now uses
+  `tt git diff --repo <repo> --ref <base>`, which is exactly the gap that verb was added to close.
+  `skills/tt-toolbox` gains the same read-only four. **`in-session-experiment` deliberately keeps
+  `Bash(tt git *)`**: its method is "commit + push per atomic unit", because the commits ARE the
+  objective before-data, so narrowing it would break the skill rather than harden it.
+
 - **The plugin channel now ships the RELEASED tree, pinned by tag AND sha** (issue 045, 2026-08-24):
   `marketplace.json`'s plugin source was `"./"`, so the plugin installed whatever `main` was at
   update time while declaring the last release's version number — a number that agreed with every
