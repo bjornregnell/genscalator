@@ -326,3 +326,41 @@ sets; that `1cc7d2f`'s `staging/VERSION` never shipped; the `:171-176` line boun
 and the install-root contents on the reporting Windows box. NOT verified: the fallback uninstall on
 Windows or macOS, and the over-clean data loss was read from `:223-231` rather than reproduced —
 no directory was actually destroyed to confirm it.
+
+### Comment by bjornregnell at 2026-08-25 20:36 — DECISION, and the fix is green-lit
+
+hmiddelk offered twice to follow up with the fix PR "if the shape is agreed". The shape is now
+agreed, so: **green light — please go ahead.**
+
+**Derive, not assert.** Settled in 041's Discussion today; the reasoning is there and I will not
+repeat it. What it means here concretely: the fallback vector becomes a build product of the
+staging step — generated, committed, and CI-verified against a regeneration — rather than a
+hand-maintained literal with a test asserting it agrees with staging. The release-history check in
+the comment above is what makes this safe to do from *current* staging: the union has not moved
+across three releases, so there is no older payload a generated list would silently under-clean.
+
+**What I would like in the PR:**
+
+* The vector fixed in **both** directions — add `reqts`, drop `plugins`, `skills`, `tools`. Please
+  lead on the over-clean rather than the omission. A user losing their own `~/.genscalator/tools/`
+  to `--uninstall --force` is the data-loss half, it contradicts the contract stated three lines
+  above the literal, and it outranks the leftover `reqts/PRD.md` this issue was filed for.
+* `:265` rendering **from** the vector rather than restating it. That is the fourth carrier, and a
+  fix that leaves it hand-typed reproduces the defect inside the fix.
+* The fallback round trip: delete `INSTALL-MANIFEST.txt`, uninstall, assert the install root ends
+  up empty. The 30-unpacked / 29-removed derivation above gives that assertion a known-correct
+  expectation, so it can check a count rather than just an emptiness.
+* The `kept:` overclaim, if it fits — the fallback path cannot know whose files it is looking at
+  and should say the weaker true thing. Split it out if it makes the diff awkward; your call.
+
+**Please do not bundle 042's version fix into it.** Your own second comment established they are
+independent, and I would rather review the list question and the version question separately.
+
+One note on your retraction of the append-only argument. Going and checking the release history
+when the claim was yours, and then recording the refutation as an appended correction so the issue
+carries the argument and its rebuttal in order, is exactly how I want this tracker to work. Same
+for the `:207`-is-155-lines-not-eleven correction on #6 — you were right, I checked, and the
+forgiving reading is the correct one.
+
+Agent disclosure: an AI agent (Claude Opus 5) drafted this comment from my ruling; the decision,
+the scope and the green light are mine.

@@ -272,3 +272,40 @@ and its five siblings are on the `case _ =>` path rather than the `--help` path;
 shape-only assertion at `cli.test.scala:2404-2413`; and the count of 46 `###` entries in
 `tools/README.md`. NOT verified: that six is the complete set of third carriers (see the sweep
 caveat above), and nothing here was run — the divergences were read, not reproduced.
+
+### Comment by bjornregnell at 2026-08-25 20:36 — DECISION
+
+Settling the call I reserved on PR #5, in the issue as promised.
+
+**Yes: Phase 1 goes ahead of the typed layer, in the derive form.** hmiddelk's four reasons above
+carry it, and I am ratifying them rather than restating them. Two things to add, one that
+strengthens the case and one that bounds the work.
+
+**The detection caveat is itself the argument for derive, and it is stronger than the four reasons
+put it.** The six verbs were found by sweeping for a `println("""…` block whose first line reads as
+a tagline, so six is a floor and nobody knows the total. Now notice what an assert-agreement test
+would have to do: be *told* which strings are carriers — the same enumeration, with the same blind
+spot, performed by the same kind of sweep. An agreement gate built today would be built against
+exactly the six we happen to have found, and would certify the rest as clean. A projection has no
+enumeration step at all: a verb renders its description from its declaration or it has no
+description, so the unfound tail stops existing rather than staying unfound. **The fact that we
+cannot bound the drift is the reason to derive it away instead of asserting against it.**
+
+**But sequence it, and do not touch 46 verbs in one change.** Start with the six that have proven
+drift — `guardcheck`, `harden`, `log`, `text`, `typo`, `wr` — and take `text` first, since two of
+its three carriers sit in one file 131 lines apart and the increment needs no cross-file machinery.
+That gives a countable that must move (six verbs disagreeing across three carriers, down to zero)
+before any general mechanism is committed to, which is the shape I want on a refactor this wide. A
+46-verb mechanical diff arriving in one PR is not reviewable at the level this repo reviews things,
+and the design would be getting ratified by its own diff size.
+
+The sketch's constraint stands unchanged and is the acceptance condition I care most about: if the
+projection becomes a fourth place to keep in sync, it has failed. `tt skillcheck` is the reference.
+
+**Phase 2 is not decided here.** It stays gated on the typed layer beneath `args: String*` and on
+`Feature: mcpServer` remaining UNSCHEDULED in the PRD. Nothing in this decision schedules it, and
+Phase 1 must be worth shipping on its own — which, per reason four above, it is.
+
+Agent disclosure: an AI agent (Claude Opus 5) drafted this comment from my ruling and added the
+detection-caveat argument and the sequencing condition, which I reviewed and adopted; the decision
+and its scope are mine.
