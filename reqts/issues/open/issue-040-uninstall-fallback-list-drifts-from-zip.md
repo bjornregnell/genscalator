@@ -364,3 +364,96 @@ forgiving reading is the correct one.
 
 Agent disclosure: an AI agent (Claude Opus 5) drafted this comment from my ruling; the decision,
 the scope and the green light are mine.
+
+### Comment by hmiddelk/Opus5 at 2026-08-26 10:00
+
+**CONFIRMED on Windows 10 against a real pre-manifest install — this closes the one gap the
+2026-08-24 comment above left open.** That comment verified the *payload shape* on Windows and said
+plainly what was still missing: *"the fallback uninstall itself, and therefore the leftover and the
+`kept:` message."* All three are supplied below. Held until PR #4 merged rather than pushed into the
+open branch, as offered on PRs #7–#9 and in report 088.
+
+Nothing was re-run for this comment. Every Windows fact below is from the run recorded in report 088
+(2026-08-21); the two figures I could re-derive today from the repo are marked as such. I am on Linux
+today, and **the start state no longer exists on any box** — see *Limits*.
+
+| | |
+|---|---|
+| Platform | Windows 10 Enterprise 10.0.19045, x86-64, PowerShell 5.1 (`SHELL` unset) |
+| Install under test | pre-manifest **v0.10.0** native install: `~\.genscalator`, `VERSION.txt` = `v0.10.0`, 30 files, **no** `INSTALL-MANIFEST.txt` |
+| Uninstaller under test | `get-genscalator.sc` at `main` `7f03345` — unreleased, sha256 `beeb62ff…3ba4`, 23 713 B |
+| Why this box | it was carrying the fallback's only real population; issue 039 built that path for exactly this install |
+
+**What reproduced, in order.**
+
+1. **The count disagreement, predicted before the deletion.** Ground truth was measured with
+   PowerShell *before* running `--force`: **30 files on disk against the 29 the preview listed**, and
+   the gap was named in advance as `reqts\PRD.md`. It held exactly.
+2. **The leftover.** `--uninstall --force` removed 29 files. `reqts\PRD.md` (82 092 B) survived, and
+   the install root survived with it.
+3. **The `kept:` line misattributed it, verbatim as the Description predicts** —
+   `kept: …\.genscalator still exists — it holds files this uninstaller did not put there` — about a
+   file the installer had put there.
+4. **The consequence the issue is really about.** Reaching the clean box the compare-versions loop
+   requires took a manual `Remove-Item -Recurse -Force`. The loop's third step did not complete on
+   its own, which is precisely what issue 039 exists to remove.
+
+**The derived 29-of-30 expectation also holds for this payload, which is new.** The 2026-08-24
+comment derived 30/29 from the tree at `v0.10.2`. Checked today at `v0.10.0` — the release actually
+uninstalled here — `docs/` is **also 27 files**, so 27 + `bin\tt.exe` + `reqts\PRD.md` +
+`VERSION.txt` = **30**, and the fallback removes all but `reqts\PRD.md` = **29**. So the count
+assertion the decision above asks for has the same known-correct expectation across every release the
+fallback can meet, not just the newest one.
+
+That arithmetic also settles something the raw log could not: it accounts for all 30 files, so
+`skills\`, `tools\` and `plugins\` held **nothing** on this box.
+
+**What did NOT reproduce, and cannot be reproduced from this run: the over-clean.** The decision
+above asks the fix to lead on the data-loss half, and that half is still read-only on both platforms.
+Those three directories were absent here, so `Files.exists` filtered them exactly as the surplus
+entries' defenders assumed, and no user file was destroyed. **Nobody has yet destroyed a directory to
+confirm the over-clean** — it remains an argument from `:223-231`. The fix's own test can supply the
+missing evidence cheaply and in CI rather than on hardware: write `~/.genscalator/tools/scratch.txt`
+into a scratch-HOME install, uninstall, and assert it survives. Worth making that a required case
+rather than a nice-to-have, since it is the direction the fix is being asked to lead on.
+
+**One scoped output defect on the fallback's own warning.** On a Windows console the JVM bootstrap
+destroyed the warning glyph *at source*: a raw-byte probe (`cmd` redirection, then
+`[IO.File]::ReadAllBytes`, to control for the read side) showed `⚠` written as ASCII `?` and the em
+dash as cp1252 `0x97`, the only non-ASCII byte in the stream. So the fallback's *"this list is a
+guess"* line loses its marker on the one path where the guess is what the user needs to notice.
+Scoped precisely: this is the **JVM bootstrap script's** stream encoding, not house style — the
+native `tt.exe` printed `—` correctly throughout the same session. `chcp` was never varied and
+`chcp 65001` is untested. Not filed as an issue; recorded here because it lands on this path.
+
+**A correction to report 088, since two corrections to one number should not leave a third wrong.**
+The report's environment table calls the uninstaller under test **360 lines**; the post-merge
+maintainer comment on issue 044 corrects it to 394. Re-fetched today at `7f03345`: sha256
+`beeb62ff…3ba4` and 23 713 B both match the report's own cmd-19 byte count, so all three readings are
+of the same file — but it is **393 lines**. `wc -l`, `awk 'END{print NR}'` and `grep -c ''` agree, and
+the file ends with `0x0a`, so 394 is a count that includes the empty segment after the final newline.
+Not a disagreement about the file, just about where a line ends.
+
+Ruling out the obvious explanation before offering that one: the file is **byte-identical at `main`
+today** — same sha256, same 23 713 B — so the difference is not a later ref being measured. Worth
+saying because the underlying `360` was the one number in an otherwise carefully-cited environment
+table that nobody measured, and it has now been corrected twice.
+
+**Limits.**
+
+* **`n = 1`, permanently.** The pre-manifest v0.10.0 install is gone and cannot be rebuilt as the
+  same evidence. A hand-made fixture is not this.
+* **The manifest path was never uninstalled on Windows.** Only the fallback branch ran end to end.
+  The precise branch — everyone's, from v0.10.3 on — is still untested on this platform, and it is
+  the branch this issue says works.
+* **Nothing here was re-run today.** The Windows facts are the 2026-08-21 log; the `v0.10.0` `docs/`
+  count and the line count are re-derived from the repo, which needs no Windows box.
+* **Not cross-observer.** Same human and same agent model as the Linux filing of this issue, so this
+  is a cross-platform confirmation and not an independent one.
+
+Provenance: `research/reports/report088-windows-update-lifecycle-2026-08-21.md`, arm A, commands
+19–24 and 38.
+
+Agent disclosure: drafted by an AI agent (Claude Opus 5) in session with hmiddelk from the report 088
+log; the agent re-derived the `v0.10.0` `docs/` count and the line count against the repo today. The
+human ran the Windows session, supplied the uninstall command under test, and reviewed and submitted.
