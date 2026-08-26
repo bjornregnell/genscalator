@@ -175,6 +175,24 @@ jobs:
           # NO skills/: the Claude Code plugin owns those, and shipping a second copy here is the
           # drift failure D4 exists to prevent.
 
+      - name: Prove the shipped uninstaller matches what was just staged
+        run: scala-cli run deploy/payloadsync.sc -- --staged staging
+        # Issue 040. get-genscalator.sc's pre-manifest uninstall fallback has to name the payload's
+        # top-level entries, and that list was hand-typed: it missed `reqts` (leftover, then blamed on
+        # the user) and claimed `skills`, `tools`, `plugins` (a user's own files walked and deleted).
+        # The list is now GENERATED from the step above, and this is the check that the generated
+        # region agrees with the tree that step actually produced. It runs HERE, between staging and
+        # archiving, because this is the only moment the real payload exists — before the zip is
+        # built and long before anyone installs it.
+        #
+        # A test also asserts the region against a regeneration (PayloadLayoutSuite), but that test
+        # and the generator share a parser. This step shares nothing with it: it lists the directory.
+        # A drift fails the release, which is the correct blast radius — the alternative is shipping
+        # an uninstaller that deletes the wrong set.
+        #
+        # NO `shell:` and one line, for the reason the build step gives above: scala-cli resolves via
+        # PATHEXT on Windows and Git Bash does not, so this must contain no shell-specific syntax.
+
       - name: Archive and checksum
         shell: bash
         run: |

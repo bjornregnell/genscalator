@@ -195,6 +195,14 @@ def addToPath(file: Path, line: String, dryRun: Boolean): Unit =
 // install. Hence the manifest AND a well-known-paths fallback that says out loud when it is being used.
 val ManifestName = "INSTALL-MANIFEST.txt"
 
+// >>> GENERATED payload layout — do not edit by hand >>>
+// Source: .github/workflows/native-release.yml's staging step (issue 040). Regenerate with
+//   scala-cli run deploy/payloadsync.sc -- --write
+// Asserted two ways: against a regeneration by PayloadLayoutSuite, and against the real
+// staging/ tree by native-release.yml. Editing this by hand re-creates the drift.
+val PayloadTopLevel = Vector("VERSION.txt", "bin", "docs", "reqts")
+// <<< END GENERATED payload layout <<<
+
 /** Plain text, no JSON parser, because this file resolves NO dependencies. `key: value` header lines, then
   * a `files:` line after which EVERY line is one install-root-relative path. */
 def writeManifest(home: Path, files: Vector[String], tag: Option[String], pathFile: Option[Path]): Unit =
@@ -214,13 +222,21 @@ def writeManifest(home: Path, files: Vector[String], tag: Option[String], pathFi
 
 final case class Manifest(files: Vector[String], pathFile: Option[Path], tag: String, fallback: Boolean)
 
-/** Read the manifest, or fall back to well-known paths for a PRE-MANIFEST install. The fallback is
-  * deliberately narrow: it only claims the directories this installer has ever created, never the whole
-  * install root, so a user who put something of their own in there does not lose it. */
+/** Read the manifest, or fall back to the payload layout for a PRE-MANIFEST install.
+  *
+  * The fallback is narrow in ONE sense only, and the distinction is the whole of issue 040: it claims the
+  * payload's top-level entries and nothing else, so a `~/.genscalator/notes.md` of your own is never
+  * touched — but inside a claimed DIRECTORY it walks and takes every regular file, including files you put
+  * there. That is unavoidable without a manifest (there is no record of what was written), so it is stated
+  * out loud in the warning rather than papered over: the old text promised the opposite while doing it.
+  *
+  * Which is why `PayloadTopLevel` is generated from the staging step. A hand-typed list is wrong in two
+  * directions at once — an entry it misses is left behind, and an entry it invents is a directory it
+  * destroys. Both had already happened. */
 def readManifest(home: Path): Manifest =
   val f = home.resolve(ManifestName)
   if !Files.exists(f) then
-    val wellKnown = Vector("bin", "docs", "skills", "tools", "plugins", "VERSION.txt")
+    val wellKnown = PayloadTopLevel
       .map(home.resolve)
       .filter(Files.exists(_))
       .flatMap: p =>
@@ -262,8 +278,9 @@ def uninstall(home: Path, force: Boolean): Unit =
   println(s"  version:  ${m.tag}")
   if m.fallback then
     println(s"  ⚠ NO $ManifestName found — this install predates manifests, so the list below comes from")
-    println(s"    WELL-KNOWN PATHS (bin, docs, skills, tools, plugins, VERSION.txt) rather than a record of")
-    println(s"    what was actually written. Anything you put in $home yourself is NOT listed and NOT touched.")
+    println(s"    WELL-KNOWN PATHS (${PayloadTopLevel.mkString(", ")}) rather than a record of what was")
+    println(s"    actually written. Anything ELSE in $home is not listed and not touched — but everything")
+    println(s"    under those paths IS removed, including files you put there yourself. Check the list.")
   println(s"  ${if force then "removing" else "would remove"}: ${present.size} file(s)" +
     (if missing > 0 then s"  ($missing listed file(s) already gone)" else ""))
   present.take(12).foreach(p => println(s"    ${home.relativize(p)}"))
@@ -278,7 +295,13 @@ def uninstall(home: Path, force: Boolean): Unit =
       .sortBy(p => -p.toString.length)
       .foreach(d => Try(Files.deleteIfExists(d)))
     if Files.exists(home) then
-      println(s"  kept:     $home still exists — it holds files this uninstaller did not put there")
+      // Two paths, two truths. WITH a manifest the strong claim is sound — the list is a record of what
+      // was written, so a survivor really is not ours. On the FALLBACK it is not knowable, and while the
+      // layout list was stale this line said exactly that about `reqts/PRD.md`, which the installer had
+      // written one command earlier (issue 040). Say the weaker thing there rather than everywhere:
+      // downgrading both would lose real information on the path that has earned it.
+      if m.fallback then println(s"  kept:     $home still exists — something under it was not in the list above")
+      else println(s"  kept:     $home still exists — it holds files this uninstaller did not put there")
     else println(s"  removed:  $home")
 
   println()
