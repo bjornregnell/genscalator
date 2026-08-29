@@ -133,9 +133,15 @@ object Links:
 
   /** Build caches and scratch, never sources: skipped when scanning AND when inventorying. Everything
     * else, including dot-directories like `.claude-plugin`, is real repo content — skipping those made
-    * the checker report a live directory as missing. PURE. */
+    * the checker report a live directory as missing. PURE.
+    *
+    * `.claude` is harness scratch (gitignored) and, unlike the other entries, can hold a NESTED GIT
+    * WORKTREE at `.claude/worktrees/<branch>` — a second checkout of this whole repo. Scanning it
+    * doubles every count and reports the worktree's copies of the ignored-by-design links as dangling,
+    * because the ignore rules are keyed on repo-relative paths (issue 053). Matching is on the
+    * directory NAME, so `.claude-plugin` above is a different string and stays included. */
   val skipDirs: Set[String] =
-    Set(".git", ".scala-build", ".bsp", ".bloop", ".metals", ".scalex", "node_modules", "target", "tmp", "out")
+    Set(".git", ".claude", ".scala-build", ".bsp", ".bloop", ".metals", ".scalex", "node_modules", "target", "tmp", "out")
 
   /** A link to `x.html` is NOT dangling when `x.md` sits beside it: the html is produced at render time
     * by the site generator, so the repo legitimately contains only the source. Without this rule every

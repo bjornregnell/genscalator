@@ -10,6 +10,19 @@ file before adopting a new version: it changes the agent's operating rules, so r
 
 ### v0.10.4 candidates (2026-08-18/19, extended 2026-08-22)
 
+- **`links check` no longer scans a nested git worktree** (2026-08-29, issue 053): `.claude/` is
+  gitignored harness scratch, and Claude Code's worktree isolation puts a full second checkout of the
+  repo at `.claude/worktrees/<branch>`. The checker descended into it: measured with one present, the
+  same tree reported **6 dangling of 698 links in 666 files, exit 1**, against 0 of 349 in 333 without
+  it — every one of the six being the worktree's copy of a link already excused, unrecognised because
+  excuses key on repo-relative paths. Worse than a wrong number: `links-check.yml` runs on a fresh
+  clone, so CI can never see it, and a contributor whose agent sessions use isolation meets a red check
+  that has nothing to do with their change (issue 050's asymmetry, in a second tool). `.claude` joins
+  `skipDirs`; matching is on the directory NAME, so the `.claude-plugin` manifest dir stays in the scan,
+  and `git ls-files .claude` is empty, so nothing tracked is now skipped. The issue records the shape
+  of the gap — a denylist covers only what someone was already surprised by — and puts the structural
+  alternative (skip any directory holding a `.git` entry, which stays PURE) to the maintainer.
+
 - **`tt git --help` now describes the tool it belongs to** (2026-08-25): the dispatch table has had
   eight verbs since `diff` and `rm` landed on 2026-08-22, and the help documented six. Worse than an
   omission: the safety paragraph listed `rm` among the verbs "not on the tool, by design", and that
