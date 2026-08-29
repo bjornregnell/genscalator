@@ -89,9 +89,17 @@ Neither invokes `scala-cli test tools`. So the suite runs only when a human or a
 locally, and whether this failure appears depends on the contributor's scala-cli version — there is no
 gate that would have turned it red for everyone at once.
 
-It is also **default-mode only**. In parity mode (`-Dtt.native.bin=<binary>`), `run` invokes the
-binary directly (`cli.test.scala:54-56`) and scala-cli never runs, so no advisory is emitted and
-`2454` passes. Read from the code, not run: no native binary was built to confirm this.
+It is also **default-mode only**, and that is now measured rather than inferred. In parity mode
+(`-Dtt.native.bin=<binary>`), `run` invokes the binary directly (`cli.test.scala:54-56`) and
+scala-cli never runs, so no advisory reaches stderr and `2454` passes. Confirmed on 2026-08-29 by a
+`deploy/buildnative.sc` run, whose parity stage runs the whole suite against the freshly built native
+dispatcher: **`CliSuite` 0 failed, 292 total, 26.0s** — against **1 failed, 292 total, 865.7s** for
+the same suite through scala-cli, same day, same machine.
+
+That asymmetry makes the gap harder to see rather than easier. The suite's only exhaustive stderr
+assertion **passes on the path that ships and fails on the path a contributor uses**: a release build
+is parity-proven green, while a fresh checkout's first `scala-cli test tools` is red — and with no CI
+gate (below), the green one is the run that gets performed deliberately.
 
 ## How to reproduce it
 
@@ -125,6 +133,15 @@ at `cli.test.scala:2454`. Steps 1, 2 and 5 were run and their output is quoted a
 reproduced against a **pristine tree** extracted with `git archive HEAD tools` at `c51a728`, where
 `json.scala` and `cli.test.scala` are byte-identical to `main` — so the failure predates and is
 independent of any working change.
+
+The parity counterpart was measured the same day, and is the cleanest single contrast:
+
+```bash
+# 6. the same suite, same machine, against a freshly built native dispatcher:
+scala-cli run deploy/buildnative.sc      # its parity stage sets -Dtt.native.bin and runs the suite
+#    => CliSuite: 0 failed, 0 ignored, 292 total   26.0s     (parity, no scala-cli in the loop)
+#    vs CliSuite: 1 failed, 0 ignored, 292 total  865.7s     (default, per-file scala-cli)
+```
 
 ## Acceptance sketch
 
@@ -173,3 +190,35 @@ whole-tuple comparison); and that neither workflow in `.github/workflows/` runs 
 verified: that parity mode passes (read from `cli.test.scala:54-56`; no native binary was built);
 anything on macOS or Windows; and anything against scala-cli 1.16.0, which this machine reports as
 available but which was not installed or tested.
+
+### Comment by hmiddelk at 2026-08-29 15:37 — parity mode confirmed by measurement
+
+The one claim the comment above labels NOT verified is now verified, and it came for free: I ran
+`scala-cli run deploy/buildnative.sc` for unrelated reasons, and its parity stage runs the whole suite
+against the binary it just built. Result, same machine and day as the failing run:
+
+```
+CliSuite: 0 failed, 0 ignored, 292 total   25.973s    (parity, -Dtt.native.bin set)
+CliSuite: 1 failed, 0 ignored, 292 total  865.748s    (default, per-file scala-cli)
+```
+
+So `cli.test.scala:2454` passes with the native dispatcher and fails through scala-cli, which is what
+the code path predicted: parity mode never invokes scala-cli, so the advisory is never emitted. The
+Description is updated accordingly; the earlier comment's "NOT verified" line is left as written,
+because the append-only rule means the record should show when the claim was still an inference.
+
+Two things this measurement does **not** establish, stated so the upgrade is not read as wider than it
+is. First, the parity run used `-Dtt.tools=<root>/tools` against the main checkout on the issue-040
+fix branch, not a pristine `main` — but that branch touches neither `json.scala` nor `cli.test.scala`,
+so the contrast holds for this assertion. Second, that tree predates PR #14, so `AbilitySuite` was not
+in it and is not covered by this parity result.
+
+The asymmetry is the part worth keeping: the suite's only exhaustive stderr assertion is green on the
+path that ships and red on the path a contributor runs. Combined with there being no CI gate, the
+green run is the one performed deliberately (a release build) and the red one is the one performed by
+whoever just cloned the repo — which is the wrong way round for a signal that is supposed to protect
+the release.
+
+Agent disclosure: this comment was drafted by an AI agent (Claude Opus 5) from output of a command I
+ran myself, and reviewed by me. The numbers are quoted from that run's console output; the agent ran
+nothing new for this comment.
