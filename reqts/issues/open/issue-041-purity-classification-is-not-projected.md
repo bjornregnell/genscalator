@@ -309,3 +309,63 @@ Phase 1 must be worth shipping on its own — which, per reason four above, it i
 Agent disclosure: an AI agent (Claude Opus 5) drafted this comment from my ruling and added the
 detection-caveat argument and the sequencing condition, which I reviewed and adopted; the decision
 and its scope are mine.
+
+### Comment by hmiddelk at 2026-08-29 14:44 — PHASE 1 IMPLEMENTED
+
+Phase 1 is implemented for the six verbs, in the derive form the decision above ratified. Two things
+are worth landing here rather than in a commit message: the naming, which this issue's own
+vocabulary does not survive, and where the registry had to live.
+
+**The countable moved to zero.** `guardcheck`, `harden`, `log`, `text`, `typo` and `wr` each declare
+themselves ONCE, on the `object <Tool>` that already holds their pure core, and both the `--help`
+tagline and the `case _ =>` usage block RENDER from that declaration — one string where there were
+two. `tools/README.md`'s six headings are **byte-identical** to before the change, because each
+declaration's `summary` was taken from the README tagline (the documented source of truth `gs help
+tt` reads) rather than from either of the strings that had drifted from it. So the diff sits entirely
+on the two carriers that were wrong, and the heading is now gated rather than merely correct.
+
+**`Ability`, not `Capability`.** The type is `Ability.Decl`, the registry `ProjectedAbilities`, in
+`tools/ability.scala` — not `Capability`, which is what this issue calls the concept throughout. Two
+reasons, and the second decided it:
+
+1. Scala 3.9 ships `scala.caps.Capability`, the marker trait of experimental CAPTURE CHECKING, where
+   a "capability" is a value whose TYPE tracks an effect. Probed on the pinned `3.9.0-RC4`: there is
+   no name collision to fix. `scala.caps` is not auto-imported; `import
+   language.experimental.captureChecking` does not import `caps.*`; and even an explicit `import
+   scala.caps.*` leaves the TERM `Capability` bound to a root-package object, because the caps one is
+   a trait. But on a toolbox that tracks bleeding-edge Scala AND classifies its verbs PURE/EFFECTFUL,
+   `Capability` is precisely the name that sends a reader looking for `^` and capture sets — two
+   unrelated concepts, adjacent enough to mislead.
+2. `ability` is the prior art's OWN word, not a coinage to dodge (1). The shape borrowed here is
+   #1833's `@ability` / `@about`, and a "model ability" is one of the two surfaces Phase 2 renders
+   into. So the code is named after what it projects into, and "capability projection" stays the name
+   of the problem rather than of the type.
+
+**Where the registry lives, and why not beside the type.** `ProjectedAbilities` sits in
+`dispatch.scala`. It has to NAME the tool objects, and `ability.scala` is `using file`-included by
+each projected tool — so the `tt` launcher's single-file fallback (`scala-cli run tools/text.scala`)
+would compile the registry in a build unit containing no other tool, and fail. `dispatch.scala`
+already carries exactly that constraint ("compiles only as part of the WHOLE-toolbox unit"), and
+verb -> description is the same axis as its verb -> entry point.
+
+**Against the "do not build a second manifest" condition**, which is the acceptance condition the
+sketch says it cares most about: the registry holds *references*, not copies, so it cannot disagree
+with what it points at, and a renamed field breaks the build instead of drifting. It is checked
+against `Dispatch.verbs`, which `DispatchSuite` already pins to exactly the `tools/*.scala` files
+with a top-level `@main` — so a NEW verb surfaces as not-yet-projected rather than silently absent.
+The enumeration step `skillcheck` avoids is avoided here too.
+
+`AbilitySuite` executes all six verbs on **both** description paths and compares the tagline exactly
+— which is what `cli.test.scala:2404-2413` structurally could not: it runs `--help` only, asserts
+shape over 8 of the 46 `###` entries, and `harden -` / `wr -` would have failed even that had it
+reached them. It also pins the projected set to the six, so widening the projection is a deliberate
+edit with a reviewable diff, per the sequencing condition attached to the decision above. Phase 2 is
+untouched and stays gated.
+
+Agent disclosure: implemented by an AI agent (Claude Opus 5) in session with hmiddelk. The
+`Capability` -> `Ability` rename is hmiddelk's call, prompted by hmiddelk's own observation about the
+capture-checking clash; the agent ran the three compiler probes that established there is no
+technical collision, and supplied reason 2. Verified by RUNNING: the full toolbox suite, and both
+description paths of all six verbs through the real CLI. NOT verified: any native-image effect (size,
+startup) was not measured, and the 40 unprojected verbs were neither touched nor audited — the floor
+caveat above still stands for them.
