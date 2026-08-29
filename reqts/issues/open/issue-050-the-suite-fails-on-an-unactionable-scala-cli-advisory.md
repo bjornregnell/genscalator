@@ -222,3 +222,31 @@ the release.
 Agent disclosure: this comment was drafted by an AI agent (Claude Opus 5) from output of a command I
 ran myself, and reviewed by me. The numbers are quoted from that run's console output; the agent ran
 nothing new for this comment.
+
+### Comment by hmiddelk at 2026-08-29 18:32 — correcting "for unrelated reasons"
+
+The comment above says I ran `scala-cli run deploy/buildnative.sc` *for unrelated reasons*, which
+reads as though I ran it arbitrarily. There was a reason, and it was named in the same session: the
+agent reported that the `tt` on my PATH was a **stale install** — its usage listed no `issue` verb,
+and `tt --version` answered `tt: no such tool '--version'`, so the binary predated both. The
+documented refresh for exactly that state is `scala-cli run deploy/buildnative.sc` (`tools/README.md`,
+`docs/native.md`), so I ran it. The parity numbers then arrived as a side effect of its parity stage.
+
+Unrelated to *this issue's subject*, then, but not unmotivated: the chain is stale binary → agent says
+so → documented rebuild → parity stage → the measurement. Worth having straight, because it changes
+what the measurement is evidence of. It did not fall out of a coincidence; it fell out of the ordinary
+staleness-and-refresh lifecycle, which is a path contributors are on routinely — the same population
+this issue argues meets the red test. That the release-shaped run is the one that happens to be green
+is therefore even less reassuring than the comment above makes it: here it happened only because a
+stale carrier forced a rebuild.
+
+It also explains a choice already visible in the preamble: this issue states its baseline as v0.10.2
+*from `VERSION.txt`* rather than from `tt --version`, per `reqts/issues/README.md`, because at filing
+time `tt --version` could not answer. A carrier that cannot state its own age is issue 036's subject.
+
+Nothing else changes: the numbers, the assertion census and the acceptance sketch stand as written,
+and the 15:37 wording is left in place under the append-only rule.
+
+Agent disclosure: drafted by an AI agent (Claude Opus 5) in session with me, from my correction and
+from the earlier session's transcript, and reviewed by me. The stale-`tt` symptoms quoted above are
+that session's recorded command output; the agent ran no new measurement for this comment.
