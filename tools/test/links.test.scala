@@ -73,6 +73,13 @@ class LinksSuite extends munit.FunSuite:
     // a different question (do the published pages resolve?) from the repo check.
     assert(Links.skipDirs("out"), "the assembled site is derived; scanning it double-counts the sources")
     assert(Links.skipDirs(".scalex"))
+    // `.claude/` is harness scratch, and the reason it must be skipped is stronger than double-counting:
+    // it can hold a NESTED GIT WORKTREE (`.claude/worktrees/<branch>`), a second checkout of the whole
+    // repo. Measured 2026-08-29 with one such worktree present: the scan went from 349 links in 334
+    // files to 699 in 667, and reported 6 dangling — every one of them the worktree's copy of a link
+    // already ignored by design, unrecognised because the ignore rules key on repo-relative paths
+    // (issue 053). Name-matching keeps `.claude-plugin` (asserted above) in the scan.
+    assert(Links.skipDirs(".claude"), "harness scratch can nest a worktree: a second copy of the repo")
   }
 
   test("html href and src count as links") {
