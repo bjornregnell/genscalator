@@ -1,6 +1,7 @@
 //> using file project.scala
 //> using jvm 21
 //> using file lib.scala
+//> using file ability.scala
 
 // texttool — a typed, compiler-checked replacement for the grep/awk/cut/sort|uniq reflex.
 // Off-the-shelf: pick a subcommand, give args. Pure (reads a file, computes, prints; no other effects).
@@ -18,8 +19,11 @@ private def warnGrepBre(pat: String): Unit =
       "`\\|` is a LITERAL pipe (matches nothing), not alternation. Use `|` (and unescaped `( { + ?`).")
 
 // Top-level, so a UNIQUE name (the toolbox compiles as one unit; a generic `Help` would collide across files).
+// The tagline is RENDERED from the one declaration in TextTool.ability, not written here (issue 041):
+// this file used to describe the verb twice — once here and once in the `case _ =>` block 131 lines
+// below, which called the tool `texttool` and had lost `cut/uniq`.
 private val TextHelp: String =
-  """tt text — typed grep/awk/cut/uniq replacement (pure)
+  TextTool.ability.tagline + """
     |
     |Searches, counts, and slices plain-text files with Java regex. Reach for it instead of
     |grep/awk/cut/sort|uniq: one compiler-checked tool, no pipes, no shell surprises.
@@ -56,6 +60,12 @@ private val TextHelp: String =
 /** Pure helpers for the text tool, in an object so the co-located munit tests can call them directly
   * (test scope extends the main scope) and so the names don't pollute the toolbox-wide top-level scope. */
 object TextTool:
+
+  /** What this verb is, declared ONCE and projected into every surface that describes it — the
+    * `--help` tagline, the bad-arguments usage block, and the tools/README.md heading. See
+    * ability.scala for why the three used to disagree. */
+  val ability: Ability.Decl = Ability.pure("text", "typed grep/awk/cut/uniq replacement")
+
   /** grepr pattern selection from the args AFTER `<dir> <ext>`.
     *  - `--any p1 p2 …`  -> every following pattern (matched as a logical OR): the metachar-free way to OR
     *    patterns, so the agent never types a regex `|` (which the not-yet-quote-aware guardcheck would read
@@ -150,7 +160,7 @@ object TextTool:
         println(want.map(i => if i >= 1 && i <= f.length then f(i - 1) else "").mkString("\t"))
 
     case _ =>
-      println("""texttool — typed grep/awk replacement (pure)
+      println(TextTool.ability.tagline + """
         |  text count <file> <regex>          count regex matches            (grep -c)
         |  text match <file> <regex>          print matching lines, numbered (grep -n)
         |  text context <file> <regex> [N]    matching lines with N context lines (grep -C N, default 2)

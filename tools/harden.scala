@@ -2,6 +2,7 @@
 //> using jvm 21
 //> using dep com.lihaoyi::os-lib:0.11.8
 //> using file secrets.scala
+//> using file ability.scala
 
 // harden — Layer-1 deterministic secret scanner (SM042). Surfaces CANDIDATES for semantic (Layer-2) triage.
 //   tt harden repo   <dir>   scan git-TRACKED text files (respects .gitignore); falls back to a walk if not a repo
@@ -18,6 +19,13 @@
 import scala.util.matching.Regex
 
 object Harden:
+
+  /** What this verb is, declared ONCE and projected into every surface that describes it (issue 041).
+    * The bad-arguments block below used to open `harden - …` with an ASCII hyphen and no purity
+    * marker — a string that would have failed even the shape assertion in cli.test.scala, had any
+    * test ever run that path. */
+  val ability: Ability.Decl = Ability.pureRead("harden", "Layer-1 deterministic secret scanner")
+
   final case class Finding(file: String, line: Int, kind: String, redacted: String, entropy: Double)
 
   // Entropy + redaction now live in secrets.scala, so `tt harden` and `tt env` cannot drift apart on
@@ -93,7 +101,7 @@ object Harden:
     }
 
   private val Help: String =
-    """tt harden — Layer-1 deterministic secret scanner (candidates for Layer-2 triage)
+    ability.tagline + """
       |
       |Scans files for likely secrets before content leaves the machine. Deliberately noisy:
       |Layer 1 (this tool) SURFACES candidates; Layer 2 (an agent or human) triages them.
@@ -127,7 +135,7 @@ object Harden:
       |Full reference: tools/README.md""".stripMargin
 
   def usage(): Unit =
-    println("""harden - Layer-1 deterministic secret scanner (candidates for Layer-2 triage)
+    println(ability.tagline + """
       |  tt harden repo   <dir>            scan git-tracked files (respects .gitignore; falls back to a walk)
       |  tt harden egress <dir>            scan ALL files under <dir> (a payload destined to leave)
       |  options: --entropy <bits>         min Shannon bits/char for entropy-gated hits (default 3.6)
