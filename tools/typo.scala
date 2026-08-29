@@ -1,5 +1,6 @@
 //> using file project.scala
 //> using jvm 21
+//> using file ability.scala
 
 // typo — a keyboard-aware typo classifier for the human-fatigue gauge (BR's idea, 2026-07-02): the human's
 // typical typo is hitting a key ADJACENT to the intended one on the Swedish keyboard. Given a typed word and the
@@ -15,6 +16,14 @@
 // Helpers (the keyboard model + adjacent/classify) scoped in this object so their generic names don't collide
 // with other tools when the toolbox compiles together. Only the @main entry is top-level. See skills/scala-style.
 object Typo {
+
+  /** What this verb is, declared ONCE and projected into every surface that describes it (issue 041).
+    * The bad-arguments block below used to describe the verb "(Swedish QWERTY; for the fatigue gauge)"
+    * — no purity marker at all. Both facts it carried are still stated, in the Help body and the
+    * file header, where a qualifier belongs; the tagline states what the verb IS and what it does to
+    * the world, and nothing else. */
+  val ability: Ability.Decl = Ability.pure("typo", "keyboard-aware typo classifier")
+
   val kbRows = Vector("qwertyuiopå", "asdfghjklöä", "zxcvbnm")
   val kbPos: Map[Char, (Int, Int)] =
     (for (row, r) <- kbRows.zipWithIndex; (ch, c) <- row.zipWithIndex yield ch -> (r, c)).toMap
@@ -45,7 +54,7 @@ object Typo {
     else "complex"
 
   private val Help: String =
-    """tt typo — keyboard-aware typo classifier (Swedish QWERTY; pure)
+    ability.tagline + """
       |
       |Classifies a typed-vs-intended word pair as one edit type, using letter adjacency on the
       |Swedish QWERTY layout. Feeds the human-fatigue gauge: adjacency-heavy typos hint at motor
@@ -75,7 +84,7 @@ object Typo {
       case "classify" :: typed :: intended :: Nil =>
         println(classify(typed, intended))
       case _ =>
-        println("""typo — keyboard-aware typo classifier (Swedish QWERTY; for the fatigue gauge)
+        println(ability.tagline + """
           |  typo adjacent <a> <b>              are two single chars keyboard-neighbors? (yes/no)
           |  typo classify <typed> <intended>   classify: match / adjacency / substitution-far /
           |                                      transposition / deletion / insertion / complex""".stripMargin)

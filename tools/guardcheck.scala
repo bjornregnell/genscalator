@@ -1,5 +1,6 @@
 //> using file project.scala
 //> using jvm 21
+//> using file ability.scala
 //> using dep com.lihaoyi::ujson:4.4.3
 
 // guardcheck — flag the shell-command / commit-message patterns that trip the confirmation guard OR are banned
@@ -28,6 +29,12 @@ import scala.util.matching.Regex
 // object so their generic names (usage/report/has/rx) don't collide with other tools when the toolbox
 // compiles together. Only the @main entry is top-level. See skills/scala-style.
 object Guardcheck {
+
+  /** What this verb is, declared ONCE and projected into every surface that describes it (issue 041).
+    * The bad-arguments block below used to state a third, different description that dropped the PURE
+    * classification — on the tool whose whole job is safety. */
+  val ability: Ability.Decl = Ability.pure("guardcheck", "flag guard-trip / banned-reflex patterns")
+
   final case class Finding(severity: String, name: String, why: String, fix: String)
 
   /** A check: a name/severity/why/fix plus a detector over the input text. */
@@ -372,14 +379,14 @@ object Guardcheck {
               s"guardcheck (tool-choice note, the command already ran): $text")))
 
   def usage(): Unit =
-    println("""guardcheck — flag shell/commit-message patterns that trip the guard or are banned reflexes
+    println(ability.tagline + """
       |  tt guardcheck cmd "<shell command>"    check a command (chaining, substitution, pipes, redirects, raw grep, /dev/stdin, heredoc)
       |  tt guardcheck msg "<commit message>"   check a commit message (line-leading #, =word, angle-glob)
       |  tt guardcheck hook [<json>]            PreToolUse hook: reads tool-call JSON on stdin (or as an arg), emits a permission-decision JSON
       |exit: cmd/msg -> 0 clean, 1 finding(s), 2 usage; hook -> 0""".stripMargin)
 
   private val Help: String =
-    """tt guardcheck — flag shell / commit-message patterns that trip the guard or are banned reflexes
+    ability.tagline + """
       |
       |Checks a proposed shell command or commit message BEFORE it is submitted, and prints the safe
       |rewrite for each finding — a prosthetic habit: the safe form is reached by structure, not by

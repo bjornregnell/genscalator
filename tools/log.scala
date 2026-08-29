@@ -1,6 +1,7 @@
 //> using file project.scala
 //> using jvm 21
 //> using file lib.scala
+//> using file ability.scala
 
 // log — analyze a build/run log: count + show errors and warnings across common ecosystems
 // (compiler/build, test runners, runtime leveled logs, CI, package managers, LaTeX). PURE: reads, computes, prints.
@@ -11,6 +12,12 @@ import agenttools.Lib
 // generic names (usage/parse/hits/show) don't collide with other tools when the toolbox compiles together.
 // Only the @main entry is top-level. See skills/scala-style.
 object Log {
+
+  /** What this verb is, declared ONCE and projected into every surface that describes it (issue 041).
+    * All three of this verb's carriers kept the purity marker but reworded the description; the point
+    * is that there is now nothing left to reword. */
+  val ability: Ability.Decl = Ability.pure("log", "build/run-log analyzer")
+
   // Curated default markers — TARGETED so tally lines ("0 errors", "no warnings") don't false-positive.
   // Each compiles SEPARATELY, so a custom pattern's inline (?i) can't leak into these.
   private val defaultErr = Vector(
@@ -80,7 +87,7 @@ object Log {
     go(args, Vector.empty, Vector.empty, Vector.empty, false, false, 50)
 
   private val Help: String =
-    """tt log — build/run-log analyzer (pure)
+    ability.tagline + """
       |
       |Counts and shows errors and warnings in a log file, with a one-line verdict. The summary
       |also counts recognised SUCCESS markers (sbt [success], compiling/compiled, tests-passed
@@ -119,7 +126,7 @@ object Log {
       |Full reference: tools/README.md""".stripMargin
 
   private def usage(): Unit =
-    println("""log — analyze a build/run log (pure)
+    println(ability.tagline + """
       |  log [summary|errors|warnings] <file>   summary = counts + lines + verdict (default)
       |  --error <regex>   add an error pattern   (repeatable)
       |  --warn  <regex>   add a warning pattern  (repeatable)
