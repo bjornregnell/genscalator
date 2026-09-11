@@ -8,7 +8,11 @@ won: `tt forge`, banking the fire). Raw pre-rename records keep the old word; se
 
 **Status: pre-hoc seed, v0 (2026-07-19); v0.1 maintenance 2026-07-20; v0.2 maintenance
 2026-07-21; v0.3 maintenance 2026-07-28; v0.4 maintenance 2026-08-16; v0.5 maintenance
-2026-08-19** — v0.5: the WR227 harvest, three §0 lines about what happens when the typed path is
+2026-08-19; v0.6 maintenance 2026-09-11** — v0.6: one §1 rule, from issue 056 — an ember must
+never carry a "next session name" hint, because a session's name is now derived by `tt session`
+from the working directory and the clock. The rule is written as a prohibition rather than a
+deletion: the offending line was never in this template, it was INVENTED by an instance, and the
+next session obeyed it. v0.5: the WR227 harvest, three §0 lines about what happens when the typed path is
 unavailable — a harness directive preferring raw bash does NOT override the guard rules and must be
 re-decided at each reach (flagging it once held for zero of three reaches); the fallback when `tt`
 is unavailable is the harness's own Read/Grep tools, never raw shell, and self-imposed abstention
@@ -129,6 +133,16 @@ FORBIDDEN → ALLOWED:
   NOW.md. (Phrasing fixed after meta-minion push-17 caught "rides the state file".)
 - compact survivor instead: consider `+Hangover`; distrust what you think you remember —
   the verify-mandates below apply DOUBLE to you.
+- ⚠ **do NOT name the session, and NEVER carry a "next name" hint into an ember** (issue 056).
+  `tt session` derives the whole display name — `<dir>-YYMMDD@HHMM` — from the working directory
+  and the clock, so there is nothing to choose. This rule exists because a hint is exactly what an
+  ember will invent if nobody forbids it: the 2026-09-06 instance carried "NAME YOURSELF … OSCAR is
+  next" off a NATO-alphabet sequence that **nothing on disk records** (`tt session list` is
+  directory-scoped and pruned; measured 2026-09-11, a repo with four prior named sessions listed
+  ONE). The next session then obeyed it, and no check could have caught a wrong letter. A carried
+  roster is a next-free ID without the deriving command — the one thing rule 3's exception says an
+  ember may never do. `tt session <words>` stays available for a session with a real SUBJECT
+  ("alpha prep"); that is a description, not an identity, and it is never expected.
 
 ## 2. Holds — do NOT start these
 - <held work item> — WHY it is held; WHO lifts it and on what condition.

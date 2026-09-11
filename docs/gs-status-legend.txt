@@ -20,8 +20,15 @@ LINE 1 — measured session gauges (fixed left-to-right order, two spaces apart)
                                 ↑  glues a label to an output FLOW  (rot?↑1k, tot↑1k)
 
 LINE 2 — mode line (--mode-line): the DECLARED joint state-of-mind
-  gs mode set ColdStart & SmartZone & TokSaving
+  in: genscalator-work  started: aug11@1408   gs mode: ColdStart & SmartZone & TokSaving
+  gs mode set ColdStart & SmartZone & TokSaving            (outside a harness session: no lead)
   CamelCase chips set by you or the agent via  tt mode add <label>  (shorthand +label / -label)
+  The lead is DERIVED, not chosen: `in:` is the working directory, `started:` the session's own
+  clock, both from the session store (issue 056) — so a session needs no naming and the spoken
+  forms follow the stamp ("the 1408 session"; "the aug11@1408 session" reaching back). Month
+  names are pinned to English so the form you say cannot differ per machine. An OPTIONAL subject
+  from `tt session <words>` appears INVERTED after the stamp: inversion marks the one run of text
+  a human actually wrote.
 
 LINE 3 — box line (--box-line): MEASURED box health from /proc + /sys (Linux only)
   box healthy | huffing | swamped   lead verdict = the worst segment's severity

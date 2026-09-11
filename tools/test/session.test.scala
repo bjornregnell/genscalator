@@ -9,16 +9,56 @@
 class SessionStoreSuite extends munit.FunSuite:
   private val utc = java.time.ZoneId.of("UTC")
 
-  test("defaultName is YYMMDD-HHhMMm, fixed width, no colon") {
+  test("defaultName is YYMMDD@HHMM, fixed width") {
     // 2026-07-28 15:42 UTC
     val ms = java.time.ZonedDateTime.of(2026, 7, 28, 15, 42, 7, 0, utc).toInstant.toEpochMilli
-    assertEquals(SessionStore.defaultName(ms, utc), "260728-15h42m")
+    assertEquals(SessionStore.defaultName(ms, utc), "260728@1542")
   }
 
-  test("displayName joins timestamp FIRST, human name as suffix") {
+  // issue 056: assert the PROPERTY, not only the literal above. A test that compares against one
+  // expected string still passes if a later format change reintroduces a path separator, which is
+  // the whole reason `@` was chosen over `:` — and is the defect class issue 048 is open for.
+  test("a derived name is usable as a filename on every platform") {
     val ms = java.time.ZonedDateTime.of(2026, 7, 28, 15, 42, 0, 0, utc).toInstant.toEpochMilli
-    assertEquals(SessionStore.displayName(ms, Some("alpha prep"), utc), "260728-15h42m-alpha prep")
-    assertEquals(SessionStore.displayName(ms, None, utc), "260728-15h42m")
+    val forbidden = Set(':', '/', '\\', '*', '?', '"', '<', '>', '|')
+    for rendered <- Vector(
+        SessionStore.defaultName(ms, utc),
+        SessionStore.displayName(ms, None, utc, dir = Some("genscalator-work")),
+        SessionStore.friendlyStamp(ms, utc)) do
+      assert(rendered.nonEmpty, "a rendered name is never empty")
+      assert(!rendered.exists(forbidden), s"'$rendered' carries a character illegal in a filename")
+      assert(!rendered.exists(_.isControl), s"'$rendered' carries a control character")
+  }
+
+  test("displayName is WHERE then WHEN, with the human name as an optional suffix") {
+    val ms = java.time.ZonedDateTime.of(2026, 7, 28, 15, 42, 0, 0, utc).toInstant.toEpochMilli
+    assertEquals(SessionStore.displayName(ms, None, utc, dir = Some("genscalator-work")),
+      "genscalator-work-260728@1542")
+    assertEquals(SessionStore.displayName(ms, Some("alpha prep"), utc, dir = Some("genscalator-work")),
+      "genscalator-work-260728@1542-alpha prep")
+    // No cwd recorded (an old store entry, or the filesystem root): the name still renders.
+    assertEquals(SessionStore.displayName(ms, Some("alpha prep"), utc), "260728@1542-alpha prep")
+  }
+
+  test("dirLabel takes the basename, and yields None rather than an empty string") {
+    assertEquals(SessionStore.dirLabel(Some("/home/br/git/hub/lu/introprog")), Some("introprog"))
+    assertEquals(SessionStore.dirLabel(Some("  /tmp/scratch  ")), Some("scratch"))
+    assertEquals(SessionStore.dirLabel(Some("/")), None)
+    assertEquals(SessionStore.dirLabel(Some("   ")), None)
+    assertEquals(SessionStore.dirLabel(None), None)
+  }
+
+  // The month name must not follow the machine's locale, or the form a human SAYS would differ per
+  // box (Swedish would render `maj` and `okt`). Pinned to English in friendlyStamp.
+  test("friendlyStamp is how a human says it, in English regardless of default locale") {
+    val ms = java.time.ZonedDateTime.of(2026, 8, 11, 14, 8, 0, 0, utc).toInstant.toEpochMilli
+    val saved = java.util.Locale.getDefault
+    try
+      java.util.Locale.setDefault(java.util.Locale.of("sv", "SE"))
+      assertEquals(SessionStore.friendlyStamp(ms, utc), "aug11@1408")
+      assertEquals(SessionStore.chipLine(ms, Some("genscalator-work"), utc),
+        "in: genscalator-work  started: aug11@1408")
+    finally java.util.Locale.setDefault(saved)
   }
 
   test("validName allows spaces and hyphens, rejects control chars and empties") {
@@ -98,7 +138,8 @@ class SessionCliSuite extends munit.FunSuite:
     val root = os.temp.dir()
     val (c1, out1, _) = run("session", "--sessions-root", root.toString, "--id", "t-1", "--now-ms", "1785339720000")
     assertEquals(c1, 0)
-    assert(clue(out1).trim.matches("\\d{6}-\\d{2}h\\d{2}m"), out1)
+    // issue 056: <dir>-YYMMDD@HHMM, the directory coming from the cwd stamp this call writes.
+    assert(clue(out1).trim.matches(".+-\\d{6}@\\d{4}"), out1)
     val (c2, out2, _) = run("session", "--sessions-root", root.toString, "--id", "t-1", "alpha", "prep")
     assertEquals(c2, 0)
     assert(clue(out2).trim.endsWith("-alpha prep"))
@@ -237,7 +278,8 @@ class SessionCliSuite extends munit.FunSuite:
     assert(clue(err1).contains("hint:") && err1.contains("tt session adopt") && err1.contains("ghost"))
     val (c2, out2, err2) = run("session", "--sessions-root", root.toString, "--id", "new-h", "--cwd", "/fake/dir")
     assertEquals(c2, 0)
-    assert(clue(out2).trim.matches("\\d{6}-\\d{2}h\\d{2}m")) // normal print unchanged
+    // `--cwd /fake/dir` is what the display name derives its `dir` part from (issue 056).
+    assert(clue(out2).trim.matches("dir-\\d{6}@\\d{4}")) // normal print, now WHERE then WHEN
     assert(clue(err2).contains("hint:") && err2.contains("tt session adopt"))
   }
 
@@ -269,8 +311,13 @@ class SessionCliSuite extends munit.FunSuite:
       "--mode-line", "--no-status", "--no-tok",
       "--modes-file", g.toString, "--sessions-root", root.toString, "--limits-file", "/nonexistent")
     assertEquals(code, 0)
-    assert(clue(out).contains("gs session:"))
-    assert(clue(out).contains("demo"))
+    // issue 056: the lead is the labelled chip, not a `gs session:` label plus a slug. The cwd
+    // stamp is written by the `session` call above, so `in:` names this temp directory.
+    assert(clue(out).contains("in: "))
+    assert(clue(out).contains("started: "))
+    assert(clue(out).contains("@"))
+    assert(clue(out).contains("demo")) // the human SUBJECT survives, and is the inverted run
+    assert(clue(out).contains("gs mode:"))
     assert(clue(out).contains("RotVigil"))
     assert(clue(out).contains("TokSpend"))
   }
@@ -284,7 +331,8 @@ class SessionCliSuite extends munit.FunSuite:
       "--modes-file", g.toString, "--sessions-root", root.toString, "--limits-file", "/nonexistent")
     assertEquals(code, 0)
     assert(clue(out).contains("gs mode set"))
-    assert(!clue(out).contains("gs session:"))
+    assert(!clue(out).contains("in: "))
+    assert(!clue(out).contains("started: "))
   }
 
   // ---- issue-037: read-shaped words must never SET a name; the setter announces itself ----

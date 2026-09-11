@@ -24,9 +24,10 @@
 //   cwd      the working directory, ONE line, stamped once by writers (issue-023): the id key is
 //            unique but NOT stable (a harness bg/fg round trip re-mints it), and orphan recovery
 //            must match entries to THIS directory — see the orphan-recovery section below.
-// THE PARTS ARE STORED, NEVER THE JOIN (SM259 rider): `YYMMDD-HHhMMm-MyName` is concatenated at
+// THE PARTS ARE STORED, NEVER THE JOIN (SM259 rider): `<dir>-YYMMDD@HHMM-MyName` is concatenated at
 // RENDER time only, because names contain hyphens and the join cannot be split back. The display
-// name is never a path component; the id is the key.
+// name is never a path component; the id is the key. The `cwd` part of the join is read from the
+// stamp above, so it is measured rather than passed in by whoever happens to be rendering.
 
 object SessionStore:
   import java.nio.file.{Files, Path}
@@ -43,17 +44,52 @@ object SessionStore:
   def validName(s: String): Boolean =
     s.nonEmpty && s.length <= 120 && !s.exists(_.isControl)
 
-  /** The always-present default name part: `YYMMDD-HHhMMm` (BR's format, third iteration): fixed
-    * width, chronologically sortable, filesystem-safe by construction (no colon). PURE. */
+  /** The always-present default name part: `YYMMDD@HHMM` (BR's format, fourth iteration): fixed
+    * width, chronologically sortable, filesystem-safe by construction (no colon). PURE.
+    *
+    * `@` reads aloud as "at", which is what makes the spoken forms work ("the 1408 session"). It is
+    * NOT a colon for the reason the third iteration already recorded here: a colon is illegal in a
+    * Windows filename and is a separator in paths, drive specifiers and URLs, so a name carrying one
+    * breaks the moment it reaches a filename or a path in a log (issue 048 is open for that class). */
   def defaultName(startedAtMs: Long, zone: java.time.ZoneId = java.time.ZoneId.systemDefault()): String =
-    java.time.format.DateTimeFormatter.ofPattern("yyMMdd-HH'h'mm'm'").withZone(zone)
+    java.time.format.DateTimeFormatter.ofPattern("yyMMdd@HHmm").withZone(zone)
       .format(java.time.Instant.ofEpochMilli(startedAtMs))
 
-  /** The rendered display name: timestamp ALWAYS present and FIRST; the human name is a SUFFIX.
-    * The age signal survives naming, and duplicate human names cannot collide. PURE. */
+  /** The working directory's basename, which is the part of a cwd worth carrying in a name. PURE.
+    * `None` for a path with no name part (the filesystem root), never an empty string. */
+  def dirLabel(cwd: Option[String]): Option[String] =
+    cwd.map(_.trim).filter(_.nonEmpty)
+      .flatMap(c => Option(java.nio.file.Path.of(c).getFileName)).map(_.toString)
+      .filter(s => s.nonEmpty && !s.exists(_.isControl))
+
+  /** The rendered display name: WHERE, then WHEN, then the optional human name as a suffix.
+    *
+    * `genscalator-work-260911@1408`, or `…@1408-alpha prep` when a human named it. Every part is
+    * DERIVED — the directory from the cwd stamp, the stamp from the clock — so a session has no name
+    * to choose and therefore none it can get wrong (issue 056). The directory is included because
+    * the store is directory-scoped, which makes the project implicit context; that context is
+    * precisely what is lost when a name is quoted in a hand-off note, an issue or a commit. PURE. */
   def displayName(startedAtMs: Long, name: Option[String],
+      zone: java.time.ZoneId = java.time.ZoneId.systemDefault(),
+      dir: Option[String] = None): String =
+    dir.map(_ + "-").getOrElse("") + defaultName(startedAtMs, zone) + name.map("-" + _).getOrElse("")
+
+  /** The stamp as a human SAYS it: `aug11@1408`. PURE.
+    *
+    * Deliberately a different rendering of the same instant than `defaultName`, not a second source
+    * of truth: display and identity are separate concerns, and the part anyone speaks — the time —
+    * is byte-identical in both. The month name is pinned to `Locale.ENGLISH` because the default
+    * locale would render Swedish month abbreviations on this box (`maj`, `okt`), which would make
+    * the spoken form differ per machine. */
+  def friendlyStamp(startedAtMs: Long, zone: java.time.ZoneId = java.time.ZoneId.systemDefault()): String =
+    java.time.format.DateTimeFormatter.ofPattern("MMMdd@HHmm", java.util.Locale.ENGLISH).withZone(zone)
+      .format(java.time.Instant.ofEpochMilli(startedAtMs)).toLowerCase
+
+  /** The session chip as a human reads it: `in: genscalator-work  started: aug11@1408`. PURE.
+    * Labelled rather than positional, so nobody has to decode a slug to see where and when. */
+  def chipLine(startedAtMs: Long, dir: Option[String],
       zone: java.time.ZoneId = java.time.ZoneId.systemDefault()): String =
-    defaultName(startedAtMs, zone) + name.map("-" + _).getOrElse("")
+    s"in: ${dir.getOrElse("?")}  started: ${friendlyStamp(startedAtMs, zone)}"
 
   def dir(root: Path, id: String): Path        = root.resolve(id)
   def modesFile(root: Path, id: String): Path  = dir(root, id).resolve("modes")
@@ -211,7 +247,7 @@ object SessionStore:
   /** The one-line orphan hint. PURE render; stderr-only at the call sites, because stdout of
     * `tt session` / `tt mode` is parsed (statusline and agents) and must stay byte-stable. */
   def hintLine(best: Orphan, nowMs: Long): String =
-    val disp = displayName(best.startedMs.getOrElse(best.mtimeMs), best.name)
+    val disp = displayName(best.startedMs.getOrElse(best.mtimeMs), best.name, dir = dirLabel(best.cwd))
     val chipsPart = if best.chips.isEmpty then "no chips" else "chips " + best.chips.mkString(" ")
     s"hint: orphaned session state for this directory exists ($disp, $chipsPart, ${ageStr(nowMs - best.mtimeMs)} old) — adopt with: tt session adopt"
 

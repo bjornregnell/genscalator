@@ -405,16 +405,20 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     * proxy; a declaration is not a proxy, it is a judgment with an owner. BR usually declares it, because the agent
     * is the unreliable narrator of its own warmth: the rule is that the declarer is whoever can OBSERVE the state,
     * which is sometimes the other party. */
-  def renderModes(modes: Seq[String], session: Option[String] = None): String =
-    // Line-2 prefix: with a session identity, the lead is `gs session:` + the display name INVERTED
-    // in the label's own colour (SM259: inversion marks free text the human chose, distinct from the
-    // CamelCase enum chips) — 11 chars, so the row-leads still align with "genscalator"/"gs mode set".
-    // Without one (bare shell / old harness), the pre-SM208 brand stays; both double as DWIM verbs.
+  def renderModes(modes: Seq[String], session: Option[String] = None,
+      subject: Option[String] = None): String =
+    // Line-2 prefix: with a session identity, the lead is the LABELLED chip `in: <dir>  started:
+    // aug11@1408` (issue 056), which says where and when instead of asking the reader to decode a
+    // slug. `gs mode:` still sits between it and the chips so the line stays self-describing.
+    //
+    // ⚠ INVERSION NOW MARKS ONLY THE SUBJECT. SM259 used it for the whole display name because that
+    // name was free text the human chose; under 056 the name is DERIVED, and the only chosen text
+    // left is the optional subject from `tt session <words>`. So the invariant is unchanged — the
+    // inverted run is exactly the part a human wrote — while what satisfies it shrank.
     val brand = session match
-      case Some(n) =>
-        // BR 2026-07-28: a second label `gs mode:` sits between the name and the chips, so the line
-        // is self-describing: gs session: ⟨NAME⟩ gs mode: ⟨chips⟩ — both labels double as DWIM verbs.
-        sgr("1;38;5;42", "gs session:") + " " + sgr("1;7;38;5;42", s" $n ") + " " + sgr("1;38;5;42", "gs mode:")
+      case Some(chip) =>
+        val subj = subject.map(s => " " + sgr("1;7;38;5;42", s" $s ")).getOrElse("")
+        sgr("1;38;5;42", chip) + subj + "  " + sgr("1;38;5;42", "gs mode:")
       case None => sgr("1;38;5;42", "gs mode set")
     val chips = sortModes(modes).map(renderMode)
     if chips.isEmpty then s"$brand ${sgr("38;5;245", "clear: no active mode labels")}"
@@ -677,8 +681,10 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
                 .creationTime().toMillis)
             catch case _: Throwable => None
           .getOrElse(nowMs)
-        SessionStore.displayName(started, SessionStore.readName(sessionsRoot, id))
-      println(renderModes(allChips, sessionLead))
+        // The chip is DERIVED from the store the same way `tt session` derives it — the directory
+        // from the cwd stamp, the stamp from the clock — so the two surfaces cannot drift apart.
+        SessionStore.chipLine(started, SessionStore.dirLabel(SessionStore.readCwd(sessionsRoot, id)))
+      println(renderModes(allChips, sessionLead, sid.flatMap(SessionStore.readName(sessionsRoot, _))))
     // LINE 3 (SM163): measured box health; gather() is None off-Linux so the row is silently absent there.
     if boxLine then BoxStats.gather().foreach(b => println(renderBox(b)))
     0

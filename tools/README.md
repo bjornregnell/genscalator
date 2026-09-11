@@ -334,21 +334,29 @@ byte-identical — pointing at the recovery: `tt session adopt`. The statusline'
 each label reverse-video + bold in its own colour, padded one space each side. Labels are bare tokens
 `[A-Za-z0-9._-]+`. Pairs with `session` (the session NAME) and `statusline` (rendering).
 
-### session — name THIS session, so parallel sessions are tellable apart (EFFECTFUL: a small state file)
+### session — tell parallel sessions apart at a glance (EFFECTFUL: a small state file)
 ```
-session                 # print the display name: YYMMDD-HHhMMm[-MyName]
-session <name words>    # set the human name part (free text, spaces allowed; control chars rejected)
+session                 # print the display name: <dir>-YYMMDD@HHMM[-MyName]
+session <name words>    # set an OPTIONAL human name part (free text, spaces allowed; control chars rejected)
 session list             # list sessions recorded for THIS directory, newest first (alias: ls; pure read)
-session --clear         # remove the human name (the timestamp part remains)
+session --clear         # remove the human name (the derived part remains)
 session adopt           # re-attach state orphaned by a harness session-id re-mint
 session adopt <id>      # pick among several candidates (a bare adopt lists them)
 session --sessions-root <d> | --id <id> | --cwd <dir> | --now-ms <ms>    # overrides (for tests)
 ```
-The timestamp part is ALWAYS present and FIRST: the age signal survives naming, duplicate human names cannot
-collide, and the string is filesystem-safe by construction — though the display name is never a path
-component; the store is keyed on the opaque harness session id. The statusline renders the name inverted
-after a `gs session:` label on the mode line. Outside a harness session (no id) there is nothing to name:
-the tool says so and exits 1.
+A session needs NO naming: the display name is DERIVED (issue 056), the directory from the working
+directory and the stamp from the clock, so there is no decision to make and nothing to get wrong. The
+previous convention had each session choose a suffix from a NATO-alphabet sequence that nothing on disk
+recorded, which no check could catch. `session <words>` remains for a session with a real SUBJECT
+("alpha prep"); it is a convenience, never an expectation.
+The derived part is ALWAYS present and FIRST: the age signal survives naming, duplicate human names cannot
+collide, and the string is filesystem-safe by construction — `@` rather than `:`, which is illegal in a
+Windows filename and a separator in paths and URLs — though the display name is never a path component;
+the store is keyed on the opaque harness session id. `@` also reads aloud as "at", which is what makes the
+spoken forms work: "the 1408 session" the same day, "the aug11@1408 session" reaching back. A bare
+`tt session` additionally prints a labelled `in: <dir>  started: aug11@1408` to stderr, so stdout stays one
+parseable line. The statusline renders the name inverted after a `gs session:` label on the mode line.
+Outside a harness session (no id) there is nothing to name: the tool says so and exits 1.
 The harness id is unique but NOT stable — a background/foreground round trip re-mints it, orphaning
 name + chips under the old key while reads of the new key find silent emptiness. `adopt` is the explicit
 recovery: with exactly ONE orphan recorded for the SAME working directory it copies that orphan under the

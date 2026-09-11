@@ -2,13 +2,22 @@
 //> using file sessionstore.scala
 //> using jvm 21
 
-// session — name THIS session, so parallel sessions are tellable apart at a glance (SM208/SM259).
-//   tt session                 print the display name: YYMMDD-HHhMMm[-MyName]
-//   tt session <name words>    set the human name part (spaces allowed)
-//   tt session --clear         remove the human name (the timestamp part always remains)
+// session — tell parallel sessions apart at a glance (SM208/SM259, reshaped by issue 056).
+//   tt session                 print the display name: <dir>-YYMMDD@HHMM[-MyName]
+//   tt session <name words>    set an OPTIONAL human name part (spaces allowed)
+//   tt session --clear         remove the human name (the derived part always remains)
 //   tt session adopt [<id>]    re-attach orphaned state after a harness session-id re-mint (issue-023)
 //   tt session list            list sessions recorded for THIS directory (pure read; alias: ls)
-// The timestamp is ALWAYS present and FIRST (BR's format): the age signal survives naming, duplicate
+//
+// ⚠ A SESSION DOES NOT NEED NAMING, and should not be asked to name itself. The whole display name
+// is DERIVED — the directory from the cwd stamp, the stamp from the clock — so there is no decision
+// to make and nothing to get wrong. issue 056 exists because the previous convention had sessions
+// choose a suffix from a sequence (the NATO alphabet) that NOTHING on disk records: `session list`
+// is directory-scoped and pruned, so a session learned its own letter only from prose carried in
+// the last session's hand-off note, and no check could catch a wrong one. `tt session <name>`
+// remains for a session with a real subject; it is a convenience, never an expectation.
+//
+// The derived part is ALWAYS present and FIRST: the age signal survives naming, duplicate
 // human names cannot collide, and the string is filesystem-safe by construction (no colon) — though
 // the display name is NEVER a path component; the store is keyed on the opaque harness session id
 // (env CLAUDE_CODE_SESSION_ID), which is useless as a name but perfect as a key. State lives in
@@ -32,15 +41,21 @@ import java.nio.file.{Files, Path}
 
 object SessionTool:
   val Help: String =
-    """tt session — name THIS session, so parallel sessions are tellable apart (v0.10.0)
+    """tt session — tell parallel sessions apart at a glance (v0.10.0)
+      |
+      |The display name is DERIVED and needs no naming: <dir> from the working directory, the stamp
+      |from the clock. A session should not be asked to name itself — issue 056 replaced a chosen
+      |suffix (…Lima, Mike, November) that nothing on disk recorded, so it could not be checked.
+      |Naming stays available for a session with a real subject; it is never an expectation.
       |
       |Usage:
-      |  session                     print the display name: YYMMDD-HHhMMm[-MyName]
-      |  session <name words...>     set the human name part (free text, spaces allowed;
+      |  session                     print the display name: <dir>-YYMMDD@HHMM[-MyName]
+      |                              (a labelled `in: <dir>  started: aug11@1408` goes to stderr)
+      |  session <name words...>     set an OPTIONAL human name part (free text, spaces allowed;
       |                              newlines/control characters rejected; max 120 chars)
       |  session list                list every session recorded for THIS directory, newest first,
       |                              the current one starred — a pure read; `ls` is an alias
-      |  session --clear             remove the human name (the timestamp part remains)
+      |  session --clear             remove the human name (the derived part remains)
       |  session adopt               re-attach ORPHANED state to this session: when the harness
       |                              re-mints the session id (e.g. a background/foreground round
       |                              trip), the old key's name + chips look cleared while the state
@@ -60,9 +75,11 @@ object SessionTool:
       |  session --cwd <dir>         override the working directory used for orphan matching (for tests)
       |  session --now-ms <ms>       fixed clock (for deterministic tests)
       |
-      |The timestamp part is ALWAYS present and FIRST — the age signal survives naming and two
-      |sessions named the same can never be confused. Outside a harness session (no session id)
-      |there is nothing to name: the tool says so and exits 1.
+      |The derived part is ALWAYS present and FIRST — the age signal survives naming and two
+      |sessions named the same can never be confused. `@` rather than `:` keeps the name legal as a
+      |filename on every platform, and reads aloud as "at", which is what makes the spoken forms
+      |work: "the 1408 session" on the same day, "the aug11@1408 session" reaching back. Outside a
+      |harness session (no session id) there is nothing to name: the tool says so and exits 1.
       |
       |`adopt` and the READ words list/ls/show/status/current/get/name are RESERVED: a lone word
       |spelled that way in any capitalization is the verb, never a name — a query must NEVER write
@@ -75,17 +92,18 @@ object SessionTool:
       |exactly as before, so nothing that parses it can break.
       |
       |Examples:
-      |  tt session alpha prep       # this session now renders as e.g. 260728-15h42m-alpha prep
-      |  tt session                  # what is this session called?
+      |  tt session                  # e.g. genscalator-260728@1542 — no naming needed
+      |  tt session alpha prep       # optional subject: genscalator-260728@1542-alpha prep
       |  tt session list             # which sessions has this directory seen? (never a setter)
-      |  tt session --clear          # back to the bare timestamp
+      |  tt session --clear          # back to the derived name
       |  tt session adopt            # chips/name vanished after a bg/fg? re-attach the orphan
       |
       |Chips/modes are a separate field: see `tt mode`. Full reference: tools/README.md""".stripMargin
 
   /** One candidate as listed to the human: id first (it is what `adopt <id>` takes). */
   private def candLine(o: SessionStore.Orphan, nowMs: Long): String =
-    val disp = SessionStore.displayName(o.startedMs.getOrElse(o.mtimeMs), o.name)
+    val disp = SessionStore.displayName(o.startedMs.getOrElse(o.mtimeMs), o.name,
+      dir = SessionStore.dirLabel(o.cwd))
     val chipsPart = if o.chips.isEmpty then "no chips" else "chips: " + o.chips.mkString(" ")
     s"  ${o.id}  $disp ($chipsPart; ${SessionStore.ageStr(nowMs - o.mtimeMs)} old)"
 
@@ -98,7 +116,12 @@ object SessionTool:
   private def printName(root: Path, id: String, cwd: String, nowMs: Long): Int =
     SessionStore.orphanHint(root, id, cwd, nowMs).foreach(Console.err.println) // stderr ONLY
     val started = SessionStore.readStarted(root, id).getOrElse(nowMs)
-    println(SessionStore.displayName(started, SessionStore.readName(root, id)))
+    // The human-readable chip goes to STDERR and the canonical name to STDOUT, the same split the
+    // naming path below uses: stdout stays ONE parseable line, and a person reading a terminal sees
+    // both. Display and identity are different concerns (issue 056).
+    Console.err.println(SessionStore.chipLine(started, SessionStore.dirLabel(Some(cwd))))
+    println(SessionStore.displayName(started, SessionStore.readName(root, id),
+      dir = SessionStore.dirLabel(Some(cwd))))
     0
 
   /** issue-037 roster: every recorded session for THIS directory, newest first — the same data
@@ -129,7 +152,8 @@ object SessionTool:
     if SessionStore.readName(root, id).isEmpty then
       best.name.foreach(n => SessionStore.writeName(root, id, n, nowMs))
     SessionStore.ensureCwd(root, id, cwd)
-    val disp = SessionStore.displayName(started, SessionStore.readName(root, id))
+    val disp = SessionStore.displayName(started, SessionStore.readName(root, id),
+      dir = SessionStore.dirLabel(Some(cwd)))
     val chipsPart = if best.chips.isEmpty then "no chips" else "chips: " + best.chips.mkString(" ")
     println(s"adopted: $disp ($chipsPart; ${SessionStore.ageStr(nowMs - best.mtimeMs)} old; from id ${best.id})")
     0
@@ -191,7 +215,7 @@ object SessionTool:
           case "--clear" :: Nil =>
             SessionStore.clearName(root, id)
             val started = SessionStore.readStarted(root, id).getOrElse(nowMs)
-            println(SessionStore.displayName(started, None))
+            println(SessionStore.displayName(started, None, dir = SessionStore.dirLabel(Some(cwd))))
             0
           // A LONE adopt matches in ANY capitalization: during the recovery flow a case-typo must
           // hit the verb, not silently NAME the session "Adopt". Multi-word names are unaffected;
@@ -232,8 +256,9 @@ object SessionTool:
               SessionStore.ensureCwd(root, id, cwd)
               SessionStore.prune(root, nowMs)
               val started = SessionStore.readStarted(root, id).getOrElse(nowMs)
-              val newDisp = SessionStore.displayName(started, Some(name))
-              val oldDisp = SessionStore.displayName(oldStarted.getOrElse(started), oldName)
+              val dirPart = SessionStore.dirLabel(Some(cwd))
+              val newDisp = SessionStore.displayName(started, Some(name), dir = dirPart)
+              val oldDisp = SessionStore.displayName(oldStarted.getOrElse(started), oldName, dir = dirPart)
               val act     = if oldName.isDefined then "renamed" else "named"
               Console.err.println(s"session: $act $oldDisp -> $newDisp")
               println(newDisp)
