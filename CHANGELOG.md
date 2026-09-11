@@ -10,6 +10,29 @@ file before adopting a new version: it changes the agent's operating rules, so r
 
 ### v0.10.4 candidates (2026-08-18/19, extended 2026-08-22)
 
+- **The uninstaller's payload layout is derived from the staging step, not typed** (issue 040,
+  2026-08-26): `get-genscalator.sc`'s pre-manifest fallback held a hand-written list of the payload's
+  top-level entries, and it had drifted in **both** directions. It missed `reqts`, so `reqts/PRD.md`
+  survived `--uninstall --force` and the `kept:` line then explained it as a file "this uninstaller did
+  not put there" — one command after the installer put it there. And it claimed `skills`, `tools` and
+  `plugins`, which the staging step has never staged and the installer never creates; the fallback
+  *walks* a listed directory and takes every regular file under it, so a user's own
+  `~/.genscalator/tools/` was destroyed **two lines below a printed promise that it would not be
+  touched**. The over-clean is the data-loss half and it reached a release unreproduced; it was finally
+  reproduced by hand on Linux on 2026-08-26, where all three surplus entries took a file. The leftover
+  half was reproduced on Windows on 2026-08-21 (report 088).
+  The list is now a **generated region** in the script, derived from `native-release.yml`'s staging
+  step by the new `deploy/payloadsync.sc` (`--check` / `--write` / `--staged <dir>`) over the pure
+  `tools/payloadlib.scala`. Two gates that share no code keep it honest: `PayloadLayoutSuite`
+  regenerates and diffs the committed region, and the release workflow compares that region against
+  the **real `staging/` tree** between staging and archiving — the only check that cannot be fooled by
+  a mistake in the parser, and it fails the release rather than the install. The warning text now
+  renders from the same vector instead of restating it (the fourth carrier), says out loud that
+  everything under a claimed path is removed *including files you put there*, and the `kept:` line
+  says the weaker thing that is actually true. Derive rather than assert was BR's ruling on the issue;
+  the release-history check that made deriving from *current* staging safe is in its Discussion.
+  Issue 042's version misreport is deliberately **not** in this change.
+
 - **`tt git --help` now describes the tool it belongs to** (2026-08-25): the dispatch table has had
   eight verbs since `diff` and `rm` landed on 2026-08-22, and the help documented six. Worse than an
   omission: the safety paragraph listed `rm` among the verbs "not on the tool, by design", and that

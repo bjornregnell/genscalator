@@ -961,6 +961,7 @@ One line per file; a tool's real reference is its `###` section above and its `-
 - `secrets.scala` — the one definition of "what is a secret" (redaction + detection; harden + env).
 - `releaselib.scala`, `ziplib.scala` — release download/verify + zip machinery shared by `forge` and `update` (the toolbox's most security-sensitive shared code — worth an auditor's read).
 - `versionlib.scala` — the `tt --version` line (display normalisation over the four VERSION.txt carrier shapes + carrier-kind discrimination; issue 028). Handlers live in `tt` (bash) and `dispatch.scala`, not in a verb file.
+- `payloadlib.scala` — the one definition of the release payload's top-level layout, which `get-genscalator.sc`'s pre-manifest uninstall fallback removes (issue 040). Pure; the generator/gate driver is `deploy/payloadsync.sc` and the tested consumer is a script outside `tools/`, so there is no `tt` verb.
 - `dispatch.scala` — the single native dispatcher (its `@main` IS `tt`, not a verb).
 - `template.scala.txt` — starter template (version + lib includes, dispatch skeleton).
 - `project.scala` — the single source of the Scala version (no code, no `@main`); every tool includes it.
