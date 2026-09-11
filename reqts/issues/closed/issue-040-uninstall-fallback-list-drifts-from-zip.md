@@ -1,6 +1,8 @@
 # Issue 040: the uninstall fallback list drifts from the shipped zip, so a pre-manifest uninstall leaves `reqts/` behind and blames the user for it
 
-> status: open 2026-08-20 · labels: installer, uninstall, release, alpha · measured against: v0.10.2
+> status: closed 2026-09-11, fixed by `1dffcb3` (PR #13; the over-clean half is the one that took the
+> lead, and `deploy/payloadsync.sc` now derives the layout from the staging step rather than asserting
+> it). Follow-up in issue 054, which is a defect in the fix, not a reopening of this one · labels: installer, uninstall, release, alpha · measured against: v0.10.2
 > (from `.genscalator/VERSION.txt`; `tt --version` postdates this release, see issue 028) · summary:
 > `--uninstall`'s well-known-paths fallback lists `skills`/`tools`/`plugins`, which the release
 > workflow deliberately does NOT ship, and omits `reqts`, which it deliberately DOES. The literal is
