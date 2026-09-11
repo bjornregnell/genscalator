@@ -85,11 +85,14 @@ object SessionStore:
     java.time.format.DateTimeFormatter.ofPattern("MMMdd@HHmm", java.util.Locale.ENGLISH).withZone(zone)
       .format(java.time.Instant.ofEpochMilli(startedAtMs)).toLowerCase
 
-  /** The session chip as a human reads it: `in: genscalator-work  started: aug11@1408`. PURE.
-    * Labelled rather than positional, so nobody has to decode a slug to see where and when. */
+  /** The session chip as a human reads it: `dir: genscalator-work  started: aug11@1408`. PURE.
+    * Labelled rather than positional, so nobody has to decode a slug to see where and when.
+    *
+    * `dir:` rather than `in:` so both halves are FIELD labels in the same register, which is what
+    * lets the statusline render the line as uniform label/value pairs (BR 2026-09-11). */
   def chipLine(startedAtMs: Long, dir: Option[String],
       zone: java.time.ZoneId = java.time.ZoneId.systemDefault()): String =
-    s"in: ${dir.getOrElse("?")}  started: ${friendlyStamp(startedAtMs, zone)}"
+    s"dir: ${dir.getOrElse("?")}  started: ${friendlyStamp(startedAtMs, zone)}"
 
   def dir(root: Path, id: String): Path        = root.resolve(id)
   def modesFile(root: Path, id: String): Path  = dir(root, id).resolve("modes")

@@ -57,7 +57,7 @@ class SessionStoreSuite extends munit.FunSuite:
       java.util.Locale.setDefault(java.util.Locale.of("sv", "SE"))
       assertEquals(SessionStore.friendlyStamp(ms, utc), "aug11@1408")
       assertEquals(SessionStore.chipLine(ms, Some("genscalator-work"), utc),
-        "in: genscalator-work  started: aug11@1408")
+        "dir: genscalator-work  started: aug11@1408")
     finally java.util.Locale.setDefault(saved)
   }
 
@@ -313,10 +313,11 @@ class SessionCliSuite extends munit.FunSuite:
     assertEquals(code, 0)
     // issue 056: the lead is the labelled chip, not a `gs session:` label plus a slug. The cwd
     // stamp is written by the `session` call above, so `in:` names this temp directory.
-    assert(clue(out).contains("in: "))
-    assert(clue(out).contains("started: "))
+    assert(clue(out).contains("dir:"))
+    assert(clue(out).contains("started:"))
     assert(clue(out).contains("@"))
-    assert(clue(out).contains("demo")) // the human SUBJECT survives, and is the inverted run
+    assert(clue(out).contains("subject:")) // a human-given name gets its own LABEL, not just styling
+    assert(clue(out).contains("demo"))
     assert(clue(out).contains("gs mode:"))
     assert(clue(out).contains("RotVigil"))
     assert(clue(out).contains("TokSpend"))
@@ -331,8 +332,8 @@ class SessionCliSuite extends munit.FunSuite:
       "--modes-file", g.toString, "--sessions-root", root.toString, "--limits-file", "/nonexistent")
     assertEquals(code, 0)
     assert(clue(out).contains("gs mode set"))
-    assert(!clue(out).contains("in: "))
-    assert(!clue(out).contains("started: "))
+    assert(!clue(out).contains("dir:"))
+    assert(!clue(out).contains("started:"))
   }
 
   // ---- issue-037: read-shaped words must never SET a name; the setter announces itself ----

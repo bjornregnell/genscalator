@@ -405,20 +405,27 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     * proxy; a declaration is not a proxy, it is a judgment with an owner. BR usually declares it, because the agent
     * is the unreliable narrator of its own warmth: the rule is that the declarer is whoever can OBSERVE the state,
     * which is sometimes the other party. */
-  def renderModes(modes: Seq[String], session: Option[String] = None,
-      subject: Option[String] = None): String =
-    // Line-2 prefix: with a session identity, the lead is the LABELLED chip `in: <dir>  started:
-    // aug11@1408` (issue 056), which says where and when instead of asking the reader to decode a
-    // slug. `gs mode:` still sits between it and the chips so the line stays self-describing.
+  /** The line-2 lead: where this session runs, when it started, and any subject a human gave it.
+    * Every part is DERIVED from the session store except `subject` (issue 056). */
+  case class SessionLead(dir: String, stamp: String, subject: Option[String] = None)
+
+  def renderModes(modes: Seq[String], session: Option[SessionLead] = None): String =
+    // Line-2 GRAMMAR (BR 2026-09-11): the whole row is LABEL: ⟨value⟩ pairs — the label plain, the
+    // value INVERTED. That was already true of the mode chips (renderMode uses SGR 7), so this is
+    // the line's existing rule applied to the new lead rather than a new convention.
     //
-    // ⚠ INVERSION NOW MARKS ONLY THE SUBJECT. SM259 used it for the whole display name because that
-    // name was free text the human chose; under 056 the name is DERIVED, and the only chosen text
-    // left is the optional subject from `tt session <words>`. So the invariant is unchanged — the
-    // inverted run is exactly the part a human wrote — while what satisfies it shrank.
+    // ⚠ WHAT INVERSION MEANS CHANGED, deliberately. SM259 used it for provenance: the inverted run
+    // was free text the HUMAN chose. Under 056 the name is derived, so that marker had almost
+    // nothing left to mark. Inversion now means VALUE, and provenance moved into the labels, where
+    // `subject:` is the one a human wrote. That is the more robust carrier: a label survives a
+    // screenshot, a copy-paste, a terminal without inverse video and a reader who cannot see it.
     val brand = session match
-      case Some(chip) =>
-        val subj = subject.map(s => " " + sgr("1;7;38;5;42", s" $s ")).getOrElse("")
-        sgr("1;38;5;42", chip) + subj + "  " + sgr("1;38;5;42", "gs mode:")
+      case Some(s) =>
+        def pair(label: String, value: String): String =
+          sgr("1;38;5;42", label) + " " + sgr("1;7;38;5;42", s" $value ")
+        val parts = Vector(pair("dir:", s.dir), pair("started:", s.stamp)) ++
+          s.subject.map(pair("subject:", _))
+        parts.mkString("  ") + "  " + sgr("1;38;5;42", "gs mode:")
       case None => sgr("1;38;5;42", "gs mode set")
     val chips = sortModes(modes).map(renderMode)
     if chips.isEmpty then s"$brand ${sgr("38;5;245", "clear: no active mode labels")}"
@@ -672,7 +679,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       val sessionChips = sid.map(id => SessionStore.readChips(SessionStore.modesFile(sessionsRoot, id)))
         .getOrElse(Vector.empty)
       val allChips = (readModes(modesFile) ++ sessionChips).distinct
-      val sessionLead: Option[String] = sid.map: id =>
+      val sessionLead: Option[SessionLead] = sid.map: id =>
         val started = SessionStore.readStarted(sessionsRoot, id)
           .orElse:
             try MiniJson.parse(json).flatMap(_.obj).flatMap(_.get("transcript_path")).flatMap(_.str)
@@ -681,10 +688,13 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
                 .creationTime().toMillis)
             catch case _: Throwable => None
           .getOrElse(nowMs)
-        // The chip is DERIVED from the store the same way `tt session` derives it — the directory
-        // from the cwd stamp, the stamp from the clock — so the two surfaces cannot drift apart.
-        SessionStore.chipLine(started, SessionStore.dirLabel(SessionStore.readCwd(sessionsRoot, id)))
-      println(renderModes(allChips, sessionLead, sid.flatMap(SessionStore.readName(sessionsRoot, _))))
+        // DERIVED from the store the same way `tt session` derives it — the directory from the cwd
+        // stamp, the stamp from the clock — so the two surfaces cannot drift apart.
+        SessionLead(
+          SessionStore.dirLabel(SessionStore.readCwd(sessionsRoot, id)).getOrElse("?"),
+          SessionStore.friendlyStamp(started),
+          SessionStore.readName(sessionsRoot, id))
+      println(renderModes(allChips, sessionLead))
     // LINE 3 (SM163): measured box health; gather() is None off-Linux so the row is silently absent there.
     if boxLine then BoxStats.gather().foreach(b => println(renderBox(b)))
     0
