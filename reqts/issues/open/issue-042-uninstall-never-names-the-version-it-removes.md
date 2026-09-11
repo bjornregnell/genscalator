@@ -222,3 +222,67 @@ distance between `:207` and the precedent, that issue 028 is in `reqts/issues/cl
 `tt --version` mentions in `CONTRIBUTING.md`. NOT verified by running anything: the `dev` and
 missing-`VERSION.txt` paths are read from the workflow and the script, not reproduced — no
 `workflow_dispatch` was fired and no payload without a `VERSION.txt` exists to install from.
+
+### Comment by hmiddelk/Opus5 at 2026-08-26 10:05
+
+**CONFIRMED on Windows 10 — both halves, hit independently before PR #6 was read — and the report's
+own ground truth for the fallback half needs one correction.** The Description says the behaviour was
+not verified off Linux; it is now, for the no-`--tag` case. Held until PR #6 merged rather than pushed
+into the open branch.
+
+Nothing was re-run for this comment; I am on Linux today. Every Windows fact is from the run recorded
+in report 088 (2026-08-21).
+
+| | |
+|---|---|
+| Platform | Windows 10 Enterprise 10.0.19045, x86-64, PowerShell 5.1 |
+| Script under test | `get-genscalator.sc` at `main` `7f03345`, sha256 `beeb62ff…3ba4`, 23 713 B |
+| Fallback half against | pre-manifest **v0.10.0** install, `VERSION.txt` = `v0.10.0`, 30 files, no manifest |
+| Manifest half against | fresh **v0.10.2** install, ordinary `scala-cli run get-genscalator.sc` with **no `--tag`** |
+
+**Fallback half.** The preview on the pre-manifest install printed `version: unknown` while
+`VERSION.txt` sat in the same directory holding a real release name.
+
+**Correction to report 088, and it is the report that is wrong, not this issue.** The report's
+Findings row for 042 says both halves were observed *"against a `VERSION.txt` reading `v0.10.2`"*.
+For the fallback half that is not right: the fallback preview ran at command 20, on the box's own
+pre-existing install, whose stamp read **`v0.10.0`**. The v0.10.2 install did not exist until the
+reinstall at command 25, five commands later. The row conflated the two phases.
+
+The defect is unaffected, and the true sequence makes it slightly sharper than the report claims: the
+value the uninstaller declined to read was not merely *a* release name, it was the name of the release
+being **compared away** — the box was moving v0.10.0 → v0.10.2, which is the exact motion issue 039
+names as its motivation. `unknown` was printed about the one field that distinguished the two versions
+under comparison.
+
+**Manifest half.** The reinstall was the plain newcomer command, no `--tag`. `VERSION.txt` read
+`v0.10.2`; the manifest written by that same install recorded **`installed-tag: latest`**. So both
+causes were observed on one box within one session, in the order the issue describes — and this was
+hit before PR #6 had been read, which is why it stands as an independent observation of the half the
+issue says was found *"by checking, not reasoning"*.
+
+**The destroyed-record bullet, instantiated on hardware.** The acceptance sketch asks the tool to
+print the version before deleting the file that states it, and calls that *"the whole value: the
+message survives, the file does not."* This run is that case, in the failing direction. `--force`
+removed 29 files including `VERSION.txt`; a manual `Remove-Item -Recurse -Force` finished the job
+(issue 040). After that, **nothing on the box named `v0.10.0`** — and the line that was supposed to
+carry it forward said `unknown`. The version that left that machine survives only in report 088's log,
+which is not a place the tool put it.
+
+**Limits.**
+
+* **The `--tag` install path is still untested, on either platform.** That is where the manifest half
+  may not reproduce, since `tag.getOrElse` would then record a real requested tag. Both the Linux
+  filing and this run used the default no-`--tag` path.
+* **The `:364` and `dev` cases remain read-only** on both platforms. No `workflow_dispatch` was fired
+  and no payload lacking a `VERSION.txt` exists to install from, so the third case the sketch asks for
+  — *file exists but does not name a release* — is still argued from the workflow and the script.
+* **`n = 1` and non-reproducible** for the fallback half: the pre-manifest v0.10.0 install is gone.
+* **Not cross-observer** — same human and agent model as the Linux filing.
+
+Provenance: `research/reports/report088-windows-update-lifecycle-2026-08-21.md`, arm A, commands 20,
+22, 24, 25 and 26.
+
+Agent disclosure: drafted by an AI agent (Claude Opus 5) in session with hmiddelk from the report 088
+log; the phase-ordering correction was found by re-reading the log against the report's Findings row.
+The human ran the Windows session and reviewed and submitted.
