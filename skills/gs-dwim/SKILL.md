@@ -60,8 +60,8 @@ gracefully). The per-command behaviour is specified below.
   SHOW the exact change, human-gated, reload via `/hooks` — same discipline as `gs status line`. The two lines
   toggle INDEPENDENTLY so the user budgets vertical space.
 - **`gs status box on` / `off` / (bare = status)** — toggle the **box line** (line 3 of the statusline, SM163:
-  MEASURED box health read directly from /proc + /sys, no subprocess — lead chip `box healthy` / `box huffing` /
-  `box swamped` = the worst segment severity, each name exactly 11 chars so the three row-leads align; segments
+  MEASURED box health read directly from /proc + /sys, no subprocess — lead chip `box health: good` / `fair` /
+  `poor` = the worst segment severity (never an average), each 16 chars so the first segment holds its column; segments
   `mem 45%/14.1G/31.2G`, `load 64%/5.1avg/8cores`, `temp 63C`, `disk 78%/110Gfree`, `jvm 4x5.1G`, and a `bloop 5.0G` chip when a
   bloop JVM is present; Linux-only, silently absent elsewhere). Same settings mechanism as the mode line, via
   the `--box-line` flag on the statusLine command: `on` = ensure the flag, `off` = remove it, bare = report.
@@ -267,7 +267,7 @@ real session; the rest are in the same spirit — accept anything that clearly m
 | status legend | `gs status` | `gs statusline`, `explain the status line`, `what does ctx-fill mean` |
 | status line on/off | `gs status line on`/`off` | `turn the status line on`, `show/hide line 1`, `gs statusline on` |
 | mode line on/off | `gs status mode on`/`off` | `show line 2`, `turn the mode line on`, `gs modeline on` |
-| box line on/off | `gs status box on`/`off` | `show line 3`, `box health line on`, `is the box swamped`, `gs boxline on` |
+| box line on/off | `gs status box on`/`off` | `show line 3`, `box health line on`, `how is the box doing`, `gs boxline on` |
 | seed an app | `gs new app <what> <dir>` | `gs seed app`, `gs make app`, `gs create app` ("seed" = the internal skill verb, "new" = user-facing) |
 | compact bing-bing | `gs compact notify on`/`off` | `bing-bing on`, `notify me on compact`, `chime when compaction done` |
 | re-hydrate reflexes | `gs warm` | `warm up`, `rehydrate`, `load the guard reflexes`, `wake the reflexes` |

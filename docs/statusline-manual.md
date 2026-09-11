@@ -94,17 +94,17 @@ An optional third row of **measured box health**, read directly from `/proc` and
 print — nothing breaks.
 
 ```
-box huffing  mem 45%·14.1G·31.2G  load 64%·5.1avg·8cores  temp 63C  disk 78%·110Gfree  jvm 4x5.1G  bloop 5.0G
+box health: fair  mem 45%·14.1G·31.2G  load 64%·5.1avg·8cores  temp 63C  disk 78%·110Gfree  jvm 4x5.1G  bloop 5.0G
 ```
 
 | Segment | Means | Grading |
 |---|---|---|
-| **`box healthy` / `box huffing` / `box swamped`** | The lead verdict: the WORST severity across the segments, computed from the same thresholds that colour them — not a new inference, just the colour semantics lifted into the name. (Each name is exactly 11 characters, so the three row-leads — `genscalator`, `gs mode set`, `box healthy` — align.) | green / orange / red = flips exactly when a segment leaves green |
+| **`box health: good` / `fair` / `poor`** | The lead verdict: the WORST severity across the segments, computed from the same thresholds that colour them — not a new inference, just the colour semantics lifted into the name. `LABEL: value`, the grammar line 2 uses. The values are **not** low/medium/high: under a `health:` label "low" would read as *bad*, inverting a row where every other gauge is higher-is-worse; and `load:` was rejected because the row already has a `load` **segment**, so one word would have meant two things on one line. Each is 16 characters, so the first segment holds its column — which is why line 3 starts slightly right of `genscalator` / `gs mode set` (those remain 11). | green / orange / red = flips exactly when a segment leaves green |
 | **`mem 45%·14.1G·31.2G`** | Memory used and total; the leading % is the exact number the colour grades on. "Used" = total − available, the kernel's reclaimable-aware figure (matches `free`'s *available*, not *free*). | orange ≥ 70%, red ≥ 90% |
 | **`load 64%·5.1avg·8cores`** | The 1-minute load average over the core count: "5.1 cores' worth of demand on 8 cores". Load measures **demand** (tasks running or waiting, including disk-wait), not CPU busy-time — hence the label `load`, not `cpu`. A true cpu% would need a two-sample delta. | orange ≥ 70%, red ≥ 90% |
 | **`temp 63C`** | The hottest thermal zone in °C (the fan story). | orange ≥ 70, red ≥ 85 |
 | **`disk 78%·110Gfree`** | Root filesystem: the leading % is space USED (what the colour grades on); the absolute is space FREE (what you act on). | orange ≥ 80%, red ≥ 90% (disks run fuller than mem) |
-| **`jvm 4x5.1G`** | Running JVM count × their combined RSS. Informational (dim, ungraded) — JVMs are the heavy processes on a dev box, but their weight already counts inside `mem`. | ungraded |
+| **`jvm 4x5.1G`** | Running JVM count × their combined RSS. The **count** is graded and votes in the lead verdict; the RSS stays a dim readout, because those bytes are already graded by `mem` and grading them here would let one cause redden the lead twice. What the count catches is what `mem` cannot see: stray build servers (bloop, scala-cli, sbt) leaking one process at a time, cheap in RAM until they are not. | orange ≥ 4 JVMs, red ≥ 6 (count, not size) |
 | **`bloop 5.0G`** | Shown only when a bloop compile daemon is running (matched by cmdline substring): its RSS. The known wedge-and-drain villain gets its own chip so its regrowth is visible early. | orange ≥ 2G, red ≥ 6G |
 
 All thresholds are first-cut guesses (bloop's calibrated on a lived 10.4 GB specimen); they live in

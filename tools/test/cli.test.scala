@@ -2278,37 +2278,45 @@ class CliSuite extends munit.FunSuite:
                  Some((32505856L, 12582912L)))
     assertEquals(parseLoadAvg("3.50 2.10 1.00 2/1234 5678\n"), Some(3.5))
     assertEquals(parseVmRssKb("Name:\tjava\nVmPeak:\t1 kB\nVmRSS:\t 8493465 kB\nThreads:\t99\n"), Some(8493465L))
-    // healthy: all segments under their orange thresholds -> green "box healthy" lead
+    // low: all segments under their orange thresholds -> green "box health: good" lead
     val healthy = BoxInfo(memUsedKb = 10485760L, memTotalKb = 32505856L, load1 = 2.0, cores = 8,
                           tempC = Some(55), jvmCount = 2, jvmRssKb = 1048576L, bloopRssKb = None)
     val outH = renderBox(healthy)
-    assert(clue(outH).contains("box healthy"))
+    assert(clue(outH).contains("box health: good"))
     assert(clue(outH).contains("mem 32%·10.0G·31.0G")) // leading % = the number the colour grades on; G on both (BR)
     assert(clue(outH).contains("load 25%·2.0avg·8cores")) // label stays `load`: it IS loadavg over cores, not a cpu%; every number self-describes
     assert(clue(outH).contains("temp 55C"))
     assert(clue(outH).contains("jvm 2x1.0G"))
     assert(!clue(outH).contains("bloop"))
-    // one orange segment (a 2G+ bloop) flips the lead to "box huffing"
+    // one orange segment (a 2G+ bloop) flips the lead to "box health: fair"
     val huffing = healthy.copy(bloopRssKb = Some(3145728L), jvmRssKb = 4194304L, jvmCount = 3)
     val outW = renderBox(huffing)
-    assert(clue(outW).contains("box huffing"))
+    assert(clue(outW).contains("box health: fair"))
     assert(clue(outW).contains("bloop 3.0G"))
-    // any red segment (the lived 10.4GB bloop, or mem >= 90%) flips the lead to "box swamped"
+    // any red segment (the lived 10.4GB bloop, or mem >= 90%) flips the lead to "box health: poor"
     val swamped = healthy.copy(bloopRssKb = Some(10905190L))
-    assert(clue(renderBox(swamped)).contains("box swamped"))
-    assert(clue(renderBox(healthy.copy(memUsedKb = 30408704L))).contains("box swamped"))
+    assert(clue(renderBox(swamped)).contains("box health: poor"))
+    assert(clue(renderBox(healthy.copy(memUsedKb = 30408704L))).contains("box health: poor"))
+    // jvm VOTES on COUNT (BR 2026-09-11), never on RSS — those bytes are already graded by `mem`, and
+    // letting them vote twice would redden the lead twice for one cause. 4 JVMs is orange, 6 is red.
+    assert(clue(renderBox(healthy.copy(jvmCount = 3))).contains("box health: good"))
+    assert(clue(renderBox(healthy.copy(jvmCount = 4))).contains("box health: fair"))
+    assert(clue(renderBox(healthy.copy(jvmCount = 6))).contains("box health: poor"))
+    // and a big RSS on FEW jvms must NOT move the lead: that is mem's job, not this segment's
+    assert(clue(renderBox(healthy.copy(jvmCount = 2, jvmRssKb = 20971520L))).contains("box health: good"))
     // disk segment: leading % is USED (grades the colour), the absolute is FREE; joins the severity vote
     val withDisk = healthy.copy(diskFreeKb = 115343360L, diskTotalKb = 524288000L) // 110G free of 500G = 78% used
     val outD = renderBox(withDisk)
     assert(clue(outD).contains("disk 78%·110Gfree")) // whole G, no decimal (BR)
-    assert(clue(outD).contains("box healthy"))                       // 78% < 80 stays green
+    assert(clue(outD).contains("box health: good"))                     // 78% < 80 stays green
     assert(clue(renderBox(healthy.copy(diskFreeKb = 78643200L, diskTotalKb = 524288000L)))
-      .contains("box huffing"))                                      // 85% used -> orange flips the lead
+      .contains("box health: fair"))                                 // 85% used -> orange flips the lead
     assert(!clue(outH).contains("disk"))                             // no disk data -> no segment
-    // the three leads are exactly "genscalator".length so the row-leads align (BR 2026-07-19)
-    assertEquals("box healthy".length, "genscalator".length)
-    assertEquals("box huffing".length, "genscalator".length)
-    assertEquals("box swamped".length, "genscalator".length)
+    // The three leads are PADDED to one width so the first segment cannot jitter sideways as the
+    // verdict changes. That width is no longer "genscalator".length: the wording could not fit 11,
+    // and a stable column within the row was worth more than the cross-row rule (BR 2026-09-11).
+    val leads = Vector(outH, outW, renderBox(swamped)).map(_.replaceAll("\\[[0-9;]*m", ""))
+    assertEquals(leads.map(_.indexOf(" mem ")).distinct.size, 1, clue(leads))
   }
 
   test("bloop T3: signature predicate + the red-only restart? hint on the box line") {

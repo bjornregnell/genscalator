@@ -209,7 +209,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       case None    => return "" // nothing usable / not an object → empty line, exit 0 (never crash the prompt)
     val segs = scala.collection.mutable.ArrayBuffer[String]()
     // Brand + clock are ONE segment joined by a SINGLE space (BR 2026-07-19): all three lines carry an
-    // 11-char lead ("genscalator" / "gs mode set" / "box healthy") + one space, so column 2 aligns across
+    // 11-char lead ("genscalator" / "gs mode set") + one space, so column 2 aligns across
     // lines 1-3 — saves hspace and gives the stacked lines their aligned left edge.
     val brandClock = sgr("1;38;5;42", "genscalator") + " " + sgr("38;5;250", clock(nowMs))
     // `silent` — feed inactivity, riding just after the clock (BR, 2026-07-17). LINE-1 CONTRACT: this row is for what
@@ -435,8 +435,10 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
   // the human was watching it with gnome-system-monitor at 2.2GB RSS. This line is a passive readout of the
   // same facts for ~zero marginal cost: a few /proc and /sys FILE READS per tick, NO subprocess spawned.
   // LINE-1 FAMILY (line-1-measured / line-2-declared contract): everything here is MEASURED by a mechanism.
-  // The LEAD CHIP is the one aggregate: "box healthy" / "box huffing" / "box swamped" (each exactly
-  // "genscalator".length = 11 chars, so the three row-leads align) = the WORST severity across the segments,
+  // The LEAD CHIP is the one aggregate: "box health: good" / "fair" / "poor" (BR 2026-09-11, replacing
+  // healthy/huffing/swamped — 7-letter words picked to hit an 11-char width rather than for clarity;
+  // the new wording is LABEL: VALUE, the grammar line 2 adopted in issue 056, and each is 16 chars so the
+  // first segment holds its column without padding) = the WORST severity across the segments,
   // computed from the SAME thresholds that colour them — a lift of the existing colour semantics into the
   // name, not a new inference (precedent: ctx's "dumb-zone" flag). Inferred proxies would carry `?`;
   // none do yet (`wedge?` detection is SM146b, deferred).
@@ -446,7 +448,9 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
   // the bloop signature needed ONE home the moment a second tool consumed it). Rendering stays here.
 
   /** The box line. Severity 0/1/2 (green/orange/red) per segment from explicit thresholds; the lead chip is
-    * the MAX severity, so the name flips healthy -> huffing -> swamped exactly when a segment leaves green.
+    * the MAX severity, so `box health:` flips good -> fair -> poor exactly when a segment leaves green.
+    * ⚠ ONE bad segment decides the lead: it is a worst-case verdict, never an average, so a full disk on an
+    * otherwise idle box still reads `high` — which is the point, since the row exists to be glanced at.
     * All thresholds are first-cut GUESSES (mem/load reuse the 70/90 gauge; temp 70/85 °C; bloop 2G/6G from the
     * lived 10.4GB specimen); tune against reality. PURE — testable with a synthetic BoxInfo. */
   def renderBox(b: BoxStats.BoxInfo): String =
@@ -462,11 +466,32 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     val bloopSev = b.bloopRssKb.map(r => if r >= 6L * 1048576 then 2 else if r >= 2L * 1048576 then 1 else 0).getOrElse(0)
     val diskPct  = if b.diskTotalKb > 0 then 100.0 * (b.diskTotalKb - b.diskFreeKb) / b.diskTotalKb else 0.0
     val diskSev  = if diskPct >= 90 then 2 else if diskPct >= 80 then 1 else 0 // disks run fuller than mem: 80/90
-    val overall  = List(sev(memPct), sev(loadPct), tempSev, bloopSev, diskSev).max
-    val lead = overall match // 11 chars each, aligning with "genscalator" / "gs mode set" (BR 2026-07-19)
-      case 2 => sgr("1;38;5;203", "box swamped")
-      case 1 => sgr("1;38;5;214", "box huffing")
-      case _ => sgr("1;38;5;114", "box healthy")
+    // jvm VOTES (BR 2026-09-11), and on COUNT, not on RSS. Its bytes are already graded by `mem`, so a
+    // memory threshold here would let the same memory vote twice and redden the lead for one cause twice
+    // over. The count is the thing `mem` cannot see: stray build servers (bloop, scala-cli, sbt) that
+    // leak one process at a time and sit idle, cheap in RAM until they are not. A handful is normal on a
+    // dev box; a dozen means something stopped cleaning up. Thresholds are GUESSES in the same spirit as
+    // the rest of this function — tune against reality.
+    val jvmSev   = if b.jvmCount >= 6 then 2 else if b.jvmCount >= 4 then 1 else 0
+    val overall  = List(sev(memPct), sev(loadPct), tempSev, bloopSev, diskSev, jvmSev).max
+    // LABEL: VALUE, the same grammar line 2 uses (issue 056), replacing healthy/huffing/swamped (BR:
+    // "huffing is a bit strange" — and it was a 7-letter word picked to hit a width, not the clearest
+    // word available). `health:` is the noun this row has always used in its own docs.
+    //
+    // ⚠ THE VALUES ARE good/fair/poor, NOT low/medium/high, and the reason is POLARITY. `load: low`
+    // means good while `health: low` would mean bad, so keeping low/medium/high under a `health:`
+    // label would silently invert the reading direction of a row where every other gauge is
+    // "higher is worse". good/fair/poor carries its own direction and cannot be misread.
+    // `load:` was also tried and rejected: the row already has a `load` SEGMENT (the loadavg), so the
+    // word would have appeared twice on one line meaning two different things (BR caught it).
+    //
+    // The three are each exactly 16 chars, so the first segment holds its column with no padding.
+    // That width is not 11, so line 3's column 2 no longer aligns with "genscalator" / "gs mode set":
+    // no wording of this shape fits 11, and stability within the row beat the cross-row rule.
+    val lead = overall match
+      case 2 => sgr("1;38;5;203", "box health: poor")
+      case 1 => sgr("1;38;5;214", "box health: fair")
+      case _ => sgr("1;38;5;114", "box health: good")
     val segs = scala.collection.mutable.ArrayBuffer[String]()
     // leading % = the exact number the colour thresholds on (BR 2026-07-19: make the grading transparent);
     // label stays `load` NOT `cpu` — the measurement is the 1-min loadavg over cores, and the name must say
@@ -478,7 +503,8 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
     b.tempC.foreach(t => segs += sgr(colour(tempSev, "38;5;114"), s"temp ${t}C"))
     // leading % = USED (what the colour grades on); the absolute is FREE (what the human thinks in) — BR 2026-07-19
     if b.diskTotalKb > 0 then segs += sgr(colour(diskSev, "38;5;114"), s"disk ${pct(diskPct)}·${b.diskFreeKb / 1048576}Gfree") // whole G, truncated (never overstates free) — BR: no .x precision here
-    if b.jvmCount > 0 then segs += sgr("38;5;245", s"jvm ${b.jvmCount}x${gb(b.jvmRssKb)}") // dim readout; its weight already counts inside mem
+    // The COUNT is graded (see jvmSev); the RSS stays a dim readout, because those bytes are `mem`'s to grade.
+    if b.jvmCount > 0 then segs += sgr(colour(jvmSev, "38;5;245"), s"jvm ${b.jvmCount}x${gb(b.jvmRssKb)}")
     // At RED the segment carries an advisory `restart?` — the `?` per the SM118 grammar: an INFERRED
     // suggestion from a threshold proxy, never an action (a render path must not kill; T3 design). The
     // declared action is `tt bloop restart`, run by a human or agent who saw the hint.
@@ -536,7 +562,7 @@ object StatuslineTool: // NB not "Statusline" — that collides case-only with t
       |  --mode-line         ALSO emit the mode line (line 2: the declared joint state-of-mind,
       |                      read from the state file `tt mode` writes)
       |  --box-line          ALSO emit the box line (line 3, SM163: MEASURED box health from
-      |                      /proc + /sys — lead chip "box healthy"/"box huffing"/"box swamped"
+      |                      /proc + /sys — lead chip "box health: good"/"fair"/"poor"
       |                      = worst segment severity; mem used/total, 1-min load / cores, max
       |                      thermal temp, root-disk used% + free space, JVM count + total RSS,
       |                      a bloop chip when a bloop JVM is present. Linux-only; silently

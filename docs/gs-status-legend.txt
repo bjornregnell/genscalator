@@ -31,15 +31,24 @@ LINE 2 — mode line (--mode-line): the DECLARED joint state-of-mind
   a human actually wrote.
 
 LINE 3 — box line (--box-line): MEASURED box health from /proc + /sys (Linux only)
-  box healthy | huffing | swamped   lead verdict = the worst segment's severity
+  box health: good | fair | poor   lead verdict = the WORST segment, never an average, so a full
+  disk on an idle box still reads poor. Same LABEL: VALUE grammar as line 2. good/fair/poor rather
+  than low/medium/high because the noun is `health`: under a health label "low" would mean BAD,
+  inverting a row where every other gauge reads higher-is-worse. Each is 16 chars, so the first
+  segment holds its column (and line 3 starts a little further right than lines 1-2).
   mem 23%·7.0G·31.2G   load 46%·3.6avg·8cores   temp 44C   disk 56%·193Gfree   jvm 2x1.6G   bloop 1.5G
+  Every segment VOTES. `jvm` votes on its COUNT, not its memory: those bytes are already graded by
+  `mem`, and a count is the thing `mem` cannot see — stray build servers that leak one at a time.
 
 GRADING (each gauge: healthy < 70% → orange → red; the red trigger differs by meaning)
   ctx      orange at the compact trigger ~24% (0.8·Z), RED at the dumb-zone ceiling ~30% (Z).
            Reds EARLY on purpose — a 1M window at 30% is already rot-risky. Tune: --ctx-warn (def 30).
   5h & w   orange at 70%, RED at the usage warn threshold (def 80%); a limit's reset reddens WITH it.
            Tune: --warn (def 80). The two thresholds are independent (rot signal vs budget signal).
-  box      mem/load orange 70% red 90% · temp orange 70 red 85 · disk orange 80 red 90 · bloop orange 2G red 6G
+  box      mem/load orange 70% red 90% · temp orange 70 red 85 · disk orange 80 red 90 (disks run
+           fuller than mem) · bloop orange 2G red 6G · jvm orange 4 red 6 (COUNT of JVMs, not size).
+           A missing sensor grades as green, so `low` can also mean "not measured" (temp, bloop).
+           All of these are first-cut guesses, tunable against reality — none is a measured optimum.
 
 PROVENANCE is encoded in the SURFACE: line 1 and line 3 are MEASURED, line 2 is DECLARED;
 and on line 1 the single "~" marks the one human-declared value. Read ctx for rot-risk,

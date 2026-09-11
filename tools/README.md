@@ -355,7 +355,7 @@ Windows filename and a separator in paths and URLs — though the display name i
 the store is keyed on the opaque harness session id. `@` also reads aloud as "at", which is what makes the
 spoken forms work: "the 1408 session" the same day, "the aug11@1408 session" reaching back. A bare
 `tt session` additionally prints a labelled `in: <dir>  started: aug11@1408` to stderr, so stdout stays one
-parseable line. The statusline renders the name inverted after a `gs session:` label on the mode line.
+parseable line. The statusline renders the same derived parts as its mode-line lead (see statusline below).
 Outside a harness session (no id) there is nothing to name: the tool says so and exits 1.
 The harness id is unique but NOT stable — a background/foreground round trip re-mints it, orphaning
 name + chips under the old key while reads of the new key find silent emptiness. `adopt` is the explicit
@@ -812,7 +812,7 @@ tt update --native --write      # apply it
 ### statusline — format the Claude Code statusLine stdin JSON into ONE compact line (read-mostly: reads stdin + state files, prints)
 Reads the JSON Claude Code pipes to the configured `statusLine` command each turn and prints one compact,
 colour-coded line — model, context-fill (the rot gauge), usage limits, cost — with optional `--mode-line`
-(line 2: `gs session:` + this session's name inverted, `gs mode:` + the declared chips — session-scoped
+(line 2: the derived `dir:`/`started:` lead, then `gs mode:` + the declared chips — session-scoped
 per SM208, keyed on the stdin JSON's `session_id`; `--sessions-root` overrides the store for tests) and
 `--box-line` (line 3, measured box health). It also reads the transcript
 and the `tt mode`/`tt limit` state files each render, and has ONE opt-in write: iff the marker file
@@ -820,6 +820,55 @@ and the `tt mode`/`tt limit` state files each render, and has ONE opt-in write: 
 (the recall-free way to confirm fields against a real invocation). Thresholds and segments are tunable —
 `--warn`, `--ctx-warn`, `--dumb-zone`, `--auto-compact`, `--tok-warn`, `--tok-danger`, `--tired-chars`,
 `--no-tok`, `--rot-only` — see `tt statusline --help`. Full legend: `docs/statusline-manual.md`.
+
+#### The three lines, and what each one is telling you
+The lines differ in PROVENANCE, and that difference is the point: **line 1 and line 3 are MEASURED, line 2 is
+DECLARED.** Read the first two together and you can see whether the state you *declared* still matches the state
+the machine is *in*. A render-ready version of everything below is `tt doc gs-status-legend` (what `gs status`
+prints); keep the two in step when a line changes.
+
+**Line 1 — session gauges (measured).** `genscalator` brand, wall clock (it FREEZES while the agent works, so a
+ticking clock means it is your turn), silence timer, model + window size, `ctx·N%` context fill (the rot axis),
+`rot?↑`/`tot↑` agent output tokens, then the limit block and notional cost. Two glue glyphs carry kind: `·` joins
+a label to a LEVEL (`ctx·4%`), `↑` joins it to a FLOW (`rot?↑1k`). The single `~` marks the one human-declared
+value on an otherwise measured row.
+
+**Line 2 — the mode line (declared), `--mode-line`.** This is the joint state-of-mind, and since issue 056 it
+reads as **`LABEL: value`** pairs with the **label plain and the value INVERTED**:
+
+```
+dir: ⟨ genscalator-work ⟩  started: ⟨ sep11@1408 ⟩  gs mode: ⟨ RotVigil ⟩ & ⟨ TokSaving ⟩
+```
+
+`dir:` and `started:` are DERIVED — the working directory and the clock — so a session needs no naming; see the
+`session` tool above. A `subject:` segment appears only when someone ran `tt session <words>`, and it is the one
+run of text on the line a human wrote. Chips are CamelCase enum labels set by either party via `tt mode add`
+(shorthand `+Label` / `-Label`); the agent is expected to declare its own as its mode of work shifts, so the row
+stays a live mutual reflection rather than a human-only field. Outside a harness session there is no lead and the
+row falls back to `gs mode set …`.
+
+**Line 3 — the box line (measured), `--box-line`.** Linux-only, read straight from `/proc` and `/sys` with no
+subprocess, so it costs a few file reads per tick:
+
+```
+box health: fair  mem 23%·7.0G·31.2G  load 46%·3.6avg·8cores  temp 44C  disk 56%·193Gfree  jvm 2x1.6G  bloop 1.5G
+```
+
+`box health:` is the one aggregate: **`good` / `fair` / `poor`**, and it is the **worst segment, never an average**
+— a full disk on an idle box still reads `poor`, which is what makes the row glanceable. The values are not
+`low`/`medium`/`high` for two reasons: under a `health:` label "low" would mean *bad*, inverting a row where every
+other gauge reads higher-is-worse; and the row already has a `load` **segment**, so a `load:` verdict would have
+put the same word on one line meaning two different things. Every segment votes, at
+its own thresholds: mem and load orange at 70% and red at 90%; temp at 70 °C and 85 °C; disk at 80% and 90%
+(disks run fuller than memory); bloop RSS at 2G and 6G; and `jvm` on its **COUNT** (orange at 4, red at 6). The
+jvm segment grades the count rather than the memory on purpose: those bytes are already graded by `mem`, so a
+size threshold would let one cause redden the lead twice, while the count catches what `mem` cannot see — stray
+build servers leaking one process at a time. A missing sensor grades green, so `low` can also mean "not measured".
+Every threshold here is a first-cut guess, tunable against reality rather than a measured optimum.
+
+Each line toggles independently, so you can budget vertical space: `tt statusline --no-status --mode-line` is
+line 2 alone. To render line 2 from source while working on it — without a two-minute native rebuild, and without
+editing files the LIVE status line is reading — use `scala-cli run deploy/previewstatusline.sc`.
 
 ### box — safe host + local box ops: health, and host-pinned remote ops for a known compute box (EFFECTFUL)
 ```
