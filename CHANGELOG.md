@@ -82,18 +82,33 @@ file before adopting a new version: it changes the agent's operating rules, so r
   sequenced deliberately rather than one 46-verb mechanical diff; Phase 2 (a parameter schema for
   `Feature: mcpServer`) stays gated on a typed layer beneath `args: String*`.
 
-- **`links check` no longer scans a nested git worktree** (2026-08-29, issue 053): `.claude/` is
-  gitignored harness scratch, and Claude Code's worktree isolation puts a full second checkout of the
-  repo at `.claude/worktrees/<branch>`. The checker descended into it: measured with one present, the
-  same tree reported **6 dangling of 698 links in 666 files, exit 1**, against 0 of 349 in 333 without
-  it — every one of the six being the worktree's copy of a link already excused, unrecognised because
-  excuses key on repo-relative paths. Worse than a wrong number: `links-check.yml` runs on a fresh
-  clone, so CI can never see it, and a contributor whose agent sessions use isolation meets a red check
-  that has nothing to do with their change (issue 050's asymmetry, in a second tool). `.claude` joins
-  `skipDirs`; matching is on the directory NAME, so the `.claude-plugin` manifest dir stays in the scan,
-  and `git ls-files .claude` is empty, so nothing tracked is now skipped. The issue records the shape
-  of the gap — a denylist covers only what someone was already surprised by — and puts the structural
-  alternative (skip any directory holding a `.git` entry, which stays PURE) to the maintainer.
+- **`links check` no longer scans a nested git worktree** (2026-08-29, revised 2026-09-14, issue 053):
+  Claude Code's worktree isolation puts a full second checkout of the repo at
+  `.claude/worktrees/<branch>`, and the checker descended into it. Measured with one present, the same
+  tree reported **6 dangling of 698 links in 668 files, exit 1**, against **0 of 349 in 334** without
+  it — the doubling exact (698 = 2 × 349, 668 = 2 × 334), and every one of the six being the worktree's
+  copy of a link already excused, unrecognised because excuses key on repo-relative paths. Worse than a
+  wrong number: `links-check.yml` runs on a fresh clone, so CI can never see it, and a contributor whose
+  agent sessions use isolation meets a red check that has nothing to do with their change (issue 050's
+  asymmetry, in a second tool).
+
+  The fix is **structural, not a name on the skip list**: any directory holding a `.git` entry is the
+  root of its own checkout and is not descended into. Both shapes count — a worktree's and a submodule's
+  `.git` is a FILE holding a `gitdir:` pointer, a plain clone's is a directory — so `Links.holdsGitEntry`
+  tests for the entry's existence, not its type, and needs no git binary: `links` stays a read → compute
+  → print tool that still works on the non-repo trees it is pointed at (`links check out/`). The scanned
+  root is exempt, since a repo root holds `.git` and is the canonical thing to point at. One decision
+  (`Links.skipDir`) now serves both the scan and the inventory, which matters because the two are
+  compared against each other.
+
+  Denylisting `.claude` was the first attempt and was **rejected in review**: `tt links` is
+  project-agnostic, and in a repo that TRACKS `.claude/` — committing the agent and skill markdown there
+  is common practice — a name on the list fails in both directions at once, hiding a real broken link
+  inside `.claude/` and inventing a dangling one for a valid link pointing in. The structural rule also
+  closes what the denylist never could: a worktree at `tmp-wt-elsewhere/` is skipped too (verified).
+  `LinksSuite` gained three fixture tests that build real trees in a temp dir — nested worktree, nested
+  clone, exempt root, and the tracked-`.claude/` case in both directions — because a member assertion on
+  the skip list cannot see whether the walk descends.
 
 - **`tt git --help` now describes the tool it belongs to** (2026-08-25): the dispatch table has had
   eight verbs since `diff` and `rm` landed on 2026-08-22, and the help documented six. Worse than an
