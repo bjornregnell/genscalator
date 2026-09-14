@@ -363,3 +363,58 @@ READING: the `assertEquals(run` and `._3` census of `ability.test.scala`, and it
 `:41-49`. NOT verified: that a filter written against this wording would survive a scala-cli upgrade —
 which the sketch already names as the safe direction to fail in — and nothing about the 40 unprojected
 verbs.
+
+### Comment by hmiddelk at 2026-09-15 — "the one capture point" is six helpers in four files, with three different normalisations
+
+Correcting the comment above, and the sketch's third bullet with it. That bullet says to filter the
+toolchain's lines "at the one capture point, beside `normalizeEol` in `run`", and my comment above
+refined that to two helpers. Both undercount. Enumerated:
+
+| file | helper that returns stderr to a test | stderr normalisation |
+| --- | --- | --- |
+| `cli.test.scala` | `run` (`:53`), `runStdin` (`:75`), `runIn` (`:882`) | `normalizeEol` (`:37`) |
+| `session.test.scala` | `run` (`:127`) delegating to `runStdin` (`:128`) | `norm` (`:135`) |
+| `dispatch.test.scala` | `runDispatcher` (`:63`), returning a raw `os.CommandResult` that callers read with `r.err.text()` (`:88`) | **none** |
+| `ability.test.scala` | `run` (`:42`) | inline `.replace("\r\n", "\n").trim` (`:49`) |
+
+**Six helper functions, four files, three distinct normalisation implementations, and one file with no
+normalisation at all.** Each was written independently; `cli.test.scala`'s three are three separate
+functions in one file, so even a filter placed in that file's `run` would leave `runStdin` and `runIn`
+untouched.
+
+Why this matters for the fix rather than being trivia: a filter added at one of these six sites
+**relocates the blind spot instead of closing it.** Any exhaustive stderr assertion written through an
+unfiltered helper stays red for the same unactionable cause the issue is about, and — worse for a
+reviewer — would look like a fresh defect in whichever tool the test happens to name, which is precisely
+how `cli.test.scala:2462` misattributes today.
+
+Three consequences for whoever implements the third bullet:
+
+* **`dispatch.test.scala` is the sharp edge.** It hands back a raw `os.CommandResult`, so there is no
+  single place inside it to put a filter — the stderr text is read at the call site. Filtering it means
+  either changing its return type or filtering at each reader. That is a small design decision, and it
+  is invisible if the count is believed to be one.
+* **A sweep must not be written against `ability.test.scala` first.** The comment above argues the
+  filter has to precede the per-verb sweep; this adds that the sweep's intended host is the helper with
+  the weakest normalisation of the four (an inline trim, no shared function), so it needs the filter
+  built rather than borrowed.
+* **Whether the filter is duplicated or shared is a decision for this issue.** The four helpers are
+  deliberately independent — `ability.test.scala:26` says so in as many words about its own restated
+  logic, "test independence over DRY, scala-style §5". Under that policy the filter becomes four to six
+  copies of a list of scala-cli's log lines, each able to drift from the others; the alternative is one
+  shared helper, which is a stated exception to the policy rather than an oversight. Better settled once
+  here than six times by accident, and it is exactly the carrier-drift shape issues 041 and 055 are
+  about — a filter list copied six times is a manifest.
+
+⚠ `ability.test.scala` does not exist on `main`; its citations are on **PR #14's branch at `8c51200`**
+and may shift before that merges. The other three files are byte-identical on `main` and on that branch
+(`git diff origin/main...8c51200 --name-only` lists neither `cli.test.scala`, `session.test.scala` nor
+`dispatch.test.scala`), so those line numbers hold here.
+
+Agent disclosure: found and drafted by an AI agent (Claude Opus 5) in session with me, and reviewed by
+me. It arose from my asking why the rebuild ritual runs the whole suite when only four test files exec
+the candidate binary; the agent's answer named those four, and enumerating their stderr handling is what
+produced the count above. Verified BY READING each cited line in all four files, and by confirming with
+`git diff --name-only` which of them PR #14 modifies. NOT verified: that six is the total — the
+enumeration covers helpers that hand stderr back to a test, and a test reading stderr by some other
+route would not appear, so six is a floor of the same kind this issue's "exactly one" was measured as.
