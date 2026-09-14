@@ -307,3 +307,59 @@ default figure, with the failure message and `:2462` read from its output; and t
 macOS or Windows; scala-cli 1.16.0, still neither installed nor tested; and whether the advisory's
 wording has changed in any newer scala-cli, which is the thing that would make the acceptance sketch's
 filter option fail safe.
+
+### Comment by hmiddelk at 2026-09-14 — Phase 1 adds 12 verb invocations and no exhaustive stderr assertion
+
+Bearing on the sketch's last two bullets, and on the order they have to be done in.
+
+⚠ Every `ability.test.scala` line cited below is on **PR #14's branch at `8c51200`**, not on `main` —
+the file does not exist here until that PR merges, and its line numbers may shift before it does. Each
+is therefore named by its text as well as its number, for the reason the comment above had to record
+(`:2454` moved to `:2462` in 20 commits). The measured stderr figure is independent of #14 and
+reproducible on `main` today.
+
+PR #14 adds `AbilitySuite`: 6 tests, 12 verb invocations, and a `run` helper that already returns
+`(exit, stdout, stderr)` (`ability.test.scala:49`). It contains **zero** whole-tuple comparisons against
+`run` and **zero** uses of `._3` — it only ever reads the exit code and stdout. So the suite still holds
+exactly **one** exhaustive stderr assertion, and the "keep it, do not trade it for green" bullet still
+has exactly one thing to protect.
+
+**"Then widen it" is now cheaper than when it was written.** That bullet hoped a per-verb sweep would
+"pair naturally with issue 041's projection work now that a per-verb declaration exists to iterate."
+Three of the four pieces such a sweep needs now exist: `ProjectedAbilities.all` is the iteration source,
+`AbilitySuite` is a host that already loops over those verbs on two paths, and its `run` already
+captures stderr. What is missing is the assertion itself.
+
+**⚠ But it cannot go in first, and this is the part worth acting on.** `AbilitySuite` is green today
+*because* it ignores stderr, not because the stderr is clean. In default mode its `run` shells out to
+`scala-cli run tools --main-class dispatchTypedTools` (`:47`), and that invocation writes **4,843 bytes**
+of the advisory to stderr — measured directly on 2026-09-14, listing 86 files, the whole-directory form
+of exactly the noise this issue is about:
+
+```bash
+scala-cli run tools --main-class dispatchTypedTools -- harden --help 2>/tmp/err 1>/dev/null
+wc -c < /tmp/err     # => 4843
+```
+
+So adding an exhaustive stderr sweep over the projected verbs **today** would not extend the one
+assertion to six — it would produce six failures with the same unactionable cause, and twelve once both
+description paths are asserted. The sweep multiplies this issue instead of widening coverage.
+
+That gives the sketch a dependency it does not currently state: **the capture-point filter has to land
+before the sweep.** Filter the toolchain's lines out of `err` inside `run` first, so that "stderr is
+empty" recovers its meaning of *the tool wrote nothing*; only then is iterating it over 6, and later 46,
+verbs a coverage win rather than a red-test multiplier. Ordering the sketch's third bullet before its
+fourth is the concrete next step this comment is arguing for.
+
+Note the filter would then be needed in **two** `run` helpers, not one — `cli.test.scala`'s and
+`ability.test.scala`'s — which restates the deliberate duplication `ability.test.scala:26` flags ("test
+independence over DRY, scala-style §5"). Worth deciding once, in this issue, rather than twice by
+accident.
+
+Agent disclosure: drafted and measured by an AI agent (Claude Opus 5) in session with me, and reviewed
+by me. Verified BY RUNNING: the `scala-cli run tools --main-class dispatchTypedTools` invocation above,
+with stderr captured to a file and its size read (4,843 bytes, advisory first line). Verified BY
+READING: the `assertEquals(run` and `._3` census of `ability.test.scala`, and its `run` helper at
+`:41-49`. NOT verified: that a filter written against this wording would survive a scala-cli upgrade —
+which the sketch already names as the safe direction to fail in — and nothing about the 40 unprojected
+verbs.
