@@ -67,7 +67,11 @@ class AbilitySuite extends munit.FunSuite:
     assertEquals(ProjectedAbilities.declFor("no-such-verb"), None)
   }
 
-  test("tools/README.md headings are RENDERED from the declaration, not hand-written") {
+  // ⚠ This carrier is GATED, not derived — the weaker of the two forms, and named as such so the
+  // difference stays visible. `readmeHeading` has no generator: nothing writes it into README.md, and
+  // this test is its only reader. So a hand-edited heading is caught here rather than being impossible,
+  // and the mechanism that makes the other two carriers agree does not apply to this one.
+  test("tools/README.md headings MATCH the declaration — gated by this test, not generated") {
     val lines = os.read.lines(toolsDir / "README.md")
     for d <- ProjectedAbilities.all do
       val own = lines.filter(_.startsWith(s"### ${d.verb} —"))

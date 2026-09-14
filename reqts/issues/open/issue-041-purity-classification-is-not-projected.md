@@ -369,3 +369,49 @@ technical collision, and supplied reason 2. Verified by RUNNING: the full toolbo
 description paths of all six verbs through the real CLI. NOT verified: any native-image effect (size,
 startup) was not measured, and the 40 unprojected verbs were neither touched nor audited — the floor
 caveat above still stands for them.
+
+### Comment by hmiddelk at 2026-09-14 — VOCABULARY: this issue says "capability", the code says `Ability`
+
+⚠ **Read this first if you arrived from the title.** This issue calls the concept **capability
+projection** throughout, but the implementation type is **`Ability`** — `Ability.Decl`, `Ability.Effect`
+and the `ProjectedAbilities` registry, in `tools/ability.scala`. Grepping the codebase for
+`capability` from this issue's prose therefore lands nowhere; grep for `ability` instead.
+
+The rename is deliberate and is argued in full in the Phase 1 comment above. In one line: Scala 3.9
+ships `scala.caps.Capability` for experimental capture checking, where a capability is a value whose
+*type* tracks an effect and the compiler enforces it — whereas what this issue projects is a **declared,
+unenforced claim** about a verb. There is no technical name collision (probed on `3.9.0-RC4`), but a
+`Capability` sitting next to an `Effect` enum with `Pure` and `Effectful` cases, in a toolbox pinned to
+a 3.9 release candidate, would send readers looking for `^` and capture sets. Naming a claim after a
+thing that sounds enforced would also become actively wrong, not merely confusing, if this repo adopts
+capture checking later. `ability` is additionally the prior art's own word (#1833's `@ability`).
+
+So: **"capability projection" is the name of the problem; `Ability` is the name of the type.** Added at
+the maintainer's request on PR #14, because the issue is where a newcomer starts and `ability.scala:23`
+bridged this only from the code side.
+
+Three follow-ups from the same review, recorded here so they are not lost in the forge thread:
+
+* **The README carrier is GATED, not derived**, and the prose now says so. Two of the three carriers
+  genuinely derive — the `--help` tagline and the bad-arguments usage block are produced from the
+  declaration at run time. The third, `tools/README.md`'s `### <verb> — <tagline>` heading, has no
+  generator: `readmeHeading` renders the expected string and `AbilitySuite` is its only reader, so the
+  heading is *checked* against the declaration rather than written from it. That is the weaker of the
+  two forms this issue left open. `tools/README.md`, the `AbilitySuite` test name and the CHANGELOG
+  entry were all overselling it as "rendered, not written" and have been corrected.
+* **`declFor` has no production caller yet.** Acknowledged as dead code today: it is the lookup a
+  future renderer (a protocol surface, the allowlist docs) calls, so its first consumer arrives with
+  Phase 2. Worth a second look then rather than now — if Phase 2 ends up wanting a different lookup
+  shape, this one should be replaced rather than kept for having been written first.
+* **`PureByDefault` and `Effectful` are constructed only in the suite** (`ability.scala:67`, `:69`;
+  built at `ability.test.scala:108-113`). This is a different fact from the one above, and the reason
+  matters: all six Phase 1 verbs declare `Ability.pure` or `Ability.pureRead`, because the six were
+  selected for having *drifted*, not for spanning the classification. So the two cases are unexercised
+  in production as a consequence of Phase 1's scope, not because unused machinery was built — and they
+  are not optional, since a three-way classification with one case is not the classification this issue
+  is about. They gain production callers as soon as the projection reaches a verb that writes anything
+  (`zip --write` is the obvious `PureByDefault`), which is the sequencing the decision above asked for.
+* **Neither design call is cheap to reverse once more verbs adopt the pattern.** Noted. If
+  `ProjectedAbilities` turns out to want its own file — which depends on whether the single-file
+  launcher fallback constraint that put it in `dispatch.scala` still holds — that gets said before the
+  projection widens, not after.
