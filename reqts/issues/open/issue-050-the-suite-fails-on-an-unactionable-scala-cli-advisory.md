@@ -250,3 +250,60 @@ and the 15:37 wording is left in place under the append-only rule.
 Agent disclosure: drafted by an AI agent (Claude Opus 5) in session with me, from my correction and
 from the earlier session's transcript, and reviewed by me. The stale-`tt` symptoms quoted above are
 that session's recorded command output; the agent ran no new measurement for this comment.
+
+### Comment by hmiddelk at 2026-09-14 — re-measured on `main`, and the cited line has moved
+
+Both halves of the contrast re-run on **`main` at `fb23f71`**, which is 20 commits on from the `c51a728`
+this issue was filed against and has PR #13 (issue 040) merged. Same machine, same day, one tree:
+
+```
+CliSuite: 0 failed, 0 ignored, 292 total    28.126s    (parity, -Dtt.native.bin set)
+CliSuite: 1 failed, 0 ignored, 292 total   768.011s    (default, per-file scala-cli)
+```
+
+**This closes the first of the two limits the 15:37 comment attached to its own numbers.** That
+measurement was taken on the issue-040 fix branch rather than a pristine `main`, and the comment said so.
+The contrast now holds on `main` itself, so "green on the path that ships, red on the path a contributor
+runs" is a statement about the mainline and not about one feature branch.
+
+**It does NOT close the second limit.** That comment also noted its tree predated PR #14, so
+`AbilitySuite` was not covered. It still is not: #14 is unmerged, `AbilitySuite` does not appear in this
+run's log either, and nothing here says anything about it. Stated rather than left to be assumed away.
+
+**The failing assertion has moved: `cli.test.scala:2454` → `:2462`.** The failure this run reports is at
+`:2462`, and that line is `assertEquals(run("json", "get", f.toString, "name"), (0, "gs", ""))` — the
+same assertion, displaced by edits above it in the 20 intervening commits.
+
+The **census still holds** at the new location, re-run rather than assumed: 68 `assertEquals(run` sites
+in the file, `:2462` the only one comparing the whole tuple (every other takes `._1`, `._2` or
+`._2.linesIterator`), and still **zero** uses of `._3`. So the finding is unchanged — one exhaustive
+stderr assertion across 46 verbs and 292 tests — and only the coordinate is stale.
+
+⚠ The body of this issue still says `:2454` throughout, and that is **left as written on purpose**. The
+preamble anchors itself to `c51a728`, where `:2454` was correct; rewriting it to `:2462` would make it
+wrong for its own declared baseline. This comment is the bridge for anyone navigating the file today.
+The lesson is small but on-topic: a line-number citation is itself a carrier that drifts, which is why
+the assertion is identified above by its text as well as its line.
+
+**The timing gap is stable, which is worth knowing before anyone optimises the wrong thing.** 768s
+default against 28.1s parity is 27×; the 2026-08-29 pair was 865.7s against 26.0s, or 33×. Both sides
+moved a little and the ratio did not meaningfully change, so the default-mode cost is a property of
+running 292 tests through per-file scala-cli rather than something that has been degrading.
+
+**Provenance, and it is the same chain as the comment above.** This did not come from anyone setting out
+to measure it either. I told the agent the native binary was stale; the documented refresh is
+`deploy/buildnative.sc`; its parity stage ran the suite and produced the green half; the red half was
+then run deliberately, because a parity figure with no same-tree counterpart is the weaker half of a
+contrast. That is now **twice** that this measurement has arrived out of ordinary
+staleness-and-refresh maintenance, which is mild support for the 18:32 comment's argument about which
+runs actually get performed: the release-shaped run keeps happening, and the contributor-shaped run
+happens only when someone goes looking.
+
+Agent disclosure: measured and drafted by an AI agent (Claude Opus 5) in session with me, and reviewed
+by me. Verified BY RUNNING, on `fb23f71`: `deploy/buildnative.sc` end to end (build 444s, parity suite
+117s, exit 0, binary swapped) for the parity figure; `scala-cli test tools --test-only CliSuite` for the
+default figure, with the failure message and `:2462` read from its output; and the `assertEquals(run` /
+`._3` census re-run against the current file. NOT verified: `AbilitySuite` under parity (see above);
+macOS or Windows; scala-cli 1.16.0, still neither installed nor tested; and whether the advisory's
+wording has changed in any newer scala-cli, which is the thing that would make the acceptance sketch's
+filter option fail safe.
