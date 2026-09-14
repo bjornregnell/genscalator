@@ -50,7 +50,11 @@ file before adopting a new version: it changes the agent's operating rules, so r
   produced the drift — the six were found by a sweep, so six is a floor and the total is unknown.
   `AbilitySuite` runs all six on **both** paths and compares the tagline exactly (`cli.test.scala`
   ran `--help` only, asserting shape over 8 of 46 verbs, and `harden -`/`wr -` would have failed even
-  that had it reached them). README headings are byte-identical to before — and now gated. Named
+  that had it reached them). ⚠ **Two of the three carriers derive; the third is gated.** The `--help`
+  tagline and the usage block are produced from the declaration at run time and so cannot disagree
+  with it. The `tools/README.md` heading has no generator — nothing writes it, and `AbilitySuite` is
+  its only reader — so it is *checked* against the declaration rather than rendered from it, which is
+  the weaker of the two forms issue 041 left open. The headings are byte-identical to before. Named
   `Ability` rather than `Capability` to stay clear of Scala 3.9's capture-checking
   `scala.caps.Capability` (probed: no name collision, but the concepts are adjacent enough to
   mislead) and to match the `@ability` prior art the issue cites. **Phase 1 only** — 6 of 46 verbs,
