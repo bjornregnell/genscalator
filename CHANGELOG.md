@@ -33,6 +33,34 @@ file before adopting a new version: it changes the agent's operating rules, so r
   the release-history check that made deriving from *current* staging safe is in its Discussion.
   Issue 042's version misreport is deliberately **not** in this change.
 
+- **A verb's description is PROJECTED from one declaration, for the six that had drifted** (issue 041,
+  2026-08-29): every `tt` verb hand-maintained its description in THREE carriers — the
+  `### <verb> — <tagline>` heading in `tools/README.md` (the source `gs help tt` reads), its own
+  `--help` string, and the `case _ =>` usage block printed on bad arguments — with nothing relating
+  them. All six verbs carrying all three disagreed, and four (`guardcheck`, `harden`, `typo`, `wr`)
+  dropped the PURE/EFFECTFUL classification from the third **entirely** — the most safety-relevant
+  fact about a verb, missing from the string `guardcheck` prints when you get its arguments wrong.
+  `harden -` and `wr -` opened with an ASCII hyphen, and `text` called itself `texttool` and had lost
+  `cut/uniq`. Those six now declare themselves ONCE in `object <Tool>.ability`
+  (`tools/ability.scala`), and both the `--help` tagline and the usage block render from it — one
+  string where there were two. The effect class is a **value** (`Pure` / `PureByDefault` /
+  `Effectful`) rather than an adjective in a markdown heading, so the claim the allowlist rests on can
+  be consumed by code rather than read. **Derive, not assert**, per the decision on the issue: an
+  agreement test has to be *told* which strings are carriers, which is the same enumeration that
+  produced the drift — the six were found by a sweep, so six is a floor and the total is unknown.
+  `AbilitySuite` runs all six on **both** paths and compares the tagline exactly (`cli.test.scala`
+  ran `--help` only, asserting shape over 8 of 46 verbs, and `harden -`/`wr -` would have failed even
+  that had it reached them). ⚠ **Two of the three carriers derive; the third is gated.** The `--help`
+  tagline and the usage block are produced from the declaration at run time and so cannot disagree
+  with it. The `tools/README.md` heading has no generator — nothing writes it, and `AbilitySuite` is
+  its only reader — so it is *checked* against the declaration rather than rendered from it, which is
+  the weaker of the two forms issue 041 left open. The headings are byte-identical to before. Named
+  `Ability` rather than `Capability` to stay clear of Scala 3.9's capture-checking
+  `scala.caps.Capability` (probed: no name collision, but the concepts are adjacent enough to
+  mislead) and to match the `@ability` prior art the issue cites. **Phase 1 only** — 6 of 46 verbs,
+  sequenced deliberately rather than one 46-verb mechanical diff; Phase 2 (a parameter schema for
+  `Feature: mcpServer`) stays gated on a typed layer beneath `args: String*`.
+
 - **`tt git --help` now describes the tool it belongs to** (2026-08-25): the dispatch table has had
   eight verbs since `diff` and `rm` landed on 2026-08-22, and the help documented six. Worse than an
   omission: the safety paragraph listed `rm` among the verbs "not on the tool, by design", and that
