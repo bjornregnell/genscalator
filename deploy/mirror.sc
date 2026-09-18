@@ -1,4 +1,4 @@
-//> using scala 3.9.0-RC4
+//> using scala 3.9.0
 
 // =============================================================================
 // mirror.sc  -  push a VERBATIM mirror of the genscalator master to all mirrors
