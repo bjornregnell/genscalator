@@ -1,6 +1,6 @@
 # Issue 056: a session's name ends in a letter that nothing on disk records, so the agent picks it from memory and cannot be wrong in a way anyone can detect
 
-> status: open 2026-09-11 · labels: toolbox, session, agent-trust, ergonomics · measured against: v0.10.2
+> status: closed 2026-09-18, fixed by `42bb138` · labels: toolbox, session, agent-trust, ergonomics · measured against: v0.10.2
 > at `b19862b` · summary: `tt session <Name>` appends a human-chosen suffix to the timestamp, and the
 > convention in use has been the NATO alphabet in sequence (…Lima, Mike, November, Oscar). Nothing stores
 > that sequence. `tt session list` is directory-scoped and pruned, so the previous letter is unrecoverable,
