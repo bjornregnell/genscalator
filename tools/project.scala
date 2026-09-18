@@ -1,4 +1,4 @@
-//> using scala 3.9.0-RC4
+//> using scala 3.9.0
 //> using javaOpt -Dstdout.encoding=UTF-8
 //> using javaOpt -Dstderr.encoding=UTF-8
 

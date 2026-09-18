@@ -13,7 +13,7 @@ file states **when**. Detail and open questions live in those documents, not her
   unchanged.
 - Native fast path is default-on in the launcher, with a stale-binary check that falls back to
   scala-cli, so a stale binary degrades to slow and never to wrong.
-- Toolbox on Scala 3.9.0-RC4, and the version is now stated once, in `tools/project.scala` (see
+- Toolbox on Scala 3.9.0 (the LTS; bumped from 3.9.0-RC4 on 2026-09-18), and the version is now stated once, in `tools/project.scala` (see
   `DESIGN.md` D1).
 - New tools: `tt env` (typed environment reads, no whole-environment verb by design), `tt sub` (typed
   search and replace, preview by default), `tt git --remote` and `tt git push` (one unit to a whole

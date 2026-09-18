@@ -61,10 +61,13 @@ object Main:
           if delete(id.toInt) then respond(ex, 204, "") else respond(ex, 404, """{"error":"not found"}""")
         case _ => respond(ex, 405, """{"error":"method not allowed"}""")
 
-  // The Scala.js client output, produced by `sbt client/fastLinkJS`. Override with env TODO_CLIENT_JS if your Scala
-  // version dir differs. This is the one bit a newcomer may need to adjust; the README says so.
+  // The Scala.js client output, produced by `sbt client/fastLinkJS`. Override with env TODO_CLIENT_JS if your
+  // layout differs. The directory is `scala-3` because sbt names it after the BINARY version, which is plain
+  // `3` for a final Scala 3 release. It was `scala-3.9.0-RC1` while the seed pinned a release candidate: RCs
+  // are not binary compatible, so sbt uses the full version for them and this path drifted on every bump.
+  // On the LTS it is stable, which removes the one step the README used to warn newcomers about.
   private val clientJs =
-    sys.env.getOrElse("TODO_CLIENT_JS", "client/target/scala-3.9.0-RC1/todo-client-fastopt/main.js")
+    sys.env.getOrElse("TODO_CLIENT_JS", "client/target/scala-3/todo-client-fastopt/main.js")
 
   object StaticHandler extends HttpHandler:
     def handle(ex: HttpExchange): Unit =
