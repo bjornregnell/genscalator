@@ -10,6 +10,27 @@ file before adopting a new version: it changes the agent's operating rules, so r
 
 ### v0.10.4 candidates (2026-08-18/19, extended 2026-08-22)
 
+- **Scala 3.9.0, the new LTS** (2026-09-18): bumped from the `3.9.0-RC4` release candidate. The
+  toolbox needed ONE edit, in `tools/project.scala`, because every tool includes that file rather
+  than naming a version — the arrangement built after the 3.8.4 → RC4 bump had to touch 78 sites,
+  and this is the first bump to collect on it. Verified before pushing: **40 suites, 795 tests, 0
+  failed, 0 ignored** (`CliSuite` 292/292, `ScalaVersionSuite` 5/5), then `buildnative.sc` end to
+  end — build, parity suite through the candidate, swap on exit 0 — so source, tests and the shipped
+  binary were each confirmed rather than inferred from one another.
+  ⚠ **The first commit (`7d7e70b`) missed six carriers OUTSIDE the toolbox, and one was a real bug**
+  (`35e0973` fixes them): the crud seed's `template/build.sbt` still pinned RC4 while the same commit
+  moved the seed server's client-JS path to `client/target/scala-3` — correct only for a FINAL
+  release, since sbt names that directory after the binary version and an RC is not binary compatible
+  with anything. With the pin left on RC4 the seeded app could not find `main.js`, so the seed was
+  left worse than it was found while its docs advertised 3.9.0. Also missed: the four `deploy/*.sc`
+  scripts and a second RC4 inside a `README.md` link. **The cause was the method** — the carrier sweep
+  used extension-scoped searches over `.scala` and `.md`, so `.sbt` and `.sc` were never looked at.
+  An extension-scoped search cannot enumerate carriers unless the extension list is itself derived.
+  Found by the exit-side ember audit, not by the suite, not by CI. Same drift class as issues 041/055.
+  ⚠ **NOT verified: neither seed has been BUILT on 3.9.0**; both `Status` blocks say so and name the
+  command to re-run. Dated records naming RC4 (issue preambles, `DESIGN.md`, research reports) are
+  left as written — they record what was measured.
+
 - **The uninstaller's payload layout is derived from the staging step, not typed** (issue 040,
   2026-08-26): `get-genscalator.sc`'s pre-manifest fallback held a hand-written list of the payload's
   top-level entries, and it had drifted in **both** directions. It missed `reqts`, so `reqts/PRD.md`
