@@ -159,7 +159,7 @@ of the suite (not run in that round; `CliSuite` carries the unrelated known fail
 described but neither implemented nor measured. ⚠ The file counts quoted in this round were inconsistent
 (333 vs 334, 666 vs 668) and are superseded by the re-measurement in the 2026-09-14 comment below.
 
-### Comment by bjornregnell at 2026-09-11 (review of PR #18)
+### Comment by bjornregnell at 2026-09-11 13:13 — review of PR #18
 
 The denylist entry cannot land, and the reason is one I had not weighed: `tt links` is project-agnostic,
 so `.claude/` being scratch is a fact about this repo and not about the tool. In a repo that tracks
@@ -176,7 +176,7 @@ noted that the added test is a member assertion on `skipDirs` and so cannot catc
 that the preamble quoted 333 files where the commit says 334 and cited `:137-138` where pre-fix
 `skipDirs` is `:137` only.
 
-### Comment by hmiddelk at 2026-09-14
+### Comment by hmiddelk at 2026-09-14 20:00
 
 Taken as directed; the structural check is in and the denylist entry is out. Three things worth recording
 beyond the swap itself.
@@ -208,3 +208,88 @@ pair on one tree; `git worktree list` and `git status` after cleanup, so no work
 NOT verified: the rest of the suite (`CliSuite` carries issue 050's unrelated known failure and ~865 s of
 scala-cli time); macOS or Windows; and the per-directory cost of the extra filesystem probe, which was
 not measured.
+
+### Comment by bjornregnell at 2026-09-18 14:21 — second review of PR #18
+
+The structural rule is what I wanted, and the fixture holds both ways: on the new code the real break
+inside `.claude/` is reported and the valid link into it is left alone; on `60d4d59` the false positive
+comes back exactly as before. Both nested shapes hold, `LinksSuite` is 0 failed of 33, and the extra
+`Files.exists` per directory is not measurable at this size.
+
+Three things before it goes in. The scaladoc on `holdsGitEntry` still says "349 links in 334 files
+became 699 in 667" — a **third** pair, different from both the corrected 698/668 and the superseded
+666/668, and the only numbers left in the shipped code. It needs another rebase; `main` has moved 18
+commits and `CHANGELOG.md` conflicts again, adjacency only. And the canonical figure has drifted under
+us: `main` is at 341 files now rather than 334, though the link count is still 349 — worth quoting the
+count you actually measure at the point it lands.
+
+One thing for a follow-up rather than this PR: a submodule's `.git` is a file, so `holdsGitEntry` skips
+it, and the inventory then skips it *without recording the directory*, so a link from the parent repo
+into a submodule comes back as a false dangling. Same shape I asked you to remove from the denylist,
+landing on content that is tracked. Nothing here is affected as we have no `.gitmodules`, but
+`tt links` is meant to be project-agnostic, so please open it as its own issue with your suggestion for
+how the scan and the inventory should split.
+
+### Comment by hmiddelk at 2026-09-19 14:10 — all three done, and the numbers re-taken on the landing tree
+
+**The third pair is gone, and the scaladoc now states the invariant rather than a sample.** You were
+right that it was the only numbers left in shipped code, and right that they were a third variant.
+Rather than correct them to a fourth, the comment now says what does not drift — a descending scan
+reads every file **twice** — and presents the counts as an explicitly dated sample. Re-measured on the
+rebased tree, 2026-09-19, one worktree present:
+
+```
+before  6 dangling of 698 local links in 686 files   exit 1
+after   0 dangling of 349 local links in 343 files   exit 0
+```
+
+698 = 2 × 349 and 686 = 2 × 343, so the doubling still holds exactly. The CHANGELOG carries the same
+landing figures and names 334 as the earlier measurement rather than silently replacing it.
+
+**On 341 versus 343: they are the same measurement on different bases, and nothing is wrong.** You read
+341 and I read 343, which looked like a disagreement until I counted the tracked `.md`/`.html` files
+at each commit:
+
+```
+fb23f71  340     (main when you reviewed, 14:21)
+7d7e70b  342     (the 3.9.0 bump, 17:17 — +2)
+b410903  342     (main now)
+```
+
+Your review predates the bump by three hours, so your base was `fb23f71` at 340, plus this branch's one
+added file — the issue itself — giving **341**. Mine is `b410903` at 342 plus the same one file, giving
+**343**. The two files between them are `issue-059-…md` and `issue-060-…md`, added by `7d7e70b`. On both
+trees `links check`'s file count equals the tracked count exactly, so nothing untracked or generated is
+inflating either number.
+
+That is worth recording rather than just reconciling: **the canonical figure is a property of the
+commit, not of the repo**, and this repo quotes it in commit messages. Two people measuring the same
+branch correctly, three hours apart, got different right answers. It is the same lesson as the scaladoc
+above — the doubling is the invariant, the count is a dated sample.
+
+**The dated `334` references elsewhere in this file are deliberately left as written**, for the reason
+the 2026-09-14 comment gives about superseded rounds: they record what a specific run on a specific
+tree produced, and rewriting them to today's count would make them false for their own date.
+
+**Rebased, not squashed** — two commits, onto `b410903`. The `CHANGELOG.md` conflict was adjacency
+only, both of us adding a bullet in the same section, plus the second commit replacing this branch's
+own earlier entry. Nothing of yours was dropped in the resolution.
+
+**Issue 062 is filed** for the submodule gap, with the scan/inventory split you asked for. Two things I
+found while writing it that sharpen your note. First, it is a **regression introduced by this PR**
+rather than a latent gap — `main` skips by *name*, and `vendor/child` is not on `skipDirs`, so today
+the link resolves; measured on one fixture, `main` gives 0 dangling of 1 in 3 files and this branch
+gives 1 dangling of 1 in 2 files, with the count falling because the submodule's file leaves scan and
+inventory together. Second, on how to recognise a submodule: its `.git` reads
+`gitdir: ../../.git/modules/<path>` where a worktree's reads `gitdir: <abs>/.git/worktrees/<name>`, so
+the `gitdir:` target would work — but I suggest keying on `.gitmodules` instead, because that is a
+tracked file the project declares, while `.git/modules` is git's private layout, and a tool that
+refuses to shell out to git should not read its internals either.
+
+Agent disclosure: the scaladoc rewrite, the re-measurement, the rebase and issue 062 were done by an AI
+agent (Claude Opus 5) in session with me, and reviewed by me. Verified BY RUNNING on the rebased tree:
+the before/after pair above, with a worktree created and removed and `git worktree list` checked after
+cleanup; `tt links check`; the tracked-file counts at the four commits quoted above; and, for issue
+062, both checker versions against one submodule fixture. NOT verified: macOS or Windows; the rest of
+the suite; and the per-directory cost of the extra `Files.exists`, which you measured as not noticeable
+at this size but which neither of us has timed.

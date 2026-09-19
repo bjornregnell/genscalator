@@ -54,15 +54,17 @@ file before adopting a new version: it changes the agent's operating rules, so r
   the release-history check that made deriving from *current* staging safe is in its Discussion.
   Issue 042's version misreport is deliberately **not** in this change.
 
-- **`links check` no longer scans a nested git worktree** (2026-08-29, revised 2026-09-14, issue 053):
-  Claude Code's worktree isolation puts a full second checkout of the repo at
-  `.claude/worktrees/<branch>`, and the checker descended into it. Measured with one present, the same
-  tree reported **6 dangling of 698 links in 668 files, exit 1**, against **0 of 349 in 334** without
-  it — the doubling exact (698 = 2 × 349, 668 = 2 × 334), and every one of the six being the worktree's
-  copy of a link already excused, unrecognised because excuses key on repo-relative paths. Worse than a
-  wrong number: `links-check.yml` runs on a fresh clone, so CI can never see it, and a contributor whose
-  agent sessions use isolation meets a red check that has nothing to do with their change (issue 050's
-  asymmetry, in a second tool).
+- **`links check` no longer scans a nested git worktree** (2026-08-29, revised 2026-09-14 and
+  2026-09-19, issue 053): Claude Code's worktree isolation puts a full second checkout of the repo at
+  `.claude/worktrees/<branch>`, and the checker descended into it. Re-measured on the tree this lands
+  on, 2026-09-19, with one worktree present: **6 dangling of 698 links in 686 files, exit 1**, against
+  **0 of 349 in 343** without it. The **doubling is the invariant** — 698 = 2 × 349 and 686 = 2 × 343 —
+  and it is the invariant rather than the absolute counts that identifies the symptom, since the file
+  count grows with the repo (it was 334 when this was first measured on 2026-09-14). Every one of the
+  six is the worktree's copy of a link already excused, unrecognised because excuses key on
+  repo-relative paths. Worse than a wrong number: `links-check.yml` runs on a fresh clone, so CI can
+  never see it, and a contributor whose agent sessions use isolation meets a red check that has nothing
+  to do with their change (issue 050's asymmetry, in a second tool).
 
   The fix is **structural, not a name on the skip list**: any directory holding a `.git` entry is the
   root of its own checkout and is not descended into. Both shapes count — a worktree's and a submodule's
