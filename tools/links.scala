@@ -137,6 +137,40 @@ object Links:
   val skipDirs: Set[String] =
     Set(".git", ".scala-build", ".bsp", ".bloop", ".metals", ".scalex", "node_modules", "target", "tmp", "out")
 
+  /** A directory holding a `.git` entry is the root of its OWN checkout, so everything beneath it
+    * belongs to that repository and not to the one being scanned. Skipping it is what keeps a NESTED
+    * CHECKOUT out of the count (issue 053): Claude Code's worktree isolation puts one at
+    * `.claude/worktrees/<branch>`, and a scan that descends there reads every markdown file in the repo
+    * twice. The invariant is the doubling, which is what makes the symptom recognisable; the absolute
+    * counts below are a dated sample of a repo that keeps growing, not a constant to check against.
+    * Measured 2026-09-19 on this repo with one worktree present: **349 links in 343 files became 698
+    * in 686 — exactly twice each** — with 6 reported dangling that are the worktree's copies of links
+    * already excused in `.links.ignore`, unmatched only because an excuse is keyed on the
+    * repo-relative path.
+    *
+    * STRUCTURAL ON PURPOSE, not a name on [[skipDirs]]. `tt links` is project-agnostic (see the header
+    * and CONTRIBUTING.md line 34), and denylisting `.claude` would fail in both directions at once in
+    * any repo that TRACKS it — committing the agent and skill markdown under `.claude` is common
+    * practice: a real broken link inside `.claude/` would go unreported, and a valid link INTO
+    * `.claude/` would be reported dangling because the target was never inventoried. The `.git` entry is
+    * the thing that actually distinguishes a foreign tree from a directory of repo content, and it is
+    * what a worktree, a submodule and a plain nested clone all have.
+    *
+    * Both shapes count: a real repo's `.git` is a directory, a worktree's and a submodule's is a FILE
+    * holding a `gitdir:` pointer — so this tests for the entry's existence, not its type. No git binary
+    * and no `git check-ignore`: one existence check per directory keeps `links` a read → compute →
+    * print tool that still works on the non-repo trees it is deliberately pointed at (`links check
+    * out/`). EFFECTFUL: one filesystem probe. */
+  def holdsGitEntry(dir: Path): Boolean = Files.exists(dir.resolve(".git"))
+
+  /** The single skip decision, shared by the scan and the inventory so the two can never disagree about
+    * which tree they are describing — they are compared against each other, and a directory scanned but
+    * not inventoried reports every link in it as dangling. The root is never skipped: it is normally
+    * itself a checkout, and `links check` is also run pointed straight AT a worktree.
+    * EFFECTFUL: via [[holdsGitEntry]]. */
+  def skipDir(dir: Path, root: Path): Boolean =
+    !dir.equals(root) && (skipDirs(Option(dir.getFileName).map(_.toString).getOrElse("")) || holdsGitEntry(dir))
+
   /** A link to `x.html` is NOT dangling when `x.md` sits beside it: the html is produced at render time
     * by the site generator, so the repo legitimately contains only the source. Without this rule every
     * page-to-page link on the site reads as broken. PURE. */
@@ -274,8 +308,7 @@ object Links:
     Files.walkFileTree(root, java.util.Collections.emptySet[java.nio.file.FileVisitOption](), Int.MaxValue,
       new java.nio.file.SimpleFileVisitor[Path] {
         override def preVisitDirectory(dir: Path, a: java.nio.file.attribute.BasicFileAttributes): java.nio.file.FileVisitResult =
-          val n = Option(dir.getFileName).map(_.toString).getOrElse("")
-          if skipDirs(n) && !dir.equals(root) then java.nio.file.FileVisitResult.SKIP_SUBTREE
+          if skipDir(dir, root) then java.nio.file.FileVisitResult.SKIP_SUBTREE
           else java.nio.file.FileVisitResult.CONTINUE
         override def visitFile(f: Path, a: java.nio.file.attribute.BasicFileAttributes): java.nio.file.FileVisitResult =
           val rel = root.relativize(f).toString
@@ -294,8 +327,7 @@ object Links:
     Files.walkFileTree(root, java.util.Collections.emptySet[java.nio.file.FileVisitOption](), Int.MaxValue,
       new java.nio.file.SimpleFileVisitor[Path] {
         override def preVisitDirectory(d: Path, a: java.nio.file.attribute.BasicFileAttributes): java.nio.file.FileVisitResult =
-          val n = Option(d.getFileName).map(_.toString).getOrElse("")
-          if skipDirs(n) && !d.equals(root) then java.nio.file.FileVisitResult.SKIP_SUBTREE
+          if skipDir(d, root) then java.nio.file.FileVisitResult.SKIP_SUBTREE
           else { if !d.equals(root) then dirs += root.relativize(d).toString; java.nio.file.FileVisitResult.CONTINUE }
         override def visitFile(f: Path, a: java.nio.file.attribute.BasicFileAttributes): java.nio.file.FileVisitResult =
           files += root.relativize(f).toString; java.nio.file.FileVisitResult.CONTINUE

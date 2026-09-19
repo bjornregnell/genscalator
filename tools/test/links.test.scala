@@ -1,10 +1,16 @@
 //> using file ../project.scala
 //> using dep org.scalameta::munit::1.3.4
+//> using dep com.lihaoyi::os-lib:0.11.8
 
 // Tests for links.scala. The parsing helpers are pure, so they are tested directly; the value of doing
 // so is that every case below is a shape this repo actually contains, not an invented one. The three
 // reference shapes (markdown, html attribute, bare path in prose) each get a case, and so does the
 // prefix form (research/052) that would otherwise be the silent miss during a migration.
+//
+// The issue-053 cases at the end are the exception, and deliberately so: the thing under test there is
+// whether the WALK descends, which no assertion about a pure helper can see. They build a real tree in
+// a temp dir (os-lib, as RunningBinaryRenameSuite does) and run the effectful `scanDir` / `inventory`
+// over it.
 
 class LinksSuite extends munit.FunSuite:
 
@@ -73,6 +79,104 @@ class LinksSuite extends munit.FunSuite:
     // a different question (do the published pages resolve?) from the repo check.
     assert(Links.skipDirs("out"), "the assembled site is derived; scanning it double-counts the sources")
     assert(Links.skipDirs(".scalex"))
+    // `.claude/` is deliberately NOT here. It is harness scratch in THIS repo, but `tt links` is
+    // project-agnostic (links.scala:4, CONTRIBUTING.md line 34) and repos that COMMIT
+    // `.claude/agents/*.md` are common — a name on this list would hide their broken links and invent
+    // dangling ones for links pointing in (asserted below). What actually needs skipping is a nested
+    // checkout, and that is detected structurally by `holdsGitEntry` (issue 053).
+    assert(!Links.skipDirs(".claude"), "a repo may TRACK .claude/; use the structural .git-entry check")
+  }
+
+  // --- issue 053: a nested checkout is a second copy of the repo, and must not be scanned.
+  //
+  // These are FIXTURE tests, not member assertions on `skipDirs`. That is the point: the rule under test
+  // is "does the walk descend?", and a member check cannot see a regression in the walk. Both walkers
+  // (`scanDir`, `inventory`) share one decision (`skipDir`), and both are asserted, because the check
+  // compares their outputs — a directory scanned but NOT inventoried reports every link in it as
+  // dangling, which is the same false positive from the other side.
+
+  /** A directory that presents as its own checkout. `worktree = true` writes `.git` as a FILE holding a
+    * `gitdir:` pointer, which is what `git worktree add` and a submodule produce; `false` writes it as a
+    * directory, which is what a plain clone produces. Both shapes must be detected, so both are built. */
+  private def nestedCheckout(at: os.Path, worktree: Boolean): Unit =
+    os.makeDir.all(at)
+    if worktree then os.write(at / ".git", s"gitdir: /elsewhere/.git/worktrees/${at.last}\n")
+    else os.makeDir.all(at / ".git")
+
+  test("issue 053: the scan does not descend into a nested git worktree") {
+    val root = os.temp.dir(prefix = "links053-")
+    try
+      os.write(root / "README.md", "[doc](docs/x.md)\n")
+      os.makeDir.all(root / "docs")
+      os.write(root / "docs" / "x.md", "# x\n")
+      // exactly where Claude Code's worktree isolation puts one: a full second checkout of this repo
+      nestedCheckout(root / ".claude" / "worktrees" / "wt", worktree = true)
+      os.write(root / ".claude" / "worktrees" / "wt" / "README.md", "[doc](docs/x.md)\n")
+      // and a plain nested clone, whose `.git` is a directory rather than a file
+      nestedCheckout(root / "vendor" / "clone", worktree = false)
+      os.write(root / "vendor" / "clone" / "README.md", "[gone](nope.md)\n")
+
+      val scanned = Links.scanDir(root.toNIO, Vector(".md")).map(_._1.replace('\\', '/')).toSet
+      assertEquals(scanned, Set("README.md", "docs/x.md"),
+        "the walk descended into a nested checkout: every file in it is a second copy of a repo file")
+
+      val (files, dirs) = Links.inventory(root.toNIO)
+      val rel = files.map(_.replace('\\', '/')) ++ dirs.map(_.replace('\\', '/'))
+      assert(!rel.exists(_.startsWith(".claude/worktrees/wt/")),
+        s"the worktree was inventoried: ${rel.filter(_.startsWith(".claude/worktrees/wt/"))}")
+      assert(!rel.exists(_.startsWith("vendor/clone/")),
+        s"the nested clone was inventoried: ${rel.filter(_.startsWith("vendor/clone/"))}")
+      // the directory that HOLDS the checkout is still repo content and still walked — only the
+      // checkout itself is cut, so `.claude/` and `vendor/` do not vanish from the inventory
+      assert(dirs.map(_.replace('\\', '/')).contains(".claude/worktrees"),
+        "the skip cut too high: the parent of a nested checkout is ordinary repo content")
+    finally os.remove.all(root)
+  }
+
+  test("issue 053: the scanned ROOT is never skipped, even though a checkout root holds `.git`") {
+    // `links check` is pointed AT a repo root as a matter of course, and at a worktree when that is what
+    // you are in. If the rule did not exempt the root, the canonical invocation would scan nothing at
+    // all — a 0-dangling PASS over 0 files, the most expensive way for this tool to be wrong.
+    val root = os.temp.dir(prefix = "links053root-")
+    try
+      nestedCheckout(root, worktree = true)
+      os.write(root / "README.md", "[gone](nope.md)\n")
+      assertEquals(Links.scanDir(root.toNIO, Vector(".md")).map(_._1).toSet, Set("README.md"))
+      assert(!Links.skipDir(root.toNIO, root.toNIO), "the root skipped itself")
+      assert(Links.skipDir((root / ".git").toNIO, root.toNIO), "the root's own .git is still skipped")
+    finally os.remove.all(root)
+  }
+
+  test("issue 053: a repo that TRACKS .claude/ is still checked — both directions") {
+    // The regression a `skipDirs(".claude")` entry caused, reported on PR #18. Committing
+    // `.claude/agents/*.md` is common practice, and a denylist entry failed in BOTH directions at once:
+    //   - a genuine broken link INSIDE .claude/ became invisible (the file was never scanned)
+    //   - a valid link INTO .claude/ became a false positive (the target was never inventoried)
+    // Asserted as the outcome `check` prints, not as a property of the skip list.
+    val root = os.temp.dir(prefix = "links053claude-")
+    try
+      os.write(root / "README.md", "[the worker](.claude/agents/worker.md)\n")
+      os.makeDir.all(root / ".claude" / "agents")
+      os.write(root / ".claude" / "agents" / "worker.md", "[missing](../../does-not-exist.md)\n")
+
+      val docs = Links.scanDir(root.toNIO, Vector(".md"))
+      val (files, dirs) = Links.inventory(root.toNIO)
+      assertEquals(docs.size, 2, "a tracked .claude/ was not scanned, so its broken links are invisible")
+
+      // Mirrors links.scala:384-399 — `check`'s dangling rule lives inline in the @main, so the
+      // resolution is reproduced here from the same public helpers rather than left unasserted.
+      def resolves(r: String) = files(r) || dirs(r) || Links.generatedFrom(r).exists(files)
+      val dangling = (for
+        (rel0, text) <- docs
+        rel = rel0.replace('\\', '/')
+        t <- Links.linkTargets(text, rel.endsWith(".md")) if !Links.isExternal(t)
+        n = Links.normalizeTarget(t) if n.nonEmpty
+        if !Links.resolve(n, rel).map(_.replace('\\', '/')).exists(resolves)
+      yield (rel, t)).toSet
+
+      assertEquals(dangling, Set(".claude/agents/worker.md" -> "../../does-not-exist.md"),
+        "exactly the one real break, named by its own path: not the valid link INTO .claude/")
+    finally os.remove.all(root)
   }
 
   test("html href and src count as links") {
