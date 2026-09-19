@@ -102,6 +102,35 @@ object Dispatch {
   }
 }
 
+/** The verbs whose description is PROJECTED from one declaration (issue 041, Phase 1).
+  *
+  * WHY IT LIVES HERE, next to the verb table, rather than in ability.scala beside the type it
+  * collects: it has to NAME the tool objects, and ability.scala is `using file`-included by each
+  * projected tool — so the `tt` launcher's single-file fallback (`scala-cli run tools/text.scala`)
+  * would compile it in a build unit containing no other tool, and fail. This file already carries
+  * exactly that constraint ("compiles only as part of the WHOLE-toolbox unit"), and verb -> description
+  * is the same axis as `entries`' verb -> entry point, so the registry is at home beside it.
+  *
+  * References, not copies: nothing here can disagree with the declaration it points at, and a renamed
+  * field breaks the build instead of drifting. AbilitySuite pins this list to the six verbs with
+  * proven drift (so growing the projection is a deliberate edit, not a side effect) and checks every
+  * entry against `Dispatch.verbs` — so a verb cannot declare an ability under a name `tt` does not
+  * serve, and a NEW verb shows up as not-yet-projected rather than silently absent.
+  */
+object ProjectedAbilities {
+
+  val all: Vector[Ability.Decl] = Vector(
+    Guardcheck.ability,
+    Harden.ability,
+    Log.ability,
+    TextTool.ability,
+    Typo.ability,
+    Wr.ability,
+  ).sortBy(_.verb)
+
+  def declFor(verb: String): Option[Ability.Decl] = all.find(_.verb == verb)
+}
+
 /** ⚠ Force UTF-8 on the way OUT, before any tool prints. On Windows System.out follows the console
   * code page, so `ö` went out as one cp1252 byte and `→` degraded to a literal `?` — mojibake in
   * every tool that prints a non-ASCII glyph (the statusline legend, ascii diagrams, prd gists).

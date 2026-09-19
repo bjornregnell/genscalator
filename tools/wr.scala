@@ -2,6 +2,7 @@
 //> using jvm 21
 //> using dep com.lihaoyi::os-lib:0.11.8
 //> using dep com.lihaoyi::ujson:4.4.3
+//> using file ability.scala
 
 // wr — Workflow-Research utilities (tooling for the WR corpus itself). One subcommand today:
 //   tt wr stamp <project-dir> <regex> [--user | --human] [--limit N]
@@ -25,6 +26,14 @@
 import scala.util.matching.Regex
 
 object Wr:
+
+  /** What this verb is, declared ONCE and projected into every surface that describes it (issue 041).
+    * The bad-arguments block below used to open `wr - Workflow-Research utilities` — ASCII hyphen, no
+    * purity marker, and dropping the READ-ONLY claim that is the reason this verb is safe to run over
+    * a corpus of session transcripts. */
+  val ability: Ability.Decl =
+    Ability.pureRead("wr", "Workflow-Research utilities for the WR corpus itself")
+
   final case class Hit(ts: String, typ: String, session: String, line: Int, snippet: String)
 
   enum Mode:
@@ -95,7 +104,7 @@ object Wr:
     0
 
   def usage(): Unit =
-    println("""wr - Workflow-Research utilities
+    println(ability.tagline + """
       |  tt wr stamp <project-dir> <regex> [--user | --human] [--limit N]
       |    scan *.jsonl transcripts in <project-dir> for a Java-regex; print <timestamp> [<type>] <session>:<line> <snippet>,
       |    sorted earliest-first. --user = type==user (NB includes tool_result echoes); --human = only human-typed prose
@@ -103,7 +112,7 @@ object Wr:
       |exit: 0 hits, 1 no matches, 2 usage/error""".stripMargin)
 
   private val Help: String =
-    """tt wr — Workflow-Research utilities (tooling for the WR corpus itself)
+    ability.tagline + """
       |
       |Retrofits the REAL date-time of an utterance or event from the Claude Code session .jsonl
       |transcripts, so a fluent quote recorded in a note can be dated to the second. READ-ONLY —
