@@ -53,6 +53,39 @@ The closest thing to a specification is a comment, not code — `cli.test.scala:
 property-then-walk contract for its own file. Nine files implement something close to it and one does
 not, with nothing relating them.
 
+### A second unrecorded input: which `scala-cli` the suite actually runs
+
+Found while investigating issue 050, and it belongs here because it is the same shape — an input the
+suite resolves from the environment, per file, with nothing recording what it resolved.
+
+`cli.test.scala:33`, `dispatch.test.scala:47` and `session.test.scala:124` each define:
+
+```scala
+private val ScalaCli = if isWindows then "scala-cli.bat" else "scala-cli"
+```
+
+A bare name, resolved through PATH, and every assertion in those suites is made against subprocesses
+spawned that way. **There is nothing wrong with the mechanism** — that is how PATH works, and the
+Windows branch is there for a documented reason (`buildnative.sc:154` explains that neither Git Bash
+nor `ProcessBuilder` does PATHEXT resolution). The gap is that **nothing records which binary won.**
+
+On this machine there are two, and the suite silently picks one:
+
+```
+/usr/local/bin/scala-cli                      1.15.0   (first on PATH)
+~/.local/share/coursier/bin/scala-cli         1.17.1
+```
+
+Measured consequence, from the issue-050 work: invoking the test harness by absolute path to one
+version leaves every asserted subprocess on the *other*, so a run that looks like a version comparison
+is not one. The two are indistinguishable from the output, because the output never names either.
+
+**The precedent for the fix is already in the same file, eleven lines away.** `cli.test.scala:93`
+prints the resolved tools directory, and `:96-98` refuses to run when it looks wrong, with the
+diagnosis spelled out: *"Likely the wrong dir resolved via cwd walk-up — pass `-Dtt.tools=<abs
+tools>`."* The suite already believes that a resolved input should be announced and guarded. It does
+this for `toolsDir` and says nothing about the binary it is about to execute several hundred times.
+
 ### Why this is worth a number
 
 **A documented command fails, and blames the wrong thing.** The two failures name `tt git`'s help
@@ -128,6 +161,13 @@ thing.
   offers a command that does not work. If the fallback lands, the sentence becomes true and can stay;
   if it does not, the bare `scala-cli test tools` form should be removed rather than left as a trap.
   These are separable and the README half should not wait on the design question.
+* **Extend the existing banner to name the `scala-cli` it resolved**, and its version. `cli.test.scala:93`
+  already prints the tools directory for exactly this reason; adding the binary is one line in a
+  `println` the suite already emits, and it costs nothing at runtime. It does not need to *guard*
+  anything — the point is only that a run's own output should state the two inputs that determine its
+  result, so a pasted failure is interpretable without asking the reporter what their PATH was. This
+  is worth doing even if the locate question below is settled the other way, and it is the half that
+  matters to issue 050, where a green run and a red run differed on inputs neither output recorded.
 * **Out of scope:** the `-Dtt.tools` mechanism itself. Passing the tools directory as an explicit
   argument rather than discovering it is a PRD position (`configInArgsNotEnv`, cited at
   `cli.test.scala:10`), and the fallback exists to make interactive use bearable, not to replace it.
@@ -157,3 +197,31 @@ the two census searches. Verified BY READING: each of the ten locate implementat
 into the four variants in the table. NOT verified: behaviour on macOS or Windows; whether any suite
 outside `tools/test/` resolves the same property; and whether `take(6)` in variant **C** can actually
 fail for a real checkout depth, which is stated as an inconsistency rather than as a defect.
+
+### Comment by hmiddelk at 2026-09-19 15:40 — the PATH input, added
+
+Added the second-input section above. It arrived from the issue-050 investigation rather than from
+looking for it: while establishing whether scala-cli 1.17.1 changes that issue's failure, a run that
+appeared to be a version comparison turned out to have the harness on one version and every asserted
+subprocess on the other, because `ScalaCli` is a bare name and PATH decided. Two installs on one
+machine, and nothing in the output naming either.
+
+I want to be careful about what is and is not being claimed, because the mechanism is not a bug.
+Resolving a command through PATH is how the shell works, the Windows `.bat` branch exists for a
+documented reason, and none of the three files is doing anything unusual. The claim is narrower: the
+suite's result is a function of inputs the suite does not report, and this is the second of them.
+`-Dtt.tools` decides *which tree* it reads and PATH decides *which binary* it executes; the first is
+announced at `cli.test.scala:93`, the second is not announced at all.
+
+That is why the suggested fix is a `println` rather than a guard. There is no wrong answer to police —
+any scala-cli on PATH is a legitimate thing to test against. What is missing is the record, and the
+cost of its absence is measured in issue 050, where a green run and a red run of the same suite on the
+same commit differed only on environment that neither run's output described.
+
+Agent disclosure: found by an AI agent (Claude Opus 5) in session with me, as a by-product of the
+issue-050 measurements, and reviewed by me. Verified BY READING `cli.test.scala:32-33`, `:93`,
+`:96-98`, `dispatch.test.scala:47`, `session.test.scala:124` and `buildnative.sc:154-158`; and BY
+RUNNING `which scala-cli` and a version call against both installs on this machine. NOT verified:
+whether the two installs actually diverge on any assertion in the suite — the issue-050 runs came out
+the same on both, so the exposure here is unrecorded provenance rather than a demonstrated behavioural
+difference.
