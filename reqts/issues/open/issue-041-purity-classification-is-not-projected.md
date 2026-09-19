@@ -370,7 +370,7 @@ description paths of all six verbs through the real CLI. NOT verified: any nativ
 startup) was not measured, and the 40 unprojected verbs were neither touched nor audited — the floor
 caveat above still stands for them.
 
-### Comment by hmiddelk at 2026-09-14 — VOCABULARY: this issue says "capability", the code says `Ability`
+### Comment by hmiddelk at 2026-09-14 20:01 — VOCABULARY: this issue says "capability", the code says `Ability`
 
 ⚠ **Read this first if you arrived from the title.** This issue calls the concept **capability
 projection** throughout, but the implementation type is **`Ability`** — `Ability.Decl`, `Ability.Effect`

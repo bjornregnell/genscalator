@@ -48,7 +48,7 @@ class AbilitySuite extends munit.FunSuite:
           .call(check = false, stdout = os.Pipe, stderr = os.Pipe)
     (r.exitCode, r.out.text().replace("\r\n", "\n").trim, r.err.text().replace("\r\n", "\n").trim)
 
-  private def firstLine(s: String): String = s.linesIterator.nextOption.getOrElse("")
+  private def firstLine(s: String): String = s.linesIterator.nextOption().getOrElse("")
 
   test("Phase 1 projects exactly the six verbs with proven drift (issue 041 decision, 2026-08-25)") {
     // Pinned, so that widening the projection is a deliberate edit with a reviewable diff rather than
