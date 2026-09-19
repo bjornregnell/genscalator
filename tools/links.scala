@@ -141,9 +141,12 @@ object Links:
     * belongs to that repository and not to the one being scanned. Skipping it is what keeps a NESTED
     * CHECKOUT out of the count (issue 053): Claude Code's worktree isolation puts one at
     * `.claude/worktrees/<branch>`, and a scan that descends there reads every markdown file in the repo
-    * twice — measured, 349 links in 334 files became 699 in 667, with 6 reported dangling that are the
-    * worktree's copies of links already excused in `links-ignore`, unmatched only because an excuse is
-    * keyed on the repo-relative path.
+    * twice. The invariant is the doubling, which is what makes the symptom recognisable; the absolute
+    * counts below are a dated sample of a repo that keeps growing, not a constant to check against.
+    * Measured 2026-09-19 on this repo with one worktree present: **349 links in 343 files became 698
+    * in 686 — exactly twice each** — with 6 reported dangling that are the worktree's copies of links
+    * already excused in `.links.ignore`, unmatched only because an excuse is keyed on the
+    * repo-relative path.
     *
     * STRUCTURAL ON PURPOSE, not a name on [[skipDirs]]. `tt links` is project-agnostic (see the header
     * and CONTRIBUTING.md line 34), and denylisting `.claude` would fail in both directions at once in
