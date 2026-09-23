@@ -109,7 +109,7 @@ and 666 for the same run; those were wrong and are corrected here.
   matter of course; without the exemption the canonical invocation would scan nothing and pass with 0
   dangling of 0 links, which is the most expensive way for this tool to be wrong. Asserted.
 * **Rejected: add `.claude` to `skipDirs`.** This is what the first draft did, and it is wrong because
-  `tt links` is project-agnostic (`links.scala:4`, CONTRIBUTING.md line 34) while `.claude/` being
+  `tt links` is project-agnostic (CONTRIBUTING.md line 34) while `.claude/` being
   scratch is a fact about *this* repo. In a repo that tracks it — committing the agent and skill
   markdown under `.claude/` is common practice — a name on the denylist fails in **both directions at
   once**: a genuine broken link inside `.claude/` goes unreported because the file is never scanned, and

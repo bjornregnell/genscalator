@@ -80,7 +80,7 @@ class LinksSuite extends munit.FunSuite:
     assert(Links.skipDirs("out"), "the assembled site is derived; scanning it double-counts the sources")
     assert(Links.skipDirs(".scalex"))
     // `.claude/` is deliberately NOT here. It is harness scratch in THIS repo, but `tt links` is
-    // project-agnostic (links.scala:4, CONTRIBUTING.md line 34) and repos that COMMIT
+    // project-agnostic (CONTRIBUTING.md line 34) and repos that COMMIT
     // `.claude/agents/*.md` are common — a name on this list would hide their broken links and invent
     // dangling ones for links pointing in (asserted below). What actually needs skipping is a nested
     // checkout, and that is detected structurally by `holdsGitEntry` (issue 053).

@@ -148,8 +148,8 @@ object Links:
     * already excused in `.links.ignore`, unmatched only because an excuse is keyed on the
     * repo-relative path.
     *
-    * STRUCTURAL ON PURPOSE, not a name on [[skipDirs]]. `tt links` is project-agnostic (see the header
-    * and CONTRIBUTING.md line 34), and denylisting `.claude` would fail in both directions at once in
+    * STRUCTURAL ON PURPOSE, not a name on [[skipDirs]]. `tt links` is project-agnostic
+    * (CONTRIBUTING.md line 34), and denylisting `.claude` would fail in both directions at once in
     * any repo that TRACKS it — committing the agent and skill markdown under `.claude` is common
     * practice: a real broken link inside `.claude/` would go unreported, and a valid link INTO
     * `.claude/` would be reported dangling because the target was never inventoried. The `.git` entry is
