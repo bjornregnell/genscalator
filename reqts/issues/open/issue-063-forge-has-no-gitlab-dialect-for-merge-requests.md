@@ -98,13 +98,21 @@ tt forge --help
 
 Measured 2026-09-23 on Linux at `b410903`. Steps 1-4 were run and their output is quoted.
 
-⚠ **The GitLab API specifics in the sketch below are NOT verified.** They come from the filer's
-proposal, not from a probe against a live GitLab instance or a reading of GitLab's API reference. No
-endpoint, response field or parameter name below has been confirmed by this repo. In particular
-`detailed_merge_status`, its value set, and the `merge_status` fallback are stated as the proposal
-received them. Anyone implementing this should treat the endpoint table as a starting point to
-check, not as a specification — the same caution the release verbs' refusals imply about assuming one
-forge's shape carries to another.
+⚠ **The GitLab API specifics below are of two different evidence grades, and the difference matters.**
+
+* **Field-observed, against a live self-managed GitLab:** everything in the "Gotchas, from a real
+  batch run" section — the 405-after-a-merge behaviour, the
+  `?with_merge_status_recheck=true` recheck, the recheck/poll/merge/retry sequence, and the
+  `force_remove_source_branch=true` web-UI default. BR ran a real oldest-first merge queue and these
+  are what it did.
+* **NOT verified by anything here:** the endpoint and parameter shapes in the per-verb list — the
+  `prs` and `pr` paths, the `order_by`/`sort` parameters, the `/changes` and `/commits` endpoints, and
+  the claim that older instances need a `merge_status` fallback. Those come from the proposal, not
+  from a probe or from GitLab's API reference.
+
+So treat the per-verb endpoint list as a starting point to check rather than a specification — the
+same caution the release verbs' refusals imply about assuming one forge's shape carries to another —
+while treating the Gotchas as measured constraints the design has to satisfy.
 
 ## Acceptance sketch
 
@@ -130,12 +138,40 @@ forge's shape carries to another.
   cheap, and worth doing even if the rest is deferred: a `case "--gl" :: _ => die(...)` naming the
   dialect as unimplemented, instead of `unknown/incomplete flag '--gl'`, which misdescribes a real
   flag as a typo. Same pattern as four verbs already in the file.
-* **Two gotchas from the proposal, both unverified and both affecting the safety argument:**
-  GitLab is said to compute merge status asynchronously, so the status may read `checking` or
-  `unchecked` right after a merge and need a brief poll before deciding; and older self-managed
-  instances may lack `detailed_merge_status`, wanting a `merge_status` fallback. If the first is
-  true it is load-bearing, not cosmetic: a batch merge that reads `checking` as "not mergeable" skips
-  work silently, and one that reads it as "mergeable" defeats the refusal.
+### Gotchas, from a real batch run rather than from reasoning
+
+These come from BR merging a queue of open MRs oldest-first on a self-managed GitLab, using `glab` as
+a stopgap, each merge pinned to the head sha he had reviewed. They are field observations, not
+predictions, and they change the design rather than decorate it.
+
+* ⚠ **A merge invalidates the NEXT MR's merge status, and the API says `405`, not "conflict".** Every
+  merge moves the target branch, which resets the following MR's `detailed_merge_status` to
+  `unchecked`. `PUT /merge_requests/:iid/merge` then answers **405 Method Not Allowed** until a
+  recheck has run — `GET /merge_requests/:iid?with_merge_status_recheck=true`. A naive queue reads 405
+  as a hard failure and stops on a perfectly mergeable MR.
+* **So the per-MR sequence a queue must follow is:** recheck → short wait/poll until the status is
+  `mergeable` → merge with `sha` pinned → **on 405, recheck and retry**. Measured in that run: **4
+  needed a retry and none actually failed.** (The run covered 16 MRs and the retry figure is recorded
+  as "4 of 13"; the two counts are quoted as given and not reconciled here.)
+* **Treat 405 as "not ready", then let `detailed_merge_status` decide what to do about it:**
+  `checking` / `unchecked` means retry, `conflict` / `need_rebase` means stop or skip. That
+  distinction is the whole difference between a queue that stalls and one that silently skips work.
+* ⚠ **"Never delete the source branch" has to be asserted, not assumed.** MRs created in the web UI
+  default to `force_remove_source_branch=true`, so `pr-merge`'s existing promise requires passing
+  `should_remove_source_branch=false` explicitly to override the MR's own setting. Inheriting the
+  default would make the GitLab path quietly destructive where the GitHub path is not — the one place
+  a dialect addition could break an existing safety property.
+* **GraphQL gives a compact preview** in one request, which suits `pr-merge`'s preview-by-default
+  shape: `mergeRequests(state: opened, sort: CREATED_ASC) { iid detailedMergeStatus diffHeadSha
+  diffStats { path } forceRemoveSourceBranch }`. Worth considering for the preview even if the merge
+  itself stays REST.
+* **Still unverified:** that older self-managed instances lack `detailed_merge_status` and want a
+  `merge_status` (`can_be_merged` / `cannot_be_merged`) fallback. Carried from the original proposal.
+
+⚠ **The reference script is private and must stay that way.** It lives at `tmp/merge-rest.sh`
+(gitignored) and names a private host and repo. It must never be committed, and those names must never
+appear in a public issue, PR or example. Examples here stay generic: `gitlab.example.org`,
+`<owner>/<repo>`.
 
 ### Possible follow-up verb, explicitly NOT part of this issue
 
