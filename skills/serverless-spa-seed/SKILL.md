@@ -31,11 +31,13 @@ datamodel), use `crud-web-app-seed` instead.
 Scala **3.9.0** · Scala.js **1.22.0** · Laminar **17.2.1** · scalajs-dom **2.8.1**, built with
 **scala-cli** (no sbt). Matches the crud seed's Scala/Scala.js/Laminar set, minus the server and sbt.
 
-## Status (2026-07-23; re-verified on RC4 2026-07-25)
-⚠ **The verification below is on 3.9.0-RC4 and has NOT been re-run on 3.9.0**, which the 2026-09-18 bump
-to the LTS pinned. Re-run `scala-cli package template --js` before treating this as verified.
+## Status (2026-07-23; re-verified on the 3.9.0 LTS 2026-09-23)
+**Re-verified on 3.9.0 (2026-09-23 14:02).** `scala-cli package <template> --js` compiles and links with
+exit 0 on Scala 3.9.0 / Scala.js 1.22.0, run on a copy with no pre-existing build output so the result is
+not a stale artifact. The emitted `main.js` is 1.2 MB and contains the `localStorage` calls, so the app
+code linked in rather than an empty shell.
 
 **Link VERIFIED.** `scala-cli package template --js` compiles + links to `main.js` (exit 0, Scala
-3.9.0-RC4 / Scala.js 1.22.0). The linked script auto-runs `@main` on load (confirmed on RC1: it reaches
+3.9.0 / Scala.js 1.22.0). The linked script auto-runs `@main` on load (confirmed on RC1: it reaches
 `TodoApp.load` → `window.localStorage`). Browser click-through (add / tick / delete, reload
 persists) is the human step, as with the crud seed.
