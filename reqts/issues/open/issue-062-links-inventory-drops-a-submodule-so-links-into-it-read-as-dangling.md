@@ -72,7 +72,7 @@ tracked content the repo chose to depend on.
 
 **Not reachable here today.** `git ls-files .gitmodules` is empty in genscalator, so no submodule
 exists and nothing regresses. This is filed because `tt links` is required to be project-agnostic
-(`tools/links.scala:4`, `CONTRIBUTING.md` line 34) and submodules are ordinary in the repos it is
+(`CONTRIBUTING.md` line 34) and submodules are ordinary in the repos it is
 meant to serve — the identical argument that removed the `.claude` entry.
 
 ## How to reproduce it

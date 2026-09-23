@@ -41,6 +41,12 @@ The resolution rule is restated in each suite that needs it. Enumerated at `b410
 | **C** — `tools/`, unvalidated, walk 6 | `session.test.scala:118` | `os.Path(_, os.pwd)` (tolerates a relative value), **no** `.filter`, `take(6)` |
 | **D** — `tools/`, unvalidated, **no fallback** | `git.test.scala:358-359` | `sys.props.get("tt.tools").map(os.Path(_)).getOrElse(throw …)` |
 
+> **Baseline note, added on merge.** The preamble declares `b410903`, where `ability.test.scala` did
+> not yet exist, so at filing time the census read 9 copies and 8 fallbacks on `main` and the table
+> above described `main` plus PR #14's branch. #14 has since merged, so the table now describes `main`
+> exactly: **10 copies, 9 with the fallback**, re-measured after the merge. The numbers were right about
+> where the repo was going; only the stated baseline lagged.
+
 Variant **D** is the defect. It is the only one of the ten that cannot resolve `tools/` without the
 property, and it is also the only one that never checks the property points at a real tools directory —
 so a *wrong* `-Dtt.tools` gets past it and fails later inside `os.read` with a worse message than the
