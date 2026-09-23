@@ -120,6 +120,13 @@ FORBIDDEN → ALLOWED:
   not merely "when convenient". And the don't-run-`tt`-during-a-build rule is CONDITIONAL — with
   a FRESH binary `tt` is a static executable and is safe (the PreToolUse guardcheck hook calls it
   on every Bash call throughout a suite run regardless); the contention only exists while stale.
+  ⚠⚠ **"Rebuild BEFORE a long batch" is NOT sufficient: a rebuild is invalidated by any `tools/`
+  change DURING it** — including a PR merged on the forge, which is not a change you made locally.
+  `buildnative.sc` reports SWAPPED regardless, and the only signal is the staleness warning on the
+  next `tt` call (specimen 2026-09-23: a `tools/links.scala` merge landed mid-build, one 106s build
+  wasted, and the verdict's own `LinksSuite` count was 30 against the merged tree's 33). So SEQUENCE
+  the merge and the rebuild, never overlap them, and treat a SWAPPED line as describing the tree the
+  build STARTED from. Issue 066 is the structural fix (refuse the swap when the inputs moved).
 - Next free IDs (SM/WR/RT/issue): carry the deriving COMMANDS, numbers only as hints marked
   "re-verify before using" (rule 3's exception, SM275b).
 
