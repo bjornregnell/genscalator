@@ -62,23 +62,36 @@ object Main:
         case _ => respond(ex, 405, """{"error":"method not allowed"}""")
 
   // The Scala.js client output, produced by `sbt client/fastLinkJS`. Override with env TODO_CLIENT_JS if your
-  // layout differs. The directory is `scala-3` because sbt names it after the BINARY version, which is plain
-  // `3` for a final Scala 3 release. It was `scala-3.9.0-RC1` while the seed pinned a release candidate: RCs
-  // are not binary compatible, so sbt uses the full version for them and this path drifted on every bump.
-  // On the LTS it is stable, which removes the one step the README used to warn newcomers about.
-  private val clientJs =
-    sys.env.getOrElse("TODO_CLIENT_JS", "client/target/scala-3/todo-client-fastopt/main.js")
+  // layout differs.
+  //
+  // We LOOK for the file instead of naming its directory. sbt puts it under a directory named after the Scala
+  // version it resolved, and that name is NOT stable across bumps: measured 2026-09-23 it is
+  // `client/target/scala-3.9.0/` on the 3.9.0 LTS, and it was `scala-3.9.0-RC1` while the seed pinned a release
+  // candidate. Every previous spelling was hardcoded here, and each bump therefore made this server answer 404
+  // for a client that had built perfectly well. Searching costs one directory listing per request and cannot
+  // drift. If several version dirs are left behind by successive builds, the most recently written one wins.
+  private val clientJsWanted = "client/target/scala-*/todo-client-fastopt/main.js"
+
+  private def clientJsFile: Option[java.nio.file.Path] =
+    sys.env.get("TODO_CLIENT_JS") match
+      case Some(p) => Some(java.nio.file.Path.of(p)).filter(java.nio.file.Files.isRegularFile(_))
+      case None =>
+        Option(java.io.File("client/target").listFiles).getOrElse(Array.empty[java.io.File])
+          .filter(_.isDirectory)
+          .map(d => d.toPath.resolve("todo-client-fastopt").resolve("main.js"))
+          .filter(java.nio.file.Files.isRegularFile(_))
+          .maxByOption(_.toFile.lastModified)
 
   object StaticHandler extends HttpHandler:
     def handle(ex: HttpExchange): Unit =
       ex.getRequestURI.getPath match
         case "/main.js" =>
-          val f = java.nio.file.Path.of(clientJs)
-          if java.nio.file.Files.exists(f) then
-            respond(ex, 200, java.nio.file.Files.readString(f), "application/javascript")
-          else
-            respond(ex, 404, s"// not found: $clientJs — run `sbt client/fastLinkJS` first (or set TODO_CLIENT_JS)",
-              "application/javascript")
+          clientJsFile match
+            case Some(f) =>
+              respond(ex, 200, java.nio.file.Files.readString(f), "application/javascript")
+            case None =>
+              respond(ex, 404, s"// not found: $clientJsWanted — run `sbt client/fastLinkJS` first (or set TODO_CLIENT_JS)",
+                "application/javascript")
         case _ =>
           val html =
             """<!doctype html><html><head><meta charset="utf-8"><title>Todo seed</title></head>
