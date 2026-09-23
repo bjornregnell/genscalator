@@ -418,3 +418,84 @@ produced the count above. Verified BY READING each cited line in all four files,
 `git diff --name-only` which of them PR #14 modifies. NOT verified: that six is the total — the
 enumeration covers helpers that hand stderr back to a test, and a test reading stderr by some other
 route would not appear, so six is a floor of the same kind this issue's "exactly one" was measured as.
+
+### Comment by bjornregnell at 2026-09-23 16:55 — the hold is released
+
+My measurement was the misleading one. Both inputs named above are present on my machine:
+`scala-cli config suppress-warning.directives-in-multiple-files` returns `true`, almost certainly set
+by me years ago by taking the advisory's own advice and forgetting, and `tt which scala-cli` shows two
+installs exactly as on yours. A direct run here emits zero bytes on stderr, and that is the whole of my
+"it is gone upstream" claim, explained.
+
+So: this issue stays open, it is not fixed upstream, and I was wrong to suggest it might close. **The
+hold on the filter is released — please build it.** The choice of fix is right for the reason given:
+0 bytes on both 1.15.0 and 1.17.1 makes it immune to the version, to the global config key and to
+PATH, which is precisely the property the current arrangement lacks. Keep the six-helper enumeration;
+the point that a filter at one of six sites relocates the blind spot rather than closing it is the part
+I would not want lost, and `dispatch.test.scala` returning a raw `os.CommandResult` is the sharp edge.
+
+On shared versus duplicated I lean **shared**, but state it in the issue rather than deciding it in a
+forge thread, since `ability.test.scala:26` records the no-DRY position deliberately and reversing it
+deserves to be visible.
+
+### Comment by hmiddelk at 2026-09-23 18:30 — the filter, and what it measures
+
+Built, and the suite is green in default mode for the first time.
+
+```
+CliSuite: 0 failed, 0 ignored, 292 total   814.1s   (default mode, caches cleared first)
+```
+
+`cli.test.scala`'s exhaustive stderr assertion — the one this issue exists to protect — now passes
+without being weakened. It still compares the whole tuple.
+
+**Shared, in `tools/test/testsupport.test.scala`, and this needed no new exception to the no-DRY
+position.** That file already exists for precisely this: `TestFs.removeAllForce` lives there because
+duplicated Windows cleanup made one bug "read as 14 unrelated git failures rather than as one cleanup
+bug". `ToolchainNoise.strip` is the same story on a different axis, so it sits beside it rather than
+overturning `ability.test.scala:26`. The policy stands; this is the second member of an exception the
+project had already made.
+
+**Applied at every capture point**, which is the part that matters given a filter at one of six
+relocates the blind spot: `cli.test.scala`'s `run`, `runStdin` and `runIn` (through one `normalizeErr`,
+applied to `err` ONLY — stdout is the tool's own channel), `session.test.scala`'s `runStdin`, and
+`dispatch.test.scala`. The sharp edge is handled without changing `runDispatcher`'s type, since callers
+need `exitCode` and `out` too: a documented `errOf(r)` accessor sits beside it, saying a new stderr
+assertion must go through it because reading `r.err.text()` would pass today and fail the moment it is
+tightened.
+
+**⚠ I did not add `--suppress-directives-in-multiple-files-warning`, and that is a deliberate
+departure from the sketch's third bullet.** An unknown CLI option is a hard error, so pinning the
+suite to a flag reintroduces a dependency on the toolchain version — the exact axis this issue is
+about. The filter is version-independent and needed regardless, because the flag cannot suppress
+`Compiling project` on a cold build. Easy to add on top if you disagree; it composes.
+
+**The filter has its own tests** (`ToolchainNoiseSuite`, 6 of 6), because it is the one piece of test
+support that can *hide* a failure if it is wrong. Two carry the weight: an unrecognised line inside the
+advisory block ends the block and survives, and a **reworded** advisory is deliberately not stripped.
+So a scala-cli wording change turns the exhaustive assertion red rather than quiet, which is the
+direction this issue asked to fail in.
+
+**`ability.test.scala` is covered too.** It was PR #14's file and not on `main` when this was written;
+#14 merged on 2026-09-23 while the filter was being built, so the sixth capture point went live and is
+handled in the same change rather than left as a follow-up. Its `run` now routes `err` through
+`ToolchainNoise.strip` and leaves `out` alone, like the other five. The enumeration is therefore **six
+capture points across four files**, exactly as the earlier comment counted them.
+
+**⚠ One thing I did not fix and am not claiming to.** The first run of the suite on this branch failed
+at `cli.test.scala:274` — the UTF-8 regression test for the latin1 bug — with `expected 1, obtained 0`.
+The second run, after `tt bloop clean`, passed. I changed two things between them, so I cannot
+attribute the recovery. The diff is provably stdout-neutral (it touches only the third tuple element,
+and `:274` asserts on `out`), the source literals are byte-identical to `main`'s, a faithful JVM
+reproduction of that test returns `1`, and `file.encoding` / `sun.jnu.encoding` / `native.encoding` are
+UTF-8 on both scala-cli versions. The likeliest reading is a stale build unit — adding a `using dep` to
+`testsupport.test.scala` re-hashes it — but that is inference. A test that fails once and passes once
+on the same code is a flake until someone characterises it, and this one is the regression test for a
+real encoding bug, so it is filed as issue 065 rather than left in a commit message.
+
+Agent disclosure: implemented and measured by an AI agent (Claude Opus 5) in session with me, and
+reviewed by me. Verified BY RUNNING: `ToolchainNoiseSuite` 6/6; `CliSuite` 292/292 in default mode on a
+cold build; the same suite on unmodified `main` as a control, which reproduced the original failure at
+`cli.test.scala:2462` and passed `:274`; and a JVM-level reproduction of `:274` in isolation. NOT
+verified: macOS or Windows; parity mode with this change; whether the `:274` flake recurs; and the
+behaviour of the filter against any scala-cli version other than 1.15.0 and 1.17.1.

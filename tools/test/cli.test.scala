@@ -36,6 +36,12 @@ class CliSuite extends munit.FunSuite:
     * suite is written with \n. Done at the ONE capture point rather than in 243 assertions. */
   private def normalizeEol(s: String): String = s.replace("\r\n", "\n").trim
 
+  /** Stderr gets one more step than stdout: the build tool writes to it too (issue 050). Stripping the
+    * toolchain's own lines is what lets `assertEquals(run(...), (0, "gs", ""))` below mean *the tool
+    * wrote nothing* rather than *scala-cli happened to be quiet*. Applied to `err` ONLY — stdout is the
+    * tool's own channel and must pass through untouched. See `ToolchainNoise`. */
+  private def normalizeErr(s: String): String = normalizeEol(ToolchainNoise.strip(s))
+
   /** Escape a string for embedding inside a JSON string literal in a test payload.
     *
     * ⚠ Needed for PATHS. A Windows temp path is `C:\Users\RUNNER~1\AppData\...`, and dropping that raw
@@ -57,7 +63,7 @@ class CliSuite extends munit.FunSuite:
       case None =>
         os.proc(ScalaCli, "run", (toolsDir / s"$tool.scala").toString, "--", args)
           .call(check = false, stdout = os.Pipe, stderr = os.Pipe)
-    (r.exitCode, normalizeEol(r.out.text()), normalizeEol(r.err.text()))
+    (r.exitCode, normalizeEol(r.out.text()), normalizeErr(r.err.text()))
 
   /** Run a tool with its payload on STDIN, which is how the real caller feeds it.
     *
@@ -80,7 +86,7 @@ class CliSuite extends munit.FunSuite:
       case None =>
         os.proc(ScalaCli, "run", (toolsDir / s"$tool.scala").toString, "--", args)
           .call(check = false, stdin = stdinText, stdout = os.Pipe, stderr = os.Pipe)
-    (r.exitCode, normalizeEol(r.out.text()), normalizeEol(r.err.text()))
+    (r.exitCode, normalizeEol(r.out.text()), normalizeErr(r.err.text()))
 
   // Announce the resolved tools dir ONCE, and fail fast on a stale/partial one. The ember records a
   // 6-file copy resolved via cwd walk-up that produced ~123 phantom failures; this turns that whole
@@ -882,7 +888,7 @@ class CliSuite extends munit.FunSuite:
   private def runIn(cwd: os.Path, tool: String, args: String*): (Int, String, String) =
     val r = os.proc(ScalaCli, "run", (toolsDir / s"$tool.scala").toString, "--", args)
       .call(cwd = cwd, check = false, stdout = os.Pipe, stderr = os.Pipe)
-    (r.exitCode, normalizeEol(r.out.text()), normalizeEol(r.err.text()))
+    (r.exitCode, normalizeEol(r.out.text()), normalizeErr(r.err.text()))
 
   // --- parsereqt (reqT-lang parse + lint over the vendored parser) ---
   // Fixtures use verified reqT-lang syntax; behaviors were confirmed against `tt parsereqt` before encoding here.
