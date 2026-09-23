@@ -36,6 +36,21 @@ cwd) — or `scala-cli test tools` from the repo root. Test scope extends the to
 
 ## Tools
 
+Each `### <verb> — <tagline>` heading below is the description `gs help tt` reads, and the
+`(PURE)` / `(EFFECTFUL)` marker in it is a **safety claim**: it decides allowlist membership and,
+the moment the toolbox is exposed over a protocol, what a caller may invoke unattended. For six
+verbs — `guardcheck`, `harden`, `log`, `text`, `typo`, `wr` — that heading is **gated by
+`AbilitySuite`**: the verb declares itself once in `object <Tool>.ability` (see
+[`ability.scala`](ability.scala)), and the suite fails if this heading does not match what the
+declaration renders. Be precise about which carrier does what, because the strength differs: the
+`--help` tagline and the usage block printed on bad arguments are **derived** — they are produced
+from the declaration at run time, so they cannot disagree with it. This heading is **checked**,
+not generated: nothing writes it, so it can still be hand-edited, and what stops that from
+surviving is the test rather than the mechanism. **Edit the declaration, not the heading** —
+`AbilitySuite` fails on a hand-edit and prints the line to paste back. The remaining verbs still
+hand-maintain all three; issue 041 is the plan for widening the projection, and it is deliberately
+sequenced rather than done in one diff.
+
 ### text — typed grep/awk/cut/uniq replacement (PURE)
 ```
 text count <file> <regex>            # grep -c   : count matches
