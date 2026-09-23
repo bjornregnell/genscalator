@@ -10,6 +10,38 @@ file before adopting a new version: it changes the agent's operating rules, so r
 
 ### v0.10.4 candidates (2026-08-18/19, extended 2026-08-22)
 
+- **`scala-cli test tools` is green in default mode for the first time** (issue 050, 2026-09-23):
+  **`CliSuite` 0 failed of 292**, where it had been 1 failed since 2026-08-29. The failure was never
+  the `json` test it named: every tool carries `//> using file project.scala` deliberately, so
+  scala-cli answers with a "Using directives detected in multiple files" advisory on **stderr**, and
+  the suite's **one** exhaustive stderr assertion is the only thing it could break. The obvious repair
+  — weakening that line to `._2` like its 40 neighbours — would have deleted the only check across 46
+  verbs able to notice a verb that starts writing something unexpected to stderr on a *success* path.
+  Instead the toolchain's own lines are filtered at the capture point, so `stderr == ""` recovers its
+  real meaning: **the tool wrote nothing**.
+  `ToolchainNoise.strip` is **shared**, in `tools/test/testsupport.test.scala`, beside
+  `TestFs.removeAllForce` — which lives there for the same reason, one bug presenting as many
+  unrelated failures. That needed no exception to the deliberate no-DRY position
+  (`ability.test.scala:26`); it joins one the project had already made. Applied at **every** capture
+  point rather than one, because a filter at a single site relocates the blind spot instead of closing
+  it: `cli.test.scala`'s `run`/`runStdin`/`runIn` via one `normalizeErr` (stderr ONLY — stdout is the
+  tool's channel), `session.test.scala`, and `dispatch.test.scala` through a documented `errOf`
+  accessor, since `runDispatcher` must keep returning the raw result its callers read `exitCode` and
+  `out` from.
+  ⚠ **The suppression flag was deliberately NOT used.** An unknown CLI option is a hard error, so
+  pinning the suite to `--suppress-directives-in-multiple-files-warning` would reintroduce a
+  dependency on the toolchain version — the axis this issue is about — and it cannot suppress
+  `Compiling project` on a cold build anyway. The filter is version-independent and was verified on a
+  **cold** build, which is the case a fresh checkout meets first.
+  `ToolchainNoiseSuite` (6 tests) guards the guard, because a filter is the one piece of test support
+  that can *hide* a failure: an unrecognised line inside the advisory block ends it and survives, and a
+  **reworded** advisory is not stripped, so a scala-cli wording change fails toward **red**.
+  `AbilitySuite` is covered too: issue 041's Phase 1 merged while this was being built, so its `run`
+  became the sixth capture point and is handled here rather than left as a follow-up.
+  ⚠ NOT fixed: `cli.test.scala:274`, the UTF-8 latin1 regression test, failed once and passed once on
+  identical code during this work — filed as issue 065 rather than glossed, since it is a flake in a
+  test guarding a real encoding bug, and its signature is indistinguishable from that bug's.
+
 - **Scala 3.9.0, the new LTS** (2026-09-18): bumped from the `3.9.0-RC4` release candidate. The
   toolbox needed ONE edit, in `tools/project.scala`, because every tool includes that file rather
   than naming a version — the arrangement built after the 3.8.4 → RC4 bump had to touch 78 sites,

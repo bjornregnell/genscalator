@@ -59,6 +59,16 @@ class DispatchSuite extends munit.FunSuite:
   private lazy val nativeBin: Option[os.Path] =
     sys.props.get("tt.native.bin").map(os.Path(_, os.pwd)).filter(os.exists)
 
+  /** Read a dispatcher run's stderr with the build tool's own lines removed (issue 050).
+    *
+    * ⚠ Use this rather than `r.err.text()`. `runDispatcher` hands back the raw `os.CommandResult`
+    * because callers want `exitCode` and `out` as well, which means there is no single interior place
+    * to filter — so the filter lives at the read instead. That is the one asymmetry with CliSuite and
+    * SessionCliSuite, where `run` returns an already-normalised triple. A new stderr assertion here
+    * must go through this; going through `r.err.text()` would pass today and start failing the moment
+    * it is tightened to an exact comparison. */
+  private def errOf(r: os.CommandResult): String = ToolchainNoise.strip(r.err.text())
+
   // check = false so exit codes are data.
   private def runDispatcher(args: String*): os.CommandResult =
     nativeBin match
@@ -85,7 +95,7 @@ class DispatchSuite extends munit.FunSuite:
     // weakens to "failed", because that is all that channel can honestly report (see runDispatcher).
     if nativeBin.isDefined || !isWindows then assertEquals(r.exitCode, 2)
     else assertNotEquals(r.exitCode, 0, "unknown tool must fail")
-    val err = r.err.text()
+    val err = errOf(r)
     assert(clue(err).contains("tt: no such tool 'no-such-tool'"))
     assert(clue(err).contains("usage: tt <tool> <args...>"))
   }

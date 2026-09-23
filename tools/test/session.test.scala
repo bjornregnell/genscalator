@@ -124,6 +124,9 @@ class SessionCliSuite extends munit.FunSuite:
   private val ScalaCli =
     if System.getProperty("os.name", "").toLowerCase.contains("win") then "scala-cli.bat" else "scala-cli"
   private def norm(s: String): String = s.replace("\r\n", "\n").trim
+  // stderr also carries the build tool's own lines; strip them so an empty stderr means the TOOL was
+  // quiet (issue 050). Shared with CliSuite and DispatchSuite via ToolchainNoise rather than restated.
+  private def normErr(s: String): String = norm(ToolchainNoise.strip(s))
   private def run(tool: String, args: String*): (Int, String, String) = runStdin(tool, "", args*)
   private def runStdin(tool: String, stdinText: String, args: String*): (Int, String, String) =
     val r = nativeBin match
@@ -132,7 +135,7 @@ class SessionCliSuite extends munit.FunSuite:
       case None =>
         os.proc(ScalaCli, "run", (toolsDir / s"$tool.scala").toString, "--", args)
           .call(check = false, stdin = stdinText, stdout = os.Pipe, stderr = os.Pipe)
-    (r.exitCode, norm(r.out.text()), norm(r.err.text()))
+    (r.exitCode, norm(r.out.text()), normErr(r.err.text()))
 
   test("session with --id prints the default name; setting and clearing a name round-trips") {
     val root = os.temp.dir()

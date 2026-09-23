@@ -46,7 +46,12 @@ class AbilitySuite extends munit.FunSuite:
       case None =>
         os.proc(ScalaCli, "run", toolsDir.toString, "--main-class", "dispatchTypedTools", "--", verb, args)
           .call(check = false, stdout = os.Pipe, stderr = os.Pipe)
-    (r.exitCode, r.out.text().replace("\r\n", "\n").trim, r.err.text().replace("\r\n", "\n").trim)
+    // stderr goes through ToolchainNoise (issue 050): the build tool writes there too, so without this
+    // an empty-stderr assertion would mean "scala-cli happened to be quiet" rather than "the verb was".
+    // stdout is the verb's own channel and passes through untouched.
+    (r.exitCode,
+     r.out.text().replace("\r\n", "\n").trim,
+     ToolchainNoise.strip(r.err.text()).replace("\r\n", "\n").trim)
 
   private def firstLine(s: String): String = s.linesIterator.nextOption().getOrElse("")
 
