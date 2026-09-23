@@ -98,8 +98,8 @@ replacement; `--literal` turns off regex AND backrefs on both sides for text con
 `tree` skips generated dirs (`.git .scala-build target node_modules .bloop .metals`), so a bulk rewrite can
 never corrupt a build cache, and line endings plus a missing final newline are preserved byte-for-byte.
 ```
-tt sub tree /abs/repo/tools .scala 'using scala 3\.8\.4' 'using scala 3.9.0-RC4'          # preview
-tt sub tree /abs/repo/tools .scala 'using scala 3\.8\.4' 'using scala 3.9.0-RC4' --write  # apply
+tt sub tree /abs/repo/tools .scala 'using scala 3\.9\.0-RC4' 'using scala 3.9.0'          # preview
+tt sub tree /abs/repo/tools .scala 'using scala 3\.9\.0-RC4' 'using scala 3.9.0' --write  # apply
 tt sub file build.txt 'v1.2 (old)' 'v1.3' --literal --write
 ```
 

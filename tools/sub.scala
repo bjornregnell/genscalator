@@ -38,8 +38,8 @@ private val SubHelp: String =
     |  before it happens; the summary always states how many lines in how many files.
     |
     |Examples:
-    |  tt sub tree /abs/repo/tools .scala 'using scala 3\.8\.4' 'using scala 3.9.0-RC4'
-    |  tt sub tree /abs/repo/tools .scala 'using scala 3\.8\.4' 'using scala 3.9.0-RC4' --write
+    |  tt sub tree /abs/repo/tools .scala 'using scala 3\.9\.0-RC4' 'using scala 3.9.0'
+    |  tt sub tree /abs/repo/tools .scala 'using scala 3\.9\.0-RC4' 'using scala 3.9.0' --write
     |  tt sub file notes.md 'colour' 'color' --write
     |  tt sub file build.txt 'v1.2 (old)' 'v1.3' --literal --write
     |
