@@ -64,3 +64,86 @@ itself the argument that the file should not be carrying these descriptions.
 Note that this does not block closing issue 041 when Phase 1 lands. 041 is about the three carriers it
 named, and it fixed them. This is the carrier nobody knew to look for, which is a different statement and
 deserves its own number.
+
+### Comment by hmiddelk at 2026-09-14 — THE SURVEY
+
+The count you asked for. Measured against `main` at `fb23f71`.
+
+**Scope: the skill describes 6 of 46 verbs**, across 11 lines in the `## What's available` block
+(`SKILL.md:25-35`). `tools/README.md` carries 46 `### <verb> —` headings, so 40 verbs are not named in
+the skill at all. It is a curated list, not a catalogue — which matters for the choice of fix.
+
+| verb | the skill's gloss (`SKILL.md`) | source of truth | classification? |
+| --- | --- | --- | --- |
+| `text` | six subcommand lines, e.g. `# grep -c` | `typed grep/awk/cut/uniq replacement (PURE)` | ✗ |
+| `files` | `find / grep -l ; add --count for just the number` | `typed find / find\|wc / grep -l replacement (PURE)` | ✗ |
+| `log` | `build/run-log analyzer: errors + warnings + verdict` | `build/run-log analyzer` **(PURE)** | ✗ |
+| `verify` | `run-and-verify (effectful): run an allowed cmd, check exit/out, PASS/FAIL` | `run-and-verify driver (EFFECTFUL)` | **✓** |
+| `gitinfo` | `branch, clean/dirty, ahead/behind — state/sync without raw git status` | `typed, READ-ONLY git status/overview (PURE, read-only)` | ✗ |
+| `git` | `the typed git lane (see Command discipline)` | `safe git helper: commit-from-file, ff-pull, fetch, read-only show (EFFECTFUL, non-destructive)` | ✗ |
+
+**The counts:**
+
+* **6 of 46** verbs described.
+* **6 of 6** worded independently — not one is the tagline verbatim.
+* **1 of 6** carries the PURE/EFFECTFUL classification (`verify`, lowercased). **5 of 6 omit it.**
+* **2 of 6** are verbs PR #14 projects (`text`, `log`) — and **both omit the marker**, so Phase 1
+  landing does not reduce this to a hypothetical.
+* `text` is a special case worth separating: the skill has no verb-level description of it at all, only
+  six subcommand glosses. So there is nothing there to disagree with a tagline, and a
+  compare-the-tagline gate would have to decide whether that counts as a miss. It should: the six
+  subcommand lines are precisely where a reader forms their idea of what `text` is.
+
+### Which of the three shapes the count supports
+
+Restating the options from the sketch above, so this reads without scrolling back:
+
+1. **Project it** — generate the skill's descriptions from the declaration, as the other three carriers
+   now are, once Phase 2 exists.
+2. **Gate it** — assert that every verb the skill names carries the same classification its declaration
+   does, without requiring identical prose, the way `AbilitySuite` gates the README heading.
+3. **Delete the descriptions** — have the skill point at `tools/README.md` instead of restating it.
+
+**The data supports (2), gate it, and argues specifically against (3), delete.** My inclination before
+counting was yours — (2) or (3) — and the count moved me off (3). The descriptions are **not
+redundant**: five of the six carry information `tools/README.md`'s heading does not carry at that
+granularity — `files`' `--count` hint, `verify`'s PASS/FAIL shape, `git`'s `--repo` flag form, and all
+six `text` subcommands visible at one glance. That is teaching text aimed at an agent at turn zero, and
+the 6-of-46 ratio shows it was curated rather than transcribed. Deleting it to fix a marker problem
+would trade something that works for something that was never broken.
+
+(1), project it, replaces that curated voice with a generated block — the objection you already raised,
+and the 6-of-46 ratio strengthens it: a generator would either emit all 46 and bury the curation, or
+need its own list of which 6 to emit, which is the enumeration issue 041 set out to remove.
+
+(2), gate it, fixes exactly the broken half at the lowest cost: the prose stays hand-written and the
+classification becomes checkable. At **1 of 6 passing**, such a gate would have real work to do on day
+one rather than being a tripwire for a hypothetical.
+
+### A second finding, which a classification gate would NOT catch
+
+The skill's prose recommends verbs its own grants exclude. `allowed-tools` (`SKILL.md:4`) grants the
+read-only four — `tt git log`, `tt git show`, `tt git diff`, `tt gitinfo` — after the 2026-08-25
+narrowing recorded in the CHANGELOG. But `:35` advertises `tt git log|commit|push --repo <dir>`, and
+`:44` instructs `tt git commit|push|pull|fetch ... --repo <dir>` as "the write subset". So four verbs
+are recommended by a skill that does not grant them, under a section headed **"Command discipline
+(keeps approvals rare)"** — the prose routes the agent into a confirmation prompt while explaining how
+to avoid them.
+
+That is this issue's drift class (the skill describing the toolbox in its own words) on a different
+axis: grants rather than descriptions. It is arguably the more expensive half, because the
+classification omissions make the skill *less informative* while this one makes it *actively
+misleading* about what will run unattended. Flagged here rather than filed separately, since it is the
+same file and the same cause; say the word if it should have its own number.
+
+### Method, and its limits
+
+Read `SKILL.md` in full (52 lines) rather than grepping it, counted the README headings mechanically,
+and took the projected set from `ProjectedAbilities`. The six comparisons were then made BY HAND,
+because "is this the same claim?" is semantic and 6 rows is well under the size where a tool pays for
+itself. NOT verified: whether the same carrier exists in the other shipped skills — this survey covers
+`skills/tt-toolbox/` only. If it does, the count above is a floor, exactly as issue 041's six was.
+
+Agent disclosure: surveyed by an AI agent (Claude Opus 5) in session with me, at my request, and
+reviewed by me. The agent read the two files, ran the heading count and produced the table; the reading
+that gating beats deleting is its argument from the data, which I agree with.
