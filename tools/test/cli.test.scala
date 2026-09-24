@@ -88,6 +88,39 @@ class CliSuite extends munit.FunSuite:
           .call(check = false, stdin = stdinText, stdout = os.Pipe, stderr = os.Pipe)
     (r.exitCode, normalizeEol(r.out.text()), normalizeErr(r.err.text()))
 
+  /** The OTHER input that decides this suite's result, recorded beside the tools dir (issue 061).
+    *
+    * ⚠ WHY. `ScalaCli` is a bare name, so PATH picks the binary every assertion in this suite is made
+    * against — ordinary shell behaviour, and not a defect. The defect was that nothing in a run's
+    * output said which binary won. That cost a real exchange on issue 050: a green reading and a red
+    * reading of the same suite, on the same commit, by two people, differing only on environment that
+    * neither run described. Two installs on one machine is common (a package manager's and a
+    * coursier launcher's), and they are not interchangeable — one is a ~140M native image, the other a
+    * 1.2K shell script.
+    *
+    * NOT a guard. Any scala-cli on PATH is a legitimate thing to test against, so there is no wrong
+    * answer to police and nothing here fails. The point is only that a pasted failure should be
+    * interpretable without asking the reporter what their PATH was.
+    *
+    * Resolution reuses `WhichTool` rather than restating it: the toolbox already owns PATH lookup
+    * (dir order, then PATHEXT within a dir — the shell's own order) and a second implementation here
+    * would be precisely the drift class issue 061 is about. EFFECTFUL: reads PATH, stats the hits,
+    * and runs the resolved binary once for its version. */
+  private lazy val resolvedRunner: String = nativeBin match
+    case Some(bin) => s"$bin  (parity mode: scala-cli is not in the loop)"
+    case None =>
+      val hits = WhichTool.hitsFor(ScalaCli, WhichTool.pathDirs,
+        WhichTool.pathExts(Option(System.getenv("PATHEXT")), WhichTool.isWindows))
+      hits.headOption match
+        case None => s"$ScalaCli — NOT FOUND on PATH (every subprocess below will fail)"
+        case Some(p) =>
+          val version =
+            try os.proc(p.toString, "version", "--cli-version").call(check = false).out.text().trim
+            catch case _: Throwable => "version unavailable"
+          // name the shadowed ones too: which install won is only interesting when there was a choice
+          val shadowed = if hits.sizeIs > 1 then s"  (+${hits.size - 1} shadowed on PATH)" else ""
+          s"$p  v$version  ${WhichTool.factsOf(p)}$shadowed"
+
   // Announce the resolved tools dir ONCE, and fail fast on a stale/partial one. The ember records a
   // 6-file copy resolved via cwd walk-up that produced ~123 phantom failures; this turns that whole
   // confusing class into ONE clear message before any test runs (beforeAll throwing aborts the suite).
@@ -97,11 +130,28 @@ class CliSuite extends munit.FunSuite:
       .filter(p => os.read.lines(p).exists(_.startsWith("@main ")))
       .map(_.baseName).filterNot(_ == "dispatch").toSet
     println(s"[CliSuite] tools dir: $toolsDir — ${toolFiles.size} @main tool files, dispatch table expects ${Dispatch.verbs.size}")
+    println(s"[CliSuite] runner:    $resolvedRunner")
     val missing = Dispatch.verbs.toSet -- toolFiles
     require(missing.isEmpty,
       s"STALE/partial tools dir: $toolsDir holds ${toolFiles.size} @main tool files but the dispatch table " +
         s"expects ${Dispatch.verbs.size}; missing ${missing.toVector.sorted.mkString("{", ", ", "}")}. " +
         "Likely the wrong dir resolved via cwd walk-up — pass -Dtt.tools=<abs tools>.")
+
+  private val startedMs = System.currentTimeMillis
+
+  /** Close by restating the runner NEXT TO the elapsed time, which is the pairing BR asked for on
+    * issue 050: "recording, next to the timing, which binary won and what kind it is".
+    *
+    * The two belong on one line because the open question they answer is a comparison. This suite
+    * spawns a subprocess per assertion, so per-invocation launcher cost is multiplied by a few
+    * hundred — which is the standing hypothesis for why the same suite, same version, same repo was
+    * timed at 220s on one machine and ~780s on another. Neither run recorded which binary it used or
+    * what kind it was, so the hypothesis could not be tested from the reports that existed. One line
+    * that carries elapsed time, path and kind together makes the next pair of reports comparable
+    * without anyone having to ask. */
+  override def afterAll(): Unit =
+    val secs = (System.currentTimeMillis - startedMs) / 1000.0
+    println(f"[CliSuite] $secs%.1fs elapsed, through $resolvedRunner")
 
   // --- text ---
   test("text count: number of regex matches") {
