@@ -231,3 +231,70 @@ RUNNING `which scala-cli` and a version call against both installs on this machi
 whether the two installs actually diverge on any assertion in the suite — the issue-050 runs came out
 the same on both, so the exposure here is unrecorded provenance rather than a demonstrated behavioural
 difference.
+
+### Comment by hmiddelk at 2026-09-24 12:10 — the banner is implemented, and its first run retired an open hypothesis
+
+`CliSuite` now prints the runner beside the tools directory it already printed, and restates it next
+to the elapsed time when the suite ends:
+
+```
+[CliSuite] tools dir: /home/hans/genscalator/tools — 46 @main tool files, dispatch table expects 46
+[CliSuite] runner:    /usr/local/bin/scala-cli  v1.17.1  ELF binary (64-bit)  139.6M  rwxrwxr-x  2026-09-19T13:21  (+2 shadowed on PATH)
+[CliSuite] 752.8s elapsed, through /usr/local/bin/scala-cli  v1.17.1  ELF binary (64-bit)  139.6M  ...
+```
+
+Two lines rather than one because they answer different questions: the opening line records the inputs
+before anything runs and survives an aborted suite, and the closing line is the pairing BR asked for on
+issue 050 — *"recording, next to the timing, which binary won and what kind it is"*. A pasted tail now
+carries all three.
+
+Resolution reuses `WhichTool` — `pathDirs`, `hitsFor`, `factsOf` — rather than restating PATH lookup.
+The toolbox already owns dir-order-then-PATHEXT resolution, and a second implementation inside a test
+would be exactly the drift this issue is about. It is a `println` and not a guard: any scala-cli on
+PATH is legitimate to test against, so there is no wrong answer to police.
+
+**It retired an open hypothesis on its first run.** BR suggested the 220s-versus-780s gap between our
+machines might be launcher startup — his winner a native binary, mine possibly a script launcher —
+and labelled it a guess. The banner prints `ELF binary (64-bit) 139.6M`, and his own `tt which` output
+reports `ELF binary (64-bit) 139.6M`. **Same kind, same size.** The hypothesis is dead, and the fact
+that kills it is one line of an ordinary run's output that neither of us had during the whole exchange.
+
+### Then the gap decomposed, and the suite turned out to have no mystery in it
+
+Measured on an idle machine, warm, three times: a single `scala-cli run tools/json.scala -- --help`
+costs **2.15s** (2.15 / 2.21 / 2.08). `cli.test.scala` holds **347** `run(` / `runStdin(` / `runIn(`
+sites, about 344 net of the three helper definitions, with a few inside loops:
+
+| | per invocation | × ~350 | measured |
+| --- | --- | --- | --- |
+| scala-cli, this machine | **2.15s** | ~752s | **752.8s** |
+| scala-cli, BR's machine | ~0.63s implied | — | 220s |
+| native binary (parity mode) | ~0.08s implied | — | 28.1s |
+
+2.15 × 350 = 752.5 against a measured 752.8. **The suite's entire wall-clock is per-invocation launcher
+startup multiplied by the number of spawns**, and nothing else contributes materially.
+
+So all three candidate explanations for the machine gap are now measured and none survives:
+
+* **not the version** — 1.15.0 and 1.17.1 both land near 780s here
+* **not the launcher kind** — both winners are 139.6M native ELF
+* **not a missing build server** — a Bloop daemon is running here, warm, and an invocation still costs
+  2.15s
+
+What is left is per-invocation scala-cli startup differing ~3.4× between two machines, amplified 350
+times. That is a property of the hardware and environment rather than a defect in this repo, and I do
+not think it is worth chasing further.
+
+**The consequence worth keeping is sharper than the puzzle.** `CliSuite`'s duration measures *launcher
+startup*, not the tools it is testing. Parity mode runs the same 292 tests in 28.1s because the native
+binary starts in milliseconds — a 27× difference that dwarfs any machine-to-machine variation. Two
+things follow. Comparing suite wall-clock across machines was never going to be informative, because
+both numbers are dominated by a cost the suite does not intend to measure. And anyone running the full
+suite routinely should be doing it in parity mode; the default-mode run is worth its 13 minutes only
+when the scala-cli path itself is what is under test.
+
+Agent disclosure: implemented and measured by an AI agent (Claude Opus 5) in session with me, and
+reviewed by me. Verified BY RUNNING: `CliSuite` 292/292 with the banner in place (752.8s); three warm
+single invocations; the spawn-site counts; and a check that a Bloop daemon was live. The decomposition
+and the conclusion that the gap is not worth chasing are the agent's; BR's launcher-kind hypothesis was
+retired against his own posted `tt which` output rather than against anything new from his machine.
