@@ -40,9 +40,10 @@ every issue drafted on a branch carries a provisional number, and provisional nu
 2. **G2 Stable from inception.** An issue gets its ID when it is first written (as a draft, on a
    branch) and keeps it forever: through filing, merge, review, retitling and closing. No step ever
    renumbers an issue, so a reference written on day one stays correct.
-3. **G3 File-name order is inception order.** Sorting the issue files by name (plain lexicographic, as
-   `ls` and every file browser do) lists them in the order they were conceived. This keeps "what came
-   first" readable without opening files, as the numbered scheme does today.
+3. **G3 File-name order is inception order, by day.** Sorting the issue files by name (plain
+   lexicographic, as `ls` and every file browser do) lists them in the order they were conceived, to
+   the day; issues conceived on the same day sort by slug. This keeps "what came first" readable
+   without opening files, as the numbered scheme does today.
 4. **G4 Human-meaningful.** An ID says roughly what the issue is about, so a reference in prose or a
    commit message can be understood without looking it up.
 5. **G5 Legacy coexistence.** Issues 000 to 073 keep their numbers (IDs are never reused or
@@ -50,23 +51,33 @@ every issue drafted on a branch carries a provisional number, and provisional nu
 6. **G6 Tool-minted.** A `tt issue` verb mints the ID from the clock, so neither a human nor an agent
    composes one by hand.
 
-## A candidate, for discussion (not decided)
+## Decision (2026-10-11)
 
-`issue-YYMMDD-HHMM-slug.md`, e.g. `issue-261011-1830-issue-identity.md`, cited as `261011-1830-issue-identity`:
+**`issue-YYMMDD-slug.md`**, e.g. `issue-261011-issue-identity.md`, cited as `261011-issue-identity`.
 
-* G1: date, time and slug together collide only if two writers start the same topic in the same minute.
-* G2: minted at inception, never changed; the slug stays frozen even if the title changes.
-* G3: `YYMMDD-HHMM` sorts lexicographically in time order. Numeric, not month names (`okt` would sort
-  `apr` < `aug` < `dec`, and is Swedish in a repo whose public text is English).
-* G4: the slug, 1 to 4 kebab-case words, matching the repo's other file names.
-* G5: legacy files start with three digits, new ones with six, so the two forms sort as two blocks,
-  legacy first.
-* An earlier idea used a per-day sequence number (`01`). That reintroduces a small counter and a small
-  collision window, which G1 rules out; the time does the same job with no coordination.
-
-Open questions: is minute resolution enough, or should the writer's initials be appended; does
-`HHMM` use UTC or local time (UTC avoids a two-hour ambiguity across collaborators); and should
-`tt issue list` show the age of an issue, which the ID now carries.
+* **ID = UTC date + slug.** `YYMMDD` is the UTC date the issue was conceived, minted by the tool. The
+  slug is 1 to 4 kebab-case words, matching the repo's other file names, and is frozen at inception
+  even if the title changes later.
+* **No time of day, no sequence number, no initials.** A clash needs the same UTC day and the same slug,
+  and it is loud, never silent: `tt issue new` refuses locally because the file exists, and two
+  branches adding the same path conflict at merge, where renaming one slug fixes it. A per-day
+  sequence number (`01`) would bring back a small counter, which G1 rules out. Initials make the ID
+  longer and repeat what the preamble and git already record.
+* **Same-day order is by slug** (G3 as amended). Few issues are conceived on the same day, so this is
+  an acceptable approximation, and simpler than a time component.
+* **UTC, not local time,** so that one clock orders every collaborator's issues. It only differs from
+  the box's local date near midnight, but it costs nothing when the tool mints it. ⚠ `tt chrono now
+  --utc` was observed printing local time on a UTC+2 box (2026-09-23); the minting code must not
+  depend on it until that is fixed.
+* **Numeric date, not month names:** `okt` would sort `apr` < `aug` < `dec`, and is Swedish in a repo
+  whose public text is English. `YYMMDD` also matches the session names `tt session` already derives.
+* **Cite the full ID**, date and slug. The bare date is not unique, so a citation always carries the
+  slug, which is what makes it readable (G4).
+* **Cutover: 073 is the last numbered issue.** Legacy files start with `0`, new ones with `2`, so plain
+  sorting gives two blocks, legacy first (G5), with no special case in any tool.
+* **`tt issue list` shows each issue's age**, derived from the ID. Nice to have, not a goal.
+* **Out of scope:** the forge's own issue numbers (Issue Zero on GitHub), and the single-writer counters
+  in the closed work repo (SM, WR, RT). Docs should say so, so that nobody migrates them by mistake.
 
 ## What would change
 
@@ -86,3 +97,14 @@ argue with, not a decision.
 
 Agent disclosure: drafted by an AI agent (Claude Opus 5.5) in session with me, from my proposal and its
 review in the same session; reviewed by me.
+
+### Comment by bjornregnell at 2026-10-11 — DECISION
+
+Decided as recorded in `## Decision` above. The first candidate here had a time of day (`HHMM`) in the
+ID; I dropped it for simplicity. The slug makes same-day clashes unlikely, a clash is loud when it
+happens, and ordering same-day issues by slug is good enough given how few there are. G3 is amended to
+say ordering is by day. UTC date, minted by `tt issue new`. Implementation follows in one PR: the tool
+change and the doc updates together, with tests for mixed legacy and new sorting, a same-day same-slug
+refusal, a same-day different-slug success, and a UTC date on a box whose local zone is not UTC.
+
+Agent disclosure: recorded by an AI agent (Claude Opus 5.5) from my decisions in the same session.
