@@ -98,7 +98,7 @@ object Issue {
     else Left(s"bad slug '$slug': use 1 to 4 lower-case words of letters and digits, joined by '-' (e.g. issue-identity)")
 
   /** Today's date in UTC, whatever zone the clock (and the JVM default) is in. The clock is injected
-    * so tests can pin it. Deliberately NOT `tt chrono` (its --utc printed local time, issue 073). Pure
+    * so tests can pin it. Deliberately NOT `tt chrono` (it has no UTC option, see issue 073). Pure
     * given the clock. */
   def utcToday(clock: Clock): LocalDate = LocalDate.now(clock.withZone(ZoneOffset.UTC))
 
