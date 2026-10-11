@@ -11,8 +11,8 @@
 
 ## Description
 
-Found 2026-09-15 on a Linux box running two Claude plans from one Unix user: a work seat on the stock
-layout, and a private Max 5x whose sessions run with `CLAUDE_CONFIG_DIR=$HOME/.claude-personal`.
+Found 2026-09-15 on a Linux box running two Claude accounts from one Unix user: one on the stock
+layout, and a second whose sessions run with `CLAUDE_CONFIG_DIR=$HOME/.claude-personal`.
 `CLAUDE_CONFIG_DIR` is a documented Claude Code variable — it relocates the *entire* config home, so on
 that profile `plugins/`, `projects/`, `settings.json` and the rest live under `~/.claude-personal`, and
 `~/.claude` belongs to the other account. genscalator does not consult it, so every path it derives
@@ -53,10 +53,10 @@ installed and enabled on the personal profile:
 
 ```
 $ ~/.genscalator/bin/tt skillcheck
-skillcheck: not a skills directory: /home/bjornr/.genscalator/skills
+skillcheck: not a skills directory: $HOME/.genscalator/skills
 A native install ships NO skills/ by design (D4: the PLUGIN owns the skills) — point at the
 plugin cache or a checkout via --skills <dir>. Plugin-cache candidates on this machine:
-  (no plugin-cache skills/ found under /home/bjornr/.claude/plugins/cache)
+  (no plugin-cache skills/ found under $HOME/.claude/plugins/cache)
 Pick the one matching your installed version (see VERSION.txt) — a stale cache yields a
 WRONG expected set.
 ```
@@ -64,10 +64,10 @@ WRONG expected set.
 The skills are installed, here:
 
 ```
-/home/bjornr/.claude-personal/plugins/cache/bjornregnell/genscalator/0.10.2/skills
+$HOME/.claude-personal/plugins/cache/bjornregnell/genscalator/0.10.2/skills
 ```
 
-`~/.claude/plugins/` on this machine has no `cache/` at all — the work profile has never installed a
+`~/.claude/plugins/` on this machine has no `cache/` at all — the other profile has never installed a
 plugin. So the hint is not stale or ambiguous; it is looking in another account's home and reporting
 absence as fact.
 
@@ -184,8 +184,8 @@ these seven sites — none fixed, none added. `skillsRecoveryHint()` still build
 
 **The reproduction still reproduces, byte for byte.** `~/.genscalator/bin/tt skillcheck` on 2026-09-24
 prints the same six lines quoted above, including `(no plugin-cache skills/ found under
-/home/bjornr/.claude/plugins/cache)`, while
-`/home/bjornr/.claude-personal/plugins/cache/bjornregnell/genscalator/0.10.2/skills` exists. The work
+$HOME/.claude/plugins/cache)`, while
+`$HOME/.claude-personal/plugins/cache/bjornregnell/genscalator/0.10.2/skills` exists. The other
 profile still has no `~/.claude/plugins/cache` at all.
 
 **Numbering.** Drafted as 024 when the highest existing was 023; the repository is now at 066, so this

@@ -144,8 +144,8 @@ $ time (printf '{}' | tt statusline >/dev/null)                      # ~656 ms
   the PATH behaviour itself is a harness property and is not unit-testable — the reproduction above is
   the check.
 
-Scope: independent of the config-home defect (issue 067) and of the profile-awareness question (a
-separate local draft, not yet filed), though all three meet in the same command line on a
+Scope: independent of the config-home defect (issue 067) and of the profile-awareness question (issue
+069), though all three meet in the same command line on a
 multi-profile box.
 
 ## Discussion
