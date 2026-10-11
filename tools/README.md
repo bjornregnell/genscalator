@@ -963,17 +963,25 @@ signal is the reliable cure. Its RSS also surfaces on the statusline box line so
 `tt wr stamp <project-dir> <regex> [--user|--human] [--limit N]` retrofits the REAL date-time of an utterance
 or event from the session `.jsonl` transcripts — the grounded-timestamp tool behind the WR-data discipline.
 
-### issue — typed verb for the in-repo issue workflow (EFFECTFUL: `close --yes` rewrites + moves ONE file)
+### issue — typed verb for the in-repo issue workflow (EFFECTFUL: `new` creates ONE file, `close --yes` rewrites + moves ONE file)
 ```
-issue next  [--repo <dir>]                    # the next free NNN across open/ AND closed/ (never reused)
-issue list  [--state open|closed|all]         # one line per issue: number, state, labels, summary
-issue close <NNN> (--fixed-by <ref> | --as <text>) [--date YYYY-MM-DD] [--yes]
+issue new <slug> [--title <text>] [--date YYYY-MM-DD]  # mint YYMMDD-slug (UTC date) + create open/issue-YYMMDD-slug.md
+issue list  [--state open|closed|all]         # one line per issue: ID (age in days if dated), state, labels, summary
+issue close <ID> (--fixed-by <ref> | --as <text>) [--date YYYY-MM-DD] [--yes]   # ID = 073 or 261011-slug
+issue next                                    # RETIRED (issue 073): prints a pointer to `new`, exits 1
 ```
+Issue IDs (issue 073) are `YYMMDD-slug`: the UTC date the issue was conceived plus 1 to 4 kebab-case words,
+so any writer on any branch can mint one without coordination. `new` computes the UTC date in-process (not
+via `tt chrono`), writes the house template, prints the path, and refuses (exit 1) a bad slug or an ID that
+already exists in `open/` or `closed/`; `--date` backdates a draft conceived earlier, never to a future day.
+The legacy numbers 000-073 are frozen; `list` and `close` take both forms, and `list` sorts the legacy
+block first. `next` is retired with an empty stdout and exit 1, so a script capturing it fails loudly
+instead of filing under a stale counter.
 Executes `reqts/issues/README.md`'s rules (issue-032): closing rewrites the `> status:` preamble AND
 moves the file open/ → closed/ as ONE operation, so directory and preamble cannot disagree — PREVIEW by
 default, `--yes` to apply (the `release-delete` pattern). The date comes from the system clock (the
-`tt chrono` source) or an explicit `--date`, never guessed. Refuses (exit 1) an unknown number, an
-already-closed issue, a number claiming several files, or a preamble already declaring a closed state.
+`tt chrono` source) or an explicit `--date`, never guessed. Refuses (exit 1) an unknown ID, an
+already-closed issue, an ID claiming several files, or a preamble already declaring a closed state.
 `list` flags a preamble that disagrees with its directory with a ⚠. Local clone only; staging and
 committing stay with the caller (stage BOTH paths so git records the rename).
 
@@ -1020,7 +1028,7 @@ One line per file; a tool's real reference is its `###` section above and its `-
 - `forge.scala` — forge client (Gitea/Codeberg + GitHub `--gh` + GitLab `--gl`): reads + env-token release verbs incl. the destructive `release-delete` (effectful; requests+ujson+os-lib).
 - `git.scala` — safe git helper: commit-from-file, ff-only pull, fetch, read-only show/log (effectful; os-lib).
 - `gitinfo.scala` — read-only git overview.
-- `issue.scala` — the in-repo issue workflow (next/list read-only; close is the guarded rewrite+move, preview-by-default).
+- `issue.scala` — the in-repo issue workflow (new mints a YYMMDD-slug ID and creates the file; list read-only; close is the guarded rewrite+move, preview-by-default).
 - `update.scala` — update-awareness (git-checkout mode: read-only apart from git fetch) AND `--native`, which REPLACES an installed binary tree (preview-by-default; effectful; os-lib+requests+ujson).
 - `statusline.scala`, `box.scala`, `bloop.scala` — harness/host instruments (box kill + bloop clean are the guarded destructive verbs).
 - `prd.scala`, `harden.scala`, `skillcheck.scala`, `skillgrants.scala`, `memory.scala`, `wr.scala` — genscalator-upkeep reads (memory `sync` writes the repo snapshot).

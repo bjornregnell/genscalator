@@ -2667,22 +2667,75 @@ class CliSuite extends munit.FunSuite:
   }
 
   // --- issue (in-repo issue workflow; close PREVIEWS by default; --yes only ever touches a temp fixture) ---
-  /** A minimal reqts/issues tree: one open issue 004, one closed 002; READMEs would be ignored. */
+  /** A minimal reqts/issues tree: open legacy 004 and dated 261011-dated-one, closed legacy 002 and
+    * dated 260901-done-thing; READMEs would be ignored. */
   private def issueFixture(): os.Path =
     val root = os.temp.dir(prefix = "tt-issue-")
     os.makeDir.all(root / "reqts" / "issues" / "open")
     os.makeDir.all(root / "reqts" / "issues" / "closed")
     os.write(root / "reqts" / "issues" / "open" / "issue-004-a-defect.md",
       "# Issue 004: a defect\n\n> status: open · labels: toolbox · summary: something is wrong\n\n## Description\nbody\n")
+    os.write(root / "reqts" / "issues" / "open" / "issue-261011-dated-one.md",
+      "# Issue 261011-dated-one: dated\n\n> status: open 2026-10-11 · labels: meta · summary: a dated issue\n\n## Description\nbody\n")
     os.write(root / "reqts" / "issues" / "closed" / "issue-002-old.md",
       "# Issue 002: old\n\n> status: done (2026-07-21) · labels: x · summary: s\n\n## Description\nbody\n")
+    os.write(root / "reqts" / "issues" / "closed" / "issue-260901-done-thing.md",
+      "# Issue 260901-done-thing: done\n\n> status: closed 2026-09-02, wontfix · labels: x · summary: s\n\n## Description\nbody\n")
     root
-  test("issue next: highest across open AND closed plus one, zero-padded") {
+  test("issue next is retired (issue 073): nothing on stdout, exit 1, points at `issue new`") {
     val root = issueFixture()
     try
-      val (code, out, _) = run("issue", "next", "--repo", root.toString)
+      val (code, out, err) = run("issue", "next", "--repo", root.toString)
+      assertEquals(code, 1)
+      assertEquals(out, "")   // a script capturing stdout gets nothing it could mistake for a number
+      assert(clue(err).contains("tt issue new <slug>"))
+      assert(clue(err).contains("issue 073"))
+    finally os.remove.all(root)
+  }
+  test("issue new --date mints issue-YYMMDD-slug.md in open/; same day + same slug refused; another slug succeeds") {
+    val root = issueFixture()
+    try
+      val open = root / "reqts" / "issues" / "open"
+      val (code, out, _) = run("issue", "new", "fresh-idea", "--title", "a fresh idea", "--date", "2026-10-05", "--repo", root.toString)
       assertEquals(code, 0)
-      assertEquals(out, "005")
+      assertEquals(out, (open / "issue-261005-fresh-idea.md").toString)
+      val text = os.read(open / "issue-261005-fresh-idea.md")
+      assert(clue(text).startsWith("# Issue 261005-fresh-idea: a fresh idea\n"))
+      assert(clue(text).contains("> status: open 2026-10-05 · labels: · summary:"))
+      val (c2, _, e2) = run("issue", "new", "fresh-idea", "--date", "2026-10-05", "--repo", root.toString)
+      assertEquals(c2, 1)
+      assert(clue(e2).contains("already exists"))
+      assertEquals(os.read(open / "issue-261005-fresh-idea.md"), text)   // the refusal touched nothing
+      val (c3, out3, _) = run("issue", "new", "other-idea", "--date", "2026-10-05", "--repo", root.toString)
+      assertEquals(c3, 0)
+      assert(clue(out3).endsWith("issue-261005-other-idea.md"))
+    finally os.remove.all(root)
+  }
+  test("issue new without --date uses a 6-digit UTC date; refuses a bad slug and an ID already in closed/") {
+    val root = issueFixture()
+    try
+      val (code, out, _) = run("issue", "new", "today-thing", "--repo", root.toString)
+      assertEquals(code, 0)
+      val made = os.Path(out)
+      assertEquals(made / os.up, root / "reqts" / "issues" / "open")
+      assert(clue(made.last).matches("issue-\\d{6}-today-thing\\.md"))
+      assert(os.exists(made))
+      val (c2, _, e2) = run("issue", "new", "Bad_Slug", "--repo", root.toString)
+      assertEquals(c2, 1)
+      assert(clue(e2).contains("bad slug"))
+      val (c3, _, e3) = run("issue", "new", "done-thing", "--date", "2026-09-01", "--repo", root.toString)
+      assertEquals(c3, 1)
+      assert(clue(e3).contains("closed/issue-260901-done-thing.md"))
+    finally os.remove.all(root)
+  }
+  test("issue close --yes works on a dated YYMMDD-slug ID") {
+    val root = issueFixture()
+    try
+      val base = root / "reqts" / "issues"
+      val (code, _, _) = run("issue", "close", "261011-dated-one", "--as", "wontfix", "--date", "2026-10-12", "--yes", "--repo", root.toString)
+      assertEquals(code, 0)
+      assert(!os.exists(base / "open" / "issue-261011-dated-one.md"))
+      assert(clue(os.read(base / "closed" / "issue-261011-dated-one.md")).contains("> status: closed 2026-10-12, wontfix · labels: meta"))
     finally os.remove.all(root)
   }
   test("issue close previews by default: nothing moves, nothing is rewritten") {
@@ -2723,6 +2776,10 @@ class CliSuite extends munit.FunSuite:
       assertEquals(code, 0)
       assert(clue(out).contains("002  done"))
       assert(clue(out).contains("004  open"))
+      // legacy block first (by number, across open/ and closed/), then dated ones, each with an age
+      val ids = out.linesIterator.map(_.takeWhile(_ != ' ')).toVector
+      assertEquals(ids, Vector("002", "004", "260901-done-thing", "261011-dated-one"))
+      assert(clue(out).matches("(?s).*261011-dated-one \\(\\d+d\\)  open.*"))
     finally os.remove.all(root)
   }
 

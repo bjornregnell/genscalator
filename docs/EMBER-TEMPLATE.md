@@ -50,7 +50,7 @@ real specimen it generalizes: [EMBER-EXAMPLE.md](EMBER-EXAMPLE.md).
    check-instruction (a hash to compare, a command to run, a file to read). A fresh agent holds all
    inherited facts at uniform strength; the mandates substitute for the lost knowing-which-was-checked.
 3. **Numbers over adjectives.** Commit hashes, counts, percentages - checkable against git and disk.
-   ⚠ Exception, and it cuts the other way: **next-free IDs (SM/WR/RT/issue numbers) carry the deriving
+   ⚠ Exception, and it cuts the other way: **next-free IDs (SM/WR/RT numbers) carry the deriving
    COMMAND, with the number only as a hint marked "re-verify before using".** A carried number decays
    the moment anyone files anything: on 2026-08-13 two of four carried next-free IDs were wrong or
    stale (`RT057+` wrong WHEN WRITTEN), and a number that is right half the time is worse than no
@@ -127,8 +127,9 @@ FORBIDDEN → ALLOWED:
   wasted, and the verdict's own `LinksSuite` count was 30 against the merged tree's 33). So SEQUENCE
   the merge and the rebuild, never overlap them, and treat a SWAPPED line as describing the tree the
   build STARTED from. Issue 066 is the structural fix (refuse the swap when the inputs moved).
-- Next free IDs (SM/WR/RT/issue): carry the deriving COMMANDS, numbers only as hints marked
-  "re-verify before using" (rule 3's exception, SM275b).
+- Next free IDs (SM/WR/RT): carry the deriving COMMANDS, numbers only as hints marked
+  "re-verify before using" (rule 3's exception, SM275b). In-repo issues need no hint: they have
+  no counter since issue 073, and `tt issue new <slug>` mints the ID (UTC date plus slug).
 
 ## 1. Warp declaration (mode line)
 - cold start: declare `-RotVigil +ColdStart +SmartZone`

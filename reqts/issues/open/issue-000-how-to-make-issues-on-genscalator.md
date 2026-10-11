@@ -26,8 +26,9 @@ genscalator keeps its **issues in the repository itself**, under `reqts/issues/`
 
 * Skip reporting here.
 * Fork and clone this repo.
-* Add your issue as a new file `reqts/issues/open/issue-NNN-your-chosen-issue-name.md`
-  (three-digit `NNN`, next free number) and open a Pull Request (also called Merge Request) with it.
+* Add your issue as a new file `reqts/issues/open/issue-YYMMDD-slug.md`, where `YYMMDD` is
+  today's date in UTC and the slug is 1 to 4 lower-case words joined by `-` (the `tt issue new
+  <slug>` command creates it for you), and open a Pull Request (also called Merge Request) with it.
 * Read more about issue management in `CONTRIBUTING.md`.
 
 Option 2 is preferred, if you are willing to help out and reduce issue inbox maintenance.

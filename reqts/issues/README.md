@@ -11,16 +11,39 @@ outsider-facing version of this text.
 
 ## Identity and naming
 
-One file per issue: `issue-NNN-short-snake-case-name.md`
+One file per issue: `issue-YYMMDD-slug.md`, for example `issue-261011-issue-identity.md`.
+The issue's ID is the part between `issue-` and `.md`: `261011-issue-identity`.
 
-* `NNN` is a three-digit number, monotonically increasing, never reused. Next free number =
-  highest existing (across `open/` AND `closed/`) plus one.
-* ⚠ Numbers can be reserved invisibly: an issue file in a not-yet-merged Pull Request claims
-  its `NNN` before the file exists on `main`, so a file scan (what `tt issue next` does)
-  under-reports while such PRs are open. Check the forge's open PRs too before claiming a
-  number.
-* The name part is lower-case words separated by `-`.
-* Example: `issue-000-how-to-make-issues-on-genscalator.md`
+* `YYMMDD` is the **UTC** date the issue was conceived (first written, even as a draft on a
+  branch). UTC, not local time, so that one clock orders every collaborator's issues.
+* The slug is 1 to 4 lower-case words of letters and digits, separated by `-`. It says roughly
+  what the issue is about, and it is frozen at inception even if the title changes later.
+* **Mint it with the tool, never by hand:** `tt issue new <slug> [--title <text>]` takes today's
+  UTC date, creates `open/issue-YYMMDD-slug.md` from the house template, and prints its path.
+  It refuses a bad slug, and an ID that already exists in `open/` or `closed/`.
+* An ID needs no coordination: it does not depend on other branches, forks or open PRs, and it
+  never changes, through filing, merge, retitling and closing. A clash needs the same UTC day
+  AND the same slug, and it is loud: `tt issue new` refuses locally, and two branches adding the
+  same file conflict at merge, where renaming one slug fixes it.
+* **Cite the full ID**, date and slug: "issue 261011-issue-identity". The bare date is not
+  unique, so a citation always carries the slug.
+* Sorting the files by name lists them in the order they were conceived, by day; issues from
+  the same day sort by slug.
+
+### Legacy numbers
+
+Issues 000 to 073 keep their three-digit numbers (`issue-NNN-name.md`, cited as "issue 032").
+Those numbers are **frozen**: 073 is the last numbered issue, and no new number is ever handed
+out (`tt issue next` is retired and points at `tt issue new`). Legacy files start with `0` and
+new ones with `2`, so a plain name sort shows the legacy block first. `tt issue list` and
+`tt issue close` accept both forms (`close 23`, `close 073`, `close 261011-issue-identity`).
+Why the counter was dropped: issue 073.
+
+### Out of scope
+
+This scheme is for the in-repo issues only. The forge trackers' own issue numbers (such as
+Issue Zero on GitHub) are the forge's, and the single-writer counters of the closed work repo
+(SM, WR, RT) stay as they are. Do not migrate them.
 
 ## Open vs closed
 
@@ -34,9 +57,10 @@ One file per issue: `issue-NNN-short-snake-case-name.md`
 * The `#` heading is a readable version of the file name.
 * After the heading, a block-quote preamble declares finer status, labels, and a one-line
   summary. (The exact preamble field syntax is still settling; keep it short and scannable.)
-* Then these `##` sections:
+* Then these `##` sections (`tt issue new` writes them for you):
   * `## Description` (mandatory)
   * `## How to reproduce it` (optional)
+  * `## Acceptance sketch` (optional)
   * `## Discussion` — an append-log; each entry is
     `### Comment by userhandle at YYYY-MM-DD HH:MM`
 
@@ -52,10 +76,11 @@ the report. Live example: issues 014–022 and reports 085–086.
 
 ## Contributing an issue
 
-Fork + clone, add your file under `open/` with the next free `NNN` (remember to count numbers
-claimed by open PRs, per the naming rules above), and open a Pull Request.
-If two PRs claim the same `NNN`, the later one renumbers. Prefer this route if you can; the
-forge inbox exists for everyone else. More in the repo root `CONTRIBUTING.md`.
+Fork + clone, create your file with `tt issue new <slug> --title <text>` (it lands under
+`open/` with a fresh ID, per the naming rules above), fill it in, and open a Pull Request.
+Without `tt`, name the file `issue-YYMMDD-slug.md` yourself, using today's UTC date. There is
+no number to claim, so open PRs need no checking. Prefer this route if you can; the forge
+inbox exists for everyone else. More in the repo root `CONTRIBUTING.md`.
 
 In the issue, **state the genscalator version you measured against** (`tt --version`): a gap
 report can only be re-checked against current `main` when it names its baseline. Reports 085,

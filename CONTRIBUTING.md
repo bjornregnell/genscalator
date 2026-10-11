@@ -20,8 +20,10 @@ so they travel with the code to every mirror (forge-independent by design). The 
 - **One-time reporter?** File on any forge tracker as usual; a maintainer transcribes it in-repo with credit.
   The how-and-why is "Issue Zero":
   [`issue-000-how-to-make-issues-on-genscalator.md`](reqts/issues/open/issue-000-how-to-make-issues-on-genscalator.md).
-- **Contributor?** Add a file `reqts/issues/open/issue-NNN-your-chosen-issue-name.md` (next free
-  three-digit number) and open a PR with it.
+- **Contributor?** Create the issue file with `tt issue new <slug> --title <text>`: it lands as
+  `reqts/issues/open/issue-YYMMDD-slug.md` (today's UTC date plus 1 to 4 kebab-case words; without
+  `tt`, name it that way yourself). Fill it in and open a PR with it. There is no number to claim;
+  the legacy numbers 000 to 073 are frozen.
 - The identity scheme, open/closed rules, and file syntax live in ONE place:
   [`reqts/issues/README.md`](reqts/issues/README.md).
 
@@ -78,8 +80,8 @@ before or at merge**:
 
 1. **Per-issue review points** → that issue's `## Discussion` section, as an append-only,
    attributed, dated comment (the same `### Comment by handle/Agent at YYYY-MM-DD HH:MM` convention
-   issues already use). No separate PR-thread heading: a review comment about issue-NNN *is*
-   discussion of issue-NNN.
+   issues already use). No separate PR-thread heading: a review comment about an issue *is*
+   discussion of that issue.
 2. **Cross-issue or process points** → the accompanying report under `research/reports/`, as a
    dated appended section. Only a decision that fits neither an issue nor a report earns a record
    file of its own.
@@ -109,8 +111,8 @@ For a **tool PR**:
 - [ ] Sent the copyright transfer email to genscalator @ bjornregnell.se (see [Copyright](#copyright) below)
 
 For an **issue-only or docs-only PR** (sanctioned above — issues and reports are contributions too):
-- [ ] Issue file follows [`reqts/issues/README.md`](reqts/issues/README.md): next free `NNN`
-      (count numbers claimed by open PRs too), preamble, mandatory sections
+- [ ] Issue file follows [`reqts/issues/README.md`](reqts/issues/README.md): named
+      `issue-YYMMDD-slug.md` (minted by `tt issue new`), preamble, mandatory sections
 - [ ] Names the version measured against (`tt --version`, or `VERSION.txt` + sha where it cannot run)
 - [ ] Claims that can be executed were executed — run, not reasoned; what was not verified is
       labelled as such, and assumptions are stated as assumptions
