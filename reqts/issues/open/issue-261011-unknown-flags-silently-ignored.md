@@ -53,3 +53,13 @@ The first issue filed under the issue 073 scheme, minted with `tt issue new`. Fo
 claim in a handoff note; the claim was wrong, and the tool's silence is what made it look right.
 
 Agent disclosure: probed and drafted by an AI agent (Claude Opus 5.5) in session with me; reviewed by me.
+
+### Comment by bjornregnell at 2026-10-11 — bundled with this fix
+
+Decided: the issue-073 slug cap stays at 4 words. Bundle with this fix, since both touch `tools/` and
+each change costs a native rebuild: make `tt issue new`'s bad-slug refusal (`validateSlug` in
+`tools/issue.scala`) say how many words it counted, and suggest dropping a redundant word such as a
+leading `tt-`. Found when this very issue's first slug, `tt-verbs-ignore-unknown-flags` (5 words), was
+refused.
+
+Agent disclosure: recorded by an AI agent (Claude Opus 5.5) from my decision in the same session.
