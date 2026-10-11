@@ -4,7 +4,7 @@
 > measured against: v0.10.2 (from `VERSION.txt`); claims re-verified at `5adb395` (2026-09-23);
 > account facts read from two live accounts on one Linux box, Claude Code 2.1.273
 > · summary: running two Claude
-> plans (a work seat and a private Max) from one Unix user is a real and growing setup that genscalator
+> plans (say, an employer seat and a personal subscription) from one Unix user is a real and growing setup that genscalator
 > currently cannot see. Proposes a three-tier answer — fix the config-home bug (issue 067), add
 > read-only *profile* and *plan* chips to the statusline (the profile one DERIVED from the environment,
 > not declared), and deliberately DECLINE to manage profiles inside `tt` — and asks the maintainer to
@@ -14,8 +14,8 @@
 
 ### The setup this is about
 
-One Unix user, two Claude accounts: an organisation seat (Team/enterprise, stock `~/.claude` layout)
-and a privately paid Max subscription (`CLAUDE_CONFIG_DIR=~/.claude-personal`). Both run at once, in
+One Unix user, two Claude accounts: one on the stock `~/.claude` layout, and one relocated with
+`CLAUDE_CONFIG_DIR=~/.claude-personal`. Both run at once, in
 different terminals, against the same `~/.local/bin/claude`. The keeping-them-apart machinery —
 a profile registry, a deep-merged settings baseline handed in via `claude --settings`, and a launcher
 that resolves each profile's config home — is ~270 lines of Scala living outside genscalator.
@@ -51,7 +51,7 @@ field**:
 | account type | where the tier actually is |
 |---|---|
 | Team/enterprise seat | `oauthAccount.seatTier` |
-| Max subscription | `seatTier` is `null`; the tier is in `organizationRateLimitTier` (e.g. `default_claude_max_5x`) |
+| Max subscription | `seatTier` is `null`; the tier is in `organizationRateLimitTier` (a `default_claude_max_*` value) |
 
 Code that reads only `seatTier` reports a Max account as having no plan — verified, and the bug that
 prompted writing it down. That detection is the part genuinely worth upstreaming: it is a small pure
@@ -110,12 +110,12 @@ live session 2026-09-15:
 
 ```
 $ grep -zao "CLAUDE_CONFIG_DIR=[^\x00]*" /proc/$(pgrep -n claude)/environ
-CLAUDE_CONFIG_DIR=/home/bjornr/.claude-personal
+CLAUDE_CONFIG_DIR=$HOME/.claude-personal
 ```
 
 So `tt statusline` can read its own environment and name the profile with **no configuration, no
 declaration and no account-metadata read** — which also sidesteps the sensitivity question in decision
-1 above. The basename gives `personal`. Note the asymmetry: a correctly-built stock profile leaves the
+1 below. The basename gives `personal`. Note the asymmetry: a correctly-built stock profile leaves the
 variable *unset* (setting it to `$HOME/.claude` orphans the sign-in), so "unset" is itself meaningful —
 it means the stock config home — though it carries no name.
 
@@ -156,8 +156,8 @@ genscalator should take it, for three reasons:
    launching is generally useful but *separately* useful; it does not want to be reached through `tt`.
 
 The proposal is therefore: genscalator becomes **profile-aware, not profile-managing**. It reports which
-plan a session belongs to; it does not switch them. The launcher stays a separate tool (a standalone
-repo is planned) and the two cross-link.
+plan a session belongs to; it does not switch them. The launcher stays a separate tool outside
+genscalator.
 
 ## Decision needed
 
@@ -186,13 +186,13 @@ Filed alongside issue 067 from the same two-plan setup. The split is deliberate:
 mechanical fix and should not wait on a scope conversation, while this one is a question and may well be
 answered "no".
 
-Provenance for the `seatTier` / `organizationRateLimitTier` claim: verified against both live accounts on
-one machine — the Team seat states its tier in `seatTier`, the Max account leaves it `null` and carries
-`default_claude_max_5x` in `organizationRateLimitTier`. Also verified that plugin installs are per config
+Provenance for the `seatTier` / `organizationRateLimitTier` claim: verified against live accounts of both
+types — the seat account states its tier in `seatTier`, the subscription account leaves it `null` and
+carries a `default_claude_max_*` value in `organizationRateLimitTier`. Also verified that plugin installs are per config
 home (`installed_plugins.json` has `"scope": "user"`), which is why a plugin — genscalator included — must
 be installed once per profile. The blank-line failure that implies turned out to be broader than a
 per-profile matter — a bare `tt` in `statusLine` resolves on *neither* profile — so it is split into its
-own draft (026) rather than carried here. I had first written it off as Claude Code behaviour; the
+own issue (068) rather than carried here. I had first written it off as Claude Code behaviour; the
 harness half (a failing statusline renders empty) is indeed fixed, but the command the genscalator help
 text recommends is the one that cannot resolve, and that half is ours.
 
@@ -212,9 +212,9 @@ issue 067 — so everything citable was re-checked rather than trusted:
   `CLAUDE_CONFIG_DIR` is present in the running `claude` process's own environment
   (`/proc/<pid>/environ`), so a statusline subprocess inherits it. The profile chip therefore needs no
   configuration and no account-metadata read. Confirmed on a live session, not reasoned from docs.
-* **The plan-detection asymmetry holds**, read from two live accounts: the Team seat states its tier in
-  `seatTier`; the Max account leaves it null and carries `default_claude_max_5x` in
-  `organizationRateLimitTier`.
+* **The plan-detection asymmetry holds**, read from live accounts of both types: the seat account states its
+  tier in `seatTier`; the subscription account leaves it null and carries a `default_claude_max_*`
+  value in `organizationRateLimitTier`.
 * **`tt mode --file` and `tt statusline --modes-file` / `--limits-file` still exist** at `5adb395`
   (`mode.scala:39`, `statusline.scala:571-572`), so the "workable by hand today" note above is current.
 * **No overlap with existing issues.** Nothing in `open/` or `closed/` mentions `CLAUDE_CONFIG_DIR`, and

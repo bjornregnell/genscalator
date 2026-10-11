@@ -50,7 +50,7 @@ Pure read → classify → print, no state. Classifiers are the interesting cont
 predicates over a command string: `isTt`, `hasPipe`, `pipesToPager`, `isHeredocEdit`, `isCompound`.
 Each is one line and each is independently testable against a fixture table — which is what makes this
 a toolbox tool rather than a script: the *judgements* get pinned down and reviewed, not re-typed per
-session. Output: counts plus the two rates 027 argues for (tool-choice, pipeline-clean), `--json` for a
+session. Output: counts plus the two rates 070 argues for (tool-choice, pipeline-clean), `--json` for a
 study harness.
 
 **2. Timestamped mode declarations — the chip records WHEN, not just WHAT.**
@@ -97,7 +97,7 @@ rate is feedback for the person watching, not for the process generating the beh
 to change the agent's behaviour rather than to inform the human, the number has to arrive on a channel
 the agent reads — a PreToolUse hook's output, or a periodic reminder. That is a different mechanism
 with a different cost, and it should be decided deliberately rather than discovered after building the
-statusline version. (Related: 027's mechanism-3 question, whether a hook can even see the regime.)
+statusline version. (Related: 070's mechanism-3 question, whether a hook can even see the regime.)
 
 ### Naming: `ProbeBrittle`, and the two concepts it has to keep apart
 
@@ -105,7 +105,7 @@ statusline version. (Related: 027's mechanism-3 question, whether a hook can eve
 being measured is the **effect** — how brittle and dynamic the tool use is — and the effect is general:
 the same two rates are worth watching in a session with no auto mode at all, and would have caught the
 same regression a year ago for entirely different reasons. So the measurement chip should be named for
-the measurement, and `AutoBash` stays as the regime chip from 027 (declaring it may *imply* the
+the measurement, and `AutoBash` stays as the regime chip from 070 (declaring it may *imply* the
 measurement one).
 
 **Settled: `ProbeBrittle`.** The `Probe` half says *measurement is on*, which is exactly what this chip
@@ -159,7 +159,7 @@ correct (a `strings | grep` over a 40 MB binary is brittle by nature and was the
 
 ### Comment by bjornregnell/Opus5 at 2026-09-15 18:20
 
-Proposed by the human after reading 027. Filed separately because 027 is a finding that wants a fix and
+Proposed by the human after reading 070. Filed separately because 070 is a finding that wants a fix and
 this is a capability that wants a design, and bundling them would let the (contentious, unbuilt)
 instrument hold up the (measured, actionable) report.
 
@@ -171,13 +171,13 @@ measurement" is not turning anything on — the data was always there.
 What the chip actually buys is two narrower things, and the issue is stronger if it claims only these:
 
 * **Arm partitioning.** A declared, timestamped boundary is what makes before/after comparison exact
-  rather than a grep for a magic string. That is real, and it is the part 027's study design needs.
+  rather than a grep for a magic string. That is real, and it is the part 070's study design needs.
 * **Intent, recorded.** Declaring the chip says "I am watching this now", which is what makes the
   numbers a check rather than an audit. Whether that changes anything is exactly the open question.
 
 A risk worth naming: a live rate visible to whoever is being measured invites optimising the number
 instead of the behaviour — piping to `tail` less because it scores badly, not because it hides an exit
-status. The rates are proxies and should be treated as such; the failure modes in 027 are the thing
+status. The rates are proxies and should be treated as such; the failure modes in 070 are the thing
 that matters, and they are what the rates are *for*, not the other way round.
 
 Prior art in this repo to reuse rather than reinvent: the `in-session-experiment` and `research-methods`
@@ -202,11 +202,8 @@ pass, on the human's instruction. Worth noting it is the one part of this issue 
 of the measurement question: a stale `Afk` chip that outlived the human's absence is a live hazard
 today, and a duration on the mode line would surface it.
 
-Agent disclosure: this comment was produced by an AI agent (Claude Opus 5) under human direction; the
-human reviewed and submitted.
-
-Agent disclosure: this issue text was produced by an AI agent (Claude Opus 5) under human direction. The
-agent is also the subject the proposed instrument would measure, which is a conflict of interest the
+Agent disclosure: this issue text and this comment were produced by an AI agent (Claude Opus 5) under
+human direction; the human reviewed and submitted. The agent is also the subject the proposed instrument would measure, which is a conflict of interest the
 reader should weigh — including in the objection above, which argues for a smaller version of a feature
 that would be pointed at the agent.
 

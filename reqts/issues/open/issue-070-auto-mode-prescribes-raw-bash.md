@@ -20,7 +20,9 @@ choose it and the human did not ask for it.
 
 ### The conflict is literal, not a drift
 
-The session's system prompt carries, verbatim:
+The session's system prompt carried, verbatim (wording as of Claude Code 2.1.272–2.1.273; by
+2026-10 it reads more softly, opening "You can do much of your work through the Bash tool when it is
+the simpler route", but still names cat, grep, find and sed as acceptable):
 
 > While auto mode is active: Do your work through the Bash tool wherever it can accomplish the job: read
 > files with cat, head, or sed -n, search with grep and find, and make file changes with sed, heredocs,
@@ -114,9 +116,10 @@ enumerate *actually recurred*, in a session where those skills were loaded and t
 2. Start a session with auto mode on and give it ordinary file work — "read X, summarise it, edit Y".
 3. Afterwards, run the histogram over the session transcript:
    ```
-   tt text freq <transcript.jsonl> "\"command\":\"([a-zA-Z0-9_./-]+)"
+   tt text freq <transcript.jsonl> "\"input\":\{\"command\":\"([a-zA-Z0-9_./-]+)"
    ```
-   (halve the counts; each call is recorded twice.)
+   (anchor on `"input":{"command":"`, the only place a command is executed; a looser `"command":"`
+   anchor matches twice per call, see Error 2 below.)
 4. Compare against the same task with auto mode off.
 
 The comparison in step 4 is the part this issue does **not** have — see the limitations below.
@@ -274,7 +277,7 @@ numbers without the following list is misusing them:
 So the honest reading is: **the rates moved, the reason is unidentified, and the single most likely
 cause is the one that required writing code rather than declaring intent.** That sharpens the study
 proposed above — the arms must differ in ONE thing — and it is mild evidence for the position in issue
-028's discussion that a mechanical counter-measure beats a declarative one.
+071's discussion that a mechanical counter-measure beats a declarative one.
 
 ### Measurement provenance — two errors, both flattering, both corrected
 
@@ -314,7 +317,7 @@ Re-verified before filing, against `5adb395`, and with a second measurement that
 this was drafted.
 
 **A second session, without the skills — the control arm this issue lacked.** A parallel session on the
-same machine, same week, same task family, ran on the **work profile where the genscalator plugin is not
+same machine, same week, same task family, ran on the **other profile, where the genscalator plugin is not
 installed**, so none of the skills were active. Measured with the same classifier over its transcript,
 134 Bash calls:
 
