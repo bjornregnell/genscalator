@@ -66,9 +66,9 @@ every issue drafted on a branch carries a provisional number, and provisional nu
 * **Same-day order is by slug** (G3 as amended). Few issues are conceived on the same day, so this is
   an acceptable approximation, and simpler than a time component.
 * **UTC, not local time,** so that one clock orders every collaborator's issues. It only differs from
-  the box's local date near midnight, but it costs nothing when the tool mints it. ⚠ `tt chrono now
-  --utc` was observed printing local time on a UTC+2 box (2026-09-23); the minting code must not
-  depend on it until that is fixed.
+  the box's local date near midnight, but it costs nothing when the tool mints it. Note: `tt chrono` has no
+  UTC option (it silently ignores an unknown `--utc` and prints local time, which was first mistaken
+  for a broken conversion), so the minting code computes the UTC date itself with `java.time`.
 * **Numeric date, not month names:** `okt` would sort `apr` < `aug` < `dec`, and is Swedish in a repo
   whose public text is English. `YYMMDD` also matches the session names `tt session` already derives.
 * **Cite the full ID**, date and slug. The bare date is not unique, so a citation always carries the
