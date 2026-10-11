@@ -1,6 +1,6 @@
 # Issue 073: issue identity — make in-repo issue IDs unique without coordination, stable from inception, and sorted by inception
 
-> status: open 2026-10-11 · labels: meta, issues, process, docs, toolbox · measured against: v0.10.2
+> status: closed 2026-10-11, fixed by `e43cf09` · labels: meta, issues, process, docs, toolbox · measured against: v0.10.2
 > (from `VERSION.txt`) at `6a905b8`, Linux · summary: in-repo issues are numbered by a global
 > counter (highest across `open/` and `closed/`, plus one). That counter cannot see drafts or unmerged
 > PRs, so numbers get renumbered at filing and the old numbers survive inside issue texts as wrong
