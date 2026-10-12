@@ -137,6 +137,11 @@ research method the rest of this folder runs under.)*
   substrate-as-multiplier claim. Also fixes *hold the model constant* during WR-data collection.
 
 ### Tools, design decisions, meta
+- [`RT058-invisible-environment-inputs.md`](topics/RT058-invisible-environment-inputs.md) — two people, one commit,
+  opposite test results: a global `scala-cli` config key and PATH decided the outcome and **neither is in the repo**.
+  Records the near-miss (the obvious repair would have deleted the suite's only exhaustive stderr assertion), the
+  filter and runner banner that shipped, the timing decomposition that showed `CliSuite` mostly measures *process
+  startup*, and **what parity mode is and why an agent should care**. Written for someone who was not there.
 - [`RT040-dry-vs-dependency-surface.md`](topics/RT040-dry-vs-dependency-surface.md) — when is DRY right vs when is repetition
   better? Default DRY (drift = false-echt risk), but weigh **dependency/coupling surface**, coincidental-vs-knowledge
   duplication, test independence, and premature-abstraction cost. Companion to `scala-style` §5.
