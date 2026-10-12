@@ -104,22 +104,54 @@ class CliSuite extends munit.FunSuite:
     *
     * Resolution reuses `WhichTool` rather than restating it: the toolbox already owns PATH lookup
     * (dir order, then PATHEXT within a dir — the shell's own order) and a second implementation here
-    * would be precisely the drift class issue 061 is about. EFFECTFUL: reads PATH, stats the hits,
-    * and runs the resolved binary once for its version. */
-  private lazy val resolvedRunner: String = nativeBin match
-    case Some(bin) => s"$bin  (parity mode: scala-cli is not in the loop)"
-    case None =>
-      val hits = WhichTool.hitsFor(ScalaCli, WhichTool.pathDirs,
-        WhichTool.pathExts(Option(System.getenv("PATHEXT")), WhichTool.isWindows))
-      hits.headOption match
-        case None => s"$ScalaCli — NOT FOUND on PATH (every subprocess below will fail)"
-        case Some(p) =>
-          val version =
-            try os.proc(p.toString, "version", "--cli-version").call(check = false).out.text().trim
-            catch case _: Throwable => "version unavailable"
-          // name the shadowed ones too: which install won is only interesting when there was a choice
-          val shadowed = if hits.sizeIs > 1 then s"  (+${hits.size - 1} shadowed on PATH)" else ""
-          s"$p  v$version  ${WhichTool.factsOf(p)}$shadowed"
+    * would be precisely the drift class issue 061 is about. It also inherits that lookup's real-file
+    * identity, so a merged-/usr box does not report one file as a phantom shadowed install
+    * (issue 261011-which-merged-usr-duplicates).
+    *
+    * ⚠ IT CANNOT FAIL THE RUN. The whole body is guarded, not just the subprocesses: `pathDirs` calls
+    * `Path.of` on every PATH entry, and a Windows entry containing a quote throws — inside `beforeAll`,
+    * which aborts the entire suite. A diagnostic that kills the thing it is diagnosing is worse than no
+    * diagnostic, so every failure degrades to a printed reason.
+    *
+    * EFFECTFUL: reads PATH, stats the hits, and runs the resolved binary twice (version, config). */
+  private lazy val resolvedRunner: String =
+    try nativeBin match
+      case Some(bin) =>
+        // In parity mode the binary's FRESHNESS is the thing that matters (issue 066), so its mtime
+        // belongs here; scala-cli's version does not, because scala-cli is not in the loop at all.
+        s"$bin  ${WhichTool.factsOf(bin.toNIO)}  (parity mode: scala-cli is not in the loop)"
+      case None =>
+        val hits = WhichTool.hitsFor(ScalaCli, WhichTool.pathDirs,
+          WhichTool.pathExts(Option(System.getenv("PATHEXT")), WhichTool.isWindows))
+        hits.headOption match
+          case None => s"$ScalaCli — NOT FOUND on PATH (every subprocess below will fail)"
+          case Some(p) =>
+            // name the shadowed ones too: which install won is only interesting when there was a choice
+            val shadowed = if hits.sizeIs > 1 then s"  (+${hits.size - 1} shadowed on PATH)" else ""
+            s"$p  v${probe(p, "version", "--cli-version")}  ${WhichTool.factsOf(p)}$shadowed" +
+              s"\n[CliSuite] suppress-warning.directives-in-multiple-files: ${suppressState(p)}"
+    catch case t: Throwable =>
+      s"could not resolve (${t.getClass.getSimpleName}: ${t.getMessage}) — the suite runs on regardless"
+
+  /** Run the resolved binary for one fact. Capped and piped: an unbounded call in `beforeAll` would
+    * hang the suite rather than report, and inherited stderr would scatter the toolchain's own chatter
+    * through the banner. */
+  private def probe(bin: java.nio.file.Path, args: String*): String =
+    try
+      val r = os.proc(bin.toString +: args).call(
+        check = false, timeout = 15_000, stdout = os.Pipe, stderr = os.Pipe)
+      val out = r.out.text().trim
+      if out.nonEmpty then out else "(empty)"
+    catch case t: Throwable => s"(unavailable: ${t.getClass.getSimpleName})"
+
+  /** The third input that decides this suite's result, and the one that actually caused issue 050's
+    * green/red split — a GLOBAL scala-cli config key, outside the repo, invisible in `scala-cli
+    * version`, and mentioned by nothing a bug report would quote. `set` here means the advisory this
+    * suite filters is suppressed before it is ever written. */
+  private def suppressState(bin: java.nio.file.Path): String =
+    probe(bin, "config", "suppress-warning.directives-in-multiple-files") match
+      case "(empty)" => "unset (advisory is emitted, and filtered by ToolchainNoise)"
+      case other     => s"$other (advisory suppressed at source)"
 
   // Announce the resolved tools dir ONCE, and fail fast on a stale/partial one. The ember records a
   // 6-file copy resolved via cwd walk-up that produced ~123 phantom failures; this turns that whole

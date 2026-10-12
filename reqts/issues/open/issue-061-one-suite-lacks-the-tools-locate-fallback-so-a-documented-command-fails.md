@@ -298,3 +298,75 @@ reviewed by me. Verified BY RUNNING: `CliSuite` 292/292 with the banner in place
 single invocations; the spawn-site counts; and a check that a Bloop daemon was live. The decomposition
 and the conclusion that the gap is not worth chasing are the agent's; BR's launcher-kind hypothesis was
 retired against his own posted `tt which` output rather than against anything new from his machine.
+
+### Comment by bjornregnell at 2026-10-11 16:30 — review of PR #26
+
+Ran it on the merge result: `CliSuite` 292/292 default (212.6s) and parity (10.4s), `DispatchSuite`
+6/6, links 0 dangling. The banner here reads
+`$HOME/.sdkman/candidates/scalacli/current/bin/scala-cli  v1.18.0  ELF binary (64-bit)  137.7M`.
+
+One warm `scala-cli run tools/json.scala -- --help` takes 0.50 / 0.52 / 0.50 s on this box, a little
+under the 0.63 predicted. With ~344 spawn sites that is ~175s of the 212.6s, so roughly 35s (17%) is
+something else. Per-invocation startup is still the dominant term and routine runs belong in parity
+mode.
+
+Two things before merging. The shadowed count can be inflated on merged-/usr systems, where `/bin` and
+`/usr/bin` are the same directory — the root cause is `WhichTool.hitsFor` de-duplicating unresolved
+paths, so fix it there and let the banner inherit it. And the banner can abort the whole suite:
+`pathDirs` calls `Path.of` on every PATH entry, and a Windows entry containing a quote throws inside
+`beforeAll`; only the version call is guarded. Smaller: the version call has no timeout and inherits
+stderr, and in parity mode the native binary's mtime matters more than a scala-cli version. Also print
+the state of `suppress-warning.directives-in-multiple-files` — that key, not PATH, explained the
+issue-050 split.
+
+### Comment by hmiddelk at 2026-10-12 14:05 — all four addressed, and the residual is now BR's not mine
+
+**The phantom shadowed install is fixed in `which.scala`, not in the banner**, as asked, so every
+caller inherits it. Identity moved from the path STRING to the real file (`toRealPath`, falling back
+to the normalised path when the filesystem cannot answer, so a dangling link degrades the lookup
+rather than aborting it). Measured on this merged-/usr box:
+
+```
+before   time: 2 in PATH (first wins)        after   time: 1 in PATH
+           /usr/bin/time                               /usr/bin/time
+           /bin/time (shadowed)                        also reachable as /bin/time (same file as /usr/bin/time)
+```
+
+The alias is named rather than dropped, per the sketch's second bullet: two PATH entries really do
+reach that file, and hiding it would trade one wrong answer for a quieter one. A genuine second
+install is untouched — this machine still reports `+2 shadowed` for scala-cli, because those are three
+distinct files (139.6M ELF, 1.2K script, 123.1M ELF), which is the case the fix must not over-merge.
+`WhichUnitSuite` is 13/13 with three added: a symlinked directory pair is ONE install, two distinct
+files are still two, and `realKey` degrades on a dangling symlink.
+
+**The banner can no longer fail a run.** The whole body is guarded now rather than only the
+subprocess — the hazard you named is real and sits in `beforeAll`, where a throw aborts everything. A
+diagnostic that kills the thing it is diagnosing is worse than no diagnostic, so every failure path
+now degrades to a printed reason. The probes are capped at 15s and pipe stderr, so they can neither
+hang the suite nor scatter toolchain chatter through the banner.
+
+**Parity mode prints the binary's own facts**, mtime included, and drops the scala-cli version — which
+is meaningless when scala-cli is not in the loop. Freshness is the thing that matters there (issue
+066).
+
+**The config key is in this PR rather than left to you**, because it is the input that actually caused
+the issue-050 split:
+
+```
+[CliSuite] suppress-warning.directives-in-multiple-files: unset (advisory is emitted, and filtered by ToolchainNoise)
+```
+
+An unset key prints empty, so the line says what that MEANS instead of showing a blank.
+
+**On the residual.** Your 0.50s against my predicted 0.63 leaves ~17% of your runtime unexplained,
+where my own numbers left none (2.15 × 350 = 752.5 against a measured 752.8). So "per-invocation
+startup is the whole story" was true of this machine and is only *mostly* true of yours, and the
+honest statement is the weaker one: it is the dominant term, not the sole term. Whatever the other
+~35s is, it is visible on your box and not on mine, so you are better placed to find it than I am, and
+it does not change the conclusion that routine runs belong in parity mode.
+
+Agent disclosure: implemented and measured by an AI agent (Claude Opus 5) in session with me, and
+reviewed by me. Verified BY RUNNING: `WhichUnitSuite` 13/13; `CliSuite` 295/295 default mode (801.5s);
+`DispatchSuite` 6/6; `tt which time` before and after the fix on a merged-/usr system. NOT verified:
+Windows, where the quoted-PATH-entry hazard the guard protects against actually lives — the guard is
+reasoned from the throw site, not observed; and macOS.
