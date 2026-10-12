@@ -88,6 +88,71 @@ class CliSuite extends munit.FunSuite:
           .call(check = false, stdin = stdinText, stdout = os.Pipe, stderr = os.Pipe)
     (r.exitCode, normalizeEol(r.out.text()), normalizeErr(r.err.text()))
 
+  /** The OTHER input that decides this suite's result, recorded beside the tools dir (issue 061).
+    *
+    * ⚠ WHY. `ScalaCli` is a bare name, so PATH picks the binary every assertion in this suite is made
+    * against — ordinary shell behaviour, and not a defect. The defect was that nothing in a run's
+    * output said which binary won. That cost a real exchange on issue 050: a green reading and a red
+    * reading of the same suite, on the same commit, by two people, differing only on environment that
+    * neither run described. Two installs on one machine is common (a package manager's and a
+    * coursier launcher's), and they are not interchangeable — one is a ~140M native image, the other a
+    * 1.2K shell script.
+    *
+    * NOT a guard. Any scala-cli on PATH is a legitimate thing to test against, so there is no wrong
+    * answer to police and nothing here fails. The point is only that a pasted failure should be
+    * interpretable without asking the reporter what their PATH was.
+    *
+    * Resolution reuses `WhichTool` rather than restating it: the toolbox already owns PATH lookup
+    * (dir order, then PATHEXT within a dir — the shell's own order) and a second implementation here
+    * would be precisely the drift class issue 061 is about. It also inherits that lookup's real-file
+    * identity, so a merged-/usr box does not report one file as a phantom shadowed install
+    * (issue 261011-which-merged-usr-duplicates).
+    *
+    * ⚠ IT CANNOT FAIL THE RUN. The whole body is guarded, not just the subprocesses: `pathDirs` calls
+    * `Path.of` on every PATH entry, and a Windows entry containing a quote throws — inside `beforeAll`,
+    * which aborts the entire suite. A diagnostic that kills the thing it is diagnosing is worse than no
+    * diagnostic, so every failure degrades to a printed reason.
+    *
+    * EFFECTFUL: reads PATH, stats the hits, and runs the resolved binary twice (version, config). */
+  private lazy val resolvedRunner: String =
+    try nativeBin match
+      case Some(bin) =>
+        // In parity mode the binary's FRESHNESS is the thing that matters (issue 066), so its mtime
+        // belongs here; scala-cli's version does not, because scala-cli is not in the loop at all.
+        s"$bin  ${WhichTool.factsOf(bin.toNIO)}  (parity mode: scala-cli is not in the loop)"
+      case None =>
+        val hits = WhichTool.hitsFor(ScalaCli, WhichTool.pathDirs,
+          WhichTool.pathExts(Option(System.getenv("PATHEXT")), WhichTool.isWindows))
+        hits.headOption match
+          case None => s"$ScalaCli — NOT FOUND on PATH (every subprocess below will fail)"
+          case Some(p) =>
+            // name the shadowed ones too: which install won is only interesting when there was a choice
+            val shadowed = if hits.sizeIs > 1 then s"  (+${hits.size - 1} shadowed on PATH)" else ""
+            s"$p  v${probe(p, "version", "--cli-version")}  ${WhichTool.factsOf(p)}$shadowed" +
+              s"\n[CliSuite] suppress-warning.directives-in-multiple-files: ${suppressState(p)}"
+    catch case t: Throwable =>
+      s"could not resolve (${t.getClass.getSimpleName}: ${t.getMessage}) — the suite runs on regardless"
+
+  /** Run the resolved binary for one fact. Capped and piped: an unbounded call in `beforeAll` would
+    * hang the suite rather than report, and inherited stderr would scatter the toolchain's own chatter
+    * through the banner. */
+  private def probe(bin: java.nio.file.Path, args: String*): String =
+    try
+      val r = os.proc(bin.toString +: args).call(
+        check = false, timeout = 15_000, stdout = os.Pipe, stderr = os.Pipe)
+      val out = r.out.text().trim
+      if out.nonEmpty then out else "(empty)"
+    catch case t: Throwable => s"(unavailable: ${t.getClass.getSimpleName})"
+
+  /** The third input that decides this suite's result, and the one that actually caused issue 050's
+    * green/red split — a GLOBAL scala-cli config key, outside the repo, invisible in `scala-cli
+    * version`, and mentioned by nothing a bug report would quote. `set` here means the advisory this
+    * suite filters is suppressed before it is ever written. */
+  private def suppressState(bin: java.nio.file.Path): String =
+    probe(bin, "config", "suppress-warning.directives-in-multiple-files") match
+      case "(empty)" => "unset (advisory is emitted, and filtered by ToolchainNoise)"
+      case other     => s"$other (advisory suppressed at source)"
+
   // Announce the resolved tools dir ONCE, and fail fast on a stale/partial one. The ember records a
   // 6-file copy resolved via cwd walk-up that produced ~123 phantom failures; this turns that whole
   // confusing class into ONE clear message before any test runs (beforeAll throwing aborts the suite).
@@ -97,11 +162,28 @@ class CliSuite extends munit.FunSuite:
       .filter(p => os.read.lines(p).exists(_.startsWith("@main ")))
       .map(_.baseName).filterNot(_ == "dispatch").toSet
     println(s"[CliSuite] tools dir: $toolsDir — ${toolFiles.size} @main tool files, dispatch table expects ${Dispatch.verbs.size}")
+    println(s"[CliSuite] runner:    $resolvedRunner")
     val missing = Dispatch.verbs.toSet -- toolFiles
     require(missing.isEmpty,
       s"STALE/partial tools dir: $toolsDir holds ${toolFiles.size} @main tool files but the dispatch table " +
         s"expects ${Dispatch.verbs.size}; missing ${missing.toVector.sorted.mkString("{", ", ", "}")}. " +
         "Likely the wrong dir resolved via cwd walk-up — pass -Dtt.tools=<abs tools>.")
+
+  private val startedMs = System.currentTimeMillis
+
+  /** Close by restating the runner NEXT TO the elapsed time, which is the pairing BR asked for on
+    * issue 050: "recording, next to the timing, which binary won and what kind it is".
+    *
+    * The two belong on one line because the open question they answer is a comparison. This suite
+    * spawns a subprocess per assertion, so per-invocation launcher cost is multiplied by a few
+    * hundred — which is the standing hypothesis for why the same suite, same version, same repo was
+    * timed at 220s on one machine and ~780s on another. Neither run recorded which binary it used or
+    * what kind it was, so the hypothesis could not be tested from the reports that existed. One line
+    * that carries elapsed time, path and kind together makes the next pair of reports comparable
+    * without anyone having to ask. */
+  override def afterAll(): Unit =
+    val secs = (System.currentTimeMillis - startedMs) / 1000.0
+    println(f"[CliSuite] $secs%.1fs elapsed, through $resolvedRunner")
 
   // --- text ---
   test("text count: number of regex matches") {

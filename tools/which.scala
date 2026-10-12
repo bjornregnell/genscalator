@@ -115,13 +115,51 @@ object WhichTool:
     else rawPathext.map(_.split(';').toVector.map(_.trim).filter(_.nonEmpty))
       .filter(_.nonEmpty).getOrElse(Vector(".COM", ".EXE", ".BAT", ".CMD"))
 
-  def hitsFor(name: String, dirs: Vector[Path], exts: Vector[String] = Vector.empty): Vector[Path] =
+  /** What a PATH scan found: distinct INSTALLS, and the paths that merely re-reach one of them.
+    *
+    * The split exists because "how many copies of this command are on PATH" and "how many ways can
+    * PATH name one copy" are different questions, and only the first is about installs. */
+  final case class PathScan(installs: Vector[Path], aliases: Vector[(Path, Path)])
+
+  /** The real file behind a path, for IDENTITY rather than for display.
+    *
+    * ⚠ Falls back to the normalised path when the filesystem cannot answer — a dangling symlink or an
+    * unreadable directory must degrade this lookup, never abort it. Two unresolvable paths then
+    * compare as distinct, which is the safe direction: a phantom extra install is a smaller lie than
+    * silently merging two real ones. EFFECTFUL: one filesystem read. */
+  def realKey(p: Path): Path =
+    try p.toRealPath() catch case _: Throwable => p.toAbsolutePath.normalize
+
+  /** Scan PATH for `name`, separating distinct files from re-reachings of the same file.
+    *
+    * ⚠ WHY THE REAL FILE DECIDES (issue 261011-which-merged-usr-duplicates). On a merged-/usr system
+    * `/bin` is a symlink to `/usr/bin`, so when both are on PATH the same file is found twice and
+    * de-duplicating on the path STRING keeps both. `tt which time` then reported `/usr/bin/time` and
+    * `/bin/time (shadowed)` — one file, described as two installs. For a distro-packaged tool that is
+    * a phantom shadowed install, and it misleads in exactly the direction a reader cares about: "which
+    * copy wins" has no answer when there is only one copy.
+    *
+    * The DISPLAY path stays the one PATH resolution would use — the first hit, in dir-then-ext order —
+    * so nothing about resolution order changes. Only identity moved from the name to the file. */
+  def scanPath(name: String, dirs: Vector[Path], exts: Vector[String] = Vector.empty): PathScan =
     // Dir order first, then ext order within a dir — the shell's own resolution order. The bare
     // word is accepted; the file actually found (e.g. tt.exe) is what gets reported.
-    dirs.flatMap { d =>
+    val raw = dirs.flatMap { d =>
       (name +: exts.map(name + _)).map(d.resolve)
         .find(p => Files.isRegularFile(p) && Files.isExecutable(p))
-    }.distinct
+    }
+    val seen = scala.collection.mutable.LinkedHashMap.empty[Path, Path]  // realKey -> first path seen
+    val aliases = Vector.newBuilder[(Path, Path)]
+    raw.foreach: p =>
+      val k = realKey(p)
+      seen.get(k) match
+        case Some(first) => if first != p then aliases += ((p, first))  // same file, another name
+        case None        => seen(k) = p
+    PathScan(seen.values.toVector, aliases.result())
+
+  /** Distinct installs of `name` on PATH, in resolution order. One entry per real FILE. */
+  def hitsFor(name: String, dirs: Vector[Path], exts: Vector[String] = Vector.empty): Vector[Path] =
+    scanPath(name, dirs, exts).installs
 
   /** A token given as a path (vs a bare command word): '/' anywhere, or on Windows also '\' or a
     * drive-letter prefix — so `tt which C:\dir\tt.exe` is inspected as a path, not mislabelled
@@ -144,7 +182,8 @@ object WhichTool:
       else { println(s"$name: no such file"); false }
     else
       val builtin = bashBuiltins(name)
-      val hits = hitsFor(name, dirs, exts)
+      val scan = scanPath(name, dirs, exts)
+      val hits = scan.installs
       if builtin && hits.isEmpty then println(s"$name: bash builtin (no file; aliases/functions are invisible here)")
       else if builtin then println(s"$name: bash builtin AND ${hits.size} in PATH (interactive bash runs the BUILTIN)")
       else if hits.isEmpty then
@@ -154,6 +193,10 @@ object WhichTool:
       else println(s"$name: ${hits.size} in PATH${if hits.size > 1 then " (first wins)" else ""}")
       hits.zipWithIndex.foreach: (p, i) =>
         reportHit(p, if i == 0 && !builtin then "" else " (shadowed)")
+      // An alias is NOT an install, but dropping it silently would hide a real fact about this PATH:
+      // two entries reach one file. Naming it beats both a phantom "(shadowed)" and saying nothing.
+      scan.aliases.foreach: (alias, first) =>
+        println(s"  also reachable as $alias (same file as $first)")
       builtin || hits.nonEmpty
 
 @main def which(args: String*): Unit =
