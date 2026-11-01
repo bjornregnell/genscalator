@@ -1,6 +1,6 @@
 # Contributing to genscalator
 
-> **genscalator v0.10.2** — contributing-policy version. Stale policy fails silently and outward:
+> **genscalator v0.10.3** — contributing-policy version. Stale policy fails silently and outward:
 > an old checkout can point you at the wrong forge or a stale address, and nothing else will warn
 > you. Check what you have with `tt --version` and update (`tt update`) before filing an issue or
 > opening a PR.

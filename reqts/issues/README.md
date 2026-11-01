@@ -1,6 +1,6 @@
 # In-repo issues — how they work
 
-> **genscalator v0.10.2** — issue-process version. In an older checkout these rules may have moved
+> **genscalator v0.10.3** — issue-process version. In an older checkout these rules may have moved
 > on: check with `tt --version` and update before filing.
 
 genscalator tracks its issues **in the repository** (not on any single forge), so requirements,
