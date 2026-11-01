@@ -1,6 +1,6 @@
 # Issue 054: `payloadsync --staged` with no directory argument silently falls back to the weaker check and exits 0, so the release gate can become a non-gate without anyone noticing
 
-> status: open 2026-09-11 · labels: release, installer, deploy, gate, correctness · measured against:
+> status: closed 2026-11-01, fixed by `3444296` · labels: release, installer, deploy, gate, correctness · measured against:
 > v0.10.2 at `1dffcb3` (the merge of PR #13, which introduced the file) · summary: `deploy/payloadsync.sc:43`
 > reads `--staged` with `argv.sliding(2).collectFirst { case "--staged" :: d :: _ => … }`, which yields
 > `None` when `--staged` is the last token. Control then falls into the `case None` branch at `:73`,
