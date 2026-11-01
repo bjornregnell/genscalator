@@ -231,3 +231,142 @@ RUNNING `which scala-cli` and a version call against both installs on this machi
 whether the two installs actually diverge on any assertion in the suite — the issue-050 runs came out
 the same on both, so the exposure here is unrecorded provenance rather than a demonstrated behavioural
 difference.
+
+### Comment by hmiddelk at 2026-09-24 12:10 — the banner is implemented, and its first run retired an open hypothesis
+
+`CliSuite` now prints the runner beside the tools directory it already printed, and restates it next
+to the elapsed time when the suite ends:
+
+```
+[CliSuite] tools dir: /home/hans/genscalator/tools — 46 @main tool files, dispatch table expects 46
+[CliSuite] runner:    /usr/local/bin/scala-cli  v1.17.1  ELF binary (64-bit)  139.6M  rwxrwxr-x  2026-09-19T13:21  (+2 shadowed on PATH)
+[CliSuite] 752.8s elapsed, through /usr/local/bin/scala-cli  v1.17.1  ELF binary (64-bit)  139.6M  ...
+```
+
+Two lines rather than one because they answer different questions: the opening line records the inputs
+before anything runs and survives an aborted suite, and the closing line is the pairing BR asked for on
+issue 050 — *"recording, next to the timing, which binary won and what kind it is"*. A pasted tail now
+carries all three.
+
+Resolution reuses `WhichTool` — `pathDirs`, `hitsFor`, `factsOf` — rather than restating PATH lookup.
+The toolbox already owns dir-order-then-PATHEXT resolution, and a second implementation inside a test
+would be exactly the drift this issue is about. It is a `println` and not a guard: any scala-cli on
+PATH is legitimate to test against, so there is no wrong answer to police.
+
+**It retired an open hypothesis on its first run.** BR suggested the 220s-versus-780s gap between our
+machines might be launcher startup — his winner a native binary, mine possibly a script launcher —
+and labelled it a guess. The banner prints `ELF binary (64-bit) 139.6M`, and his own `tt which` output
+reports `ELF binary (64-bit) 139.6M`. **Same kind, same size.** The hypothesis is dead, and the fact
+that kills it is one line of an ordinary run's output that neither of us had during the whole exchange.
+
+### Then the gap decomposed, and the suite turned out to have no mystery in it
+
+Measured on an idle machine, warm, three times: a single `scala-cli run tools/json.scala -- --help`
+costs **2.15s** (2.15 / 2.21 / 2.08). `cli.test.scala` holds **347** `run(` / `runStdin(` / `runIn(`
+sites, about 344 net of the three helper definitions, with a few inside loops:
+
+| | per invocation | × ~350 | measured |
+| --- | --- | --- | --- |
+| scala-cli, this machine | **2.15s** | ~752s | **752.8s** |
+| scala-cli, BR's machine | ~0.63s implied | — | 220s |
+| native binary (parity mode) | ~0.08s implied | — | 28.1s |
+
+2.15 × 350 = 752.5 against a measured 752.8. **The suite's entire wall-clock is per-invocation launcher
+startup multiplied by the number of spawns**, and nothing else contributes materially.
+
+So all three candidate explanations for the machine gap are now measured and none survives:
+
+* **not the version** — 1.15.0 and 1.17.1 both land near 780s here
+* **not the launcher kind** — both winners are 139.6M native ELF
+* **not a missing build server** — a Bloop daemon is running here, warm, and an invocation still costs
+  2.15s
+
+What is left is per-invocation scala-cli startup differing ~3.4× between two machines, amplified 350
+times. That is a property of the hardware and environment rather than a defect in this repo, and I do
+not think it is worth chasing further.
+
+**The consequence worth keeping is sharper than the puzzle.** `CliSuite`'s duration measures *launcher
+startup*, not the tools it is testing. Parity mode runs the same 292 tests in 28.1s because the native
+binary starts in milliseconds — a 27× difference that dwarfs any machine-to-machine variation. Two
+things follow. Comparing suite wall-clock across machines was never going to be informative, because
+both numbers are dominated by a cost the suite does not intend to measure. And anyone running the full
+suite routinely should be doing it in parity mode; the default-mode run is worth its 13 minutes only
+when the scala-cli path itself is what is under test.
+
+Agent disclosure: implemented and measured by an AI agent (Claude Opus 5) in session with me, and
+reviewed by me. Verified BY RUNNING: `CliSuite` 292/292 with the banner in place (752.8s); three warm
+single invocations; the spawn-site counts; and a check that a Bloop daemon was live. The decomposition
+and the conclusion that the gap is not worth chasing are the agent's; BR's launcher-kind hypothesis was
+retired against his own posted `tt which` output rather than against anything new from his machine.
+
+### Comment by bjornregnell at 2026-10-11 16:30 — review of PR #26
+
+Ran it on the merge result: `CliSuite` 292/292 default (212.6s) and parity (10.4s), `DispatchSuite`
+6/6, links 0 dangling. The banner here reads
+`$HOME/.sdkman/candidates/scalacli/current/bin/scala-cli  v1.18.0  ELF binary (64-bit)  137.7M`.
+
+One warm `scala-cli run tools/json.scala -- --help` takes 0.50 / 0.52 / 0.50 s on this box, a little
+under the 0.63 predicted. With ~344 spawn sites that is ~175s of the 212.6s, so roughly 35s (17%) is
+something else. Per-invocation startup is still the dominant term and routine runs belong in parity
+mode.
+
+Two things before merging. The shadowed count can be inflated on merged-/usr systems, where `/bin` and
+`/usr/bin` are the same directory — the root cause is `WhichTool.hitsFor` de-duplicating unresolved
+paths, so fix it there and let the banner inherit it. And the banner can abort the whole suite:
+`pathDirs` calls `Path.of` on every PATH entry, and a Windows entry containing a quote throws inside
+`beforeAll`; only the version call is guarded. Smaller: the version call has no timeout and inherits
+stderr, and in parity mode the native binary's mtime matters more than a scala-cli version. Also print
+the state of `suppress-warning.directives-in-multiple-files` — that key, not PATH, explained the
+issue-050 split.
+
+### Comment by hmiddelk at 2026-10-12 14:05 — all four addressed, and the residual is now BR's not mine
+
+**The phantom shadowed install is fixed in `which.scala`, not in the banner**, as asked, so every
+caller inherits it. Identity moved from the path STRING to the real file (`toRealPath`, falling back
+to the normalised path when the filesystem cannot answer, so a dangling link degrades the lookup
+rather than aborting it). Measured on this merged-/usr box:
+
+```
+before   time: 2 in PATH (first wins)        after   time: 1 in PATH
+           /usr/bin/time                               /usr/bin/time
+           /bin/time (shadowed)                        also reachable as /bin/time (same file as /usr/bin/time)
+```
+
+The alias is named rather than dropped, per the sketch's second bullet: two PATH entries really do
+reach that file, and hiding it would trade one wrong answer for a quieter one. A genuine second
+install is untouched — this machine still reports `+2 shadowed` for scala-cli, because those are three
+distinct files (139.6M ELF, 1.2K script, 123.1M ELF), which is the case the fix must not over-merge.
+`WhichUnitSuite` is 13/13 with three added: a symlinked directory pair is ONE install, two distinct
+files are still two, and `realKey` degrades on a dangling symlink.
+
+**The banner can no longer fail a run.** The whole body is guarded now rather than only the
+subprocess — the hazard you named is real and sits in `beforeAll`, where a throw aborts everything. A
+diagnostic that kills the thing it is diagnosing is worse than no diagnostic, so every failure path
+now degrades to a printed reason. The probes are capped at 15s and pipe stderr, so they can neither
+hang the suite nor scatter toolchain chatter through the banner.
+
+**Parity mode prints the binary's own facts**, mtime included, and drops the scala-cli version — which
+is meaningless when scala-cli is not in the loop. Freshness is the thing that matters there (issue
+066).
+
+**The config key is in this PR rather than left to you**, because it is the input that actually caused
+the issue-050 split:
+
+```
+[CliSuite] suppress-warning.directives-in-multiple-files: unset (advisory is emitted, and filtered by ToolchainNoise)
+```
+
+An unset key prints empty, so the line says what that MEANS instead of showing a blank.
+
+**On the residual.** Your 0.50s against my predicted 0.63 leaves ~17% of your runtime unexplained,
+where my own numbers left none (2.15 × 350 = 752.5 against a measured 752.8). So "per-invocation
+startup is the whole story" was true of this machine and is only *mostly* true of yours, and the
+honest statement is the weaker one: it is the dominant term, not the sole term. Whatever the other
+~35s is, it is visible on your box and not on mine, so you are better placed to find it than I am, and
+it does not change the conclusion that routine runs belong in parity mode.
+
+Agent disclosure: implemented and measured by an AI agent (Claude Opus 5) in session with me, and
+reviewed by me. Verified BY RUNNING: `WhichUnitSuite` 13/13; `CliSuite` 295/295 default mode (801.5s);
+`DispatchSuite` 6/6; `tt which time` before and after the fix on a merged-/usr system. NOT verified:
+Windows, where the quoted-PATH-entry hazard the guard protects against actually lives — the guard is
+reasoned from the throw site, not observed; and macOS.

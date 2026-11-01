@@ -44,6 +44,44 @@ class WhichUnitSuite extends munit.FunSuite:
     assertEquals(hits, Vector((d1 / "tool.EXE").toNIO, (d2 / "tool").toNIO))
   }
 
+  // --- identity is the real FILE, not the path string (issue 261011-which-merged-usr-duplicates) ---
+  //
+  // The live case is a merged-/usr system, where /bin is a symlink to /usr/bin and both are on PATH.
+  // De-duplicating on the path string kept both, so one file was reported as two installs — and for a
+  // distro-packaged tool, PR #26's runner banner would have printed a phantom "+1 shadowed", which is
+  // the two-installs confusion that banner exists to clear up. Reproduced here with a symlinked dir.
+  test("a symlinked PATH dir pair is ONE install, named once, with the alias reported") {
+    val real = os.temp.dir()
+    os.write(real / "tool", "x"); (real / "tool").toIO.setExecutable(true, false)
+    val link = os.temp.dir() / "alias"
+    java.nio.file.Files.createSymbolicLink(link.toNIO, real.toNIO)
+
+    val scan = WhichTool.scanPath("tool", Vector(real.toNIO, link.toNIO))
+    assertEquals(scan.installs, Vector((real / "tool").toNIO), "one file must count as one install")
+    // the alias is not dropped: two PATH entries really do reach this file, and that is worth saying
+    assertEquals(scan.aliases.map((a, f) => (a.toString, f.toString)),
+      Vector(((link / "tool").toString, (real / "tool").toString)))
+    // and the display path is still the one PATH resolution would use — resolution order is untouched
+    assertEquals(WhichTool.hitsFor("tool", Vector(real.toNIO, link.toNIO)), Vector((real / "tool").toNIO))
+  }
+
+  test("two DISTINCT files are still two installs, so a real shadow is never hidden") {
+    val d1 = os.temp.dir(); val d2 = os.temp.dir()
+    os.write(d1 / "tool", "one"); os.write(d2 / "tool", "two")
+    for f <- Seq(d1 / "tool", d2 / "tool") do f.toIO.setExecutable(true, false)
+    val scan = WhichTool.scanPath("tool", Vector(d1.toNIO, d2.toNIO))
+    assertEquals(scan.installs, Vector((d1 / "tool").toNIO, (d2 / "tool").toNIO))
+    assertEquals(scan.aliases, Vector.empty)
+  }
+
+  test("realKey degrades rather than throws on a path the filesystem cannot resolve") {
+    // a dangling symlink: toRealPath throws, and the lookup must survive it (BR's last sketch bullet)
+    val d = os.temp.dir()
+    val dangling = d / "gone"
+    java.nio.file.Files.createSymbolicLink(dangling.toNIO, (d / "no-such-target").toNIO)
+    assertEquals(WhichTool.realKey(dangling.toNIO), dangling.toNIO.toAbsolutePath.normalize)
+  }
+
   // --- pathExts (Windows PATHEXT; empty elsewhere) ---
   test("pathExts is empty off Windows regardless of the env value") {
     assertEquals(WhichTool.pathExts(Some(".COM;.EXE"), windows = false), Vector.empty)
