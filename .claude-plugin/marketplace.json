@@ -8,7 +8,7 @@
         "source": "github",
         "repo": "bjornregnell/genscalator",
         "ref": "v0.10.3",
-        "sha": ""
+        "sha": "4899f06aecca0f5aadd1f6c8b891553f58c08d2e"
       },
       "description": "The genscalator `tt` toolbox + the toolbox-habit skill, packaged for Claude Code.",
       "version": "0.10.3"
