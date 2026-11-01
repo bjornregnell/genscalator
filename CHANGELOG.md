@@ -14,6 +14,12 @@ PRs, the move to the Scala 3.9.0 LTS and the typed-verb gaps found in daily use 
 and the test suite runs green in default mode for the first time. Behaviour changes that could
 surprise are marked ⚠.
 
+**About the tag**: v0.10.3 was first tagged at `4899f06`, but its Windows release build failed on test
+portability: no `.gitattributes`, so CRLF checkouts broke multi-line string literals, and one suite ran
+bare `scala-cli` where Windows needs `scala-cli.bat` (fixed in `e110b8f`, which also skips the issue
+053 links test on Windows until issue 048 is fixed). No binaries were ever attached to the first tag,
+so it was moved to `e110b8f` (2026-11-01) instead of cutting a new version.
+
 **The maintainer-workflow wave**
 
 - **`tt --version` / `tt version` / `-v`** (issue-028): one identifying line — tag-spelled version,
