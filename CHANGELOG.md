@@ -205,7 +205,7 @@ surprise are marked ⚠.
   mark text a human wrote; it now marks a value, and provenance moved into the labels (`subject:` is
   the human one). EMBER-TEMPLATE v0.6 forbids an ember from carrying a "next name" hint.
 
-- **The box line says `box health: good | fair | poor`, and every segment votes** (2026-09-10,
+- **The box line says `box health: good | fair | poor`, and every segment votes** (2026-09-11,
   `499e414`): the lead verdict was `healthy | huffing | swamped`. It is now the same `LABEL: value`
   grammar as line 2, and always the WORST segment, never an average, so a full disk on an idle box
   reads `poor`. Not low/medium/high, because under a `health:` label "low" would mean bad, inverting a
@@ -315,7 +315,7 @@ surprise are marked ⚠.
   back. An instance of issue 041's class, found in the tool whose grants that very claim gates.
 
 - **`tt ssg` puts the publication byline where it belongs, and quotes keep their paragraphs**
-  (2026-08-24/25, `fd0e279`, `f624c24`, `78ec67b`): the byline anchored on the first bold span anywhere
+  (2026-08-25, `fd0e279`, `f624c24`, `78ec67b`): the byline anchored on the first bold span anywhere
   in a post's preamble, so on blog 000 the date landed in the middle of the Audience sentence on the
   live site. It now follows a LEADING `**Author: ...**` span and otherwise opens the quote. A bare `>`
   line inside a blockquote is now a paragraph break (standard markdown): `tt ssg` renders one `<p>`
@@ -344,7 +344,7 @@ surprise are marked ⚠.
   equals `v` + `VERSION` and a `sha` is present, so a release cut that bumps `VERSION` without
   moving the pin goes red. Release ritual gains one step: update `ref` + `sha` with `VERSION`.
 
-- **`CONTRIBUTING.md` has a checklist for issue-only and docs-only PRs** (2026-08-23, `e8778c8`):
+- **`CONTRIBUTING.md` has a checklist for issue-only and docs-only PRs** (2026-08-24, `e8778c8`):
   the existing checklist was for tool PRs only, while issues and reports are sanctioned
   contributions. The new one asks for the version measured against, claims executed rather than
   reasoned (and unverified ones labelled), append-only Discussion comments, and no assistant-credit

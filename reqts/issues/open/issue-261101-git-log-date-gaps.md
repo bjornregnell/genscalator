@@ -49,3 +49,24 @@ Observed: three lines of sha, email and headline; no dates.
 - Help text and `tools/README.md` updated together.
 
 ## Discussion
+
+### Comment by bjornregnell at 2026-11-01 20:19
+
+**A third gap, and the worst of the three: a bare date in `--since` does not mean midnight.** git reads
+a date with no time as that date at the CURRENT time of day, so `--since 2026-09-11` run at 19:20
+means "since 2026-09-11 19:20". `tt git log` passes the value through unchanged, so it inherits this.
+
+It mattered the same day. The bisection described above read "listed with `--since D`, not listed with
+`--since D+1`" as "made on day D", which is only true at midnight. Re-run with explicit times
+(`--since '2026-09-11 00:00'`), two of the three dates came out differently: the box line is
+2026-09-11, not 09-10, and the CONTRIBUTING checklist is 2026-08-24, not 08-23. The wrong dates went
+into the v0.10.3 CHANGELOG and were fixed on main afterwards. A missing flag is visible; this gave
+plausible wrong answers.
+
+Reproduce: `tt git log --repo <genscalator> --since 2026-11-01 --path tools/payloadlib.scala`, run
+on the evening of 2026-11-01, does not list `3444296`, which was committed that afternoon and touches
+that file.
+
+Suggested fix, beside the acceptance sketch above: treat a bare `YYYY-MM-DD` in `--since`/`--until`
+as `00:00` local time (and say so in `--help`), and add a test that a commit made earlier on the
+`--since` date IS listed.
