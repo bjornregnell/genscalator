@@ -370,3 +370,42 @@ reviewed by me. Verified BY RUNNING: `WhichUnitSuite` 13/13; `CliSuite` 295/295 
 `DispatchSuite` 6/6; `tt which time` before and after the fix on a merged-/usr system. NOT verified:
 Windows, where the quoted-PATH-entry hazard the guard protects against actually lives — the guard is
 reasoned from the throw site, not observed; and macOS.
+
+### Comment by bjornregnell at 2026-11-01 14:30: review after #26, what is left
+
+PR #26 merged today (`87fff68`), so the banner bullet of the acceptance sketch is done: `CliSuite`
+now names the scala-cli it runs (or the native binary in parity mode), the state of
+`suppress-warning.directives-in-multiple-files`, and repeats the runner next to the elapsed time.
+`which.scala` now treats two PATH entries that reach the same real file as one install. The other
+four bullets are still open. Re-checked on `main` at `cfa9277`:
+
+* **The defect reproduces.** `scala-cli test tools --test-only GitHelpCoverageSuite` gives 2 failed
+  of 2 with `cannot locate tools/` at `git.test.scala:359`; with `--java-prop tt.tools=<abs>/tools`
+  it gives 0 failed of 2.
+* **The census is unchanged.** 10 suites read `tt.tools`, 9 walk up from the cwd; variant D is still
+  `git.test.scala:358-359` and variant C still walks `take(6)` at `session.test.scala:119`.
+* **`tools/README.md:34` still offers `scala-cli test tools`** as an equal alternative.
+
+My decision on the class question: **share, do not gate.** Since this issue was filed, `TestFs` got
+a second shared helper, `ToolchainNoise` (issue 050), and the header of `testsupport.test.scala` now
+says both live there "for the SAME reason: each was duplicated per suite until a single defect showed
+up as several unrelated failures". Locate is the third case of exactly that. So the work, when someone
+picks it up:
+
+1. Add `TestFs.toolsDir` and `TestFs.repoRoot` with the variant A rule (property, validated by
+   `os.exists(d / "tt")`, else walk up 8), and an error that names both the property and the cwd.
+2. Replace all ten copies with calls to them. This removes variants C and D as a side effect, and
+   `take(6)` stops being a question.
+3. Update the "test independence over DRY" comment at `ability.test.scala:26` so it points at the
+   `TestFs` exception instead of contradicting it.
+4. Keep the README sentence, since it becomes true. If the code change is not picked up soon, a
+   one-line README fix (drop the bare form) can land on its own first.
+
+Not part of this issue: the ~17% of my 212.6s run that per-invocation startup does not explain. It
+does not change the conclusion that routine runs belong in parity mode, and I do not plan to chase
+it. The issue stays open for the locate work.
+
+Agent disclosure: reviewed by an AI agent (Claude Opus 5.5) in session with me, and reviewed by me.
+Verified BY RUNNING: `GitHelpCoverageSuite` with and without the property (2 failed, 0 failed) and
+the two census searches on `cfa9277`. Verified BY READING: `testsupport.test.scala:1-35` and the
+README line. Not verified: Windows and macOS.
