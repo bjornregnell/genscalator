@@ -232,3 +232,28 @@ about behaviour that has not been executed is a guess.
 Agent disclosure: the docs verification, the pin change and this comment were produced by an AI
 agent (Claude Fable 5) under human direction; the human chose pin-to-tag and reviewed and
 submitted.
+
+### Comment by bjornregnell at 2026-11-01 21:39
+
+**The pin survived its first real release cut, v0.10.3, with one wrinkle and one gap.**
+
+What happened, in order:
+
+1. The release commit `4899f06` moved `ref` to `v0.10.3` but could not carry its own sha, so `sha` was
+   committed EMPTY on purpose, with a follow-up planned. After the tag existed, `8854c9c` filled it in.
+2. The first release build failed on Windows (test portability, fixed in `e110b8f`), so the tag was
+   moved to `e110b8f` before any binaries were attached, and `32c211c` re-pinned `sha` to it.
+
+So the sha-follow-up step is structural, not a one-off: **the release commit can never pin itself.**
+Every cut needs the pin committed AFTER the tag exists. The release ritual should say so explicitly,
+and `version.test.scala` should reflect it (see the gap below).
+
+**The gap.** The gate `marketplace.json pins the plugin source to VERSION's release tag` asserts only
+that `"sha": "` is present. It passed with `"sha": ""`, which is the state main was in between
+`4899f06` and `8854c9c`. It cannot be tightened to "sha equals the tag's commit" inside the release
+commit (that commit cannot know its own sha), but it can at least require 40 hex characters, so an
+empty or truncated pin fails. Main then needs the follow-up commit before the suite goes green again,
+which correctly shows a half-finished cut as red.
+
+Still to do before closing: a field-tested `claude plugin update` against the pinned v0.10.3 source,
+as this issue's last comment set as the bar.
