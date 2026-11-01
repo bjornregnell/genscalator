@@ -1,6 +1,6 @@
 # Issue 261011-which-merged-usr-duplicates: tt which reports one file twice on merged-/usr systems, so a shadowed install can be phantom
 
-> status: open 2026-10-11 · labels: toolbox, which, linux, silent-wrong · measured against: v0.10.2
+> status: closed 2026-11-01, fixed by `87fff68` · labels: toolbox, which, linux, silent-wrong · measured against: v0.10.2
 > (from `VERSION.txt`) at `c5f1043`, native binary, Linux (Ubuntu, merged /usr) · summary: on a
 > merged-/usr system `/bin` is a symlink to `/usr/bin`, so when both are on PATH, `tt which` lists the
 > same file twice, the second as "(shadowed)". It reads as two installs. The same lookup feeds the
