@@ -30,6 +30,10 @@ class PayloadLayoutSuite extends munit.FunSuite:
         .find(d => os.exists(d / "tools" / "tt"))
         .getOrElse(throw IllegalStateException(s"cannot locate the repo root (pass -Dtt.tools=<dir>); cwd=${os.pwd}"))
 
+  // scala-cli.bat on Windows: ProcessBuilder does no PATHEXT resolution (see cli.test.scala).
+  private val isWindows = System.getProperty("os.name", "").toLowerCase.contains("win")
+  private val ScalaCli  = if isWindows then "scala-cli.bat" else "scala-cli"
+
   private lazy val installer = root / "get-genscalator.sc"
   private lazy val workflow  = root / ".github" / "workflows" / "native-release.yml"
 
@@ -82,7 +86,7 @@ class PayloadLayoutSuite extends munit.FunSuite:
   }
 
   private def payloadsync(flags: String*): os.CommandResult =
-    os.proc("scala-cli", "run", (root / "deploy" / "payloadsync.sc").toString, "--", flags)
+    os.proc(ScalaCli, "run", (root / "deploy" / "payloadsync.sc").toString, "--", flags)
       .call(cwd = root, check = false, stderr = os.Pipe)
 
   test("payloadsync: a bare --staged FAILS the gate instead of running the weaker one") {
@@ -122,7 +126,7 @@ class PayloadLayoutSuite extends munit.FunSuite:
 
   private def uninstall(home: os.Path, force: Boolean): os.CommandResult =
     val flags = Seq("--uninstall", "--home", home.toString) ++ Option.when(force)("--force")
-    os.proc("scala-cli", "run", installer.toString, "--", flags).call(cwd = root, check = false)
+    os.proc(ScalaCli, "run", installer.toString, "--", flags).call(cwd = root, check = false)
 
   test("fallback round trip: a pre-manifest install is removed completely, root and all") {
     // Before this fix the same fixture left reqts/PRD.md behind and printed `kept:` about it.
