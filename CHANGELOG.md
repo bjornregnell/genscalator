@@ -10,6 +10,14 @@ file before adopting a new version: it changes the agent's operating rules, so r
 
 ### v0.10.4 candidates (2026-08-18/19, extended 2026-08-22)
 
+- **A bare `payloadsync --staged` now fails the release gate instead of passing it** (issue 054,
+  2026-11-01): `sliding(2)` could not tell an absent flag from a flag without a value, so `--staged`
+  as the last token silently ran the weaker workflow-parser check, printed `payload layout OK` and
+  exited 0, without ever listing the staged tree. A flag that expects a value now dies with exit 2
+  when the value is missing (`PayloadLib.valueOf`, also used for `--root`), and `Files.list` is closed
+  via `Using.resource`. Not triggered so far: `native-release.yml` always passes `--staged staging`.
+  Three tests, one of which runs the real script with a bare `--staged` and requires a non-zero exit;
+  it was checked against the pre-fix script, which exits 0.
 - **`scala-cli test tools` is green in default mode for the first time** (issue 050, 2026-09-23):
   **`CliSuite` 0 failed of 292**, where it had been 1 failed since 2026-08-29. The failure was never
   the `json` test it named: every tool carries `//> using file project.scala` deliberately, so

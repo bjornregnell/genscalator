@@ -99,6 +99,18 @@ object PayloadLib:
       .toVector
       .flatMap(line => quoted.findAllMatchIn(line).map(_.group(1)))
 
+  /** The value after `flag` in `argv`: `Right(None)` when the flag is absent, `Right(Some(v))` when a
+    * value follows it, and `Left(why)` when it is the last token or is followed by another `--` flag.
+    *
+    * Issue 054: the script used to read flags with `sliding(2)`, which cannot tell "absent" from
+    * "present without a value", so a bare `--staged` silently ran the weaker default gate and exited
+    * 0. A flag that expects a value is now an error without one, never a flag that was not given. */
+  def valueOf(argv: List[String], flag: String): Either[String, Option[String]] =
+    argv.dropWhile(_ != flag) match
+      case Nil                                        => Right(None)
+      case _ :: value :: _ if !value.startsWith("--") => Right(Some(value))
+      case _                                          => Left(s"$flag needs a value, e.g. $flag <dir>")
+
   /** `None` when the two agree; otherwise a human-readable account of the drift. */
   def drift(label: String, expected: Vector[Entry], actual: Vector[Entry]): Option[String] =
     if expected == actual then None

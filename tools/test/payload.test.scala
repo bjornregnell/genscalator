@@ -71,6 +71,38 @@ class PayloadLayoutSuite extends munit.FunSuite:
     assertEquals(agenttools.PayloadLib.drift("x", expected, expected), None)
   }
 
+  // ---- flag parsing of the release gate (issue 054) ----------------------------------------------
+
+  test("valueOf tells an absent flag from a flag without a value") {
+    import agenttools.PayloadLib.valueOf
+    assertEquals(valueOf(List("--write"), "--staged"), Right(None))
+    assertEquals(valueOf(List("--staged", "staging"), "--staged"), Right(Some("staging")))
+    assert(valueOf(List("--staged"), "--staged").isLeft, "last token: the value is missing")
+    assert(valueOf(List("--staged", "--root", "."), "--staged").isLeft, "followed by a flag: missing")
+  }
+
+  private def payloadsync(flags: String*): os.CommandResult =
+    os.proc("scala-cli", "run", (root / "deploy" / "payloadsync.sc").toString, "--", flags)
+      .call(cwd = root, check = false, stderr = os.Pipe)
+
+  test("payloadsync: a bare --staged FAILS the gate instead of running the weaker one") {
+    // The acceptance condition on issue 054: it must fail, not merely parse. Before the fix this
+    // exited 0 and printed `payload layout OK … (committed region == regeneration)`.
+    val out = payloadsync("--staged")
+    assertNotEquals(out.exitCode, 0, clue(out.out.text()))
+    assert(clue(out.err.text()).contains("--staged needs a value"))
+  }
+
+  test("payloadsync: --staged <dir> checks the real tree, the branch the bare flag used to skip") {
+    // The contrast case: the same flag WITH a matching tree reaches the staged-tree gate and passes.
+    val dir = os.temp.dir(prefix = "gs-payload-staged-")
+    fixture(dir)
+    val out = payloadsync("--staged", dir.toString)
+    assertEquals(out.exitCode, 0, clue(out.err.text()))
+    assert(clue(out.out.text()).contains("(staged tree == get-genscalator.sc)"))
+    TestFs.removeAllForce(dir)
+  }
+
   // ---- the round trip -------------------------------------------------------------------------
   // Runs the REAL script against a scratch install root. No network and no release download: the
   // fixture is the payload's SHAPE, which is all the fallback reads. `--home` keeps it inside the

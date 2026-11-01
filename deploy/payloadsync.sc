@@ -32,6 +32,7 @@
 // tools/payloadlib.scala instead, so the toolbox's test suite covers it without a verb existing.
 
 import java.nio.file.{Files, Path}
+import scala.util.Using
 import agenttools.PayloadLib
 
 def die(msg: String): Nothing =
@@ -39,9 +40,12 @@ def die(msg: String): Nothing =
   sys.exit(2)
 
 val argv    = args.toList
+// A flag that expects a value dies without one (issue 054): a bare `--staged` must fail the gate, not
+// quietly run the weaker one and exit 0.
+def valueOf(flag: String): Option[String] = PayloadLib.valueOf(argv, flag).fold(die, identity)
 val write   = argv.contains("--write")
-val staged  = argv.sliding(2).collectFirst { case "--staged" :: d :: _ => Path.of(d) }
-val root    = argv.sliding(2).collectFirst { case "--root" :: d :: _ => Path.of(d) }.getOrElse(Path.of("."))
+val staged  = valueOf("--staged").map(Path.of(_))
+val root    = valueOf("--root").map(Path.of(_)).getOrElse(Path.of("."))
 
 val workflow = root.resolve(".github/workflows/native-release.yml")
 val script   = root.resolve("get-genscalator.sc")
@@ -56,7 +60,7 @@ staged match
   case Some(dir) =>
     // The release-time gate: the real tree, as built, versus what the shipped script will claim.
     if !Files.isDirectory(dir) then die(s"--staged $dir is not a directory")
-    val actual = Files.list(dir).toArray.toVector
+    val actual = Using.resource(Files.list(dir))(_.toArray.toVector)
       .map(_.asInstanceOf[Path].getFileName.toString)
       .sorted
     // The TREE is the source of truth here and the script's list is what is being judged, so the tree
