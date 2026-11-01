@@ -416,7 +416,7 @@ surprise are marked ⚠.
 verb descriptions), 050 (suite green in default mode), 053 (nested worktrees) and
 `261011-which-merged-usr-duplicates`, the scala-cli banner for issue 061, and research topic RT058,
 each recorded above, plus the filings and measurements behind issues 042, 051, 052, 055, 058, 061, 062
-and 065, and the Windows confirmations of 040 and 042 (PR #12).
+and 065, and the Windows confirmations of 040 and 042 (PR #12). Thank you @hmiddelk!
 
 **Still open**: the other half of issue 061, the suites that lack the tools-locate fallback; 065, the
 UTF-8 regression test that flaked once; 066, the native swap not checking its inputs are unchanged;
