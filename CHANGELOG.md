@@ -6,9 +6,82 @@ All notable changes to genscalator. Versions follow the git tags (`vX.Y.Z`); the
 Updating genscalator is a **human-reviewed** step — see [`docs/updating.md`](docs/updating.md). Skim this
 file before adopting a new version: it changes the agent's operating rules, so review beats blind pull.
 
-## Unreleased (v0.10.3 wave, in progress since 2026-08-16)
+## v0.10.3 (unreleased) — improved tooling and test suite
 
-### v0.10.4 candidates (2026-08-18/19, extended 2026-08-22)
+A large release in two parts. The maintainer-workflow wave gave routine repo work its typed verbs
+(`tt issue`, the `tt forge pr-*` family, `tt git log --path`, `tt version`). Since then, contributor
+PRs, the move to the Scala 3.9.0 LTS and the typed-verb gaps found in daily use filled in the rest,
+and the test suite runs green in default mode for the first time. Behaviour changes that could
+surprise are marked ⚠.
+
+**The maintainer-workflow wave**
+
+- **`tt --version` / `tt version` / `-v`** (issue-028): one identifying line — tag-spelled version,
+  carrier kind (git checkout / source copy / native install), root, entry path, platform — answered
+  on both code paths (bash launcher without a JVM start; dispatcher via the new mainless
+  `versionlib.scala`). Offline always. The v-prefix half of 028 closed works-as-designed.
+- **Version-stamped policy carriers** (issue-036): `CONTRIBUTING.md` and `reqts/issues/README.md`
+  carry the AGENTS.md-style version banner, gated by VersionSuite, plus a check-your-version line in
+  the contributor path and a state-your-baseline line in the issue checklist.
+- **`tt issue` — the in-repo issue workflow gets its typed verb** (issue-032): `next` prints the next
+  free NNN computed across `open/` AND `closed/` (numbers never reused); `list` prints one line per
+  issue (number, state, labels, summary — with a ⚠ when a preamble disagrees with its directory);
+  `close <NNN> --fixed-by <ref>` (or `--as wontfix|duplicate|...`) rewrites the `> status:` line and
+  moves the file as ONE operation, so the two can never disagree — preview by default, `--yes` to
+  apply, date from the system clock, never invented. Local clone only; staging and committing stay
+  with the caller (stage both paths and git records the rename). The standalone move primitive stayed
+  OUT, answering issue-032's design question: verb sprawl for a shape only this workflow uses.
+  ⚠ **Superseded 2026-10-11 by issue 073**: `next` is retired; new issues are minted with
+  `tt issue new` (see the issue 073 entry below).
+- **`tt forge pr-commits`** (issue-029): list a PR's commits (short sha, date, author, headline) with
+  `Co-Authored-By:`/"Generated with" lines surfaced under their commit and a one-line verdict — the
+  CONTRIBUTING.md no-assistant-credit check now runs inside the lane.
+- **`tt forge pr-merge`** (issue-030): the first effectful verb in the `pr-*` family. Previews by
+  default and merges only with `--yes`; composes the merge subject `Merge PR #<n>: <title>` from PR
+  metadata, takes the body from `--body-file` only, refuses an unmergeable/draft/closed PR by name,
+  and never deletes the source branch.
+- **`tt forge whoami --gh/--gl`** (issue-035, first item): the auth-check verb can now check the
+  GitHub and GitLab tokens the other verbs use, with each dialect's own guard; the token-source line
+  also names the keyring/`gh auth token` instead of `env ?`.
+- **`tt verify` can watch a long run** (issue-025): `--tee` streams the child's output live while
+  still capturing it for checks (line-callback sinks, not os.Inherit, so `--out` checks keep
+  working), and `--timeout N` bounds a wedged child; the silent default stays and is now documented
+  as deliberate.
+- **Missing files fail like grown-ups across the read path** (issue-027): the five `tt text` verbs
+  and the previously-tracing direct readers get a shared classified guard (`not a readable file` /
+  `is a directory`, exit 2) instead of a raw stack trace, via the new `Lib.requireReadableFile`.
+- **`tt files` on a missing root is an error, not a silent zero** (issue-031): `files: no such
+  path:` exit 2, matching `tt find`'s wording, and a not-a-directory root is rejected too — a
+  mistyped path can no longer read as a true negative.
+- **`tt git log --path <relpath>`** (issue-038, repeatable): only commits that touched the given
+  repo-root-relative path(s), passed to git after a `--` separator so a path can never be parsed as
+  a ref — "which commits touched this file" now has a typed answer.
+- **`tt git fetch` reports evidence, not reassurance** (issue-026): the false all-clear
+  `fetch: up to date` is gone — fetch names the ONE remote it contacted, distinguishes "no new
+  refs" from "you are current" (upstream ahead/behind standing when the fetched remote hosts it),
+  lists remotes NOT fetched, and takes a repeatable `--remote <name>`.
+- **`tt session list` is a read, and a rename announces itself** (issue-037): read-shaped lone words
+  (list/ls/show/status/current/get/name) are reserved like adopt — list/ls print a roster of every
+  session recorded for this directory (newest first, current starred), the rest print the display
+  name, and none can ever set a name; an exact-lowercase read word with arguments is a usage error,
+  exit 2. `tt session <Name>` is unchanged, but a name write now prints `session: renamed <old> ->
+  <new>` on stderr, so a write can no longer pass as a read; stdout stays byte-stable.
+- **guardcheck tells the truth about its own coverage** (issues 033/034/024): a `pipe to tee` MED
+  check (the closed list read as complete and was not; the fix line differs because a tee caller
+  wants output kept); the stale SM217 sanction of raw `git log --grep` corrected, and the retired
+  shape now gets a NOTE nudge toward `tt git log`; the git-lane carriers across AGENTS.md, skills
+  and docs now say typed-verbs-first with `git -C` as the named fallback.
+- **`tt links check` learns its exceptions, and CI finally runs it** (issue-011): a checked-in
+  `.links.ignore` at the scanned root records by-design dangling links, one `from -> target  #
+  reason` per line with the reason MANDATORY (malformed file = exit 2), excused links disclosed with
+  their reason and kept off the exit code, unused entries noted but never fatal. The six known cases
+  recorded, and the new `links-check` workflow gates every push and PR — strict links only, no
+  network.
+- **`docs/allowlist.md` says which `tt` wins** (issue-019): the `tt which tt` ritual first, the
+  three field-evidenced arrangements named, and the Windows version caveat — landing in the same
+  cut as 022's verified fix per the standing ordering rule.
+
+**Since the wave: contributor PRs, the 3.9.0 LTS, and the typed-verb gaps**
 
 - **A bare `payloadsync --staged` now fails the release gate instead of passing it** (issue 054,
   2026-11-01): `sliding(2)` could not tell an absent flag from a flag without a value, so `--staged`
@@ -18,6 +91,40 @@ file before adopting a new version: it changes the agent's operating rules, so r
   via `Using.resource`. Not triggered so far: `native-release.yml` always passes `--staged staging`.
   Three tests, one of which runs the real script with a bare `--staged` and requires a non-zero exit;
   it was checked against the pre-fix script, which exits 0.
+
+- **`tt which` counts files, not paths, and `CliSuite` says which scala-cli it ran against** (PR #26,
+  merged `87fff68`, 2026-11-01; closes `261011-which-merged-usr-duplicates` and the banner half of
+  issue 061): on a merged-/usr system `/bin` is a symlink to `/usr/bin`, so with both on PATH
+  `tt which time` reported one file as an install plus a "(shadowed)" second install. Identity is now
+  the real file (`WhichTool.scanPath`): the display path is still the one PATH resolution uses, a
+  second route to the same file is printed as `also reachable as …`, and a path the filesystem cannot
+  resolve degrades to its normalised form instead of aborting the lookup. `CliSuite` now prints, at
+  the start and again beside the elapsed time, which scala-cli PATH resolved (path, version, file
+  facts) and the global `suppress-warning.directives-in-multiple-files` config key, the input that
+  split issue 050's readings into green and red. It cannot fail a run: every failure degrades to a
+  printed reason. ⚠ Issue 061 stays open for its other half, the suites that lack the tools-locate
+  fallback (decided on the issue: share the fallback, do not gate).
+
+- **Research topic RT058: when a test result depends on something not in the repo** (PR #30, merged
+  `cfa9277`, 2026-11-01): the issue-050 split, in which two people ran the same suite on the same
+  commit and got opposite results, written up so that someone who was not there can follow it. It
+  traces the arc across issues 050, 061, 062, 065, 066 and `261011-which-merged-usr-duplicates`,
+  including the near-miss where the obvious repair would have deleted the suite's only check of its
+  kind. In `research/topics/`, listed in `research/README.md`.
+
+- **Issues get coordination-free IDs: `tt issue new`, and `next` is retired** (issue 073, PR #29,
+  merged `e43cf09`, 2026-10-11): issues were numbered by a global counter, so two branches could mint
+  the same number and an open PR reserved one invisibly to a file scan. An issue ID is now
+  `YYMMDD-slug`: the UTC date it was conceived plus 1 to 4 kebab-case words, which any writer on any
+  branch can mint alone. `tt issue new <slug> [--title <text>] [--date YYYY-MM-DD]` creates
+  `reqts/issues/open/issue-YYMMDD-slug.md` from the house template, computing the UTC date in-process,
+  and refuses (exit 1) a bad slug, an ID that already exists in `open/` or `closed/`, or a future
+  `--date`. The legacy numbers 000 to 073 are frozen; `list` and `close` take both forms, `list`
+  shows the age in days of a dated ID and sorts the legacy block first. ⚠ **Behaviour change**:
+  `tt issue next` now prints a pointer to `new` with an EMPTY stdout and exit 1, so a script that
+  captures it fails loudly instead of filing under a stale counter. `CONTRIBUTING.md`,
+  `reqts/issues/README.md` and Issue Zero describe the new scheme. The first issue filed under it is
+  `261011-unknown-flags-silently-ignored`.
 - **`scala-cli test tools` is green in default mode for the first time** (issue 050, 2026-09-23):
   **`CliSuite` 0 failed of 292**, where it had been 1 failed since 2026-08-29. The failure was never
   the `json` test it named: every tool carries `//> using file project.scala` deliberately, so
@@ -70,6 +177,46 @@ file before adopting a new version: it changes the agent's operating rules, so r
   ⚠ **NOT verified: neither seed has been BUILT on 3.9.0**; both `Status` blocks say so and name the
   command to re-run. Dated records naming RC4 (issue preambles, `DESIGN.md`, research reports) are
   left as written — they record what was measured.
+  **Correction, 2026-09-23: both seeds are now BUILT on 3.9.0, and the build disproved the reasoning
+  above** (`cbc9bbd`, `d80fac1`). sbt named the client directory `scala-3.9.0`, the FULL version, not
+  `scala-3`, so the seeded server answered 404 for `/main.js` although the client had built. The crud
+  seed's server now LOOKS for `client/target/scala-*/todo-client-fastopt/main.js` (newest wins;
+  `TODO_CLIENT_JS` still overrides), so the path cannot drift on the next bump. Measured on a clean
+  copy: `sbt compile` exit 0 with no warnings, `client/fastLinkJS` exit 0, `server/test` 6 passed,
+  `GET /main.js` 200. `ServerCrudSuite` gained a regression test that finds the client by walking
+  `client/target` rather than reusing the server's lookup, and it was mutation-checked: the old
+  hardcoded path turns it red. The serverless seed was re-verified the same day
+  (`scala-cli package --js`, exit 0, 1.2 MB `main.js` that contains the app). Why sbt used the full
+  version is NOT established; the fix does not depend on it. The `tt sub` worked example in
+  `tools/README.md` and `sub --help` now shows this bump (RC4 to 3.9.0) instead of the previous one
+  (`ac09bcc`).
+
+- **A session needs no naming: its name is derived** (issue 056, 2026-09-11, closed `7750280`):
+  `tt session` used to expect a human-chosen suffix, and in practice sessions took the next letter of
+  a NATO-alphabet sequence that nothing on disk records (`tt session list` is directory-scoped and
+  pruned; a repo with four prior named sessions listed one). An ember then carried "OSCAR is next"
+  and the next session obeyed it, with no check able to catch a wrong letter. The display name is now
+  `<dir>-YYMMDD@HHMM`, from the working directory and the clock (`@` rather than `:`, which Windows
+  forbids in filenames, and which reads aloud: "the 1408 session"). A bare `tt session` also prints
+  `in: <dir>  started: aug11@1408` on stderr, so stdout stays one parseable line. `tt session <words>`
+  remains for a session with a real subject, never expected. The statusline mode line now reads as
+  `LABEL: value` pairs, label plain and value inverted: `dir:`, `started:`, an optional `subject:`,
+  then `gs mode:` and the chips (`800b826`, `42bb138`). ⚠ **Behaviour change**: inversion used to
+  mark text a human wrote; it now marks a value, and provenance moved into the labels (`subject:` is
+  the human one). EMBER-TEMPLATE v0.6 forbids an ember from carrying a "next name" hint.
+
+- **The box line says `box health: good | fair | poor`, and every segment votes** (2026-09-10,
+  `499e414`): the lead verdict was `healthy | huffing | swamped`. It is now the same `LABEL: value`
+  grammar as line 2, and always the WORST segment, never an average, so a full disk on an idle box
+  reads `poor`. Not low/medium/high, because under a `health:` label "low" would mean bad, inverting a
+  row where every other gauge reads higher-is-worse. `jvm` now votes on its COUNT (orange 4, red 6),
+  not its memory, which `mem` already grades; the count catches stray build servers leaking one at a
+  time. Disk grades at 80/90 because disks run fuller than memory. A missing sensor grades green, so
+  "good" can also mean "not measured". Every threshold is a first-cut guess, not a measured optimum.
+  `tools/README.md` gains a section on what each of the three status lines tells you, and
+  `scala-cli run deploy/previewstatusline.sc` renders line 2 from source without a native rebuild or
+  touching the files the live status line reads (`c9b96b2`). ⚠ Issue 057 stays open: the line
+  diagnoses but does not yet say what to do.
 
 - **The uninstaller's payload layout is derived from the staging step, not typed** (issue 040,
   2026-08-26): `get-genscalator.sc`'s pre-manifest fallback held a hand-written list of the payload's
@@ -93,6 +240,10 @@ file before adopting a new version: it changes the agent's operating rules, so r
   says the weaker thing that is actually true. Derive rather than assert was BR's ruling on the issue;
   the release-history check that made deriving from *current* staging safe is in its Discussion.
   Issue 042's version misreport is deliberately **not** in this change.
+  ⚠ **The release-time gate had a hole, closed in this release** (issue 054): `payloadsync.sc --staged`
+  given NO directory silently ran the weaker parser-based check and exited 0. No release was
+  affected, since the one caller, `native-release.yml:179`, passes `staging`; see the issue 054 entry
+  above.
 
 - **A verb's description is PROJECTED from one declaration, for the six that had drifted** (issue 041,
   2026-08-29): every `tt` verb hand-maintained its description in THREE carriers — the
@@ -163,6 +314,15 @@ file before adopting a new version: it changes the agent's operating rules, so r
   a usage line, or if the safety paragraph denies a verb that is dispatched — so this cannot drift
   back. An instance of issue 041's class, found in the tool whose grants that very claim gates.
 
+- **`tt ssg` puts the publication byline where it belongs, and quotes keep their paragraphs**
+  (2026-08-24/25, `fd0e279`, `f624c24`, `78ec67b`): the byline anchored on the first bold span anywhere
+  in a post's preamble, so on blog 000 the date landed in the middle of the Audience sentence on the
+  live site. It now follows a LEADING `**Author: ...**` span and otherwise opens the quote. A bare `>`
+  line inside a blockquote is now a paragraph break (standard markdown): `tt ssg` renders one `<p>`
+  per paragraph inside one `<blockquote>`, and `tt md-fmt` keeps the break instead of reflowing it
+  away. Trimming is per paragraph, so a Status-only first line keeps its own byline. Tests in
+  `ssg.test.scala` and `md-fmt.test.scala`.
+
 - **Skill grants: the blanket `git -C` is gone, and review-time git is read-only** (2026-08-25):
   `skills/scala-code-review` declared `Bash(git -C *)` — a do-anything grant on a do-anything binary,
   which also auto-approved `push --force` and `reset --hard` in any directory, inside a skill whose job
@@ -184,6 +344,13 @@ file before adopting a new version: it changes the agent's operating rules, so r
   equals `v` + `VERSION` and a `sha` is present, so a release cut that bumps `VERSION` without
   moving the pin goes red. Release ritual gains one step: update `ref` + `sha` with `VERSION`.
 
+- **`CONTRIBUTING.md` has a checklist for issue-only and docs-only PRs** (2026-08-23, `e8778c8`):
+  the existing checklist was for tool PRs only, while issues and reports are sanctioned
+  contributions. The new one asks for the version measured against, claims executed rather than
+  reasoned (and unverified ones labelled), append-only Discussion comments, and no assistant-credit
+  trailers. Its "next free NNN, count numbers claimed by open PRs too" line (and the matching note in
+  `reqts/issues/README.md`, `7b580f0`) was replaced by the issue 073 ID scheme above.
+
 - **`tt git diff`** (2026-08-22): the most-cited gap in the toolbox. With no typed diff, answering
   "what did that commit change" forced either raw `git -C` or a `tt git show --out` plus an external
   `diff` — both outside what the guard can inspect. READ-ONLY and CAPPED like `log` (`--limit`,
@@ -199,6 +366,10 @@ file before adopting a new version: it changes the agent's operating rules, so r
   from), directories, globs, absolute paths and `..`; validates every path before removing any; stages
   rather than commits. ⚠ **This makes `Bash(tt git *)` no longer purely non-destructive — pair a
   blanket `tt` allow with an `ask` rule for `Bash(tt git rm *)`.**
+- **The v0.10.1 fixes are re-verified on real Windows** (report 088, PRs #10 and #11, 2026-08-21):
+  issues 014 to 022 were re-run against the released v0.10.2 on Windows 10, and issue 022 closed with
+  all six components demonstrated (`352f2e6`). This was the open item v0.10.2 named. The same run
+  reproduced the uninstaller's leftover half that became issue 040.
 - **`tt gitinfo --files`** (issue-004): the paths behind the change COUNT, one per line, each labelled
   `staged` / `unstaged` / `both` / `untracked` / `conflict` with its raw porcelain code, grouped
   conflicts-first and untracked-last. Closes the gap that made a bare `git status --short` the only
@@ -241,70 +412,18 @@ file before adopting a new version: it changes the agent's operating rules, so r
   behaviour — and it turns red the day reqT-lang is fixed, which is the point. The fix itself is an
   upstream candidate to be timed with a reqT desktop release.
 
-### v0.10.3 wave
+**From Hans's PRs #12 to #26, and #30**: the fixes for issues 040 (payload layout), 041 (projected
+verb descriptions), 050 (suite green in default mode), 053 (nested worktrees) and
+`261011-which-merged-usr-duplicates`, the scala-cli banner for issue 061, and research topic RT058,
+each recorded above, plus the filings and measurements behind issues 042, 051, 052, 055, 058, 061, 062
+and 065, and the Windows confirmations of 040 and 042 (PR #12).
 
-- **`tt --version` / `tt version` / `-v`** (issue-028): one identifying line — tag-spelled version,
-  carrier kind (git checkout / source copy / native install), root, entry path, platform — answered
-  on both code paths (bash launcher without a JVM start; dispatcher via the new mainless
-  `versionlib.scala`). Offline always. The v-prefix half of 028 closed works-as-designed.
-- **Version-stamped policy carriers** (issue-036): `CONTRIBUTING.md` and `reqts/issues/README.md`
-  carry the AGENTS.md-style version banner, gated by VersionSuite, plus a check-your-version line in
-  the contributor path and a state-your-baseline line in the issue checklist.
-- **`tt issue` — the in-repo issue workflow gets its typed verb** (issue-032): `next` prints the next
-  free NNN computed across `open/` AND `closed/` (numbers never reused); `list` prints one line per
-  issue (number, state, labels, summary — with a ⚠ when a preamble disagrees with its directory);
-  `close <NNN> --fixed-by <ref>` (or `--as wontfix|duplicate|...`) rewrites the `> status:` line and
-  moves the file as ONE operation, so the two can never disagree — preview by default, `--yes` to
-  apply, date from the system clock, never invented. Local clone only; staging and committing stay
-  with the caller (stage both paths and git records the rename). The standalone move primitive stayed
-  OUT, answering issue-032's design question: verb sprawl for a shape only this workflow uses.
-- **`tt forge pr-commits`** (issue-029): list a PR's commits (short sha, date, author, headline) with
-  `Co-Authored-By:`/"Generated with" lines surfaced under their commit and a one-line verdict — the
-  CONTRIBUTING.md no-assistant-credit check now runs inside the lane.
-- **`tt forge pr-merge`** (issue-030): the first effectful verb in the `pr-*` family. Previews by
-  default and merges only with `--yes`; composes the merge subject `Merge PR #<n>: <title>` from PR
-  metadata, takes the body from `--body-file` only, refuses an unmergeable/draft/closed PR by name,
-  and never deletes the source branch.
-- **`tt forge whoami --gh/--gl`** (issue-035, first item): the auth-check verb can now check the
-  GitHub and GitLab tokens the other verbs use, with each dialect's own guard; the token-source line
-  also names the keyring/`gh auth token` instead of `env ?`.
-- **`tt verify` can watch a long run** (issue-025): `--tee` streams the child's output live while
-  still capturing it for checks (line-callback sinks, not os.Inherit, so `--out` checks keep
-  working), and `--timeout N` bounds a wedged child; the silent default stays and is now documented
-  as deliberate.
-- **Missing files fail like grown-ups across the read path** (issue-027): the five `tt text` verbs
-  and the previously-tracing direct readers get a shared classified guard (`not a readable file` /
-  `is a directory`, exit 2) instead of a raw stack trace, via the new `Lib.requireReadableFile`.
-- **`tt files` on a missing root is an error, not a silent zero** (issue-031): `files: no such
-  path:` exit 2, matching `tt find`'s wording, and a not-a-directory root is rejected too — a
-  mistyped path can no longer read as a true negative.
-- **`tt git log --path <relpath>`** (issue-038, repeatable): only commits that touched the given
-  repo-root-relative path(s), passed to git after a `--` separator so a path can never be parsed as
-  a ref — "which commits touched this file" now has a typed answer.
-- **`tt git fetch` reports evidence, not reassurance** (issue-026): the false all-clear
-  `fetch: up to date` is gone — fetch names the ONE remote it contacted, distinguishes "no new
-  refs" from "you are current" (upstream ahead/behind standing when the fetched remote hosts it),
-  lists remotes NOT fetched, and takes a repeatable `--remote <name>`.
-- **`tt session list` is a read, and a rename announces itself** (issue-037): read-shaped lone words
-  (list/ls/show/status/current/get/name) are reserved like adopt — list/ls print a roster of every
-  session recorded for this directory (newest first, current starred), the rest print the display
-  name, and none can ever set a name; an exact-lowercase read word with arguments is a usage error,
-  exit 2. `tt session <Name>` is unchanged, but a name write now prints `session: renamed <old> ->
-  <new>` on stderr, so a write can no longer pass as a read; stdout stays byte-stable.
-- **guardcheck tells the truth about its own coverage** (issues 033/034/024): a `pipe to tee` MED
-  check (the closed list read as complete and was not; the fix line differs because a tee caller
-  wants output kept); the stale SM217 sanction of raw `git log --grep` corrected, and the retired
-  shape now gets a NOTE nudge toward `tt git log`; the git-lane carriers across AGENTS.md, skills
-  and docs now say typed-verbs-first with `git -C` as the named fallback.
-- **`tt links check` learns its exceptions, and CI finally runs it** (issue-011): a checked-in
-  `.links.ignore` at the scanned root records by-design dangling links, one `from -> target  #
-  reason` per line with the reason MANDATORY (malformed file = exit 2), excused links disclosed with
-  their reason and kept off the exit code, unused entries noted but never fatal. The six known cases
-  recorded, and the new `links-check` workflow gates every push and PR — strict links only, no
-  network.
-- **`docs/allowlist.md` says which `tt` wins** (issue-019): the `tt which tt` ritual first, the
-  three field-evidenced arrangements named, and the Windows version caveat — landing in the same
-  cut as 022's verified fix per the standing ordering rule.
+**Still open**: the other half of issue 061, the suites that lack the tools-locate fallback; 065, the
+UTF-8 regression test that flaked once; 066, the native swap not checking its inputs are unchanged;
+042 to 044, the uninstaller's version line, the README's uninstall promise and the installer ignoring
+unknown flags; 051, `tt session help` still setting a name; and 052, the native fast path disarmed by
+mtime. Issues 067 to 072 and the date-named `261011-unknown-flags-silently-ignored` and
+`261101-git-log-date-gaps` were filed in this release and are not yet worked.
 
 ## v0.10.2 — 2026-08-11 — the polish pool, and the release gate proven
 
