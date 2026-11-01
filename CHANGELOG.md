@@ -6,7 +6,7 @@ All notable changes to genscalator. Versions follow the git tags (`vX.Y.Z`); the
 Updating genscalator is a **human-reviewed** step — see [`docs/updating.md`](docs/updating.md). Skim this
 file before adopting a new version: it changes the agent's operating rules, so review beats blind pull.
 
-## v0.10.3 (unreleased) — improved tooling and test suite
+## v0.10.3 (unreleased): improved tooling and test suite
 
 A large release in two parts. The maintainer-workflow wave gave routine repo work its typed verbs
 (`tt issue`, the `tt forge pr-*` family, `tt git log --path`, `tt version`). Since then, contributor
