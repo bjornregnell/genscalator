@@ -55,6 +55,11 @@ General:
 > `—` (the training corpus is edited prose where em-dashes mark parentheticals); humans typing live use plain
 > `-`. The mismatch is a small bandwidth/register irritant, cheap to fix by restructuring. A targeted style
 > directive (not a blanket ban), contrast the emoji case above.
+>
+> Note (2026-11-14): the plan these instructions were set on has been cancelled. On BR's current plan (LU, via the
+> Claude for Science plan) the Instructions field (Settings, Your Claude) is empty. The Codeberg URL above no
+> longer hosts genscalator (issue 261114-drop-codeberg-mirror); the repo is at https://github.com/bjornregnell/genscalator.
+> The snapshot above is kept verbatim as the record of what the instructions said on 2026-06-30.
 
 ### What this example does well (early analysis)
 - **Mode routing with a clean genscalator gate** — coding pulls in genscalator; research explicitly suppresses
