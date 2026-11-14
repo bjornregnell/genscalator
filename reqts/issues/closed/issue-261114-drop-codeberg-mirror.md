@@ -1,6 +1,6 @@
 # Issue 261114-drop-codeberg-mirror: drop the Codeberg mirror, after Codeberg's July 2026 LLM policy
 
-> status: open 2026-11-14 · labels: hosting, docs, deploy · measured against: genscalator v0.10.3, main at `6481b7a`
+> status: closed 2026-11-14, fixed by `24856f6` · labels: hosting, docs, deploy · measured against: genscalator v0.10.3, main at `6481b7a`
 > · summary: Codeberg's members voted in July 2026 that projects written with heavy use of LLMs, or heavily tied
 > to the LLM ecosystem, are no longer welcome there. genscalator is both. We stop mirroring to Codeberg, remove the
 > live references to it, and delete the Codeberg repo. GitHub stays the primary host, gitlab.com stays as a
@@ -61,3 +61,7 @@ archived repo is still hosted there, and the cost is a few broken old links, mos
 mirror. The plugin install docs now name the GitLab mirror as the alternative URL. Not changed: `tt forge` still
 defaults to Codeberg; whether the default should move is a separate question. RT004 keeps its 2026-06-30 snapshot of
 BR's instructions verbatim; the live instructions are outside the repo.
+
+2026-11-14, done: the `codeberg` remote is removed from the local clone. BR deleted the Codeberg repo in the web UI
+("The repository has been deleted"); https://codeberg.org/bjornregnell/genscalator now answers Not found. RT004 got a
+dated note pointing to GitHub (`a2dc680`).
