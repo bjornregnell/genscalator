@@ -14,11 +14,10 @@
 // MASTER (source of truth, = the `origin` everything is pushed to): https://github.com/bjornregnell/genscalator
 // Mirrored (verbatim, one-directional; master is authoritative, mirrors are
 // disposable) to:
-//   - codeberg.org/bjornregnell/genscalator          (the EU-sovereign copy; SM035's point survives
-//                                                     the flip — sovereignty is about the copy EXISTING
-//                                                     off the US forges, not about which host we type into)
-//   - gitlab.com/bjornregnell/genscalator
-//   - coursegit.cs.lth.se/bjorn.regnell/genscalator   (note: bjorn.regnell, with a dot)
+//   - gitlab.com/bjornregnell/genscalator             (the public mirror)
+//   - coursegit.cs.lth.se/bjorn.regnell/genscalator   (note: bjorn.regnell, with a dot; closed hosting,
+//                                                     no public access: the EU-hosted backup, SM035)
+// Codeberg was a mirror until 2026-11; dropped per issue 261114-drop-codeberg-mirror.
 //
 // The "why this is a mirror" note lives in the MASTER README (a "Mirrors & EU
 // sovereignty" section), so `git push --mirror` propagates it verbatim to every
@@ -30,15 +29,15 @@
 // needs auth.
 //
 // AUTH: SSH remote URLs. blixten needs an SSH key registered at each host
-// (codeberg.org / gitlab.com / coursegit.cs.lth.se). Until those keys exist, the pushes
+// (gitlab.com / coursegit.cs.lth.se). Until those keys exist, the pushes
 // (and `--dry-run`, which still connects) will fail at the connect - that SSH setup is
 // the deferred joint step.
 //
 // USAGE (from the genscalator root; lives in deploy/ since the 2026-07-21 repo refactor):
 //   scala-cli run deploy/mirror.sc -- --dry-run       # clone master + show what WOULD push (all mirrors)
 //   scala-cli run deploy/mirror.sc                     # clone master + push --mirror to ALL mirrors
-//   scala-cli run deploy/mirror.sc -- gitlab             # only the named mirror: codeberg | gitlab | coursegit
-//   scala-cli run deploy/mirror.sc -- --dry-run codeberg # dry-run a single mirror
+//   scala-cli run deploy/mirror.sc -- gitlab             # only the named mirror: gitlab | coursegit
+//   scala-cli run deploy/mirror.sc -- --dry-run gitlab   # dry-run a single mirror
 //   (pass one or more names to mirror just those - go one repo at a time as SSH keys land)
 //   scala-cli run deploy/mirror.sc -- --root <abs> ... # treat <abs> as the genscalator checkout (else cwd must be the root)
 //   (bloop wedged? add --server=false after `run` - the daemon-free escape hatch, slower but wedge-proof)
@@ -81,7 +80,6 @@ if !Files.exists(root.resolve("deploy").resolve("mirror.sc")) || !Files.isDirect
 // mirror ONLY those - so we can go one repo at a time as each host's SSH key gets set
 // up. No name given = all of them.
 val allMirrors = Seq(
-  "codeberg"  -> "ssh://git@codeberg.org/bjornregnell/genscalator.git",
   "gitlab"    -> "git@gitlab.com:bjornregnell/genscalator.git",
   "coursegit" -> "git@coursegit.cs.lth.se:bjorn.regnell/genscalator.git",
 )

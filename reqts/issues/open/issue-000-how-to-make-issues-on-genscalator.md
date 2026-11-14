@@ -39,8 +39,7 @@ empty-by-neglect.
 ## Where to find all the things
 
 * The canonical repository is https://github.com/bjornregnell/genscalator
-  * You can also file issues on the mirrors; they are transcribed the same way:
-    * Codeberg: https://codeberg.org/bjornregnell/genscalator
+  * You can also file issues on the public mirror; they are transcribed the same way:
     * GitLab: https://gitlab.com/bjornregnell/genscalator
 * `reqts/` holds the requirements side of the project. First go-tos:
   * the Product Requirements Document: `reqts/PRD.md`

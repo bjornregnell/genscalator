@@ -54,3 +54,10 @@ scala-common-style repo on Codeberg is human-written prose about Scala style and
 
 2026-11-14: open question, delete the Codeberg repo or keep it as a frozen archive. The case for deleting: an
 archived repo is still hosted there, and the cost is a few broken old links, mostly in research records.
+
+2026-11-14, fix: two more live places turned up while doing it. `docs/RELEASING.md` steps 8, 10 and 12 used
+`tt forge` without `--gh`, i.e. against its Codeberg default, with the Codeberg token; they now use `--gh` and
+`GENSCALATOR_GITHUB_TOKEN`, and step 11 names gitlab + coursegit. `docs/EMBER-TEMPLATE.md` called Codeberg a batched
+mirror. The plugin install docs now name the GitLab mirror as the alternative URL. Not changed: `tt forge` still
+defaults to Codeberg; whether the default should move is a separate question. RT004 keeps its 2026-06-30 snapshot of
+BR's instructions verbatim; the live instructions are outside the repo.

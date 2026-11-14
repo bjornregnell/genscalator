@@ -28,15 +28,15 @@ but kept a doc for now, because a rarely-fired skill would bloat the skill listi
    known lint baseline).
 7. **Consistency sweep** — every shipped tool has: a `tools/README.md` entry, a PRD Feature, a CHANGELOG line,
    and (where testable) tests in `tools/test/`. Flag any tool missing one.
-8. **Dry check** (read-only, no token): `tt forge releases bjornregnell/genscalator` confirms the previous tag is
+8. **Dry check** (read-only, no token): `tt forge releases bjornregnell/genscalator --gh` confirms the previous tag is
    still the latest before the cut.
 
 ## The cut — BR's hand (token-gated, outward-facing; the agent PREPARES, BR CUTS)
 9.  `git tag vX.Y.Z`
-10. `tt forge release-create bjornregnell/genscalator vX.Y.Z --name "vX.Y.Z: <title>" --body-file tmp/vX.Y.Z-release-notes.md`
-    (needs `GENSCALATOR_CODEBERG_TOKEN` in the env; this is the `ask`-gated command).
-11. **Mirror** via `mirror.sc` (github + coursegit; gitlab if wired).
-12. Verify: `tt forge releases bjornregnell/genscalator` now shows the new tag.
+10. `tt forge release-create bjornregnell/genscalator vX.Y.Z --gh --name "vX.Y.Z: <title>" --body-file tmp/vX.Y.Z-release-notes.md`
+    (needs `GENSCALATOR_GITHUB_TOKEN` in the env; this is the `ask`-gated command).
+11. **Mirror** via `mirror.sc` (gitlab + coursegit). Codeberg is no longer a mirror (issue 261114-drop-codeberg-mirror).
+12. Verify: `tt forge releases bjornregnell/genscalator --gh` now shows the new tag.
 
 ## After the cut
 13. Ensure the PRD `## PAST / ### IMPLEMENTED` release block mirrors the CHANGELOG entry.

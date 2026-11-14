@@ -192,7 +192,7 @@ Before exiting, the writer checks:
 - [ ] every state line and pre-authorized action carries a verify-mandate;
 - [ ] all work is committed AND pushed to the FULL routine push set (genscalator: origin
       (github) + gitlab + coursegit every unit, plain fast-forward only — `mirror.sc` stays the
-      sole force path; codeberg is a BATCHED mirror, release/sweep only; work repo: origin
+      sole force path; codeberg is no longer a mirror, issue 261114; work repo: origin
       (github) + gitlab + coursegit); a flapping remote is retried next unit, never rewritten around;
 - [ ] the file fits on roughly one screen;
 - [ ] timestamps are read from a clock, never guessed;

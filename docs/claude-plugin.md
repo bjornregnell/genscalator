@@ -26,11 +26,10 @@ Still required on the user's machine (plugins can't install dependencies): **`sc
 /plugin install genscalator@bjornregnell
 ```
 **Why the short form works:**
-- The short `owner/repo` form of `/plugin marketplace add` resolves to **github.com**, and the GitHub
-  mirror `github.com/bjornregnell/genscalator` is pushed on every commit, so it is always current
-  (and github.com has steadier uptime than codeberg.org).
-- The canonical Codeberg repo also works, via the full URL:
-  `/plugin marketplace add https://codeberg.org/bjornregnell/genscalator.git`. Here the **`.git` suffix**
+- The short `owner/repo` form of `/plugin marketplace add` resolves to **github.com**, and
+  `github.com/bjornregnell/genscalator` is the canonical repo, pushed on every commit, so it is always current.
+- The GitLab mirror also works, via the full URL:
+  `/plugin marketplace add https://gitlab.com/bjornregnell/genscalator.git`. Here the **`.git` suffix**
   tells Claude Code to *clone* the repo (so it finds `.claude-plugin/marketplace.json` inside it) rather
   than treating the URL as a direct link to a hosted `marketplace.json`.
 

@@ -19,8 +19,8 @@ In Claude Code, run:
 /reload-plugins
 ```
 
-The short form installs from the GitHub mirror (kept in sync on every commit). The canonical
-Codeberg repo works too: `/plugin marketplace add https://codeberg.org/bjornregnell/genscalator.git`
+The short form installs from GitHub, the canonical repo. The GitLab mirror works too:
+`/plugin marketplace add https://gitlab.com/bjornregnell/genscalator.git`
 
 Then verify with **`/skills`** — you should see `tt-toolbox`, `scala-style`, and the rest of the
 set. If they do not show up yet, restart Claude Code and check again.
