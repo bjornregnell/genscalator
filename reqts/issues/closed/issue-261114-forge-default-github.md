@@ -1,6 +1,6 @@
 # Issue 261114-forge-default-github: tt forge defaults to Codeberg, which genscalator no longer uses: make GitHub the default
 
-> status: open 2026-11-14 · labels: tools, forge, ux · measured against: genscalator main at `18f2887`
+> status: closed 2026-11-15, fixed by `6d76fac` · labels: tools, forge, ux · measured against: genscalator main at `18f2887`
 > · summary: with no dialect flag, `tt forge` talks to Codeberg (Gitea/Forgejo). genscalator dropped Codeberg
 > (issue 261114-drop-codeberg-mirror), and its own release checklist now has to add `--gh` to every call. Make
 > GitHub the default dialect; keep Gitea/Forgejo reachable with an explicit flag or `--url`.
