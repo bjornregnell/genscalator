@@ -6,7 +6,8 @@
 //> using dep com.lihaoyi::ujson:4.4.3
 //> using dep com.lihaoyi::os-lib:0.11.8
 
-// forge — typed client for a Forgejo/Gitea forge (default: Codeberg). Replaces hand-curling the REST API
+// forge — typed client for a GitHub, Forgejo/Gitea or GitLab forge (default: GitHub since 2026-11-15, issue
+// 261114-forge-default-github; Gitea/Codeberg via --gitea or --url BASE). Replaces hand-curling the REST API
 // (a dual-use `curl` carrying a token on the command line) with a narrow, effect-declared tool.
 //   READ verbs (releases, tags) need NO auth (public repos) → safe to allowlist (`Bash(tt forge releases *)`).
 //   The one EFFECTFUL verb (release-create) reads its token from a fixed set of human-set env vars
@@ -43,7 +44,8 @@
 //   tt forge pr-merge <owner>/<repo> <n> [--gh | --url BASE] [--method M] [--subject S] [--body-file F] [--yes]
 //                                                                    # EFFECTFUL: previews by default, merges with --yes
 //   tt forge protection <owner>/<repo> <branch> [--gh | --url BASE]  # protection rule (needs a token)
-//   BASE defaults to https://codeberg.org
+//   No dialect flag = GitHub (`--gh` is then a no-op). `--gitea` = Gitea/Forgejo at https://codeberg.org;
+//   `--url BASE` without --gh/--gl = Gitea/Forgejo at BASE. See withDialectDefault.
 import scala.util.Try
 import agenttools.{Lib, ReleaseLib}
 
@@ -77,12 +79,12 @@ object Forge {
       "  forge release-delete <owner>/<repo> <tag> [--gh | --url BASE] [--yes] [--allow-published]   (PREVIEWS by default; never deletes the git tag)\n" +
       "  forge asset-rm <owner>/<repo> <tag> <asset> [--gh | --url BASE] [--yes] [--allow-published]   (remove ONE asset; PREVIEWS by default)\n" +
       "  forge file <owner>/<repo> <path> [--ref R] [--out F] [--max-bytes N] [--gh | --gl | --url BASE]   (read ONE repo file; READ, but carries a token)\n" +
-      "  Dialects for release-create: default = Gitea/Forgejo (--url BASE, default https://codeberg.org); --gh = GitHub (fixed api.github.com); --gl = GitLab (--url BASE, default https://gitlab.com).\n" +
+      "  Dialects: default = GitHub (fixed api.github.com; --gh is a no-op); --gitea = Gitea/Forgejo at https://codeberg.org, or --url BASE for another Gitea/Forgejo; --gl = GitLab (--url BASE, default https://gitlab.com).\n" +
       "  Tokens come ONLY from fixed env names (never a flag): Gitea = CODEBERG_TOKEN/FORGE_TOKEN, GitHub = GITHUB_TOKEN/GH_TOKEN, GitLab = GITLAB_TOKEN (GENSCALATOR_-prefixed variants win first)."
   )
 
   private val Help: String =
-    """tt forge — Forgejo/Gitea forge client (default: Codeberg)
+    """tt forge — forge client for GitHub (default), Forgejo/Gitea (--gitea, --url) and GitLab (--gl)
       |
       |Talks to a forge's REST API without hand-curling it: list releases and tags
       |(no auth needed on public repos), verify a token, and create or edit releases.
@@ -167,14 +169,17 @@ object Forge {
       |                        with --yes; a PUBLISHED release additionally needs
       |                        --allow-published; the git TAG is never deleted)
       |Flags:
-      |  --url BASE        forge base URL (Gitea default https://codeberg.org; GitLab default https://gitlab.com)
+      |  (no dialect flag) GitHub, the default since 2026-11-15 (it was Gitea/Codeberg before)
+      |  --url BASE        forge base URL; without --gl it means a Gitea/Forgejo forge at BASE
+      |                    (GitLab default https://gitlab.com; not allowed with --gh)
+      |  --gitea           talk to a Gitea/Forgejo forge, default https://codeberg.org
       |  --limit N         max items for releases/tags (default 50)
       |  --name S          release title (default: the tag)
       |  --body S          release notes inline; --body-file F reads them from a file
       |  --prerelease      mark as prerelease (Gitea/GitHub only; GitLab has no such flag)
       |  --draft           mark as draft (Gitea/GitHub only; GitLab has no such flag)
       |  --target C        commitish/ref the new tag points at (release-create only)
-      |  --gh              talk to the GitHub API (fixed api.github.com) instead of a Gitea forge
+      |  --gh              talk to the GitHub API (fixed api.github.com); the default, kept as a no-op
       |  --gl              talk to the GitLab API (--url BASE, default https://gitlab.com)
       |  --state S         open | closed | all for issues/prs (default open)
       |  --method M        pr-merge: merge | squash | rebase (default merge; squash discards
@@ -187,11 +192,11 @@ object Forge {
       |  --out F           file: write the bytes to F instead of printing them
       |  --max-bytes N     file: refuse to print more than N bytes (default 5000000)
       |
-      |Token: whoami, release-create/edit/upload/delete and protection read the token from env
+      |Gitea token (--gitea / --url): whoami, release-create/edit/upload/delete and protection read it from env
       |GENSCALATOR_CODEBERG_TOKEN, then CODEBERG_TOKEN, then FORGE_TOKEN — never a flag,
       |and it is only ever sent to a trusted host (codeberg.org; the human may extend
       |the set via env TT_FORGE_HOSTS). Effectful verbs print an [audit] line first.
-      |GitHub verbs (--gh) read their token from env GENSCALATOR_GITHUB_TOKEN, GITHUB_TOKEN
+      |GitHub verbs (the default) read their token from env GENSCALATOR_GITHUB_TOKEN, GITHUB_TOKEN
       |or GH_TOKEN and only ever send it to api.github.com; reads work anonymously too
       |(60 requests/h), protection requires the token (admin-scoped read). release-create
       |--gh needs it too (Contents: read-and-write, or the classic `repo` scope).
@@ -201,12 +206,12 @@ object Forge {
       |for self-managed instances like git.cs.lth.se).
       |
       |Examples:
-      |  tt forge releases bjornregnell/genscalator --limit 5    # latest 5 releases
+      |  tt forge releases bjornregnell/genscalator --limit 5    # latest 5 releases (GitHub)
       |  tt forge tags bjornregnell/genscalator                  # tag list with short SHAs
-      |  tt forge release-create bjornregnell/genscalator v0.9.0 --name "v0.9.0: title" \
-      |           --body-file NOTES.md --prerelease                # Gitea/Codeberg (default)
-      |  tt forge release-create bjornregnell/prontopop v0.1.1 --gh --name "v0.1.1" \
-      |           --body-file NOTES.md                             # GitHub
+      |  tt forge release-create bjornregnell/prontopop v0.1.1 --name "v0.1.1" \
+      |           --body-file NOTES.md --prerelease                # GitHub (default)
+      |  tt forge release-create someone/repo v0.9.0 --gitea --name "v0.9.0: title" \
+      |           --body-file NOTES.md                             # Gitea/Codeberg
       |  tt forge release-create bjornregnell/prontopop v0.1.1 --gl \
       |           --url https://git.cs.lth.se --name "v0.1.1" --body-file NOTES.md   # GitLab
       |
@@ -266,9 +271,28 @@ object Forge {
   private def strOr(v: Option[ujson.Value], default: String) = ReleaseLib.strOr(v, default)
   private def strOrEmpty(v: Option[ujson.Value])             = ReleaseLib.strOrEmpty(v)
 
+  /** The default dialect, decided in ONE place before any verb parses (issue 261114-forge-default-github).
+    * Every verb already accepts --gh, so the GitHub default is "append --gh when no dialect is named",
+    * and the per-verb parsers keep their old Gitea-unless-told-otherwise logic untouched:
+    *   - --gh or --gl given        -> unchanged
+    *   - --url BASE without --gl   -> unchanged: a Gitea/Forgejo forge at BASE, as before
+    *   - --gitea                   -> stripped, leaving the old Gitea default (https://codeberg.org)
+    *   - nothing                   -> --gh appended
+    * Left = a usage error. Pure and public for unit tests. Known limit: a flag VALUE spelled exactly
+    * like a dialect flag (`--name --gh`) counts as that flag. */
+  def withDialectDefault(args: List[String]): Either[String, List[String]] =
+    val gh    = args.contains("--gh")
+    val gl    = args.contains("--gl")
+    val gitea = args.contains("--gitea")
+    if gitea && (gh || gl) then Left("--gitea cannot be combined with --gh or --gl: pick one dialect")
+    else if gh && gl then Left("--gh cannot be combined with --gl: pick one dialect")
+    else if gitea then Right(args.filterNot(_ == "--gitea"))
+    else if gh || gl || args.contains("--url") then Right(args)
+    else Right(args :+ "--gh")
+
   def dispatch(args: String*): Unit =
     if args.contains("--help") || args.contains("-h") then { println(Help); sys.exit(0) }
-    args.toList match
+    withDialectDefault(args.toList).fold(die, identity) match
       case "whoami" :: rest         => whoami(rest)
       case "releases" :: rest       => listReleases(rest)
       case "tags" :: rest           => listTags(rest)

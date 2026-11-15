@@ -6,6 +6,16 @@ All notable changes to genscalator. Versions follow the git tags (`vX.Y.Z`); the
 Updating genscalator is a **human-reviewed** step — see [`docs/updating.md`](docs/updating.md). Skim this
 file before adopting a new version: it changes the agent's operating rules, so review beats blind pull.
 
+## Unreleased
+
+- **Behaviour change: `tt forge` talks to GitHub by default.** Before, a call without a dialect flag went to
+  Codeberg (Gitea/Forgejo). genscalator has no Codeberg repo any more, so a forgotten `--gh` asked the wrong
+  host and got a 404 that read like a missing release. `--gh` still works and is now a no-op. Use the new
+  `--gitea` flag for Gitea/Forgejo at codeberg.org, or `--url BASE` (without `--gl`) for another Gitea/Forgejo
+  forge, as before. (issue 261114-forge-default-github)
+- The Codeberg mirror is dropped. GitHub is the public home, GitLab a public mirror, and coursegit a closed
+  backup. (issue 261114-drop-codeberg-mirror)
+
 ## v0.10.3: improved tooling and test suite
 
 A large release in two parts. The maintainer-workflow wave gave routine repo work its typed verbs

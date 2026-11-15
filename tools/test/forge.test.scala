@@ -7,6 +7,28 @@
 
 class ForgeRequestSuite extends munit.FunSuite:
 
+  // ---- withDialectDefault: GitHub is the default dialect (issue 261114-forge-default-github) ----
+  test("withDialectDefault: no dialect flag appends --gh (bare releases goes to GitHub)") {
+    assertEquals(Forge.withDialectDefault(List("releases", "o/r")), Right(List("releases", "o/r", "--gh")))
+    assertEquals(Forge.withDialectDefault(List("whoami")), Right(List("whoami", "--gh")))
+  }
+  test("withDialectDefault: --gh is a no-op and --gl passes through unchanged") {
+    assertEquals(Forge.withDialectDefault(List("tags", "o/r", "--gh")), Right(List("tags", "o/r", "--gh")))
+    assertEquals(Forge.withDialectDefault(List("whoami", "--gl")), Right(List("whoami", "--gl")))
+  }
+  test("withDialectDefault: --gitea is stripped, leaving the old Gitea/Codeberg default") {
+    assertEquals(Forge.withDialectDefault(List("releases", "o/r", "--gitea")), Right(List("releases", "o/r")))
+  }
+  test("withDialectDefault: --url without --gl stays a Gitea forge at that base (no --gh added)") {
+    val a = List("issues", "o/r", "--url", "https://git.example")
+    assertEquals(Forge.withDialectDefault(a), Right(a))
+  }
+  test("withDialectDefault: conflicting dialect flags are a usage error") {
+    assert(Forge.withDialectDefault(List("whoami", "--gitea", "--gh")).isLeft)
+    assert(Forge.withDialectDefault(List("whoami", "--gitea", "--gl")).isLeft)
+    assert(Forge.withDialectDefault(List("whoami", "--gh", "--gl")).isLeft)
+  }
+
   // ---- uploadAssetUrl: dialect routing + the FIXED GitHub uploads root ----
   test("uploadAssetUrl --gh targets the fixed uploads.github.com root, never the api root argument") {
     val u = Forge.uploadAssetUrl(true, "https://evil.example/api/v1", "o", "r", 42L, "a.zip")

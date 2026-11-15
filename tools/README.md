@@ -641,7 +641,12 @@ touches SOURCES: it rewrites each post's status line (optionally stamping `--dat
 Still deferred: nested lists (rendered flat) and reference links.
 Example: `tt ssg blog/002-....md tmp/site` then `tt serv tmp/site` and open the URL.
 
-### forge — Forgejo/Gitea forge client, default Codeberg (EFFECTFUL: network; create needs env token)
+### forge — GitHub, Forgejo/Gitea and GitLab forge client, default GitHub (EFFECTFUL: network; create needs env token)
+
+**Default dialect: GitHub** since 2026-11-15 (issue 261114-forge-default-github; it was Gitea/Codeberg before).
+With no dialect flag every verb talks to GitHub, and `--gh` is a no-op that keeps old scripts working.
+`--gitea` selects Gitea/Forgejo at `https://codeberg.org`; `--url BASE` without `--gl` selects Gitea/Forgejo at BASE;
+`--gl` selects GitLab. The `[--gh | --url BASE]` forms below read with that in mind.
 ```
 forge whoami   [--gh | --gl | --url BASE]                 # verify auth: print the token's login (never the token)
 forge releases <owner>/<repo> [--url BASE] [--limit N]    # list releases  (READ, no auth → allowlistable)
@@ -691,7 +696,7 @@ READ verbs but is REFUSED by `release-create` (the trusted-host check), so use t
 work anonymously on GitHub (60/h rate limit); `protection` requires the token (admin read).
 **`contributors`** reads the repo's contributor list — `--gh` prints `login⇥contributions⇥type` (type = `User`/`Bot`,
 the field that answers "why is a bot on the list"), `--gl` prints `name⇥email⇥commits`; the Gitea/Forgejo REST API
-has no contributors endpoint (Codeberg 404s), so the default dialect says so plainly rather than erroring cryptically.
+has no contributors endpoint (Codeberg 404s), so `--gitea` says so plainly rather than erroring cryptically.
 **`pr-commits`** lists a PR's commits (short sha⇥date⇥author⇥headline) and surfaces `Co-Authored-By:`/"Generated
 with" lines with a one-line verdict — the CONTRIBUTING.md no-assistant-credit pre-merge check in one allowlisted
 call. **`pr-merge`** merges a PR: previews by default (release-delete's shape) and applies only with `--yes`; the
@@ -1025,7 +1030,7 @@ One line per file; a tool's real reference is its `###` section above and its `-
 - `web.scala` — safe read-only HTTP GET (effectful: network; requests).
 - `serv.scala` — loopback-only static preview server.
 - `ssg.scala` — the markdown → HTML site generator (writes into its out-dir; see its ⚠ managed-out-dir note).
-- `forge.scala` — forge client (Gitea/Codeberg + GitHub `--gh` + GitLab `--gl`): reads + env-token release verbs incl. the destructive `release-delete` (effectful; requests+ujson+os-lib).
+- `forge.scala` — forge client (GitHub by default + Gitea/Codeberg `--gitea` + GitLab `--gl`): reads + env-token release verbs incl. the destructive `release-delete` (effectful; requests+ujson+os-lib).
 - `git.scala` — safe git helper: commit-from-file, ff-only pull, fetch, read-only show/log (effectful; os-lib).
 - `gitinfo.scala` — read-only git overview.
 - `issue.scala` — the in-repo issue workflow (new mints a YYMMDD-slug ID and creates the file; list read-only; close is the guarded rewrite+move, preview-by-default).

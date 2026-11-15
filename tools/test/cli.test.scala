@@ -2994,8 +2994,8 @@ class CliSuite extends munit.FunSuite:
 
   // --- forge issue/PR/protection READ verbs (arg contract; live reads need a network, so only arg errors here) ---
   // --- forge contributors (SM217; --gh/--gl only — arg contract + the Gitea-default guard, no network) ---
-  test("forge contributors: the Gitea default exits 2 with a use-gh/gl message (no endpoint, no network)") {
-    val (code, _, err) = run("forge", "contributors", "foo/bar") // default dialect = Gitea/Codeberg
+  test("forge contributors --gitea exits 2 with a use-gh/gl message (no endpoint, no network)") {
+    val (code, _, err) = run("forge", "contributors", "foo/bar", "--gitea") // GitHub is the default since 261114
     assertEquals(code, 2)
     assert(clue(err).contains("--gh"))
     assert(clue(err).contains("--gl"))
@@ -3004,6 +3004,15 @@ class CliSuite extends munit.FunSuite:
     assertEquals(run("forge", "contributors")._1, 2)                          // no repo
     assertEquals(run("forge", "contributors", "foo/bar", "--gh", "--limit", "0")._1, 2)  // bad limit
     assertEquals(run("forge", "contributors", "foo/bar", "--gl", "--limit", "x")._1, 2)  // non-numeric limit
+  }
+  test("forge: --gitea with --gh is a usage error before any network") {
+    val (code, _, err) = run("forge", "whoami", "--gitea", "--gh")
+    assertEquals(code, 2)
+    assert(clue(err).contains("--gitea"))
+  }
+  test("forge --help says GitHub is the default and documents --gitea") {
+    val (_, out, _) = run("forge", "--help")
+    assert(clue(out).contains("GitHub (default)") && clue(out).contains("--gitea"))
   }
   test("forge --help mentions the contributors verb") {
     val (_, out, _) = run("forge", "--help")
