@@ -1,6 +1,6 @@
 //> using file project.scala
 //> using jvm 21
-//> using dep com.lihaoyi::os-lib:0.11.8
+//> using dep com.lihaoyi::os-lib:0.11.10
 
 // verify — run-and-verify driver (EFFECTFUL): run an ALLOWED command (NO shell), capture exit/stdout/stderr,
 // check against expectations, print an audit line + a PASS/FAIL verdict. Replaces the

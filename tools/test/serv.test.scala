@@ -1,6 +1,6 @@
 //> using file ../project.scala
 //> using dep org.scalameta::munit::1.3.4
-//> using dep com.lihaoyi::os-lib:0.11.8
+//> using dep com.lihaoyi::os-lib:0.11.10
 
 // Unit tests for the serv static-file server (serv.scala). The server loop itself opens a socket and blocks,
 // so it is NOT unit-tested here; instead we test the PURE, security-critical helpers that decide what gets

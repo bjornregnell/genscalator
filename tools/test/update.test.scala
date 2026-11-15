@@ -1,6 +1,6 @@
 //> using file ../project.scala
 //> using dep org.scalameta::munit::1.3.4
-//> using dep com.lihaoyi::os-lib:0.11.8
+//> using dep com.lihaoyi::os-lib:0.11.10
 
 // Unit tests for update's ahead/behind parser (the one bit of pure logic; the git effects stay in the driver).
 // Co-located under tools/ (test scope extends the MAIN scope, so `Update` is in scope without a `//> using file`).

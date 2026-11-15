@@ -1,7 +1,7 @@
 //> using file project.scala
 //> using file lib.scala
 //> using jvm 21
-//> using dep com.lihaoyi::os-lib:0.11.8
+//> using dep com.lihaoyi::os-lib:0.11.10
 
 // sbt — run `sbt` in an EXPLICIT directory (EFFECTFUL: runs sbt as a subprocess). This is the
 // dir-scoped runner that closes a real dead-end: the guardcheck hook blocks even a bare `cd`

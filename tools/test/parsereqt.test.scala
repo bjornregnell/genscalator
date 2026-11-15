@@ -1,7 +1,7 @@
 //> using file ../project.scala
 //> using file ../reqt-vendored
 //> using dep org.scalameta::munit::1.3.4
-//> using dep com.lihaoyi::os-lib:0.11.8
+//> using dep com.lihaoyi::os-lib:0.11.10
 
 // Unit tests for parsereqt.scala's lint wrapper — specifically the fenced-block skip (issue 010).
 // The pure half (fencedLines / normalizeBullet / dropFenced) runs without touching a file; the last

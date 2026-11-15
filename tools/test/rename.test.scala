@@ -1,6 +1,6 @@
 //> using file ../project.scala
 //> using dep org.scalameta::munit::1.3.4
-//> using dep com.lihaoyi::os-lib:0.11.8
+//> using dep com.lihaoyi::os-lib:0.11.10
 
 // AN EXPERIMENT, not a regression test — and it must stay in the suite precisely because a DESIGN
 // depends on its result remaining true (reqts/DESIGN.md D7b).

@@ -1,6 +1,6 @@
 //> using file ../project.scala
 //> using dep org.scalameta::munit::1.3.4
-//> using dep com.lihaoyi::os-lib:0.11.8
+//> using dep com.lihaoyi::os-lib:0.11.10
 
 // Unit tests for WhichTool's PURE helpers (issue-022): PATH splitting, PATHEXT parsing, magic-byte
 // kinds. The Windows ';'-separator and PATHEXT cases run on ANY platform precisely because the

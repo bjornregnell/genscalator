@@ -1,6 +1,6 @@
 //> using file project.scala
 //> using jvm 21
-//> using dep com.lihaoyi::os-lib:0.11.8
+//> using dep com.lihaoyi::os-lib:0.11.10
 
 // issue — typed verb for the IN-REPO issue workflow (issue-032): the rules reqts/issues/README.md
 // states in prose, made executable. `list` is a PURE read; `new` creates ONE file (refusing to

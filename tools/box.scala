@@ -1,6 +1,6 @@
 //> using file project.scala
 //> using jvm 21
-//> using dep com.lihaoyi::os-lib:0.11.8
+//> using dep com.lihaoyi::os-lib:0.11.10
 //> using file boxstats.scala
 
 // box — safe box ops: host-pinned REMOTE ops for a known compute box (default bjornyx.local), plus

@@ -1,4 +1,4 @@
-//> using dep com.lihaoyi::os-lib:0.11.8
+//> using dep com.lihaoyi::os-lib:0.11.10
 
 // buildsite — assemble the WHOLE deployable site into ONE directory, `out/`, so that deploying is a
 // single upload of a single tree instead of three pipelines with three destinations.

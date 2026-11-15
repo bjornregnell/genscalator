@@ -1,6 +1,6 @@
 //> using file ../project.scala
 //> using dep org.scalameta::munit::1.3.4
-//> using dep com.lihaoyi::os-lib:0.11.8
+//> using dep com.lihaoyi::os-lib:0.11.10
 
 // Tests for links.scala. The parsing helpers are pure, so they are tested directly; the value of doing
 // so is that every case below is a shape this repo actually contains, not an invented one. The three

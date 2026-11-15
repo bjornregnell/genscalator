@@ -1,6 +1,6 @@
 //> using file ../project.scala
 //> using dep org.scalameta::munit::1.3.4
-//> using dep com.lihaoyi::os-lib:0.11.8
+//> using dep com.lihaoyi::os-lib:0.11.10
 
 // Tests for the single-sourced product version (VERSION at the repo root). Sibling of
 // ScalaVersionSuite, and it exists for the same reason: the failure is SILENT. The number lived in

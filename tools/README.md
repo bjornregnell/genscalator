@@ -23,7 +23,7 @@ exists and is fresh, `tt` runs it and a call answers in ~10 ms with no compile a
 is stale (tools edited since it was built) or absent, `tt` falls back to `scala-cli` with a stderr
 note — SLOWER, still correct; first such run compiles (~couple s), reruns are cached. Refresh the
 binary with `scala-cli run deploy/buildnative.sc`; details in `docs/native.md`. Pure tools use only
-the JDK; effectful drivers add `//> using dep com.lihaoyi::os-lib:0.11.8` (some also requests/ujson).
+the JDK; effectful drivers add `//> using dep com.lihaoyi::os-lib:0.11.10` (some also requests/ujson).
 
 ## Tests
 The suite is **co-located** under [`test/`](test/): ~30 `.test.scala` files, roughly one per tool —

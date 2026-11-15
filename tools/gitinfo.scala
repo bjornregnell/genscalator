@@ -1,6 +1,6 @@
 //> using file project.scala
 //> using jvm 21
-//> using dep com.lihaoyi::os-lib:0.11.8
+//> using dep com.lihaoyi::os-lib:0.11.10
 
 // gitinfo — typed, READ-ONLY git status/overview for agents (retires raw `git -C status/log/ls-remote`).
 // Prints branch, clean/dirty count, ahead/behind vs upstream, and the recent log; with `--remote <name>` it

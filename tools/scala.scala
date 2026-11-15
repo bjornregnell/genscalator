@@ -1,6 +1,6 @@
 //> using file project.scala
 //> using jvm 21
-//> using dep com.lihaoyi::os-lib:0.11.8
+//> using dep com.lihaoyi::os-lib:0.11.10
 
 // scala — a typed driver over `scala-cli` for a Scala PROJECT DIRECTORY (EFFECTFUL: runs scala-cli as a
 // subprocess). This is what lets a blanket `Bash(scala-cli *)` allow come OUT of settings (SM205).

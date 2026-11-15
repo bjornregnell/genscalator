@@ -4,7 +4,7 @@
 //> using jvm 21
 //> using dep com.lihaoyi::requests:0.9.3
 //> using dep com.lihaoyi::ujson:4.4.3
-//> using dep com.lihaoyi::os-lib:0.11.8
+//> using dep com.lihaoyi::os-lib:0.11.10
 
 // forge — typed client for a GitHub, Forgejo/Gitea or GitLab forge (default: GitHub since 2026-11-15, issue
 // 261114-forge-default-github; Gitea/Codeberg via --gitea or --url BASE). Replaces hand-curling the REST API

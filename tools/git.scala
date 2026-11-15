@@ -1,6 +1,6 @@
 //> using file project.scala
 //> using jvm 21
-//> using dep com.lihaoyi::os-lib:0.11.8
+//> using dep com.lihaoyi::os-lib:0.11.10
 
 // git — typed, SAFE git helper for agents. It exposes ONLY add/commit/push plus fast-forward-only pull,
 // fetch, and read-only show (never reset, rebase, merge, --force, rm, or clean — the destructive/interactive

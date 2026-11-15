@@ -1,7 +1,7 @@
 //> using file project.scala
 //> using jvm 21
 //> using file seqspec.scala
-//> using dep com.lihaoyi::os-lib:0.11.8
+//> using dep com.lihaoyi::os-lib:0.11.10
 
 // gvdot — render a sequence-diagram spec (the SAME spec as `tt svg`/`tt ascii`, shared via seqspec.scala) to an
 // image by generating **graphviz DOT** and shelling out to **`dot`**. EFFECTFUL driver (spawns `dot`, writes a file).

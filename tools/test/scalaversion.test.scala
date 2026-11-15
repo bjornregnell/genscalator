@@ -1,6 +1,6 @@
 //> using file ../project.scala
 //> using dep org.scalameta::munit::1.3.4
-//> using dep com.lihaoyi::os-lib:0.11.8
+//> using dep com.lihaoyi::os-lib:0.11.10
 
 // Tests for the single-sourced Scala version (project.scala). Why this needs a drift-proof at all:
 // the `tt` launcher's scala-cli fallback runs ONE tool file, a build unit that does NOT contain the rest

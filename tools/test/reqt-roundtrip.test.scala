@@ -1,7 +1,7 @@
 //> using file ../project.scala
 //> using file ../reqt-vendored
 //> using dep org.scalameta::munit::1.3.4
-//> using dep com.lihaoyi::os-lib:0.11.8
+//> using dep com.lihaoyi::os-lib:0.11.10
 
 // ISSUE 005 — reqT-lang's markdown round trip is not idempotent, and each pass destroys more.
 //

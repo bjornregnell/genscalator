@@ -1,6 +1,6 @@
 //> using file ../project.scala
 //> using dep org.scalameta::munit::1.3.4
-//> using dep com.lihaoyi::os-lib:0.11.8
+//> using dep com.lihaoyi::os-lib:0.11.10
 
 // Tests for the single dispatcher (dispatch.scala). The coverage test is the drift-proof: the verb
 // table must match EXACTLY the set of tools/*.scala files with a top-level @main (minus dispatch
