@@ -167,11 +167,20 @@ def run(label: String, cmd: String*): Long =
     (if label == "parity" then s"; candidate kept for inspection at $nextBin" else ""))
   secs
 
+// ---- the GraalVM that builds the image: PINNED to JDK 21 (2026-11-15) ----
+// Without a pin, scala-cli picks its own default GraalVM, which moved to JDK 25 (scala-cli says
+// "25 by default"). An image built on JDK 25 prints four `sun.misc.Unsafe ... LazyVals$` WARNING lines
+// on EVERY tt call: JDK 25 warns about the Unsafe access that Scala 3 lazy vals use. That is noise in
+// every tool output an agent reads. 21.0.2 is the last GraalVM Community release for JDK 21 in
+// coursier's JVM index. Revisit when Scala's lazy vals stop using sun.misc.Unsafe.
+val GraalVmJvmId = "graalvm-community:21.0.2"
+
 // ---- step 1: build the CANDIDATE (never the live path) ----
 Files.createDirectories(liveBin.getParent)
 Files.deleteIfExists(nextBin)
 val buildSecs = run("build",
   scalaCli, "--power", "package", "--native-image", toolsDir.toString,
+  "--graalvm-jvm-id", GraalVmJvmId,
   "--main-class", "dispatchTypedTools", "-o", nextBin.toString,
   "--", "--no-fallback", "--enable-url-protocols=https,http", "-J-Xmx6g")
 if !Files.isRegularFile(nextBin) then die(s"build reported success but $nextBin is missing")

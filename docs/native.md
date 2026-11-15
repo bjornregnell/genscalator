@@ -23,10 +23,15 @@
 
 ```
 scala-cli --power package --native-image <repo>/tools \
+  --graalvm-jvm-id graalvm-community:21.0.2 \
   --main-class dispatchTypedTools -o <repo>/tmp/tt-native \
   -- --no-fallback --enable-url-protocols=https,http -J-Xmx6g
 ```
 
+* **GraalVM is PINNED** (2026-11-15) to Community 21.0.2, the last release for JDK 21: scala-cli's own
+  default moved to JDK 25, and a binary built on that prints four `sun.misc.Unsafe` WARNING lines on every
+  call. Rebuilt with the pin on linux-x64: build 95 s, parity suite 0 failures (CliSuite 297), binary 46 MB.
+  Moving to the still-maintained 25 line is issue 261115-graalvm-25-unsafe-warning.
 * Entry point: `tools/dispatch.scala` (the single dispatcher; contract `tt-native <tool> <args...>`).
 * Measured: image generation 1 m 39 s, peak RSS 3.3 GB (cap the heap; check free mem
   first — 6 GB floor), binary 39.5 MB (19.3 code + 18.1 heap). GraalVM CE 17.0.9 via
